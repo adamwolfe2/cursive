@@ -58,7 +58,7 @@ export function SearchResults({
           No results yet
         </h3>
         <p className="mt-1 text-sm text-gray-500">
-          Enter search criteria and click "Search People" to find contacts
+          Enter search criteria and click &quot;Search People&quot; to find contacts
         </p>
       </div>
     )
@@ -205,7 +205,7 @@ export function SearchResults({
               </h3>
               <div className="mt-2 text-sm text-yellow-700">
                 <p>
-                  You've used all your credits for today. Credits reset at midnight,
+                  You&apos;ve used all your credits for today. Credits reset at midnight,
                   or{' '}
                   <a
                     href="/pricing"

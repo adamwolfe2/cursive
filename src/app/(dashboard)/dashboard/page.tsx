@@ -45,7 +45,7 @@ export default async function DashboardPage() {
           Welcome back, {user?.full_name || 'there'}!
         </h1>
         <p className="mt-1 text-sm text-gray-500">
-          Here's what's happening with your lead generation
+          Here&apos;s what&apos;s happening with your lead generation
         </p>
       </div>
 

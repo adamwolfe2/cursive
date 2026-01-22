@@ -179,8 +179,8 @@ export function ZapierIntegration({ user, isPro }: ZapierIntegrationProps) {
             <ol className="text-sm text-blue-800 space-y-1 list-decimal list-inside">
               <li>Copy the webhook URL above</li>
               <li>Create a new Zap in Zapier</li>
-              <li>Use "Webhooks by Zapier" as the trigger</li>
-              <li>Choose "Catch Hook" and paste your webhook URL</li>
+              <li>Use &quot;Webhooks by Zapier&quot; as the trigger</li>
+              <li>Choose &quot;Catch Hook&quot; and paste your webhook URL</li>
               <li>Configure your action (e.g., add to Google Sheets, send to CRM)</li>
               <li>Test and activate your Zap!</li>
             </ol>

@@ -43,7 +43,7 @@ export default function PricingPage() {
           Simple, transparent pricing
         </h1>
         <p className="mt-4 text-xl text-gray-600">
-          Choose the plan that's right for your business
+          Choose the plan that&apos;s right for your business
         </p>
       </div>
 
@@ -263,7 +263,7 @@ export default function PricingPage() {
             </h3>
             <p className="text-gray-600">
               Yes, you can cancel your subscription at any time from the
-              billing settings. You'll continue to have Pro access until the
+              billing settings. You&apos;ll continue to have Pro access until the
               end of your billing period.
             </p>
           </div>
@@ -283,7 +283,7 @@ export default function PricingPage() {
               Do you offer refunds?
             </h3>
             <p className="text-gray-600">
-              We offer a 14-day money-back guarantee. If you're not satisfied
+              We offer a 14-day money-back guarantee. If you&apos;re not satisfied
               within the first 14 days, contact support for a full refund.
             </p>
           </div>

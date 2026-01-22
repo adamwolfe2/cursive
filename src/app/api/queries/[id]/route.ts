@@ -5,6 +5,10 @@ import { QueryRepository } from '@/lib/repositories/query.repository'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { z } from 'zod'
 
+interface RouteContext {
+  params: Promise<{ id: string }>
+}
+
 // Validation schema for query update
 const updateQuerySchema = z.object({
   name: z.string().optional(),
@@ -52,9 +56,11 @@ const updateQuerySchema = z.object({
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: RouteContext
 ) {
   try {
+    const { id } = await context.params
+
     // Check authentication
     const user = await getCurrentUser()
     if (!user) {
@@ -63,7 +69,7 @@ export async function GET(
 
     // Get query
     const queryRepo = new QueryRepository()
-    const query = await queryRepo.findById(params.id, user.workspace_id)
+    const query = await queryRepo.findById(id, user.workspace_id)
 
     if (!query) {
       return NextResponse.json({ error: 'Query not found' }, { status: 404 })
@@ -84,9 +90,11 @@ export async function GET(
  */
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: RouteContext
 ) {
   try {
+    const { id } = await context.params
+
     // Check authentication
     const user = await getCurrentUser()
     if (!user) {
@@ -100,7 +108,7 @@ export async function PATCH(
     // Update query
     const queryRepo = new QueryRepository()
     const query = await queryRepo.update(
-      params.id,
+      id,
       user.workspace_id,
       validatedData
     )
@@ -128,9 +136,11 @@ export async function PATCH(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: RouteContext
 ) {
   try {
+    const { id } = await context.params
+
     // Check authentication
     const user = await getCurrentUser()
     if (!user) {
@@ -139,7 +149,7 @@ export async function DELETE(
 
     // Delete query
     const queryRepo = new QueryRepository()
-    await queryRepo.delete(params.id, user.workspace_id)
+    await queryRepo.delete(id, user.workspace_id)
 
     return NextResponse.json({ success: true })
   } catch (error: any) {

@@ -288,8 +288,6 @@ async function uploadToGeneralPlatform(
   leads: any[],
   config: any
 ): Promise<{ success: boolean; message: string; uploaded_count: number }> {
-  console.log(`[GeneralPlatform] Uploading ${leads.length} leads`)
-
   // Generic webhook or API upload
   if (config?.webhook_url) {
     await fetch(config.webhook_url, {

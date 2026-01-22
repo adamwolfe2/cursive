@@ -89,7 +89,7 @@ export function SearchForm({ onSearch, loading }: SearchFormProps) {
               <p className="mt-1 text-sm text-red-600">{errors.domain.message}</p>
             )}
             <p className="mt-1 text-xs text-gray-500">
-              Enter the company's website domain to find employees
+              Enter the company&apos;s website domain to find employees
             </p>
           </div>
 
@@ -109,7 +109,7 @@ export function SearchForm({ onSearch, loading }: SearchFormProps) {
               className="block w-full rounded-md border-gray-300 px-4 py-2 shadow-sm focus:border-blue-500 focus:ring-blue-500"
             />
             <p className="mt-1 text-xs text-gray-500">
-              If you don't know the domain, enter the company name
+              If you don&apos;t know the domain, enter the company name
             </p>
           </div>
 

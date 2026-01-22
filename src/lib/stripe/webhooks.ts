@@ -54,8 +54,6 @@ export async function handleSubscriptionCreated(
       status: subscription.status,
     },
   })
-
-  console.log(`[Stripe] Subscription created for user ${userId}`)
 }
 
 /**
@@ -118,10 +116,6 @@ export async function handleSubscriptionUpdated(
       cancel_at_period_end: subscription.cancel_at_period_end,
     },
   })
-
-  console.log(
-    `[Stripe] Subscription updated for user ${userId}, status: ${subscription.status}`
-  )
 }
 
 /**
@@ -168,8 +162,6 @@ export async function handleSubscriptionDeleted(
       status: 'canceled',
     },
   })
-
-  console.log(`[Stripe] Subscription deleted for user ${userId}`)
 }
 
 /**
@@ -203,8 +195,6 @@ export async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
       invoice_number: invoice.number,
     },
   })
-
-  console.log(`[Stripe] Payment succeeded for invoice ${invoice.id}`)
 }
 
 /**
@@ -240,8 +230,6 @@ export async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
   })
 
   // TODO: Send email notification to user about failed payment
-
-  console.log(`[Stripe] Payment failed for invoice ${invoice.id}`)
 }
 
 /**
@@ -271,7 +259,8 @@ export async function processWebhookEvent(event: Stripe.Event) {
         break
 
       default:
-        console.log(`[Stripe] Unhandled event type: ${event.type}`)
+        // Unhandled event type
+        break
     }
   } catch (error: any) {
     console.error(`[Stripe] Error processing webhook:`, error)

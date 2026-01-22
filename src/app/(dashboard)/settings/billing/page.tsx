@@ -333,7 +333,7 @@ export default function BillingSettingsPage() {
           </div>
         ) : (
           <p className="text-sm text-gray-600">
-            You don't have an active subscription. Upgrade to Pro to add a
+            You don&apos;t have an active subscription. Upgrade to Pro to add a
             payment method.
           </p>
         )}

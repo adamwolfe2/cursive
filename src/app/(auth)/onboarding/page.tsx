@@ -85,18 +85,18 @@ export default function OnboardingPage() {
           slug: workspaceSlug,
           subdomain: workspaceSlug,
           industry_vertical: industryVertical || null,
-        })
+        } as any)
         .select()
         .single()
 
-      if (workspaceError) {
-        throw workspaceError
+      if (workspaceError || !workspace) {
+        throw workspaceError || new Error('Failed to create workspace')
       }
 
       // Create user profile
       const { error: userError } = await supabase.from('users').insert({
         auth_user_id: session.user.id,
-        workspace_id: workspace.id,
+        workspace_id: (workspace as any).id,
         email: session.user.email!,
         full_name:
           session.user.user_metadata.full_name ||
@@ -105,11 +105,11 @@ export default function OnboardingPage() {
         role: 'owner',
         plan: 'free',
         daily_credit_limit: 3,
-      })
+      } as any)
 
       if (userError) {
         // Rollback workspace creation
-        await supabase.from('workspaces').delete().eq('id', workspace.id)
+        await supabase.from('workspaces').delete().eq('id', (workspace as any).id)
         throw userError
       }
 
@@ -131,7 +131,7 @@ export default function OnboardingPage() {
             Welcome to OpenInfo
           </h2>
           <p className="mt-2 text-sm text-gray-600">
-            Let's set up your workspace to get started
+            Let&apos;s set up your workspace to get started
           </p>
         </div>
 

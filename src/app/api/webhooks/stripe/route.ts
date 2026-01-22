@@ -46,8 +46,6 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  console.log(`[Stripe Webhook] Received event: ${event.type}`)
-
   try {
     // Process the webhook event
     await processWebhookEvent(event)
