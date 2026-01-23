@@ -17,7 +17,8 @@ const nextConfig = {
   // IMAGE OPTIMIZATION
   // ============================================
   images: {
-    domains: ['localhost'],
+    formats: ['image/avif', 'image/webp'],
+    domains: ['localhost', 'openinfo.com'],
     remotePatterns: [
       {
         protocol: 'https',
