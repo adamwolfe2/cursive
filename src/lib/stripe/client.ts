@@ -3,13 +3,26 @@
 
 import Stripe from 'stripe'
 
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error('Missing STRIPE_SECRET_KEY environment variable')
+// Initialize Stripe client only if key is available
+// This allows builds to succeed without the key, but will error at runtime if used
+const getStripeClient = () => {
+  if (!process.env.STRIPE_SECRET_KEY) {
+    throw new Error('Missing STRIPE_SECRET_KEY environment variable')
+  }
+  return new Stripe(process.env.STRIPE_SECRET_KEY, {
+    apiVersion: '2024-12-18.acacia',
+    typescript: true,
+  })
 }
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: '2024-12-18.acacia',
-  typescript: true,
+// Export a lazy-initialized stripe client
+export const stripe = new Proxy({} as Stripe, {
+  get: (target, prop) => {
+    if (!target.checkout) {
+      Object.assign(target, getStripeClient())
+    }
+    return (target as any)[prop]
+  }
 })
 
 // Stripe Product IDs (set these in Stripe Dashboard)
