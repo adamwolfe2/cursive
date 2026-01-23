@@ -188,11 +188,11 @@ const rateLimitStore = new Map<string, RateLimitEntry>()
 // Clean up expired entries periodically
 setInterval(() => {
   const now = Date.now()
-  for (const [key, entry] of rateLimitStore.entries()) {
+  Array.from(rateLimitStore.entries()).forEach(([key, entry]) => {
     if (entry.resetAt < now) {
       rateLimitStore.delete(key)
     }
-  }
+  })
 }, 60000) // Clean up every minute
 
 /**
@@ -535,7 +535,7 @@ export function getClientIp(request: NextRequest): string {
     return realIp
   }
 
-  return request.ip || 'unknown'
+  return 'unknown'
 }
 
 /**

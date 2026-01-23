@@ -7,7 +7,8 @@
 
 import { z } from 'zod'
 import { NextRequest } from 'next/server'
-import { BadRequestError, ValidationError, ErrorDetails } from './errors'
+import { BadRequestError, ValidationError } from './errors'
+import type { ErrorDetails } from './response'
 
 // ============================================
 // COMMON SCHEMAS
@@ -49,12 +50,17 @@ export const sortSchema = z.object({
 export type SortParams = z.infer<typeof sortSchema>
 
 /**
- * Date range schema
+ * Date range schema (base - for spreading into other schemas)
  */
-export const dateRangeSchema = z.object({
+const dateRangeBaseSchema = z.object({
   dateFrom: z.string().datetime().optional(),
   dateTo: z.string().datetime().optional(),
-}).refine(
+})
+
+/**
+ * Date range schema (with refinement validation)
+ */
+export const dateRangeSchema = dateRangeBaseSchema.refine(
   (data) => {
     if (data.dateFrom && data.dateTo) {
       return new Date(data.dateFrom) <= new Date(data.dateTo)
@@ -129,7 +135,7 @@ export const leadFilterSchema = z.object({
   enrichmentStatus: z.enum(['pending', 'completed', 'failed']).optional(),
   deliveryStatus: z.enum(['pending', 'delivered', 'failed']).optional(),
   intentScore: z.enum(['hot', 'warm', 'cold']).optional(),
-  ...dateRangeSchema.shape,
+  ...dateRangeBaseSchema.shape,
   ...searchSchema.shape,
   ...paginationSchema.shape,
   ...sortSchema.shape,

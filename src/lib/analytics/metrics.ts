@@ -344,7 +344,7 @@ export function aggregateTimeSeries(
   const groups = groupByInterval(data, interval)
   const result: DataPoint[] = []
 
-  for (const [key, points] of groups) {
+  for (const [key, points] of Array.from(groups.entries())) {
     const values = points.map(p => p.value)
     let aggregatedValue: number
 

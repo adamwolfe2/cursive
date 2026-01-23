@@ -158,7 +158,8 @@ export function logPropsChanges<T extends Record<string, unknown>>(
 
   const changes: Record<string, { prev: unknown; next: unknown }> = {}
 
-  for (const key of new Set([...Object.keys(prevProps), ...Object.keys(nextProps)])) {
+  const allKeys = Array.from(new Set([...Object.keys(prevProps), ...Object.keys(nextProps)]))
+  for (const key of allKeys) {
     if (prevProps[key] !== nextProps[key]) {
       changes[key] = { prev: prevProps[key], next: nextProps[key] }
     }

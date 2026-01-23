@@ -6,8 +6,16 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { getCurrentUser } from '@/lib/auth/helpers'
 import { UnauthorizedError, ForbiddenError, RateLimitError } from './errors'
+
+// Note: Import getCurrentUser from your auth module when available
+// import { getCurrentUser } from '@/lib/auth/helpers'
+
+// Placeholder - replace with actual auth implementation
+async function getCurrentUser(): Promise<unknown> {
+  // This should be replaced with actual auth logic
+  return null
+}
 
 // ============================================
 // TYPES
@@ -102,6 +110,13 @@ interface RateLimitConfig {
 // In-memory rate limit store (use Redis in production)
 const rateLimitStore = new Map<string, { count: number; resetAt: number }>()
 
+// Helper to get IP from request
+function getClientIp(request: NextRequest): string {
+  return request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+    request.headers.get('x-real-ip') ||
+    'unknown'
+}
+
 /**
  * Simple rate limiting middleware
  */
@@ -109,7 +124,7 @@ export function withRateLimit(config: RateLimitConfig) {
   const {
     windowMs,
     maxRequests,
-    keyGenerator = (req, user) => user?.id || req.ip || 'anonymous',
+    keyGenerator = (req, user) => user?.id || getClientIp(req) || 'anonymous',
   } = config
 
   return <T extends NextResponse>(

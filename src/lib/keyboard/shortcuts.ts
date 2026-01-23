@@ -192,7 +192,7 @@ class ShortcutManager {
       target.tagName === 'TEXTAREA' ||
       target.isContentEditable
 
-    for (const shortcut of this.shortcuts.values()) {
+    for (const shortcut of Array.from(this.shortcuts.values())) {
       // Check if shortcut is enabled
       const isEnabled =
         typeof shortcut.enabled === 'function'
@@ -298,9 +298,9 @@ class ShortcutManager {
 
   private notifyListeners(): void {
     const shortcuts = this.getAll()
-    for (const listener of this.listeners) {
+    Array.from(this.listeners).forEach(listener => {
       listener(shortcuts)
-    }
+    })
   }
 
   destroy(): void {

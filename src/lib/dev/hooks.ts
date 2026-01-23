@@ -128,7 +128,7 @@ export function useValueLogger<T>(name: string, value: T): void {
  * const prevCount = usePreviousValue(count)
  */
 export function usePreviousValue<T>(value: T): T | undefined {
-  const ref = React.useRef<T>()
+  const ref = React.useRef<T | undefined>(undefined)
 
   React.useEffect(() => {
     ref.current = value
@@ -312,7 +312,9 @@ export function useEffectWithLog(
       if (process.env.NODE_ENV === 'development') {
         console.log(`[EFFECT CLEANUP] ${name}`)
       }
-      cleanup?.()
+      if (typeof cleanup === 'function') {
+        cleanup()
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps)

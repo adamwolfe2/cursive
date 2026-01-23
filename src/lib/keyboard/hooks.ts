@@ -348,7 +348,7 @@ export function useTypeAhead<T>({
 }: UseTypeAheadOptions<T>) {
   const [searchString, setSearchString] = React.useState('')
   const [matchedIndex, setMatchedIndex] = React.useState(-1)
-  const timeoutRef = React.useRef<NodeJS.Timeout>()
+  const timeoutRef = React.useRef<NodeJS.Timeout | null>(null)
 
   const handleKeyDown = React.useCallback(
     (event: React.KeyboardEvent) => {
