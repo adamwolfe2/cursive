@@ -31,6 +31,9 @@ export default function MarketplacePage() {
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null)
   const [showPurchaseModal, setShowPurchaseModal] = useState(false)
   const [buyerEmail, setBuyerEmail] = useState('')
+  const [isPurchasing, setIsPurchasing] = useState(false)
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false)
+  const [showCancelMessage, setShowCancelMessage] = useState(false)
 
   const supabase = createClient()
 
@@ -62,6 +65,29 @@ export default function MarketplacePage() {
     return () => clearInterval(interval)
   }, [])
 
+  // Handle Stripe redirect URLs
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search)
+    const success = urlParams.get('success')
+    const canceled = urlParams.get('canceled')
+
+    if (success === 'true') {
+      setShowSuccessMessage(true)
+      // Remove URL params
+      window.history.replaceState({}, '', '/marketplace')
+      // Hide message after 5 seconds
+      setTimeout(() => setShowSuccessMessage(false), 5000)
+    }
+
+    if (canceled === 'true') {
+      setShowCancelMessage(true)
+      // Remove URL params
+      window.history.replaceState({}, '', '/marketplace')
+      // Hide message after 5 seconds
+      setTimeout(() => setShowCancelMessage(false), 5000)
+    }
+  }, [])
+
   const openPurchaseModal = (lead: Lead) => {
     setSelectedLead(lead)
     setShowPurchaseModal(true)
@@ -73,57 +99,34 @@ export default function MarketplacePage() {
       return
     }
 
-    // Check if buyer exists, create if not
-    let { data: buyer } = await supabase
-      .from('buyers')
-      .select('*')
-      .eq('email', buyerEmail)
-      .single()
+    setIsPurchasing(true)
 
-    if (!buyer) {
-      const { data: newBuyer } = await supabase
-        .from('buyers')
-        .insert({
-          email: buyerEmail,
-          company_name: 'Sample Company',
-          workspace_id: selectedLead.workspace_id
+    try {
+      // Create Stripe Checkout session
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          leadId: selectedLead.id,
+          buyerEmail,
+          buyerName: '', // Optional: can be collected from buyer profile
+          companyName: 'Sample Company' // Optional: can be collected from buyer profile
         })
-        .select()
-        .single()
-      buyer = newBuyer
-    }
-
-    if (!buyer) {
-      alert('Failed to create buyer profile')
-      return
-    }
-
-    // Create purchase
-    const { error } = await supabase
-      .from('lead_purchases')
-      .insert({
-        lead_id: selectedLead.id,
-        buyer_id: buyer.id,
-        price_paid: 50.00
       })
 
-    if (error) {
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Failed to create checkout session')
+      }
+
+      const { url } = await response.json()
+
+      // Redirect to Stripe Checkout
+      window.location.href = url
+    } catch (error: any) {
       alert(`Purchase failed: ${error.message}`)
-      return
+      setIsPurchasing(false)
     }
-
-    // Update lead delivery status
-    await supabase
-      .from('leads')
-      .update({ delivery_status: 'delivered' })
-      .eq('id', selectedLead.id)
-
-    alert('Purchase successful! Lead data emailed to you.')
-    setShowPurchaseModal(false)
-    setSelectedLead(null)
-    setBuyerEmail('')
-    fetchLeads()
-    fetchPurchases()
   }
 
   const isPurchased = (leadId: string) => {
@@ -135,6 +138,52 @@ export default function MarketplacePage() {
       <NavBar />
       <div className="min-h-screen bg-white">
         <div className="max-w-7xl mx-auto px-8 py-8">
+          {/* Success Message */}
+          {showSuccessMessage && (
+            <div className="mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-lg flex items-start gap-3">
+              <svg className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              <div>
+                <h3 className="text-[13px] font-medium text-emerald-900">Purchase Successful!</h3>
+                <p className="text-[13px] text-emerald-700 mt-1">
+                  Your payment has been processed. Lead details have been sent to your email.
+                </p>
+              </div>
+              <button
+                onClick={() => setShowSuccessMessage(false)}
+                className="ml-auto text-emerald-600 hover:text-emerald-800"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          )}
+
+          {/* Cancel Message */}
+          {showCancelMessage && (
+            <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3">
+              <svg className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <div>
+                <h3 className="text-[13px] font-medium text-amber-900">Payment Cancelled</h3>
+                <p className="text-[13px] text-amber-700 mt-1">
+                  Your payment was cancelled. You can try again anytime.
+                </p>
+              </div>
+              <button
+                onClick={() => setShowCancelMessage(false)}
+                className="ml-auto text-amber-600 hover:text-amber-800"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          )}
+
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-xl font-semibold text-zinc-900">Lead Marketplace</h1>
             <div className="flex gap-3">
@@ -237,17 +286,20 @@ export default function MarketplacePage() {
               <div className="flex gap-3">
                 <button
                   onClick={purchaseLead}
-                  className="flex-1 h-9 px-4 text-[13px] font-medium bg-zinc-900 text-white hover:bg-zinc-800 rounded-lg transition-all duration-150"
+                  disabled={isPurchasing || !buyerEmail}
+                  className="flex-1 h-9 px-4 text-[13px] font-medium bg-zinc-900 text-white hover:bg-zinc-800 rounded-lg transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Confirm Purchase
+                  {isPurchasing ? 'Redirecting to Checkout...' : 'Confirm Purchase'}
                 </button>
                 <button
                   onClick={() => {
                     setShowPurchaseModal(false)
                     setSelectedLead(null)
                     setBuyerEmail('')
+                    setIsPurchasing(false)
                   }}
-                  className="flex-1 h-9 px-4 text-[13px] font-medium border border-zinc-300 text-zinc-700 hover:bg-zinc-50 rounded-lg transition-all duration-150"
+                  disabled={isPurchasing}
+                  className="flex-1 h-9 px-4 text-[13px] font-medium border border-zinc-300 text-zinc-700 hover:bg-zinc-50 rounded-lg transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Cancel
                 </button>
