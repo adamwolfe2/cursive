@@ -12,6 +12,7 @@ import {
 import { CreditService } from '@/lib/services/credit.service'
 import type { CreditAction } from '@/lib/services/credit.service'
 import { createClient } from '@/lib/supabase/server'
+import { logSecurityEvent } from '@/lib/logging/logger'
 
 export interface ProtectionOptions {
   rateLimit?: {
@@ -56,6 +57,18 @@ export async function protectRoute(
     const rateLimitResult = await rateLimit(identifier, options.rateLimit)
 
     if (!rateLimitResult.success) {
+      // Log rate limit violation
+      logSecurityEvent({
+        type: 'rate_limit_exceeded',
+        ip: getClientIp(req),
+        userId: req.headers.get('x-user-id') || undefined,
+        details: {
+          endpoint: req.url,
+          limit: rateLimitResult.limit,
+          retryAfter: rateLimitResult.retryAfter,
+        },
+      })
+
       return {
         success: false,
         response: rateLimitExceeded(rateLimitResult),
@@ -74,6 +87,16 @@ export async function protectRoute(
     } = await supabase.auth.getUser()
 
     if (authError || !authUser) {
+      // Log failed authentication
+      logSecurityEvent({
+        type: 'auth_failed',
+        ip: getClientIp(req),
+        details: {
+          endpoint: req.url,
+          error: authError?.message,
+        },
+      })
+
       return {
         success: false,
         response: NextResponse.json(
@@ -113,6 +136,19 @@ export async function protectRoute(
     )
 
     if (!creditCheck.allowed) {
+      // Log insufficient credits (potential abuse or upgrade opportunity)
+      logSecurityEvent({
+        type: 'suspicious_activity',
+        userId: user.id,
+        workspaceId: user.workspace_id,
+        details: {
+          type: 'insufficient_credits',
+          action: options.requireCredits.action,
+          remaining: creditCheck.remaining,
+          limit: creditCheck.limit,
+        },
+      })
+
       return {
         success: false,
         response: NextResponse.json(
