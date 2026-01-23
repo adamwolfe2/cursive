@@ -13,12 +13,9 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
 
-  // Performance optimizations
-  compiler: {
-    removeConsole: process.env.NODE_ENV === 'production',
-  },
-
-  // Image optimization
+  // ============================================
+  // IMAGE OPTIMIZATION
+  // ============================================
   images: {
     formats: ['image/avif', 'image/webp'],
     domains: ['localhost', 'openinfo.com'],
@@ -27,65 +24,57 @@ const nextConfig = {
         protocol: 'https',
         hostname: '**.supabase.co',
       },
+      {
+        protocol: 'https',
+        hostname: 'avatars.githubusercontent.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.googleusercontent.com',
+      },
     ],
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    // Modern image formats
+    formats: ['image/avif', 'image/webp'],
+    // Minimize image processing memory
+    minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days
+    // Device sizes for responsive images
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
 
-  // Compression
-  compress: true,
-
-  // PoweredBy header removal
-  poweredByHeader: false,
-
-  // Experimental features
+  // ============================================
+  // PERFORMANCE OPTIMIZATIONS
+  // ============================================
   experimental: {
     serverActions: {
       bodySizeLimit: '2mb',
     },
-    optimisticClientCache: true,
+    // Optimize package imports
+    optimizePackageImports: [
+      '@tanstack/react-query',
+      'lucide-react',
+      'date-fns',
+    ],
   },
 
-  // Headers for security and performance
+  // ============================================
+  // BUNDLE OPTIMIZATION
+  // ============================================
+  compiler: {
+    // Remove console.log in production
+    removeConsole: process.env.NODE_ENV === 'production' ? {
+      exclude: ['error', 'warn'],
+    } : false,
+  },
+
+  // ============================================
+  // HEADERS FOR CACHING & SECURITY
+  // ============================================
   async headers() {
     return [
       {
-        source: '/:path*',
-        headers: [
-          // Security headers
-          {
-            key: 'X-DNS-Prefetch-Control',
-            value: 'on',
-          },
-          {
-            key: 'Strict-Transport-Security',
-            value: 'max-age=63072000; includeSubDomains; preload',
-          },
-          {
-            key: 'X-Frame-Options',
-            value: 'SAMEORIGIN',
-          },
-          {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
-          },
-          {
-            key: 'X-XSS-Protection',
-            value: '1; mode=block',
-          },
-          {
-            key: 'Referrer-Policy',
-            value: 'strict-origin-when-cross-origin',
-          },
-          {
-            key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=()',
-          },
-        ],
-      },
-      {
-        // Cache static assets aggressively
-        source: '/_next/static/:path*',
+        // Cache static assets
+        source: '/static/:path*',
         headers: [
           {
             key: 'Cache-Control',
@@ -93,17 +82,33 @@ const nextConfig = {
           },
         ],
       },
+      {
+        // Security headers for all routes
+        source: '/:path*',
+        headers: [
+          {
+            key: 'X-DNS-Prefetch-Control',
+            value: 'on',
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'origin-when-cross-origin',
+          },
+        ],
+      },
     ]
   },
 
-  // Redirects
+  // ============================================
+  // REDIRECTS
+  // ============================================
   async redirects() {
     return [
-      {
-        source: '/home',
-        destination: '/',
-        permanent: true,
-      },
+      // Add any permanent redirects here
     ]
   },
 }

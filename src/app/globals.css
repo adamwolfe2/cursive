@@ -2,50 +2,147 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================
+   OPENINFO ENTERPRISE DESIGN SYSTEM
+   Clean, Sleek, White Mode Enterprise UI
+   ============================================ */
+
 @layer base {
   :root {
+    /* ========== CORE COLORS ========== */
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 220 13% 13%;
+
+    /* Cards & Surfaces */
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 220 13% 13%;
+    --card-elevated: 0 0% 100%;
+
+    /* Popovers & Dropdowns */
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
+    --popover-foreground: 220 13% 13%;
+
+    /* ========== BRAND COLORS ========== */
+    /* Primary - Professional Blue */
+    --primary: 217 91% 50%;
+    --primary-foreground: 0 0% 100%;
+    --primary-hover: 217 91% 45%;
+    --primary-muted: 217 91% 96%;
+
+    /* Secondary - Subtle Gray */
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 220 13% 26%;
+    --secondary-hover: 220 14% 93%;
+
+    /* ========== SEMANTIC COLORS ========== */
+    /* Success - Professional Green */
+    --success: 152 69% 41%;
+    --success-foreground: 0 0% 100%;
+    --success-muted: 152 69% 96%;
+
+    /* Warning - Warm Amber */
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+    --warning-muted: 38 92% 96%;
+
+    /* Destructive - Refined Red */
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --destructive-muted: 0 72% 96%;
+
+    /* Info - Cool Blue */
+    --info: 199 89% 48%;
+    --info-foreground: 0 0% 100%;
+    --info-muted: 199 89% 96%;
+
+    /* ========== UI COLORS ========== */
+    /* Muted - Subtle backgrounds */
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 9% 46%;
+
+    /* Accent - Highlights */
+    --accent: 220 14% 96%;
+    --accent-foreground: 220 13% 13%;
+
+    /* ========== BORDER & INPUT ========== */
+    --border: 220 13% 91%;
+    --border-light: 220 13% 95%;
+    --border-focus: 217 91% 50%;
+    --input: 220 13% 91%;
+    --input-focus: 217 91% 50%;
+    --ring: 217 91% 50%;
+
+    /* ========== RADIUS ========== */
     --radius: 0.5rem;
+    --radius-sm: 0.375rem;
+    --radius-lg: 0.75rem;
+    --radius-xl: 1rem;
+
+    /* ========== SHADOWS ========== */
+    --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    --shadow-xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+
+    /* ========== SPACING SCALE ========== */
+    --space-0: 0;
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-5: 1.25rem;
+    --space-6: 1.5rem;
+    --space-8: 2rem;
+    --space-10: 2.5rem;
+    --space-12: 3rem;
+    --space-16: 4rem;
+
+    /* ========== TYPOGRAPHY ========== */
+    --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+
+    /* ========== TRANSITIONS ========== */
+    --transition-fast: 150ms;
+    --transition-base: 200ms;
+    --transition-slow: 300ms;
+    --ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-in: cubic-bezier(0.4, 0, 1, 1);
+    --ease-out: cubic-bezier(0, 0, 0.2, 1);
+    --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* ========== Z-INDEX SCALE ========== */
+    --z-dropdown: 1000;
+    --z-sticky: 1020;
+    --z-fixed: 1030;
+    --z-modal-backdrop: 1040;
+    --z-modal: 1050;
+    --z-popover: 1060;
+    --z-tooltip: 1070;
+    --z-toast: 1080;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
+    --background: 224 71% 4%;
+    --foreground: 213 31% 91%;
+    --card: 224 71% 6%;
+    --card-foreground: 213 31% 91%;
+    --popover: 224 71% 6%;
+    --popover-foreground: 213 31% 91%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 222 47% 11%;
+    --secondary: 222 47% 14%;
+    --secondary-foreground: 213 31% 91%;
+    --muted: 223 47% 14%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 222 47% 14%;
+    --accent-foreground: 213 31% 91%;
+    --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 48%;
+    --border: 222 47% 18%;
+    --input: 222 47% 18%;
+    --ring: 217 91% 60%;
   }
 }
 
@@ -53,7 +150,505 @@
   * {
     @apply border-border;
   }
+
+  html {
+    @apply antialiased;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-sans);
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
   }
+
+  /* Focus visible styles for accessibility */
+  :focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+
+  /* Selection styling */
+  ::selection {
+    @apply bg-primary/20 text-foreground;
+  }
+
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Better scrollbar styling */
+  ::-webkit-scrollbar {
+    @apply w-2 h-2;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-border rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/30;
+  }
+}
+
+/* ============================================
+   COMPONENT UTILITIES
+   ============================================ */
+
+@layer components {
+  /* Enterprise Card Styles */
+  .card-enterprise {
+    @apply bg-card rounded-lg border border-border shadow-sm;
+  }
+
+  .card-enterprise-elevated {
+    @apply bg-card rounded-lg border border-border shadow-md;
+  }
+
+  .card-enterprise-interactive {
+    @apply bg-card rounded-lg border border-border shadow-sm
+           transition-all duration-200
+           hover:shadow-md hover:border-border-focus/30;
+  }
+
+  /* Enterprise Button Base */
+  .btn-enterprise {
+    @apply inline-flex items-center justify-center
+           rounded-lg font-medium
+           transition-all duration-200
+           focus-visible:outline-none focus-visible:ring-2
+           focus-visible:ring-ring focus-visible:ring-offset-2
+           disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .btn-enterprise-primary {
+    @apply btn-enterprise bg-primary text-primary-foreground
+           hover:bg-primary/90 active:bg-primary/80;
+  }
+
+  .btn-enterprise-secondary {
+    @apply btn-enterprise bg-secondary text-secondary-foreground
+           hover:bg-secondary/80 active:bg-secondary/70;
+  }
+
+  .btn-enterprise-outline {
+    @apply btn-enterprise border border-border bg-background
+           hover:bg-accent hover:text-accent-foreground;
+  }
+
+  .btn-enterprise-ghost {
+    @apply btn-enterprise hover:bg-accent hover:text-accent-foreground;
+  }
+
+  /* Enterprise Input Styles */
+  .input-enterprise {
+    @apply flex h-10 w-full rounded-lg border border-input
+           bg-background px-3 py-2 text-sm
+           ring-offset-background
+           placeholder:text-muted-foreground
+           focus-visible:outline-none focus-visible:ring-2
+           focus-visible:ring-ring focus-visible:ring-offset-0
+           disabled:cursor-not-allowed disabled:opacity-50
+           transition-all duration-200;
+  }
+
+  /* Enterprise Badge Styles */
+  .badge-enterprise {
+    @apply inline-flex items-center rounded-md px-2 py-0.5
+           text-xs font-medium transition-colors;
+  }
+
+  .badge-enterprise-primary {
+    @apply badge-enterprise bg-primary/10 text-primary;
+  }
+
+  .badge-enterprise-success {
+    @apply badge-enterprise bg-success-muted text-success;
+  }
+
+  .badge-enterprise-warning {
+    @apply badge-enterprise bg-warning-muted text-warning;
+  }
+
+  .badge-enterprise-destructive {
+    @apply badge-enterprise bg-destructive-muted text-destructive;
+  }
+
+  .badge-enterprise-info {
+    @apply badge-enterprise bg-info-muted text-info;
+  }
+
+  .badge-enterprise-muted {
+    @apply badge-enterprise bg-muted text-muted-foreground;
+  }
+
+  /* Enterprise Table Styles */
+  .table-enterprise {
+    @apply w-full text-sm;
+  }
+
+  .table-enterprise thead {
+    @apply border-b border-border bg-muted/50;
+  }
+
+  .table-enterprise th {
+    @apply h-10 px-4 text-left align-middle font-medium text-muted-foreground;
+  }
+
+  .table-enterprise tbody tr {
+    @apply border-b border-border transition-colors hover:bg-muted/50;
+  }
+
+  .table-enterprise td {
+    @apply p-4 align-middle;
+  }
+
+  /* Enterprise Section Styles */
+  .section-enterprise {
+    @apply space-y-6;
+  }
+
+  .section-header-enterprise {
+    @apply flex items-center justify-between;
+  }
+
+  .section-title-enterprise {
+    @apply text-lg font-semibold text-foreground;
+  }
+
+  .section-description-enterprise {
+    @apply text-sm text-muted-foreground mt-1;
+  }
+
+  /* Enterprise Stats Card */
+  .stat-card-enterprise {
+    @apply card-enterprise p-5;
+  }
+
+  .stat-card-enterprise-value {
+    @apply text-2xl font-semibold text-foreground mt-1;
+  }
+
+  .stat-card-enterprise-label {
+    @apply text-sm font-medium text-muted-foreground;
+  }
+
+  .stat-card-enterprise-trend {
+    @apply flex items-center gap-1 text-xs font-medium mt-2;
+  }
+
+  .stat-card-enterprise-trend-up {
+    @apply text-success;
+  }
+
+  .stat-card-enterprise-trend-down {
+    @apply text-destructive;
+  }
+
+  /* Enterprise Empty State */
+  .empty-state-enterprise {
+    @apply flex flex-col items-center justify-center py-12 text-center;
+  }
+
+  .empty-state-enterprise-icon {
+    @apply h-12 w-12 text-muted-foreground/50 mb-4;
+  }
+
+  .empty-state-enterprise-title {
+    @apply text-lg font-medium text-foreground;
+  }
+
+  .empty-state-enterprise-description {
+    @apply text-sm text-muted-foreground mt-1 max-w-sm;
+  }
+
+  /* Enterprise Skeleton Loader */
+  .skeleton-enterprise {
+    @apply animate-pulse bg-muted rounded;
+  }
+
+  /* Enterprise Avatar */
+  .avatar-enterprise {
+    @apply inline-flex items-center justify-center rounded-full
+           bg-primary/10 text-primary font-medium;
+  }
+
+  .avatar-enterprise-sm {
+    @apply h-8 w-8 text-xs;
+  }
+
+  .avatar-enterprise-md {
+    @apply h-10 w-10 text-sm;
+  }
+
+  .avatar-enterprise-lg {
+    @apply h-12 w-12 text-base;
+  }
+
+  /* Enterprise Divider */
+  .divider-enterprise {
+    @apply h-px bg-border my-6;
+  }
+
+  /* Enterprise Link */
+  .link-enterprise {
+    @apply text-primary hover:text-primary/80
+           underline-offset-4 hover:underline
+           transition-colors duration-200;
+  }
+
+  /* Enterprise Page Container */
+  .page-container-enterprise {
+    @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8;
+  }
+
+  /* Enterprise Page Header */
+  .page-header-enterprise {
+    @apply mb-8;
+  }
+
+  .page-title-enterprise {
+    @apply text-2xl font-semibold text-foreground tracking-tight;
+  }
+
+  .page-description-enterprise {
+    @apply text-muted-foreground mt-2 max-w-2xl;
+  }
+
+  /* Enterprise Navigation */
+  .nav-enterprise {
+    @apply bg-background border-b border-border;
+  }
+
+  .nav-item-enterprise {
+    @apply text-sm font-medium text-muted-foreground
+           hover:text-foreground transition-colors duration-200;
+  }
+
+  .nav-item-enterprise-active {
+    @apply text-foreground;
+  }
+}
+
+/* ============================================
+   ANIMATION UTILITIES
+   ============================================ */
+
+@layer utilities {
+  /* Fade animations */
+  .animate-fade-in {
+    animation: fadeIn var(--transition-base) var(--ease-out);
+  }
+
+  .animate-fade-out {
+    animation: fadeOut var(--transition-base) var(--ease-in);
+  }
+
+  /* Slide animations */
+  .animate-slide-up {
+    animation: slideUp var(--transition-base) var(--ease-out);
+  }
+
+  .animate-slide-down {
+    animation: slideDown var(--transition-base) var(--ease-out);
+  }
+
+  .animate-slide-left {
+    animation: slideLeft var(--transition-base) var(--ease-out);
+  }
+
+  .animate-slide-right {
+    animation: slideRight var(--transition-base) var(--ease-out);
+  }
+
+  /* Scale animation */
+  .animate-scale-in {
+    animation: scaleIn var(--transition-base) var(--ease-out);
+  }
+
+  /* Spin slow */
+  .animate-spin-slow {
+    animation: spin 3s linear infinite;
+  }
+
+  /* Gradient text */
+  .text-gradient-enterprise {
+    @apply bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent;
+  }
+
+  /* Glass effect */
+  .glass-enterprise {
+    @apply backdrop-blur-md bg-background/80;
+  }
+
+  /* Focus ring utility */
+  .ring-enterprise {
+    @apply ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+
+  /* Hide scrollbar utility */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Line clamp utilities */
+  .line-clamp-1 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+  }
+
+  .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .line-clamp-3 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+  }
+
+  /* ========== ACCESSIBILITY UTILITIES ========== */
+
+  /* Screen reader only - visually hidden but accessible */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  /* Not screen reader only - shows visually hidden content */
+  .not-sr-only {
+    position: static;
+    width: auto;
+    height: auto;
+    padding: 0;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+  }
+
+  /* Focus-only visible (for skip links) */
+  .focus-visible-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  .focus-visible-only:focus {
+    position: fixed;
+    width: auto;
+    height: auto;
+    padding: 1rem 1.5rem;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+    z-index: 9999;
+    top: 1rem;
+    left: 1rem;
+    background-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    border-radius: var(--radius);
+    font-weight: 500;
+    box-shadow: var(--shadow-lg);
+  }
+
+  /* Reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    :root {
+      --border: 220 13% 50%;
+      --input: 220 13% 50%;
+    }
+  }
+
+  /* Forced colors mode (Windows High Contrast) */
+  @media (forced-colors: active) {
+    .btn-enterprise,
+    .input-enterprise,
+    .card-enterprise {
+      border: 2px solid currentColor;
+    }
+
+    .badge-enterprise {
+      border: 1px solid currentColor;
+    }
+  }
+}
+
+/* Keyframes */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideLeft {
+  from { opacity: 0; transform: translateX(10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideRight {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
 }

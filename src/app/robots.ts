@@ -1,46 +1,38 @@
-// Robots.txt Generation
-// Controls search engine crawler access
+/**
+ * Robots.txt Generator
+ * OpenInfo Platform Marketing Site
+ *
+ * Generates robots.txt for search engines.
+ */
 
-import { MetadataRoute } from 'next'
+import type { MetadataRoute } from 'next'
+
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://openinfo.io'
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = 'https://openinfo.com'
-
   return {
     rules: [
       {
         userAgent: '*',
-        allow: [
-          '/',
-          '/pricing',
-          '/login',
-          '/signup',
-        ],
+        allow: '/',
         disallow: [
           '/api/',
+          '/admin/',
           '/dashboard/',
-          '/data/',
-          '/queries/',
-          '/people-search/',
-          '/trends/',
-          '/settings/',
-          '/integrations/',
-          '/onboarding/',
+          '/_next/',
+          '/private/',
         ],
       },
       {
-        userAgent: 'Googlebot',
-        allow: [
-          '/',
-          '/pricing',
-        ],
-        disallow: [
-          '/api/',
-          '/dashboard/',
-          '/data/',
-        ],
+        userAgent: 'GPTBot',
+        disallow: '/',
+      },
+      {
+        userAgent: 'ChatGPT-User',
+        disallow: '/',
       },
     ],
     sitemap: `${baseUrl}/sitemap.xml`,
+    host: baseUrl,
   }
 }

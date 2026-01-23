@@ -4,6 +4,9 @@ import { getCurrentUser } from '@/lib/auth/helpers'
 import { redirect } from 'next/navigation'
 import { LeadsTable } from '@/components/leads/leads-table'
 import { LeadStats } from '@/components/leads/lead-stats'
+import { PageContainer, PageHeader } from '@/components/layout'
+import { Button } from '@/components/ui/button'
+import Link from 'next/link'
 
 export default async function DataPage({
   searchParams,
@@ -34,20 +37,41 @@ export default async function DataPage({
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Lead Data</h1>
-        <p className="mt-1 text-sm text-gray-500">
-          View and manage all discovered leads
-        </p>
-      </div>
+    <PageContainer>
+      <PageHeader
+        title="Lead Data"
+        description="View and manage all discovered leads across your queries"
+        breadcrumbs={[
+          { label: 'Dashboard', href: '/dashboard' },
+          { label: 'Lead Data' },
+        ]}
+        actions={
+          <div className="flex items-center gap-3">
+            <Button variant="outline" size="sm">
+              <svg className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+              </svg>
+              Export
+            </Button>
+            <Link href="/queries/new">
+              <Button size="sm">
+                <svg className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                New Query
+              </Button>
+            </Link>
+          </div>
+        }
+      />
 
       {/* Stats */}
-      <LeadStats />
+      <div className="mb-6">
+        <LeadStats />
+      </div>
 
       {/* Table */}
       <LeadsTable initialFilters={initialFilters} />
-    </div>
+    </PageContainer>
   )
 }

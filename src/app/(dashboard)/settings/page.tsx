@@ -2,64 +2,32 @@
 
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import Link from 'next/link'
 import { profileSettingsSchema, type ProfileSettingsFormData } from '@/lib/validation/schemas'
-import {
-  FormField,
-  FormLabel,
-  FormInput,
-} from '@/components/ui/form'
-import { useToast } from '@/lib/hooks/use-toast'
-import { z } from 'zod'
+import { PageContainer, PageHeader } from '@/components/layout'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Badge } from '@/components/ui/badge'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { FormField, FormActions } from '@/components/ui/form-field'
+import { Skeleton, SkeletonCard } from '@/components/ui/skeleton'
 
-const workspaceSettingsSchema = z.object({
-  workspace_name: z.string().min(2, 'Workspace name must be at least 2 characters'),
-  industry: z.string().optional(),
-})
-
-type WorkspaceSettingsFormData = z.infer<typeof workspaceSettingsSchema>
-
-function SettingsNav({ currentPath }: { currentPath: string }) {
-  const tabs = [
-    { name: 'Profile', href: '/settings' },
-    { name: 'Billing', href: '/settings/billing' },
-    { name: 'Security', href: '/settings/security' },
-    { name: 'Notifications', href: '/settings/notifications' },
-  ]
-
-  return (
-    <div className="border-b border-zinc-200">
-      <nav className="-mb-px flex space-x-8">
-        {tabs.map((tab) => {
-          const isActive = currentPath === tab.href
-          return (
-            <Link
-              key={tab.name}
-              href={tab.href}
-              className={`whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium transition-colors ${
-                isActive
-                  ? 'border-emerald-500 text-emerald-600'
-                  : 'border-transparent text-zinc-500 hover:border-zinc-300 hover:text-zinc-700'
-              }`}
-            >
-              {tab.name}
-            </Link>
-          )
-        })}
-      </nav>
-    </div>
-  )
-}
+const settingsTabs = [
+  { value: 'profile', label: 'Profile', href: '/settings' },
+  { value: 'notifications', label: 'Notifications', href: '/settings/notifications' },
+  { value: 'security', label: 'Security', href: '/settings/security' },
+  { value: 'billing', label: 'Billing', href: '/settings/billing' },
+]
 
 export default function ProfileSettingsPage() {
   const queryClient = useQueryClient()
-  const router = useRouter()
-  const toast = useToast()
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
-  const [deleteConfirmText, setDeleteConfirmText] = useState('')
+  const pathname = usePathname()
+  const [successMessage, setSuccessMessage] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
 
   // Fetch current user
   const { data: userData, isLoading } = useQuery({
@@ -156,263 +124,241 @@ export default function ProfileSettingsPage() {
     updateProfileMutation.mutate(data)
   }
 
-  const handleDeleteAccount = () => {
-    if (deleteConfirmText !== 'DELETE') {
-      toast.error('Please type DELETE to confirm')
-      return
-    }
-    deleteAccountMutation.mutate()
-  }
-
-  const copyReferralCode = () => {
-    if (user?.referral_code) {
-      navigator.clipboard.writeText(user.referral_code)
-      toast.success('Referral code copied to clipboard!')
-    }
-  }
-
-  const copyReferralLink = () => {
-    const link = `${window.location.origin}/signup?ref=${user?.referral_code}`
-    navigator.clipboard.writeText(link)
-    toast.success('Referral link copied to clipboard!')
+  const copyToClipboard = (text: string, message: string) => {
+    navigator.clipboard.writeText(text)
+    setSuccessMessage(message)
+    setTimeout(() => setSuccessMessage(''), 3000)
   }
 
   if (isLoading) {
     return (
-      <div className="space-y-6">
-        <div className="h-8 w-48 bg-zinc-200 rounded animate-pulse" />
-        <div className="h-96 bg-zinc-200 rounded animate-pulse" />
-      </div>
+      <PageContainer>
+        <div className="space-y-6">
+          <Skeleton className="h-10 w-48" />
+          <Skeleton className="h-10 w-full max-w-md" />
+          <SkeletonCard />
+          <SkeletonCard />
+        </div>
+      </PageContainer>
     )
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-zinc-900">Settings</h1>
-        <p className="mt-2 text-sm text-zinc-600">
-          Manage your account settings and preferences
-        </p>
-      </div>
+    <PageContainer>
+      <PageHeader
+        title="Settings"
+        description="Manage your account settings and preferences"
+        breadcrumbs={[
+          { label: 'Dashboard', href: '/dashboard' },
+          { label: 'Settings' },
+        ]}
+      />
 
       {/* Navigation Tabs */}
-      <SettingsNav currentPath="/settings" />
-
-      {/* Profile Form */}
-      <form onSubmit={handleSubmitProfile(onSubmitProfile)} className="space-y-6">
-        <div className="rounded-lg border border-zinc-200 bg-white p-6">
-          <h2 className="text-lg font-semibold text-zinc-900 mb-4">
-            Personal Information
-          </h2>
-
-          <div className="space-y-4">
-            <FormField error={profileErrors.full_name}>
-              <FormLabel htmlFor="full_name" required>
-                Full Name
-              </FormLabel>
-              <FormInput
-                id="full_name"
-                type="text"
-                disabled={updateProfileMutation.isPending}
-                error={profileErrors.full_name}
-                {...registerProfile('full_name')}
-              />
-            </FormField>
-
-            <FormField error={profileErrors.email}>
-              <FormLabel
-                htmlFor="email"
-                hint="Email cannot be changed once registered"
+      <div className="mb-6 border-b border-border">
+        <nav className="-mb-px flex space-x-8">
+          {settingsTabs.map((tab) => {
+            const isActive = pathname === tab.href
+            return (
+              <Link
+                key={tab.value}
+                href={tab.href}
+                className={`whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium transition-colors ${
+                  isActive
+                    ? 'border-primary text-primary'
+                    : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
+                }`}
               >
-                Email Address
-              </FormLabel>
-              <FormInput
-                id="email"
-                type="email"
-                disabled
-                className="bg-zinc-50 text-zinc-500 cursor-not-allowed"
-                {...registerProfile('email')}
-              />
-            </FormField>
-          </div>
+                {tab.label}
+              </Link>
+            )
+          })}
+        </nav>
+      </div>
 
-          <div className="mt-6 flex justify-end">
-            <button
-              type="submit"
-              disabled={updateProfileMutation.isPending || Object.keys(profileErrors).length > 0}
-              className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-150 shadow-sm"
-            >
-              {updateProfileMutation.isPending ? 'Saving...' : 'Save Changes'}
-            </button>
-          </div>
-        </div>
-      </form>
+      {/* Success Message */}
+      {successMessage && (
+        <Alert variant="success" className="mb-6">
+          <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+            <path
+              fillRule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+              clipRule="evenodd"
+            />
+          </svg>
+          <AlertDescription>{successMessage}</AlertDescription>
+        </Alert>
+      )}
 
-      {/* Account Info */}
-      <div className="rounded-lg border border-zinc-200 bg-white p-6">
-        <h2 className="text-lg font-semibold text-zinc-900 mb-4">
-          Account Information
-        </h2>
+      {/* Error Message */}
+      {errorMessage && (
+        <Alert variant="destructive" className="mb-6">
+          <AlertDescription>{errorMessage}</AlertDescription>
+        </Alert>
+      )}
 
-        <div className="space-y-3">
-          <div className="flex items-center justify-between py-2">
-            <span className="text-sm font-medium text-zinc-700">Current Plan</span>
-            <div className="flex items-center gap-2">
-              <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${
-                user?.plan === 'pro'
-                  ? 'bg-emerald-100 text-emerald-800'
-                  : 'bg-zinc-100 text-zinc-800'
-              }`}>
-                {user?.plan === 'pro' ? 'Pro' : 'Free'}
-              </span>
-              {user?.plan === 'free' && (
-                <Link
-                  href="/settings/billing"
-                  className="text-sm text-emerald-600 hover:text-emerald-700 font-medium"
+      <div className="space-y-6">
+        {/* Profile Form */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Personal Information</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <div className="space-y-4 max-w-md">
+                <FormField
+                  label="Full Name"
+                  htmlFor="full_name"
+                  required
+                  error={errors.full_name?.message}
                 >
-                  Upgrade →
-                </Link>
-              )}
+                  <Input
+                    id="full_name"
+                    placeholder="Enter your full name"
+                    disabled={updateProfileMutation.isPending}
+                    {...register('full_name')}
+                  />
+                </FormField>
+
+                <FormField
+                  label="Email Address"
+                  htmlFor="email"
+                  description="Email cannot be changed once registered"
+                >
+                  <Input
+                    id="email"
+                    type="email"
+                    disabled
+                    className="bg-muted"
+                    {...register('email')}
+                  />
+                </FormField>
+              </div>
+
+              <FormActions>
+                <Button
+                  type="submit"
+                  disabled={updateProfileMutation.isPending || Object.keys(errors).length > 0}
+                >
+                  {updateProfileMutation.isPending ? 'Saving...' : 'Save Changes'}
+                </Button>
+              </FormActions>
+            </form>
+          </CardContent>
+        </Card>
+
+        {/* Workspace Info */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Workspace Information</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4 max-w-md">
+                <div>
+                  <p className="text-sm text-muted-foreground">Role</p>
+                  <p className="text-sm font-medium text-foreground capitalize">
+                    {user?.role || 'Member'}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-sm text-muted-foreground">Plan</p>
+                  <div className="flex items-center gap-2">
+                    <Badge variant={user?.plan === 'pro' ? 'default' : 'muted'}>
+                      {user?.plan === 'pro' ? 'Pro' : 'Free'}
+                    </Badge>
+                    {user?.plan === 'free' && (
+                      <Link href="/pricing">
+                        <Button variant="link" size="sm" className="px-0">
+                          Upgrade
+                        </Button>
+                      </Link>
+                    )}
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-sm text-muted-foreground">Daily Credits</p>
+                  <p className="text-sm font-medium text-foreground">
+                    {user?.credits_remaining || 0} / {user?.daily_credit_limit || 3}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-sm text-muted-foreground">Member Since</p>
+                  <p className="text-sm font-medium text-foreground">
+                    {user?.created_at
+                      ? new Date(user.created_at).toLocaleDateString('en-US', {
+                          month: 'long',
+                          year: 'numeric',
+                        })
+                      : 'N/A'}
+                  </p>
+                </div>
+              </div>
             </div>
-          </div>
+          </CardContent>
+        </Card>
 
-          <div className="flex items-center justify-between py-2">
-            <span className="text-sm font-medium text-zinc-700">Daily Credits</span>
-            <span className="text-sm text-zinc-900">
-              {user?.credits_remaining || 0} / {user?.daily_credit_limit || 3} remaining
-            </span>
-          </div>
+        {/* Referral Program */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Referral Program</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground mb-4">
+              Share OpenInfo with your network and earn bonus credits when they
+              sign up using your referral link.
+            </p>
 
-          <div className="flex items-center justify-between py-2">
-            <span className="text-sm font-medium text-zinc-700">Member Since</span>
-            <span className="text-sm text-zinc-900">
-              {user?.created_at
-                ? new Date(user.created_at).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  })
-                : 'N/A'}
-            </span>
-          </div>
+            <div className="space-y-4 max-w-md">
+              <FormField label="Your Referral Code">
+                <div className="flex gap-2">
+                  <Input
+                    value={user?.referral_code || 'Generating...'}
+                    readOnly
+                    className="bg-muted"
+                  />
+                  <Button
+                    variant="outline"
+                    onClick={() =>
+                      copyToClipboard(user?.referral_code, 'Referral code copied!')
+                    }
+                  >
+                    Copy
+                  </Button>
+                </div>
+              </FormField>
 
-          <div className="flex items-center justify-between py-2">
-            <span className="text-sm font-medium text-zinc-700">Role</span>
-            <span className="text-sm text-zinc-900 capitalize">
-              {user?.role || 'Member'}
-            </span>
-          </div>
-        </div>
+              <FormField label="Your Referral Link">
+                <div className="flex gap-2">
+                  <Input
+                    value={
+                      user?.referral_code
+                        ? `${typeof window !== 'undefined' ? window.location.origin : ''}/signup?ref=${user.referral_code}`
+                        : 'Generating...'
+                    }
+                    readOnly
+                    className="bg-muted text-sm"
+                  />
+                  <Button
+                    variant="outline"
+                    onClick={() =>
+                      copyToClipboard(
+                        `${window.location.origin}/signup?ref=${user?.referral_code}`,
+                        'Referral link copied!'
+                      )
+                    }
+                  >
+                    Copy
+                  </Button>
+                </div>
+              </FormField>
+            </div>
+          </CardContent>
+        </Card>
       </div>
-
-      {/* Referral Program */}
-      <div className="rounded-lg border border-zinc-200 bg-white p-6">
-        <h2 className="text-lg font-semibold text-zinc-900 mb-2">
-          Referral Program
-        </h2>
-        <p className="text-sm text-zinc-600 mb-4">
-          Share OpenInfo with your network and earn bonus credits when they sign up.
-        </p>
-
-        <div className="space-y-3">
-          <div>
-            <label className="block text-sm font-medium text-zinc-700 mb-1">
-              Your Referral Code
-            </label>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={user?.referral_code || 'Generating...'}
-                readOnly
-                className="block flex-1 rounded-lg border-zinc-300 bg-zinc-50 shadow-sm text-sm font-mono"
-              />
-              <button
-                onClick={copyReferralCode}
-                className="rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 transition-colors"
-              >
-                Copy
-              </button>
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-zinc-700 mb-1">
-              Your Referral Link
-            </label>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={
-                  user?.referral_code
-                    ? `${typeof window !== 'undefined' ? window.location.origin : ''}/signup?ref=${user.referral_code}`
-                    : 'Generating...'
-                }
-                readOnly
-                className="block flex-1 rounded-lg border-zinc-300 bg-zinc-50 shadow-sm text-sm font-mono"
-              />
-              <button
-                onClick={copyReferralLink}
-                className="rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 transition-colors"
-              >
-                Copy
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Danger Zone */}
-      <div className="rounded-lg border border-red-200 bg-red-50 p-6">
-        <h2 className="text-lg font-semibold text-red-900 mb-2">
-          Danger Zone
-        </h2>
-        <p className="text-sm text-red-700 mb-4">
-          Permanently delete your account and all associated data. This action cannot be undone.
-        </p>
-
-        {!showDeleteConfirm ? (
-          <button
-            onClick={() => setShowDeleteConfirm(true)}
-            className="rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-semibold text-red-700 hover:bg-red-100 transition-colors"
-          >
-            Delete Account
-          </button>
-        ) : (
-          <div className="space-y-3">
-            <div>
-              <label className="block text-sm font-medium text-red-900 mb-2">
-                Type <span className="font-mono font-bold">DELETE</span> to confirm
-              </label>
-              <input
-                type="text"
-                value={deleteConfirmText}
-                onChange={(e) => setDeleteConfirmText(e.target.value)}
-                className="block w-full max-w-xs rounded-lg border-red-300 shadow-sm focus:border-red-500 focus:ring-red-500"
-                placeholder="DELETE"
-              />
-            </div>
-            <div className="flex gap-2">
-              <button
-                onClick={handleDeleteAccount}
-                disabled={deleteConfirmText !== 'DELETE' || deleteAccountMutation.isPending}
-                className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                {deleteAccountMutation.isPending ? 'Deleting...' : 'Permanently Delete Account'}
-              </button>
-              <button
-                onClick={() => {
-                  setShowDeleteConfirm(false)
-                  setDeleteConfirmText('')
-                }}
-                className="rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 transition-colors"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
+    </PageContainer>
   )
 }

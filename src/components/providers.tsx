@@ -1,9 +1,15 @@
 'use client'
 
-import { ReactNode, useEffect } from 'react'
+/**
+ * Application Providers
+ * OpenInfo Platform
+ *
+ * Combines all providers needed for the application in the correct order.
+ */
+
+import { ReactNode, useEffect, useState } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ErrorBoundary } from './error-boundary'
-import { useState } from 'react'
 import { initGlobalErrorHandler } from '@/lib/utils/global-error-handler'
 import { ToastProvider } from '@/lib/contexts/toast-context'
 
@@ -45,7 +51,11 @@ function getQueryClient() {
   }
 }
 
-export function Providers({ children }: { children: ReactNode }) {
+interface ProvidersProps {
+  children: ReactNode
+}
+
+export function Providers({ children }: ProvidersProps) {
   const [queryClient] = useState(() => getQueryClient())
 
   // Initialize global error handler
@@ -59,5 +69,17 @@ export function Providers({ children }: { children: ReactNode }) {
         <ToastProvider>{children}</ToastProvider>
       </QueryClientProvider>
     </ErrorBoundary>
+  )
+}
+
+/**
+ * Dashboard-specific providers
+ * Use this for authenticated dashboard routes
+ */
+export function DashboardProviders({ children }: ProvidersProps) {
+  return (
+    <Providers>
+      {children}
+    </Providers>
   )
 }

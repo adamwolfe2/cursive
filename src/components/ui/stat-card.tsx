@@ -1,96 +1,123 @@
-// Stat Card Component
-// Displays a metric with optional trend and icon
+'use client'
 
-import { LucideIcon, TrendingUp, TrendingDown } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import * as React from 'react'
+import { cn, formatNumber, formatPercentage } from '@/lib/design-system'
+import { Card } from './card'
 
-interface StatCardProps {
+export interface StatCardProps {
   label: string
-  value: string | number
-  icon?: LucideIcon
-  trend?: {
-    value: number // Percentage change
-    direction: 'up' | 'down'
-    label?: string
-  }
-  subtitle?: string
-  variant?: 'default' | 'success' | 'warning' | 'error'
+  value: number | string
+  previousValue?: number
+  format?: 'number' | 'currency' | 'percentage' | 'none'
+  icon?: React.ReactNode
+  trend?: 'up' | 'down' | 'neutral'
+  trendValue?: number
+  description?: string
   className?: string
 }
 
 export function StatCard({
   label,
   value,
-  icon: Icon,
+  previousValue,
+  format = 'number',
+  icon,
   trend,
-  subtitle,
-  variant = 'default',
+  trendValue,
+  description,
   className,
 }: StatCardProps) {
-  const variantStyles = {
-    default: 'bg-white border-zinc-200',
-    success: 'bg-emerald-50 border-emerald-200',
-    warning: 'bg-amber-50 border-amber-200',
-    error: 'bg-red-50 border-red-200',
-  }
+  const formattedValue = React.useMemo(() => {
+    if (typeof value === 'string') return value
+    switch (format) {
+      case 'number':
+        return formatNumber(value)
+      case 'currency':
+        return `$${formatNumber(value)}`
+      case 'percentage':
+        return formatPercentage(value)
+      default:
+        return value
+    }
+  }, [value, format])
 
-  const iconStyles = {
-    default: 'bg-zinc-100 text-zinc-600',
-    success: 'bg-emerald-100 text-emerald-700',
-    warning: 'bg-amber-100 text-amber-700',
-    error: 'bg-red-100 text-red-700',
-  }
+  const calculatedTrend = React.useMemo(() => {
+    if (trend) return trend
+    if (previousValue !== undefined && typeof value === 'number') {
+      if (value > previousValue) return 'up'
+      if (value < previousValue) return 'down'
+    }
+    return 'neutral'
+  }, [trend, previousValue, value])
+
+  const calculatedTrendValue = React.useMemo(() => {
+    if (trendValue !== undefined) return trendValue
+    if (previousValue !== undefined && typeof value === 'number' && previousValue !== 0) {
+      return ((value - previousValue) / previousValue) * 100
+    }
+    return undefined
+  }, [trendValue, previousValue, value])
 
   return (
-    <div
-      className={cn(
-        'rounded-lg border p-6',
-        variantStyles[variant],
-        className
-      )}
-    >
+    <Card className={cn('p-5', className)}>
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <p className="text-[13px] font-medium text-zinc-600 mb-1">{label}</p>
-          <p className="text-3xl font-bold text-zinc-900">{value}</p>
-
-          {subtitle && (
-            <p className="text-[12px] text-zinc-500 mt-1">{subtitle}</p>
-          )}
-
-          {trend && (
-            <div className="flex items-center gap-1 mt-2">
-              {trend.direction === 'up' ? (
-                <TrendingUp className="h-3.5 w-3.5 text-emerald-600" />
-              ) : (
-                <TrendingDown className="h-3.5 w-3.5 text-red-600" />
+          <p className="text-sm font-medium text-muted-foreground">{label}</p>
+          <p className="mt-2 text-2xl font-semibold text-foreground">
+            {formattedValue}
+          </p>
+          {calculatedTrendValue !== undefined && (
+            <div className="mt-2 flex items-center gap-1">
+              {calculatedTrend === 'up' && (
+                <svg
+                  className="h-4 w-4 text-success"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              )}
+              {calculatedTrend === 'down' && (
+                <svg
+                  className="h-4 w-4 text-destructive"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 12.586V5a1 1 0 012 0v7.586l2.293-2.293a1 1 0 011.414 0z"
+                    clipRule="evenodd"
+                  />
+                </svg>
               )}
               <span
                 className={cn(
-                  'text-[12px] font-medium',
-                  trend.direction === 'up' ? 'text-emerald-600' : 'text-red-600'
+                  'text-xs font-medium',
+                  calculatedTrend === 'up' && 'text-success',
+                  calculatedTrend === 'down' && 'text-destructive',
+                  calculatedTrend === 'neutral' && 'text-muted-foreground'
                 )}
               >
-                {Math.abs(trend.value)}%
+                {formatPercentage(Math.abs(calculatedTrendValue))}
               </span>
-              {trend.label && (
-                <span className="text-[12px] text-zinc-500">{trend.label}</span>
+              {description && (
+                <span className="text-xs text-muted-foreground">
+                  {description}
+                </span>
               )}
             </div>
           )}
         </div>
-
-        {Icon && (
-          <div
-            className={cn(
-              'flex h-10 w-10 items-center justify-center rounded-lg',
-              iconStyles[variant]
-            )}
-          >
-            <Icon className="h-5 w-5" />
+        {icon && (
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+            {icon}
           </div>
         )}
       </div>
-    </div>
+    </Card>
   )
 }

@@ -1,60 +1,76 @@
-// Empty State Component
-// Displays when no data is available
+'use client'
 
-import { LucideIcon } from 'lucide-react'
-import Link from 'next/link'
+import * as React from 'react'
+import { cn } from '@/lib/design-system'
+import { Button } from './button'
 
-interface EmptyStateProps {
-  icon?: LucideIcon
+export interface EmptyStateProps {
+  icon?: React.ReactNode
   title: string
-  description: string
+  description?: string
   action?: {
     label: string
-    href?: string
     onClick?: () => void
+    href?: string
   }
-  children?: React.ReactNode
+  secondaryAction?: {
+    label: string
+    onClick?: () => void
+    href?: string
+  }
+  className?: string
 }
 
 export function EmptyState({
-  icon: Icon,
+  icon,
   title,
   description,
   action,
-  children,
+  secondaryAction,
+  className,
 }: EmptyStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
-      {Icon && (
-        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-zinc-100">
-          <Icon className="h-6 w-6 text-zinc-400" />
+    <div
+      className={cn(
+        'flex flex-col items-center justify-center py-12 text-center',
+        className
+      )}
+    >
+      {icon && (
+        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-muted text-muted-foreground">
+          {icon}
         </div>
       )}
-
-      <h3 className="text-base font-medium text-zinc-900 mb-1">{title}</h3>
-      <p className="text-[13px] text-zinc-600 max-w-sm mb-6">{description}</p>
-
-      {action && (
-        <>
-          {action.href ? (
-            <Link
-              href={action.href}
-              className="inline-flex h-9 items-center rounded-lg bg-zinc-900 px-4 text-[13px] font-medium text-white hover:bg-zinc-800 transition-colors"
-            >
-              {action.label}
-            </Link>
-          ) : (
-            <button
-              onClick={action.onClick}
-              className="inline-flex h-9 items-center rounded-lg bg-zinc-900 px-4 text-[13px] font-medium text-white hover:bg-zinc-800 transition-colors"
-            >
-              {action.label}
-            </button>
-          )}
-        </>
+      <h3 className="text-lg font-semibold text-foreground">{title}</h3>
+      {description && (
+        <p className="mt-2 max-w-sm text-sm text-muted-foreground">
+          {description}
+        </p>
       )}
-
-      {children}
+      {(action || secondaryAction) && (
+        <div className="mt-6 flex items-center gap-3">
+          {action && (
+            action.href ? (
+              <a href={action.href}>
+                <Button>{action.label}</Button>
+              </a>
+            ) : (
+              <Button onClick={action.onClick}>{action.label}</Button>
+            )
+          )}
+          {secondaryAction && (
+            secondaryAction.href ? (
+              <a href={secondaryAction.href}>
+                <Button variant="outline">{secondaryAction.label}</Button>
+              </a>
+            ) : (
+              <Button variant="outline" onClick={secondaryAction.onClick}>
+                {secondaryAction.label}
+              </Button>
+            )
+          )}
+        </div>
+      )}
     </div>
   )
 }
