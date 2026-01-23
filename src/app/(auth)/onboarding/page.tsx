@@ -233,7 +233,7 @@ export default function OnboardingPage() {
         {/* Header */}
         <div className="text-center">
           <h2 className="text-xl font-medium text-zinc-900">
-            Welcome to LeadMe
+            Set up your account
           </h2>
           <p className="mt-2 text-[13px] text-zinc-600">
             Set up your account to start receiving leads
@@ -424,7 +424,7 @@ export default function OnboardingPage() {
                 </div>
                 <div className="flex justify-between py-3">
                   <dt className="text-[13px] text-zinc-600">Plan</dt>
-                  <dd className="text-[13px] font-medium text-emerald-600">
+                  <dd className="text-[13px] font-medium text-blue-600">
                     Free - 3 leads/day included
                   </dd>
                 </div>
@@ -449,7 +449,7 @@ export default function OnboardingPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="h-10 px-6 text-[13px] font-medium bg-emerald-600 text-white hover:bg-emerald-700 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="h-10 px-6 text-[13px] font-medium bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? 'Creating...' : 'Start Getting Leads'}
               </button>
