@@ -9,12 +9,16 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "test": "vitest",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
     "test:routing": "tsx scripts/test-routing.ts",
-    "test:routing:live": "tsx scripts/test-routing-live.ts"
+    "test:routing:live": "tsx scripts/test-routing-live.ts",
+    "validate": "pnpm typecheck && pnpm lint && pnpm test"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.9",
