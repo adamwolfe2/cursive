@@ -5,6 +5,9 @@
  * Root layout for all marketing pages.
  */
 
+// Force dynamic rendering to avoid static generation issues with animated components
+export const dynamic = 'force-dynamic'
+
 import { Navigation } from '@/components/marketing/layout/navigation'
 import { Footer } from '@/components/marketing/layout/footer'
 
