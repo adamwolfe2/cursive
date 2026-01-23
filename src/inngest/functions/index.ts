@@ -6,3 +6,10 @@ export { leadDelivery } from './lead-delivery'
 export { platformUpload } from './platform-upload'
 export { creditReset } from './credit-reset'
 export { weeklyTrends } from './weekly-trends'
+
+// Bulk upload and routing functions
+export {
+  processBulkUpload,
+  enrichLeadFromDataShopper,
+  importLeadFromAudienceLabs
+} from './bulk-upload-processor'

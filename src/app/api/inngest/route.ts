@@ -15,5 +15,9 @@ export const { GET, POST, PUT } = serve({
     functions.platformUpload,
     functions.creditReset,
     functions.weeklyTrends,
+    // Bulk upload and routing functions
+    functions.processBulkUpload,
+    functions.enrichLeadFromDataShopper,
+    functions.importLeadFromAudienceLabs,
   ],
 })

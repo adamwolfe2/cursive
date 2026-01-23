@@ -209,3 +209,6 @@ export class ClayClient {
     }
   }
 }
+
+// Export singleton instance
+export const clay = new ClayClient()
