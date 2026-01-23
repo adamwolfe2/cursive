@@ -3,8 +3,7 @@
 
 import Stripe from 'stripe'
 
-// Initialize Stripe client only if key is available
-// This allows builds to succeed without the key, but will error at runtime if used
+// Helper to get Stripe client - only initializes when called
 const getStripeClient = () => {
   if (!process.env.STRIPE_SECRET_KEY) {
     throw new Error('Missing STRIPE_SECRET_KEY environment variable')
@@ -14,16 +13,6 @@ const getStripeClient = () => {
     typescript: true,
   })
 }
-
-// Export a lazy-initialized stripe client
-export const stripe = new Proxy({} as Stripe, {
-  get: (target, prop) => {
-    if (!target.checkout) {
-      Object.assign(target, getStripeClient())
-    }
-    return (target as any)[prop]
-  }
-})
 
 // Stripe Product IDs (set these in Stripe Dashboard)
 export const STRIPE_PRODUCTS = {
@@ -89,6 +78,7 @@ export async function createCheckoutSession(params: {
   successUrl: string
   cancelUrl: string
 }): Promise<Stripe.Checkout.Session> {
+  const stripe = getStripeClient()
   const { userId, userEmail, workspaceId, priceId, successUrl, cancelUrl } =
     params
 
@@ -128,6 +118,7 @@ export async function createPortalSession(params: {
   customerId: string
   returnUrl: string
 }): Promise<Stripe.BillingPortal.Session> {
+  const stripe = getStripeClient()
   const { customerId, returnUrl } = params
 
   const session = await stripe.billingPortal.sessions.create({
@@ -144,6 +135,7 @@ export async function createPortalSession(params: {
 export async function getSubscription(
   subscriptionId: string
 ): Promise<Stripe.Subscription | null> {
+  const stripe = getStripeClient()
   try {
     const subscription = await stripe.subscriptions.retrieve(subscriptionId)
     return subscription
@@ -159,6 +151,7 @@ export async function getSubscription(
 export async function cancelSubscription(
   subscriptionId: string
 ): Promise<Stripe.Subscription> {
+  const stripe = getStripeClient()
   const subscription = await stripe.subscriptions.update(subscriptionId, {
     cancel_at_period_end: true,
   })
@@ -172,6 +165,7 @@ export async function cancelSubscription(
 export async function resumeSubscription(
   subscriptionId: string
 ): Promise<Stripe.Subscription> {
+  const stripe = getStripeClient()
   const subscription = await stripe.subscriptions.update(subscriptionId, {
     cancel_at_period_end: false,
   })
