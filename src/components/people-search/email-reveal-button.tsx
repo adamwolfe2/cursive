@@ -55,11 +55,11 @@ export function EmailRevealButton({
       <div className="flex items-center space-x-2">
         <a
           href={`mailto:${revealedEmail}`}
-          className="text-sm font-medium text-blue-600 hover:text-blue-500"
+          className="text-[13px] font-medium text-zinc-900 hover:text-zinc-700"
         >
           {revealedEmail}
         </a>
-        <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">
+        <span className="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-md bg-emerald-50 text-emerald-700">
           Revealed
         </span>
       </div>
@@ -70,8 +70,8 @@ export function EmailRevealButton({
   if (!creditsAvailable) {
     return (
       <div className="flex items-center space-x-2">
-        <span className="text-sm text-gray-500">{maskedEmail}</span>
-        <span className="inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800">
+        <span className="text-[13px] text-zinc-500">{maskedEmail}</span>
+        <span className="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-md bg-red-50 text-red-700">
           No credits
         </span>
       </div>
@@ -81,11 +81,11 @@ export function EmailRevealButton({
   // Can reveal
   return (
     <div className="flex items-center space-x-2">
-      <span className="text-sm text-gray-500">{maskedEmail}</span>
+      <span className="text-[13px] text-zinc-500">{maskedEmail}</span>
       <button
         onClick={handleReveal}
         disabled={loading}
-        className="inline-flex items-center rounded-md bg-blue-600 px-2.5 py-1 text-xs font-semibold text-white hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+        className="inline-flex items-center h-7 px-2.5 text-[11px] font-medium bg-zinc-900 text-white hover:bg-zinc-800 rounded-md transition-all duration-150 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {loading ? (
           'Revealing...'
@@ -114,7 +114,7 @@ export function EmailRevealButton({
           </>
         )}
       </button>
-      {error && <span className="text-xs text-red-600">{error}</span>}
+      {error && <span className="text-[11px] text-red-600">{error}</span>}
     </div>
   )
 }

@@ -40,9 +40,9 @@ export function SearchResults({
 
   if (results.length === 0) {
     return (
-      <div className="rounded-lg border-2 border-dashed border-gray-300 bg-white px-6 py-12 text-center">
+      <div className="rounded-lg border-2 border-dashed border-zinc-200 bg-white px-6 py-12 text-center">
         <svg
-          className="mx-auto h-12 w-12 text-gray-400"
+          className="mx-auto h-12 w-12 text-zinc-400"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -54,10 +54,10 @@ export function SearchResults({
             d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
           />
         </svg>
-        <h3 className="mt-2 text-sm font-semibold text-gray-900">
+        <h3 className="mt-2 text-[13px] font-medium text-zinc-900">
           No results yet
         </h3>
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="mt-1 text-[13px] text-zinc-600">
           Enter search criteria and click &quot;Search People&quot; to find contacts
         </p>
       </div>
@@ -68,83 +68,83 @@ export function SearchResults({
     <div className="space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-900">
+        <h3 className="text-[15px] font-medium text-zinc-900">
           {results.length} {results.length === 1 ? 'result' : 'results'} found
         </h3>
-        <div className="text-sm text-gray-500">
-          Credits remaining: <span className="font-medium">{creditsRemaining}</span>
+        <div className="text-[13px] text-zinc-600">
+          Credits remaining: <span className="font-medium text-zinc-900">{creditsRemaining}</span>
         </div>
       </div>
 
       {/* Results Table */}
-      <div className="rounded-lg border border-gray-200 bg-white overflow-hidden">
+      <div className="rounded-lg border border-zinc-200 bg-white overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-zinc-100">
+            <thead className="bg-zinc-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                <th className="px-4 py-3 text-left text-[13px] font-medium text-zinc-600">
                   Name
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                <th className="px-4 py-3 text-left text-[13px] font-medium text-zinc-600">
                   Title
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                <th className="px-4 py-3 text-left text-[13px] font-medium text-zinc-600">
                   Company
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                <th className="px-4 py-3 text-left text-[13px] font-medium text-zinc-600">
                   Location
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                <th className="px-4 py-3 text-left text-[13px] font-medium text-zinc-600">
                   Email
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                <th className="px-4 py-3 text-left text-[13px] font-medium text-zinc-600">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
+            <tbody className="divide-y divide-zinc-100 bg-white">
               {results.map((result) => {
                 const person = result.person_data
                 const isRevealed = person.email_revealed || !!revealedEmails[result.id]
                 const displayEmail = revealedEmails[result.id] || person.email
 
                 return (
-                  <tr key={result.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4">
+                  <tr key={result.id} className="hover:bg-zinc-50 transition-colors">
+                    <td className="px-4 py-3">
                       <div className="flex items-center">
                         <div>
-                          <div className="font-medium text-gray-900">
+                          <div className="font-medium text-[13px] text-zinc-900">
                             {person.full_name}
                           </div>
                           {person.seniority && (
-                            <div className="text-xs text-gray-500">
+                            <div className="text-[12px] text-zinc-500">
                               {person.seniority}
                             </div>
                           )}
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm text-gray-900">
+                    <td className="px-4 py-3">
+                      <div className="text-[13px] text-zinc-900">
                         {person.title || 'N/A'}
                       </div>
                       {person.department && (
-                        <div className="text-xs text-gray-500">
+                        <div className="text-[12px] text-zinc-500">
                           {person.department}
                         </div>
                       )}
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm text-gray-900">
+                    <td className="px-4 py-3">
+                      <div className="text-[13px] text-zinc-900">
                         {person.company_name || 'N/A'}
                       </div>
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm text-gray-900">
+                    <td className="px-4 py-3">
+                      <div className="text-[13px] text-zinc-900">
                         {person.location || 'N/A'}
                       </div>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-4 py-3">
                       <EmailRevealButton
                         resultId={result.id}
                         maskedEmail={person.email}
@@ -153,14 +153,14 @@ export function SearchResults({
                         creditsAvailable={creditsRemaining > 0}
                       />
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-4 py-3">
                       <div className="flex items-center space-x-2">
                         {person.linkedin_url && (
                           <a
                             href={person.linkedin_url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-blue-600 hover:text-blue-500"
+                            className="text-zinc-600 hover:text-zinc-900 transition-colors"
                             title="View LinkedIn Profile"
                           >
                             <svg
@@ -184,11 +184,11 @@ export function SearchResults({
 
       {/* Credits Warning */}
       {creditsRemaining === 0 && (
-        <div className="rounded-lg bg-yellow-50 p-4">
+        <div className="rounded-lg bg-amber-50 border border-amber-200 p-4">
           <div className="flex">
             <div className="flex-shrink-0">
               <svg
-                className="h-5 w-5 text-yellow-400"
+                className="h-5 w-5 text-amber-600"
                 viewBox="0 0 20 20"
                 fill="currentColor"
               >
@@ -200,16 +200,16 @@ export function SearchResults({
               </svg>
             </div>
             <div className="ml-3">
-              <h3 className="text-sm font-medium text-yellow-800">
+              <h3 className="text-[13px] font-medium text-amber-900">
                 No credits remaining
               </h3>
-              <div className="mt-2 text-sm text-yellow-700">
+              <div className="mt-2 text-[13px] text-amber-800">
                 <p>
                   You&apos;ve used all your credits for today. Credits reset at midnight,
                   or{' '}
                   <a
                     href="/pricing"
-                    className="font-medium underline hover:text-yellow-600"
+                    className="font-medium underline hover:text-amber-900"
                   >
                     upgrade to Pro
                   </a>{' '}

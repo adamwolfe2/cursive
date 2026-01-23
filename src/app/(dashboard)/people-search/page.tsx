@@ -93,18 +93,18 @@ export default function PeopleSearchPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">People Search</h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <h1 className="text-xl font-medium text-zinc-900">People Search</h1>
+        <p className="mt-1 text-[13px] text-zinc-600">
           Find and connect with decision-makers at target companies
         </p>
       </div>
 
       {/* Credits Info */}
-      <div className="rounded-lg bg-blue-50 px-4 py-3">
+      <div className="rounded-lg bg-zinc-50 border border-zinc-200 px-4 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <svg
-              className="h-5 w-5 text-blue-400 mr-2"
+              className="h-5 w-5 text-zinc-400 mr-2"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -116,13 +116,13 @@ export default function PeopleSearchPage() {
                 d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
-            <p className="text-sm text-blue-900">
+            <p className="text-[13px] text-zinc-900">
               <span className="font-medium">{creditsRemaining}</span> credits remaining today
             </p>
           </div>
           <a
             href="/pricing"
-            className="text-sm font-medium text-blue-700 hover:text-blue-600"
+            className="text-[13px] font-medium text-zinc-900 hover:text-zinc-700"
           >
             Get more credits →
           </a>
@@ -131,11 +131,11 @@ export default function PeopleSearchPage() {
 
       {/* Error Message */}
       {error && (
-        <div className="rounded-lg bg-red-50 p-4">
+        <div className="rounded-lg bg-red-50 border border-red-200 p-4">
           <div className="flex">
             <div className="flex-shrink-0">
               <svg
-                className="h-5 w-5 text-red-400"
+                className="h-5 w-5 text-red-600"
                 viewBox="0 0 20 20"
                 fill="currentColor"
               >
@@ -147,8 +147,8 @@ export default function PeopleSearchPage() {
               </svg>
             </div>
             <div className="ml-3">
-              <h3 className="text-sm font-medium text-red-800">Search Error</h3>
-              <p className="mt-1 text-sm text-red-700">{error}</p>
+              <h3 className="text-[13px] font-medium text-red-900">Search Error</h3>
+              <p className="mt-1 text-[13px] text-red-800">{error}</p>
             </div>
           </div>
         </div>
@@ -158,7 +158,7 @@ export default function PeopleSearchPage() {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Search Form (Left Sidebar) */}
         <div className="lg:col-span-1">
-          <div className="rounded-lg border border-gray-200 bg-white p-6">
+          <div className="rounded-lg border border-zinc-200 bg-white p-6 shadow-sm">
             <SearchForm onSearch={handleSearch} loading={loading} />
           </div>
         </div>
