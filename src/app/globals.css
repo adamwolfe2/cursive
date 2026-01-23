@@ -523,6 +523,98 @@
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 3;
   }
+
+  /* ========== ACCESSIBILITY UTILITIES ========== */
+
+  /* Screen reader only - visually hidden but accessible */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  /* Not screen reader only - shows visually hidden content */
+  .not-sr-only {
+    position: static;
+    width: auto;
+    height: auto;
+    padding: 0;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+  }
+
+  /* Focus-only visible (for skip links) */
+  .focus-visible-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  .focus-visible-only:focus {
+    position: fixed;
+    width: auto;
+    height: auto;
+    padding: 1rem 1.5rem;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+    z-index: 9999;
+    top: 1rem;
+    left: 1rem;
+    background-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    border-radius: var(--radius);
+    font-weight: 500;
+    box-shadow: var(--shadow-lg);
+  }
+
+  /* Reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    :root {
+      --border: 220 13% 50%;
+      --input: 220 13% 50%;
+    }
+  }
+
+  /* Forced colors mode (Windows High Contrast) */
+  @media (forced-colors: active) {
+    .btn-enterprise,
+    .input-enterprise,
+    .card-enterprise {
+      border: 2px solid currentColor;
+    }
+
+    .badge-enterprise {
+      border: 1px solid currentColor;
+    }
+  }
 }
 
 /* Keyframes */

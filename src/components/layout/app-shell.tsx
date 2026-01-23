@@ -163,7 +163,9 @@ export function AppShell({ children, user, workspace }: AppShellProps) {
           workspace={workspace}
           onMenuClick={() => setSidebarOpen(true)}
         />
-        <main className="flex-1">{children}</main>
+        <main id="main-content" className="flex-1" tabIndex={-1}>
+          {children}
+        </main>
       </div>
     </div>
   )

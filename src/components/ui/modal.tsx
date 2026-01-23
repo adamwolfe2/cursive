@@ -3,20 +3,51 @@
 import * as React from 'react'
 import { cn } from '@/lib/design-system'
 import { Button } from './button'
+import { generateAriaId, trapFocus, getFocusableElements } from '@/lib/accessibility'
 
 interface ModalProps {
   isOpen: boolean
   onClose: () => void
   children: React.ReactNode
   className?: string
+  'aria-labelledby'?: string
+  'aria-describedby'?: string
 }
 
-export function Modal({ isOpen, onClose, children, className }: ModalProps) {
+export function Modal({
+  isOpen,
+  onClose,
+  children,
+  className,
+  'aria-labelledby': ariaLabelledBy,
+  'aria-describedby': ariaDescribedBy,
+}: ModalProps) {
+  const modalRef = React.useRef<HTMLDivElement>(null)
+  const previousActiveElement = React.useRef<HTMLElement | null>(null)
+
+  // Store the previously focused element and restore it on close
   React.useEffect(() => {
     if (isOpen) {
+      previousActiveElement.current = document.activeElement as HTMLElement
       document.body.style.overflow = 'hidden'
+
+      // Focus the first focusable element in the modal
+      requestAnimationFrame(() => {
+        if (modalRef.current) {
+          const focusable = getFocusableElements(modalRef.current)
+          if (focusable.length > 0) {
+            focusable[0].focus()
+          } else {
+            modalRef.current.focus()
+          }
+        }
+      })
     } else {
       document.body.style.overflow = 'unset'
+      // Restore focus to the previously focused element
+      if (previousActiveElement.current) {
+        previousActiveElement.current.focus()
+      }
     }
 
     return () => {
@@ -24,19 +55,25 @@ export function Modal({ isOpen, onClose, children, className }: ModalProps) {
     }
   }, [isOpen])
 
+  // Handle keyboard events
   React.useEffect(() => {
-    function handleEscape(event: KeyboardEvent) {
+    function handleKeyDown(event: KeyboardEvent) {
       if (event.key === 'Escape') {
         onClose()
+      }
+
+      // Trap focus within the modal
+      if (event.key === 'Tab' && modalRef.current) {
+        trapFocus(modalRef.current, event)
       }
     }
 
     if (isOpen) {
-      document.addEventListener('keydown', handleEscape)
+      document.addEventListener('keydown', handleKeyDown)
     }
 
     return () => {
-      document.removeEventListener('keydown', handleEscape)
+      document.removeEventListener('keydown', handleKeyDown)
     }
   }, [isOpen, onClose])
 
@@ -52,12 +89,16 @@ export function Modal({ isOpen, onClose, children, className }: ModalProps) {
       />
       {/* Content */}
       <div
+        ref={modalRef}
         className={cn(
           'relative z-10 w-full max-w-lg rounded-xl border border-border bg-background p-6 shadow-enterprise-xl animate-scale-in',
           className
         )}
         role="dialog"
         aria-modal="true"
+        aria-labelledby={ariaLabelledBy}
+        aria-describedby={ariaDescribedBy}
+        tabIndex={-1}
       >
         {children}
       </div>
@@ -104,12 +145,14 @@ export function ModalHeader({ children, className, onClose }: ModalHeaderProps) 
 export function ModalTitle({
   children,
   className,
+  id,
 }: {
   children: React.ReactNode
   className?: string
+  id?: string
 }) {
   return (
-    <h2 className={cn('text-lg font-semibold text-foreground', className)}>
+    <h2 id={id} className={cn('text-lg font-semibold text-foreground', className)}>
       {children}
     </h2>
   )
@@ -118,12 +161,14 @@ export function ModalTitle({
 export function ModalDescription({
   children,
   className,
+  id,
 }: {
   children: React.ReactNode
   className?: string
+  id?: string
 }) {
   return (
-    <p className={cn('text-sm text-muted-foreground mt-1', className)}>
+    <p id={id} className={cn('text-sm text-muted-foreground mt-1', className)}>
       {children}
     </p>
   )

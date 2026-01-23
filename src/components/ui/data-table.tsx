@@ -91,39 +91,51 @@ interface TableHeadProps extends React.ThHTMLAttributes<HTMLTableCellElement> {
 }
 
 const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(
-  ({ className, children, sortable, sorted, onSort, ...props }, ref) => (
-    <th
-      ref={ref}
-      className={cn(
-        'h-11 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0',
-        sortable && 'cursor-pointer select-none hover:text-foreground',
-        className
-      )}
-      onClick={sortable ? onSort : undefined}
-      {...props}
-    >
-      <div className="flex items-center gap-2">
-        {children}
-        {sortable && (
-          <svg
-            className={cn(
-              'h-4 w-4 transition-transform',
-              sorted === 'asc' && 'rotate-180',
-              !sorted && 'opacity-30'
-            )}
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path
-              fillRule="evenodd"
-              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-              clipRule="evenodd"
-            />
-          </svg>
+  ({ className, children, sortable, sorted, onSort, ...props }, ref) => {
+    const sortLabel = sorted === 'asc' ? 'sorted ascending' : sorted === 'desc' ? 'sorted descending' : 'not sorted'
+
+    return (
+      <th
+        ref={ref}
+        className={cn(
+          'h-11 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0',
+          sortable && 'cursor-pointer select-none hover:text-foreground',
+          className
         )}
-      </div>
-    </th>
-  )
+        onClick={sortable ? onSort : undefined}
+        onKeyDown={sortable ? (e) => e.key === 'Enter' && onSort?.() : undefined}
+        tabIndex={sortable ? 0 : undefined}
+        role={sortable ? 'columnheader' : undefined}
+        aria-sort={sorted === 'asc' ? 'ascending' : sorted === 'desc' ? 'descending' : sortable ? 'none' : undefined}
+        {...props}
+      >
+        <div className="flex items-center gap-2">
+          {children}
+          {sortable && (
+            <>
+              <svg
+                className={cn(
+                  'h-4 w-4 transition-transform',
+                  sorted === 'asc' && 'rotate-180',
+                  !sorted && 'opacity-30'
+                )}
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              <span className="sr-only">{sortLabel}</span>
+            </>
+          )}
+        </div>
+      </th>
+    )
+  }
 )
 TableHead.displayName = 'TableHead'
 
@@ -265,6 +277,7 @@ function DataTable<T extends Record<string, unknown>>({
                   checked={allSelected}
                   onChange={(e) => onSelectAll?.(e.target.checked)}
                   className="h-4 w-4 rounded border-border text-primary focus:ring-primary"
+                  aria-label="Select all rows"
                 />
               </TableHead>
             )}
@@ -301,6 +314,7 @@ function DataTable<T extends Record<string, unknown>>({
                       checked={isSelected}
                       onChange={(e) => onSelectRow?.(rowKey, e.target.checked)}
                       className="h-4 w-4 rounded border-border text-primary focus:ring-primary"
+                      aria-label={`Select row ${rowKey}`}
                     />
                   </TableCell>
                 )}
@@ -439,8 +453,12 @@ function Pagination({
     : undefined
 
   return (
-    <div className={cn('flex items-center justify-between py-4', className)}>
-      <div className="text-sm text-muted-foreground">
+    <nav
+      className={cn('flex items-center justify-between py-4', className)}
+      aria-label="Pagination"
+      role="navigation"
+    >
+      <div className="text-sm text-muted-foreground" aria-live="polite">
         {totalItems !== undefined && startItem !== undefined && endItem !== undefined && (
           <>
             Showing <span className="font-medium">{startItem}</span> to{' '}
@@ -449,20 +467,21 @@ function Pagination({
           </>
         )}
       </div>
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1" role="group" aria-label="Page navigation">
         <Button
           variant="outline"
           size="icon-sm"
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
+          aria-label="Go to previous page"
         >
-          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </Button>
         {pages.map((page, index) =>
           page === 'ellipsis' ? (
-            <span key={`ellipsis-${index}`} className="px-2 text-muted-foreground">
+            <span key={`ellipsis-${index}`} className="px-2 text-muted-foreground" aria-hidden="true">
               ...
             </span>
           ) : (
@@ -471,6 +490,8 @@ function Pagination({
               variant={currentPage === page ? 'default' : 'ghost'}
               size="icon-sm"
               onClick={() => onPageChange(page)}
+              aria-label={`Go to page ${page}`}
+              aria-current={currentPage === page ? 'page' : undefined}
             >
               {page}
             </Button>
@@ -481,13 +502,14 @@ function Pagination({
           size="icon-sm"
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
+          aria-label="Go to next page"
         >
-          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
         </Button>
       </div>
-    </div>
+    </nav>
   )
 }
 
