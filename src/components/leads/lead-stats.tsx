@@ -2,9 +2,11 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { formatDate, formatNumber } from '@/lib/utils'
+import { StatCardsSkeleton } from '@/components/skeletons'
+import { ErrorDisplay } from '@/components/error-display'
 
 export function LeadStats() {
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['lead-stats'],
     queryFn: async () => {
       const response = await fetch('/api/leads/stats')
@@ -14,20 +16,19 @@ export function LeadStats() {
     refetchInterval: 30000, // Refetch every 30 seconds
   })
 
-  if (isLoading) {
+  if (error) {
     return (
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {[...Array(4)].map((_, i) => (
-          <div
-            key={i}
-            className="animate-pulse rounded-lg border border-zinc-200 bg-white p-6"
-          >
-            <div className="h-4 w-20 bg-zinc-200 rounded"></div>
-            <div className="mt-2 h-8 w-16 bg-zinc-200 rounded"></div>
-          </div>
-        ))}
-      </div>
+      <ErrorDisplay
+        error={error as Error}
+        retry={() => refetch()}
+        variant="card"
+        title="Failed to load stats"
+      />
     )
+  }
+
+  if (isLoading) {
+    return <StatCardsSkeleton count={4} />
   }
 
   const intentBreakdown = data?.data?.intent_breakdown || {}

@@ -16,10 +16,12 @@ import {
   type RowSelectionState,
 } from '@tanstack/react-table'
 import type { Lead } from '@/types'
-import { LeadsTableToolbar } from './leads-table-toolbar-enhanced'
+import { LeadsTableToolbar } from './leads-table-toolbar'
 import { LeadDetailPanel } from './lead-detail-panel'
 import { IntentBadge } from './intent-badge'
 import { formatDate, cn } from '@/lib/utils'
+import { TableSkeleton } from '@/components/skeletons'
+import { ErrorDisplay } from '@/components/error-display'
 
 interface LeadsTableProps {
   initialFilters?: {
@@ -43,7 +45,7 @@ export function LeadsTable({ initialFilters }: LeadsTableProps) {
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null)
 
   // Fetch leads with all filters
-  const { data, isLoading, refetch } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: [
       'leads',
       pagination.pageIndex,
@@ -390,6 +392,39 @@ export function LeadsTable({ initialFilters }: LeadsTableProps) {
     await deleteMutation.mutateAsync(selectedLeadIds)
   }, [selectedLeadIds, deleteMutation])
 
+  // Show error state
+  if (error) {
+    return (
+      <div className="space-y-4">
+        <LeadsTableToolbar
+          table={table}
+          globalFilter={globalFilter}
+          setGlobalFilter={setGlobalFilter}
+          onRefresh={() => refetch()}
+          selectedCount={0}
+          onBulkDelete={handleBulkDelete}
+          isDeleting={false}
+        />
+        <ErrorDisplay
+          error={error as Error}
+          retry={() => refetch()}
+          variant="card"
+          title="Failed to load leads"
+        />
+      </div>
+    )
+  }
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        <div className="h-16 rounded-lg border border-zinc-200 bg-white" />
+        <TableSkeleton rows={10} columns={8} />
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-4">
       <LeadsTableToolbar
@@ -426,19 +461,7 @@ export function LeadsTable({ initialFilters }: LeadsTableProps) {
               ))}
             </thead>
             <tbody className="divide-y divide-zinc-200 bg-white">
-              {isLoading ? (
-                <tr>
-                  <td
-                    colSpan={columns.length}
-                    className="px-6 py-12 text-center text-[13px] text-zinc-500"
-                  >
-                    <div className="flex items-center justify-center gap-2">
-                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-zinc-300 border-t-emerald-600" />
-                      Loading leads...
-                    </div>
-                  </td>
-                </tr>
-              ) : table.getRowModel().rows.length === 0 ? (
+              {table.getRowModel().rows.length === 0 ? (
                 <tr>
                   <td
                     colSpan={columns.length}
