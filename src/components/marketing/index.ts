@@ -33,3 +33,16 @@ export { FeaturesSection } from './sections/features'
 export { StatsSection, StatsLightSection } from './sections/stats'
 export { TestimonialsSection, FeaturedTestimonial } from './sections/testimonials'
 export { CTASection, SimpleCTASection, NewsletterCTA } from './sections/cta'
+export { DemoSection } from './sections/demo'
+
+// SEO Components
+export {
+  OrganizationJsonLd,
+  SoftwareJsonLd,
+  FAQJsonLd,
+  BlogPostJsonLd,
+  BreadcrumbJsonLd,
+  PricingJsonLd,
+  HomePageJsonLd,
+  PricingPageJsonLd,
+} from './seo/structured-data'
