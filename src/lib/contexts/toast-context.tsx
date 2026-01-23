@@ -27,6 +27,11 @@ let toastCounter = 0
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<ToastProps[]>([])
 
+  // Define removeToast first since addToast depends on it
+  const removeToast = useCallback((id: string) => {
+    setToasts((prev) => prev.filter((toast) => toast.id !== id))
+  }, [])
+
   const addToast = useCallback(
     (options: ToastOptions) => {
       const id = `toast-${++toastCounter}-${Date.now()}`
@@ -45,10 +50,6 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     },
     [removeToast]
   )
-
-  const removeToast = useCallback((id: string) => {
-    setToasts((prev) => prev.filter((toast) => toast.id !== id))
-  }, [])
 
   const success = useCallback(
     (message: string, options?: Omit<ToastOptions, 'type' | 'message'>) => {

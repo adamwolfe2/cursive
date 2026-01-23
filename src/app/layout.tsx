@@ -1,20 +1,13 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter } from 'next/font/google'
 import { SkipLink } from '@/components/ui/skip-link'
 import { Providers } from '@/components/providers'
 import './globals.css'
 
-const inter = Inter({
-  subsets: ['latin'],
-  display: 'swap', // Optimize font loading
-  variable: '--font-inter',
-})
-
 export const metadata: Metadata = {
-  title: 'OpenInfo - B2B Lead Intelligence Platform',
+  title: 'LeadMe - B2B Lead Intelligence Platform',
   description: 'Identify companies actively researching specific topics',
   keywords: ['B2B', 'lead intelligence', 'sales intelligence', 'company research'],
-  authors: [{ name: 'OpenInfo' }],
+  authors: [{ name: 'LeadMe' }],
   robots: {
     index: true,
     follow: true,
@@ -24,7 +17,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#2563eb', // Primary color
+  themeColor: '#18181b',
 }
 
 export default function RootLayout({
@@ -33,8 +26,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={inter.variable}>
-      <body className={inter.className}>
+    <html lang="en">
+      <body className="font-sans antialiased">
         <SkipLink href="#main-content">Skip to main content</SkipLink>
         <Providers>
           {children}

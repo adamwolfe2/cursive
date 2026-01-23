@@ -49,12 +49,6 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: '2mb',
     },
-    // Optimize package imports
-    optimizePackageImports: [
-      '@tanstack/react-query',
-      'lucide-react',
-      'date-fns',
-    ],
   },
 
   // ============================================

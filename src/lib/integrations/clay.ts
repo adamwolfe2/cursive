@@ -50,7 +50,9 @@ export class ClayClient {
   constructor() {
     this.apiKey = process.env.CLAY_API_KEY || ''
     this.baseUrl = process.env.CLAY_API_URL || 'https://api.clay.com/v1'
+  }
 
+  private ensureApiKey(): void {
     if (!this.apiKey) {
       throw new Error('CLAY_API_KEY environment variable is not set')
     }
@@ -62,6 +64,7 @@ export class ClayClient {
   async enrichCompany(
     request: ClayEnrichmentRequest
   ): Promise<ClayEnrichmentResponse> {
+    this.ensureApiKey()
     try {
       const response = await fetch(`${this.baseUrl}/enrichment/company`, {
         method: 'POST',
@@ -123,6 +126,7 @@ export class ClayClient {
    * Verify email addresses
    */
   async verifyEmail(email: string): Promise<{ valid: boolean; reason?: string }> {
+    this.ensureApiKey()
     try {
       const response = await fetch(`${this.baseUrl}/verification/email`, {
         method: 'POST',
@@ -151,6 +155,7 @@ export class ClayClient {
   async batchEnrich(
     requests: ClayEnrichmentRequest[]
   ): Promise<ClayEnrichmentResponse[]> {
+    this.ensureApiKey()
     try {
       const response = await fetch(`${this.baseUrl}/enrichment/batch`, {
         method: 'POST',
@@ -188,6 +193,7 @@ export class ClayClient {
     result?: ClayEnrichmentResponse
     error?: string
   }> {
+    this.ensureApiKey()
     try {
       const response = await fetch(`${this.baseUrl}/jobs/${jobId}`, {
         method: 'GET',
@@ -209,6 +215,3 @@ export class ClayClient {
     }
   }
 }
-
-// Export singleton instance
-export const clay = new ClayClient()
