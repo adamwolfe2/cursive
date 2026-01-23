@@ -1,5 +1,8 @@
 // Dashboard Layout - Protected layout with navigation
 
+// Force dynamic rendering for all dashboard pages (auth required)
+export const dynamic = 'force-dynamic'
+
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { AppShell } from '@/components/layout'

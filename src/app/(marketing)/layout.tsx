@@ -1,56 +1,83 @@
 /**
  * Marketing Site Layout
- * OpenInfo Platform
+ * LeadMe Platform
  *
- * Root layout for all marketing pages.
+ * Simple layout for marketing pages.
  */
 
-import { Navigation } from '@/components/marketing/layout/navigation'
-import { Footer } from '@/components/marketing/layout/footer'
+import Link from 'next/link'
 
 export const metadata = {
   title: {
-    default: 'OpenInfo - AI-Powered Team Management Platform',
-    template: '%s | OpenInfo',
+    default: 'LeadMe - B2B Lead Intelligence Platform',
+    template: '%s | LeadMe',
   },
-  description: 'The all-in-one platform for teams to manage tasks, track progress, and collaborate with AI-powered insights. Get real-time updates and end-of-day reports.',
-  keywords: ['team management', 'task tracking', 'AI', 'productivity', 'collaboration', 'enterprise'],
-  authors: [{ name: 'OpenInfo' }],
-  creator: 'OpenInfo',
-  openGraph: {
-    type: 'website',
-    locale: 'en_US',
-    url: 'https://openinfo.app',
-    siteName: 'OpenInfo',
-    title: 'OpenInfo - AI-Powered Team Management Platform',
-    description: 'The all-in-one platform for teams to manage tasks, track progress, and collaborate with AI-powered insights.',
-    images: [
-      {
-        url: '/og-image.png',
-        width: 1200,
-        height: 630,
-        alt: 'OpenInfo Platform',
-      },
-    ],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'OpenInfo - AI-Powered Team Management Platform',
-    description: 'The all-in-one platform for teams to manage tasks, track progress, and collaborate with AI-powered insights.',
-    images: ['/og-image.png'],
-    creator: '@openinfo',
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
-  },
+  description: 'Find companies actively researching your solution. Get enriched contact data delivered to your inbox daily.',
+  keywords: ['B2B leads', 'lead generation', 'intent data', 'sales intelligence'],
+}
+
+function SimpleNavigation() {
+  return (
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-zinc-200/50">
+      <nav className="max-w-7xl mx-auto px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          <Link href="/" className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-zinc-900 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-sm">L</span>
+            </div>
+            <span className="font-semibold text-lg text-zinc-900">LeadMe</span>
+          </Link>
+
+          <div className="hidden md:flex items-center gap-6">
+            <Link href="/pricing" className="text-sm text-zinc-600 hover:text-zinc-900">
+              Pricing
+            </Link>
+            <Link href="/login" className="text-sm text-zinc-600 hover:text-zinc-900">
+              Sign in
+            </Link>
+            <Link
+              href="/signup"
+              className="px-4 py-2 text-sm font-medium bg-zinc-900 text-white rounded-lg hover:bg-zinc-800"
+            >
+              Get Started
+            </Link>
+          </div>
+
+          <Link
+            href="/signup"
+            className="md:hidden px-4 py-2 text-sm font-medium bg-zinc-900 text-white rounded-lg hover:bg-zinc-800"
+          >
+            Get Started
+          </Link>
+        </div>
+      </nav>
+    </header>
+  )
+}
+
+function SimpleFooter() {
+  return (
+    <footer className="bg-zinc-50 border-t border-zinc-200 py-12">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-zinc-900 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-sm">L</span>
+            </div>
+            <span className="font-semibold text-zinc-900">LeadMe</span>
+          </div>
+          <div className="flex items-center gap-6 text-sm text-zinc-600">
+            <Link href="/pricing" className="hover:text-zinc-900">Pricing</Link>
+            <Link href="/login" className="hover:text-zinc-900">Sign In</Link>
+            <Link href="/signup" className="hover:text-zinc-900">Sign Up</Link>
+          </div>
+          <p className="text-sm text-zinc-500">
+            © {new Date().getFullYear()} LeadMe. All rights reserved.
+          </p>
+        </div>
+      </div>
+    </footer>
+  )
 }
 
 export default function MarketingLayout({
@@ -60,9 +87,9 @@ export default function MarketingLayout({
 }) {
   return (
     <div className="min-h-screen bg-white">
-      <Navigation />
-      <main>{children}</main>
-      <Footer />
+      <SimpleNavigation />
+      <main className="pt-16">{children}</main>
+      <SimpleFooter />
     </div>
   )
 }
