@@ -5,6 +5,27 @@ import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 
+// URL validation helpers
+const normalizeUrl = (url: string): string => {
+  let normalized = url.trim().toLowerCase()
+  if (!normalized) return ''
+  if (!normalized.startsWith('http://') && !normalized.startsWith('https://')) {
+    normalized = 'https://' + normalized
+  }
+  return normalized
+}
+
+const isValidUrl = (url: string): boolean => {
+  if (!url) return true // Empty is valid (optional field)
+  try {
+    const normalized = normalizeUrl(url)
+    const urlObj = new URL(normalized)
+    return urlObj.protocol === 'http:' || urlObj.protocol === 'https:'
+  } catch {
+    return false
+  }
+}
+
 // Service industries that match lead sources
 const SERVICE_INDUSTRIES = [
   'HVAC',
@@ -90,6 +111,7 @@ export default function OnboardingPage() {
   const [businessName, setBusinessName] = useState('')
   const [businessSlug, setBusinessSlug] = useState('')
   const [industry, setIndustry] = useState('')
+  const [websiteUrl, setWebsiteUrl] = useState('')
   const [serviceAreas, setServiceAreas] = useState<string[]>([])
 
   // Auto-generate slug from business name
@@ -171,6 +193,9 @@ export default function OnboardingPage() {
     }
 
     try {
+      // Prepare website URL
+      const normalizedWebsiteUrl = websiteUrl ? normalizeUrl(websiteUrl) : null
+
       // Create workspace with routing config
       const { data: workspace, error: workspaceError } = await supabase
         .from('workspaces')
@@ -181,6 +206,8 @@ export default function OnboardingPage() {
           industry_vertical: industry,
           allowed_industries: [industry],
           allowed_regions: serviceAreas,
+          website_url: normalizedWebsiteUrl,
+          scrape_status: normalizedWebsiteUrl ? 'pending' : null,
           routing_config: {
             enabled: true,
             industry_filter: [industry],
@@ -217,6 +244,26 @@ export default function OnboardingPage() {
         // Rollback workspace creation
         await supabase.from('workspaces').delete().eq('id', (workspace as any).id)
         throw userError
+      }
+
+      // Trigger website scraping if URL was provided
+      if (normalizedWebsiteUrl) {
+        try {
+          await fetch('/api/inngest', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name: 'workspace/scrape-website',
+              data: {
+                workspaceId: (workspace as any).id,
+                websiteUrl: normalizedWebsiteUrl,
+              },
+            }),
+          })
+        } catch (scrapeError) {
+          // Non-blocking - don't fail onboarding if scrape fails to trigger
+          console.error('Failed to trigger website scrape:', scrapeError)
+        }
       }
 
       // Success! Redirect to dashboard
@@ -319,13 +366,43 @@ export default function OnboardingPage() {
                     We&apos;ll match you with leads in your industry
                   </p>
                 </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Website URL <span className="text-gray-400 font-normal">(optional)</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={websiteUrl}
+                    onChange={(e) => setWebsiteUrl(e.target.value)}
+                    className={`w-full rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ${
+                      websiteUrl && !isValidUrl(websiteUrl) ? 'ring-red-500' : 'ring-gray-300'
+                    } placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm`}
+                    placeholder="https://yourcompany.com"
+                  />
+                  {websiteUrl && !isValidUrl(websiteUrl) && (
+                    <p className="mt-1 text-xs text-red-600">Please enter a valid URL</p>
+                  )}
+                  <p className="mt-2 text-xs text-gray-500">
+                    We&apos;ll analyze your site to better understand your business
+                  </p>
+                  {!websiteUrl && (
+                    <button
+                      type="button"
+                      onClick={() => setWebsiteUrl('')}
+                      className="mt-2 text-xs text-blue-600 hover:text-blue-500 underline"
+                    >
+                      I don&apos;t have a website yet
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
 
             <div className="flex justify-end">
               <button
                 type="submit"
-                disabled={!businessName || !industry}
+                disabled={!businessName || !industry || (websiteUrl && !isValidUrl(websiteUrl))}
                 className="rounded-md bg-blue-600 px-6 py-2 text-sm font-semibold text-white hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Continue
@@ -426,6 +503,14 @@ export default function OnboardingPage() {
                   <dt className="text-sm text-gray-600">Industry</dt>
                   <dd className="text-sm font-medium text-gray-900">{industry}</dd>
                 </div>
+                {websiteUrl && (
+                  <div className="flex justify-between py-3 border-b border-gray-100">
+                    <dt className="text-sm text-gray-600">Website</dt>
+                    <dd className="text-sm font-medium text-gray-900 truncate max-w-xs">
+                      {normalizeUrl(websiteUrl)}
+                    </dd>
+                  </div>
+                )}
                 <div className="flex justify-between py-3 border-b border-gray-100">
                   <dt className="text-sm text-gray-600">Service Areas</dt>
                   <dd className="text-sm font-medium text-gray-900">
