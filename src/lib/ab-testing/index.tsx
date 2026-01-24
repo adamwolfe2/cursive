@@ -1,6 +1,6 @@
 /**
  * A/B Testing Infrastructure
- * OpenInfo Platform Marketing Site
+ * Cursive Platform Marketing Site
  *
  * Client-side A/B testing utilities.
  */
@@ -36,7 +36,7 @@ export interface ExperimentAssignment {
 // STORAGE
 // ============================================
 
-const STORAGE_KEY = 'openinfo_experiments'
+const STORAGE_KEY = 'cursive_experiments'
 
 function getStoredAssignments(): Record<string, ExperimentAssignment> {
   if (typeof window === 'undefined') return {}
@@ -84,7 +84,7 @@ function hashCode(str: string): number {
 function getUserId(): string {
   if (typeof window === 'undefined') return 'server'
 
-  const storageKey = 'openinfo_user_id'
+  const storageKey = 'cursive_user_id'
 
   try {
     let userId = localStorage.getItem(storageKey)

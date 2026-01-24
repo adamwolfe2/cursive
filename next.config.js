@@ -18,7 +18,7 @@ const nextConfig = {
   // ============================================
   images: {
     formats: ['image/avif', 'image/webp'],
-    domains: ['localhost', 'openinfo.com'],
+    domains: ['localhost', 'meetcursive.com'],
     remotePatterns: [
       {
         protocol: 'https',

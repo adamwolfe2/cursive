@@ -7,7 +7,7 @@ export default function Home() {
       <header className="border-b border-zinc-200">
         <nav className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8">
           <div className="flex lg:flex-1">
-            <span className="text-xl font-medium text-zinc-900">OpenInfo</span>
+            <span className="text-xl font-medium text-zinc-900">Cursive</span>
           </div>
           <div className="flex gap-x-3">
             <Link
@@ -35,7 +35,7 @@ export default function Home() {
                 Identify companies researching your topics
               </h1>
               <p className="mt-6 text-lg leading-8 text-zinc-600">
-                OpenInfo tracks B2B intent signals to help you discover companies
+                Cursive tracks B2B intent signals to help you discover companies
                 actively researching specific topics. Get enriched lead data
                 delivered automatically.
               </p>
@@ -175,7 +175,7 @@ export default function Home() {
                 Start finding leads today
               </h2>
               <p className="mt-6 text-lg leading-8 text-zinc-600">
-                Join companies using OpenInfo to identify their next customers.
+                Join companies using Cursive to identify their next customers.
                 Free plan includes 3 leads per day.
               </p>
               <div className="mt-10 flex items-center gap-x-4">
@@ -196,7 +196,7 @@ export default function Home() {
         <div className="mx-auto max-w-7xl px-6 py-12 md:flex md:items-center md:justify-between lg:px-8">
           <div className="mt-8 md:order-1 md:mt-0">
             <p className="text-center text-[12px] text-zinc-500">
-              &copy; 2026 OpenInfo. All rights reserved.
+              &copy; 2026 Cursive. All rights reserved.
             </p>
           </div>
         </div>

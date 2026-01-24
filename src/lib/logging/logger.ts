@@ -35,7 +35,7 @@ export const logger = pino({
   // Base fields included in all logs
   base: {
     env: process.env.NODE_ENV,
-    app: 'openinfo',
+    app: 'cursive',
     version: process.env.NEXT_PUBLIC_APP_VERSION || '1.0.0',
   },
 

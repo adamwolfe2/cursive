@@ -1,13 +1,13 @@
 /**
  * Sitemap Generator
- * OpenInfo Platform Marketing Site
+ * Cursive Platform Marketing Site
  *
  * Generates dynamic sitemap for SEO.
  */
 
 import type { MetadataRoute } from 'next'
 
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://openinfo.io'
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://meetcursive.com'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date()

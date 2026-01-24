@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { profileSettingsSchema, type ProfileSettingsFormData } from '@/lib/validation/schemas'
@@ -15,6 +15,7 @@ import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { FormField, FormActions } from '@/components/ui/form-field'
 import { Skeleton, SkeletonCard } from '@/components/ui/skeleton'
+import { useToast } from '@/lib/hooks/use-toast'
 
 const settingsTabs = [
   { value: 'profile', label: 'Profile', href: '/settings' },
@@ -26,6 +27,8 @@ const settingsTabs = [
 export default function ProfileSettingsPage() {
   const queryClient = useQueryClient()
   const pathname = usePathname()
+  const router = useRouter()
+  const toast = useToast()
   const [successMessage, setSuccessMessage] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
 
@@ -43,36 +46,27 @@ export default function ProfileSettingsPage() {
 
   // Profile form
   const {
-    register: registerProfile,
-    handleSubmit: handleSubmitProfile,
-    formState: { errors: profileErrors },
-    reset: resetProfile,
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
   } = useForm<ProfileSettingsFormData>({
     resolver: zodResolver(profileSettingsSchema),
     defaultValues: {
-      full_name: user?.full_name || '',
-      email: user?.email || '',
+      full_name: '',
+      email: '',
     },
   })
 
-  // Workspace form
-  const {
-    register: registerWorkspace,
-    handleSubmit: handleSubmitWorkspace,
-    formState: { errors: workspaceErrors },
-  } = useForm<WorkspaceSettingsFormData>({
-    resolver: zodResolver(workspaceSettingsSchema),
-  })
-
-  // Reset profile form when user data loads
-  useState(() => {
+  // Reset form when user data loads
+  useEffect(() => {
     if (user) {
-      resetProfile({
+      reset({
         full_name: user.full_name || '',
         email: user.email || '',
       })
     }
-  })
+  }, [user, reset])
 
   // Update profile mutation
   const updateProfileMutation = useMutation({
@@ -120,7 +114,7 @@ export default function ProfileSettingsPage() {
     },
   })
 
-  const onSubmitProfile = (data: ProfileSettingsFormData) => {
+  const onSubmit = (data: ProfileSettingsFormData) => {
     updateProfileMutation.mutate(data)
   }
 
@@ -308,7 +302,7 @@ export default function ProfileSettingsPage() {
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground mb-4">
-              Share OpenInfo with your network and earn bonus credits when they
+              Share Cursive with your network and earn bonus credits when they
               sign up using your referral link.
             </p>
 

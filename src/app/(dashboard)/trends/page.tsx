@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { TopicCard } from '@/components/trends/topic-card'
 import { useRouter } from 'next/navigation'
+import { PageContainer, PageHeader } from '@/components/layout'
 
 type TrendType = 'gainers' | 'losers'
 
@@ -37,14 +38,17 @@ export default function TrendsPage() {
   }
 
   return (
+    <PageContainer>
+      <PageHeader
+        title="Trending Topics"
+        description="Discover emerging trends and track topics with the highest growth"
+        breadcrumbs={[
+          { label: 'Dashboard', href: '/dashboard' },
+          { label: 'Trends' },
+        ]}
+      />
+
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-xl font-medium text-zinc-900">Trending Topics</h1>
-        <p className="mt-2 text-[13px] text-zinc-600">
-          Discover emerging trends and track topics with the highest growth
-        </p>
-      </div>
 
       {/* Tabs */}
       <div className="border-b border-zinc-200">
@@ -157,5 +161,6 @@ export default function TrendsPage() {
         </div>
       )}
     </div>
+    </PageContainer>
   )
 }

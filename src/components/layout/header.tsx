@@ -62,7 +62,7 @@ export function Header({ user, workspace, onMenuClick, className }: HeaderProps)
           <span className="text-sm font-medium text-foreground">{workspace.name}</span>
           {workspace.subdomain && (
             <span className="text-xs text-muted-foreground">
-              {workspace.subdomain}.openinfo.com
+              {workspace.subdomain}.meetcursive.com
             </span>
           )}
         </div>

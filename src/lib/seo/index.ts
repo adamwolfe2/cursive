@@ -1,6 +1,6 @@
 /**
  * SEO Utilities
- * OpenInfo Platform Marketing Site
+ * Cursive Platform Marketing Site
  *
  * Helpers for generating SEO metadata and structured data.
  */
@@ -12,21 +12,21 @@ import type { Metadata } from 'next'
 // ============================================
 
 export const siteConfig = {
-  name: 'OpenInfo',
-  title: 'OpenInfo - AI-Powered Team Management Platform',
+  name: 'Cursive',
+  title: 'Cursive - AI-Powered Team Management Platform',
   description:
     'Transform how your team works with intelligent task management, automated reporting, and AI-powered insights. Track progress, boost productivity, and make data-driven decisions.',
-  url: 'https://openinfo.io',
-  ogImage: 'https://openinfo.io/og-image.png',
-  twitterHandle: '@openinfo',
+  url: 'https://meetcursive.com',
+  ogImage: 'https://meetcursive.com/og-image.png',
+  twitterHandle: '@meetcursive',
   links: {
-    twitter: 'https://twitter.com/openinfo',
-    github: 'https://github.com/openinfo',
-    linkedin: 'https://linkedin.com/company/openinfo',
+    twitter: 'https://twitter.com/meetcursive',
+    github: 'https://github.com/meetcursive',
+    linkedin: 'https://linkedin.com/company/meetcursive',
   },
   author: {
-    name: 'OpenInfo Team',
-    url: 'https://openinfo.io/about',
+    name: 'Cursive Team',
+    url: 'https://meetcursive.com/about',
   },
 }
 
@@ -188,7 +188,7 @@ export function generateOrganizationSchema() {
     ],
     contactPoint: {
       '@type': 'ContactPoint',
-      telephone: '+1-800-OPENINFO',
+      telephone: '+1-800-CURSIVE',
       contactType: 'customer service',
       availableLanguage: ['English'],
     },

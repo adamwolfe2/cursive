@@ -1,6 +1,6 @@
 /**
  * Marketing Components Index
- * LeadMe Platform
+ * Cursive Platform
  *
  * Simplified exports - animated components removed to prevent circular dependencies.
  */

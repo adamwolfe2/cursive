@@ -45,7 +45,7 @@ export type Events = {
 
 // Create Inngest client
 export const inngest = new Inngest({
-  id: 'openinfo-platform',
-  name: 'OpenInfo Platform',
+  id: 'cursive-platform',
+  name: 'Cursive Platform',
   eventKey: process.env.INNGEST_EVENT_KEY,
 })
