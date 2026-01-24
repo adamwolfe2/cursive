@@ -1,6 +1,6 @@
 /**
  * Pricing Page
- * LeadMe Platform
+ * Cursive Platform
  */
 
 import Link from 'next/link'

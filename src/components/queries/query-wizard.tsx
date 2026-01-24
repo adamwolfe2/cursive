@@ -19,7 +19,7 @@ export interface WizardState {
 }
 
 const TOTAL_STEPS = 5
-const STORAGE_KEY = 'openinfo-query-wizard-state'
+const STORAGE_KEY = 'cursive-query-wizard-state'
 
 const STEP_LABELS = [
   'Select Topic',

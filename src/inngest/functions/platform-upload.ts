@@ -195,7 +195,7 @@ async function uploadToTechPlatform(
           intent_score: lead.intent_score,
           contacts: lead.contacts,
           technologies: lead.company_data?.technologies,
-          source: 'OpenInfo',
+          source: 'Cursive',
         })),
       }),
     })

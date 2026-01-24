@@ -99,7 +99,7 @@ export default function IntegrationsPage() {
       <div>
         <h1 className="text-3xl font-bold text-zinc-900">Integrations</h1>
         <p className="mt-2 text-sm text-zinc-600">
-          Connect OpenInfo with your favorite tools and automate your lead workflow
+          Connect Cursive with your favorite tools and automate your lead workflow
         </p>
       </div>
 
@@ -232,7 +232,7 @@ export default function IntegrationsPage() {
           <div className="flex-1">
             <h2 className="text-lg font-semibold text-zinc-900">API Keys</h2>
             <p className="text-sm text-zinc-600 mt-1">
-              Generate API keys to access OpenInfo programmatically via our REST API.
+              Generate API keys to access Cursive programmatically via our REST API.
             </p>
           </div>
           {!isPro && (
@@ -311,7 +311,7 @@ export default function IntegrationsPage() {
           <div className="mt-6 pt-6 border-t border-zinc-200">
             <h3 className="text-sm font-medium text-zinc-900 mb-3">Example Usage</h3>
             <pre className="text-xs bg-zinc-900 text-zinc-100 p-4 rounded-lg overflow-x-auto">
-              {`curl -X GET "https://api.openinfo.com/v1/leads" \\
+              {`curl -X GET "https://api.meetcursive.com/v1/leads" \\
   -H "Authorization: Bearer ${user.api_key}" \\
   -H "Content-Type: application/json"`}
             </pre>

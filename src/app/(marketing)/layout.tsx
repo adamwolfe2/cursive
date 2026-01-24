@@ -1,6 +1,6 @@
 /**
  * Marketing Site Layout
- * LeadMe Platform
+ * Cursive Platform
  *
  * Simple layout for marketing pages.
  */
@@ -12,11 +12,21 @@ export const dynamic = 'force-dynamic'
 
 export const metadata = {
   title: {
-    default: 'LeadMe - B2B Lead Intelligence Platform',
-    template: '%s | LeadMe',
+    default: 'Cursive - Buyer-Intent Lead Generation',
+    template: '%s | Cursive',
   },
-  description: 'Find companies actively researching your solution. Get enriched contact data delivered to your inbox daily.',
-  keywords: ['B2B leads', 'lead generation', 'intent data', 'sales intelligence'],
+  description: 'Get buyer-intent leads from enrichment platforms delivered to your dashboard. Auto-routed by location and industry for service businesses.',
+  keywords: ['lead generation', 'buyer intent', 'service industry leads', 'HVAC leads', 'roofing leads', 'plumbing leads', 'real estate leads'],
+}
+
+function CursiveLogo() {
+  return (
+    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 text-white">
+      <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+      </svg>
+    </div>
+  )
 }
 
 function SimpleNavigation() {
@@ -25,10 +35,8 @@ function SimpleNavigation() {
       <nav className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-zinc-900 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">L</span>
-            </div>
-            <span className="font-semibold text-lg text-zinc-900">LeadMe</span>
+            <CursiveLogo />
+            <span className="font-semibold text-lg text-zinc-900">Cursive</span>
           </Link>
 
           <div className="hidden md:flex items-center gap-6">
@@ -40,7 +48,7 @@ function SimpleNavigation() {
             </Link>
             <Link
               href="/signup"
-              className="px-4 py-2 text-sm font-medium bg-zinc-900 text-white rounded-lg hover:bg-zinc-800"
+              className="px-4 py-2 text-sm font-medium bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-lg hover:from-violet-700 hover:to-indigo-700 transition-all"
             >
               Get Started
             </Link>
@@ -48,7 +56,7 @@ function SimpleNavigation() {
 
           <Link
             href="/signup"
-            className="md:hidden px-4 py-2 text-sm font-medium bg-zinc-900 text-white rounded-lg hover:bg-zinc-800"
+            className="md:hidden px-4 py-2 text-sm font-medium bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-lg hover:from-violet-700 hover:to-indigo-700"
           >
             Get Started
           </Link>
@@ -64,10 +72,8 @@ function SimpleFooter() {
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-zinc-900 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">L</span>
-            </div>
-            <span className="font-semibold text-zinc-900">LeadMe</span>
+            <CursiveLogo />
+            <span className="font-semibold text-zinc-900">Cursive</span>
           </div>
           <div className="flex items-center gap-6 text-sm text-zinc-600">
             <Link href="/pricing" className="hover:text-zinc-900">Pricing</Link>
@@ -75,7 +81,7 @@ function SimpleFooter() {
             <Link href="/signup" className="hover:text-zinc-900">Sign Up</Link>
           </div>
           <p className="text-sm text-zinc-500">
-            © {new Date().getFullYear()} LeadMe. All rights reserved.
+            © {new Date().getFullYear()} Cursive. All rights reserved.
           </p>
         </div>
       </div>

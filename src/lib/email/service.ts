@@ -1,6 +1,6 @@
 /**
  * Email Service
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Email sending utilities using Resend.
  */
@@ -57,7 +57,7 @@ interface EmailResult {
 // EMAIL SENDER
 // ============================================
 
-const FROM_EMAIL = process.env.EMAIL_FROM || 'OpenInfo <notifications@openinfo.com>'
+const FROM_EMAIL = process.env.EMAIL_FROM || 'Cursive <notifications@meetcursive.com>'
 
 /**
  * Send an email using Resend
@@ -111,7 +111,7 @@ export async function sendWelcomeEmail(
 
   return sendEmail({
     to: email,
-    subject: 'Welcome to OpenInfo!',
+    subject: 'Welcome to Cursive!',
     html,
     tags: [{ name: 'category', value: 'welcome' }],
   })
@@ -160,7 +160,7 @@ export async function sendCreditLowEmail(
 
   return sendEmail({
     to: email,
-    subject: 'Your OpenInfo credits are running low',
+    subject: 'Your Cursive credits are running low',
     html,
     tags: [
       { name: 'category', value: 'notification' },
@@ -224,7 +224,7 @@ export async function sendWeeklyDigestEmail(
 
   return sendEmail({
     to: email,
-    subject: 'Your OpenInfo Weekly Summary',
+    subject: 'Your Cursive Weekly Summary',
     html,
     tags: [
       { name: 'category', value: 'digest' },
@@ -253,7 +253,7 @@ export async function sendPasswordResetEmail(
 
   return sendEmail({
     to: email,
-    subject: 'Reset your OpenInfo password',
+    subject: 'Reset your Cursive password',
     html,
     tags: [
       { name: 'category', value: 'auth' },

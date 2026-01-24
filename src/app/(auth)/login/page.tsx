@@ -78,7 +78,7 @@ function LoginForm() {
         {/* Header */}
         <div>
           <h2 className="mt-6 text-center text-xl font-medium text-zinc-900">
-            Sign in to OpenInfo
+            Sign in to Cursive
           </h2>
           <p className="mt-2 text-center text-[13px] text-zinc-600">
             Or{' '}

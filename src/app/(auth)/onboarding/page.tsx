@@ -78,6 +78,27 @@ const US_STATES = [
   { code: 'WY', name: 'Wyoming' },
 ]
 
+// URL validation and normalization helper
+function normalizeUrl(url: string): string {
+  let normalized = url.trim().toLowerCase()
+  normalized = normalized.replace(/\/+$/, '')
+  if (normalized && !normalized.startsWith('http://') && !normalized.startsWith('https://')) {
+    normalized = 'https://' + normalized
+  }
+  return normalized
+}
+
+function isValidUrl(url: string): boolean {
+  if (!url) return true
+  try {
+    const normalized = normalizeUrl(url)
+    const parsed = new URL(normalized)
+    return parsed.protocol === 'https:' || parsed.protocol === 'http:'
+  } catch {
+    return false
+  }
+}
+
 export default function OnboardingPage() {
   const router = useRouter()
 
@@ -91,6 +112,11 @@ export default function OnboardingPage() {
   const [industry, setIndustry] = useState('')
   const [serviceAreas, setServiceAreas] = useState<string[]>([])
 
+  // Website info
+  const [websiteUrl, setWebsiteUrl] = useState('')
+  const [noWebsite, setNoWebsite] = useState(false)
+  const [urlError, setUrlError] = useState<string | null>(null)
+
   // Auto-generate slug from business name
   const handleBusinessNameChange = (name: string) => {
     setBusinessName(name)
@@ -99,6 +125,44 @@ export default function OnboardingPage() {
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '')
     setBusinessSlug(slug)
+  }
+
+  // Handle website URL change with validation
+  const handleWebsiteUrlChange = (url: string) => {
+    setWebsiteUrl(url)
+    setNoWebsite(false)
+    setUrlError(null)
+    if (url && !isValidUrl(url)) {
+      setUrlError('Please enter a valid website URL')
+    }
+  }
+
+  // Handle "I don't have one" button
+  const handleNoWebsite = async () => {
+    setNoWebsite(true)
+    setWebsiteUrl('')
+    setUrlError(null)
+
+    // Send notification to admin
+    try {
+      const supabase = createClient()
+      const { data: { session } } = await supabase.auth.getSession()
+
+      if (session) {
+        await fetch('/api/notify/website-upsell', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            businessName,
+            industry,
+            serviceAreas,
+            userEmail: session.user.email,
+          }),
+        })
+      }
+    } catch (err) {
+      console.error('Failed to send website upsell notification:', err)
+    }
   }
 
   // Toggle state selection
@@ -170,6 +234,9 @@ export default function OnboardingPage() {
     }
 
     try {
+      // Normalize website URL if provided
+      const normalizedWebsiteUrl = websiteUrl ? normalizeUrl(websiteUrl) : null
+
       // Create workspace with routing config
       const { data: workspace, error: workspaceError } = await supabase
         .from('workspaces')
@@ -180,6 +247,8 @@ export default function OnboardingPage() {
           industry_vertical: industry,
           allowed_industries: [industry],
           allowed_regions: serviceAreas,
+          website_url: normalizedWebsiteUrl,
+          scrape_status: normalizedWebsiteUrl ? 'pending' : null,
           routing_config: {
             enabled: true,
             industry_filter: [industry],
@@ -218,6 +287,21 @@ export default function OnboardingPage() {
         throw userError
       }
 
+      // Trigger website scraping if URL provided
+      if (normalizedWebsiteUrl) {
+        fetch('/api/inngest', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: 'workspace/website.scrape',
+            data: {
+              workspace_id: (workspace as any).id,
+              website_url: normalizedWebsiteUrl,
+            },
+          }),
+        }).catch(() => {})
+      }
+
       // Success! Redirect to dashboard
       router.push('/dashboard')
       router.refresh()
@@ -232,8 +316,15 @@ export default function OnboardingPage() {
       <div className="w-full max-w-2xl space-y-8">
         {/* Header */}
         <div className="text-center">
+          <div className="flex justify-center mb-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 text-white">
+              <svg className="h-7 w-7" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+              </svg>
+            </div>
+          </div>
           <h2 className="text-xl font-medium text-zinc-900">
-            Welcome to LeadMe
+            Welcome to Cursive
           </h2>
           <p className="mt-2 text-[13px] text-zinc-600">
             Set up your account to start receiving leads
@@ -247,7 +338,7 @@ export default function OnboardingPage() {
               <div
                 className={`flex h-10 w-10 items-center justify-center rounded-full text-[13px] font-medium ${
                   step >= s
-                    ? 'bg-zinc-900 text-white'
+                    ? 'bg-gradient-to-br from-violet-600 to-indigo-600 text-white'
                     : 'bg-zinc-200 text-zinc-600'
                 }`}
               >
@@ -283,7 +374,7 @@ export default function OnboardingPage() {
                     required
                     value={businessName}
                     onChange={(e) => handleBusinessNameChange(e.target.value)}
-                    className="w-full h-10 px-3 text-[13px] text-zinc-900 placeholder:text-zinc-400 bg-white border border-zinc-300 rounded-lg focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-200"
+                    className="w-full h-10 px-3 text-[13px] text-zinc-900 placeholder:text-zinc-400 bg-white border border-zinc-300 rounded-lg focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-200"
                     placeholder="Smith HVAC Services"
                   />
                 </div>
@@ -296,7 +387,7 @@ export default function OnboardingPage() {
                     required
                     value={industry}
                     onChange={(e) => setIndustry(e.target.value)}
-                    className="w-full h-10 px-3 text-[13px] text-zinc-900 bg-white border border-zinc-300 rounded-lg focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-200"
+                    className="w-full h-10 px-3 text-[13px] text-zinc-900 bg-white border border-zinc-300 rounded-lg focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-200"
                   >
                     <option value="">Select your industry</option>
                     {SERVICE_INDUSTRIES.map((ind) => (
@@ -309,14 +400,50 @@ export default function OnboardingPage() {
                     We&apos;ll match you with leads in your industry
                   </p>
                 </div>
+
+                {/* Website URL Field */}
+                <div>
+                  <label className="block text-[13px] font-medium text-zinc-700 mb-2">
+                    Website URL <span className="text-zinc-400">(optional)</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={websiteUrl}
+                    onChange={(e) => handleWebsiteUrlChange(e.target.value)}
+                    disabled={noWebsite}
+                    className={`w-full h-10 px-3 text-[13px] text-zinc-900 placeholder:text-zinc-400 bg-white border rounded-lg focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-200 ${
+                      urlError ? 'border-red-300' : 'border-zinc-300'
+                    } ${noWebsite ? 'bg-zinc-50 text-zinc-400' : ''}`}
+                    placeholder="https://example.com"
+                  />
+                  {urlError && (
+                    <p className="mt-1 text-[12px] text-red-600">{urlError}</p>
+                  )}
+                  <div className="mt-2 flex items-center justify-between">
+                    <p className="text-[12px] text-zinc-500">
+                      We&apos;ll personalize your dashboard with your branding
+                    </p>
+                    <button
+                      type="button"
+                      onClick={handleNoWebsite}
+                      className={`text-[12px] font-medium transition-colors ${
+                        noWebsite
+                          ? 'text-violet-600'
+                          : 'text-zinc-500 hover:text-violet-600'
+                      }`}
+                    >
+                      {noWebsite ? '✓ No website' : "I don't have one"}
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
 
             <div className="flex justify-end">
               <button
                 type="submit"
-                disabled={!businessName || !industry}
-                className="h-10 px-6 text-[13px] font-medium bg-zinc-900 text-white hover:bg-zinc-800 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={!businessName || !industry || (websiteUrl && !!urlError)}
+                className="h-10 px-6 text-[13px] font-medium bg-gradient-to-r from-violet-600 to-indigo-600 text-white hover:from-violet-700 hover:to-indigo-700 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Continue
               </button>
@@ -364,8 +491,8 @@ export default function OnboardingPage() {
                     onClick={() => toggleState(state.code)}
                     className={`px-3 py-2 text-[12px] font-medium rounded-lg border transition-all ${
                       serviceAreas.includes(state.code)
-                        ? 'bg-zinc-900 text-white border-zinc-900'
-                        : 'bg-white text-zinc-600 border-zinc-200 hover:border-zinc-400'
+                        ? 'bg-gradient-to-br from-violet-600 to-indigo-600 text-white border-transparent'
+                        : 'bg-white text-zinc-600 border-zinc-200 hover:border-violet-400'
                     }`}
                   >
                     {state.code}
@@ -391,7 +518,7 @@ export default function OnboardingPage() {
               <button
                 type="submit"
                 disabled={serviceAreas.length === 0}
-                className="h-10 px-6 text-[13px] font-medium bg-zinc-900 text-white hover:bg-zinc-800 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="h-10 px-6 text-[13px] font-medium bg-gradient-to-r from-violet-600 to-indigo-600 text-white hover:from-violet-700 hover:to-indigo-700 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Continue
               </button>
@@ -422,15 +549,21 @@ export default function OnboardingPage() {
                     {serviceAreas.length === 50 ? 'All US States' : `${serviceAreas.length} states`}
                   </dd>
                 </div>
+                <div className="flex justify-between py-3 border-b border-zinc-100">
+                  <dt className="text-[13px] text-zinc-600">Website</dt>
+                  <dd className="text-[13px] font-medium text-zinc-900">
+                    {websiteUrl ? normalizeUrl(websiteUrl) : (noWebsite ? 'No website' : 'Not provided')}
+                  </dd>
+                </div>
                 <div className="flex justify-between py-3">
                   <dt className="text-[13px] text-zinc-600">Plan</dt>
-                  <dd className="text-[13px] font-medium text-emerald-600">
+                  <dd className="text-[13px] font-medium text-violet-600">
                     Free - 3 leads/day included
                   </dd>
                 </div>
               </dl>
 
-              <div className="mt-6 p-4 bg-zinc-50 rounded-lg">
+              <div className="mt-6 p-4 bg-violet-50 rounded-lg">
                 <p className="text-[12px] text-zinc-600">
                   <strong className="text-zinc-900">How it works:</strong> We&apos;ll automatically match you with {industry} leads in your service areas. You&apos;ll receive up to 3 free leads per day, and you can upgrade anytime to get more.
                 </p>
@@ -449,7 +582,7 @@ export default function OnboardingPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="h-10 px-6 text-[13px] font-medium bg-emerald-600 text-white hover:bg-emerald-700 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="h-10 px-6 text-[13px] font-medium bg-gradient-to-r from-violet-600 to-indigo-600 text-white hover:from-violet-700 hover:to-indigo-700 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? 'Creating...' : 'Start Getting Leads'}
               </button>

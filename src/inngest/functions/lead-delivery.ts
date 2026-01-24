@@ -77,7 +77,7 @@ export const leadDelivery = inngest.createFunction(
           const resend = getResendClient()
           const emailPromises = users.map((user: any) => {
             return resend.emails.send({
-              from: 'OpenInfo <leads@openinfo.com>',
+              from: 'Cursive <leads@meetcursive.com>',
               to: user.email,
               subject: `New ${intentData?.score?.toUpperCase() || 'Warm'} Lead: ${companyData.name}`,
               html: generateLeadEmailHtml({
@@ -163,7 +163,7 @@ export const leadDelivery = inngest.createFunction(
                         {
                           type: 'button',
                           text: { type: 'plain_text', text: 'View in Dashboard' },
-                          url: `https://${(workspace as any).subdomain}.openinfo.com/data?lead_id=${lead_id}`,
+                          url: `https://${(workspace as any).subdomain}.meetcursive.com/data?lead_id=${lead_id}`,
                         },
                       ],
                     },

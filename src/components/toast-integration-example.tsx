@@ -229,7 +229,7 @@ export function ExampleCopyToClipboard() {
 
   return (
     <button
-      onClick={() => copyToClipboard('Hello, OpenInfo!')}
+      onClick={() => copyToClipboard('Hello, Cursive!')}
       className="px-4 py-2 bg-zinc-600 text-white rounded-lg hover:bg-zinc-700 text-[13px]"
     >
       Copy Text
@@ -309,7 +309,7 @@ export function ExampleInfoNotification() {
   return (
     <button
       onClick={() =>
-        toast.info('A new version of OpenInfo is available. Refresh to update.', {
+        toast.info('A new version of Cursive is available. Refresh to update.', {
           title: 'Update Available',
           duration: 0, // Persistent
           action: {

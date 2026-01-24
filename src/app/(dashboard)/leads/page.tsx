@@ -2,7 +2,7 @@ import { Suspense } from 'react'
 import { LeadsTable, LeadStats } from '@/components/leads'
 
 export const metadata = {
-  title: 'Leads | OpenInfo',
+  title: 'Leads | Cursive',
   description: 'Manage and track your B2B leads',
 }
 
