@@ -79,27 +79,6 @@ const US_STATES = [
   { code: 'WY', name: 'Wyoming' },
 ]
 
-// URL validation and normalization helper
-function normalizeUrl(url: string): string {
-  let normalized = url.trim().toLowerCase()
-  normalized = normalized.replace(/\/+$/, '')
-  if (normalized && !normalized.startsWith('http://') && !normalized.startsWith('https://')) {
-    normalized = 'https://' + normalized
-  }
-  return normalized
-}
-
-function isValidUrl(url: string): boolean {
-  if (!url) return true
-  try {
-    const normalized = normalizeUrl(url)
-    const parsed = new URL(normalized)
-    return parsed.protocol === 'https:' || parsed.protocol === 'http:'
-  } catch {
-    return false
-  }
-}
-
 export default function OnboardingPage() {
   const router = useRouter()
 
@@ -113,11 +92,6 @@ export default function OnboardingPage() {
   const [industry, setIndustry] = useState('')
   const [serviceAreas, setServiceAreas] = useState<string[]>([])
 
-  // Website info
-  const [websiteUrl, setWebsiteUrl] = useState('')
-  const [noWebsite, setNoWebsite] = useState(false)
-  const [urlError, setUrlError] = useState<string | null>(null)
-
   // Auto-generate slug from business name
   const handleBusinessNameChange = (name: string) => {
     setBusinessName(name)
@@ -126,44 +100,6 @@ export default function OnboardingPage() {
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '')
     setBusinessSlug(slug)
-  }
-
-  // Handle website URL change with validation
-  const handleWebsiteUrlChange = (url: string) => {
-    setWebsiteUrl(url)
-    setNoWebsite(false)
-    setUrlError(null)
-    if (url && !isValidUrl(url)) {
-      setUrlError('Please enter a valid website URL')
-    }
-  }
-
-  // Handle "I don't have one" button
-  const handleNoWebsite = async () => {
-    setNoWebsite(true)
-    setWebsiteUrl('')
-    setUrlError(null)
-
-    // Send notification to admin
-    try {
-      const supabase = createClient()
-      const { data: { session } } = await supabase.auth.getSession()
-
-      if (session) {
-        await fetch('/api/notify/website-upsell', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            businessName,
-            industry,
-            serviceAreas,
-            userEmail: session.user.email,
-          }),
-        })
-      }
-    } catch (err) {
-      console.error('Failed to send website upsell notification:', err)
-    }
   }
 
   // Toggle state selection
@@ -235,9 +171,6 @@ export default function OnboardingPage() {
     }
 
     try {
-      // Normalize website URL if provided
-      const normalizedWebsiteUrl = websiteUrl ? normalizeUrl(websiteUrl) : null
-
       // Create workspace with routing config
       const { data: workspace, error: workspaceError } = await supabase
         .from('workspaces')
@@ -248,7 +181,6 @@ export default function OnboardingPage() {
           industry_vertical: industry,
           allowed_industries: [industry],
           allowed_regions: serviceAreas,
-          website_url: normalizedWebsiteUrl,
           routing_config: {
             enabled: true,
             industry_filter: [industry],
@@ -285,21 +217,6 @@ export default function OnboardingPage() {
         // Rollback workspace creation
         await supabase.from('workspaces').delete().eq('id', (workspace as any).id)
         throw userError
-      }
-
-      // Trigger website scraping if URL provided
-      if (normalizedWebsiteUrl) {
-        fetch('/api/inngest', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            name: 'workspace/website.scrape',
-            data: {
-              workspace_id: (workspace as any).id,
-              website_url: normalizedWebsiteUrl,
-            },
-          }),
-        }).catch(() => {})
       }
 
       // Success! Redirect to dashboard
@@ -402,49 +319,13 @@ export default function OnboardingPage() {
                     We&apos;ll match you with leads in your industry
                   </p>
                 </div>
-
-                {/* Website URL Field */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Website URL <span className="text-gray-400">(optional)</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={websiteUrl}
-                    onChange={(e) => handleWebsiteUrlChange(e.target.value)}
-                    disabled={noWebsite}
-                    className={`w-full rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm ${
-                      urlError ? 'ring-red-300' : 'ring-gray-300'
-                    } ${noWebsite ? 'bg-gray-50 text-gray-400' : ''}`}
-                    placeholder="https://example.com"
-                  />
-                  {urlError && (
-                    <p className="mt-1 text-xs text-red-600">{urlError}</p>
-                  )}
-                  <div className="mt-2 flex items-center justify-between">
-                    <p className="text-xs text-gray-500">
-                      We&apos;ll personalize your dashboard with your branding
-                    </p>
-                    <button
-                      type="button"
-                      onClick={handleNoWebsite}
-                      className={`text-xs font-medium transition-colors ${
-                        noWebsite
-                          ? 'text-blue-600'
-                          : 'text-gray-500 hover:text-blue-600'
-                      }`}
-                    >
-                      {noWebsite ? '✓ No website' : "I don't have one"}
-                    </button>
-                  </div>
-                </div>
               </div>
             </div>
 
             <div className="flex justify-end">
               <button
                 type="submit"
-                disabled={!businessName || !industry || (websiteUrl && !!urlError)}
+                disabled={!businessName || !industry}
                 className="rounded-md bg-blue-600 px-6 py-2 text-sm font-semibold text-white hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Continue
@@ -549,12 +430,6 @@ export default function OnboardingPage() {
                   <dt className="text-sm text-gray-600">Service Areas</dt>
                   <dd className="text-sm font-medium text-gray-900">
                     {serviceAreas.length === 50 ? 'All US States' : `${serviceAreas.length} states`}
-                  </dd>
-                </div>
-                <div className="flex justify-between py-3 border-b border-gray-100">
-                  <dt className="text-sm text-gray-600">Website</dt>
-                  <dd className="text-sm font-medium text-gray-900">
-                    {websiteUrl ? normalizeUrl(websiteUrl) : (noWebsite ? 'No website' : 'Not provided')}
                   </dd>
                 </div>
                 <div className="flex justify-between py-3">
