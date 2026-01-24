@@ -6,7 +6,7 @@
  */
 
 import { inngest } from '../client'
-import { createServerClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server'
 import { firecrawlService } from '@/lib/services/firecrawl.service'
 import { tavilyService } from '@/lib/services/tavily.service'
 
@@ -25,7 +25,7 @@ export const scrapeWebsite = inngest.createFunction(
 
     // Update status to processing
     await step.run('update-status-processing', async () => {
-      const supabase = await createServerClient()
+      const supabase = await createClient()
       await supabase
         .from('workspaces')
         .update({ scrape_status: 'processing' })
@@ -75,7 +75,7 @@ export const scrapeWebsite = inngest.createFunction(
 
     // Update workspace with scraped data
     await step.run('update-workspace', async () => {
-      const supabase = await createServerClient()
+      const supabase = await createClient()
 
       if (finalData) {
         await supabase

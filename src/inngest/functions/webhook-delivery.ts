@@ -13,10 +13,12 @@ import {
   calculateNextRetry,
 } from '@/lib/services/webhook.service'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+function getSupabaseAdmin() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+}
 
 /**
  * Deliver webhook for new lead
@@ -32,7 +34,7 @@ export const deliverLeadWebhook = inngest.createFunction(
 
     // Get workspace webhook settings
     const workspace = await step.run('get-workspace', async () => {
-      const { data, error } = await supabase
+      const supabase = getSupabaseAdmin(); const { data, error } = await supabase
         .from('workspaces')
         .select('id, name, webhook_url, webhook_secret, webhook_enabled')
         .eq('id', workspaceId)
@@ -49,7 +51,7 @@ export const deliverLeadWebhook = inngest.createFunction(
 
     // Get lead data
     const lead = await step.run('get-lead', async () => {
-      const { data, error } = await supabase
+      const supabase = getSupabaseAdmin(); const { data, error } = await supabase
         .from('leads')
         .select('*')
         .eq('id', leadId)
@@ -63,7 +65,7 @@ export const deliverLeadWebhook = inngest.createFunction(
     const delivery = await step.run('create-delivery-record', async () => {
       const payload = formatLeadPayload(lead)
 
-      const { data, error } = await supabase
+      const supabase = getSupabaseAdmin(); const { data, error } = await supabase
         .from('webhook_deliveries')
         .insert({
           workspace_id: workspaceId,
@@ -91,6 +93,7 @@ export const deliverLeadWebhook = inngest.createFunction(
 
     // Update delivery record
     await step.run('update-delivery-record', async () => {
+      const supabase = getSupabaseAdmin()
       if (result.success) {
         await supabase
           .from('webhook_deliveries')
@@ -153,7 +156,7 @@ export const retryWebhookDeliveries = inngest.createFunction(
   async ({ step }) => {
     // Get pending retries
     const deliveries = await step.run('get-pending-retries', async () => {
-      const { data, error } = await supabase
+      const supabase = getSupabaseAdmin(); const { data, error } = await supabase
         .from('webhook_deliveries')
         .select(`
           *,
@@ -178,6 +181,8 @@ export const retryWebhookDeliveries = inngest.createFunction(
       failed: 0,
       exhausted: 0,
     }
+
+    const supabase = getSupabaseAdmin()
 
     for (const delivery of deliveries) {
       const workspace = delivery.workspace as any
@@ -285,7 +290,7 @@ export const sendLeadEmailNotification = inngest.createFunction(
 
     // Get workspace settings
     const workspace = await step.run('get-workspace', async () => {
-      const { data, error } = await supabase
+      const supabase = getSupabaseAdmin(); const { data, error } = await supabase
         .from('workspaces')
         .select('id, name, email_notifications, notification_email')
         .eq('id', workspaceId)
@@ -302,7 +307,7 @@ export const sendLeadEmailNotification = inngest.createFunction(
 
     // Get lead data
     const lead = await step.run('get-lead', async () => {
-      const { data, error } = await supabase
+      const supabase = getSupabaseAdmin(); const { data, error } = await supabase
         .from('leads')
         .select('*')
         .eq('id', leadId)
@@ -372,6 +377,7 @@ export const sendLeadEmailNotification = inngest.createFunction(
 
     // Record notification
     await step.run('record-notification', async () => {
+      const supabase = getSupabaseAdmin()
       await supabase.from('email_notifications').insert({
         workspace_id: workspaceId,
         lead_id: leadId,

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server'
 import { isAdmin } from '@/lib/auth/admin'
 import { parse } from 'csv-parse/sync'
 
@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const supabase = await createServerClient()
+    const supabase = await createClient()
 
     // Parse form data
     const formData = await request.formData()

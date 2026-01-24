@@ -110,7 +110,7 @@ function getSubdomain(hostname: string): string | null {
 
   const parts = host.split('.')
 
-  // Main domain (e.g., openinfo.com)
+  // Main domain (e.g., meetcursive.com)
   if (parts.length <= 2) {
     return null
   }

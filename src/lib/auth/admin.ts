@@ -5,14 +5,14 @@
  * Utilities for admin authentication and authorization.
  */
 
-import { createServerClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server'
 
 // Hardcoded admin emails (fallback)
 const ADMIN_EMAILS = ['adam@meetcursive.com']
 
 export async function isAdmin(): Promise<boolean> {
   try {
-    const supabase = await createServerClient()
+    const supabase = await createClient()
 
     // Get current session
     const { data: { session } } = await supabase.auth.getSession()
@@ -43,7 +43,7 @@ export async function isAdmin(): Promise<boolean> {
 
 export async function getCurrentAdminEmail(): Promise<string | null> {
   try {
-    const supabase = await createServerClient()
+    const supabase = await createClient()
     const { data: { session } } = await supabase.auth.getSession()
     return session?.user?.email || null
   } catch {
@@ -60,7 +60,7 @@ export async function requireAdmin(): Promise<void> {
 
 export async function getCurrentAdminId(): Promise<string | null> {
   try {
-    const supabase = await createServerClient()
+    const supabase = await createClient()
     const { data: { session } } = await supabase.auth.getSession()
 
     if (!session?.user?.email) {

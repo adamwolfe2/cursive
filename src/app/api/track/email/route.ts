@@ -2,10 +2,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
 // Create Supabase client with service role for tracking (no auth required)
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+function getSupabaseAdmin() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+}
 
 // 1x1 transparent GIF for tracking pixel
 const TRACKING_PIXEL = Buffer.from(
@@ -17,6 +19,7 @@ const TRACKING_PIXEL = Buffer.from(
  * Handle email open tracking (GET with tracking pixel)
  */
 export async function GET(request: NextRequest) {
+  const supabase = getSupabaseAdmin()
   const { searchParams } = new URL(request.url)
   const emailSendId = searchParams.get('id')
 
@@ -78,6 +81,7 @@ export async function GET(request: NextRequest) {
  * Handle click tracking (POST for click events)
  */
 export async function POST(request: NextRequest) {
+  const supabase = getSupabaseAdmin()
   try {
     const { emailSendId, url } = await request.json()
 

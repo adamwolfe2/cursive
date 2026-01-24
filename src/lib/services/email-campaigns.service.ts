@@ -33,8 +33,12 @@ export interface EmailTrackingData {
   clickTrackingPrefix: string
 }
 
-// Initialize Resend client
-const resend = new Resend(process.env.RESEND_API_KEY)
+/**
+ * Get Resend client (lazy initialization)
+ */
+function getResendClient(): Resend {
+  return new Resend(process.env.RESEND_API_KEY)
+}
 
 /**
  * Send an email using Resend
@@ -43,6 +47,7 @@ export async function sendEmailWithResend(
   request: EmailSendRequest
 ): Promise<EmailSendResult> {
   try {
+    const resend = getResendClient()
     const fromEmail = request.fromEmail || 'notifications@meetcursive.com'
     const fromName = request.fromName || 'Cursive'
 

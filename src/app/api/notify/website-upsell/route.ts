@@ -1,12 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server'
 import { Resend } from 'resend'
-
-const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createServerClient()
+    const supabase = await createClient()
 
     // Get current user
     const { data: { session } } = await supabase.auth.getSession()
@@ -24,6 +22,9 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
+
+    // Initialize Resend client lazily
+    const resend = new Resend(process.env.RESEND_API_KEY)
 
     // Send notification email to admin
     const { error: emailError } = await resend.emails.send({

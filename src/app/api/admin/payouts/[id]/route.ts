@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server'
 import { isAdmin, getCurrentAdminId } from '@/lib/auth/admin'
 import Stripe from 'stripe'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-  apiVersion: '2023-10-16',
-})
+function getStripeClient(): Stripe {
+  return new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: '2023-10-16',
+  })
+}
 
 export async function PATCH(
   request: NextRequest,
@@ -24,7 +26,7 @@ export async function PATCH(
       return NextResponse.json({ error: 'Invalid action' }, { status: 400 })
     }
 
-    const supabase = await createServerClient()
+    const supabase = await createClient()
     const adminId = await getCurrentAdminId()
 
     // Get payout request
@@ -143,6 +145,7 @@ export async function PATCH(
 
         try {
           // Create Stripe transfer
+          const stripe = getStripeClient()
           const transfer = await stripe.transfers.create({
             amount: Math.round(Number(payout.amount) * 100), // Convert to cents
             currency: 'usd',

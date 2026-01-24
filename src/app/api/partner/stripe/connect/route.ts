@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server'
 import Stripe from 'stripe'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-  apiVersion: '2023-10-16',
-})
+function getStripeClient(): Stripe {
+  return new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: '2023-10-16',
+  })
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,7 +16,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'API key required' }, { status: 401 })
     }
 
-    const supabase = await createServerClient()
+    const supabase = await createClient()
+    const stripe = getStripeClient()
 
     // Validate partner
     const { data: partner, error: partnerError } = await supabase
@@ -88,7 +91,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'API key required' }, { status: 401 })
     }
 
-    const supabase = await createServerClient()
+    const supabase = await createClient()
+    const stripe = getStripeClient()
 
     // Validate partner
     const { data: partner, error: partnerError } = await supabase

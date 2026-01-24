@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+function getSupabaseAdmin() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+}
 
 /**
  * Handle click tracking with redirect
@@ -19,6 +21,7 @@ export async function GET(request: NextRequest) {
 
   if (emailSendId && targetUrl) {
     try {
+      const supabase = getSupabaseAdmin()
       // Get the email send record
       const { data: emailSend } = await supabase
         .from('email_sends')
