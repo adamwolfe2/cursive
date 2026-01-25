@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 
 interface UpgradeButtonProps {
   billingPeriod: 'monthly' | 'yearly'
@@ -15,7 +14,6 @@ export function UpgradeButton({
   variant = 'primary',
 }: UpgradeButtonProps) {
   const [loading, setLoading] = useState(false)
-  const router = useRouter()
 
   const handleUpgrade = async () => {
     setLoading(true)
@@ -52,12 +50,12 @@ export function UpgradeButton({
   }
 
   const baseClasses =
-    'w-full rounded-lg px-6 py-3 text-base font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+    'w-full rounded-lg px-6 py-3 text-base font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm'
 
   const variantClasses =
     variant === 'primary'
-      ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white hover:from-emerald-600 hover:to-emerald-700'
-      : 'bg-white text-emerald-600 border-2 border-emerald-600 hover:bg-emerald-50'
+      ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800'
+      : 'bg-white text-blue-600 border-2 border-blue-600 hover:bg-blue-50'
 
   return (
     <button

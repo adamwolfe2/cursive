@@ -1,5 +1,18 @@
 // Stripe Client Setup
 // Server-side Stripe client for API operations
+//
+// SETUP INSTRUCTIONS:
+// 1. Go to Stripe Dashboard > Products
+// 2. Create a product called "Cursive Pro"
+// 3. Add a price: $50.00 USD / month (recurring)
+// 4. Copy the Price ID (starts with price_)
+// 5. Set STRIPE_PRO_MONTHLY_PRICE_ID in your .env file
+//
+// Required environment variables:
+// - STRIPE_SECRET_KEY: Your Stripe secret key (sk_live_xxx or sk_test_xxx)
+// - STRIPE_PRO_MONTHLY_PRICE_ID: Price ID for Pro monthly plan (price_xxx)
+// - STRIPE_PRO_YEARLY_PRICE_ID: (Optional) Price ID for Pro yearly plan
+// - STRIPE_WEBHOOK_SECRET: Webhook signing secret for verifying events
 
 import Stripe from 'stripe'
 
@@ -21,6 +34,7 @@ export const STRIPE_PRODUCTS = {
 }
 
 // Stripe Price IDs (set these in Stripe Dashboard)
+// Create in Stripe Dashboard: Products > Add Product > "Cursive Pro" > $50/month
 export const STRIPE_PRICES = {
   PRO_MONTHLY: process.env.STRIPE_PRO_MONTHLY_PRICE_ID || '',
   PRO_YEARLY: process.env.STRIPE_PRO_YEARLY_PRICE_ID || '',

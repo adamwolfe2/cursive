@@ -3,9 +3,70 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useToast } from '@/lib/hooks/use-toast'
 import { SlackIntegration } from '@/components/integrations/slack-integration'
 import { ZapierIntegration } from '@/components/integrations/zapier-integration'
+
+// Integration logo configuration
+const INTEGRATION_LOGOS: Record<string, { src: string; alt: string }> = {
+  slack: { src: '/logos/slack.png', alt: 'Slack' },
+  zapier: { src: '/logos/zapier.png', alt: 'Zapier' },
+  salesforce: { src: '/logos/salesforce.png', alt: 'Salesforce' },
+  hubspot: { src: '/logos/hubspot.png', alt: 'HubSpot' },
+  pipedrive: { src: '/logos/pipedrive.png', alt: 'Pipedrive' },
+  'google-sheets': { src: '/logos/google-sheets.png', alt: 'Google Sheets' },
+  'microsoft-teams': { src: '/logos/microsoft-teams.png', alt: 'Microsoft Teams' },
+  discord: { src: '/logos/discord.png', alt: 'Discord' },
+}
+
+// Fallback icon component when logo is not available
+function FallbackIcon({ name }: { name: string }) {
+  const icons: Record<string, string> = {
+    salesforce: 'bg-blue-500',
+    hubspot: 'bg-orange-500',
+    pipedrive: 'bg-green-600',
+    'google-sheets': 'bg-green-500',
+    'microsoft-teams': 'bg-purple-600',
+    discord: 'bg-indigo-600',
+  }
+
+  const labels: Record<string, string> = {
+    salesforce: 'SF',
+    hubspot: 'HS',
+    pipedrive: 'PD',
+    'google-sheets': 'GS',
+    'microsoft-teams': 'MT',
+    discord: 'DC',
+  }
+
+  return (
+    <div className={`w-10 h-10 rounded-lg ${icons[name] || 'bg-zinc-400'} flex items-center justify-center text-white text-xs font-bold`}>
+      {labels[name] || name.slice(0, 2).toUpperCase()}
+    </div>
+  )
+}
+
+// Integration logo component with fallback
+function IntegrationLogo({ name }: { name: string }) {
+  const [hasError, setHasError] = useState(false)
+  const logo = INTEGRATION_LOGOS[name]
+
+  if (!logo || hasError) {
+    return <FallbackIcon name={name} />
+  }
+
+  return (
+    <Image
+      src={logo.src}
+      alt={logo.alt}
+      width={40}
+      height={40}
+      className="object-contain"
+      onError={() => setHasError(true)}
+    />
+  )
+}
 
 export default function IntegrationsPage() {
   const toast = useToast()
@@ -94,7 +155,7 @@ export default function IntegrationsPage() {
   const isPro = user?.plan === 'pro'
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-zinc-900">Integrations</h1>
@@ -104,11 +165,11 @@ export default function IntegrationsPage() {
       </div>
 
       {/* Info Banner */}
-      <div className="rounded-lg bg-blue-50 border border-blue-200 p-4">
+      <div className="rounded-xl bg-blue-50 border border-blue-200 p-4">
         <div className="flex">
           <div className="flex-shrink-0">
             <svg
-              className="h-5 w-5 text-blue-400"
+              className="h-5 w-5 text-blue-500"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -140,7 +201,7 @@ export default function IntegrationsPage() {
       </div>
 
       {/* Custom Webhooks */}
-      <div className="rounded-lg border border-zinc-200 bg-white p-6 shadow-sm">
+      <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
         <div className="flex items-start justify-between mb-4">
           <div className="flex-1">
             <h2 className="text-lg font-semibold text-zinc-900">Custom Webhooks</h2>
@@ -150,13 +211,13 @@ export default function IntegrationsPage() {
             </p>
           </div>
           {!isPro && (
-            <span className="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-emerald-100 text-emerald-800 ml-4">
+            <span className="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-blue-100 text-blue-800 ml-4">
               Pro
             </span>
           )}
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-zinc-700 mb-2">
               Webhook URL
@@ -164,7 +225,7 @@ export default function IntegrationsPage() {
             <input
               type="url"
               placeholder="https://your-domain.com/webhook"
-              className="block w-full rounded-lg border-zinc-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 disabled:bg-zinc-50 disabled:cursor-not-allowed"
+              className="block w-full rounded-lg border-zinc-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 disabled:bg-zinc-50 disabled:cursor-not-allowed"
               value={customWebhookUrl || user?.custom_webhook_url || ''}
               onChange={(e) => setCustomWebhookUrl(e.target.value)}
               disabled={!isPro}
@@ -177,7 +238,7 @@ export default function IntegrationsPage() {
           <button
             onClick={handleSaveCustomWebhook}
             disabled={!isPro || saveCustomWebhookMutation.isPending}
-            className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
+            className="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
           >
             {saveCustomWebhookMutation.isPending ? 'Saving...' : 'Save Webhook'}
           </button>
@@ -186,7 +247,7 @@ export default function IntegrationsPage() {
             <p className="text-sm text-zinc-500 mt-2">
               <Link
                 href="/settings/billing"
-                className="text-emerald-600 hover:text-emerald-700 font-medium"
+                className="text-blue-600 hover:text-blue-700 font-medium"
               >
                 Upgrade to Pro
               </Link>{' '}
@@ -227,7 +288,7 @@ export default function IntegrationsPage() {
       </div>
 
       {/* API Keys */}
-      <div className="rounded-lg border border-zinc-200 bg-white p-6 shadow-sm">
+      <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
         <div className="flex items-start justify-between mb-4">
           <div className="flex-1">
             <h2 className="text-lg font-semibold text-zinc-900">API Keys</h2>
@@ -236,19 +297,19 @@ export default function IntegrationsPage() {
             </p>
           </div>
           {!isPro && (
-            <span className="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-emerald-100 text-emerald-800 ml-4">
+            <span className="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-blue-100 text-blue-800 ml-4">
               Pro
             </span>
           )}
         </div>
 
         {user?.api_key && isPro ? (
-          <div className="space-y-3">
+          <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-zinc-700 mb-2">
                 Your API Key
               </label>
-              <div className="flex gap-2">
+              <div className="flex gap-3">
                 <input
                   type="text"
                   value={user.api_key}
@@ -288,16 +349,16 @@ export default function IntegrationsPage() {
             <button
               onClick={() => generateApiKeyMutation.mutate()}
               disabled={!isPro || generateApiKeyMutation.isPending}
-              className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
+              className="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
             >
               {generateApiKeyMutation.isPending ? 'Generating...' : 'Generate API Key'}
             </button>
 
             {!isPro && (
-              <p className="text-sm text-zinc-500 mt-2">
+              <p className="text-sm text-zinc-500 mt-3">
                 <Link
                   href="/settings/billing"
-                  className="text-emerald-600 hover:text-emerald-700 font-medium"
+                  className="text-blue-600 hover:text-blue-700 font-medium"
                 >
                   Upgrade to Pro
                 </Link>{' '}
@@ -318,7 +379,7 @@ export default function IntegrationsPage() {
             <p className="text-sm text-zinc-500 mt-3">
               <a
                 href="/docs/api"
-                className="text-emerald-600 hover:text-emerald-700 font-medium"
+                className="text-blue-600 hover:text-blue-700 font-medium"
               >
                 View API Documentation →
               </a>
@@ -327,58 +388,60 @@ export default function IntegrationsPage() {
         )}
       </div>
 
-      {/* Coming Soon */}
-      <div className="rounded-lg border border-zinc-200 bg-white p-6 shadow-sm">
-        <h2 className="text-lg font-semibold text-zinc-900 mb-4">Coming Soon</h2>
+      {/* Coming Soon - with real logos */}
+      <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
+        <h2 className="text-lg font-semibold text-zinc-900 mb-6">Coming Soon</h2>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {[
             {
               name: 'Salesforce',
-              icon: '☁️',
+              key: 'salesforce',
               description: 'Sync leads directly to Salesforce CRM',
             },
             {
               name: 'HubSpot',
-              icon: '🟠',
+              key: 'hubspot',
               description: 'Push leads to HubSpot contacts',
             },
             {
               name: 'Pipedrive',
-              icon: '🔵',
+              key: 'pipedrive',
               description: 'Create deals in Pipedrive automatically',
             },
             {
               name: 'Google Sheets',
-              icon: '📊',
+              key: 'google-sheets',
               description: 'Export leads to Google Sheets',
             },
             {
               name: 'Microsoft Teams',
-              icon: '💬',
+              key: 'microsoft-teams',
               description: 'Receive lead notifications in Teams',
             },
             {
               name: 'Discord',
-              icon: '🎮',
+              key: 'discord',
               description: 'Get lead alerts in Discord channels',
             },
           ].map((integration) => (
             <div
-              key={integration.name}
-              className="rounded-lg border border-zinc-200 p-4 opacity-60"
+              key={integration.key}
+              className="rounded-xl border border-zinc-200 p-4 opacity-60 hover:opacity-80 transition-opacity"
             >
-              <div className="flex items-start gap-3">
-                <div className="text-2xl">{integration.icon}</div>
-                <div className="flex-1">
-                  <h3 className="text-sm font-medium text-zinc-900">
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0">
+                  <IntegrationLogo name={integration.key} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-sm font-semibold text-zinc-900">
                     {integration.name}
                   </h3>
-                  <p className="mt-1 text-xs text-zinc-500">{integration.description}</p>
+                  <p className="mt-1 text-xs text-zinc-500 line-clamp-2">{integration.description}</p>
                 </div>
               </div>
-              <div className="mt-3">
-                <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-zinc-100 text-zinc-600">
+              <div className="mt-4">
+                <span className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium bg-zinc-100 text-zinc-600">
                   Coming Soon
                 </span>
               </div>
@@ -389,18 +452,24 @@ export default function IntegrationsPage() {
 
       {/* Upgrade CTA */}
       {!isPro && (
-        <div className="rounded-lg bg-gradient-to-r from-emerald-500 to-emerald-600 p-8 text-white shadow-lg">
-          <h2 className="text-2xl font-bold mb-2">Unlock All Integrations</h2>
-          <p className="text-emerald-100 mb-6">
-            Upgrade to Pro to connect Slack, Zapier, custom webhooks, and access our API.
-            Automate your entire lead workflow.
-          </p>
-          <Link
-            href="/settings/billing"
-            className="inline-flex items-center rounded-lg bg-white px-6 py-3 text-sm font-semibold text-emerald-600 hover:bg-emerald-50 transition-colors shadow-md"
-          >
-            Upgrade to Pro →
-          </Link>
+        <div className="rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 p-8 text-white shadow-lg">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div>
+              <h2 className="text-2xl font-bold mb-2">Unlock All Integrations</h2>
+              <p className="text-blue-100">
+                Upgrade to Pro to connect Slack, Zapier, custom webhooks, and access our API.
+                Automate your entire lead workflow.
+              </p>
+            </div>
+            <div className="flex-shrink-0">
+              <Link
+                href="/settings/billing"
+                className="inline-flex items-center rounded-lg bg-white px-6 py-3 text-sm font-semibold text-blue-600 hover:bg-blue-50 transition-colors shadow-md"
+              >
+                Upgrade to Pro →
+              </Link>
+            </div>
+          </div>
         </div>
       )}
     </div>
