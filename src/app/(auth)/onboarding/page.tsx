@@ -282,7 +282,7 @@ export default function OnboardingPage() {
         <div className="text-center">
           <div className="flex justify-center mb-6">
             <Image
-              src="/cursive-logo.png"
+              src="/logo.png"
               alt="Cursive"
               width={180}
               height={48}

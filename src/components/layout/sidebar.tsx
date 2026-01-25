@@ -32,10 +32,14 @@ interface SidebarProps {
 
 function CursiveLogo() {
   return (
-    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 text-white">
-      <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-      </svg>
+    <div className="relative h-8 w-8 overflow-hidden rounded-lg">
+      <Image
+        src="/logo.png"
+        alt="Cursive"
+        fill
+        className="object-contain"
+        priority
+      />
     </div>
   )
 }

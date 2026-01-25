@@ -77,7 +77,7 @@ export default function SignupPage() {
         <div>
           <div className="flex justify-center mb-6">
             <Image
-              src="/cursive-logo.png"
+              src="/logo.png"
               alt="Cursive"
               width={180}
               height={48}
