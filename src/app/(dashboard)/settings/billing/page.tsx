@@ -410,23 +410,156 @@ export default function BillingSettingsPage() {
         </div>
       </div>
 
-      {/* Upgrade CTA for Free users */}
+      {/* Pro Plan Details for Free users */}
       {!isPro && (
-        <div className="rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 p-8 text-white shadow-lg">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-            <div>
-              <h2 className="text-2xl font-bold mb-2">Upgrade to Pro</h2>
-              <p className="text-blue-100">
-                Get 1,000 credits per day, 5 active queries, and multi-channel delivery for
-                just $50/month
+        <div className="rounded-xl border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-white p-8 shadow-sm relative overflow-hidden">
+          {/* Popular badge */}
+          <div className="absolute top-4 right-4">
+            <span className="inline-flex items-center rounded-full bg-blue-600 px-3 py-1 text-xs font-semibold text-white">
+              Most Popular
+            </span>
+          </div>
+
+          <div className="flex flex-col lg:flex-row gap-8">
+            {/* Left side - Plan info */}
+            <div className="flex-1">
+              <div className="flex items-center gap-3 mb-2">
+                <h2 className="text-2xl font-bold text-zinc-900">Pro Plan</h2>
+                <span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800">
+                  Recommended
+                </span>
+              </div>
+              <p className="text-zinc-600 mb-6">
+                Everything you need to scale your lead generation and close more deals.
+              </p>
+
+              <div className="flex items-baseline gap-2 mb-6">
+                <span className="text-4xl font-bold text-zinc-900">$50</span>
+                <span className="text-zinc-500">/month</span>
+                <span className="ml-2 text-sm text-zinc-400 line-through">$99/month</span>
+                <span className="text-sm font-medium text-green-600">Save 50%</span>
+              </div>
+
+              <UpgradeButton billingPeriod="monthly" variant="primary" />
+
+              <p className="mt-3 text-xs text-zinc-500 text-center">
+                Cancel anytime. No long-term commitment.
               </p>
             </div>
-            <div className="flex-shrink-0">
-              <UpgradeButton
-                billingPeriod="monthly"
-                variant="secondary"
-                className="bg-white text-blue-600 hover:bg-blue-50 shadow-md border-0"
-              />
+
+            {/* Right side - Features */}
+            <div className="flex-1 lg:border-l lg:border-zinc-200 lg:pl-8">
+              <h3 className="text-sm font-semibold text-zinc-900 uppercase tracking-wider mb-4">
+                Everything in Free, plus:
+              </h3>
+
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3">
+                  <svg className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <div>
+                    <span className="font-medium text-zinc-900">1,000 credits per day</span>
+                    <p className="text-sm text-zinc-500">333x more than Free plan</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <svg className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <div>
+                    <span className="font-medium text-zinc-900">5 active queries</span>
+                    <p className="text-sm text-zinc-500">Monitor multiple intent signals</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <svg className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <div>
+                    <span className="font-medium text-zinc-900">Multi-channel delivery</span>
+                    <p className="text-sm text-zinc-500">Email, Slack, Webhooks, Zapier</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <svg className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <div>
+                    <span className="font-medium text-zinc-900">CRM integrations</span>
+                    <p className="text-sm text-zinc-500">Salesforce, HubSpot, Pipedrive</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <svg className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <div>
+                    <span className="font-medium text-zinc-900">Advanced filtering</span>
+                    <p className="text-sm text-zinc-500">Industry, company size, location</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <svg className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <div>
+                    <span className="font-medium text-zinc-900">AI-powered lead scoring</span>
+                    <p className="text-sm text-zinc-500">Prioritize high-intent leads</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <svg className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <div>
+                    <span className="font-medium text-zinc-900">Email sequences</span>
+                    <p className="text-sm text-zinc-500">Automated outreach campaigns</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <svg className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <div>
+                    <span className="font-medium text-zinc-900">Priority support</span>
+                    <p className="text-sm text-zinc-500">24-hour response time</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <svg className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <div>
+                    <span className="font-medium text-zinc-900">API access</span>
+                    <p className="text-sm text-zinc-500">Build custom integrations</p>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Social proof */}
+          <div className="mt-8 pt-6 border-t border-zinc-200">
+            <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-zinc-500">
+              <div className="flex items-center gap-2">
+                <svg className="h-5 w-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                <span>30-day money-back guarantee</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <svg className="h-5 w-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                </svg>
+                <span>Secure payment via Stripe</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <svg className="h-5 w-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+                </svg>
+                <span>Trusted by 500+ sales teams</span>
+              </div>
             </div>
           </div>
         </div>
