@@ -6,6 +6,10 @@
  */
 
 import { createClient } from '@/lib/supabase/server'
+import { fetchWithTimeout } from '@/lib/utils/retry'
+
+// Configuration
+const GHL_TIMEOUT = 30000 // 30 seconds
 
 // ============================================================================
 // TYPES
@@ -51,7 +55,7 @@ const GHL_API_URL = 'https://services.leadconnectorhq.com'
 async function ghlFetch(
   connection: GhlConnection,
   endpoint: string,
-  options: RequestInit = {}
+  options: RequestInit & { timeout?: number } = {}
 ): Promise<any> {
   // Check if token needs refresh
   if (new Date(connection.tokenExpiresAt) <= new Date()) {
@@ -62,8 +66,11 @@ async function ghlFetch(
     connection.accessToken = refreshed.accessToken
   }
 
-  const response = await fetch(`${GHL_API_URL}${endpoint}`, {
+  const timeout = options.timeout ?? GHL_TIMEOUT
+
+  const response = await fetchWithTimeout(`${GHL_API_URL}${endpoint}`, {
     ...options,
+    timeout,
     headers: {
       'Authorization': `Bearer ${connection.accessToken}`,
       'Content-Type': 'application/json',
@@ -74,7 +81,7 @@ async function ghlFetch(
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({}))
-    throw new Error(error.message || `GHL API error: ${response.status}`)
+    throw new Error((error as any).message || `GHL API error: ${response.status}`)
   }
 
   return response.json()
@@ -90,25 +97,24 @@ async function ghlFetch(
 async function refreshGhlToken(
   connection: GhlConnection
 ): Promise<{ accessToken: string; refreshToken: string } | null> {
-  try {
-    const clientId = process.env.GHL_CLIENT_ID
-    const clientSecret = process.env.GHL_CLIENT_SECRET
-    if (!clientId || !clientSecret) {
-      console.error('GoHighLevel OAuth credentials not configured')
-      return null
-    }
+  if (!process.env.GHL_CLIENT_ID || !process.env.GHL_CLIENT_SECRET) {
+    console.error('[GHL] Missing GHL_CLIENT_ID or GHL_CLIENT_SECRET')
+    return null
+  }
 
-    const response = await fetch(`${GHL_API_URL}/oauth/token`, {
+  try {
+    const response = await fetchWithTimeout(`${GHL_API_URL}/oauth/token`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: new URLSearchParams({
-        client_id: clientId,
-        client_secret: clientSecret,
+        client_id: process.env.GHL_CLIENT_ID,
+        client_secret: process.env.GHL_CLIENT_SECRET,
         grant_type: 'refresh_token',
         refresh_token: connection.refreshToken,
       }),
+      timeout: 15000, // Token refresh should be quick
     })
 
     if (!response.ok) {

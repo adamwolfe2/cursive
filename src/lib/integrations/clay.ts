@@ -1,6 +1,12 @@
 // Clay API Client
 // Used for enriching company data with contact information
 
+import { retryFetch, DEFAULT_TIMEOUT } from '@/lib/utils/retry'
+
+// Configuration
+const CLAY_TIMEOUT = 30000 // 30 seconds for enrichment requests
+const CLAY_MAX_RETRIES = 2
+
 export interface ClayEnrichmentRequest {
   domain: string
   company_name?: string
@@ -66,33 +72,38 @@ export class ClayClient {
   ): Promise<ClayEnrichmentResponse> {
     this.ensureApiKey()
     try {
-      const response = await fetch(`${this.baseUrl}/enrichment/company`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${this.apiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          domain: request.domain,
-          company_name: request.company_name,
-          contact_filters: request.filters || {
-            job_titles: [
-              'CEO',
-              'CTO',
-              'VP',
-              'Director',
-              'Head of',
-              'Manager',
-            ],
-            seniority_levels: ['executive', 'director', 'manager'],
+      const response = await retryFetch(
+        `${this.baseUrl}/enrichment/company`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${this.apiKey}`,
+            'Content-Type': 'application/json',
           },
-          max_contacts: request.limit || 5,
-        }),
-      })
+          body: JSON.stringify({
+            domain: request.domain,
+            company_name: request.company_name,
+            contact_filters: request.filters || {
+              job_titles: [
+                'CEO',
+                'CTO',
+                'VP',
+                'Director',
+                'Head of',
+                'Manager',
+              ],
+              seniority_levels: ['executive', 'director', 'manager'],
+            },
+            max_contacts: request.limit || 5,
+          }),
+          timeout: CLAY_TIMEOUT,
+        },
+        { maxRetries: CLAY_MAX_RETRIES }
+      )
 
       if (!response.ok) {
-        const error = await response.json()
-        throw new Error(`Clay API error: ${error.message || response.statusText}`)
+        const error = await response.json().catch(() => ({}))
+        throw new Error(`Clay API error: ${(error as any).message || response.statusText}`)
       }
 
       return await response.json()
@@ -128,18 +139,23 @@ export class ClayClient {
   async verifyEmail(email: string): Promise<{ valid: boolean; reason?: string }> {
     this.ensureApiKey()
     try {
-      const response = await fetch(`${this.baseUrl}/verification/email`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${this.apiKey}`,
-          'Content-Type': 'application/json',
+      const response = await retryFetch(
+        `${this.baseUrl}/verification/email`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${this.apiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email }),
+          timeout: 15000, // Email verification should be quick
         },
-        body: JSON.stringify({ email }),
-      })
+        { maxRetries: CLAY_MAX_RETRIES }
+      )
 
       if (!response.ok) {
-        const error = await response.json()
-        throw new Error(`Clay API error: ${error.message || response.statusText}`)
+        const error = await response.json().catch(() => ({}))
+        throw new Error(`Clay API error: ${(error as any).message || response.statusText}`)
       }
 
       return await response.json()
@@ -157,25 +173,30 @@ export class ClayClient {
   ): Promise<ClayEnrichmentResponse[]> {
     this.ensureApiKey()
     try {
-      const response = await fetch(`${this.baseUrl}/enrichment/batch`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${this.apiKey}`,
-          'Content-Type': 'application/json',
+      const response = await retryFetch(
+        `${this.baseUrl}/enrichment/batch`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${this.apiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            requests: requests.map((req) => ({
+              domain: req.domain,
+              company_name: req.company_name,
+              contact_filters: req.filters,
+              max_contacts: req.limit || 5,
+            })),
+          }),
+          timeout: 60000, // Batch operations may take longer
         },
-        body: JSON.stringify({
-          requests: requests.map((req) => ({
-            domain: req.domain,
-            company_name: req.company_name,
-            contact_filters: req.filters,
-            max_contacts: req.limit || 5,
-          })),
-        }),
-      })
+        { maxRetries: CLAY_MAX_RETRIES }
+      )
 
       if (!response.ok) {
-        const error = await response.json()
-        throw new Error(`Clay API error: ${error.message || response.statusText}`)
+        const error = await response.json().catch(() => ({}))
+        throw new Error(`Clay API error: ${(error as any).message || response.statusText}`)
       }
 
       return await response.json()
@@ -195,23 +216,54 @@ export class ClayClient {
   }> {
     this.ensureApiKey()
     try {
-      const response = await fetch(`${this.baseUrl}/jobs/${jobId}`, {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${this.apiKey}`,
-          'Content-Type': 'application/json',
+      const response = await retryFetch(
+        `${this.baseUrl}/jobs/${jobId}`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${this.apiKey}`,
+            'Content-Type': 'application/json',
+          },
+          timeout: 10000,
         },
-      })
+        { maxRetries: CLAY_MAX_RETRIES }
+      )
 
       if (!response.ok) {
-        const error = await response.json()
-        throw new Error(`Clay API error: ${error.message || response.statusText}`)
+        const error = await response.json().catch(() => ({}))
+        throw new Error(`Clay API error: ${(error as any).message || response.statusText}`)
       }
 
       return await response.json()
     } catch (error: any) {
       console.error('[Clay] Job status error:', error)
       throw new Error(`Failed to get job status: ${error.message}`)
+    }
+  }
+
+  /**
+   * Check if Clay API is configured and reachable
+   */
+  async healthCheck(): Promise<{ healthy: boolean; error?: string }> {
+    if (!this.apiKey) {
+      return { healthy: false, error: 'CLAY_API_KEY not configured' }
+    }
+    try {
+      // Try a lightweight endpoint to check connectivity
+      const response = await retryFetch(
+        `${this.baseUrl}/health`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${this.apiKey}`,
+          },
+          timeout: 5000,
+        },
+        { maxRetries: 1 }
+      )
+      return { healthy: response.ok }
+    } catch (error: any) {
+      return { healthy: false, error: error.message }
     }
   }
 }
