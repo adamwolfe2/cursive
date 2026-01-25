@@ -32,7 +32,7 @@ interface SidebarProps {
 
 function CursiveLogo() {
   return (
-    <div className="relative h-8 w-8 overflow-hidden rounded-lg">
+    <div className="relative h-6 w-6 overflow-hidden rounded-md">
       <Image
         src="/logo.png"
         alt="Cursive"
@@ -228,22 +228,52 @@ export function SidebarMobile({
   const pathname = usePathname()
 
   React.useEffect(() => {
-    onClose()
-  }, [pathname, onClose])
+    if (isOpen) {
+      onClose()
+    }
+  }, [pathname])
 
-  if (!isOpen) return null
+  // Prevent body scroll when sidebar is open
+  React.useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [isOpen])
 
   return (
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 z-40 bg-black/50 lg:hidden"
+        className={cn(
+          'fixed inset-0 z-40 bg-black/50 lg:hidden transition-opacity duration-300',
+          isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        )}
         onClick={onClose}
         aria-hidden="true"
       />
       {/* Sidebar */}
-      <div className="fixed inset-y-0 left-0 z-50 w-64 lg:hidden">
-        <Sidebar items={items} workspace={workspace} className="h-full shadow-enterprise-xl" />
+      <div
+        className={cn(
+          'fixed inset-y-0 left-0 z-50 w-64 lg:hidden transition-transform duration-300 ease-in-out',
+          isOpen ? 'translate-x-0' : '-translate-x-full'
+        )}
+      >
+        <Sidebar items={items} workspace={workspace} className="h-full shadow-xl" />
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 p-2 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-zinc-600 lg:hidden"
+          aria-label="Close menu"
+        >
+          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
       </div>
     </>
   )

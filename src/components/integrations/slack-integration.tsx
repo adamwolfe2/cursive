@@ -53,10 +53,10 @@ export function SlackIntegration({ user, isPro }: SlackIntegrationProps) {
         <div className="flex-shrink-0">
           {!logoError ? (
             <Image
-              src="/logos/slack.png"
+              src="/Slack_icon_2019.svg.png"
               alt="Slack"
-              width={48}
-              height={48}
+              width={40}
+              height={40}
               className="object-contain"
               onError={() => setLogoError(true)}
             />

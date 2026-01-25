@@ -73,10 +73,10 @@ export function ZapierIntegration({ user, isPro }: ZapierIntegrationProps) {
         <div className="flex-shrink-0">
           {!logoError ? (
             <Image
-              src="/logos/zapier.png"
+              src="/zapier-logo-png-transparent.png"
               alt="Zapier"
-              width={48}
-              height={48}
+              width={40}
+              height={40}
               className="object-contain"
               onError={() => setLogoError(true)}
             />
