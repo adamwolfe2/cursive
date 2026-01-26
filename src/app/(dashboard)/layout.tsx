@@ -51,6 +51,7 @@ export default async function DashboardLayout({
         name: user.full_name,
         email: user.email,
         plan: user.plan,
+        role: user.role,
         creditsRemaining: user.daily_credit_limit - user.daily_credits_used,
         totalCredits: user.daily_credit_limit,
         avatarUrl: null,

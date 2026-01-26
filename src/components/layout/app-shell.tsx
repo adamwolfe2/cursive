@@ -6,6 +6,7 @@ import { Sidebar, SidebarMobile } from './sidebar'
 import { Header } from './header'
 
 // Navigation items for the sidebar
+// Items marked with adminOnly: true are only visible to admin/owner roles
 const navigationItems = [
   {
     name: 'Dashboard',
@@ -70,6 +71,7 @@ const navigationItems = [
   {
     name: 'AI Agents',
     href: '/agents',
+    adminOnly: true,
     icon: (
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path
@@ -88,6 +90,7 @@ const navigationItems = [
   {
     name: 'Campaigns',
     href: '/campaigns',
+    adminOnly: true,
     icon: (
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path
@@ -107,6 +110,7 @@ const navigationItems = [
   {
     name: 'Templates',
     href: '/templates',
+    adminOnly: true,
     icon: (
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path
@@ -180,6 +184,7 @@ interface AppShellProps {
     name?: string | null
     email: string
     plan: string
+    role: string
     creditsRemaining: number
     totalCredits: number
     avatarUrl?: string | null
@@ -193,16 +198,26 @@ interface AppShellProps {
 export function AppShell({ children, user, workspace }: AppShellProps) {
   const [sidebarOpen, setSidebarOpen] = React.useState(false)
 
+  // Filter navigation items based on user role
+  // Admin and owner can see all items, regular members can't see admin-only items
+  const isAdmin = user?.role === 'admin' || user?.role === 'owner'
+  const filteredNavItems = navigationItems.filter((item) => {
+    if ('adminOnly' in item && item.adminOnly) {
+      return isAdmin
+    }
+    return true
+  })
+
   return (
     <div className="flex min-h-screen bg-muted/30">
       {/* Desktop sidebar */}
       <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64">
-        <Sidebar items={navigationItems} />
+        <Sidebar items={filteredNavItems} />
       </div>
 
       {/* Mobile sidebar */}
       <SidebarMobile
-        items={navigationItems}
+        items={filteredNavItems}
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
       />
