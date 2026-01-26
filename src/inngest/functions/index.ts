@@ -32,6 +32,12 @@ export {
   resetDailySendCounts,
   resetWorkspaceSendCount,
 } from './reset-daily-send-counts'
+export {
+  recalculateOptimalTimes,
+  inferLeadTimezones,
+  onCampaignScheduleChanged,
+  updateLeadTimezoneFromEnrichment,
+} from './timezone-optimizer'
 
 // Lead Generation & Management
 export { dailyLeadGeneration } from './daily-lead-generation'

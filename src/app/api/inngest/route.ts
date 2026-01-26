@@ -45,6 +45,10 @@ export const { GET, POST, PUT } = serve({
     functions.checkSequenceCompletion,
     functions.resetDailySendCounts,
     functions.resetWorkspaceSendCount,
+    functions.recalculateOptimalTimes,
+    functions.inferLeadTimezones,
+    functions.onCampaignScheduleChanged,
+    functions.updateLeadTimezoneFromEnrichment,
 
     // System Jobs
     functions.creditReset,

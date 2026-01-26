@@ -278,6 +278,27 @@ export type Events = {
       sequence_step: number
     }
   }
+  'campaign/schedule-changed': {
+    data: {
+      campaign_id: string
+      workspace_id: string
+      changed_fields?: string[]
+    }
+  }
+  'lead/enrichment-complete': {
+    data: {
+      lead_id: string
+      workspace_id: string
+      enrichment_data: {
+        company_location?: {
+          country?: string
+          state?: string
+          city?: string
+        }
+        company_domain?: string
+      }
+    }
+  }
   // EmailBison webhook events
   'emailbison/email-sent': {
     data: {

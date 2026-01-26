@@ -8,6 +8,10 @@
 
 import { inngest } from '../client'
 import { createClient } from '@/lib/supabase/server'
+import {
+  getLeadsReadyForSend,
+  updateCampaignLeadOptimalTimes,
+} from '@/lib/services/campaign/timezone-scheduling.service'
 
 /**
  * Process campaign sequences
@@ -46,52 +50,81 @@ export const processCampaignSequences = inngest.createFunction(
       return { processed: 0, campaigns: 0 }
     }
 
-    // Step 2: For each campaign, find leads ready for next email
+    // Step 2: For each campaign, find leads ready for next email (timezone-aware)
     const results = await step.run('process-campaigns', async () => {
       const supabase = await createClient()
       const processed: Array<{
         campaign_id: string
         leads_queued: number
         auto_send: boolean
+        timezone_optimized: boolean
       }> = []
 
       for (const campaign of activeCampaigns) {
-        // Check if we're within send window (basic check - Phase 20 will enhance)
+        // Check if we're within send window at campaign level
         if (!isWithinSendWindow(campaign)) {
           logger.info(`Campaign ${campaign.name} is outside send window, skipping`)
           continue
         }
 
-        // Find leads ready for next email
-        const { data: readyLeads, error } = await supabase
+        // Use timezone-aware lead selection
+        // This considers each lead's optimal send time based on their timezone
+        let readyLeads: Array<{ campaignLeadId: string; leadId: string }> = []
+        let timezoneOptimized = false
+
+        try {
+          // Try timezone-optimized query first
+          const tzLeads = await getLeadsReadyForSend(campaign.id, 50)
+          readyLeads = tzLeads.map((l) => ({
+            campaignLeadId: l.campaignLeadId,
+            leadId: l.leadId,
+          }))
+          timezoneOptimized = true
+        } catch {
+          // Fallback to basic query
+          const { data, error } = await supabase
+            .from('campaign_leads')
+            .select('id, lead_id, current_step')
+            .eq('campaign_id', campaign.id)
+            .eq('status', 'in_sequence')
+            .lte('next_email_scheduled_at', now)
+            .lt('current_step', campaign.sequence_steps)
+            .limit(50)
+
+          if (error) {
+            logger.warn(`Failed to fetch leads for campaign ${campaign.id}: ${error.message}`)
+            continue
+          }
+
+          readyLeads = (data || []).map((l) => ({
+            campaignLeadId: l.id,
+            leadId: l.lead_id,
+          }))
+        }
+
+        if (readyLeads.length === 0) {
+          continue
+        }
+
+        logger.info(`Campaign ${campaign.name}: ${readyLeads.length} leads ready (timezone_optimized=${timezoneOptimized})`)
+
+        // Get current step for each lead
+        const { data: leadSteps } = await supabase
           .from('campaign_leads')
-          .select('id, lead_id, current_step')
-          .eq('campaign_id', campaign.id)
-          .eq('status', 'in_sequence')
-          .lte('next_email_scheduled_at', now)
-          .lt('current_step', campaign.sequence_steps)
-          .limit(50) // Process 50 leads per campaign per hour
+          .select('id, current_step')
+          .in('id', readyLeads.map((l) => l.campaignLeadId))
 
-        if (error) {
-          logger.warn(`Failed to fetch leads for campaign ${campaign.id}: ${error.message}`)
-          continue
-        }
-
-        if (!readyLeads || readyLeads.length === 0) {
-          continue
-        }
-
-        logger.info(`Campaign ${campaign.name}: ${readyLeads.length} leads ready for next email`)
+        const stepMap = new Map((leadSteps || []).map((l) => [l.id, l.current_step || 0]))
 
         // Queue composition for each lead
         const events = readyLeads.map((lead) => ({
           name: 'campaign/compose-email' as const,
           data: {
-            campaign_lead_id: lead.id,
+            campaign_lead_id: lead.campaignLeadId,
             campaign_id: campaign.id,
-            lead_id: lead.lead_id,
+            lead_id: lead.leadId,
             workspace_id: campaign.workspace_id,
-            sequence_step: (lead.current_step || 0) + 1,
+            sequence_step: (stepMap.get(lead.campaignLeadId) || 0) + 1,
             auto_send: campaign.auto_send_approved,
           },
         }))
@@ -102,6 +135,7 @@ export const processCampaignSequences = inngest.createFunction(
           campaign_id: campaign.id,
           leads_queued: readyLeads.length,
           auto_send: campaign.auto_send_approved,
+          timezone_optimized: timezoneOptimized,
         })
       }
 
