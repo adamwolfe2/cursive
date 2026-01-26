@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { cn } from '@/lib/design-system'
 import { Avatar } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
@@ -25,7 +26,7 @@ interface HeaderProps {
   }
   workspace?: {
     name: string
-    subdomain?: string
+    logoUrl?: string | null
   }
   onMenuClick?: () => void
   className?: string
@@ -58,13 +59,27 @@ export function Header({ user, workspace, onMenuClick, className }: HeaderProps)
 
       {/* Workspace info */}
       {workspace && (
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-foreground">{workspace.name}</span>
-          {workspace.subdomain && (
-            <span className="text-xs text-muted-foreground">
-              {workspace.subdomain}.meetcursive.com
-            </span>
+        <div className="flex items-center gap-3">
+          {workspace.logoUrl ? (
+            <div className="relative h-8 w-8 overflow-hidden rounded-lg border border-border bg-muted flex-shrink-0">
+              <Image
+                src={workspace.logoUrl}
+                alt={workspace.name}
+                fill
+                className="object-contain"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.display = 'none'
+                }}
+              />
+            </div>
+          ) : (
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-100 to-indigo-100 text-violet-600 flex-shrink-0">
+              <span className="text-xs font-bold">
+                {workspace.name?.charAt(0)?.toUpperCase() || 'B'}
+              </span>
+            </div>
           )}
+          <span className="text-sm font-medium text-foreground">{workspace.name}</span>
         </div>
       )}
 

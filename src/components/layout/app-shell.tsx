@@ -135,7 +135,7 @@ interface AppShellProps {
   }
   workspace?: {
     name: string
-    subdomain?: string
+    logoUrl?: string | null
   }
 }
 

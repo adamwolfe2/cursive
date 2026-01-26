@@ -34,7 +34,16 @@ export default async function DashboardLayout({
     redirect('/onboarding')
   }
 
-  const workspace = user.workspaces as { name: string; subdomain?: string } | null
+  const workspace = user.workspaces as {
+    name: string
+    subdomain?: string
+    website_url?: string | null
+    branding?: {
+      logo_url?: string | null
+      favicon_url?: string | null
+      primary_color?: string
+    } | null
+  } | null
 
   return (
     <AppShell
@@ -50,7 +59,7 @@ export default async function DashboardLayout({
         workspace
           ? {
               name: workspace.name,
-              subdomain: workspace.subdomain,
+              logoUrl: workspace.branding?.logo_url || workspace.branding?.favicon_url || null,
             }
           : undefined
       }
