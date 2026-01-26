@@ -17,7 +17,8 @@ const updateAgentSchema = z.object({
   ai_provider: z.enum(['openai', 'openrouter']).optional(),
   ai_model: z.string().optional(),
   tone: z.enum(['casual', 'professional', 'friendly', 'formal']).optional(),
-  instantly_api_key: z.string().nullable().optional(),
+  emailbison_api_key: z.string().nullable().optional(),
+  openai_api_key: z.string().nullable().optional(),
 })
 
 export async function GET(request: NextRequest, context: RouteContext) {

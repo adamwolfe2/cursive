@@ -438,7 +438,8 @@ export interface Database {
           ai_provider: string
           ai_model: string
           tone: string
-          instantly_api_key: string | null
+          emailbison_api_key: string | null
+          openai_api_key: string | null
           created_at: string
         }
         Insert: {
@@ -448,7 +449,8 @@ export interface Database {
           ai_provider?: string
           ai_model?: string
           tone?: string
-          instantly_api_key?: string | null
+          emailbison_api_key?: string | null
+          openai_api_key?: string | null
           created_at?: string
         }
         Update: {
@@ -458,7 +460,8 @@ export interface Database {
           ai_provider?: string
           ai_model?: string
           tone?: string
-          instantly_api_key?: string | null
+          emailbison_api_key?: string | null
+          openai_api_key?: string | null
           created_at?: string
         }
       }

@@ -99,9 +99,9 @@ export default async function AgentsPage() {
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Instantly</span>
+                    <span className="text-muted-foreground">Email Bison</span>
                     <span className="font-medium text-foreground">
-                      {agent.instantly_api_key ? (
+                      {agent.emailbison_api_key ? (
                         <Badge variant="success" dot>Connected</Badge>
                       ) : (
                         <Badge variant="muted">Not connected</Badge>

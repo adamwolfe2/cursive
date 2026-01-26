@@ -20,7 +20,8 @@ const createAgentSchema = z.object({
   ai_provider: z.enum(['openai', 'openrouter']),
   ai_model: z.string().min(1, 'Model is required'),
   tone: z.enum(['casual', 'professional', 'friendly', 'formal']),
-  instantly_api_key: z.string().optional(),
+  emailbison_api_key: z.string().optional(),
+  openai_api_key: z.string().optional(),
 })
 
 type CreateAgentFormData = z.infer<typeof createAgentSchema>
@@ -183,22 +184,41 @@ export function NewAgentForm() {
             </FormSelect>
           </FormField>
 
-          {/* Instantly API Key */}
-          <FormField error={errors.instantly_api_key}>
+          {/* Email Bison API Key */}
+          <FormField error={errors.emailbison_api_key}>
             <FormLabel
-              htmlFor="instantly_api_key"
+              htmlFor="emailbison_api_key"
               optional
-              hint="Connect to Instantly to send email responses"
+              hint="Connect to Email Bison to send and receive emails"
             >
-              Instantly API Key
+              Email Bison API Key
             </FormLabel>
             <FormInput
-              id="instantly_api_key"
+              id="emailbison_api_key"
               type="password"
-              placeholder="Enter your Instantly API key"
+              placeholder="Enter your Email Bison API key"
               disabled={loading}
-              error={errors.instantly_api_key}
-              {...register('instantly_api_key')}
+              error={errors.emailbison_api_key}
+              {...register('emailbison_api_key')}
+            />
+          </FormField>
+
+          {/* OpenAI API Key */}
+          <FormField error={errors.openai_api_key}>
+            <FormLabel
+              htmlFor="openai_api_key"
+              optional
+              hint="For AI-powered email responses (uses workspace default if not set)"
+            >
+              OpenAI API Key
+            </FormLabel>
+            <FormInput
+              id="openai_api_key"
+              type="password"
+              placeholder="sk-..."
+              disabled={loading}
+              error={errors.openai_api_key}
+              {...register('openai_api_key')}
             />
           </FormField>
 
@@ -226,7 +246,7 @@ export function NewAgentForm() {
                   <ul className="list-disc space-y-1 pl-5">
                     <li>Add instructions to guide the AI responses</li>
                     <li>Build a knowledge base with company info</li>
-                    <li>Configure webhook to receive emails from Instantly</li>
+                    <li>Configure webhook to receive emails from Email Bison</li>
                     <li>Review and approve AI-generated responses</li>
                   </ul>
                 </div>

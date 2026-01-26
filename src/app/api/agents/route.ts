@@ -13,7 +13,8 @@ const createAgentSchema = z.object({
   ai_provider: z.enum(['openai', 'openrouter']).optional().default('openai'),
   ai_model: z.string().optional().default('gpt-4o-mini'),
   tone: z.enum(['casual', 'professional', 'friendly', 'formal']).optional().default('professional'),
-  instantly_api_key: z.string().optional(),
+  emailbison_api_key: z.string().optional(),
+  openai_api_key: z.string().optional(),
 })
 
 export async function GET(request: NextRequest) {

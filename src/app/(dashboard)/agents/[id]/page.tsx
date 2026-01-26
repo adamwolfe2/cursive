@@ -130,12 +130,20 @@ export default async function AgentDetailPage({ params }: PageProps) {
               <span className="text-muted-foreground">Tone</span>
               <Badge variant="muted" className="capitalize">{agent.tone}</Badge>
             </div>
-            <div className="flex justify-between items-center py-2">
-              <span className="text-muted-foreground">Instantly Integration</span>
-              {agent.instantly_api_key ? (
+            <div className="flex justify-between items-center py-2 border-b border-border">
+              <span className="text-muted-foreground">Email Bison</span>
+              {agent.emailbison_api_key ? (
                 <Badge variant="success" dot>Connected</Badge>
               ) : (
                 <Badge variant="muted">Not connected</Badge>
+              )}
+            </div>
+            <div className="flex justify-between items-center py-2">
+              <span className="text-muted-foreground">OpenAI Key</span>
+              {agent.openai_api_key ? (
+                <Badge variant="success" dot>Custom</Badge>
+              ) : (
+                <Badge variant="muted">Default</Badge>
               )}
             </div>
           </div>
