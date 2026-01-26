@@ -616,6 +616,430 @@ export interface Database {
           created_at?: string
         }
       }
+      // Email Campaign Tables (Sales.co integration)
+      email_templates: {
+        Row: {
+          id: string
+          workspace_id: string
+          name: string
+          subject: string
+          body_html: string
+          body_text: string | null
+          variables: Json
+          tone: string | null
+          structure: string | null
+          cta_type: string | null
+          target_seniority: string[] | null
+          company_types: string[] | null
+          emails_sent: number
+          total_replies: number
+          positive_replies: number
+          reply_rate: number
+          positive_reply_rate: number
+          source: string
+          is_active: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          workspace_id: string
+          name: string
+          subject: string
+          body_html: string
+          body_text?: string | null
+          variables?: Json
+          tone?: string | null
+          structure?: string | null
+          cta_type?: string | null
+          target_seniority?: string[] | null
+          company_types?: string[] | null
+          emails_sent?: number
+          total_replies?: number
+          positive_replies?: number
+          reply_rate?: number
+          positive_reply_rate?: number
+          source?: string
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          workspace_id?: string
+          name?: string
+          subject?: string
+          body_html?: string
+          body_text?: string | null
+          variables?: Json
+          tone?: string | null
+          structure?: string | null
+          cta_type?: string | null
+          target_seniority?: string[] | null
+          company_types?: string[] | null
+          emails_sent?: number
+          total_replies?: number
+          positive_replies?: number
+          reply_rate?: number
+          positive_reply_rate?: number
+          source?: string
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      email_campaigns: {
+        Row: {
+          id: string
+          workspace_id: string
+          agent_id: string | null
+          name: string
+          description: string | null
+          status: string
+          subject_template: string | null
+          body_template: string | null
+          target_audience: Json | null
+          schedule_config: Json | null
+          target_industries: string[] | null
+          target_company_sizes: string[] | null
+          target_seniorities: string[] | null
+          target_regions: string[] | null
+          value_propositions: Json
+          trust_signals: Json
+          selected_template_ids: string[] | null
+          matching_mode: string
+          sequence_steps: number
+          days_between_steps: number[] | null
+          scheduled_start_at: string | null
+          submitted_for_review_at: string | null
+          reviewed_by: string | null
+          reviewed_at: string | null
+          review_notes: string | null
+          client_approved_at: string | null
+          total_sent: number
+          total_opened: number
+          total_clicked: number
+          total_replied: number
+          positive_replies: number
+          meetings_booked: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          workspace_id: string
+          agent_id?: string | null
+          name: string
+          description?: string | null
+          status?: string
+          subject_template?: string | null
+          body_template?: string | null
+          target_audience?: Json | null
+          schedule_config?: Json | null
+          target_industries?: string[] | null
+          target_company_sizes?: string[] | null
+          target_seniorities?: string[] | null
+          target_regions?: string[] | null
+          value_propositions?: Json
+          trust_signals?: Json
+          selected_template_ids?: string[] | null
+          matching_mode?: string
+          sequence_steps?: number
+          days_between_steps?: number[] | null
+          scheduled_start_at?: string | null
+          submitted_for_review_at?: string | null
+          reviewed_by?: string | null
+          reviewed_at?: string | null
+          review_notes?: string | null
+          client_approved_at?: string | null
+          total_sent?: number
+          total_opened?: number
+          total_clicked?: number
+          total_replied?: number
+          positive_replies?: number
+          meetings_booked?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          workspace_id?: string
+          agent_id?: string | null
+          name?: string
+          description?: string | null
+          status?: string
+          subject_template?: string | null
+          body_template?: string | null
+          target_audience?: Json | null
+          schedule_config?: Json | null
+          target_industries?: string[] | null
+          target_company_sizes?: string[] | null
+          target_seniorities?: string[] | null
+          target_regions?: string[] | null
+          value_propositions?: Json
+          trust_signals?: Json
+          selected_template_ids?: string[] | null
+          matching_mode?: string
+          sequence_steps?: number
+          days_between_steps?: number[] | null
+          scheduled_start_at?: string | null
+          submitted_for_review_at?: string | null
+          reviewed_by?: string | null
+          reviewed_at?: string | null
+          review_notes?: string | null
+          client_approved_at?: string | null
+          total_sent?: number
+          total_opened?: number
+          total_clicked?: number
+          total_replied?: number
+          positive_replies?: number
+          meetings_booked?: number
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      email_sends: {
+        Row: {
+          id: string
+          campaign_id: string
+          workspace_id: string
+          lead_id: string
+          campaign_lead_id: string | null
+          template_id: string | null
+          to_email: string
+          subject: string
+          body_html: string
+          body_text: string | null
+          sequence_step: number | null
+          value_prop_id: string | null
+          tone_used: string | null
+          structure_used: string | null
+          cta_type_used: string | null
+          status: string
+          provider: string | null
+          provider_message_id: string | null
+          sent_at: string | null
+          delivered_at: string | null
+          opened_at: string | null
+          clicked_at: string | null
+          replied_at: string | null
+          bounced_at: string | null
+          error_message: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          campaign_id: string
+          workspace_id: string
+          lead_id: string
+          campaign_lead_id?: string | null
+          template_id?: string | null
+          to_email: string
+          subject: string
+          body_html: string
+          body_text?: string | null
+          sequence_step?: number | null
+          value_prop_id?: string | null
+          tone_used?: string | null
+          structure_used?: string | null
+          cta_type_used?: string | null
+          status?: string
+          provider?: string | null
+          provider_message_id?: string | null
+          sent_at?: string | null
+          delivered_at?: string | null
+          opened_at?: string | null
+          clicked_at?: string | null
+          replied_at?: string | null
+          bounced_at?: string | null
+          error_message?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          campaign_id?: string
+          workspace_id?: string
+          lead_id?: string
+          campaign_lead_id?: string | null
+          template_id?: string | null
+          to_email?: string
+          subject?: string
+          body_html?: string
+          body_text?: string | null
+          sequence_step?: number | null
+          value_prop_id?: string | null
+          tone_used?: string | null
+          structure_used?: string | null
+          cta_type_used?: string | null
+          status?: string
+          provider?: string | null
+          provider_message_id?: string | null
+          sent_at?: string | null
+          delivered_at?: string | null
+          opened_at?: string | null
+          clicked_at?: string | null
+          replied_at?: string | null
+          bounced_at?: string | null
+          error_message?: string | null
+          created_at?: string
+        }
+      }
+      client_profiles: {
+        Row: {
+          id: string
+          workspace_id: string
+          company_name: string
+          company_description: string | null
+          website_url: string | null
+          industry: string | null
+          company_size: string | null
+          primary_offering: string | null
+          secondary_offerings: string[] | null
+          value_propositions: Json
+          trust_signals: Json
+          pain_points: string[] | null
+          competitors: string[] | null
+          differentiators: string[] | null
+          target_industries: string[] | null
+          target_company_sizes: string[] | null
+          target_seniorities: string[] | null
+          target_regions: string[] | null
+          target_titles: string[] | null
+          is_active: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          workspace_id: string
+          company_name: string
+          company_description?: string | null
+          website_url?: string | null
+          industry?: string | null
+          company_size?: string | null
+          primary_offering?: string | null
+          secondary_offerings?: string[] | null
+          value_propositions?: Json
+          trust_signals?: Json
+          pain_points?: string[] | null
+          competitors?: string[] | null
+          differentiators?: string[] | null
+          target_industries?: string[] | null
+          target_company_sizes?: string[] | null
+          target_seniorities?: string[] | null
+          target_regions?: string[] | null
+          target_titles?: string[] | null
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          workspace_id?: string
+          company_name?: string
+          company_description?: string | null
+          website_url?: string | null
+          industry?: string | null
+          company_size?: string | null
+          primary_offering?: string | null
+          secondary_offerings?: string[] | null
+          value_propositions?: Json
+          trust_signals?: Json
+          pain_points?: string[] | null
+          competitors?: string[] | null
+          differentiators?: string[] | null
+          target_industries?: string[] | null
+          target_company_sizes?: string[] | null
+          target_seniorities?: string[] | null
+          target_regions?: string[] | null
+          target_titles?: string[] | null
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      campaign_leads: {
+        Row: {
+          id: string
+          campaign_id: string
+          lead_id: string
+          enrichment_data: Json
+          enriched_at: string | null
+          matched_value_prop_id: string | null
+          match_reasoning: string | null
+          current_step: number
+          last_email_sent_at: string | null
+          next_email_scheduled_at: string | null
+          status: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          campaign_id: string
+          lead_id: string
+          enrichment_data?: Json
+          enriched_at?: string | null
+          matched_value_prop_id?: string | null
+          match_reasoning?: string | null
+          current_step?: number
+          last_email_sent_at?: string | null
+          next_email_scheduled_at?: string | null
+          status?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          campaign_id?: string
+          lead_id?: string
+          enrichment_data?: Json
+          enriched_at?: string | null
+          matched_value_prop_id?: string | null
+          match_reasoning?: string | null
+          current_step?: number
+          last_email_sent_at?: string | null
+          next_email_scheduled_at?: string | null
+          status?: string
+          created_at?: string
+        }
+      }
+      campaign_reviews: {
+        Row: {
+          id: string
+          campaign_id: string
+          reviewer_id: string | null
+          review_type: string
+          status: string
+          notes: string | null
+          requested_changes: Json
+          sample_emails_reviewed: Json
+          created_at: string
+          completed_at: string | null
+        }
+        Insert: {
+          id?: string
+          campaign_id: string
+          reviewer_id?: string | null
+          review_type: string
+          status?: string
+          notes?: string | null
+          requested_changes?: Json
+          sample_emails_reviewed?: Json
+          created_at?: string
+          completed_at?: string | null
+        }
+        Update: {
+          id?: string
+          campaign_id?: string
+          reviewer_id?: string | null
+          review_type?: string
+          status?: string
+          notes?: string | null
+          requested_changes?: Json
+          sample_emails_reviewed?: Json
+          created_at?: string
+          completed_at?: string | null
+        }
+      }
     }
     Views: {}
     Functions: {
