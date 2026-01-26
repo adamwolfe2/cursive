@@ -3,9 +3,24 @@
 
 import { inngest } from '../client'
 import { createClient } from '@/lib/supabase/server'
+import Anthropic from '@anthropic-ai/sdk'
 
 // Mock flag for development when API keys aren't available
 const USE_MOCKS = !process.env.ANTHROPIC_API_KEY
+
+// Lazy-initialized Anthropic client
+let anthropicClient: Anthropic | null = null
+
+function getAnthropicClient(): Anthropic {
+  if (!anthropicClient) {
+    const apiKey = process.env.ANTHROPIC_API_KEY
+    if (!apiKey) {
+      throw new Error('ANTHROPIC_API_KEY not set')
+    }
+    anthropicClient = new Anthropic({ apiKey })
+  }
+  return anthropicClient
+}
 
 interface EnrichmentData {
   company_summary?: string
@@ -90,25 +105,8 @@ export const enrichCampaignLead = inngest.createFunction(
         }
       }
 
-      // Real matching would use AI to select best fit
-      // For now, use simple matching based on industry/challenges
-      const industry = lead.company_industry?.toLowerCase() || ''
-
-      for (const vp of valueProps) {
-        const segments = vp.target_segments || []
-        if (segments.some((s) => industry.includes(s.toLowerCase()))) {
-          return {
-            matched_id: vp.id,
-            reasoning: `Matched to "${vp.name}" based on industry alignment`,
-          }
-        }
-      }
-
-      // Default to first if no match
-      return {
-        matched_id: valueProps[0].id,
-        reasoning: `Default selection: "${valueProps[0].name}"`,
-      }
+      // Use AI to intelligently match value proposition
+      return await matchValuePropWithClaude(lead, enrichmentData, valueProps, logger)
     })
 
     // Step 4: Update campaign_lead record
@@ -240,14 +238,161 @@ async function enrichWithClaude(
   campaign: any,
   logger: any
 ): Promise<EnrichmentData> {
-  // TODO: Implement real Claude API call for enrichment
-  // This would:
-  // 1. Research the company using web search or company database
-  // 2. Generate personalization hooks
-  // 3. Identify key challenges relevant to our value props
+  logger.info(`[REAL] Enriching ${lead.company_name} with Claude API`)
 
-  logger.info(`[REAL] Would enrich ${lead.company_name} with Claude API`)
+  const client = getAnthropicClient()
 
-  // For now, return mock data even in "real" mode until API is integrated
-  return generateMockEnrichment(lead)
+  // Build context from available lead data
+  const companyContext = [
+    `Company: ${lead.company_name}`,
+    lead.company_domain ? `Domain: ${lead.company_domain}` : null,
+    lead.company_industry ? `Industry: ${lead.company_industry}` : null,
+    lead.company_size ? `Size: ${lead.company_size}` : null,
+    lead.company_location ? `Location: ${JSON.stringify(lead.company_location)}` : null,
+    lead.job_title ? `Contact Title: ${lead.job_title}` : null,
+  ].filter(Boolean).join('\n')
+
+  // Get value propositions for context
+  const valueProps = campaign.value_propositions as Array<{
+    name: string
+    description: string
+  }> || []
+
+  const valuePropsContext = valueProps.length > 0
+    ? `\n\nOur Value Propositions:\n${valueProps.map(vp => `- ${vp.name}: ${vp.description}`).join('\n')}`
+    : ''
+
+  const prompt = `You are a B2B sales research analyst. Research this company and provide actionable insights for personalized outreach.
+
+${companyContext}
+${valuePropsContext}
+
+Analyze this company and provide:
+1. A concise company summary (2-3 sentences about what they do and their market position)
+2. Recent news or developments (3-5 bullet points, or note if limited information)
+3. Key challenges they likely face (3-5 pain points relevant to their industry/size)
+4. Personalization hooks for outreach (3-5 specific angles we can use to connect)
+
+Respond ONLY with valid JSON in this exact format:
+{
+  "company_summary": "Brief summary of the company",
+  "recent_news": ["Recent development 1", "Recent development 2"],
+  "key_challenges": ["Challenge 1", "Challenge 2", "Challenge 3"],
+  "personalization_hooks": ["Hook 1 based on their role/company", "Hook 2 based on industry trends"]
+}
+
+If you don't have specific information, make reasonable inferences based on their industry and company size. Be specific and actionable.`
+
+  try {
+    const response = await client.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1024,
+      messages: [{ role: 'user', content: prompt }],
+    })
+
+    if (!response.content || response.content.length === 0) {
+      logger.warn('Empty response from Claude API, using mock data')
+      return generateMockEnrichment(lead)
+    }
+
+    const content = response.content[0]
+    if (content.type !== 'text') {
+      logger.warn('Unexpected response type from Claude, using mock data')
+      return generateMockEnrichment(lead)
+    }
+
+    // Parse JSON response
+    const jsonMatch = content.text.match(/\{[\s\S]*\}/)
+    if (!jsonMatch) {
+      logger.warn('No JSON found in Claude response, using mock data')
+      return generateMockEnrichment(lead)
+    }
+
+    const enrichment = JSON.parse(jsonMatch[0])
+
+    return {
+      company_summary: enrichment.company_summary || `${lead.company_name} is a company in the ${lead.company_industry || 'technology'} sector.`,
+      recent_news: enrichment.recent_news || [],
+      key_challenges: enrichment.key_challenges || [],
+      personalization_hooks: enrichment.personalization_hooks || [],
+      enriched_at: new Date().toISOString(),
+    }
+  } catch (error) {
+    logger.error(`Claude API error during enrichment: ${error}`)
+    // Graceful fallback to mock data
+    return generateMockEnrichment(lead)
+  }
+}
+
+// Helper: Match value proposition with Claude AI
+async function matchValuePropWithClaude(
+  lead: any,
+  enrichmentData: EnrichmentData,
+  valueProps: Array<{ id: string; name: string; description: string; target_segments?: string[] }>,
+  logger: any
+): Promise<{ matched_id: string; reasoning: string }> {
+  if (valueProps.length === 0) {
+    return { matched_id: '', reasoning: 'No value propositions defined' }
+  }
+
+  if (valueProps.length === 1) {
+    return { matched_id: valueProps[0].id, reasoning: 'Only one value proposition available' }
+  }
+
+  const client = getAnthropicClient()
+
+  const prompt = `You are a sales strategist. Match this lead to the most appropriate value proposition.
+
+LEAD INFORMATION:
+- Company: ${lead.company_name}
+- Industry: ${lead.company_industry || 'Unknown'}
+- Size: ${lead.company_size || 'Unknown'}
+- Contact Title: ${lead.job_title || 'Unknown'}
+
+ENRICHMENT DATA:
+- Summary: ${enrichmentData.company_summary || 'N/A'}
+- Key Challenges: ${enrichmentData.key_challenges?.join(', ') || 'N/A'}
+
+VALUE PROPOSITIONS:
+${valueProps.map((vp, i) => `${i + 1}. ${vp.name}: ${vp.description}${vp.target_segments?.length ? ` (Targets: ${vp.target_segments.join(', ')})` : ''}`).join('\n')}
+
+Which value proposition (1-${valueProps.length}) best matches this lead? Consider:
+1. Industry alignment
+2. Company size fit
+3. Likely pain points
+4. Contact's role and priorities
+
+Respond with JSON:
+{
+  "selected": 1,
+  "reasoning": "Brief explanation of why this value prop is the best fit"
+}`
+
+  try {
+    const response = await client.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 256,
+      messages: [{ role: 'user', content: prompt }],
+    })
+
+    if (!response.content || response.content.length === 0 || response.content[0].type !== 'text') {
+      return { matched_id: valueProps[0].id, reasoning: 'Default selection (API response issue)' }
+    }
+
+    const jsonMatch = response.content[0].text.match(/\{[\s\S]*\}/)
+    if (!jsonMatch) {
+      return { matched_id: valueProps[0].id, reasoning: 'Default selection (parsing issue)' }
+    }
+
+    const result = JSON.parse(jsonMatch[0])
+    const selectedIndex = Math.max(0, Math.min(valueProps.length - 1, (result.selected || 1) - 1))
+
+    return {
+      matched_id: valueProps[selectedIndex].id,
+      reasoning: result.reasoning || `Selected "${valueProps[selectedIndex].name}" based on AI analysis`,
+    }
+  } catch (error) {
+    logger.warn(`Claude API error during value prop matching: ${error}`)
+    return { matched_id: valueProps[0].id, reasoning: 'Default selection (API error)' }
+  }
 }

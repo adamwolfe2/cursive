@@ -4,6 +4,8 @@
 import { inngest } from '../client'
 import { createClient } from '@/lib/supabase/server'
 import { EmailBisonClient } from '@/lib/services/emailbison'
+import { isEmailSuppressed } from '@/lib/services/campaign/suppression.service'
+import { checkSendLimits, incrementSendCount } from '@/lib/services/campaign/send-limits.service'
 
 // Mock flag for development when API keys aren't available
 const USE_MOCKS = !process.env.EMAILBISON_API_KEY
@@ -64,7 +66,75 @@ export const sendApprovedEmail = inngest.createFunction(
 
     logger.info(`Sending email ${email_send_id} to ${emailSend.recipient_email}`)
 
-    // Step 2: Send via EmailBison or mock
+    // Step 2: Check suppression list
+    const suppressionCheck = await step.run('check-suppression', async () => {
+      return await isEmailSuppressed(emailSend.recipient_email, workspace_id)
+    })
+
+    if (suppressionCheck.isSuppressed) {
+      logger.info(`Email ${emailSend.recipient_email} is suppressed (${suppressionCheck.reason}), skipping send`)
+
+      // Update email status to indicate suppression
+      await step.run('mark-suppressed', async () => {
+        const supabase = await createClient()
+        await supabase
+          .from('email_sends')
+          .update({
+            status: 'suppressed',
+            send_metadata: {
+              suppression_reason: suppressionCheck.reason,
+              suppressed_at: suppressionCheck.suppressedAt,
+            },
+          })
+          .eq('id', email_send_id)
+      })
+
+      return {
+        success: false,
+        email_send_id,
+        reason: 'suppressed',
+        suppression_reason: suppressionCheck.reason,
+      }
+    }
+
+    // Step 3: Check daily send limits
+    const limitsCheck = await step.run('check-send-limits', async () => {
+      return await checkSendLimits(emailSend.campaign_id, workspace_id)
+    })
+
+    if (!limitsCheck.canSend) {
+      logger.info(`Send limit reached (${limitsCheck.limitType}), deferring email ${email_send_id}`)
+
+      // Update email status to indicate rate limit
+      await step.run('mark-rate-limited', async () => {
+        const supabase = await createClient()
+        await supabase
+          .from('email_sends')
+          .update({
+            status: 'rate_limited',
+            send_metadata: {
+              limit_type: limitsCheck.limitType,
+              campaign_limit: limitsCheck.campaignLimit,
+              campaign_sent: limitsCheck.campaignSent,
+              workspace_limit: limitsCheck.workspaceLimit,
+              workspace_sent: limitsCheck.workspaceSent,
+              limited_at: new Date().toISOString(),
+            },
+          })
+          .eq('id', email_send_id)
+      })
+
+      return {
+        success: false,
+        email_send_id,
+        reason: 'rate_limited',
+        limit_type: limitsCheck.limitType,
+        campaign_remaining: limitsCheck.campaignRemaining,
+        workspace_remaining: limitsCheck.workspaceRemaining,
+      }
+    }
+
+    // Step 5: Send via EmailBison or mock
     const sendResult = await step.run('send-email', async () => {
       if (USE_MOCKS) {
         logger.info('[MOCK] Simulating email send')
@@ -95,7 +165,15 @@ export const sendApprovedEmail = inngest.createFunction(
       })
     })
 
-    // Step 3: Update email_sends record
+    // Step 6: Increment send counts
+    await step.run('increment-send-count', async () => {
+      const success = await incrementSendCount(emailSend.campaign_id, workspace_id)
+      if (!success) {
+        logger.warn(`Failed to increment send count for campaign ${emailSend.campaign_id}`)
+      }
+    })
+
+    // Step 7: Update email_sends record
     await step.run('update-email-record', async () => {
       const supabase = await createClient()
 
@@ -119,7 +197,7 @@ export const sendApprovedEmail = inngest.createFunction(
       logger.info(`Email ${email_send_id} marked as sent`)
     })
 
-    // Step 4: Update campaign_lead record
+    // Step 8: Update campaign_lead record
     await step.run('update-campaign-lead', async () => {
       const supabase = await createClient()
 
@@ -152,11 +230,27 @@ export const sendApprovedEmail = inngest.createFunction(
       logger.info(`Campaign lead ${campaign_lead_id} updated to step ${(campaignLead.current_step || 0) + 1}`)
     })
 
+    // Step 9: Emit email-sent event for sequence completion tracking
+    const currentStep = emailSend.step_number || emailSend.sequence_step || 1
+    await step.run('emit-sent-event', async () => {
+      await inngest.send({
+        name: 'campaign/email-sent',
+        data: {
+          email_send_id,
+          campaign_lead_id,
+          campaign_id: emailSend.campaign_id,
+          workspace_id,
+          sequence_step: currentStep,
+        },
+      })
+    })
+
     return {
       success: true,
       email_send_id,
       message_id: sendResult.message_id,
       sent_at: sendResult.sent_at,
+      sequence_step: currentStep,
     }
   }
 )

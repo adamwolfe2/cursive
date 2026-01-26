@@ -194,6 +194,24 @@ export type Events = {
       websiteUrl: string
     }
   }
+  'workspace/reset-send-count': {
+    data: {
+      workspace_id: string
+    }
+  }
+  'job/retry-requested': {
+    data: {
+      job_id: string
+      workspace_id?: string
+    }
+  }
+  'webhook/deliver': {
+    data: {
+      url: string
+      data: Record<string, any>
+      workspace_id: string
+    }
+  }
 
   // Campaign Events
   'campaign/lead-added': {
@@ -243,6 +261,55 @@ export type Events = {
       campaign_id: string
       workspace_id: string
       limit?: number
+    }
+  }
+  'campaign/status-changed': {
+    data: {
+      campaign_id: string
+      workspace_id: string
+      old_status: string
+      new_status: string
+      triggered_by?: string
+    }
+  }
+  'campaign/email-composed': {
+    data: {
+      email_send_id: string
+      campaign_lead_id: string
+      campaign_id: string
+      workspace_id: string
+      sequence_step: number
+      auto_send: boolean
+    }
+  }
+  'campaign/email-sent': {
+    data: {
+      email_send_id: string
+      campaign_lead_id: string
+      campaign_id: string
+      workspace_id: string
+      sequence_step: number
+    }
+  }
+  'campaign/schedule-changed': {
+    data: {
+      campaign_id: string
+      workspace_id: string
+      changed_fields?: string[]
+    }
+  }
+  'lead/enrichment-complete': {
+    data: {
+      lead_id: string
+      workspace_id: string
+      enrichment_data: {
+        company_location?: {
+          country?: string
+          state?: string
+          city?: string
+        }
+        company_domain?: string
+      }
     }
   }
   // EmailBison webhook events

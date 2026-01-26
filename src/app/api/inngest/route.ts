@@ -27,9 +27,35 @@ export const { GET, POST, PUT } = serve({
     functions.batchEnrollSequence,
     functions.processScheduledSteps,
 
+    // Campaign Functions (Sales.co)
+    functions.enrichCampaignLead,
+    functions.batchEnrichCampaignLeads,
+    functions.composeCampaignEmail,
+    functions.batchComposeCampaignEmails,
+    functions.sendApprovedEmail,
+    functions.batchSendApprovedEmails,
+    functions.onEmailApproved,
+    functions.processReply,
+    functions.batchProcessReplies,
+    functions.activateScheduledCampaigns,
+    functions.autoCompleteCampaignsCron,
+    functions.onCampaignStatusChange,
+    functions.processCampaignSequences,
+    functions.handleAutoSendEmail,
+    functions.checkSequenceCompletion,
+    functions.resetDailySendCounts,
+    functions.resetWorkspaceSendCount,
+    functions.recalculateOptimalTimes,
+    functions.inferLeadTimezones,
+    functions.onCampaignScheduleChanged,
+    functions.updateLeadTimezoneFromEnrichment,
+
     // System Jobs
     functions.creditReset,
     functions.weeklyTrends,
+    functions.processRetryQueue,
+    functions.cleanupFailedJobs,
+    functions.onJobRetryRequested,
 
     // Webhook Delivery
     functions.deliverLeadWebhook,

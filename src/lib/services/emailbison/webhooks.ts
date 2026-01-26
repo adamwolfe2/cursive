@@ -89,6 +89,33 @@ export interface BounceReceivedEvent extends EmailBisonWebhookEvent {
   }
 }
 
+export interface EmailOpenedEvent extends EmailBisonWebhookEvent {
+  event: EmailBisonWebhookEvent['event'] & { type: 'EMAIL_OPENED' }
+  data: {
+    message_id: number
+    lead_id: number
+    campaign_id: number
+    to_email: string
+    opened_at: string
+    ip_address?: string
+    user_agent?: string
+  }
+}
+
+export interface EmailClickedEvent extends EmailBisonWebhookEvent {
+  event: EmailBisonWebhookEvent['event'] & { type: 'EMAIL_CLICKED' }
+  data: {
+    message_id: number
+    lead_id: number
+    campaign_id: number
+    to_email: string
+    clicked_at: string
+    url: string
+    ip_address?: string
+    user_agent?: string
+  }
+}
+
 // ============================================================================
 // WEBHOOK VERIFICATION
 // ============================================================================
@@ -170,4 +197,12 @@ export function isLeadUnsubscribedEvent(event: EmailBisonWebhookEvent): event is
 
 export function isBounceReceivedEvent(event: EmailBisonWebhookEvent): event is BounceReceivedEvent {
   return event.event.type === 'BOUNCE_RECEIVED'
+}
+
+export function isEmailOpenedEvent(event: EmailBisonWebhookEvent): event is EmailOpenedEvent {
+  return event.event.type === 'EMAIL_OPENED'
+}
+
+export function isEmailClickedEvent(event: EmailBisonWebhookEvent): event is EmailClickedEvent {
+  return event.event.type === 'EMAIL_CLICKED'
 }

@@ -11,9 +11,13 @@ import {
   isReplyReceivedEvent,
   isLeadUnsubscribedEvent,
   isBounceReceivedEvent,
+  isEmailOpenedEvent,
+  isEmailClickedEvent,
   type EmailBisonWebhookEvent,
   type ReplyReceivedEvent,
   type BounceReceivedEvent,
+  type EmailOpenedEvent,
+  type EmailClickedEvent,
 } from '@/lib/services/emailbison'
 
 // Webhook secret from environment
@@ -49,12 +53,18 @@ export async function POST(request: NextRequest) {
     // Handle different event types
     if (isEmailSentEvent(event)) {
       await handleEmailSent(supabase, event)
+    } else if (isEmailOpenedEvent(event)) {
+      await handleEmailOpened(supabase, event)
+    } else if (isEmailClickedEvent(event)) {
+      await handleEmailClicked(supabase, event)
     } else if (isReplyReceivedEvent(event)) {
       await handleReplyReceived(supabase, event)
     } else if (isLeadUnsubscribedEvent(event)) {
       await handleUnsubscribe(supabase, event)
     } else if (isBounceReceivedEvent(event)) {
       await handleBounce(supabase, event)
+    } else {
+      console.log(`[Campaign Webhook] Unhandled event type: ${event.event.type}`)
     }
 
     return NextResponse.json({ success: true })
@@ -284,4 +294,148 @@ async function handleBounce(
       bounced_at: data.bounced_at,
     },
   })
+}
+
+/**
+ * Handle email opened event
+ * Updates email_sends with open tracking and campaign stats
+ */
+async function handleEmailOpened(
+  supabase: ReturnType<typeof createAdminClient>,
+  event: EmailOpenedEvent
+) {
+  const { data } = event
+
+  // Find email by message_id or to_email
+  const { data: emailSend, error: findError } = await supabase
+    .from('email_sends')
+    .select('id, campaign_id, lead_id, opened_at, open_count')
+    .eq('recipient_email', data.to_email)
+    .eq('status', 'sent')
+    .order('sent_at', { ascending: false })
+    .limit(1)
+    .single()
+
+  if (findError || !emailSend) {
+    console.log(`[Campaign Webhook] No sent email found for open event: ${data.to_email}`)
+    return
+  }
+
+  const isFirstOpen = !emailSend.opened_at
+
+  // Update email_sends record
+  const { error: updateError } = await supabase
+    .from('email_sends')
+    .update({
+      opened_at: emailSend.opened_at || data.opened_at, // Keep first open time
+      open_count: (emailSend.open_count || 0) + 1,
+      status: 'opened', // Update status
+    })
+    .eq('id', emailSend.id)
+
+  if (updateError) {
+    console.error('[Campaign Webhook] Failed to update email open:', updateError)
+    return
+  }
+
+  // Update campaign stats (only on first open)
+  if (isFirstOpen) {
+    await supabase.rpc('increment_campaign_opens', { campaign_id: emailSend.campaign_id })
+      .catch(() => {
+        // Fallback if RPC doesn't exist
+        supabase
+          .from('email_campaigns')
+          .update({
+            emails_opened: supabase.raw('COALESCE(emails_opened, 0) + 1'),
+          })
+          .eq('id', emailSend.campaign_id)
+      })
+
+    // Update campaign_lead engagement tracking
+    await supabase
+      .from('campaign_leads')
+      .update({
+        emails_opened: supabase.raw('COALESCE(emails_opened, 0) + 1'),
+      })
+      .eq('campaign_id', emailSend.campaign_id)
+      .eq('lead_id', emailSend.lead_id)
+  }
+
+  console.log(`[Campaign Webhook] Recorded open for email ${emailSend.id} (first: ${isFirstOpen})`)
+}
+
+/**
+ * Handle email clicked event
+ * Updates email_sends with click tracking and campaign stats
+ */
+async function handleEmailClicked(
+  supabase: ReturnType<typeof createAdminClient>,
+  event: EmailClickedEvent
+) {
+  const { data } = event
+
+  // Find email by to_email
+  const { data: emailSend, error: findError } = await supabase
+    .from('email_sends')
+    .select('id, campaign_id, lead_id, clicked_at, click_count, clicked_links')
+    .eq('recipient_email', data.to_email)
+    .in('status', ['sent', 'opened'])
+    .order('sent_at', { ascending: false })
+    .limit(1)
+    .single()
+
+  if (findError || !emailSend) {
+    console.log(`[Campaign Webhook] No email found for click event: ${data.to_email}`)
+    return
+  }
+
+  const isFirstClick = !emailSend.clicked_at
+  const existingLinks = (emailSend.clicked_links as Array<{ url: string; clicked_at: string }>) || []
+
+  // Add new link click
+  const updatedLinks = [
+    ...existingLinks,
+    { url: data.url, clicked_at: data.clicked_at },
+  ]
+
+  // Update email_sends record
+  const { error: updateError } = await supabase
+    .from('email_sends')
+    .update({
+      clicked_at: emailSend.clicked_at || data.clicked_at, // Keep first click time
+      click_count: (emailSend.click_count || 0) + 1,
+      clicked_links: updatedLinks,
+      status: 'clicked', // Update status
+    })
+    .eq('id', emailSend.id)
+
+  if (updateError) {
+    console.error('[Campaign Webhook] Failed to update email click:', updateError)
+    return
+  }
+
+  // Update campaign stats (only on first click)
+  if (isFirstClick) {
+    await supabase.rpc('increment_campaign_clicks', { campaign_id: emailSend.campaign_id })
+      .catch(() => {
+        // Fallback if RPC doesn't exist
+        supabase
+          .from('email_campaigns')
+          .update({
+            emails_clicked: supabase.raw('COALESCE(emails_clicked, 0) + 1'),
+          })
+          .eq('id', emailSend.campaign_id)
+      })
+
+    // Update campaign_lead engagement tracking
+    await supabase
+      .from('campaign_leads')
+      .update({
+        emails_clicked: supabase.raw('COALESCE(emails_clicked, 0) + 1'),
+      })
+      .eq('campaign_id', emailSend.campaign_id)
+      .eq('lead_id', emailSend.lead_id)
+  }
+
+  console.log(`[Campaign Webhook] Recorded click for email ${emailSend.id} on ${data.url}`)
 }

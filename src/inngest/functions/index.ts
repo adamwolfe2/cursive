@@ -18,6 +18,26 @@ export {
   processReply,
   batchProcessReplies,
 } from './campaign-reply'
+export {
+  activateScheduledCampaigns,
+  autoCompleteCampaignsCron,
+  onCampaignStatusChange,
+} from './campaign-scheduler'
+export {
+  processCampaignSequences,
+  handleAutoSendEmail,
+  checkSequenceCompletion,
+} from './campaign-sequence-processor'
+export {
+  resetDailySendCounts,
+  resetWorkspaceSendCount,
+} from './reset-daily-send-counts'
+export {
+  recalculateOptimalTimes,
+  inferLeadTimezones,
+  onCampaignScheduleChanged,
+  updateLeadTimezoneFromEnrichment,
+} from './timezone-optimizer'
 
 // Lead Generation & Management
 export { dailyLeadGeneration } from './daily-lead-generation'
@@ -44,6 +64,11 @@ export {
 // System Jobs
 export { creditReset } from './credit-reset'
 export { weeklyTrends } from './weekly-trends'
+export {
+  processRetryQueue,
+  cleanupFailedJobs,
+  onJobRetryRequested,
+} from './retry-failed-jobs'
 
 // Webhook Delivery
 export {
