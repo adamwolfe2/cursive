@@ -7,11 +7,6 @@ import { createClient } from '@/lib/supabase/middleware'
 export async function middleware(req: NextRequest) {
   const { supabase, response } = createClient(req)
 
-  // Refresh session if expired
-  const {
-    data: { session },
-  } = await supabase.auth.getSession()
-
   const { pathname } = req.nextUrl
 
   // Extract subdomain for multi-tenant routing
@@ -22,6 +17,9 @@ export async function middleware(req: NextRequest) {
   const isPublicRoute =
     pathname.startsWith('/login') ||
     pathname.startsWith('/signup') ||
+    pathname.startsWith('/forgot-password') ||
+    pathname.startsWith('/reset-password') ||
+    pathname.startsWith('/verify-email') ||
     pathname.startsWith('/auth/callback') ||
     pathname === '/' ||
     pathname.startsWith('/_next') ||
@@ -33,6 +31,16 @@ export async function middleware(req: NextRequest) {
 
   // Auth routes (login, signup) - redirect to dashboard if already authenticated
   const isAuthRoute = pathname.startsWith('/login') || pathname.startsWith('/signup')
+
+  // Try to get session - handle errors gracefully
+  let session = null
+  try {
+    const { data } = await supabase.auth.getSession()
+    session = data?.session
+  } catch (e) {
+    // If Supabase fails, treat as not authenticated
+    console.error('Middleware: Failed to get session', e)
+  }
 
   if (isAuthRoute && session) {
     return NextResponse.redirect(new URL('/dashboard', req.url))
@@ -52,32 +60,40 @@ export async function middleware(req: NextRequest) {
 
   // If authenticated, verify workspace access
   if (session && !isPublicRoute && !pathname.startsWith('/onboarding')) {
-    const { data: user } = await supabase
-      .from('users')
-      .select('*, workspaces(*)')
-      .eq('auth_user_id', session.user.id)
-      .single()
+    try {
+      const { data: user } = await supabase
+        .from('users')
+        .select('*, workspaces(*)')
+        .eq('auth_user_id', session.user.id)
+        .single()
 
-    // User doesn't have a workspace - redirect to onboarding
-    if (!user || !(user as any).workspace_id) {
+      // User doesn't have a workspace - redirect to onboarding
+      if (!user || !(user as any).workspace_id) {
+        if (pathname !== '/onboarding') {
+          return NextResponse.redirect(new URL('/onboarding', req.url))
+        }
+      }
+
+      // Validate subdomain matches user's workspace (if subdomain is present)
+      if (user && subdomain && subdomain !== 'www') {
+        const workspace = (user as any).workspaces
+
+        if (
+          workspace?.subdomain !== subdomain &&
+          workspace?.custom_domain !== hostname
+        ) {
+          // User is accessing wrong subdomain
+          return NextResponse.json(
+            { error: 'Access denied to this workspace' },
+            { status: 403 }
+          )
+        }
+      }
+    } catch (e) {
+      // If database query fails, redirect to onboarding
+      console.error('Middleware: Failed to query user', e)
       if (pathname !== '/onboarding') {
         return NextResponse.redirect(new URL('/onboarding', req.url))
-      }
-    }
-
-    // Validate subdomain matches user's workspace (if subdomain is present)
-    if (user && subdomain && subdomain !== 'www') {
-      const workspace = (user as any).workspaces
-
-      if (
-        workspace?.subdomain !== subdomain &&
-        workspace?.custom_domain !== hostname
-      ) {
-        // User is accessing wrong subdomain
-        return NextResponse.json(
-          { error: 'Access denied to this workspace' },
-          { status: 403 }
-        )
       }
     }
   }
@@ -106,6 +122,17 @@ function getSubdomain(hostname: string): string | null {
 
   // Localhost or IP address
   if (host === 'localhost' || /^\d+\.\d+\.\d+\.\d+$/.test(host)) {
+    return null
+  }
+
+  // Main application domains - not subdomains
+  const mainDomains = [
+    'leads.meetcursive.com',
+    'leadme.vercel.app',
+    'localhost',
+  ]
+
+  if (mainDomains.some(domain => host === domain || host.endsWith('.vercel.app'))) {
     return null
   }
 
