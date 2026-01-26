@@ -271,10 +271,10 @@ export function CampaignDetail({ campaignId }: CampaignDetailProps) {
         <TabsContent value="leads">
           <Card className="p-6">
             <div className="text-center py-12">
-              <p className="text-muted-foreground">Lead management coming soon</p>
-              <p className="text-sm text-muted-foreground mt-2">
-                You'll be able to add and manage leads for this campaign here.
-              </p>
+              <p className="text-muted-foreground mb-4">Manage leads enrolled in this campaign</p>
+              <Button onClick={() => router.push(`/campaigns/${campaignId}/leads`)}>
+                Manage Campaign Leads
+              </Button>
             </div>
           </Card>
         </TabsContent>

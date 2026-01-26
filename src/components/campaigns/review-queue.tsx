@@ -30,6 +30,50 @@ interface CampaignReview {
     sequence_steps: number
     target_industries?: string[]
     value_propositions: Array<{ name: string; description: string }>
+    trust_signals?: Array<{ type: string; content: string }>
+  }
+}
+
+interface SampleEmail {
+  subject: string
+  body: string
+  leadName: string
+  leadCompany: string
+  templateName: string
+}
+
+// Generate a sample email preview using campaign data
+function generateSampleEmail(campaign: CampaignReview['campaign']): SampleEmail {
+  const valueProp = campaign.value_propositions?.[0]
+  const sampleLead = {
+    firstName: 'Alex',
+    lastName: 'Johnson',
+    company: 'TechCorp Inc.',
+    title: 'VP of Engineering',
+    industry: campaign.target_industries?.[0] || 'Technology',
+  }
+
+  // Simple template with variable replacement
+  const subject = `Quick question about ${sampleLead.company}'s growth strategy`
+  const body = `Hi ${sampleLead.firstName},
+
+I noticed ${sampleLead.company} is scaling fast - congrats on the growth!
+
+${valueProp ? `I wanted to reach out because ${valueProp.description}` : 'I thought it might be worth connecting about your current challenges.'}
+
+We've helped similar companies in ${sampleLead.industry} achieve significant improvements. Would love to share how if it's relevant.
+
+Worth a quick chat?
+
+Best,
+[Your Name]`
+
+  return {
+    subject,
+    body,
+    leadName: `${sampleLead.firstName} ${sampleLead.lastName}`,
+    leadCompany: sampleLead.company,
+    templateName: 'Problem-Solution (Informal)',
   }
 }
 
@@ -42,6 +86,19 @@ export function ReviewQueue() {
   const [reviewAction, setReviewAction] = useState<'approve' | 'reject' | 'changes_requested' | null>(null)
   const [reviewNotes, setReviewNotes] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [expandedPreviews, setExpandedPreviews] = useState<Set<string>>(new Set())
+
+  const togglePreview = (reviewId: string) => {
+    setExpandedPreviews((prev) => {
+      const next = new Set(prev)
+      if (next.has(reviewId)) {
+        next.delete(reviewId)
+      } else {
+        next.add(reviewId)
+      }
+      return next
+    })
+  }
 
   useEffect(() => {
     fetchReviews()
@@ -195,6 +252,72 @@ export function ReviewQueue() {
                   </ul>
                 </div>
               )}
+
+              {/* Sample Email Preview */}
+              <div className="mb-4">
+                <button
+                  type="button"
+                  onClick={() => togglePreview(review.id)}
+                  className="flex items-center gap-2 text-sm text-primary hover:underline"
+                >
+                  <svg
+                    className={`h-4 w-4 transition-transform ${
+                      expandedPreviews.has(review.id) ? 'rotate-90' : ''
+                    }`}
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                  {expandedPreviews.has(review.id) ? 'Hide' : 'Show'} Sample Email Preview
+                </button>
+
+                {expandedPreviews.has(review.id) && (
+                  <div className="mt-3 p-4 rounded-lg border border-border bg-background">
+                    {(() => {
+                      const sampleEmail = generateSampleEmail(review.campaign)
+                      return (
+                        <>
+                          <div className="mb-3 pb-3 border-b border-border">
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="text-xs text-muted-foreground">
+                                Template: {sampleEmail.templateName}
+                              </span>
+                              <Badge variant="secondary" className="text-xs">
+                                Sample
+                              </Badge>
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                              To: {sampleEmail.leadName} at {sampleEmail.leadCompany}
+                            </p>
+                          </div>
+                          <div className="mb-2">
+                            <p className="text-xs text-muted-foreground mb-1">Subject:</p>
+                            <p className="text-sm font-medium text-foreground">
+                              {sampleEmail.subject}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-muted-foreground mb-1">Body:</p>
+                            <div className="text-sm text-foreground whitespace-pre-wrap bg-muted/30 rounded p-3">
+                              {sampleEmail.body}
+                            </div>
+                          </div>
+                          <p className="mt-3 text-xs text-muted-foreground italic">
+                            Note: This is a sample preview. Actual emails will be personalized for each lead.
+                          </p>
+                        </>
+                      )
+                    })()}
+                  </div>
+                )}
+              </div>
 
               {/* Actions */}
               <div className="flex items-center justify-between pt-4 border-t border-border">

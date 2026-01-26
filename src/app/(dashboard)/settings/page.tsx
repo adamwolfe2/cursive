@@ -19,6 +19,7 @@ import { useToast } from '@/lib/hooks/use-toast'
 
 const settingsTabs = [
   { value: 'profile', label: 'Profile', href: '/settings' },
+  { value: 'client-profile', label: 'Client Profile', href: '/settings/client-profile' },
   { value: 'notifications', label: 'Notifications', href: '/settings/notifications' },
   { value: 'security', label: 'Security', href: '/settings/security' },
   { value: 'billing', label: 'Billing', href: '/settings/billing' },
