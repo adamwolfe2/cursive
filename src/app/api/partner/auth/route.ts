@@ -1,13 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { z } from 'zod'
+
+// Zod schema for API key validation
+const authSchema = z.object({
+  api_key: z.string().min(1, 'API key required').max(256, 'API key too long'),
+})
 
 export async function POST(request: NextRequest) {
   try {
-    const { api_key } = await request.json()
+    const body = await request.json()
+    const parseResult = authSchema.safeParse(body)
 
-    if (!api_key) {
-      return NextResponse.json({ error: 'API key required' }, { status: 400 })
+    if (!parseResult.success) {
+      return NextResponse.json(
+        { error: parseResult.error.errors[0]?.message || 'Invalid input' },
+        { status: 400 }
+      )
     }
+
+    const { api_key } = parseResult.data
 
     const supabase = await createClient()
 

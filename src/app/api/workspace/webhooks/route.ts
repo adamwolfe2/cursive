@@ -1,5 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { z } from 'zod'
+
+// Zod schema for PATCH validation
+const updateWebhookSchema = z.object({
+  webhook_url: z.string().url('Invalid webhook URL').optional().nullable(),
+  webhook_enabled: z.boolean().optional(),
+  email_notifications: z.boolean().optional(),
+  notification_email: z.string().email('Invalid email address').optional().nullable(),
+})
 
 export async function GET(request: NextRequest) {
   try {
@@ -68,19 +77,20 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: 'No workspace found' }, { status: 404 })
     }
 
+    // Validate input with Zod
     const body = await request.json()
-    const { webhook_url, webhook_enabled, email_notifications, notification_email } = body
+    const parseResult = updateWebhookSchema.safeParse(body)
 
-    // Validate webhook URL if provided
-    if (webhook_url) {
-      try {
-        new URL(webhook_url)
-      } catch {
-        return NextResponse.json({ error: 'Invalid webhook URL' }, { status: 400 })
-      }
+    if (!parseResult.success) {
+      return NextResponse.json(
+        { error: parseResult.error.errors[0]?.message || 'Invalid input' },
+        { status: 400 }
+      )
     }
 
-    // Update workspace settings
+    const { webhook_url, webhook_enabled, email_notifications, notification_email } = parseResult.data
+
+    // Build update object with only provided fields
     const updateData: Record<string, any> = {}
     if (webhook_url !== undefined) updateData.webhook_url = webhook_url
     if (webhook_enabled !== undefined) updateData.webhook_enabled = webhook_enabled
