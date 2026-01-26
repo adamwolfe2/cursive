@@ -112,8 +112,8 @@ export default function BillingSettingsPage() {
               <span
                 className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${
                   isPro
-                    ? 'bg-blue-100 text-blue-800'
-                    : 'bg-zinc-100 text-zinc-800'
+                    ? 'bg-primary/10 text-primary'
+                    : 'bg-muted text-muted-foreground'
                 }`}
               >
                 {isPro ? 'Pro' : 'Free'}
@@ -122,10 +122,10 @@ export default function BillingSettingsPage() {
                 <span
                   className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
                     user.subscription_status === 'trialing'
-                      ? 'bg-blue-100 text-blue-800'
+                      ? 'bg-primary/10 text-primary'
                       : user.subscription_status === 'past_due'
                         ? 'bg-red-100 text-red-800'
-                        : 'bg-zinc-100 text-zinc-800'
+                        : 'bg-muted text-muted-foreground'
                   }`}
                 >
                   {user.subscription_status}
@@ -134,14 +134,14 @@ export default function BillingSettingsPage() {
             </div>
 
             <div className="flex items-baseline gap-2 mb-4">
-              <span className="text-3xl font-bold text-zinc-900">
+              <span className="text-3xl font-bold text-foreground">
                 ${isPro ? '50' : '0'}
               </span>
-              <span className="text-zinc-500">/month</span>
+              <span className="text-muted-foreground">/month</span>
             </div>
 
             {isPro && user?.subscription_period_end && (
-              <p className="text-sm text-zinc-600 mb-4">
+              <p className="text-sm text-muted-foreground mb-4">
                 {isCancelled ? (
                   <>
                     <span className="text-red-600 font-medium">Cancelled.</span> Access until{' '}
@@ -165,13 +165,13 @@ export default function BillingSettingsPage() {
             )}
 
             <div className="space-y-2">
-              <h3 className="text-sm font-medium text-zinc-900">Plan Features</h3>
+              <h3 className="text-sm font-medium text-foreground">Plan Features</h3>
               <ul className="space-y-2">
                 {isPro ? (
                   <>
-                    <li className="flex items-center text-sm text-zinc-600">
+                    <li className="flex items-center text-sm text-muted-foreground">
                       <svg
-                        className="mr-2 h-4 w-4 text-blue-600 flex-shrink-0"
+                        className="mr-2 h-4 w-4 text-primary flex-shrink-0"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -185,9 +185,9 @@ export default function BillingSettingsPage() {
                       </svg>
                       1,000 credits per day
                     </li>
-                    <li className="flex items-center text-sm text-zinc-600">
+                    <li className="flex items-center text-sm text-muted-foreground">
                       <svg
-                        className="mr-2 h-4 w-4 text-blue-600 flex-shrink-0"
+                        className="mr-2 h-4 w-4 text-primary flex-shrink-0"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -201,9 +201,9 @@ export default function BillingSettingsPage() {
                       </svg>
                       5 active queries
                     </li>
-                    <li className="flex items-center text-sm text-zinc-600">
+                    <li className="flex items-center text-sm text-muted-foreground">
                       <svg
-                        className="mr-2 h-4 w-4 text-blue-600 flex-shrink-0"
+                        className="mr-2 h-4 w-4 text-primary flex-shrink-0"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -217,9 +217,9 @@ export default function BillingSettingsPage() {
                       </svg>
                       Multi-channel delivery (Email, Slack, Webhooks)
                     </li>
-                    <li className="flex items-center text-sm text-zinc-600">
+                    <li className="flex items-center text-sm text-muted-foreground">
                       <svg
-                        className="mr-2 h-4 w-4 text-blue-600 flex-shrink-0"
+                        className="mr-2 h-4 w-4 text-primary flex-shrink-0"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -233,9 +233,9 @@ export default function BillingSettingsPage() {
                       </svg>
                       Advanced filtering
                     </li>
-                    <li className="flex items-center text-sm text-zinc-600">
+                    <li className="flex items-center text-sm text-muted-foreground">
                       <svg
-                        className="mr-2 h-4 w-4 text-blue-600 flex-shrink-0"
+                        className="mr-2 h-4 w-4 text-primary flex-shrink-0"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -252,9 +252,9 @@ export default function BillingSettingsPage() {
                   </>
                 ) : (
                   <>
-                    <li className="flex items-center text-sm text-zinc-600">
+                    <li className="flex items-center text-sm text-muted-foreground">
                       <svg
-                        className="mr-2 h-4 w-4 text-blue-600 flex-shrink-0"
+                        className="mr-2 h-4 w-4 text-primary flex-shrink-0"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -268,9 +268,9 @@ export default function BillingSettingsPage() {
                       </svg>
                       3 credits per day
                     </li>
-                    <li className="flex items-center text-sm text-zinc-600">
+                    <li className="flex items-center text-sm text-muted-foreground">
                       <svg
-                        className="mr-2 h-4 w-4 text-blue-600 flex-shrink-0"
+                        className="mr-2 h-4 w-4 text-primary flex-shrink-0"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -284,9 +284,9 @@ export default function BillingSettingsPage() {
                       </svg>
                       1 active query
                     </li>
-                    <li className="flex items-center text-sm text-zinc-600">
+                    <li className="flex items-center text-sm text-muted-foreground">
                       <svg
-                        className="mr-2 h-4 w-4 text-blue-600 flex-shrink-0"
+                        className="mr-2 h-4 w-4 text-primary flex-shrink-0"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -300,9 +300,9 @@ export default function BillingSettingsPage() {
                       </svg>
                       Email delivery only
                     </li>
-                    <li className="flex items-center text-sm text-zinc-600">
+                    <li className="flex items-center text-sm text-muted-foreground">
                       <svg
-                        className="mr-2 h-4 w-4 text-blue-600 flex-shrink-0"
+                        className="mr-2 h-4 w-4 text-primary flex-shrink-0"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -331,7 +331,7 @@ export default function BillingSettingsPage() {
               <button
                 onClick={handleManageBilling}
                 disabled={loading}
-                className="rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 disabled:opacity-50 transition-colors shadow-sm"
+                className="rounded-lg bg-foreground px-4 py-2.5 text-sm font-medium text-background hover:bg-foreground/90 disabled:opacity-50 transition-colors shadow-sm"
               >
                 {loading ? 'Loading...' : 'Manage Subscription'}
               </button>
@@ -341,7 +341,7 @@ export default function BillingSettingsPage() {
               <button
                 onClick={handleManageBilling}
                 disabled={loading}
-                className="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50 transition-colors shadow-sm"
+                className="rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition-colors shadow-sm"
               >
                 {loading ? 'Loading...' : 'Reactivate Subscription'}
               </button>
@@ -361,14 +361,14 @@ export default function BillingSettingsPage() {
         <div className="space-y-6">
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-zinc-700">Daily Credits</span>
-              <span className="text-sm text-zinc-600">
+              <span className="text-sm font-medium text-foreground">Daily Credits</span>
+              <span className="text-sm text-muted-foreground">
                 {user?.credits_remaining || 0} / {isPro ? '1,000' : '3'} remaining
               </span>
             </div>
-            <div className="w-full bg-zinc-200 rounded-full h-2.5">
+            <div className="w-full bg-muted rounded-full h-2.5">
               <div
-                className="bg-blue-600 h-2.5 rounded-full transition-all"
+                className="bg-primary h-2.5 rounded-full transition-all"
                 style={{
                   width: `${
                     ((user?.credits_remaining || 0) / (isPro ? 1000 : 3)) * 100
@@ -376,7 +376,7 @@ export default function BillingSettingsPage() {
                 }}
               />
             </div>
-            <p className="mt-1.5 text-xs text-zinc-500">Resets daily at midnight UTC</p>
+            <p className="mt-1.5 text-xs text-muted-foreground">Resets daily at midnight UTC</p>
           </div>
 
           <div className="pt-4 border-t border-border">
@@ -391,179 +391,95 @@ export default function BillingSettingsPage() {
 
       {/* Pro Plan Details for Free users */}
       {!isPro && (
-        <div className="rounded-xl border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-white p-8 shadow-sm relative overflow-hidden">
-          {/* Popular badge */}
-          <div className="absolute top-4 right-4">
-            <span className="inline-flex items-center rounded-full bg-blue-600 px-3 py-1 text-xs font-semibold text-white">
-              Most Popular
-            </span>
-          </div>
-
-          <div className="flex flex-col lg:flex-row gap-8">
-            {/* Left side - Plan info */}
-            <div className="flex-1">
-              <div className="flex items-center gap-3 mb-2">
-                <h2 className="text-2xl font-bold text-zinc-900">Pro Plan</h2>
-                <span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800">
-                  Recommended
-                </span>
-              </div>
-              <p className="text-zinc-600 mb-6">
-                Everything you need to scale your lead generation and close more deals.
-              </p>
-
-              <div className="flex items-baseline gap-2 mb-6">
-                <span className="text-4xl font-bold text-zinc-900">$50</span>
-                <span className="text-zinc-500">/month</span>
-                <span className="ml-2 text-sm text-zinc-400 line-through">$99/month</span>
-                <span className="text-sm font-medium text-green-600">Save 50%</span>
+        <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-background">
+          <CardContent className="pt-6">
+            {/* Horizontal layout: Pricing | Features | CTA */}
+            <div className="grid md:grid-cols-[1fr_2fr_auto] gap-6 items-center">
+              {/* Pricing */}
+              <div className="text-center md:text-left">
+                <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
+                  <h3 className="text-xl font-bold text-foreground">Pro Plan</h3>
+                  <Badge variant="default">Save 50%</Badge>
+                </div>
+                <div className="flex items-baseline justify-center md:justify-start gap-1">
+                  <span className="text-3xl font-bold text-foreground">$50</span>
+                  <span className="text-muted-foreground">/month</span>
+                </div>
+                <p className="text-sm text-muted-foreground mt-1 line-through">$99/month</p>
               </div>
 
-              <UpgradeButton billingPeriod="monthly" variant="primary" />
-
-              <p className="mt-3 text-xs text-zinc-500 text-center">
-                Cancel anytime. No long-term commitment.
-              </p>
-            </div>
-
-            {/* Right side - Features */}
-            <div className="flex-1 lg:border-l lg:border-zinc-200 lg:pl-8">
-              <h3 className="text-sm font-semibold text-zinc-900 uppercase tracking-wider mb-4">
-                Everything in Free, plus:
-              </h3>
-
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3">
-                  <svg className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              {/* Key Features - Compact horizontal grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <div className="flex items-center gap-2">
+                  <svg className="h-4 w-4 text-primary flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
-                  <div>
-                    <span className="font-medium text-zinc-900">1,000 credits per day</span>
-                    <p className="text-sm text-zinc-500">333x more than Free plan</p>
-                  </div>
-                </li>
-                <li className="flex items-start gap-3">
-                  <svg className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <span className="text-sm text-foreground">1,000 credits/day</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <svg className="h-4 w-4 text-primary flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
-                  <div>
-                    <span className="font-medium text-zinc-900">5 active queries</span>
-                    <p className="text-sm text-zinc-500">Monitor multiple intent signals</p>
-                  </div>
-                </li>
-                <li className="flex items-start gap-3">
-                  <svg className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <span className="text-sm text-foreground">5 active queries</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <svg className="h-4 w-4 text-primary flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
-                  <div>
-                    <span className="font-medium text-zinc-900">Multi-channel delivery</span>
-                    <p className="text-sm text-zinc-500">Email, Slack, Webhooks, Zapier</p>
-                    <div className="flex items-center gap-2 mt-2">
-                      <div className="relative h-6 w-6 rounded-md overflow-hidden bg-white shadow-sm border border-zinc-200">
-                        <Image src={INTEGRATION_LOGOS.slack.src} alt={INTEGRATION_LOGOS.slack.alt} fill className="object-contain p-0.5" />
-                      </div>
-                      <div className="relative h-6 w-6 rounded-md overflow-hidden bg-white shadow-sm border border-zinc-200">
-                        <Image src={INTEGRATION_LOGOS.zapier.src} alt={INTEGRATION_LOGOS.zapier.alt} fill className="object-contain p-0.5" />
-                      </div>
-                      <div className="relative h-6 w-6 rounded-md overflow-hidden bg-white shadow-sm border border-zinc-200">
-                        <Image src={INTEGRATION_LOGOS.googleSheets.src} alt={INTEGRATION_LOGOS.googleSheets.alt} fill className="object-contain p-0.5" />
-                      </div>
-                    </div>
-                  </div>
-                </li>
-                <li className="flex items-start gap-3">
-                  <svg className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <span className="text-sm text-foreground">Multi-channel delivery</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <svg className="h-4 w-4 text-primary flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
-                  <div>
-                    <span className="font-medium text-zinc-900">CRM integrations</span>
-                    <p className="text-sm text-zinc-500">Salesforce, HubSpot, Pipedrive</p>
-                    <div className="flex items-center gap-2 mt-2">
-                      <div className="relative h-6 w-6 rounded-md overflow-hidden bg-white shadow-sm border border-zinc-200">
-                        <Image src={INTEGRATION_LOGOS.salesforce.src} alt={INTEGRATION_LOGOS.salesforce.alt} fill className="object-contain p-0.5" />
-                      </div>
-                      <div className="relative h-6 w-6 rounded-md overflow-hidden bg-white shadow-sm border border-zinc-200">
-                        <Image src={INTEGRATION_LOGOS.hubspot.src} alt={INTEGRATION_LOGOS.hubspot.alt} fill className="object-contain p-0.5" />
-                      </div>
-                      <div className="relative h-6 w-6 rounded-md overflow-hidden bg-white shadow-sm border border-zinc-200">
-                        <Image src={INTEGRATION_LOGOS.pipedrive.src} alt={INTEGRATION_LOGOS.pipedrive.alt} fill className="object-contain p-0.5" />
-                      </div>
-                    </div>
-                  </div>
-                </li>
-                <li className="flex items-start gap-3">
-                  <svg className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <span className="text-sm text-foreground">CRM integrations</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <svg className="h-4 w-4 text-primary flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
-                  <div>
-                    <span className="font-medium text-zinc-900">Advanced filtering</span>
-                    <p className="text-sm text-zinc-500">Industry, company size, location</p>
-                  </div>
-                </li>
-                <li className="flex items-start gap-3">
-                  <svg className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <span className="text-sm text-foreground">AI lead scoring</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <svg className="h-4 w-4 text-primary flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
-                  <div>
-                    <span className="font-medium text-zinc-900">AI-powered lead scoring</span>
-                    <p className="text-sm text-zinc-500">Prioritize high-intent leads</p>
-                  </div>
-                </li>
-                <li className="flex items-start gap-3">
-                  <svg className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  <div>
-                    <span className="font-medium text-zinc-900">Email sequences</span>
-                    <p className="text-sm text-zinc-500">Automated outreach campaigns</p>
-                  </div>
-                </li>
-                <li className="flex items-start gap-3">
-                  <svg className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  <div>
-                    <span className="font-medium text-zinc-900">Priority support</span>
-                    <p className="text-sm text-zinc-500">24-hour response time</p>
-                  </div>
-                </li>
-                <li className="flex items-start gap-3">
-                  <svg className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  <div>
-                    <span className="font-medium text-zinc-900">API access</span>
-                    <p className="text-sm text-zinc-500">Build custom integrations</p>
-                  </div>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          {/* Social proof */}
-          <div className="mt-8 pt-6 border-t border-zinc-200">
-            <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-zinc-500">
-              <div className="flex items-center gap-2">
-                <svg className="h-5 w-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                </svg>
-                <span>30-day money-back guarantee</span>
+                  <span className="text-sm text-foreground">Priority support</span>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <svg className="h-5 w-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
-                </svg>
-                <span>Secure payment via Stripe</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <svg className="h-5 w-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
-                </svg>
-                <span>Trusted by 500+ sales teams</span>
+
+              {/* CTA */}
+              <div className="flex flex-col items-center md:items-end gap-2">
+                <UpgradeButton billingPeriod="monthly" variant="primary" />
+                <p className="text-xs text-muted-foreground">Cancel anytime</p>
               </div>
             </div>
-          </div>
-        </div>
+
+            {/* Guarantees row */}
+            <div className="mt-6 pt-4 border-t border-border">
+              <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
+                <div className="flex items-center gap-2">
+                  <svg className="h-4 w-4 text-primary" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span>30-day money-back guarantee</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <svg className="h-4 w-4 text-primary" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                  </svg>
+                  <span>Secure payment via Stripe</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <svg className="h-4 w-4 text-primary" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+                  </svg>
+                  <span>Trusted by 500+ sales teams</span>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       )}
 
       {/* Payment Method */}
