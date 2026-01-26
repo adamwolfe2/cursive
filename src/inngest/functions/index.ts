@@ -1,5 +1,15 @@
 // Export all Inngest functions
 
+// Campaign Functions (Sales.co)
+export {
+  enrichCampaignLead,
+  batchEnrichCampaignLeads,
+} from './campaign-enrichment'
+export {
+  composeCampaignEmail,
+  batchComposeCampaignEmails,
+} from './campaign-compose'
+
 // Lead Generation & Management
 export { dailyLeadGeneration } from './daily-lead-generation'
 export { leadEnrichment, leadEnrichmentFailure } from './lead-enrichment'

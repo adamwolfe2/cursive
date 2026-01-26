@@ -194,6 +194,50 @@ export type Events = {
       websiteUrl: string
     }
   }
+
+  // Campaign Events
+  'campaign/lead-added': {
+    data: {
+      campaign_lead_id: string
+      campaign_id: string
+      lead_id: string
+      workspace_id: string
+    }
+  }
+  'campaign/batch-enrich': {
+    data: {
+      campaign_id: string
+      workspace_id: string
+    }
+  }
+  'campaign/compose-email': {
+    data: {
+      campaign_lead_id: string
+      campaign_id: string
+      lead_id: string
+      workspace_id: string
+    }
+  }
+  'campaign/batch-compose': {
+    data: {
+      campaign_id: string
+      workspace_id: string
+    }
+  }
+  'campaign/send-email': {
+    data: {
+      email_send_id: string
+      campaign_lead_id: string
+      workspace_id: string
+    }
+  }
+  'campaign/email-approved': {
+    data: {
+      email_send_id: string
+      campaign_lead_id: string
+      workspace_id: string
+    }
+  }
 }
 
 // Create Inngest client
