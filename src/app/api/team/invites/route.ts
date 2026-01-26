@@ -9,7 +9,17 @@ import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized, forbidden, success, badRequest } from '@/lib/utils/api-error-handler'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+// Lazy-load Resend to avoid build-time initialization errors
+let resendClient: Resend | null = null
+function getResend(): Resend {
+  if (!resendClient) {
+    if (!process.env.RESEND_API_KEY) {
+      throw new Error('RESEND_API_KEY is not configured')
+    }
+    resendClient = new Resend(process.env.RESEND_API_KEY)
+  }
+  return resendClient
+}
 
 const createInviteSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -98,7 +108,7 @@ export async function POST(request: NextRequest) {
     const inviteUrl = `${process.env.NEXT_PUBLIC_APP_URL}/auth/accept-invite?token=${invite.token}`
 
     try {
-      await resend.emails.send({
+      await getResend().emails.send({
         from: 'LeadMe <noreply@leadme.app>',
         to: email,
         subject: `You've been invited to join ${workspace?.name || 'a workspace'} on LeadMe`,
