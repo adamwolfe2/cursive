@@ -3,9 +3,25 @@
 
 import { inngest } from '../client'
 import { createClient } from '@/lib/supabase/server'
+import Anthropic from '@anthropic-ai/sdk'
+import { quickClassify, type IntentCategory, type SuggestedAction } from '@/lib/services/ai/intent'
 
 // Mock flag for development when API keys aren't available
 const USE_MOCKS = !process.env.ANTHROPIC_API_KEY
+
+// Lazy-initialized Anthropic client
+let anthropicClient: Anthropic | null = null
+
+function getAnthropicClient(): Anthropic {
+  if (!anthropicClient) {
+    const apiKey = process.env.ANTHROPIC_API_KEY
+    if (!apiKey) {
+      throw new Error('ANTHROPIC_API_KEY not set')
+    }
+    anthropicClient = new Anthropic({ apiKey })
+  }
+  return anthropicClient
+}
 
 interface ReplyClassification {
   sentiment: 'positive' | 'negative' | 'neutral' | 'question' | 'not_interested' | 'out_of_office' | 'unsubscribe'
@@ -389,9 +405,111 @@ async function classifyWithClaude(
   reply: any,
   logger: any
 ): Promise<ReplyClassification> {
-  // TODO: Implement real Claude API call for classification
-  logger.info('[REAL] Would classify with Claude API')
-  return generateMockClassification(body, subject)
+  // First, try quick pattern matching for obvious cases
+  const quickResult = quickClassify(body)
+  if (quickResult) {
+    logger.info(`[REAL] Quick classification matched: ${quickResult.category}`)
+    // Map IntentCategory to our sentiment type
+    const categoryToSentiment: Record<IntentCategory, ReplyClassification['sentiment']> = {
+      'INTERESTED': 'positive',
+      'CURIOUS': 'neutral',
+      'QUESTION': 'question',
+      'OBJECTION': 'neutral',
+      'NOT_INTERESTED': 'not_interested',
+      'UNSUBSCRIBE': 'unsubscribe',
+      'OUT_OF_OFFICE': 'out_of_office',
+      'WRONG_PERSON': 'not_interested',
+    }
+    const actionToSuggested: Record<SuggestedAction, string> = {
+      'auto_reply': 'Schedule a call or send more information',
+      'human_review': 'Review manually and respond appropriately',
+      'ignore': 'No action needed',
+      'unsubscribe': 'Remove from all campaigns immediately',
+    }
+    return {
+      sentiment: categoryToSentiment[quickResult.category] || 'neutral',
+      intent_score: quickResult.score,
+      confidence: quickResult.confidence,
+      reasoning: quickResult.reasoning,
+      suggested_action: actionToSuggested[quickResult.suggestedAction] || 'Review manually',
+    }
+  }
+
+  // For ambiguous cases, use Claude API
+  logger.info('[REAL] Classifying with Claude API')
+  const client = getAnthropicClient()
+
+  // Build context from the original email if available
+  const originalEmailContext = reply.email_send?.body_text
+    ? `\nORIGINAL EMAIL WE SENT:\n${reply.email_send.body_text.substring(0, 500)}`
+    : ''
+
+  const prompt = `You are analyzing an email reply to a cold outreach campaign. Classify the reply sentiment and intent.
+
+REPLY SUBJECT: ${subject || '(no subject)'}
+
+REPLY BODY:
+${body}
+${originalEmailContext}
+
+LEAD CONTEXT:
+- Name: ${reply.lead?.first_name || 'Unknown'} ${reply.lead?.last_name || ''}
+- Company: ${reply.lead?.company_name || 'Unknown'}
+- Title: ${reply.lead?.job_title || 'Unknown'}
+
+Classify this reply into ONE of these sentiments:
+1. positive - Interested, wants more info, willing to talk (intent: 7-10)
+2. question - Has specific questions, engaged but not committed (intent: 5-7)
+3. neutral - Acknowledged but unclear intent (intent: 4-6)
+4. not_interested - Explicit rejection or decline (intent: 1-3)
+5. negative - Hostile, complaints, very negative tone (intent: 1-2)
+6. out_of_office - Auto-reply, vacation, away message (intent: 0)
+7. unsubscribe - Explicit unsubscribe or removal request (intent: 0)
+
+Respond ONLY with valid JSON:
+{
+  "sentiment": "positive|question|neutral|not_interested|negative|out_of_office|unsubscribe",
+  "intent_score": 0-10,
+  "confidence": 0.0-1.0,
+  "reasoning": "Brief explanation of classification",
+  "suggested_action": "What to do next"
+}`
+
+  try {
+    const response = await client.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 512,
+      messages: [{ role: 'user', content: prompt }],
+    })
+
+    if (!response.content || response.content.length === 0 || response.content[0].type !== 'text') {
+      logger.warn('Empty or invalid Claude response, falling back to mock')
+      return generateMockClassification(body, subject)
+    }
+
+    const jsonMatch = response.content[0].text.match(/\{[\s\S]*\}/)
+    if (!jsonMatch) {
+      logger.warn('No JSON in Claude response, falling back to mock')
+      return generateMockClassification(body, subject)
+    }
+
+    const result = JSON.parse(jsonMatch[0])
+
+    // Validate and sanitize the response
+    const validSentiments = ['positive', 'negative', 'neutral', 'question', 'not_interested', 'out_of_office', 'unsubscribe']
+    const sentiment = validSentiments.includes(result.sentiment) ? result.sentiment : 'neutral'
+
+    return {
+      sentiment: sentiment as ReplyClassification['sentiment'],
+      intent_score: Math.max(0, Math.min(10, Number(result.intent_score) || 5)),
+      confidence: Math.max(0, Math.min(1, Number(result.confidence) || 0.7)),
+      reasoning: result.reasoning || 'AI classification',
+      suggested_action: result.suggested_action || 'Review and respond appropriately',
+    }
+  } catch (error) {
+    logger.error(`Claude API error during classification: ${error}`)
+    return generateMockClassification(body, subject)
+  }
 }
 
 // Helper: Generate response with Claude AI (real implementation)
@@ -400,7 +518,89 @@ async function generateResponseWithClaude(
   reply: any,
   logger: any
 ): Promise<SuggestedResponse> {
-  // TODO: Implement real Claude API call for response generation
-  logger.info('[REAL] Would generate response with Claude API')
-  return generateMockResponse(classification, reply)
+  logger.info('[REAL] Generating response with Claude API')
+  const client = getAnthropicClient()
+
+  const leadName = reply.lead?.first_name || 'there'
+  const companyName = reply.lead?.company_name || 'your company'
+  const campaignName = reply.campaign?.name || ''
+
+  // Get original email context
+  const originalEmail = reply.email_send?.body_text || ''
+  const replyBody = reply.body_text || reply.body_html || ''
+
+  const toneGuidance = {
+    positive: 'Be enthusiastic and move toward scheduling a call or demo. Keep momentum.',
+    question: 'Be helpful and thorough in answering their questions. Provide clear next steps.',
+    neutral: 'Be engaging but not pushy. Offer value and a clear but low-pressure next step.',
+  }
+
+  const prompt = `You are a professional sales representative responding to an email reply. Generate a personalized, authentic response.
+
+THEIR REPLY:
+${replyBody.substring(0, 1000)}
+
+THEIR SENTIMENT: ${classification.sentiment} (intent score: ${classification.intent_score}/10)
+
+LEAD INFO:
+- Name: ${leadName}
+- Company: ${companyName}
+- Title: ${reply.lead?.job_title || 'Unknown'}
+
+${originalEmail ? `ORIGINAL EMAIL WE SENT:\n${originalEmail.substring(0, 500)}\n` : ''}
+
+TONE GUIDANCE: ${toneGuidance[classification.sentiment as keyof typeof toneGuidance] || 'Be professional and helpful.'}
+
+Write a response that:
+1. Acknowledges their reply naturally
+2. Addresses any questions or concerns they raised
+3. Provides value relevant to their situation
+4. Includes a clear call-to-action (meeting, call, or next step)
+5. Is concise (under 150 words)
+6. Sounds human and authentic, not templated
+
+DO NOT include:
+- Email headers (To:, From:, Subject:)
+- Formal greetings like "Dear" - use casual "Hi ${leadName},"
+- Overly formal sign-offs - use simple "Best," or "Thanks,"
+- Placeholder text like [YOUR_NAME] - leave signature area for user to complete
+
+Respond with JSON:
+{
+  "subject": "Re: Original subject or appropriate response subject",
+  "body": "The full email response body",
+  "tone": "enthusiastic|helpful|professional|casual",
+  "confidence": 0.0-1.0
+}`
+
+  try {
+    const response = await client.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1024,
+      messages: [{ role: 'user', content: prompt }],
+    })
+
+    if (!response.content || response.content.length === 0 || response.content[0].type !== 'text') {
+      logger.warn('Empty Claude response for reply generation, using mock')
+      return generateMockResponse(classification, reply)
+    }
+
+    const jsonMatch = response.content[0].text.match(/\{[\s\S]*\}/)
+    if (!jsonMatch) {
+      logger.warn('No JSON in Claude response for reply generation, using mock')
+      return generateMockResponse(classification, reply)
+    }
+
+    const result = JSON.parse(jsonMatch[0])
+
+    return {
+      subject: result.subject || `Re: ${reply.subject || 'Following up'}`,
+      body: result.body || generateMockResponse(classification, reply).body,
+      tone: result.tone || 'professional',
+      confidence: Math.max(0, Math.min(1, Number(result.confidence) || 0.75)),
+    }
+  } catch (error) {
+    logger.error(`Claude API error during response generation: ${error}`)
+    return generateMockResponse(classification, reply)
+  }
 }
