@@ -17,6 +17,7 @@ import {
   type ExportFormat,
   type ExportOptions,
 } from '@/lib/services/export.service'
+import { logDataExport } from '@/lib/services/audit.service'
 
 const exportSchema = z.object({
   type: z.enum([
@@ -104,6 +105,16 @@ export async function POST(request: NextRequest) {
       default:
         return badRequest('Invalid export type')
     }
+
+    // Log the export for audit/compliance
+    const ipAddress = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || undefined
+    await logDataExport(
+      user.workspace_id,
+      user.id,
+      validated.type,
+      result.rowCount,
+      ipAddress || undefined
+    )
 
     // Return the file
     return new NextResponse(result.data, {
