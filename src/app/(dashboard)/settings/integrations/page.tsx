@@ -13,7 +13,7 @@ const INTEGRATION_LOGOS: Record<string, { src: string; alt: string }> = {
   slack: { src: '/Slack_icon_2019.svg.png', alt: 'Slack' },
   zapier: { src: '/zapier-logo-png-transparent.png', alt: 'Zapier' },
   salesforce: { src: '/Salesforce.com_logo.svg.png', alt: 'Salesforce' },
-  hubspot: { src: '/HubSpot_Logo.png', alt: 'HubSpot' },
+  hubspot: { src: '/free-hubspot-logo-icon-svg-download-png-2944939.webp', alt: 'HubSpot' },
   pipedrive: { src: '/Pipedrive_Monogram_Green background.png', alt: 'Pipedrive' },
   'google-sheets': { src: '/Google_Sheets_Logo_512px.png', alt: 'Google Sheets' },
   'microsoft-teams': { src: '/Microsoft_Teams.png', alt: 'Microsoft Teams' },

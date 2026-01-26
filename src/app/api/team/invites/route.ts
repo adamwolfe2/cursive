@@ -9,7 +9,14 @@ import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized, forbidden, success, badRequest } from '@/lib/utils/api-error-handler'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+// Lazy-load Resend to avoid build errors when API key is not set
+function getResendClient() {
+  if (!process.env.RESEND_API_KEY) {
+    console.warn('[Team Invites] RESEND_API_KEY not set, emails will not be sent')
+    return null
+  }
+  return new Resend(process.env.RESEND_API_KEY)
+}
 
 const createInviteSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -98,29 +105,32 @@ export async function POST(request: NextRequest) {
     const inviteUrl = `${process.env.NEXT_PUBLIC_APP_URL}/auth/accept-invite?token=${invite.token}`
 
     try {
-      await resend.emails.send({
-        from: 'LeadMe <noreply@leadme.app>',
-        to: email,
-        subject: `You've been invited to join ${workspace?.name || 'a workspace'} on LeadMe`,
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #059669;">You've been invited!</h2>
-            <p>${user.full_name || user.email} has invited you to join <strong>${workspace?.name || 'their workspace'}</strong> on LeadMe as a ${role}.</p>
-            <p style="margin: 30px 0;">
-              <a href="${inviteUrl}" style="background-color: #059669; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
-                Accept Invitation
-              </a>
-            </p>
-            <p style="color: #6b7280; font-size: 14px;">
-              This invitation expires in 7 days. If you didn't expect this invitation, you can safely ignore this email.
-            </p>
-            <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;" />
-            <p style="color: #9ca3af; font-size: 12px;">
-              LeadMe - Lead Generation Platform
-            </p>
-          </div>
-        `,
-      })
+      const resend = getResendClient()
+      if (resend) {
+        await resend.emails.send({
+          from: 'LeadMe <noreply@leadme.app>',
+          to: email,
+          subject: `You've been invited to join ${workspace?.name || 'a workspace'} on LeadMe`,
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+              <h2 style="color: #2563eb;">You've been invited!</h2>
+              <p>${user.full_name || user.email} has invited you to join <strong>${workspace?.name || 'their workspace'}</strong> on LeadMe as a ${role}.</p>
+              <p style="margin: 30px 0;">
+                <a href="${inviteUrl}" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
+                  Accept Invitation
+                </a>
+              </p>
+              <p style="color: #6b7280; font-size: 14px;">
+                This invitation expires in 7 days. If you didn't expect this invitation, you can safely ignore this email.
+              </p>
+              <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;" />
+              <p style="color: #9ca3af; font-size: 12px;">
+                LeadMe - Lead Generation Platform
+              </p>
+            </div>
+          `,
+        })
+      }
     } catch (emailError) {
       console.error('[Team Invites] Email send error:', emailError)
       // Don't fail the request if email fails - invite is still created
