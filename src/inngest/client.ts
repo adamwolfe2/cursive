@@ -254,6 +254,25 @@ export type Events = {
       triggered_by?: string
     }
   }
+  'campaign/email-composed': {
+    data: {
+      email_send_id: string
+      campaign_lead_id: string
+      campaign_id: string
+      workspace_id: string
+      sequence_step: number
+      auto_send: boolean
+    }
+  }
+  'campaign/email-sent': {
+    data: {
+      email_send_id: string
+      campaign_lead_id: string
+      campaign_id: string
+      workspace_id: string
+      sequence_step: number
+    }
+  }
   // EmailBison webhook events
   'emailbison/email-sent': {
     data: {

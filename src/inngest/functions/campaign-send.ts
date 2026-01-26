@@ -152,11 +152,27 @@ export const sendApprovedEmail = inngest.createFunction(
       logger.info(`Campaign lead ${campaign_lead_id} updated to step ${(campaignLead.current_step || 0) + 1}`)
     })
 
+    // Step 5: Emit email-sent event for sequence completion tracking
+    const currentStep = emailSend.step_number || emailSend.sequence_step || 1
+    await step.run('emit-sent-event', async () => {
+      await inngest.send({
+        name: 'campaign/email-sent',
+        data: {
+          email_send_id,
+          campaign_lead_id,
+          campaign_id: emailSend.campaign_id,
+          workspace_id,
+          sequence_step: currentStep,
+        },
+      })
+    })
+
     return {
       success: true,
       email_send_id,
       message_id: sendResult.message_id,
       sent_at: sendResult.sent_at,
+      sequence_step: currentStep,
     }
   }
 )

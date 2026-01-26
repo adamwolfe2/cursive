@@ -18,6 +18,9 @@ export const composeCampaignEmail = inngest.createFunction(
   { event: 'campaign/compose-email' },
   async ({ event, step, logger }) => {
     const { campaign_lead_id, campaign_id, lead_id, workspace_id } = event.data
+    // Optional: sequence_step and auto_send from sequence processor
+    const sequenceStep = (event.data as any).sequence_step
+    const autoSend = (event.data as any).auto_send ?? false
 
     // Step 1: Fetch all required data
     const { campaignLead, campaign, lead, templates, workspace } = await step.run(
@@ -176,12 +179,30 @@ export const composeCampaignEmail = inngest.createFunction(
       `Email composed for campaign lead ${campaign_lead_id}, awaiting approval (email_send_id: ${emailSend.id})`
     )
 
+    // Step 7: Emit email-composed event for auto-send handling
+    const currentStep = sequenceStep || campaignLead.current_step + 1
+    await step.run('emit-composed-event', async () => {
+      await inngest.send({
+        name: 'campaign/email-composed',
+        data: {
+          email_send_id: emailSend.id,
+          campaign_lead_id,
+          campaign_id,
+          workspace_id,
+          sequence_step: currentStep,
+          auto_send: autoSend,
+        },
+      })
+    })
+
     return {
       success: true,
       campaign_lead_id,
       email_send_id: emailSend.id,
       template_used: selectedTemplate.name,
       subject: composedEmail.subject,
+      sequence_step: currentStep,
+      auto_send: autoSend,
     }
   }
 )

@@ -23,6 +23,11 @@ export {
   autoCompleteCampaignsCron,
   onCampaignStatusChange,
 } from './campaign-scheduler'
+export {
+  processCampaignSequences,
+  handleAutoSendEmail,
+  checkSequenceCompletion,
+} from './campaign-sequence-processor'
 
 // Lead Generation & Management
 export { dailyLeadGeneration } from './daily-lead-generation'

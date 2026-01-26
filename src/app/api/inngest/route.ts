@@ -40,6 +40,9 @@ export const { GET, POST, PUT } = serve({
     functions.activateScheduledCampaigns,
     functions.autoCompleteCampaignsCron,
     functions.onCampaignStatusChange,
+    functions.processCampaignSequences,
+    functions.handleAutoSendEmail,
+    functions.checkSequenceCompletion,
 
     // System Jobs
     functions.creditReset,
