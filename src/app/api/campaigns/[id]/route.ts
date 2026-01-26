@@ -6,6 +6,12 @@ import { CampaignRepository } from '@/lib/repositories/campaign.repository'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized, notFound, success } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'
+import {
+  transitionCampaignStatus,
+  isValidTransition,
+  type CampaignStatus,
+} from '@/lib/services/campaign/campaign-state-machine'
+import { inngest } from '@/inngest/client'
 
 interface RouteContext {
   params: Promise<{ id: string }>
@@ -76,7 +82,59 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     const existing = await repo.findById(id, user.workspace_id)
     if (!existing) return notFound('Campaign not found')
 
-    const campaign = await repo.update(id, user.workspace_id, validatedData)
+    // Handle status changes through state machine
+    if (validatedData.status && validatedData.status !== existing.status) {
+      const currentStatus = existing.status as CampaignStatus
+      const newStatus = validatedData.status as CampaignStatus
+
+      // Validate transition
+      if (!isValidTransition(currentStatus, newStatus)) {
+        return handleApiError(
+          new Error(`Invalid status transition from "${currentStatus}" to "${newStatus}"`)
+        )
+      }
+
+      // Perform transition with state machine
+      const transitionResult = await transitionCampaignStatus(
+        {
+          campaignId: id,
+          workspaceId: user.workspace_id,
+          userId: user.id,
+          scheduledStartAt: validatedData.scheduled_start_at
+            ? new Date(validatedData.scheduled_start_at)
+            : undefined,
+        },
+        newStatus
+      )
+
+      if (!transitionResult.success) {
+        return handleApiError(new Error(transitionResult.error))
+      }
+
+      // Emit status change event for downstream processing
+      await inngest.send({
+        name: 'campaign/status-changed',
+        data: {
+          campaign_id: id,
+          workspace_id: user.workspace_id,
+          old_status: currentStatus,
+          new_status: newStatus,
+          triggered_by: user.id,
+        },
+      })
+
+      // Remove status from validatedData to avoid double update
+      delete validatedData.status
+    }
+
+    // Update other fields if any remain
+    const { status: _status, ...otherUpdates } = validatedData
+    if (Object.keys(otherUpdates).length > 0) {
+      await repo.update(id, user.workspace_id, otherUpdates)
+    }
+
+    // Fetch updated campaign
+    const campaign = await repo.findByIdWithDetails(id, user.workspace_id)
 
     return success(campaign)
   } catch (error: unknown) {

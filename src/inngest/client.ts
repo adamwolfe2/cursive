@@ -245,6 +245,15 @@ export type Events = {
       limit?: number
     }
   }
+  'campaign/status-changed': {
+    data: {
+      campaign_id: string
+      workspace_id: string
+      old_status: string
+      new_status: string
+      triggered_by?: string
+    }
+  }
   // EmailBison webhook events
   'emailbison/email-sent': {
     data: {

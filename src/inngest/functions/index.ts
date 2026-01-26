@@ -18,6 +18,11 @@ export {
   processReply,
   batchProcessReplies,
 } from './campaign-reply'
+export {
+  activateScheduledCampaigns,
+  autoCompleteCampaignsCron,
+  onCampaignStatusChange,
+} from './campaign-scheduler'
 
 // Lead Generation & Management
 export { dailyLeadGeneration } from './daily-lead-generation'
