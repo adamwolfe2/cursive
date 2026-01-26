@@ -45,6 +45,14 @@ export type EmailThread = Tables<'email_threads'>
 export type EmailMessage = Tables<'email_messages'>
 export type EmailTask = Tables<'email_tasks'>
 
+// Email Campaign types (Sales.co integration)
+export type EmailTemplate = Tables<'email_templates'>
+export type EmailCampaign = Tables<'email_campaigns'>
+export type EmailSend = Tables<'email_sends'>
+export type ClientProfile = Tables<'client_profiles'>
+export type CampaignLead = Tables<'campaign_leads'>
+export type CampaignReview = Tables<'campaign_reviews'>
+
 // Insert types
 export type WorkspaceInsert = Inserts<'workspaces'>
 export type UserInsert = Inserts<'users'>
@@ -74,6 +82,22 @@ export type KBEntryUpdate = Updates<'kb_entries'>
 export type EmailThreadUpdate = Updates<'email_threads'>
 export type EmailMessageUpdate = Updates<'email_messages'>
 export type EmailTaskUpdate = Updates<'email_tasks'>
+
+// Email Campaign insert types
+export type EmailTemplateInsert = Inserts<'email_templates'>
+export type EmailCampaignInsert = Inserts<'email_campaigns'>
+export type EmailSendInsert = Inserts<'email_sends'>
+export type ClientProfileInsert = Inserts<'client_profiles'>
+export type CampaignLeadInsert = Inserts<'campaign_leads'>
+export type CampaignReviewInsert = Inserts<'campaign_reviews'>
+
+// Email Campaign update types
+export type EmailTemplateUpdate = Updates<'email_templates'>
+export type EmailCampaignUpdate = Updates<'email_campaigns'>
+export type EmailSendUpdate = Updates<'email_sends'>
+export type ClientProfileUpdate = Updates<'client_profiles'>
+export type CampaignLeadUpdate = Updates<'campaign_leads'>
+export type CampaignReviewUpdate = Updates<'campaign_reviews'>
 
 // ============================================================================
 // STRUCTURED DATA TYPES (from JSONB columns)
