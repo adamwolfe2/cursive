@@ -41,6 +41,102 @@ export interface Database {
           created_at?: string
         }
       }
+      users: {
+        Row: {
+          id: string
+          auth_user_id: string
+          workspace_id: string
+          email: string
+          full_name: string | null
+          role: string
+          plan: string
+          daily_credit_limit: number
+          daily_credits_used: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          auth_user_id: string
+          workspace_id: string
+          email: string
+          full_name?: string | null
+          role?: string
+          plan?: string
+          daily_credit_limit?: number
+          daily_credits_used?: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          auth_user_id?: string
+          workspace_id?: string
+          email?: string
+          full_name?: string | null
+          role?: string
+          plan?: string
+          daily_credit_limit?: number
+          daily_credits_used?: number
+          created_at?: string
+        }
+      }
+      queries: {
+        Row: {
+          id: string
+          workspace_id: string
+          name: string | null
+          topic_id: string | null
+          filters: Json | null
+          status: string
+          total_leads_generated: number
+          leads_this_week: number
+          last_run_at: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          workspace_id: string
+          name?: string | null
+          topic_id?: string | null
+          filters?: Json | null
+          status?: string
+          total_leads_generated?: number
+          leads_this_week?: number
+          last_run_at?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          workspace_id?: string
+          name?: string | null
+          topic_id?: string | null
+          filters?: Json | null
+          status?: string
+          total_leads_generated?: number
+          leads_this_week?: number
+          last_run_at?: string | null
+          created_at?: string
+        }
+      }
+      global_topics: {
+        Row: {
+          id: string
+          topic: string
+          category: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          topic: string
+          category: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          topic?: string
+          category?: string
+          created_at?: string
+        }
+      }
       leads: {
         Row: {
           id: string
@@ -330,6 +426,193 @@ export interface Database {
           description?: string | null
           metadata?: Json
           performed_by?: string | null
+          created_at?: string
+        }
+      }
+      // AI Email Agent Tables
+      agents: {
+        Row: {
+          id: string
+          workspace_id: string
+          name: string
+          ai_provider: string
+          ai_model: string
+          tone: string
+          emailbison_api_key: string | null
+          openai_api_key: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          workspace_id: string
+          name: string
+          ai_provider?: string
+          ai_model?: string
+          tone?: string
+          emailbison_api_key?: string | null
+          openai_api_key?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          workspace_id?: string
+          name?: string
+          ai_provider?: string
+          ai_model?: string
+          tone?: string
+          emailbison_api_key?: string | null
+          openai_api_key?: string | null
+          created_at?: string
+        }
+      }
+      email_instructions: {
+        Row: {
+          id: string
+          agent_id: string
+          content: string
+          order_index: number
+          enabled: boolean
+        }
+        Insert: {
+          id?: string
+          agent_id: string
+          content: string
+          order_index: number
+          enabled?: boolean
+        }
+        Update: {
+          id?: string
+          agent_id?: string
+          content?: string
+          order_index?: number
+          enabled?: boolean
+        }
+      }
+      kb_entries: {
+        Row: {
+          id: string
+          agent_id: string
+          title: string
+          content: string
+          tags: string[] | null
+          is_golden: boolean
+        }
+        Insert: {
+          id?: string
+          agent_id: string
+          title: string
+          content: string
+          tags?: string[] | null
+          is_golden?: boolean
+        }
+        Update: {
+          id?: string
+          agent_id?: string
+          title?: string
+          content?: string
+          tags?: string[] | null
+          is_golden?: boolean
+        }
+      }
+      email_threads: {
+        Row: {
+          id: string
+          agent_id: string
+          lead_id: string | null
+          campaign_id: string | null
+          sender_email: string
+          sender_name: string | null
+          subject: string | null
+          intent_score: number
+          status: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          agent_id: string
+          lead_id?: string | null
+          campaign_id?: string | null
+          sender_email: string
+          sender_name?: string | null
+          subject?: string | null
+          intent_score?: number
+          status?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          agent_id?: string
+          lead_id?: string | null
+          campaign_id?: string | null
+          sender_email?: string
+          sender_name?: string | null
+          subject?: string | null
+          intent_score?: number
+          status?: string
+          created_at?: string
+        }
+      }
+      email_messages: {
+        Row: {
+          id: string
+          thread_id: string
+          direction: string
+          content: string
+          generated_by: string | null
+          confidence: number | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          thread_id: string
+          direction: string
+          content: string
+          generated_by?: string | null
+          confidence?: number | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          thread_id?: string
+          direction?: string
+          content?: string
+          generated_by?: string | null
+          confidence?: number | null
+          created_at?: string
+        }
+      }
+      email_tasks: {
+        Row: {
+          id: string
+          thread_id: string
+          agent_id: string
+          status: string
+          confidence: number | null
+          generated_reply: string
+          scheduled_for: string | null
+          executed_at: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          thread_id: string
+          agent_id: string
+          status?: string
+          confidence?: number | null
+          generated_reply: string
+          scheduled_for?: string | null
+          executed_at?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          thread_id?: string
+          agent_id?: string
+          status?: string
+          confidence?: number | null
+          generated_reply?: string
+          scheduled_for?: string | null
+          executed_at?: string | null
           created_at?: string
         }
       }

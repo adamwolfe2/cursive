@@ -37,6 +37,14 @@ export type LeadStatusHistory = Tables<'lead_status_history'>
 export type LeadNote = Tables<'lead_notes'>
 export type LeadActivity = Tables<'lead_activities'>
 
+// AI Email Agent types
+export type Agent = Tables<'agents'>
+export type EmailInstruction = Tables<'email_instructions'>
+export type KBEntry = Tables<'kb_entries'>
+export type EmailThread = Tables<'email_threads'>
+export type EmailMessage = Tables<'email_messages'>
+export type EmailTask = Tables<'email_tasks'>
+
 // Insert types
 export type WorkspaceInsert = Inserts<'workspaces'>
 export type UserInsert = Inserts<'users'>
@@ -50,6 +58,22 @@ export type WorkspaceUpdate = Updates<'workspaces'>
 export type UserUpdate = Updates<'users'>
 export type QueryUpdate = Updates<'queries'>
 export type LeadUpdate = Updates<'leads'>
+
+// AI Email Agent insert types
+export type AgentInsert = Inserts<'agents'>
+export type EmailInstructionInsert = Inserts<'email_instructions'>
+export type KBEntryInsert = Inserts<'kb_entries'>
+export type EmailThreadInsert = Inserts<'email_threads'>
+export type EmailMessageInsert = Inserts<'email_messages'>
+export type EmailTaskInsert = Inserts<'email_tasks'>
+
+// AI Email Agent update types
+export type AgentUpdate = Updates<'agents'>
+export type EmailInstructionUpdate = Updates<'email_instructions'>
+export type KBEntryUpdate = Updates<'kb_entries'>
+export type EmailThreadUpdate = Updates<'email_threads'>
+export type EmailMessageUpdate = Updates<'email_messages'>
+export type EmailTaskUpdate = Updates<'email_tasks'>
 
 // ============================================================================
 // STRUCTURED DATA TYPES (from JSONB columns)

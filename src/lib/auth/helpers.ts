@@ -7,7 +7,7 @@ import type { User } from '@/types'
  * Get the current authenticated user
  * Returns null if not authenticated
  */
-export async function getCurrentUser() {
+export async function getCurrentUser(): Promise<User | null> {
   const supabase = await createClient()
 
   const {
@@ -25,7 +25,7 @@ export async function getCurrentUser() {
     .eq('auth_user_id', session.user.id)
     .single()
 
-  return user
+  return user as User | null
 }
 
 /**
