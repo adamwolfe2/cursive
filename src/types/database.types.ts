@@ -439,6 +439,7 @@ export interface Database {
           ai_model: string
           tone: string
           emailbison_api_key: string | null
+          anthropic_api_key: string | null
           openai_api_key: string | null
           created_at: string
         }
@@ -450,6 +451,7 @@ export interface Database {
           ai_model?: string
           tone?: string
           emailbison_api_key?: string | null
+          anthropic_api_key?: string | null
           openai_api_key?: string | null
           created_at?: string
         }
@@ -461,6 +463,7 @@ export interface Database {
           ai_model?: string
           tone?: string
           emailbison_api_key?: string | null
+          anthropic_api_key?: string | null
           openai_api_key?: string | null
           created_at?: string
         }
