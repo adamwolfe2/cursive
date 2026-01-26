@@ -1,4 +1,4 @@
-# OpenInfo Clone - B2B Intent Lead Intelligence Platform
+# Cursive Leads - B2B Intent Lead Intelligence Platform
 
 A full-stack B2B lead generation platform that identifies companies actively researching specific topics and delivers enriched contact data with intent scoring. Built with Next.js 14, Supabase, Stripe, and Inngest.
 

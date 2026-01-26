@@ -3,8 +3,19 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useToast } from '@/lib/hooks/use-toast'
 import { UpgradeButton } from '@/components/billing/upgrade-button'
+
+// Integration logos for the Pro plan card
+const INTEGRATION_LOGOS = {
+  slack: { src: '/Slack_icon_2019.svg.png', alt: 'Slack' },
+  zapier: { src: '/zapier-logo-png-transparent.png', alt: 'Zapier' },
+  salesforce: { src: '/Salesforce.com_logo.svg.png', alt: 'Salesforce' },
+  hubspot: { src: '/free-hubspot-logo-icon-svg-download-png-2944939.webp', alt: 'HubSpot' },
+  pipedrive: { src: '/Pipedrive_Monogram_Green background.png', alt: 'Pipedrive' },
+  googleSheets: { src: '/Google_Sheets_Logo_512px.png', alt: 'Google Sheets' },
+}
 
 function SettingsNav({ currentPath }: { currentPath: string }) {
   const tabs = [
@@ -25,7 +36,7 @@ function SettingsNav({ currentPath }: { currentPath: string }) {
               href={tab.href}
               className={`whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium transition-colors ${
                 isActive
-                  ? 'border-emerald-500 text-emerald-600'
+                  ? 'border-blue-600 text-blue-600'
                   : 'border-transparent text-zinc-500 hover:border-zinc-300 hover:text-zinc-700'
               }`}
             >
@@ -117,7 +128,7 @@ export default function BillingSettingsPage() {
   const isCancelled = user?.cancel_at_period_end
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-zinc-900">Billing & Subscription</h1>
@@ -130,15 +141,15 @@ export default function BillingSettingsPage() {
       <SettingsNav currentPath="/settings/billing" />
 
       {/* Current Plan Card */}
-      <div className="rounded-lg border border-zinc-200 bg-white p-6 shadow-sm">
-        <div className="flex items-start justify-between">
+      <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
+        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
           <div className="flex-1">
-            <div className="flex items-center gap-3 mb-3">
+            <div className="flex items-center gap-3 mb-4">
               <h2 className="text-lg font-semibold text-zinc-900">Current Plan</h2>
               <span
                 className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${
                   isPro
-                    ? 'bg-emerald-100 text-emerald-800'
+                    ? 'bg-blue-100 text-blue-800'
                     : 'bg-zinc-100 text-zinc-800'
                 }`}
               >
@@ -197,7 +208,7 @@ export default function BillingSettingsPage() {
                   <>
                     <li className="flex items-center text-sm text-zinc-600">
                       <svg
-                        className="mr-2 h-4 w-4 text-emerald-500 flex-shrink-0"
+                        className="mr-2 h-4 w-4 text-blue-600 flex-shrink-0"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -213,7 +224,7 @@ export default function BillingSettingsPage() {
                     </li>
                     <li className="flex items-center text-sm text-zinc-600">
                       <svg
-                        className="mr-2 h-4 w-4 text-emerald-500 flex-shrink-0"
+                        className="mr-2 h-4 w-4 text-blue-600 flex-shrink-0"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -229,7 +240,7 @@ export default function BillingSettingsPage() {
                     </li>
                     <li className="flex items-center text-sm text-zinc-600">
                       <svg
-                        className="mr-2 h-4 w-4 text-emerald-500 flex-shrink-0"
+                        className="mr-2 h-4 w-4 text-blue-600 flex-shrink-0"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -245,7 +256,7 @@ export default function BillingSettingsPage() {
                     </li>
                     <li className="flex items-center text-sm text-zinc-600">
                       <svg
-                        className="mr-2 h-4 w-4 text-emerald-500 flex-shrink-0"
+                        className="mr-2 h-4 w-4 text-blue-600 flex-shrink-0"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -261,7 +272,7 @@ export default function BillingSettingsPage() {
                     </li>
                     <li className="flex items-center text-sm text-zinc-600">
                       <svg
-                        className="mr-2 h-4 w-4 text-emerald-500 flex-shrink-0"
+                        className="mr-2 h-4 w-4 text-blue-600 flex-shrink-0"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -280,7 +291,7 @@ export default function BillingSettingsPage() {
                   <>
                     <li className="flex items-center text-sm text-zinc-600">
                       <svg
-                        className="mr-2 h-4 w-4 text-emerald-500 flex-shrink-0"
+                        className="mr-2 h-4 w-4 text-blue-600 flex-shrink-0"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -296,7 +307,7 @@ export default function BillingSettingsPage() {
                     </li>
                     <li className="flex items-center text-sm text-zinc-600">
                       <svg
-                        className="mr-2 h-4 w-4 text-emerald-500 flex-shrink-0"
+                        className="mr-2 h-4 w-4 text-blue-600 flex-shrink-0"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -312,7 +323,7 @@ export default function BillingSettingsPage() {
                     </li>
                     <li className="flex items-center text-sm text-zinc-600">
                       <svg
-                        className="mr-2 h-4 w-4 text-emerald-500 flex-shrink-0"
+                        className="mr-2 h-4 w-4 text-blue-600 flex-shrink-0"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -328,7 +339,7 @@ export default function BillingSettingsPage() {
                     </li>
                     <li className="flex items-center text-sm text-zinc-600">
                       <svg
-                        className="mr-2 h-4 w-4 text-emerald-500 flex-shrink-0"
+                        className="mr-2 h-4 w-4 text-blue-600 flex-shrink-0"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -348,7 +359,7 @@ export default function BillingSettingsPage() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-2 ml-6">
+          <div className="flex flex-col gap-3 lg:ml-6 lg:min-w-[200px]">
             {!isPro && (
               <UpgradeButton billingPeriod="monthly" variant="primary" />
             )}
@@ -357,7 +368,7 @@ export default function BillingSettingsPage() {
               <button
                 onClick={handleManageBilling}
                 disabled={loading}
-                className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 disabled:opacity-50 transition-colors shadow-sm"
+                className="rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 disabled:opacity-50 transition-colors shadow-sm"
               >
                 {loading ? 'Loading...' : 'Manage Subscription'}
               </button>
@@ -367,7 +378,7 @@ export default function BillingSettingsPage() {
               <button
                 onClick={handleManageBilling}
                 disabled={loading}
-                className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50 transition-colors shadow-sm"
+                className="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50 transition-colors shadow-sm"
               >
                 {loading ? 'Loading...' : 'Reactivate Subscription'}
               </button>
@@ -377,10 +388,10 @@ export default function BillingSettingsPage() {
       </div>
 
       {/* Usage Card */}
-      <div className="rounded-lg border border-zinc-200 bg-white p-6 shadow-sm">
-        <h2 className="text-lg font-semibold text-zinc-900 mb-4">Current Usage</h2>
+      <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
+        <h2 className="text-lg font-semibold text-zinc-900 mb-6">Current Usage</h2>
 
-        <div className="space-y-4">
+        <div className="space-y-6">
           <div>
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-medium text-zinc-700">Daily Credits</span>
@@ -388,9 +399,9 @@ export default function BillingSettingsPage() {
                 {user?.credits_remaining || 0} / {isPro ? '1,000' : '3'} remaining
               </span>
             </div>
-            <div className="w-full bg-zinc-200 rounded-full h-2">
+            <div className="w-full bg-zinc-200 rounded-full h-2.5">
               <div
-                className="bg-emerald-600 h-2 rounded-full transition-all"
+                className="bg-blue-600 h-2.5 rounded-full transition-all"
                 style={{
                   width: `${
                     ((user?.credits_remaining || 0) / (isPro ? 1000 : 3)) * 100
@@ -398,10 +409,10 @@ export default function BillingSettingsPage() {
                 }}
               />
             </div>
-            <p className="mt-1 text-xs text-zinc-500">Resets daily at midnight UTC</p>
+            <p className="mt-1.5 text-xs text-zinc-500">Resets daily at midnight UTC</p>
           </div>
 
-          <div className="pt-3 border-t border-zinc-200">
+          <div className="pt-4 border-t border-zinc-200">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-zinc-700">Active Queries</span>
               <span className="text-sm text-zinc-600">0 / {isPro ? '5' : '1'}</span>
@@ -410,24 +421,185 @@ export default function BillingSettingsPage() {
         </div>
       </div>
 
-      {/* Upgrade CTA for Free users */}
+      {/* Pro Plan Details for Free users */}
       {!isPro && (
-        <div className="rounded-lg bg-gradient-to-r from-emerald-500 to-emerald-600 p-8 text-white shadow-lg">
-          <h2 className="text-2xl font-bold mb-2">Upgrade to Pro</h2>
-          <p className="text-emerald-100 mb-6">
-            Get 1,000 credits per day, 5 active queries, and multi-channel delivery for
-            just $50/month
-          </p>
-          <UpgradeButton
-            billingPeriod="monthly"
-            variant="secondary"
-            className="bg-white text-emerald-600 hover:bg-emerald-50 shadow-md"
-          />
+        <div className="rounded-xl border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-white p-8 shadow-sm relative overflow-hidden">
+          {/* Popular badge */}
+          <div className="absolute top-4 right-4">
+            <span className="inline-flex items-center rounded-full bg-blue-600 px-3 py-1 text-xs font-semibold text-white">
+              Most Popular
+            </span>
+          </div>
+
+          <div className="flex flex-col lg:flex-row gap-8">
+            {/* Left side - Plan info */}
+            <div className="flex-1">
+              <div className="flex items-center gap-3 mb-2">
+                <h2 className="text-2xl font-bold text-zinc-900">Pro Plan</h2>
+                <span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800">
+                  Recommended
+                </span>
+              </div>
+              <p className="text-zinc-600 mb-6">
+                Everything you need to scale your lead generation and close more deals.
+              </p>
+
+              <div className="flex items-baseline gap-2 mb-6">
+                <span className="text-4xl font-bold text-zinc-900">$50</span>
+                <span className="text-zinc-500">/month</span>
+                <span className="ml-2 text-sm text-zinc-400 line-through">$99/month</span>
+                <span className="text-sm font-medium text-green-600">Save 50%</span>
+              </div>
+
+              <UpgradeButton billingPeriod="monthly" variant="primary" />
+
+              <p className="mt-3 text-xs text-zinc-500 text-center">
+                Cancel anytime. No long-term commitment.
+              </p>
+            </div>
+
+            {/* Right side - Features */}
+            <div className="flex-1 lg:border-l lg:border-zinc-200 lg:pl-8">
+              <h3 className="text-sm font-semibold text-zinc-900 uppercase tracking-wider mb-4">
+                Everything in Free, plus:
+              </h3>
+
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3">
+                  <svg className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <div>
+                    <span className="font-medium text-zinc-900">1,000 credits per day</span>
+                    <p className="text-sm text-zinc-500">333x more than Free plan</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <svg className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <div>
+                    <span className="font-medium text-zinc-900">5 active queries</span>
+                    <p className="text-sm text-zinc-500">Monitor multiple intent signals</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <svg className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <div>
+                    <span className="font-medium text-zinc-900">Multi-channel delivery</span>
+                    <p className="text-sm text-zinc-500">Email, Slack, Webhooks, Zapier</p>
+                    <div className="flex items-center gap-2 mt-2">
+                      <div className="relative h-6 w-6 rounded-md overflow-hidden bg-white shadow-sm border border-zinc-200">
+                        <Image src={INTEGRATION_LOGOS.slack.src} alt={INTEGRATION_LOGOS.slack.alt} fill className="object-contain p-0.5" />
+                      </div>
+                      <div className="relative h-6 w-6 rounded-md overflow-hidden bg-white shadow-sm border border-zinc-200">
+                        <Image src={INTEGRATION_LOGOS.zapier.src} alt={INTEGRATION_LOGOS.zapier.alt} fill className="object-contain p-0.5" />
+                      </div>
+                      <div className="relative h-6 w-6 rounded-md overflow-hidden bg-white shadow-sm border border-zinc-200">
+                        <Image src={INTEGRATION_LOGOS.googleSheets.src} alt={INTEGRATION_LOGOS.googleSheets.alt} fill className="object-contain p-0.5" />
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <svg className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <div>
+                    <span className="font-medium text-zinc-900">CRM integrations</span>
+                    <p className="text-sm text-zinc-500">Salesforce, HubSpot, Pipedrive</p>
+                    <div className="flex items-center gap-2 mt-2">
+                      <div className="relative h-6 w-6 rounded-md overflow-hidden bg-white shadow-sm border border-zinc-200">
+                        <Image src={INTEGRATION_LOGOS.salesforce.src} alt={INTEGRATION_LOGOS.salesforce.alt} fill className="object-contain p-0.5" />
+                      </div>
+                      <div className="relative h-6 w-6 rounded-md overflow-hidden bg-white shadow-sm border border-zinc-200">
+                        <Image src={INTEGRATION_LOGOS.hubspot.src} alt={INTEGRATION_LOGOS.hubspot.alt} fill className="object-contain p-0.5" />
+                      </div>
+                      <div className="relative h-6 w-6 rounded-md overflow-hidden bg-white shadow-sm border border-zinc-200">
+                        <Image src={INTEGRATION_LOGOS.pipedrive.src} alt={INTEGRATION_LOGOS.pipedrive.alt} fill className="object-contain p-0.5" />
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <svg className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <div>
+                    <span className="font-medium text-zinc-900">Advanced filtering</span>
+                    <p className="text-sm text-zinc-500">Industry, company size, location</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <svg className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <div>
+                    <span className="font-medium text-zinc-900">AI-powered lead scoring</span>
+                    <p className="text-sm text-zinc-500">Prioritize high-intent leads</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <svg className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <div>
+                    <span className="font-medium text-zinc-900">Email sequences</span>
+                    <p className="text-sm text-zinc-500">Automated outreach campaigns</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <svg className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <div>
+                    <span className="font-medium text-zinc-900">Priority support</span>
+                    <p className="text-sm text-zinc-500">24-hour response time</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <svg className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <div>
+                    <span className="font-medium text-zinc-900">API access</span>
+                    <p className="text-sm text-zinc-500">Build custom integrations</p>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Social proof */}
+          <div className="mt-8 pt-6 border-t border-zinc-200">
+            <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-zinc-500">
+              <div className="flex items-center gap-2">
+                <svg className="h-5 w-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                <span>30-day money-back guarantee</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <svg className="h-5 w-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                </svg>
+                <span>Secure payment via Stripe</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <svg className="h-5 w-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+                </svg>
+                <span>Trusted by 500+ sales teams</span>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
       {/* Payment Method */}
-      <div className="rounded-lg border border-zinc-200 bg-white p-6 shadow-sm">
+      <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
         <h2 className="text-lg font-semibold text-zinc-900 mb-4">Payment Method</h2>
 
         {isPro && hasActiveSubscription ? (
@@ -438,7 +610,7 @@ export default function BillingSettingsPage() {
             <button
               onClick={handleManageBilling}
               disabled={loading}
-              className="text-sm text-emerald-600 hover:text-emerald-700 font-medium disabled:opacity-50 transition-colors"
+              className="text-sm text-blue-600 hover:text-blue-700 font-medium disabled:opacity-50 transition-colors"
             >
               {loading ? 'Loading...' : 'Update payment method →'}
             </button>
@@ -452,7 +624,7 @@ export default function BillingSettingsPage() {
       </div>
 
       {/* Billing History */}
-      <div className="rounded-lg border border-zinc-200 bg-white p-6 shadow-sm">
+      <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
         <h2 className="text-lg font-semibold text-zinc-900 mb-4">Billing History</h2>
 
         {isPro && hasActiveSubscription ? (
@@ -463,7 +635,7 @@ export default function BillingSettingsPage() {
             <button
               onClick={handleManageBilling}
               disabled={loading}
-              className="text-sm text-emerald-600 hover:text-emerald-700 font-medium disabled:opacity-50 transition-colors"
+              className="text-sm text-blue-600 hover:text-blue-700 font-medium disabled:opacity-50 transition-colors"
             >
               {loading ? 'Loading...' : 'View billing history →'}
             </button>
@@ -475,7 +647,7 @@ export default function BillingSettingsPage() {
 
       {/* Cancel Subscription */}
       {isPro && hasActiveSubscription && !isCancelled && (
-        <div className="rounded-lg border border-red-200 bg-red-50 p-6">
+        <div className="rounded-xl border border-red-200 bg-red-50 p-6">
           <h2 className="text-lg font-semibold text-red-900 mb-2">Cancel Subscription</h2>
           <p className="text-sm text-red-700 mb-4">
             Your subscription will remain active until the end of the current billing
@@ -494,7 +666,7 @@ export default function BillingSettingsPage() {
               <p className="text-sm text-red-800 font-medium">
                 Are you sure you want to cancel your subscription?
               </p>
-              <div className="flex gap-2">
+              <div className="flex gap-3">
                 <button
                   onClick={() => cancelSubscriptionMutation.mutate()}
                   disabled={cancelSubscriptionMutation.isPending}

@@ -4,7 +4,7 @@
  * UI Showcase Component
  *
  * This component demonstrates all error boundaries, loading states,
- * and skeleton loaders available in OpenInfo.
+ * and skeleton loaders available in Cursive.
  *
  * Usage: Import and render in a test page to see all UI states
  */
@@ -35,7 +35,7 @@ export function UIShowcase() {
     <div className="space-y-12 p-8 max-w-7xl mx-auto">
       <div>
         <h1 className="text-3xl font-bold text-zinc-900 mb-2">
-          OpenInfo UI Component Showcase
+          Cursive UI Component Showcase
         </h1>
         <p className="text-zinc-600">
           Comprehensive error boundaries and loading states

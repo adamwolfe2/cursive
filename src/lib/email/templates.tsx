@@ -1,6 +1,6 @@
 /**
  * Email Templates
- * LeadMe Platform
+ * Cursive Platform
  *
  * React-based email templates for transactional emails.
  */
@@ -92,7 +92,7 @@ export function EmailLayout({ children, preview }: EmailLayoutProps) {
                       >
                         <img
                           src={`${process.env.NEXT_PUBLIC_APP_URL}/logo.png`}
-                          alt="LeadMe"
+                          alt="Cursive"
                           width="140"
                           height="32"
                           style={{ display: 'block' }}
@@ -123,7 +123,7 @@ export function EmailLayout({ children, preview }: EmailLayoutProps) {
                             margin: 0,
                           }}
                         >
-                          &copy; {new Date().getFullYear()} LeadMe. All rights reserved.
+                          &copy; {new Date().getFullYear()} Cursive. All rights reserved.
                           <br />
                           <a
                             href={`${process.env.NEXT_PUBLIC_APP_URL}/settings/notifications`}
@@ -279,11 +279,11 @@ interface WelcomeEmailProps {
 
 export function WelcomeEmail({ userName, loginUrl }: WelcomeEmailProps) {
   return (
-    <EmailLayout preview="Welcome to LeadMe - Your B2B Lead Intelligence Platform">
-      <Heading>Welcome to LeadMe!</Heading>
+    <EmailLayout preview="Welcome to Cursive - Your B2B Lead Intelligence Platform">
+      <Heading>Welcome to Cursive!</Heading>
       <Text>Hi {userName},</Text>
       <Text>
-        Thank you for signing up for LeadMe. We&apos;re excited to help you
+        Thank you for signing up for Cursive. We&apos;re excited to help you
         discover companies actively researching topics relevant to your business.
       </Text>
       <Text>Here&apos;s what you can do to get started:</Text>
@@ -347,7 +347,7 @@ export function CreditLowEmail({
   billingUrl,
 }: CreditLowEmailProps) {
   return (
-    <EmailLayout preview="Your LeadMe credits are running low">
+    <EmailLayout preview="Your Cursive credits are running low">
       <Heading>Credits Running Low</Heading>
       <Text>Hi {userName},</Text>
       <Text>
@@ -415,10 +415,10 @@ export function WeeklyDigestEmail({
   dashboardUrl,
 }: WeeklyDigestEmailProps) {
   return (
-    <EmailLayout preview="Your weekly LeadMe summary">
+    <EmailLayout preview="Your weekly Cursive summary">
       <Heading>Weekly Summary</Heading>
       <Text>Hi {userName},</Text>
-      <Text>Here&apos;s what happened with your LeadMe account this week:</Text>
+      <Text>Here&apos;s what happened with your Cursive account this week:</Text>
 
       <table
         width="100%"
@@ -496,7 +496,7 @@ export function PasswordResetEmail({
   expiresIn,
 }: PasswordResetEmailProps) {
   return (
-    <EmailLayout preview="Reset your LeadMe password">
+    <EmailLayout preview="Reset your Cursive password">
       <Heading>Reset Your Password</Heading>
       <Text>Hi {userName},</Text>
       <Text>

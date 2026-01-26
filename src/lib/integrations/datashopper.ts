@@ -1,6 +1,12 @@
 // DataShopper API Client
 // Used for discovering companies with intent signals
 
+import { retryFetch } from '@/lib/utils/retry'
+
+// Configuration
+const DATASHOPPER_TIMEOUT = 30000
+const DATASHOPPER_MAX_RETRIES = 2
+
 export interface DataShopperSearchParams {
   topic: string
   location?: {
@@ -63,7 +69,12 @@ export class DataShopperClient {
   constructor() {
     this.apiKey = process.env.DATASHOPPER_API_KEY || ''
     this.baseUrl = process.env.DATASHOPPER_API_URL || 'https://api.datashopper.com/v1'
+  }
 
+  /**
+   * Ensure API key is configured before making requests
+   */
+  private ensureApiKey(): void {
     if (!this.apiKey) {
       throw new Error('DATASHOPPER_API_KEY environment variable is not set')
     }
@@ -75,6 +86,8 @@ export class DataShopperClient {
   async searchCompanies(
     params: DataShopperSearchParams
   ): Promise<DataShopperResponse> {
+    this.ensureApiKey()
+
     try {
       const queryParams = new URLSearchParams()
       queryParams.append('topic', params.topic)
@@ -108,7 +121,7 @@ export class DataShopperClient {
         params.industry.forEach((ind) => queryParams.append('industry', ind))
       }
 
-      const response = await fetch(
+      const response = await retryFetch(
         `${this.baseUrl}/companies/search?${queryParams}`,
         {
           method: 'GET',
@@ -116,13 +129,15 @@ export class DataShopperClient {
             Authorization: `Bearer ${this.apiKey}`,
             'Content-Type': 'application/json',
           },
-        }
+          timeout: DATASHOPPER_TIMEOUT,
+        },
+        { maxRetries: DATASHOPPER_MAX_RETRIES }
       )
 
       if (!response.ok) {
-        const error = await response.json()
+        const error = await response.json().catch(() => ({}))
         throw new Error(
-          `DataShopper API error: ${error.message || response.statusText}`
+          `DataShopper API error: ${(error as any).message || response.statusText}`
         )
       }
 
@@ -137,22 +152,26 @@ export class DataShopperClient {
    * Get intent signals for a specific domain
    */
   async getIntentSignals(domain: string): Promise<DataShopperCompany['intent_signals']> {
+    this.ensureApiKey()
+
     try {
-      const response = await fetch(
-        `${this.baseUrl}/companies/${domain}/intent`,
+      const response = await retryFetch(
+        `${this.baseUrl}/companies/${encodeURIComponent(domain)}/intent`,
         {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${this.apiKey}`,
             'Content-Type': 'application/json',
           },
-        }
+          timeout: DATASHOPPER_TIMEOUT,
+        },
+        { maxRetries: DATASHOPPER_MAX_RETRIES }
       )
 
       if (!response.ok) {
-        const error = await response.json()
+        const error = await response.json().catch(() => ({}))
         throw new Error(
-          `DataShopper API error: ${error.message || response.statusText}`
+          `DataShopper API error: ${(error as any).message || response.statusText}`
         )
       }
 
@@ -190,5 +209,30 @@ export class DataShopperClient {
     }
 
     return 'cold'
+  }
+
+  /**
+   * Check if DataShopper API is configured and reachable
+   */
+  async healthCheck(): Promise<{ healthy: boolean; error?: string }> {
+    if (!this.apiKey) {
+      return { healthy: false, error: 'DATASHOPPER_API_KEY not configured' }
+    }
+    try {
+      const response = await retryFetch(
+        `${this.baseUrl}/health`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${this.apiKey}`,
+          },
+          timeout: 5000,
+        },
+        { maxRetries: 1 }
+      )
+      return { healthy: response.ok }
+    } catch (error: any) {
+      return { healthy: false, error: error.message }
+    }
   }
 }

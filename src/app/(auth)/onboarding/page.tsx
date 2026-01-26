@@ -2,7 +2,29 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
+
+// URL validation helpers
+const normalizeUrl = (url: string): string => {
+  let normalized = url.trim().toLowerCase()
+  if (!normalized) return ''
+  if (!normalized.startsWith('http://') && !normalized.startsWith('https://')) {
+    normalized = 'https://' + normalized
+  }
+  return normalized
+}
+
+const isValidUrl = (url: string): boolean => {
+  if (!url) return true // Empty is valid (optional field)
+  try {
+    const normalized = normalizeUrl(url)
+    const urlObj = new URL(normalized)
+    return urlObj.protocol === 'http:' || urlObj.protocol === 'https:'
+  } catch {
+    return false
+  }
+}
 
 // Service industries that match lead sources
 const SERVICE_INDUSTRIES = [
@@ -89,6 +111,7 @@ export default function OnboardingPage() {
   const [businessName, setBusinessName] = useState('')
   const [businessSlug, setBusinessSlug] = useState('')
   const [industry, setIndustry] = useState('')
+  const [websiteUrl, setWebsiteUrl] = useState('')
   const [serviceAreas, setServiceAreas] = useState<string[]>([])
 
   // Auto-generate slug from business name
@@ -170,6 +193,9 @@ export default function OnboardingPage() {
     }
 
     try {
+      // Prepare website URL
+      const normalizedWebsiteUrl = websiteUrl ? normalizeUrl(websiteUrl) : null
+
       // Create workspace with routing config
       const { data: workspace, error: workspaceError } = await supabase
         .from('workspaces')
@@ -180,6 +206,8 @@ export default function OnboardingPage() {
           industry_vertical: industry,
           allowed_industries: [industry],
           allowed_regions: serviceAreas,
+          website_url: normalizedWebsiteUrl,
+          scrape_status: normalizedWebsiteUrl ? 'pending' : null,
           routing_config: {
             enabled: true,
             industry_filter: [industry],
@@ -218,6 +246,26 @@ export default function OnboardingPage() {
         throw userError
       }
 
+      // Trigger website scraping if URL was provided
+      if (normalizedWebsiteUrl) {
+        try {
+          await fetch('/api/inngest', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name: 'workspace/scrape-website',
+              data: {
+                workspaceId: (workspace as any).id,
+                websiteUrl: normalizedWebsiteUrl,
+              },
+            }),
+          })
+        } catch (scrapeError) {
+          // Non-blocking - don't fail onboarding if scrape fails to trigger
+          console.error('Failed to trigger website scrape:', scrapeError)
+        }
+      }
+
       // Success! Redirect to dashboard
       router.push('/dashboard')
       router.refresh()
@@ -228,14 +276,23 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-white px-4 py-12 sm:px-6 lg:px-8">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
       <div className="w-full max-w-2xl space-y-8">
         {/* Header */}
         <div className="text-center">
-          <h2 className="text-xl font-medium text-zinc-900">
-            Set up your account
+          <div className="flex justify-center mb-6">
+            <Image
+              src="/logo.png"
+              alt="Cursive"
+              width={180}
+              height={48}
+              priority
+            />
+          </div>
+          <h2 className="text-2xl font-bold tracking-tight text-gray-900">
+            Welcome to Cursive
           </h2>
-          <p className="mt-2 text-[13px] text-zinc-600">
+          <p className="mt-2 text-sm text-gray-600">
             Set up your account to start receiving leads
           </p>
         </div>
@@ -245,37 +302,37 @@ export default function OnboardingPage() {
           {[1, 2, 3].map((s) => (
             <div key={s} className="flex items-center">
               <div
-                className={`flex h-10 w-10 items-center justify-center rounded-full text-[13px] font-medium ${
+                className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-medium ${
                   step >= s
                     ? 'bg-blue-600 text-white'
-                    : 'bg-zinc-200 text-zinc-600'
+                    : 'bg-gray-200 text-gray-600'
                 }`}
               >
                 {s}
               </div>
-              {s < 3 && <div className="h-1 w-12 bg-zinc-200 ml-4" />}
+              {s < 3 && <div className={`h-1 w-12 ml-4 ${step > s ? 'bg-blue-600' : 'bg-gray-200'}`} />}
             </div>
           ))}
         </div>
 
         {/* Error Message */}
         {error && (
-          <div className="rounded-lg bg-red-50 border border-red-200 p-4">
-            <p className="text-[13px] font-medium text-red-700">{error}</p>
+          <div className="rounded-md bg-red-50 p-4">
+            <p className="text-sm font-medium text-red-800">{error}</p>
           </div>
         )}
 
         {/* Step 1: Business Info */}
         {step === 1 && (
           <form onSubmit={(e) => { e.preventDefault(); setStep(2); }} className="space-y-6">
-            <div className="rounded-lg bg-white border border-zinc-200 p-8">
-              <h3 className="text-[15px] font-medium text-zinc-900 mb-6">
+            <div className="rounded-lg bg-white shadow-sm ring-1 ring-gray-900/5 p-8">
+              <h3 className="text-lg font-semibold text-gray-900 mb-6">
                 Tell us about your business
               </h3>
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-[13px] font-medium text-zinc-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     Business Name
                   </label>
                   <input
@@ -283,20 +340,20 @@ export default function OnboardingPage() {
                     required
                     value={businessName}
                     onChange={(e) => handleBusinessNameChange(e.target.value)}
-                    className="w-full h-10 px-3 text-[13px] text-zinc-900 placeholder:text-zinc-400 bg-white border border-zinc-300 rounded-lg focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-200"
+                    className="w-full rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm"
                     placeholder="Smith HVAC Services"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[13px] font-medium text-zinc-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     Industry
                   </label>
                   <select
                     required
                     value={industry}
                     onChange={(e) => setIndustry(e.target.value)}
-                    className="w-full h-10 px-3 text-[13px] text-zinc-900 bg-white border border-zinc-300 rounded-lg focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-200"
+                    className="w-full rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm"
                   >
                     <option value="">Select your industry</option>
                     {SERVICE_INDUSTRIES.map((ind) => (
@@ -305,9 +362,39 @@ export default function OnboardingPage() {
                       </option>
                     ))}
                   </select>
-                  <p className="mt-2 text-[12px] text-zinc-500">
+                  <p className="mt-2 text-xs text-gray-500">
                     We&apos;ll match you with leads in your industry
                   </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Website URL <span className="text-gray-400 font-normal">(optional)</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={websiteUrl}
+                    onChange={(e) => setWebsiteUrl(e.target.value)}
+                    className={`w-full rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ${
+                      websiteUrl && !isValidUrl(websiteUrl) ? 'ring-red-500' : 'ring-gray-300'
+                    } placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm`}
+                    placeholder="https://yourcompany.com"
+                  />
+                  {websiteUrl && !isValidUrl(websiteUrl) && (
+                    <p className="mt-1 text-xs text-red-600">Please enter a valid URL</p>
+                  )}
+                  <p className="mt-2 text-xs text-gray-500">
+                    We&apos;ll analyze your site to better understand your business
+                  </p>
+                  {!websiteUrl && (
+                    <button
+                      type="button"
+                      onClick={() => setWebsiteUrl('')}
+                      className="mt-2 text-xs text-blue-600 hover:text-blue-500 underline"
+                    >
+                      I don&apos;t have a website yet
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
@@ -315,8 +402,8 @@ export default function OnboardingPage() {
             <div className="flex justify-end">
               <button
                 type="submit"
-                disabled={!businessName || !industry}
-                className="h-10 px-6 text-[13px] font-medium bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={!businessName || !industry || (websiteUrl && !isValidUrl(websiteUrl))}
+                className="rounded-md bg-blue-600 px-6 py-2 text-sm font-semibold text-white hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Continue
               </button>
@@ -327,13 +414,13 @@ export default function OnboardingPage() {
         {/* Step 2: Service Areas */}
         {step === 2 && (
           <form onSubmit={(e) => { e.preventDefault(); setStep(3); }} className="space-y-6">
-            <div className="rounded-lg bg-white border border-zinc-200 p-8">
+            <div className="rounded-lg bg-white shadow-sm ring-1 ring-gray-900/5 p-8">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h3 className="text-[15px] font-medium text-zinc-900">
+                  <h3 className="text-lg font-semibold text-gray-900">
                     Where do you serve?
                   </h3>
-                  <p className="text-[12px] text-zinc-500 mt-1">
+                  <p className="text-xs text-gray-500 mt-1">
                     Select the states where you can take on new customers
                   </p>
                 </div>
@@ -341,15 +428,15 @@ export default function OnboardingPage() {
                   <button
                     type="button"
                     onClick={selectAllStates}
-                    className="text-[12px] text-zinc-600 hover:text-zinc-900 underline"
+                    className="text-xs text-gray-600 hover:text-gray-900 underline"
                   >
                     Select all
                   </button>
-                  <span className="text-zinc-300">|</span>
+                  <span className="text-gray-300">|</span>
                   <button
                     type="button"
                     onClick={clearAllStates}
-                    className="text-[12px] text-zinc-600 hover:text-zinc-900 underline"
+                    className="text-xs text-gray-600 hover:text-gray-900 underline"
                   >
                     Clear
                   </button>
@@ -362,10 +449,10 @@ export default function OnboardingPage() {
                     key={state.code}
                     type="button"
                     onClick={() => toggleState(state.code)}
-                    className={`px-3 py-2 text-[12px] font-medium rounded-lg border transition-all ${
+                    className={`px-3 py-2 text-xs font-medium rounded-md border transition-all ${
                       serviceAreas.includes(state.code)
-                        ? 'bg-blue-600 text-white border-blue-600'
-                        : 'bg-white text-zinc-600 border-zinc-200 hover:border-zinc-400'
+                        ? 'bg-blue-600 text-white border-transparent'
+                        : 'bg-white text-gray-600 border-gray-300 hover:border-blue-400'
                     }`}
                   >
                     {state.code}
@@ -374,7 +461,7 @@ export default function OnboardingPage() {
               </div>
 
               {serviceAreas.length > 0 && (
-                <p className="mt-4 text-[12px] text-zinc-600">
+                <p className="mt-4 text-xs text-gray-600">
                   Selected: {serviceAreas.length} state{serviceAreas.length !== 1 ? 's' : ''}
                 </p>
               )}
@@ -384,14 +471,14 @@ export default function OnboardingPage() {
               <button
                 type="button"
                 onClick={() => setStep(1)}
-                className="h-10 px-6 text-[13px] font-medium border border-zinc-300 text-zinc-700 hover:bg-zinc-50 rounded-lg"
+                className="rounded-md bg-white px-6 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
               >
                 Back
               </button>
               <button
                 type="submit"
                 disabled={serviceAreas.length === 0}
-                className="h-10 px-6 text-[13px] font-medium bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="rounded-md bg-blue-600 px-6 py-2 text-sm font-semibold text-white hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Continue
               </button>
@@ -402,37 +489,45 @@ export default function OnboardingPage() {
         {/* Step 3: Review & Create */}
         {step === 3 && (
           <form onSubmit={handleCreateWorkspace} className="space-y-6">
-            <div className="rounded-lg bg-white border border-zinc-200 p-8">
-              <h3 className="text-[15px] font-medium text-zinc-900 mb-6">
+            <div className="rounded-lg bg-white shadow-sm ring-1 ring-gray-900/5 p-8">
+              <h3 className="text-lg font-semibold text-gray-900 mb-6">
                 Review your setup
               </h3>
 
               <dl className="space-y-4">
-                <div className="flex justify-between py-3 border-b border-zinc-100">
-                  <dt className="text-[13px] text-zinc-600">Business Name</dt>
-                  <dd className="text-[13px] font-medium text-zinc-900">{businessName}</dd>
+                <div className="flex justify-between py-3 border-b border-gray-100">
+                  <dt className="text-sm text-gray-600">Business Name</dt>
+                  <dd className="text-sm font-medium text-gray-900">{businessName}</dd>
                 </div>
-                <div className="flex justify-between py-3 border-b border-zinc-100">
-                  <dt className="text-[13px] text-zinc-600">Industry</dt>
-                  <dd className="text-[13px] font-medium text-zinc-900">{industry}</dd>
+                <div className="flex justify-between py-3 border-b border-gray-100">
+                  <dt className="text-sm text-gray-600">Industry</dt>
+                  <dd className="text-sm font-medium text-gray-900">{industry}</dd>
                 </div>
-                <div className="flex justify-between py-3 border-b border-zinc-100">
-                  <dt className="text-[13px] text-zinc-600">Service Areas</dt>
-                  <dd className="text-[13px] font-medium text-zinc-900">
+                {websiteUrl && (
+                  <div className="flex justify-between py-3 border-b border-gray-100">
+                    <dt className="text-sm text-gray-600">Website</dt>
+                    <dd className="text-sm font-medium text-gray-900 truncate max-w-xs">
+                      {normalizeUrl(websiteUrl)}
+                    </dd>
+                  </div>
+                )}
+                <div className="flex justify-between py-3 border-b border-gray-100">
+                  <dt className="text-sm text-gray-600">Service Areas</dt>
+                  <dd className="text-sm font-medium text-gray-900">
                     {serviceAreas.length === 50 ? 'All US States' : `${serviceAreas.length} states`}
                   </dd>
                 </div>
                 <div className="flex justify-between py-3">
-                  <dt className="text-[13px] text-zinc-600">Plan</dt>
-                  <dd className="text-[13px] font-medium text-blue-600">
+                  <dt className="text-sm text-gray-600">Plan</dt>
+                  <dd className="text-sm font-medium text-blue-600">
                     Free - 3 leads/day included
                   </dd>
                 </div>
               </dl>
 
-              <div className="mt-6 p-4 bg-zinc-50 rounded-lg">
-                <p className="text-[12px] text-zinc-600">
-                  <strong className="text-zinc-900">How it works:</strong> We&apos;ll automatically match you with {industry} leads in your service areas. You&apos;ll receive up to 3 free leads per day, and you can upgrade anytime to get more.
+              <div className="mt-6 p-4 bg-blue-50 rounded-md">
+                <p className="text-xs text-gray-600">
+                  <strong className="text-gray-900">How it works:</strong> We&apos;ll automatically match you with {industry} leads in your service areas. You&apos;ll receive up to 3 free leads per day, and you can upgrade anytime to get more.
                 </p>
               </div>
             </div>
@@ -442,14 +537,14 @@ export default function OnboardingPage() {
                 type="button"
                 onClick={() => setStep(2)}
                 disabled={loading}
-                className="h-10 px-6 text-[13px] font-medium border border-zinc-300 text-zinc-700 hover:bg-zinc-50 rounded-lg disabled:opacity-50"
+                className="rounded-md bg-white px-6 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:opacity-50"
               >
                 Back
               </button>
               <button
                 type="submit"
                 disabled={loading}
-                className="h-10 px-6 text-[13px] font-medium bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="rounded-md bg-blue-600 px-6 py-2 text-sm font-semibold text-white hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? 'Creating...' : 'Start Getting Leads'}
               </button>

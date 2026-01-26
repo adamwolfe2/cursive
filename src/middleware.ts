@@ -23,7 +23,8 @@ export async function middleware(req: NextRequest) {
     pathname.startsWith('/auth/callback') ||
     pathname === '/' ||
     pathname.startsWith('/_next') ||
-    pathname.startsWith('/api/webhooks') // Webhooks are authenticated differently
+    pathname.startsWith('/api/webhooks') || // Webhooks are authenticated differently
+    pathname === '/api/health' // Health check endpoint for monitoring
 
   // API routes (except webhooks) require authentication
   const isApiRoute = pathname.startsWith('/api') && !pathname.startsWith('/api/webhooks')
@@ -137,7 +138,7 @@ function getSubdomain(hostname: string): string | null {
 
   const parts = host.split('.')
 
-  // Main domain (e.g., openinfo.com)
+  // Main domain (e.g., meetcursive.com)
   if (parts.length <= 2) {
     return null
   }
@@ -145,8 +146,9 @@ function getSubdomain(hostname: string): string | null {
   // Extract subdomain (first part)
   const subdomain = parts[0]
 
-  // Ignore www
-  if (subdomain === 'www') {
+  // Ignore www and app subdomains (these are the main app, not tenant subdomains)
+  const appSubdomains = ['www', 'leads', 'app', 'dashboard']
+  if (appSubdomains.includes(subdomain)) {
     return null
   }
 

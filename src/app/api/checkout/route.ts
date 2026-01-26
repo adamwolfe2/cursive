@@ -1,26 +1,130 @@
+/**
+ * Checkout API Route
+ * Cursive Platform
+ *
+ * Creates Stripe checkout sessions for lead purchases.
+ * Requires authenticated user.
+ */
+
 import { NextRequest, NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
+import { createServerClient } from '@supabase/ssr'
 import Stripe from 'stripe'
-import { createClient } from '@/lib/supabase/client'
+import { z } from 'zod'
+
+// Request validation schema
+const checkoutSchema = z.object({
+  leadId: z.string().uuid('Invalid lead ID'),
+  buyerEmail: z.string().email('Invalid email address'),
+  buyerName: z.string().optional(),
+  companyName: z.string().optional(),
+})
+
+/**
+ * Get authenticated user from session
+ */
+async function getAuthenticatedUser() {
+  const cookieStore = await cookies()
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll()
+        },
+        setAll(cookiesToSet) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options)
+            )
+          } catch {
+            // Ignore - called from Server Component
+          }
+        },
+      },
+    }
+  )
+
+  const {
+    data: { session },
+  } = await supabase.auth.getSession()
+
+  if (!session) {
+    return null
+  }
+
+  // Get user with workspace
+  const { data: user } = await supabase
+    .from('users')
+    .select('id, workspace_id, email')
+    .eq('auth_user_id', session.user.id)
+    .single()
+
+  return user
+}
 
 export async function POST(req: NextRequest) {
   try {
-    // Initialize Stripe only when the function is called
+    // Authenticate user
+    const user = await getAuthenticatedUser()
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Authentication required' },
+        { status: 401 }
+      )
+    }
+
+    // Validate request body
+    const body = await req.json()
+    const validation = checkoutSchema.safeParse(body)
+
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: validation.error.errors[0].message },
+        { status: 400 }
+      )
+    }
+
+    const { leadId, buyerEmail, buyerName, companyName } = validation.data
+
+    // Initialize Stripe
     if (!process.env.STRIPE_SECRET_KEY) {
-      return NextResponse.json({ error: 'Stripe not configured' }, { status: 500 })
+      return NextResponse.json(
+        { error: 'Payment system not configured' },
+        { status: 500 }
+      )
     }
 
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: '2024-12-18.acacia'
+      apiVersion: '2024-12-18.acacia',
     })
 
-    const { leadId, buyerEmail, buyerName, companyName } = await req.json()
+    // Create admin Supabase client for database operations
+    const cookieStore = await cookies()
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll()
+          },
+          setAll(cookiesToSet) {
+            try {
+              cookiesToSet.forEach(({ name, value, options }) =>
+                cookieStore.set(name, value, options)
+              )
+            } catch {
+              // Ignore
+            }
+          },
+        },
+      }
+    )
 
-    if (!leadId || !buyerEmail) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
-    }
-
-    // Get lead details
-    const supabase = createClient()
+    // Get lead details - ensure user has access to this lead
     const { data: lead, error: leadError } = await supabase
       .from('leads')
       .select('*')
@@ -28,7 +132,10 @@ export async function POST(req: NextRequest) {
       .single()
 
     if (leadError || !lead) {
-      return NextResponse.json({ error: 'Lead not found' }, { status: 404 })
+      return NextResponse.json(
+        { error: 'Lead not found' },
+        { status: 404 }
+      )
     }
 
     // Check if already purchased
@@ -39,11 +146,14 @@ export async function POST(req: NextRequest) {
       .single()
 
     if (existingPurchase) {
-      return NextResponse.json({ error: 'Lead already purchased' }, { status: 400 })
+      return NextResponse.json(
+        { error: 'Lead already purchased' },
+        { status: 400 }
+      )
     }
 
     // Create or get Stripe customer
-    let customer
+    let customer: Stripe.Customer | Stripe.DeletedCustomer
     const { data: existingCustomer } = await supabase
       .from('buyers')
       .select('stripe_customer_id')
@@ -58,19 +168,23 @@ export async function POST(req: NextRequest) {
         name: buyerName || companyName,
         metadata: {
           company_name: companyName || '',
-          buyer_email: buyerEmail
-        }
+          buyer_email: buyerEmail,
+          user_id: user.id,
+        },
       })
 
       // Update buyer with Stripe customer ID
       await supabase
         .from('buyers')
-        .upsert({
-          email: buyerEmail,
-          company_name: companyName || 'Unknown',
-          stripe_customer_id: customer.id,
-          workspace_id: lead.workspace_id
-        }, { onConflict: 'email' })
+        .upsert(
+          {
+            email: buyerEmail,
+            company_name: companyName || 'Unknown',
+            stripe_customer_id: customer.id,
+            workspace_id: lead.workspace_id,
+          },
+          { onConflict: 'email' }
+        )
     }
 
     // Create Stripe Checkout Session
@@ -87,13 +201,13 @@ export async function POST(req: NextRequest) {
               metadata: {
                 lead_id: leadId,
                 company_name: lead.company_name,
-                industry: lead.company_industry || 'N/A'
-              }
+                industry: lead.company_industry || 'N/A',
+              },
             },
-            unit_amount: 5000 // $50.00
+            unit_amount: 5000, // $50.00
           },
-          quantity: 1
-        }
+          quantity: 1,
+        },
       ],
       mode: 'payment',
       success_url: `${process.env.NEXT_PUBLIC_APP_URL}/marketplace?success=true&lead_id=${leadId}`,
@@ -101,24 +215,26 @@ export async function POST(req: NextRequest) {
       metadata: {
         lead_id: leadId,
         buyer_email: buyerEmail,
-        company_name: companyName || ''
+        company_name: companyName || '',
+        user_id: user.id,
+        workspace_id: user.workspace_id,
       },
       allow_promotion_codes: true,
       billing_address_collection: 'auto',
       customer_update: {
         address: 'auto',
-        name: 'auto'
-      }
+        name: 'auto',
+      },
     })
 
     return NextResponse.json({
       sessionId: session.id,
-      url: session.url
+      url: session.url,
     })
   } catch (error: any) {
-    console.error('Checkout error:', error)
+    console.error('[Checkout] Error:', error)
     return NextResponse.json(
-      { error: error.message || 'Failed to create checkout session' },
+      { error: 'Failed to create checkout session' },
       { status: 500 }
     )
   }

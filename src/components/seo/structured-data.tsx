@@ -9,20 +9,20 @@ import { Organization, WebSite, SoftwareApplication, FAQPage, BreadcrumbList } f
 export function OrganizationSchema() {
   const schema: Organization = {
     '@type': 'Organization',
-    '@id': 'https://leads.meetcursive.com/#organization',
-    name: 'LeadMe',
-    url: 'https://leads.meetcursive.com',
-    logo: 'https://leads.meetcursive.com/logo.png',
+    '@id': 'https://meetcursive.com/#organization',
+    name: 'Cursive',
+    url: 'https://meetcursive.com',
+    logo: 'https://meetcursive.com/logo.png',
     description:
       'B2B intent lead intelligence platform that identifies companies actively researching specific topics',
     sameAs: [
-      'https://twitter.com/openinfo',
-      'https://linkedin.com/company/openinfo',
+      'https://twitter.com/meetcursive',
+      'https://linkedin.com/company/meetcursive',
     ],
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'Customer Support',
-      email: 'support@leads.meetcursive.com',
+      email: 'support@meetcursive.com',
     },
   }
 
@@ -40,18 +40,18 @@ export function OrganizationSchema() {
 export function WebsiteSchema() {
   const schema: WebSite = {
     '@type': 'WebSite',
-    '@id': 'https://leads.meetcursive.com/#website',
-    url: 'https://leads.meetcursive.com',
-    name: 'LeadMe',
+    '@id': 'https://meetcursive.com/#website',
+    url: 'https://meetcursive.com',
+    name: 'Cursive',
     description: 'B2B Intent Lead Intelligence Platform',
     publisher: {
-      '@id': 'https://leads.meetcursive.com/#organization',
+      '@id': 'https://meetcursive.com/#organization',
     },
     potentialAction: {
       '@type': 'SearchAction',
       target: {
         '@type': 'EntryPoint',
-        urlTemplate: 'https://leads.meetcursive.com/search?q={search_term_string}',
+        urlTemplate: 'https://meetcursive.com/search?q={search_term_string}',
       },
       'query-input': 'required name=search_term_string',
     },
@@ -71,7 +71,7 @@ export function WebsiteSchema() {
 export function SoftwareApplicationSchema() {
   const schema: SoftwareApplication = {
     '@type': 'SoftwareApplication',
-    name: 'LeadMe',
+    name: 'Cursive',
     operatingSystem: 'Web Browser',
     applicationCategory: 'BusinessApplication',
     aggregateRating: {

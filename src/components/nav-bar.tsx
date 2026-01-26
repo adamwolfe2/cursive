@@ -18,7 +18,7 @@ export function NavBar() {
         <div className="flex h-14 items-center justify-between">
           <div className="flex items-center gap-8">
             <Link href="/" className="text-[15px] font-medium text-zinc-900">
-              LeadMe
+              Cursive
             </Link>
             <div className="flex gap-6">
               {navItems.map((item) => (

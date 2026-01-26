@@ -231,6 +231,108 @@ export interface Database {
           created_at?: string
         }
       }
+      lead_status_history: {
+        Row: {
+          id: string
+          lead_id: string
+          workspace_id: string
+          from_status: LeadStatus | null
+          to_status: LeadStatus
+          changed_by: string
+          change_note: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          lead_id: string
+          workspace_id: string
+          from_status?: LeadStatus | null
+          to_status: LeadStatus
+          changed_by: string
+          change_note?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          lead_id?: string
+          workspace_id?: string
+          from_status?: LeadStatus | null
+          to_status?: LeadStatus
+          changed_by?: string
+          change_note?: string | null
+          created_at?: string
+        }
+      }
+      lead_notes: {
+        Row: {
+          id: string
+          lead_id: string
+          workspace_id: string
+          content: string
+          note_type: NoteType
+          created_by: string
+          is_pinned: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          lead_id: string
+          workspace_id: string
+          content: string
+          note_type?: NoteType
+          created_by: string
+          is_pinned?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          lead_id?: string
+          workspace_id?: string
+          content?: string
+          note_type?: NoteType
+          created_by?: string
+          is_pinned?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      lead_activities: {
+        Row: {
+          id: string
+          lead_id: string
+          workspace_id: string
+          activity_type: ActivityType
+          title: string
+          description: string | null
+          metadata: Json
+          performed_by: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          lead_id: string
+          workspace_id: string
+          activity_type: ActivityType
+          title: string
+          description?: string | null
+          metadata?: Json
+          performed_by?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          lead_id?: string
+          workspace_id?: string
+          activity_type?: ActivityType
+          title?: string
+          description?: string | null
+          metadata?: Json
+          performed_by?: string | null
+          created_at?: string
+        }
+      }
     }
     Views: {}
     Functions: {
@@ -241,7 +343,47 @@ export interface Database {
         }
         Returns: string
       }
+      update_lead_status: {
+        Args: {
+          p_lead_id: string
+          p_new_status: LeadStatus
+          p_user_id: string
+          p_change_note?: string | null
+        }
+        Returns: void
+      }
+      add_lead_note: {
+        Args: {
+          p_lead_id: string
+          p_user_id: string
+          p_content: string
+          p_note_type?: NoteType
+          p_is_pinned?: boolean
+        }
+        Returns: string
+      }
     }
-    Enums: {}
+    Enums: {
+      lead_status: LeadStatus
+      note_type: NoteType
+      activity_type: ActivityType
+    }
   }
 }
+
+// Enum types
+export type LeadStatus = 'new' | 'contacted' | 'qualified' | 'proposal' | 'negotiation' | 'won' | 'lost'
+export type NoteType = 'note' | 'call' | 'email' | 'meeting' | 'task'
+export type ActivityType =
+  | 'status_change'
+  | 'note_added'
+  | 'email_sent'
+  | 'email_opened'
+  | 'email_clicked'
+  | 'email_replied'
+  | 'call_logged'
+  | 'meeting_scheduled'
+  | 'task_completed'
+  | 'assigned'
+  | 'enriched'
+  | 'created'

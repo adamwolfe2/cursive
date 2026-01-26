@@ -1,5 +1,5 @@
 // Re-export database types
-export type { Database, Json } from './database.types'
+export type { Database, Json, LeadStatus, NoteType, ActivityType } from './database.types'
 export type * from './database.types'
 
 // Helper type for table rows
@@ -33,12 +33,17 @@ export type Integration = Tables<'integrations'>
 export type BillingEvent = Tables<'billing_events'>
 export type NotificationPreferences = Tables<'notification_preferences'>
 export type StripeCustomer = Tables<'stripe_customers'>
+export type LeadStatusHistory = Tables<'lead_status_history'>
+export type LeadNote = Tables<'lead_notes'>
+export type LeadActivity = Tables<'lead_activities'>
 
 // Insert types
 export type WorkspaceInsert = Inserts<'workspaces'>
 export type UserInsert = Inserts<'users'>
 export type QueryInsert = Inserts<'queries'>
 export type LeadInsert = Inserts<'leads'>
+export type LeadNoteInsert = Inserts<'lead_notes'>
+export type LeadActivityInsert = Inserts<'lead_activities'>
 
 // Update types
 export type WorkspaceUpdate = Updates<'workspaces'>
@@ -224,3 +229,25 @@ export class InsufficientCreditsError extends Error {
     this.name = 'InsufficientCreditsError'
   }
 }
+
+// ============================================================================
+// LEAD STATUS CONSTANTS
+// ============================================================================
+
+export const LEAD_STATUSES = [
+  { value: 'new', label: 'New', color: 'gray' },
+  { value: 'contacted', label: 'Contacted', color: 'blue' },
+  { value: 'qualified', label: 'Qualified', color: 'purple' },
+  { value: 'proposal', label: 'Proposal', color: 'yellow' },
+  { value: 'negotiation', label: 'Negotiation', color: 'orange' },
+  { value: 'won', label: 'Won', color: 'green' },
+  { value: 'lost', label: 'Lost', color: 'red' },
+] as const
+
+export const NOTE_TYPES = [
+  { value: 'note', label: 'Note', icon: 'document' },
+  { value: 'call', label: 'Call', icon: 'phone' },
+  { value: 'email', label: 'Email', icon: 'envelope' },
+  { value: 'meeting', label: 'Meeting', icon: 'calendar' },
+  { value: 'task', label: 'Task', icon: 'check' },
+] as const

@@ -1,13 +1,13 @@
 /**
  * Robots.txt Generator
- * OpenInfo Platform Marketing Site
+ * Cursive Platform Marketing Site
  *
  * Generates robots.txt for search engines.
  */
 
 import type { MetadataRoute } from 'next'
 
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://openinfo.io'
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://meetcursive.com'
 
 export default function robots(): MetadataRoute.Robots {
   return {

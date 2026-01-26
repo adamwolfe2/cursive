@@ -4,35 +4,35 @@
 import { DefaultSeoProps } from 'next-seo'
 
 const SEO_CONFIG: DefaultSeoProps = {
-  defaultTitle: 'OpenInfo - B2B Intent Lead Intelligence Platform',
-  titleTemplate: '%s | OpenInfo',
+  defaultTitle: 'Cursive - B2B Intent Lead Intelligence Platform',
+  titleTemplate: '%s | Cursive',
   description:
     'Identify companies actively researching your topics. Get enriched B2B lead data delivered automatically. Track intent signals and convert research into revenue.',
 
-  canonical: 'https://openinfo.com',
+  canonical: 'https://meetcursive.com',
 
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://openinfo.com',
-    siteName: 'OpenInfo',
-    title: 'OpenInfo - B2B Intent Lead Intelligence Platform',
+    url: 'https://meetcursive.com',
+    siteName: 'Cursive',
+    title: 'Cursive - B2B Intent Lead Intelligence Platform',
     description:
       'Identify companies actively researching your topics. Get enriched B2B lead data delivered automatically.',
     images: [
       {
-        url: 'https://openinfo.com/og-image.png',
+        url: 'https://meetcursive.com/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'OpenInfo - B2B Intent Lead Intelligence',
+        alt: 'Cursive - B2B Intent Lead Intelligence',
         type: 'image/png',
       },
     ],
   },
 
   twitter: {
-    handle: '@openinfo',
-    site: '@openinfo',
+    handle: '@meetcursive',
+    site: '@meetcursive',
     cardType: 'summary_large_image',
   },
 
@@ -48,7 +48,7 @@ const SEO_CONFIG: DefaultSeoProps = {
     },
     {
       name: 'author',
-      content: 'OpenInfo',
+      content: 'Cursive',
     },
     {
       httpEquiv: 'x-ua-compatible',
@@ -88,13 +88,13 @@ export function generatePageSEO(props: {
   return {
     title: props.title,
     description: props.description,
-    canonical: props.path ? `https://openinfo.com${props.path}` : undefined,
+    canonical: props.path ? `https://meetcursive.com${props.path}` : undefined,
     noindex: props.noIndex || false,
     nofollow: props.noIndex || false,
     openGraph: {
       title: props.title,
       description: props.description,
-      url: props.path ? `https://openinfo.com${props.path}` : undefined,
+      url: props.path ? `https://meetcursive.com${props.path}` : undefined,
       images: props.image
         ? [
             {

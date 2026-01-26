@@ -4,10 +4,10 @@ import { Providers } from '@/components/providers'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'LeadMe - B2B Lead Intelligence Platform',
-  description: 'Identify companies actively researching specific topics',
-  keywords: ['B2B', 'lead intelligence', 'sales intelligence', 'company research'],
-  authors: [{ name: 'LeadMe' }],
+  title: 'Cursive - Buyer-Intent Lead Generation',
+  description: 'Get buyer-intent leads from enrichment platforms delivered to your dashboard. Auto-routed by location and industry.',
+  keywords: ['lead generation', 'buyer intent', 'service industry leads', 'HVAC leads', 'roofing leads', 'plumbing leads'],
+  authors: [{ name: 'Cursive' }],
   robots: {
     index: true,
     follow: true,
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#18181b',
+  themeColor: '#7c3aed',
 }
 
 export default function RootLayout({

@@ -1,20 +1,78 @@
 /**
  * API Middleware Utilities
- * OpenInfo Platform
+ * Cursive Platform
  *
  * Reusable middleware functions for API routes.
  */
 
 import { NextRequest, NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
+import { createServerClient } from '@supabase/ssr'
 import { UnauthorizedError, ForbiddenError, RateLimitError } from './errors'
 
-// Note: Import getCurrentUser from your auth module when available
-// import { getCurrentUser } from '@/lib/auth/helpers'
+/**
+ * Get the current authenticated user from Supabase session
+ */
+async function getCurrentUser(): Promise<AuthenticatedUser | null> {
+  try {
+    const cookieStore = await cookies()
 
-// Placeholder - replace with actual auth implementation
-async function getCurrentUser(): Promise<unknown> {
-  // This should be replaced with actual auth logic
-  return null
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll()
+          },
+          setAll(cookiesToSet) {
+            try {
+              cookiesToSet.forEach(({ name, value, options }) =>
+                cookieStore.set(name, value, options)
+              )
+            } catch {
+              // Ignore - called from Server Component
+            }
+          },
+        },
+      }
+    )
+
+    const {
+      data: { session },
+    } = await supabase.auth.getSession()
+
+    if (!session) {
+      return null
+    }
+
+    // Fetch user with workspace data
+    const { data: user } = await supabase
+      .from('users')
+      .select('*, workspaces(*)')
+      .eq('auth_user_id', session.user.id)
+      .single()
+
+    if (!user) {
+      return null
+    }
+
+    const workspace = (user as any).workspaces
+
+    return {
+      id: user.id,
+      auth_user_id: user.auth_user_id,
+      email: session.user.email || '',
+      full_name: user.full_name || '',
+      workspace_id: user.workspace_id,
+      plan: workspace?.plan || 'free',
+      daily_credits_used: user.daily_credits_used || 0,
+      daily_credit_limit: workspace?.daily_credit_limit || 10,
+    }
+  } catch (error) {
+    console.error('[Auth] Failed to get current user:', error)
+    return null
+  }
 }
 
 // ============================================
@@ -197,8 +255,14 @@ export function withCreditCheck<T extends NextResponse>(
 
 const ALLOWED_ORIGINS = [
   process.env.NEXT_PUBLIC_APP_URL,
+  process.env.NEXT_PUBLIC_PRODUCTION_URL,
   'http://localhost:3000',
-].filter(Boolean)
+  'http://localhost:3001',
+  // Production domains
+  'https://meetcursive.com',
+  'https://www.meetcursive.com',
+  'https://app.meetcursive.com',
+].filter(Boolean) as string[]
 
 /**
  * Add CORS headers to response
