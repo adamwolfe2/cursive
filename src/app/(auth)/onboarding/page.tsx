@@ -297,6 +297,7 @@ export default function OnboardingPage() {
           allowed_regions: serviceAreas,
           website_url: normalizedWebsiteUrl,
           scrape_status: normalizedWebsiteUrl ? 'pending' : null,
+          onboarding_status: 'completed',
           routing_config: {
             enabled: true,
             industry_filter: [industry],
