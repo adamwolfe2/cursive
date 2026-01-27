@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
@@ -24,6 +24,30 @@ const isValidUrl = (url: string): boolean => {
   } catch {
     return false
   }
+}
+
+// Extract domain from URL
+const extractDomain = (url: string): string | null => {
+  try {
+    const normalized = normalizeUrl(url)
+    if (!normalized) return null
+    const urlObj = new URL(normalized)
+    return urlObj.hostname.replace(/^www\./, '')
+  } catch {
+    return null
+  }
+}
+
+// Debounce hook
+function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value)
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedValue(value), delay)
+    return () => clearTimeout(timer)
+  }, [value, delay])
+
+  return debouncedValue
 }
 
 // Service industries that match lead sources
@@ -113,6 +137,71 @@ export default function OnboardingPage() {
   const [industry, setIndustry] = useState('')
   const [websiteUrl, setWebsiteUrl] = useState('')
   const [serviceAreas, setServiceAreas] = useState<string[]>([])
+
+  // Company enrichment
+  const [companyLogo, setCompanyLogo] = useState<string | null>(null)
+  const [companyData, setCompanyData] = useState<{
+    name?: string
+    industry?: string
+    description?: string
+  } | null>(null)
+  const [enrichmentLoading, setEnrichmentLoading] = useState(false)
+
+  // Debounce website URL for logo fetching
+  const debouncedWebsiteUrl = useDebounce(websiteUrl, 500)
+
+  // Fetch company logo when website URL changes
+  const fetchCompanyInfo = useCallback(async () => {
+    const domain = extractDomain(debouncedWebsiteUrl)
+    if (!domain) {
+      setCompanyLogo(null)
+      setCompanyData(null)
+      return
+    }
+
+    setEnrichmentLoading(true)
+    try {
+      const response = await fetch(`/api/enrich/company?domain=${encodeURIComponent(domain)}`)
+      if (response.ok) {
+        const data = await response.json()
+        if (data.success && data.data) {
+          setCompanyLogo(data.data.logoUrl || data.data.faviconUrl || null)
+          setCompanyData({
+            name: data.data.name,
+            industry: data.data.industry,
+            description: data.data.description,
+          })
+        }
+      }
+    } catch (err) {
+      console.error('Failed to fetch company info:', err)
+    } finally {
+      setEnrichmentLoading(false)
+    }
+  }, [debouncedWebsiteUrl])
+
+  useEffect(() => {
+    fetchCompanyInfo()
+  }, [fetchCompanyInfo])
+
+  // Auto-fill business name from enrichment data
+  useEffect(() => {
+    if (companyData?.name && !businessName) {
+      handleBusinessNameChange(companyData.name)
+    }
+  }, [companyData?.name])
+
+  // Auto-fill industry from enrichment data
+  useEffect(() => {
+    if (companyData?.industry && !industry) {
+      const matchedIndustry = SERVICE_INDUSTRIES.find(
+        ind => companyData.industry?.toLowerCase().includes(ind.toLowerCase())
+      )
+      if (matchedIndustry) {
+        setIndustry(matchedIndustry)
+      }
+    }
+  }, [companyData?.industry])
 
   // Auto-generate slug from business name
   const handleBusinessNameChange = (name: string) => {
@@ -246,8 +335,24 @@ export default function OnboardingPage() {
         throw userError
       }
 
-      // Trigger website scraping if URL was provided
+      // Trigger company enrichment if URL was provided
       if (normalizedWebsiteUrl) {
+        try {
+          // First, try to enrich and save company data
+          await fetch('/api/enrich/company', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              website: normalizedWebsiteUrl,
+              saveToWorkspace: true,
+            }),
+          })
+        } catch (enrichError) {
+          // Non-blocking - don't fail onboarding if enrichment fails
+          console.error('Failed to enrich company:', enrichError)
+        }
+
+        // Also trigger background website scraping for additional data
         try {
           await fetch('/api/inngest', {
             method: 'POST',
@@ -371,30 +476,56 @@ export default function OnboardingPage() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Website URL <span className="text-gray-400 font-normal">(optional)</span>
                   </label>
-                  <input
-                    type="text"
-                    value={websiteUrl}
-                    onChange={(e) => setWebsiteUrl(e.target.value)}
-                    className={`w-full rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ${
-                      websiteUrl && !isValidUrl(websiteUrl) ? 'ring-red-500' : 'ring-gray-300'
-                    } placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm`}
-                    placeholder="https://yourcompany.com"
-                  />
-                  {websiteUrl && !isValidUrl(websiteUrl) && (
-                    <p className="mt-1 text-xs text-red-600">Please enter a valid URL</p>
+                  <div className="flex gap-3">
+                    {/* Logo preview */}
+                    <div className="flex-shrink-0">
+                      {enrichmentLoading ? (
+                        <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center">
+                          <svg className="w-5 h-5 text-gray-400 animate-spin" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                          </svg>
+                        </div>
+                      ) : companyLogo ? (
+                        <img
+                          src={companyLogo}
+                          alt="Company logo"
+                          className="w-12 h-12 rounded-lg object-contain border border-gray-200 bg-white"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).style.display = 'none'
+                          }}
+                        />
+                      ) : websiteUrl && isValidUrl(websiteUrl) ? (
+                        <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center">
+                          <svg className="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                          </svg>
+                        </div>
+                      ) : null}
+                    </div>
+                    <div className="flex-1">
+                      <input
+                        type="text"
+                        value={websiteUrl}
+                        onChange={(e) => setWebsiteUrl(e.target.value)}
+                        className={`w-full rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ${
+                          websiteUrl && !isValidUrl(websiteUrl) ? 'ring-red-500' : 'ring-gray-300'
+                        } placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm`}
+                        placeholder="https://yourcompany.com"
+                      />
+                      {websiteUrl && !isValidUrl(websiteUrl) && (
+                        <p className="mt-1 text-xs text-red-600">Please enter a valid URL</p>
+                      )}
+                    </div>
+                  </div>
+                  {companyData?.name && (
+                    <p className="mt-2 text-xs text-green-600">
+                      Found: {companyData.name}{companyData.industry ? ` - ${companyData.industry}` : ''}
+                    </p>
                   )}
                   <p className="mt-2 text-xs text-gray-500">
                     We&apos;ll analyze your site to better understand your business
                   </p>
-                  {!websiteUrl && (
-                    <button
-                      type="button"
-                      onClick={() => setWebsiteUrl('')}
-                      className="mt-2 text-xs text-blue-600 hover:text-blue-500 underline"
-                    >
-                      I don&apos;t have a website yet
-                    </button>
-                  )}
                 </div>
               </div>
             </div>
@@ -497,7 +628,19 @@ export default function OnboardingPage() {
               <dl className="space-y-4">
                 <div className="flex justify-between py-3 border-b border-gray-100">
                   <dt className="text-sm text-gray-600">Business Name</dt>
-                  <dd className="text-sm font-medium text-gray-900">{businessName}</dd>
+                  <dd className="text-sm font-medium text-gray-900 flex items-center gap-2">
+                    {companyLogo && (
+                      <img
+                        src={companyLogo}
+                        alt=""
+                        className="w-6 h-6 rounded object-contain"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = 'none'
+                        }}
+                      />
+                    )}
+                    {businessName}
+                  </dd>
                 </div>
                 <div className="flex justify-between py-3 border-b border-gray-100">
                   <dt className="text-sm text-gray-600">Industry</dt>
