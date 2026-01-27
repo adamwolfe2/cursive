@@ -8,6 +8,7 @@ import { createClient } from '@/lib/supabase/server'
 import { AppShell } from '@/components/layout'
 import { ImpersonationBanner } from '@/components/admin'
 import { isAdmin } from '@/lib/auth/admin'
+import { TierProvider } from '@/lib/hooks/use-tier'
 
 export default async function DashboardLayout({
   children,
@@ -51,7 +52,7 @@ export default async function DashboardLayout({
   } | null
 
   return (
-    <>
+    <TierProvider>
       {/* Show impersonation banner for admins */}
       {userIsAdmin && <ImpersonationBanner />}
 
@@ -76,6 +77,6 @@ export default async function DashboardLayout({
       >
         {children}
       </AppShell>
-    </>
+    </TierProvider>
   )
 }
