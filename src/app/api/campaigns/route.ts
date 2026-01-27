@@ -1,10 +1,17 @@
 // Campaigns API Routes
 // List all campaigns and create new campaigns
 
-import { type NextRequest } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { CampaignRepository } from '@/lib/repositories/campaign.repository'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized, success, created } from '@/lib/utils/api-error-handler'
+import {
+  requireFeature,
+  requireWithinLimit,
+  isWorkspaceWithinLimit,
+  FeatureNotAvailableError,
+  LimitExceededError,
+} from '@/lib/tier/server'
 import { z } from 'zod'
 
 // Validation schema for creating a campaign
@@ -46,6 +53,7 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url)
     const status = searchParams.get('status')
+    const includeUsage = searchParams.get('includeUsage') === 'true'
 
     const repo = new CampaignRepository()
 
@@ -56,7 +64,17 @@ export async function GET(request: NextRequest) {
       campaigns = await repo.findByWorkspace(user.workspace_id)
     }
 
-    return success(campaigns)
+    // Include tier usage information if requested
+    let usage = null
+    if (includeUsage) {
+      const { withinLimit, used, limit } = await isWorkspaceWithinLimit(user.workspace_id, 'campaigns')
+      usage = { used, limit, withinLimit }
+    }
+
+    return NextResponse.json({
+      data: campaigns,
+      usage,
+    })
   } catch (error: unknown) {
     return handleApiError(error)
   }
@@ -66,6 +84,20 @@ export async function POST(request: NextRequest) {
   try {
     const user = await getCurrentUser()
     if (!user) return unauthorized()
+
+    // Check if workspace has campaigns feature enabled
+    await requireFeature(
+      user.workspace_id,
+      'campaigns',
+      'Campaigns require a paid plan. Upgrade to create email campaigns.'
+    )
+
+    // Check if workspace is within campaign limit
+    await requireWithinLimit(
+      user.workspace_id,
+      'campaigns',
+      'You have reached your maximum number of campaigns. Upgrade to create more.'
+    )
 
     const body = await request.json()
     const validatedData = createCampaignSchema.parse(body)
@@ -92,6 +124,32 @@ export async function POST(request: NextRequest) {
 
     return created(campaign)
   } catch (error: unknown) {
+    // Handle tier-specific errors
+    if (error instanceof FeatureNotAvailableError) {
+      return NextResponse.json(
+        {
+          error: error.message,
+          code: 'FEATURE_NOT_AVAILABLE',
+          feature: error.feature,
+          currentTier: error.currentTier,
+        },
+        { status: 403 }
+      )
+    }
+
+    if (error instanceof LimitExceededError) {
+      return NextResponse.json(
+        {
+          error: error.message,
+          code: 'LIMIT_EXCEEDED',
+          resource: error.resource,
+          used: error.used,
+          limit: error.limit,
+        },
+        { status: 403 }
+      )
+    }
+
     return handleApiError(error)
   }
 }
