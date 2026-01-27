@@ -6,8 +6,8 @@
  */
 
 import { Resend } from 'resend'
+import { renderEmail } from './render'
 import {
-  renderEmail,
   WelcomeEmail,
   QueryCompletedEmail,
   CreditLowEmail,
@@ -107,7 +107,7 @@ export async function sendWelcomeEmail(
 ): Promise<EmailResult> {
   const loginUrl = `${process.env.NEXT_PUBLIC_APP_URL}/login`
 
-  const html = renderEmail(
+  const html = await renderEmail(
     WelcomeEmail({ userName, loginUrl })
   )
 
@@ -131,7 +131,7 @@ export async function sendQueryCompletedEmail(
 ): Promise<EmailResult> {
   const queryUrl = `${process.env.NEXT_PUBLIC_APP_URL}/queries/${queryId}`
 
-  const html = renderEmail(
+  const html = await renderEmail(
     QueryCompletedEmail({ userName, queryName, leadsCount, queryUrl })
   )
 
@@ -156,7 +156,7 @@ export async function sendCreditLowEmail(
 ): Promise<EmailResult> {
   const billingUrl = `${process.env.NEXT_PUBLIC_APP_URL}/settings/billing`
 
-  const html = renderEmail(
+  const html = await renderEmail(
     CreditLowEmail({ userName, creditsRemaining, billingUrl })
   )
 
@@ -181,7 +181,7 @@ export async function sendExportReadyEmail(
   downloadUrl: string,
   expiresAt: Date
 ): Promise<EmailResult> {
-  const html = renderEmail(
+  const html = await renderEmail(
     ExportReadyEmail({
       userName,
       exportName,
@@ -220,7 +220,7 @@ export async function sendWeeklyDigestEmail(
 ): Promise<EmailResult> {
   const dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`
 
-  const html = renderEmail(
+  const html = await renderEmail(
     WeeklyDigestEmail({ userName, stats, dashboardUrl })
   )
 
@@ -245,7 +245,7 @@ export async function sendPasswordResetEmail(
 ): Promise<EmailResult> {
   const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL}/reset-password?token=${resetToken}`
 
-  const html = renderEmail(
+  const html = await renderEmail(
     PasswordResetEmail({
       userName,
       resetUrl,
@@ -281,7 +281,7 @@ export async function sendCampaignCompletedEmail(
 ): Promise<EmailResult> {
   const campaignUrl = `${process.env.NEXT_PUBLIC_APP_URL}/campaigns/${campaignId}`
 
-  const html = renderEmail(
+  const html = await renderEmail(
     CampaignCompletedEmail({ userName, campaignName, stats, campaignUrl })
   )
 
@@ -309,7 +309,7 @@ export async function sendPaymentFailedEmail(
   const billingUrl = `${process.env.NEXT_PUBLIC_APP_URL}/settings/billing`
   const formattedAmount = (amount / 100).toFixed(2) // Stripe amounts are in cents
 
-  const html = renderEmail(
+  const html = await renderEmail(
     PaymentFailedEmail({
       userName,
       amount: formattedAmount,

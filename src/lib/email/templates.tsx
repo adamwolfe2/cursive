@@ -661,16 +661,3 @@ export function PaymentFailedEmail({
     </EmailLayout>
   )
 }
-
-// ============================================
-// TEMPLATE RENDERER
-// ============================================
-
-import { renderToStaticMarkup } from 'react-dom/server'
-
-/**
- * Render email template to HTML string
- */
-export function renderEmail(component: React.ReactElement): string {
-  return '<!DOCTYPE html>' + renderToStaticMarkup(component)
-}
