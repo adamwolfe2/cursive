@@ -7,6 +7,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { getCompanyEnrichmentService } from '@/lib/services/company-enrichment.service'
+import { checkRateLimit, RATE_LIMITS } from '@/lib/utils/rate-limit'
+import { z } from 'zod'
+
+// Domain validation schema
+const domainSchema = z.string().min(1).max(255).regex(
+  /^[a-zA-Z0-9][a-zA-Z0-9-]*(\.[a-zA-Z0-9][a-zA-Z0-9-]*)*\.[a-zA-Z]{2,}$/,
+  'Invalid domain format'
+)
 
 export async function POST(request: NextRequest) {
   try {
@@ -77,18 +85,46 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    // This endpoint can be public for basic logo lookup
-    // but we'll rate limit it in production
+    // Apply rate limiting for public endpoint
+    const clientIp = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+      || request.headers.get('x-real-ip')
+      || 'unknown'
+
+    const rateLimitResult = checkRateLimit(`enrich-company:${clientIp}`, RATE_LIMITS.publicStrict)
+    if (!rateLimitResult.allowed) {
+      return NextResponse.json(
+        { error: 'Rate limit exceeded. Please try again later.' },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': String(rateLimitResult.resetIn),
+            'X-RateLimit-Limit': String(RATE_LIMITS.publicStrict.limit),
+            'X-RateLimit-Remaining': '0',
+            'X-RateLimit-Reset': String(Math.ceil(Date.now() / 1000) + rateLimitResult.resetIn),
+          },
+        }
+      )
+    }
 
     const { searchParams } = new URL(request.url)
-    const domain = searchParams.get('domain')
+    const rawDomain = searchParams.get('domain')
 
-    if (!domain) {
+    if (!rawDomain) {
       return NextResponse.json(
         { error: 'Domain parameter is required' },
         { status: 400 }
       )
     }
+
+    // Validate domain format
+    const domainResult = domainSchema.safeParse(rawDomain)
+    if (!domainResult.success) {
+      return NextResponse.json(
+        { error: 'Invalid domain format' },
+        { status: 400 }
+      )
+    }
+    const domain = domainResult.data
 
     const enrichmentService = getCompanyEnrichmentService()
 

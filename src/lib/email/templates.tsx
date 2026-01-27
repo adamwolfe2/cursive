@@ -514,6 +514,154 @@ export function PasswordResetEmail({
   )
 }
 
+interface CampaignCompletedEmailProps {
+  userName: string
+  campaignName: string
+  stats: {
+    totalSent: number
+    opened: number
+    clicked: number
+    replied: number
+  }
+  campaignUrl: string
+}
+
+export function CampaignCompletedEmail({
+  userName,
+  campaignName,
+  stats,
+  campaignUrl,
+}: CampaignCompletedEmailProps) {
+  const openRate = stats.totalSent > 0 ? Math.round((stats.opened / stats.totalSent) * 100) : 0
+  const clickRate = stats.totalSent > 0 ? Math.round((stats.clicked / stats.totalSent) * 100) : 0
+
+  return (
+    <EmailLayout preview={`Your campaign "${campaignName}" has completed`}>
+      <Heading>Campaign Completed!</Heading>
+      <Text>Hi {userName},</Text>
+      <Text>
+        Your email campaign <strong>&quot;{campaignName}&quot;</strong> has finished
+        sending to all recipients.
+      </Text>
+
+      <table
+        width="100%"
+        cellPadding="0"
+        cellSpacing="0"
+        style={{ margin: '16px 0' }}
+      >
+        <tbody>
+          <tr>
+            <td
+              style={{
+                padding: '12px',
+                backgroundColor: '#f9fafb',
+                borderRadius: '6px',
+                textAlign: 'center',
+                width: '25%',
+              }}
+            >
+              <div style={{ fontSize: '20px', fontWeight: 600, color: '#2563eb' }}>
+                {stats.totalSent}
+              </div>
+              <div style={{ fontSize: '11px', color: '#6b7280' }}>Sent</div>
+            </td>
+            <td style={{ width: '8px' }} />
+            <td
+              style={{
+                padding: '12px',
+                backgroundColor: '#f9fafb',
+                borderRadius: '6px',
+                textAlign: 'center',
+                width: '25%',
+              }}
+            >
+              <div style={{ fontSize: '20px', fontWeight: 600, color: '#22c55e' }}>
+                {openRate}%
+              </div>
+              <div style={{ fontSize: '11px', color: '#6b7280' }}>Open Rate</div>
+            </td>
+            <td style={{ width: '8px' }} />
+            <td
+              style={{
+                padding: '12px',
+                backgroundColor: '#f9fafb',
+                borderRadius: '6px',
+                textAlign: 'center',
+                width: '25%',
+              }}
+            >
+              <div style={{ fontSize: '20px', fontWeight: 600, color: '#f59e0b' }}>
+                {clickRate}%
+              </div>
+              <div style={{ fontSize: '11px', color: '#6b7280' }}>Click Rate</div>
+            </td>
+            <td style={{ width: '8px' }} />
+            <td
+              style={{
+                padding: '12px',
+                backgroundColor: '#f9fafb',
+                borderRadius: '6px',
+                textAlign: 'center',
+                width: '25%',
+              }}
+            >
+              <div style={{ fontSize: '20px', fontWeight: 600, color: '#8b5cf6' }}>
+                {stats.replied}
+              </div>
+              <div style={{ fontSize: '11px', color: '#6b7280' }}>Replies</div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div style={{ textAlign: 'center', margin: '24px 0' }}>
+        <Button href={campaignUrl}>View Campaign Results</Button>
+      </div>
+    </EmailLayout>
+  )
+}
+
+interface PaymentFailedEmailProps {
+  userName: string
+  amount: string
+  currency: string
+  billingUrl: string
+  attemptCount: number
+}
+
+export function PaymentFailedEmail({
+  userName,
+  amount,
+  currency,
+  billingUrl,
+  attemptCount,
+}: PaymentFailedEmailProps) {
+  return (
+    <EmailLayout preview="Payment failed - action required">
+      <Heading>Payment Failed</Heading>
+      <Text>Hi {userName},</Text>
+      <Text>
+        We were unable to process your payment of{' '}
+        <strong>{currency.toUpperCase()} {amount}</strong>.
+      </Text>
+      <Callout variant="error">
+        <Text style={{ margin: 0 }}>
+          {attemptCount === 1
+            ? 'This is our first attempt. We will retry automatically, but please update your payment method to avoid service interruption.'
+            : `This is attempt ${attemptCount}. Please update your payment method immediately to avoid service interruption.`}
+        </Text>
+      </Callout>
+      <div style={{ textAlign: 'center', margin: '24px 0' }}>
+        <Button href={billingUrl}>Update Payment Method</Button>
+      </div>
+      <Text style={{ color: '#6b7280', fontSize: '12px' }}>
+        If you believe this is an error or need assistance, please contact our support team.
+      </Text>
+    </EmailLayout>
+  )
+}
+
 // ============================================
 // TEMPLATE RENDERER
 // ============================================

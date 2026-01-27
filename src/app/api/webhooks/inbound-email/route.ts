@@ -1,13 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { createAdminClient } from '@/lib/supabase/admin'
 import crypto from 'crypto'
-
-function getSupabaseAdmin() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
-}
 
 /**
  * Verify webhook signature from email provider
@@ -28,7 +21,7 @@ function verifySignature(payload: string, signature: string, secret: string): bo
  * Handle inbound email webhook (from Resend, SendGrid, etc.)
  */
 export async function POST(request: NextRequest) {
-  const supabase = getSupabaseAdmin()
+  const supabase = createAdminClient()
   try {
     const payload = await request.text()
     const signature = request.headers.get('x-webhook-signature') || ''

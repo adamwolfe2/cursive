@@ -1,11 +1,39 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { createAdminClient } from '@/lib/supabase/admin'
+import { z } from 'zod'
 
-function getSupabaseAdmin() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
+// Allowed domains for redirect URLs (prevent open redirect attacks)
+const ALLOWED_REDIRECT_DOMAINS = [
+  'meetcursive.com',
+  'cursive.com',
+  'localhost',
+  '127.0.0.1',
+]
+
+// Validation schema
+const querySchema = z.object({
+  id: z.string().uuid().optional(),
+  url: z.string().optional(),
+})
+
+/**
+ * Validate URL is safe for redirect (prevent open redirect attacks)
+ */
+function isValidRedirectUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url)
+    // Only allow http and https protocols
+    if (!['http:', 'https:'].includes(parsed.protocol)) {
+      return false
+    }
+    // Check if domain is in allowlist or is a subdomain of allowed domains
+    const hostname = parsed.hostname.toLowerCase()
+    return ALLOWED_REDIRECT_DOMAINS.some(domain =>
+      hostname === domain || hostname.endsWith(`.${domain}`)
+    )
+  } catch {
+    return false
+  }
 }
 
 /**
@@ -13,15 +41,37 @@ function getSupabaseAdmin() {
  */
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
-  const emailSendId = searchParams.get('id')
-  const encodedUrl = searchParams.get('url')
 
-  // Decode the target URL
-  const targetUrl = encodedUrl ? decodeURIComponent(encodedUrl) : null
+  // Validate input
+  const parseResult = querySchema.safeParse({
+    id: searchParams.get('id') || undefined,
+    url: searchParams.get('url') || undefined,
+  })
+
+  if (!parseResult.success) {
+    // Invalid params - redirect to safe fallback
+    const fallbackUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://meetcursive.com'
+    return NextResponse.redirect(fallbackUrl, { status: 302 })
+  }
+
+  const { id: emailSendId, url: encodedUrl } = parseResult.data
+
+  // Decode and validate the target URL
+  let targetUrl: string | null = null
+  if (encodedUrl) {
+    try {
+      const decoded = decodeURIComponent(encodedUrl)
+      if (isValidRedirectUrl(decoded)) {
+        targetUrl = decoded
+      }
+    } catch {
+      // Invalid encoding - ignore
+    }
+  }
 
   if (emailSendId && targetUrl) {
     try {
-      const supabase = getSupabaseAdmin()
+      const supabase = createAdminClient()
       // Get the email send record
       const { data: emailSend } = await supabase
         .from('email_sends')
@@ -62,7 +112,7 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  // Redirect to target URL or fallback
+  // Redirect to validated target URL or safe fallback
   const redirectUrl = targetUrl || process.env.NEXT_PUBLIC_APP_URL || 'https://meetcursive.com'
 
   return NextResponse.redirect(redirectUrl, {

@@ -13,11 +13,27 @@ export default async function DashboardPage() {
   }
 
   // Get user profile
-  const { data: user, error: userError } = await supabase
+  const { data: userData, error: userError } = await supabase
     .from('users')
     .select('*, workspaces(*)')
     .eq('auth_user_id', session.user.id)
     .single()
+
+  // Type the user data
+  const user = userData as {
+    id: string
+    auth_user_id: string
+    workspace_id: string
+    email: string
+    full_name: string | null
+    plan: string | null
+    role: string
+    workspaces: {
+      id: string
+      name: string
+      industry_vertical: string | null
+    } | null
+  } | null
 
   // If no user profile exists, redirect to onboarding
   if (userError || !user || !user.workspace_id) {
