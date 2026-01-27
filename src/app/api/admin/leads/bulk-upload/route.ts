@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { isAdmin } from '@/lib/auth/admin'
+import { requireAdmin } from '@/lib/auth/admin'
 import { parse } from 'csv-parse/sync'
 
 // Industry mapping
@@ -70,11 +70,8 @@ function calculateLeadScore(lead: any): number {
 
 export async function POST(request: NextRequest) {
   try {
-    // Check admin authorization
-    const adminCheck = await isAdmin()
-    if (!adminCheck) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    // Check admin authorization (throws if not admin)
+    await requireAdmin()
 
     const supabase = await createClient()
 

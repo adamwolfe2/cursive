@@ -6,3 +6,4 @@
  */
 
 export * from './utility-types'
+export * from './api-types'

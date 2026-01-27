@@ -10,14 +10,12 @@ import { createClient } from '@/lib/supabase/server'
 import { cookies } from 'next/headers'
 import type { PlatformAdmin, AdminContext, Workspace, AdminActionType } from '@/types'
 
-// Hardcoded admin emails (fallback)
-const ADMIN_EMAILS = ['adam@meetcursive.com']
-
 // Cookie name for impersonation session
 const IMPERSONATION_COOKIE = 'cursive_impersonation_session'
 
 /**
  * Check if current user is a platform admin
+ * NOTE: Admins must be in the platform_admins database table.
  */
 export async function isAdmin(): Promise<boolean> {
   try {
@@ -30,7 +28,7 @@ export async function isAdmin(): Promise<boolean> {
       return false
     }
 
-    // Check database first
+    // Check database - this is the only source of truth for admin status
     const { data: admin } = await supabase
       .from('platform_admins')
       .select('id')
@@ -38,12 +36,7 @@ export async function isAdmin(): Promise<boolean> {
       .eq('is_active', true)
       .single()
 
-    if (admin) {
-      return true
-    }
-
-    // Fallback to hardcoded list
-    return ADMIN_EMAILS.includes(session.user.email)
+    return !!admin
   } catch (error) {
     console.error('Admin check error:', error)
     return false

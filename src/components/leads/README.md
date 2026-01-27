@@ -344,16 +344,6 @@ To test the components:
 9. **Test detail panel** - click on a row
 10. **Test pagination** - navigate pages
 
-## Migration from Old Components
-
-The old components are saved with `-old.tsx` suffix:
-- `leads-table-old.tsx`
-- `leads-table-toolbar-old.tsx`
-- `lead-detail-panel-old.tsx`
-- `lead-stats-old.tsx`
-
-All imports will automatically use the new enhanced versions.
-
 ## Future Enhancements
 
 - [ ] Date range picker for created_at filter

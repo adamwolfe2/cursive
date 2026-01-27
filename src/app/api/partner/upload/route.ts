@@ -1,6 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { parse } from 'csv-parse/sync'
+import { z } from 'zod'
+
+// Input validation for lead data
+const leadSchema = z.object({
+  first_name: z.string().min(1).max(100),
+  last_name: z.string().min(1).max(100),
+  email: z.string().email().max(255),
+  phone: z.string().max(50).optional(),
+  company_name: z.string().max(200).optional(),
+  city: z.string().max(100).optional(),
+  state: z.string().max(50),
+  industry: z.string().max(100),
+  intent_signal: z.string().max(500).optional(),
+  utm_source: z.string().max(100).optional(),
+})
 
 // Industry mapping
 const INDUSTRY_MAP: Record<string, string> = {
@@ -90,10 +105,15 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Get workspaces for routing
+    // Get only workspaces that have opted-in to receive partner leads
+    // Workspaces must have:
+    // 1. accepts_partner_leads = true (explicit opt-in)
+    // 2. Matching allowed_industries and allowed_regions
     const { data: workspaces } = await supabase
       .from('workspaces')
-      .select('id, name, allowed_industries, allowed_regions')
+      .select('id, name, allowed_industries, allowed_regions, accepts_partner_leads')
+      .eq('accepts_partner_leads', true)
+      .eq('subscription_status', 'active')
 
     // Process leads
     const results = {
@@ -108,20 +128,24 @@ export async function POST(request: NextRequest) {
       const rowNum = i + 2
 
       try {
-        if (!row.first_name || !row.last_name || !row.email) {
-          results.errors.push(`Row ${rowNum}: Missing required fields`)
+        // Validate input with Zod schema
+        const parseResult = leadSchema.safeParse(row)
+        if (!parseResult.success) {
+          results.errors.push(`Row ${rowNum}: Invalid data - ${parseResult.error.issues[0]?.message || 'validation failed'}`)
           results.failed++
           continue
         }
 
-        const state = normalizeState(row.state)
+        const validatedRow = parseResult.data
+
+        const state = normalizeState(validatedRow.state)
         if (!state) {
           results.errors.push(`Row ${rowNum}: Invalid state`)
           results.failed++
           continue
         }
 
-        const industry = normalizeIndustry(row.industry)
+        const industry = normalizeIndustry(validatedRow.industry)
         if (!industry) {
           results.errors.push(`Row ${rowNum}: Invalid industry`)
           results.failed++
@@ -141,25 +165,25 @@ export async function POST(request: NextRequest) {
           continue
         }
 
-        // Insert lead
+        // Insert lead with validated and sanitized data
         const { error: insertError } = await supabase.from('leads').insert({
           workspace_id: matchingWorkspace.id,
           partner_id: partner.id,
-          first_name: row.first_name,
-          last_name: row.last_name,
-          email: row.email,
-          phone: row.phone || null,
-          company_name: row.company_name || `${row.first_name}'s Request`,
+          first_name: validatedRow.first_name,
+          last_name: validatedRow.last_name,
+          email: validatedRow.email.toLowerCase(), // Normalize email
+          phone: validatedRow.phone || null,
+          company_name: validatedRow.company_name || `${validatedRow.first_name}'s Request`,
           company_industry: industry,
           company_location: {
-            city: row.city || null,
+            city: validatedRow.city || null,
             state: state,
             country: 'US',
           },
-          intent_signal: row.intent_signal || null,
+          intent_signal: validatedRow.intent_signal || null,
           source: 'partner',
           lead_score: 60,
-          utm_source: row.utm_source || `partner_${partner.id}`,
+          utm_source: validatedRow.utm_source || `partner_${partner.id}`,
           enrichment_status: 'pending',
           delivery_status: 'pending',
         } as any)

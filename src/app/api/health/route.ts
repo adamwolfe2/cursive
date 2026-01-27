@@ -4,16 +4,19 @@
  *
  * Verifies connectivity to all external services the app depends on.
  * Used for monitoring, deployment verification, and debugging.
+ *
+ * SECURITY: Detailed health info requires HEALTH_CHECK_SECRET header.
+ * Public access only returns basic status without service details.
  */
 
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
 interface ServiceHealth {
   name: string
   status: 'healthy' | 'unhealthy' | 'degraded' | 'unconfigured'
   latency?: number
-  error?: string
+  // Error is internal only - never exposed in public responses
 }
 
 interface HealthCheckResponse {
@@ -36,7 +39,7 @@ async function checkSupabase(): Promise<ServiceHealth> {
   const name = 'supabase'
 
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
-    return { name, status: 'unconfigured', error: 'Missing Supabase credentials' }
+    return { name, status: 'unconfigured' }
   }
 
   try {
@@ -54,7 +57,8 @@ async function checkSupabase(): Promise<ServiceHealth> {
 
     return { name, status: 'healthy', latency: Date.now() - start }
   } catch (error: any) {
-    return { name, status: 'unhealthy', latency: Date.now() - start, error: error.message }
+    console.error('Supabase health check failed:', error.message)
+    return { name, status: 'unhealthy', latency: Date.now() - start }
   }
 }
 
@@ -66,18 +70,19 @@ async function checkAnthropic(): Promise<ServiceHealth> {
   const name = 'anthropic'
 
   if (!process.env.ANTHROPIC_API_KEY) {
-    return { name, status: 'unconfigured', error: 'ANTHROPIC_API_KEY not set' }
+    return { name, status: 'unconfigured' }
   }
 
   try {
     // Validate API key format (starts with sk-ant-)
     if (!process.env.ANTHROPIC_API_KEY.startsWith('sk-ant-')) {
-      return { name, status: 'degraded', error: 'Invalid API key format' }
+      return { name, status: 'degraded' }
     }
     // Don't make actual API call to save tokens - just verify config
     return { name, status: 'healthy', latency: Date.now() - start }
   } catch (error: any) {
-    return { name, status: 'unhealthy', latency: Date.now() - start, error: error.message }
+    console.error('Anthropic health check failed:', error.message)
+    return { name, status: 'unhealthy', latency: Date.now() - start }
   }
 }
 
@@ -89,7 +94,7 @@ async function checkStripe(): Promise<ServiceHealth> {
   const name = 'stripe'
 
   if (!process.env.STRIPE_SECRET_KEY) {
-    return { name, status: 'unconfigured', error: 'STRIPE_SECRET_KEY not set' }
+    return { name, status: 'unconfigured' }
   }
 
   try {
@@ -100,13 +105,13 @@ async function checkStripe(): Promise<ServiceHealth> {
     })
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({}))
-      throw new Error((error as any).error?.message || 'Stripe API error')
+      throw new Error('Stripe API error')
     }
 
     return { name, status: 'healthy', latency: Date.now() - start }
   } catch (error: any) {
-    return { name, status: 'unhealthy', latency: Date.now() - start, error: error.message }
+    console.error('Stripe health check failed:', error.message)
+    return { name, status: 'unhealthy', latency: Date.now() - start }
   }
 }
 
@@ -118,7 +123,7 @@ async function checkResend(): Promise<ServiceHealth> {
   const name = 'resend'
 
   if (!process.env.RESEND_API_KEY) {
-    return { name, status: 'unconfigured', error: 'RESEND_API_KEY not set' }
+    return { name, status: 'unconfigured' }
   }
 
   try {
@@ -129,13 +134,13 @@ async function checkResend(): Promise<ServiceHealth> {
     })
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({}))
-      throw new Error((error as any).message || 'Resend API error')
+      throw new Error('Resend API error')
     }
 
     return { name, status: 'healthy', latency: Date.now() - start }
   } catch (error: any) {
-    return { name, status: 'unhealthy', latency: Date.now() - start, error: error.message }
+    console.error('Resend health check failed:', error.message)
+    return { name, status: 'unhealthy', latency: Date.now() - start }
   }
 }
 
@@ -147,7 +152,7 @@ async function checkClay(): Promise<ServiceHealth> {
   const name = 'clay'
 
   if (!process.env.CLAY_API_KEY) {
-    return { name, status: 'unconfigured', error: 'CLAY_API_KEY not set' }
+    return { name, status: 'unconfigured' }
   }
 
   // Clay doesn't have a dedicated health endpoint, so we just verify config
@@ -162,7 +167,7 @@ async function checkDataShopper(): Promise<ServiceHealth> {
   const name = 'datashopper'
 
   if (!process.env.DATASHOPPER_API_KEY) {
-    return { name, status: 'unconfigured', error: 'DATASHOPPER_API_KEY not set' }
+    return { name, status: 'unconfigured' }
   }
 
   // DataShopper doesn't have a dedicated health endpoint, so we just verify config
@@ -177,7 +182,7 @@ async function checkInngest(): Promise<ServiceHealth> {
   const name = 'inngest'
 
   if (!process.env.INNGEST_EVENT_KEY || !process.env.INNGEST_SIGNING_KEY) {
-    return { name, status: 'unconfigured', error: 'Inngest credentials not set' }
+    return { name, status: 'unconfigured' }
   }
 
   return { name, status: 'healthy', latency: Date.now() - start }
@@ -186,12 +191,18 @@ async function checkInngest(): Promise<ServiceHealth> {
 /**
  * GET /api/health
  * Returns health status of all services
+ *
+ * Public access returns only overall status.
+ * Detailed service info requires X-Health-Secret header matching HEALTH_CHECK_SECRET env var.
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
   const timestamp = new Date().toISOString()
-  const environment = process.env.NODE_ENV || 'development'
-  const version = process.env.npm_package_version || '1.0.0'
   const uptime = Math.floor((Date.now() - startTime) / 1000)
+
+  // Check if this is an authenticated detailed health check
+  const healthSecret = process.env.HEALTH_CHECK_SECRET
+  const providedSecret = request.headers.get('x-health-secret')
+  const isAuthenticated = healthSecret && providedSecret === healthSecret
 
   // Run all health checks in parallel
   const services = await Promise.all([
@@ -207,7 +218,6 @@ export async function GET() {
   // Determine overall status
   const unhealthyCount = services.filter((s) => s.status === 'unhealthy').length
   const degradedCount = services.filter((s) => s.status === 'degraded').length
-  const unconfiguredCount = services.filter((s) => s.status === 'unconfigured').length
 
   let status: 'healthy' | 'unhealthy' | 'degraded' = 'healthy'
 
@@ -223,17 +233,38 @@ export async function GET() {
     status = 'degraded'
   }
 
+  // Return 503 for unhealthy, 200 otherwise
+  const httpStatus = status === 'unhealthy' ? 503 : 200
+
+  // Public response - only status and timestamp
+  if (!isAuthenticated) {
+    return NextResponse.json(
+      {
+        status,
+        timestamp,
+      },
+      {
+        status: httpStatus,
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate',
+        },
+      }
+    )
+  }
+
+  // Authenticated response - full service details (no error messages)
   const response: HealthCheckResponse = {
     status,
     timestamp,
-    version,
-    environment,
-    services,
+    version: process.env.npm_package_version || '1.0.0',
+    environment: process.env.NODE_ENV || 'development',
+    services: services.map(s => ({
+      name: s.name,
+      status: s.status,
+      latency: s.latency,
+    })),
     uptime,
   }
-
-  // Return 503 for unhealthy, 200 otherwise
-  const httpStatus = status === 'unhealthy' ? 503 : 200
 
   return NextResponse.json(response, {
     status: httpStatus,

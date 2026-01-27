@@ -6,7 +6,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import {
-  isAdmin,
+  requireAdmin,
   startImpersonation,
   endImpersonation,
   getActiveImpersonationSession,
@@ -14,14 +14,8 @@ import {
 
 export async function POST(request: NextRequest) {
   try {
-    // Verify admin
-    const isAdminUser = await isAdmin()
-    if (!isAdminUser) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
-    }
+    // Verify admin (throws if not admin)
+    await requireAdmin()
 
     const body = await request.json()
     const { workspaceId, reason } = body
@@ -58,14 +52,8 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE() {
   try {
-    // Verify admin
-    const isAdminUser = await isAdmin()
-    if (!isAdminUser) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
-    }
+    // Verify admin (throws if not admin)
+    await requireAdmin()
 
     const result = await endImpersonation()
 
@@ -91,14 +79,8 @@ export async function DELETE() {
 
 export async function GET() {
   try {
-    // Verify admin
-    const isAdminUser = await isAdmin()
-    if (!isAdminUser) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
-    }
+    // Verify admin (throws if not admin)
+    await requireAdmin()
 
     const session = await getActiveImpersonationSession()
 

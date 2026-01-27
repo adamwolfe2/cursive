@@ -246,7 +246,8 @@ export default function TeamSettingsPage() {
                               updateRoleMutation.mutate({ id: member.id, role: e.target.value })
                             }
                           }}
-                          className="rounded-md border border-input text-sm py-1 px-2 focus:border-primary focus:ring-primary"
+                          disabled={updateRoleMutation.isPending}
+                          className="rounded-md border border-input text-sm py-1 px-2 focus:border-primary focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           <option value="member">Member</option>
                           <option value="admin">Admin</option>
@@ -257,12 +258,17 @@ export default function TeamSettingsPage() {
                               removeMemberMutation.mutate(member.id)
                             }
                           }}
-                          className="p-1.5 text-zinc-400 hover:text-red-600 transition-colors"
+                          disabled={removeMemberMutation.isPending}
+                          className="p-1.5 text-zinc-400 hover:text-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                           title="Remove member"
                         >
-                          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                          </svg>
+                          {removeMemberMutation.isPending ? (
+                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-zinc-300 border-t-red-500" />
+                          ) : (
+                            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          )}
                         </button>
                       </div>
                     )}
@@ -328,9 +334,10 @@ export default function TeamSettingsPage() {
                           cancelInviteMutation.mutate(invite.id)
                         }
                       }}
-                      className="text-sm text-red-600 hover:text-red-700 font-medium"
+                      disabled={cancelInviteMutation.isPending}
+                      className="text-sm text-red-600 hover:text-red-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      Cancel
+                      {cancelInviteMutation.isPending ? 'Canceling...' : 'Cancel'}
                     </button>
                   </td>
                 </tr>

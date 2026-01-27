@@ -1,9 +1,11 @@
 // Admin API: Seed Demo Data
 // POST /api/admin/seed-demo-data - Populate dashboard with realistic demo data
 // This is for demonstration purposes only
+// SECURITY: Requires platform admin privileges
 
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
+import { requireAdmin } from '@/lib/auth/admin'
 import { createClient } from '@/lib/supabase/server'
 
 // Realistic company data for demos
@@ -77,7 +79,10 @@ function randomDate(daysAgo: number): string {
 
 export async function POST(request: NextRequest) {
   try {
-    // 1. Check authentication
+    // 1. Check admin authorization (throws if not admin)
+    await requireAdmin()
+
+    // 2. Get current user for workspace context
     const user = await getCurrentUser()
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

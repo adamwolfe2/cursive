@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { isAdmin, getCurrentAdminId } from '@/lib/auth/admin'
+import { requireAdmin, getCurrentAdminId } from '@/lib/auth/admin'
 import Stripe from 'stripe'
 
 function getStripeClient(): Stripe {
@@ -14,10 +14,8 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Check admin access
-    if (!(await isAdmin())) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    // Check admin access (throws if not admin)
+    await requireAdmin()
 
     const { id: payoutId } = await params
     const { action, admin_notes, rejection_reason } = await request.json()

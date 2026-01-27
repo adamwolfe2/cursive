@@ -84,11 +84,27 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Store the inbound message
+    // Reject emails we can't attribute to a workspace
+    if (!workspaceId) {
+      console.warn('Inbound email could not be matched to a workspace:', {
+        from: inboundEmail.from,
+        to: inboundEmail.to,
+        subject: inboundEmail.subject,
+      })
+      // Return success to the email provider so they don't retry
+      // but don't store the message since we can't attribute it
+      return NextResponse.json({
+        success: true,
+        matched: false,
+        reason: 'Could not match email to a workspace',
+      })
+    }
+
+    // Store the inbound message (only if we have a valid workspace)
     const { data: inboundMessage, error: insertError } = await supabase
       .from('inbound_messages')
       .insert({
-        workspace_id: workspaceId || '00000000-0000-0000-0000-000000000000', // Default workspace for unmatched
+        workspace_id: workspaceId,
         lead_id: lead?.id || emailSend?.lead_id,
         email_send_id: emailSend?.id,
         message_type: 'email_reply',

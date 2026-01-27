@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { z } from 'zod'
 
 // Create Supabase client with service role for tracking (no auth required)
 function getSupabaseAdmin() {
@@ -15,6 +16,13 @@ const TRACKING_PIXEL = Buffer.from(
   'base64'
 )
 
+// Input validation schemas
+const uuidSchema = z.string().uuid()
+const clickTrackingSchema = z.object({
+  emailSendId: z.string().uuid(),
+  url: z.string().url().optional(),
+})
+
 /**
  * Handle email open tracking (GET with tracking pixel)
  */
@@ -23,16 +31,18 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
   const emailSendId = searchParams.get('id')
 
-  if (emailSendId) {
+  // Validate UUID format to prevent injection
+  if (emailSendId && uuidSchema.safeParse(emailSendId).success) {
     try {
-      // Get the email send record
+      // Get the email send record with workspace validation
       const { data: emailSend } = await supabase
         .from('email_sends')
-        .select('id, campaign_id, opened_at')
+        .select('id, campaign_id, opened_at, email_campaigns!inner(workspace_id)')
         .eq('id', emailSendId)
         .single()
 
-      if (emailSend && !emailSend.opened_at) {
+      // Only process if we found a valid record with a workspace
+      if (emailSend && emailSend.email_campaigns && !emailSend.opened_at) {
         // Record open event
         const now = new Date().toISOString()
 
@@ -83,20 +93,25 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   const supabase = getSupabaseAdmin()
   try {
-    const { emailSendId, url } = await request.json()
+    const body = await request.json()
 
-    if (!emailSendId) {
-      return NextResponse.json({ error: 'Missing emailSendId' }, { status: 400 })
+    // Validate input
+    const parseResult = clickTrackingSchema.safeParse(body)
+    if (!parseResult.success) {
+      return NextResponse.json({ error: 'Invalid input' }, { status: 400 })
     }
 
-    // Get the email send record
+    const { emailSendId, url } = parseResult.data
+
+    // Get the email send record with workspace validation
     const { data: emailSend } = await supabase
       .from('email_sends')
-      .select('id, campaign_id, clicked_at')
+      .select('id, campaign_id, clicked_at, email_campaigns!inner(workspace_id)')
       .eq('id', emailSendId)
       .single()
 
-    if (!emailSend) {
+    // Validate that the email send exists and belongs to a valid workspace
+    if (!emailSend || !emailSend.email_campaigns) {
       return NextResponse.json({ error: 'Email send not found' }, { status: 404 })
     }
 
