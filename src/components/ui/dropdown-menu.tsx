@@ -155,10 +155,10 @@ export function DropdownMenuItem({
       role="menuitem"
       disabled={disabled}
       className={cn(
-        'relative flex w-full cursor-pointer select-none items-center rounded-md px-2 py-1.5 text-sm outline-none transition-colors',
+        'relative flex w-full cursor-pointer select-none items-center rounded-md px-3 py-2.5 sm:px-2 sm:py-1.5 text-sm outline-none transition-colors touch-manipulation',
         destructive
-          ? 'text-destructive focus:bg-destructive/10 focus:text-destructive'
-          : 'focus:bg-accent focus:text-accent-foreground',
+          ? 'text-destructive focus:bg-destructive/10 focus:text-destructive active:bg-destructive/10'
+          : 'focus:bg-accent focus:text-accent-foreground active:bg-accent',
         disabled && 'pointer-events-none opacity-50',
         className
       )}

@@ -3,6 +3,7 @@
 
 import Stripe from 'stripe'
 import { createClient } from '@/lib/supabase/server'
+import { sendPaymentFailedEmail } from '@/lib/email/service'
 
 /**
  * Handle customer.subscription.created event
@@ -208,7 +209,7 @@ export async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
 
   const subscription = await supabase
     .from('users')
-    .select('workspace_id, id, email')
+    .select('workspace_id, id, email, full_name')
     .eq('stripe_subscription_id', invoice.subscription)
     .single()
 
@@ -229,7 +230,19 @@ export async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
     },
   })
 
-  // TODO: Send email notification to user about failed payment
+  // Send email notification to user about failed payment
+  try {
+    await sendPaymentFailedEmail(
+      subscription.data.email,
+      subscription.data.full_name || 'there',
+      invoice.amount_due,
+      invoice.currency,
+      invoice.attempt_count || 1
+    )
+  } catch (error) {
+    console.error('Failed to send payment failed email:', error)
+    // Don't throw - we still want to process the webhook
+  }
 }
 
 /**

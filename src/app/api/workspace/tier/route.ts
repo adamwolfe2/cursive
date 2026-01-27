@@ -92,6 +92,12 @@ export async function GET(request: NextRequest) {
       .select('id', { count: 'exact', head: true })
       .eq('workspace_id', user.workspace_id)
 
+    // Get email accounts count
+    const { count: emailAccountsUsed } = await supabase
+      .from('email_accounts')
+      .select('id', { count: 'exact', head: true })
+      .eq('workspace_id', user.workspace_id)
+
     // Build response
     const productTier = tierInfo?.product_tiers as {
       id: string
@@ -135,7 +141,7 @@ export async function GET(request: NextRequest) {
         teamMembersUsed: teamMembersUsed || 1,
         campaignsUsed: campaignsUsed || 0,
         templatesUsed: templatesUsed || 0,
-        emailAccountsUsed: 1, // TODO: Track actual email account count
+        emailAccountsUsed: emailAccountsUsed || 0,
       },
       subscription: tierInfo
         ? {

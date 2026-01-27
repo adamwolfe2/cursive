@@ -30,13 +30,13 @@ export function PageHeader({
     <div className={cn('mb-8', className)}>
       {/* Breadcrumbs */}
       {breadcrumbs && breadcrumbs.length > 0 && (
-        <nav className="mb-4 flex items-center text-sm" aria-label="Breadcrumb">
-          <ol className="flex items-center gap-2">
+        <nav className="mb-4 flex items-center text-sm overflow-x-auto pb-1" aria-label="Breadcrumb">
+          <ol className="flex items-center gap-2 whitespace-nowrap">
             {breadcrumbs.map((crumb, index) => (
-              <li key={index} className="flex items-center">
+              <li key={index} className="flex items-center min-w-0">
                 {index > 0 && (
                   <svg
-                    className="mx-2 h-4 w-4 text-muted-foreground"
+                    className="mx-1 sm:mx-2 h-4 w-4 text-muted-foreground flex-shrink-0"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -52,12 +52,12 @@ export function PageHeader({
                 {crumb.href ? (
                   <Link
                     href={crumb.href}
-                    className="text-muted-foreground hover:text-foreground transition-colors"
+                    className="text-muted-foreground hover:text-foreground transition-colors truncate max-w-[120px] sm:max-w-none"
                   >
                     {crumb.label}
                   </Link>
                 ) : (
-                  <span className="text-foreground font-medium">{crumb.label}</span>
+                  <span className="text-foreground font-medium truncate max-w-[150px] sm:max-w-none">{crumb.label}</span>
                 )}
               </li>
             ))}

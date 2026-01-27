@@ -10,6 +10,8 @@ import {
   autoCompleteCampaigns,
   validateCampaignForActivation,
 } from '@/lib/services/campaign/campaign-state-machine'
+import { createAdminClient } from '@/lib/supabase/admin'
+import { sendCampaignCompletedEmail } from '@/lib/email/service'
 
 /**
  * Activate scheduled campaigns
@@ -162,9 +164,63 @@ export const onCampaignStatusChange = inngest.createFunction(
     }
 
     if (new_status === 'completed') {
-      // Campaign completed - could trigger analytics summary, notifications, etc.
+      // Campaign completed - send notification to workspace owner
       logger.info(`Campaign ${campaign_id} completed`)
-      // TODO: Trigger completion notifications
+
+      await step.run('send-completion-notification', async () => {
+        const supabase = createAdminClient()
+
+        // Get campaign details with workspace owner
+        const { data: campaign } = await supabase
+          .from('email_campaigns')
+          .select(`
+            id,
+            name,
+            total_sent,
+            total_opened,
+            total_clicked,
+            total_replied,
+            workspaces!inner (
+              id
+            )
+          `)
+          .eq('id', campaign_id)
+          .single()
+
+        if (!campaign) {
+          logger.error(`Campaign ${campaign_id} not found for notification`)
+          return
+        }
+
+        // Get workspace owner
+        const { data: owner } = await supabase
+          .from('users')
+          .select('email, full_name')
+          .eq('workspace_id', workspace_id)
+          .eq('role', 'owner')
+          .single()
+
+        if (!owner) {
+          logger.warn(`No owner found for workspace ${workspace_id}`)
+          return
+        }
+
+        // Send completion email
+        await sendCampaignCompletedEmail(
+          owner.email,
+          owner.full_name || 'there',
+          campaign.name,
+          campaign.id,
+          {
+            totalSent: campaign.total_sent || 0,
+            opened: campaign.total_opened || 0,
+            clicked: campaign.total_clicked || 0,
+            replied: campaign.total_replied || 0,
+          }
+        )
+
+        logger.info(`Sent completion notification for campaign ${campaign_id} to ${owner.email}`)
+      })
     }
 
     return { success: true }

@@ -134,10 +134,10 @@ export function Sidebar({ items, workspace, className }: SidebarProps) {
                 <Link
                   href={item.href}
                   className={cn(
-                    'group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                    'group flex items-center gap-3 rounded-lg px-3 py-2.5 sm:py-2 text-sm font-medium transition-colors touch-manipulation',
                     isActive
                       ? 'bg-primary/10 text-primary'
-                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                      : 'text-muted-foreground hover:bg-muted hover:text-foreground active:bg-muted'
                   )}
                 >
                   <span
@@ -264,13 +264,13 @@ export function SidebarMobile({
         )}
       >
         <Sidebar items={items} workspace={workspace} className="h-full shadow-xl" />
-        {/* Close button */}
+        {/* Close button - larger touch target on mobile */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-zinc-600 lg:hidden"
+          className="absolute top-3 right-3 p-3 rounded-lg bg-zinc-100 hover:bg-zinc-200 active:bg-zinc-300 text-zinc-600 lg:hidden touch-manipulation"
           aria-label="Close menu"
         >
-          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>

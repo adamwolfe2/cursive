@@ -14,6 +14,8 @@ import {
   ExportReadyEmail,
   WeeklyDigestEmail,
   PasswordResetEmail,
+  CampaignCompletedEmail,
+  PaymentFailedEmail,
 } from './templates'
 
 // ============================================
@@ -258,6 +260,72 @@ export async function sendPasswordResetEmail(
     tags: [
       { name: 'category', value: 'auth' },
       { name: 'type', value: 'password_reset' },
+    ],
+  })
+}
+
+/**
+ * Send campaign completed notification
+ */
+export async function sendCampaignCompletedEmail(
+  email: string,
+  userName: string,
+  campaignName: string,
+  campaignId: string,
+  stats: {
+    totalSent: number
+    opened: number
+    clicked: number
+    replied: number
+  }
+): Promise<EmailResult> {
+  const campaignUrl = `${process.env.NEXT_PUBLIC_APP_URL}/campaigns/${campaignId}`
+
+  const html = renderEmail(
+    CampaignCompletedEmail({ userName, campaignName, stats, campaignUrl })
+  )
+
+  return sendEmail({
+    to: email,
+    subject: `Campaign "${campaignName}" has completed`,
+    html,
+    tags: [
+      { name: 'category', value: 'notification' },
+      { name: 'type', value: 'campaign_completed' },
+    ],
+  })
+}
+
+/**
+ * Send payment failed notification
+ */
+export async function sendPaymentFailedEmail(
+  email: string,
+  userName: string,
+  amount: number,
+  currency: string,
+  attemptCount: number
+): Promise<EmailResult> {
+  const billingUrl = `${process.env.NEXT_PUBLIC_APP_URL}/settings/billing`
+  const formattedAmount = (amount / 100).toFixed(2) // Stripe amounts are in cents
+
+  const html = renderEmail(
+    PaymentFailedEmail({
+      userName,
+      amount: formattedAmount,
+      currency,
+      billingUrl,
+      attemptCount,
+    })
+  )
+
+  return sendEmail({
+    to: email,
+    subject: 'Payment failed - action required',
+    html,
+    tags: [
+      { name: 'category', value: 'billing' },
+      { name: 'type', value: 'payment_failed' },
     ],
   })
 }

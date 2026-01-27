@@ -7,7 +7,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
-import { createClient } from '@supabase/supabase-js'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 // GHL OAuth Token URL
 const GHL_TOKEN_URL = 'https://services.leadconnectorhq.com/oauth/token'
@@ -28,19 +28,6 @@ interface OAuthContext {
   user_id: string
 }
 
-/**
- * Create admin Supabase client
- */
-function getSupabaseAdmin() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-
-  if (!supabaseUrl || !serviceRoleKey) {
-    throw new Error('Missing Supabase configuration')
-  }
-
-  return createClient(supabaseUrl, serviceRoleKey)
-}
 
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams
@@ -129,7 +116,7 @@ export async function GET(req: NextRequest) {
     const expiresAt = new Date(Date.now() + tokens.expires_in * 1000).toISOString()
 
     // Store connection in database
-    const supabase = getSupabaseAdmin()
+    const supabase = createAdminClient()
 
     // Check if connection already exists for this workspace
     const { data: existingConnection } = await supabase

@@ -27,11 +27,32 @@ export default async function DashboardLayout({
   }
 
   // Get user profile
-  const { data: user } = await supabase
+  const { data: userData } = await supabase
     .from('users')
     .select('*, workspaces(*)')
     .eq('auth_user_id', session.user.id)
     .single()
+
+  // Type the user data
+  const user = userData as {
+    id: string
+    full_name: string | null
+    email: string
+    plan: string | null
+    role: string
+    daily_credit_limit: number
+    daily_credits_used: number
+    workspaces: {
+      name: string
+      subdomain?: string
+      website_url?: string | null
+      branding?: {
+        logo_url?: string | null
+        favicon_url?: string | null
+        primary_color?: string
+      } | null
+    } | null
+  } | null
 
   if (!user) {
     redirect('/onboarding')
@@ -58,12 +79,12 @@ export default async function DashboardLayout({
 
       <AppShell
         user={{
-          name: user.full_name,
+          name: user.full_name || 'User',
           email: user.email,
-          plan: user.plan,
+          plan: user.plan || 'free',
           role: user.role,
-          creditsRemaining: user.daily_credit_limit - user.daily_credits_used,
-          totalCredits: user.daily_credit_limit,
+          creditsRemaining: (user.daily_credit_limit || 0) - (user.daily_credits_used || 0),
+          totalCredits: user.daily_credit_limit || 0,
           avatarUrl: null,
         }}
         workspace={

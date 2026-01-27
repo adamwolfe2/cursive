@@ -652,3 +652,78 @@
   from { opacity: 0; transform: scale(0.95); }
   to { opacity: 1; transform: scale(1); }
 }
+
+/* ============================================
+   MOBILE OPTIMIZATIONS
+   ============================================ */
+
+@layer utilities {
+  /* Touch-friendly tap targets */
+  .touch-manipulation {
+    touch-action: manipulation;
+  }
+
+  /* Prevent text selection on touch */
+  .select-none-touch {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* Safe area padding for notched devices */
+  .safe-area-inset {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* Better mobile scrolling */
+  .scroll-touch {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Mobile-specific styles */
+@media (max-width: 639px) {
+  /* Larger touch targets for buttons and links */
+  button,
+  a,
+  [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Reduce animations on mobile for performance */
+  .animate-slide-in-from-top,
+  .animate-scale-in,
+  .animate-fade-in {
+    animation-duration: 150ms;
+  }
+
+  /* Better form input experience */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="search"],
+  input[type="tel"],
+  input[type="url"],
+  input[type="number"],
+  textarea,
+  select {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+
+  /* Improve table readability on small screens */
+  .overflow-auto {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Tablet adjustments */
+@media (min-width: 640px) and (max-width: 1023px) {
+  /* Slightly larger touch targets on tablets */
+  button,
+  a,
+  [role="button"] {
+    min-height: 40px;
+  }
+}

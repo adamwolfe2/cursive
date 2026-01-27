@@ -6,7 +6,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { createAdminClient } from '@/lib/supabase/admin'
 import crypto from 'crypto'
 
 // Types for Bland.ai webhook payload
@@ -69,19 +69,6 @@ function verifySignature(
   }
 }
 
-/**
- * Create admin Supabase client for webhook operations
- */
-function getSupabaseAdmin() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-
-  if (!supabaseUrl || !serviceRoleKey) {
-    throw new Error('Missing Supabase configuration')
-  }
-
-  return createClient(supabaseUrl, serviceRoleKey)
-}
 
 /**
  * Map Bland status to our internal status
@@ -177,7 +164,7 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const supabase = getSupabaseAdmin()
+    const supabase = createAdminClient()
 
     // Analyze call outcome
     const { outcome, interested, callbackRequested } = analyzeCallOutcome(payload)

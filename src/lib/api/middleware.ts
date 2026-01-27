@@ -66,6 +66,7 @@ async function getCurrentUser(): Promise<AuthenticatedUser | null> {
       full_name: user.full_name || '',
       workspace_id: user.workspace_id,
       plan: workspace?.plan || 'free',
+      role: (user as any).role || 'member',
       daily_credits_used: user.daily_credits_used || 0,
       daily_credit_limit: workspace?.daily_credit_limit || 10,
     }
@@ -86,6 +87,7 @@ export interface AuthenticatedUser {
   full_name: string
   workspace_id: string
   plan: 'free' | 'pro' | 'enterprise'
+  role: 'owner' | 'admin' | 'member'
   daily_credits_used: number
   daily_credit_limit: number
 }
@@ -150,7 +152,9 @@ export function withWorkspaceOwner<T extends NextResponse>(
   handler: AuthenticatedHandler<T>
 ): (request: NextRequest, context?: { params?: Record<string, string> }) => Promise<T | NextResponse> {
   return withAuth(async (request, context) => {
-    // TODO: Add workspace owner check when workspace roles are implemented
+    if (context.user.role !== 'owner') {
+      throw new ForbiddenError('This action requires workspace ownership')
+    }
     return handler(request, context)
   })
 }

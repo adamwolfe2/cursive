@@ -57,7 +57,8 @@ interface AuditLog {
 }
 
 export default function AdminWorkspaceDetailPage() {
-  const { id } = useParams()
+  const params = useParams()
+  const id = params.id as string
   const router = useRouter()
   const queryClient = useQueryClient()
   const supabase = createClient()

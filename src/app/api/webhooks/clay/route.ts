@@ -6,7 +6,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { createAdminClient } from '@/lib/supabase/admin'
 import crypto from 'crypto'
 
 // Types for Clay webhook payload
@@ -66,19 +66,6 @@ function verifySignature(
   }
 }
 
-/**
- * Create admin Supabase client for webhook operations
- */
-function getSupabaseAdmin() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-
-  if (!supabaseUrl || !serviceRoleKey) {
-    throw new Error('Missing Supabase configuration')
-  }
-
-  return createClient(supabaseUrl, serviceRoleKey)
-}
 
 export async function POST(req: NextRequest) {
   try {
@@ -127,7 +114,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Use admin client for database operations
-    const supabase = getSupabaseAdmin()
+    const supabase = createAdminClient()
 
     // Determine workspace - use provided or find from enrichment job
     let targetWorkspaceId = workspace_id
