@@ -80,7 +80,7 @@ export function Modal({
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-modal flex items-center justify-center">
+    <div className="fixed inset-0 z-modal flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-fade-in"
@@ -91,7 +91,7 @@ export function Modal({
       <div
         ref={modalRef}
         className={cn(
-          'relative z-10 w-full max-w-lg rounded-xl border border-border bg-background p-6 shadow-enterprise-xl animate-scale-in',
+          'relative z-10 w-full max-w-[calc(100vw-2rem)] sm:max-w-lg rounded-xl border border-border bg-background p-4 sm:p-6 shadow-enterprise-xl animate-scale-in max-h-[calc(100vh-2rem)] overflow-y-auto',
           className
         )}
         role="dialog"
@@ -192,7 +192,7 @@ export function ModalFooter({
   className?: string
 }) {
   return (
-    <div className={cn('flex items-center justify-end gap-3 mt-6', className)}>
+    <div className={cn('flex flex-col-reverse sm:flex-row items-center justify-end gap-3 mt-6', className)}>
       {children}
     </div>
   )
@@ -222,19 +222,20 @@ export function ConfirmModal({
   loading,
 }: ConfirmModalProps) {
   return (
-    <Modal isOpen={isOpen} onClose={onClose} className="max-w-md">
+    <Modal isOpen={isOpen} onClose={onClose} className="sm:max-w-md">
       <ModalHeader onClose={onClose}>
         <ModalTitle>{title}</ModalTitle>
         {description && <ModalDescription>{description}</ModalDescription>}
       </ModalHeader>
       <ModalFooter>
-        <Button variant="outline" onClick={onClose} disabled={loading}>
+        <Button variant="outline" onClick={onClose} disabled={loading} className="w-full sm:w-auto">
           {cancelLabel}
         </Button>
         <Button
           variant={variant === 'destructive' ? 'destructive' : 'default'}
           onClick={onConfirm}
           loading={loading}
+          className="w-full sm:w-auto"
         >
           {confirmLabel}
         </Button>

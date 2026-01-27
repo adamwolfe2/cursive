@@ -362,14 +362,14 @@ function TableToolbar({
   className,
 }: TableToolbarProps) {
   return (
-    <div className={cn('flex items-center justify-between gap-4 py-4', className)}>
-      <div className="flex flex-1 items-center gap-4">
+    <div className={cn('flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 py-4', className)}>
+      <div className="flex flex-col sm:flex-row flex-1 items-stretch sm:items-center gap-3 sm:gap-4">
         {onSearchChange && (
           <Input
             placeholder={searchPlaceholder}
             value={searchValue}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="max-w-sm"
+            className="w-full sm:max-w-sm"
             leftIcon={
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -377,17 +377,19 @@ function TableToolbar({
             }
           />
         )}
-        {filters}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
+          {filters}
+        </div>
         {selectedCount > 0 && bulkActions && (
-          <div className="flex items-center gap-2 ml-4 pl-4 border-l border-border">
-            <span className="text-sm text-muted-foreground">
+          <div className="flex items-center gap-2 sm:ml-4 sm:pl-4 sm:border-l sm:border-border">
+            <span className="text-sm text-muted-foreground whitespace-nowrap">
               {selectedCount} selected
             </span>
             {bulkActions}
           </div>
         )}
       </div>
-      {actions && <div className="flex items-center gap-2">{actions}</div>}
+      {actions && <div className="flex items-center gap-2 flex-shrink-0">{actions}</div>}
     </div>
   )
 }
@@ -454,55 +456,67 @@ function Pagination({
 
   return (
     <nav
-      className={cn('flex items-center justify-between py-4', className)}
+      className={cn('flex flex-col sm:flex-row items-center justify-between gap-3 py-4', className)}
       aria-label="Pagination"
       role="navigation"
     >
-      <div className="text-sm text-muted-foreground" aria-live="polite">
+      <div className="text-sm text-muted-foreground order-2 sm:order-1" aria-live="polite">
         {totalItems !== undefined && startItem !== undefined && endItem !== undefined && (
-          <>
+          <span className="hidden sm:inline">
             Showing <span className="font-medium">{startItem}</span> to{' '}
             <span className="font-medium">{endItem}</span> of{' '}
             <span className="font-medium">{totalItems}</span> results
-          </>
+          </span>
+        )}
+        {totalItems !== undefined && (
+          <span className="sm:hidden">
+            Page {currentPage} of {totalPages}
+          </span>
         )}
       </div>
-      <div className="flex items-center gap-1" role="group" aria-label="Page navigation">
+      <div className="flex items-center gap-1 order-1 sm:order-2" role="group" aria-label="Page navigation">
         <Button
           variant="outline"
           size="icon-sm"
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
           aria-label="Go to previous page"
+          className="h-9 w-9 sm:h-8 sm:w-8"
         >
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </Button>
-        {pages.map((page, index) =>
-          page === 'ellipsis' ? (
-            <span key={`ellipsis-${index}`} className="px-2 text-muted-foreground" aria-hidden="true">
-              ...
-            </span>
-          ) : (
-            <Button
-              key={page}
-              variant={currentPage === page ? 'default' : 'ghost'}
-              size="icon-sm"
-              onClick={() => onPageChange(page)}
-              aria-label={`Go to page ${page}`}
-              aria-current={currentPage === page ? 'page' : undefined}
-            >
-              {page}
-            </Button>
-          )
-        )}
+        <div className="hidden sm:flex items-center gap-1">
+          {pages.map((page, index) =>
+            page === 'ellipsis' ? (
+              <span key={`ellipsis-${index}`} className="px-2 text-muted-foreground" aria-hidden="true">
+                ...
+              </span>
+            ) : (
+              <Button
+                key={page}
+                variant={currentPage === page ? 'default' : 'ghost'}
+                size="icon-sm"
+                onClick={() => onPageChange(page)}
+                aria-label={`Go to page ${page}`}
+                aria-current={currentPage === page ? 'page' : undefined}
+              >
+                {page}
+              </Button>
+            )
+          )}
+        </div>
+        <span className="sm:hidden px-3 text-sm font-medium">
+          {currentPage} / {totalPages}
+        </span>
         <Button
           variant="outline"
           size="icon-sm"
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
           aria-label="Go to next page"
+          className="h-9 w-9 sm:h-8 sm:w-8"
         >
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

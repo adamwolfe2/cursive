@@ -10,15 +10,15 @@ const cardVariants = cva('rounded-lg border bg-card text-card-foreground', {
       default: 'border-border',
       elevated: 'border-border shadow-enterprise-md',
       interactive:
-        'border-border shadow-enterprise-sm transition-all duration-200 hover:shadow-enterprise-md hover:border-border-focus/30 cursor-pointer',
+        'border-border shadow-enterprise-sm transition-all duration-200 hover:shadow-enterprise-md hover:border-border-focus/30 cursor-pointer active:scale-[0.99]',
       outlined: 'border-border-light bg-transparent',
       ghost: 'border-transparent bg-transparent',
     },
     padding: {
       none: '',
-      sm: 'p-4',
-      default: 'p-6',
-      lg: 'p-8',
+      sm: 'p-3 sm:p-4',
+      default: 'p-4 sm:p-6',
+      lg: 'p-6 sm:p-8',
     },
   },
   defaultVariants: {
