@@ -1,4 +1,5 @@
 import { Suspense } from 'react'
+import Link from 'next/link'
 import { LeadsTable, LeadStats } from '@/components/leads'
 
 export const metadata = {
@@ -10,11 +11,22 @@ export default function LeadsPage() {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-zinc-900">Leads</h1>
-        <p className="mt-1 text-[13px] text-zinc-500">
-          Track and manage your B2B leads with intent data
-        </p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-zinc-900">Leads</h1>
+          <p className="mt-1 text-[13px] text-zinc-500">
+            Track and manage your B2B leads with intent data
+          </p>
+        </div>
+        <Link
+          href="/leads/discover"
+          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-violet-600 rounded-lg hover:bg-violet-700 transition-colors"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          Discover Leads
+        </Link>
       </div>
 
       {/* Stats */}

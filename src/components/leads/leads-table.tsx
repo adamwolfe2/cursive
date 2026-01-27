@@ -433,6 +433,7 @@ export function LeadsTable({ initialFilters }: LeadsTableProps) {
         setGlobalFilter={setGlobalFilter}
         onRefresh={() => refetch()}
         selectedCount={selectedLeadIds.length}
+        selectedLeadIds={selectedLeadIds}
         onBulkDelete={handleBulkDelete}
         isDeleting={deleteMutation.isPending}
       />
