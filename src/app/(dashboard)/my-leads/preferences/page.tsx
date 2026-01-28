@@ -12,6 +12,10 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { TargetingPreferencesForm } from '@/components/leads/targeting-preferences-form'
 import Link from 'next/link'
+import type { Database } from '@/types/database.types'
+
+type User = Database['public']['Tables']['users']['Row']
+type UserTargeting = Database['public']['Tables']['user_targeting']['Row']
 
 export const metadata = {
   title: 'Targeting Preferences | Cursive',
@@ -104,23 +108,27 @@ export default async function TargetingPreferencesPage() {
   }
 
   // Get user profile
-  const { data: user, error: userError } = await supabase
+  const { data: userData, error: userError } = await supabase
     .from('users')
     .select('id, workspace_id, full_name, email')
     .eq('auth_user_id', session.user.id)
     .single()
 
-  if (userError || !user) {
+  if (userError || !userData) {
     redirect('/onboarding')
   }
 
+  const user = userData as Pick<User, 'id' | 'workspace_id' | 'full_name' | 'email'>
+
   // Get existing targeting preferences
-  const { data: targeting } = await supabase
+  const { data: targetingData } = await supabase
     .from('user_targeting')
     .select('*')
     .eq('user_id', user.id)
     .eq('workspace_id', user.workspace_id)
     .single()
+
+  const targeting = targetingData as UserTargeting | null
 
   return (
     <div className="space-y-8">

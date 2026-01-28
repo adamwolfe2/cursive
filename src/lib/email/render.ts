@@ -1,15 +1,17 @@
 /**
- * Email Template Renderer
- * Server-only utility for rendering React email templates to HTML
+ * Email Rendering Utility
+ * Server-only - renders React email components to HTML strings
  */
 
-import * as React from 'react'
+import 'server-only'
+import type { ReactElement } from 'react'
 
 /**
- * Render email template to HTML string
- * Uses dynamic import to avoid bundling issues with react-dom/server
+ * Render a React email component to HTML string
+ * Uses dynamic import to avoid Next.js SWC static analysis issues
  */
-export async function renderEmail(component: React.ReactElement): Promise<string> {
+export async function renderEmail(component: ReactElement): Promise<string> {
+  // Dynamic import to avoid bundler issues with react-dom/server
   const { renderToStaticMarkup } = await import('react-dom/server')
-  return '<!DOCTYPE html>' + renderToStaticMarkup(component)
+  return `<!DOCTYPE html>${renderToStaticMarkup(component)}`
 }

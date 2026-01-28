@@ -10,23 +10,14 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/design-system'
+import type { Database } from '@/types/database.types'
+
+type UserTargeting = Database['public']['Tables']['user_targeting']['Row']
 
 interface TargetingPreferencesFormProps {
   userId: string
   workspaceId: string
-  initialData: {
-    id?: string
-    target_industries: string[] | null
-    target_sic_codes: string[] | null
-    target_states: string[] | null
-    target_cities: string[] | null
-    target_zips: string[] | null
-    daily_lead_cap: number | null
-    weekly_lead_cap: number | null
-    monthly_lead_cap: number | null
-    email_notifications: boolean | null
-    is_active: boolean | null
-  } | null
+  initialData: UserTargeting | null
   industryOptions: { value: string; label: string }[]
   stateOptions: { value: string; label: string }[]
 }
@@ -95,7 +86,7 @@ export function TargetingPreferencesForm({
         user_id: userId,
         workspace_id: workspaceId,
         target_industries: industries,
-        target_sic_codes: [], // Can be extended later
+        target_sic_codes: [] as string[],
         target_states: states,
         target_cities: parsedCities,
         target_zips: parsedZips,
@@ -111,7 +102,7 @@ export function TargetingPreferencesForm({
         // Update existing
         const { error: updateError } = await supabase
           .from('user_targeting')
-          .update(data)
+          .update(data as never)
           .eq('id', initialData.id)
 
         if (updateError) throw updateError
@@ -119,7 +110,7 @@ export function TargetingPreferencesForm({
         // Insert new
         const { error: insertError } = await supabase
           .from('user_targeting')
-          .insert(data)
+          .insert(data as never)
 
         if (insertError) throw insertError
       }

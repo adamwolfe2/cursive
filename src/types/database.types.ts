@@ -175,6 +175,8 @@ export interface Database {
           country: string | null
           country_code: string | null
           postal_code: string | null
+          address: string | null
+          datashopper_id: number | null
           intent_topic: string | null
           intent_topic_id: string | null
           intent_score: string | null
@@ -225,6 +227,8 @@ export interface Database {
           country?: string | null
           country_code?: string | null
           postal_code?: string | null
+          address?: string | null
+          datashopper_id?: number | null
           intent_topic?: string | null
           intent_topic_id?: string | null
           intent_score?: string | null
@@ -275,6 +279,8 @@ export interface Database {
           country?: string | null
           country_code?: string | null
           postal_code?: string | null
+          address?: string | null
+          datashopper_id?: number | null
           intent_topic?: string | null
           intent_topic_id?: string | null
           intent_score?: string | null
@@ -1125,6 +1131,104 @@ export interface Database {
           sample_emails_reviewed?: Json
           created_at?: string
           completed_at?: string | null
+        }
+      }
+      // User Lead Targeting and Assignments (Self-Service Model)
+      user_targeting: {
+        Row: {
+          id: string
+          user_id: string
+          workspace_id: string
+          target_industries: string[] | null
+          target_sic_codes: string[] | null
+          target_states: string[] | null
+          target_cities: string[] | null
+          target_zips: string[] | null
+          is_active: boolean
+          daily_lead_limit: number
+          daily_lead_cap: number | null
+          weekly_lead_cap: number | null
+          monthly_lead_cap: number | null
+          notification_email: string | null
+          notify_on_new_leads: boolean
+          email_notifications: boolean | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          workspace_id: string
+          target_industries?: string[] | null
+          target_sic_codes?: string[] | null
+          target_states?: string[] | null
+          target_cities?: string[] | null
+          target_zips?: string[] | null
+          is_active?: boolean
+          daily_lead_limit?: number
+          daily_lead_cap?: number | null
+          weekly_lead_cap?: number | null
+          monthly_lead_cap?: number | null
+          notification_email?: string | null
+          notify_on_new_leads?: boolean
+          email_notifications?: boolean | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          workspace_id?: string
+          target_industries?: string[] | null
+          target_sic_codes?: string[] | null
+          target_states?: string[] | null
+          target_cities?: string[] | null
+          target_zips?: string[] | null
+          is_active?: boolean
+          daily_lead_limit?: number
+          daily_lead_cap?: number | null
+          weekly_lead_cap?: number | null
+          monthly_lead_cap?: number | null
+          notification_email?: string | null
+          notify_on_new_leads?: boolean
+          email_notifications?: boolean | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      user_lead_assignments: {
+        Row: {
+          id: string
+          user_id: string
+          lead_id: string
+          workspace_id: string
+          matching_criteria: Json
+          status: string
+          created_at: string
+          viewed_at: string | null
+          contacted_at: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          lead_id: string
+          workspace_id: string
+          matching_criteria?: Json
+          status?: string
+          created_at?: string
+          viewed_at?: string | null
+          contacted_at?: string | null
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          lead_id?: string
+          workspace_id?: string
+          matching_criteria?: Json
+          status?: string
+          created_at?: string
+          viewed_at?: string | null
+          contacted_at?: string | null
         }
       }
     }

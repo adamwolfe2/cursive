@@ -11,6 +11,10 @@ import { redirect } from 'next/navigation'
 import { MyLeadsTable } from '@/components/leads/my-leads-table'
 import { MyLeadsStats } from '@/components/leads/my-leads-stats'
 import Link from 'next/link'
+import type { Database } from '@/types/database.types'
+
+type User = Database['public']['Tables']['users']['Row']
+type UserTargeting = Database['public']['Tables']['user_targeting']['Row']
 
 export const metadata = {
   title: 'My Leads | Cursive',
@@ -30,30 +34,34 @@ export default async function MyLeadsPage() {
   }
 
   // Get user profile
-  const { data: user, error: userError } = await supabase
+  const { data: userData, error: userError } = await supabase
     .from('users')
     .select('id, workspace_id, full_name, email')
     .eq('auth_user_id', session.user.id)
     .single()
 
-  if (userError || !user) {
+  if (userError || !userData) {
     redirect('/onboarding')
   }
 
+  const user = userData as Pick<User, 'id' | 'workspace_id' | 'full_name' | 'email'>
+
   // Check if user has targeting preferences set up
-  const { data: targeting } = await supabase
+  const { data: targetingData } = await supabase
     .from('user_targeting')
     .select('id, target_industries, target_sic_codes, target_states, target_cities, is_active')
     .eq('user_id', user.id)
     .eq('workspace_id', user.workspace_id)
     .single()
 
+  const targeting = targetingData as UserTargeting | null
+
   const hasTargeting =
     targeting &&
-    (targeting.target_industries?.length > 0 ||
-      targeting.target_sic_codes?.length > 0 ||
-      targeting.target_states?.length > 0 ||
-      targeting.target_cities?.length > 0)
+    ((targeting.target_industries?.length ?? 0) > 0 ||
+      (targeting.target_sic_codes?.length ?? 0) > 0 ||
+      (targeting.target_states?.length ?? 0) > 0 ||
+      (targeting.target_cities?.length ?? 0) > 0)
 
   return (
     <div className="space-y-8">

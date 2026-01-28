@@ -33,5 +33,7 @@ export {
   WeeklyDigestEmail,
   PasswordResetEmail,
   NewLeadEmail,
-  renderEmail,
 } from './templates'
+
+// Note: renderEmail is exported from './render' separately
+// Import directly from '@/lib/email/render' when needed (server-only)

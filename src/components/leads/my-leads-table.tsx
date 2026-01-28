@@ -9,6 +9,9 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/design-system'
+import type { Database } from '@/types/database.types'
+
+type UserLeadAssignmentUpdate = Database['public']['Tables']['user_lead_assignments']['Update']
 
 interface MyLeadsTableProps {
   userId: string
@@ -113,22 +116,19 @@ export function MyLeadsTable({ userId, workspaceId }: MyLeadsTableProps) {
   async function updateStatus(assignmentId: string, newStatus: string) {
     const supabase = createClient()
 
-    const update: Record<string, unknown> = {
+    const update: UserLeadAssignmentUpdate = {
       status: newStatus,
-      updated_at: new Date().toISOString(),
     }
 
     if (newStatus === 'viewed') {
       update.viewed_at = new Date().toISOString()
     } else if (newStatus === 'contacted') {
       update.contacted_at = new Date().toISOString()
-    } else if (newStatus === 'converted') {
-      update.converted_at = new Date().toISOString()
     }
 
     const { error } = await supabase
       .from('user_lead_assignments')
-      .update(update)
+      .update(update as never)
       .eq('id', assignmentId)
 
     if (!error) {
