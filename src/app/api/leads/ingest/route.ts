@@ -15,6 +15,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { createMatchingEngine } from '@/lib/services/matching-engine.service'
+import { createUserLeadRouter } from '@/lib/services/user-lead-router.service'
 import { DataShopperRepository } from '@/lib/repositories/datashopper.repository'
 import { createClient } from '@/lib/supabase/server'
 import type { DataShopperIdentity } from '@/types/datashopper.types'
@@ -108,6 +109,37 @@ export async function POST(req: NextRequest) {
 
     const supabase = await createClient()
     const matchingEngine = createMatchingEngine(workspaceId)
+    const userLeadRouter = createUserLeadRouter(workspaceId)
+
+    // Helper to route a lead through both systems
+    async function routeLeadToAll(leadId: string) {
+      const assignedTo: string[] = []
+      let matched = false
+
+      // Route to client profiles (B2B/agency model)
+      try {
+        const clientRouting = await matchingEngine.routeLead(leadId)
+        if (clientRouting.matched) {
+          matched = true
+          assignedTo.push(...clientRouting.assignments.map((a) => a.clientName))
+        }
+      } catch (err) {
+        console.error('Client routing error:', err)
+      }
+
+      // Route to individual users (self-service model)
+      try {
+        const userRouting = await userLeadRouter.routeLead(leadId)
+        if (userRouting.matched) {
+          matched = true
+          assignedTo.push(...userRouting.assignedTo)
+        }
+      } catch (err) {
+        console.error('User routing error:', err)
+      }
+
+      return { matched, assignedTo }
+    }
 
     // Handle DataShopper format
     if (request.datashopper?.success && request.datashopper.data.identities) {
@@ -118,11 +150,11 @@ export async function POST(req: NextRequest) {
           const leadId = await dsRepo.storeIdentity(identity, 'datashopper_webhook')
 
           if (request.auto_route) {
-            const routing = await matchingEngine.routeLead(leadId)
+            const routing = await routeLeadToAll(leadId)
             results.push({
               leadId,
               matched: routing.matched,
-              assignedTo: routing.assignments.map((a) => a.clientName),
+              assignedTo: routing.assignedTo,
             })
           } else {
             results.push({ leadId, matched: false })
@@ -144,11 +176,11 @@ export async function POST(req: NextRequest) {
           const leadId = await createLeadFromPush(supabase, workspaceId, leadData, request)
 
           if (request.auto_route) {
-            const routing = await matchingEngine.routeLead(leadId)
+            const routing = await routeLeadToAll(leadId)
             results.push({
               leadId,
               matched: routing.matched,
-              assignedTo: routing.assignments.map((a) => a.clientName),
+              assignedTo: routing.assignedTo,
             })
           } else {
             results.push({ leadId, matched: false })
@@ -169,11 +201,11 @@ export async function POST(req: NextRequest) {
         const leadId = await createLeadFromPush(supabase, workspaceId, request.lead, request)
 
         if (request.auto_route) {
-          const routing = await matchingEngine.routeLead(leadId)
+          const routing = await routeLeadToAll(leadId)
           results.push({
             leadId,
             matched: routing.matched,
-            assignedTo: routing.assignments.map((a) => a.clientName),
+            assignedTo: routing.assignedTo,
           })
         } else {
           results.push({ leadId, matched: false })
