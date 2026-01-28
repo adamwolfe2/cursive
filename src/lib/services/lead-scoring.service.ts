@@ -272,7 +272,7 @@ function calculateCompletenessScore(lead: LeadData): {
 
 /**
  * Calculate freshness score using sigmoid decay
- * Score range: 5-100
+ * Score range: 15-100 (floor of 15 per spec)
  */
 export function calculateFreshnessScore(
   createdAt: Date,
@@ -283,7 +283,7 @@ export function calculateFreshnessScore(
     floor?: number
   } = {}
 ): number {
-  const { maxScore = 100, midpointDays = 30, steepness = 0.15, floor = 5 } = options
+  const { maxScore = 100, midpointDays = 30, steepness = 0.15, floor = 15 } = options
 
   const now = new Date()
   const daysOld = (now.getTime() - createdAt.getTime()) / (1000 * 60 * 60 * 24)
@@ -331,11 +331,12 @@ export function calculateMarketplacePrice(params: {
     price += 0.03
   }
 
+  // Verified email add-on: +$0.02 for VALID only
+  // Catch-all: NO add-on (per spec), just include in marketplace but flag as risky
   if (verificationStatus === 'valid') {
     price += 0.02
-  } else if (verificationStatus === 'catch_all') {
-    price -= 0.01
   }
+  // Note: catch_all gets no modifier - neither bonus nor penalty
 
   // Round to 4 decimal places
   return Math.round(price * 10000) / 10000

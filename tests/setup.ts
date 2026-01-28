@@ -82,6 +82,34 @@ Object.defineProperty(window, 'scrollTo', {
   value: vi.fn(),
 })
 
+// Mock requestAnimationFrame and cancelAnimationFrame
+// These are needed for components that use RAF for animations/timers
+// The mock converts RAF calls to setTimeout so fake timers work correctly
+let rafId = 0
+const rafCallbacks = new Map<number, FrameRequestCallback>()
+
+Object.defineProperty(window, 'requestAnimationFrame', {
+  writable: true,
+  value: vi.fn((callback: FrameRequestCallback): number => {
+    const id = ++rafId
+    rafCallbacks.set(id, callback)
+    setTimeout(() => {
+      if (rafCallbacks.has(id)) {
+        rafCallbacks.delete(id)
+        callback(performance.now())
+      }
+    }, 16)
+    return id
+  }),
+})
+
+Object.defineProperty(window, 'cancelAnimationFrame', {
+  writable: true,
+  value: vi.fn((id: number): void => {
+    rafCallbacks.delete(id)
+  }),
+})
+
 // Mock requestIdleCallback
 Object.defineProperty(window, 'requestIdleCallback', {
   writable: true,

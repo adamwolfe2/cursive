@@ -76,3 +76,35 @@ export {
   retryWebhookDeliveries,
   sendLeadEmailNotification,
 } from './webhook-delivery'
+
+// Email Verification (Marketplace)
+export {
+  processEmailVerificationQueue,
+  continueEmailVerification,
+  queueNewLeadsForVerification,
+  reverifyStaleLeads,
+  updatePartnerVerificationRates,
+} from './email-verification'
+
+// Partner Payouts (Marketplace)
+export {
+  weeklyPartnerPayouts,
+  triggerManualPayout,
+  dailyCommissionRelease,
+  reconcilePayouts,
+} from './partner-payouts'
+
+// Marketplace Jobs (Scoring, Freshness, Bonuses)
+export {
+  dailyFreshnessDecay,
+  dailyPartnerScoreCalculation,
+  monthlyVolumeBonusUpdate,
+  processReferralMilestones,
+  updatePartnerDataCompleteness,
+} from './marketplace-jobs'
+
+// Partner Upload Processor (Large File Support)
+export {
+  processPartnerUpload,
+  retryStatledUploads,
+} from './partner-upload-processor'

@@ -29,10 +29,108 @@ export async function POST(req: NextRequest) {
 
     const supabase = createAdminClient()
 
+    // IDEMPOTENCY CHECK: Prevent duplicate processing of same event
+    const eventId = event.id
+    const { data: existingEvent } = await supabase
+      .from('processed_webhook_events')
+      .select('id')
+      .eq('stripe_event_id', eventId)
+      .single()
+
+    if (existingEvent) {
+      console.log(`Webhook event ${eventId} already processed, skipping`)
+      return NextResponse.json({ received: true, duplicate: true })
+    }
+
+    // Record event as being processed (before actual processing)
+    await supabase.from('processed_webhook_events').insert({
+      stripe_event_id: eventId,
+      event_type: event.type,
+      processed_at: new Date().toISOString(),
+    })
+
     // Handle payment success
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object as Stripe.Checkout.Session
       const purchaseType = session.metadata?.type
+
+      // Handle marketplace lead purchase
+      if (purchaseType === 'lead_purchase') {
+        const purchaseId = session.metadata?.purchase_id
+        const workspaceId = session.metadata?.workspace_id
+
+        if (!purchaseId || !workspaceId) {
+          console.error('Missing metadata for lead purchase')
+          return NextResponse.json({ error: 'Missing metadata' }, { status: 400 })
+        }
+
+        // Check if purchase already completed (extra idempotency check)
+        const { data: existingPurchase } = await supabase
+          .from('marketplace_purchases')
+          .select('status')
+          .eq('id', purchaseId)
+          .single()
+
+        if (existingPurchase?.status === 'completed') {
+          console.log(`Lead purchase ${purchaseId} already completed, skipping`)
+          return NextResponse.json({ received: true, duplicate: true })
+        }
+
+        // Complete the marketplace purchase
+        await supabase
+          .from('marketplace_purchases')
+          .update({
+            status: 'completed',
+            stripe_payment_intent_id: session.payment_intent as string,
+            completed_at: new Date().toISOString(),
+          })
+          .eq('id', purchaseId)
+
+        // Get purchase items to mark leads as sold
+        const { data: items } = await supabase
+          .from('marketplace_purchase_items')
+          .select('lead_id, partner_id, commission_amount')
+          .eq('purchase_id', purchaseId)
+
+        if (items && items.length > 0) {
+          // Mark leads as sold
+          const leadIds = items.map(item => item.lead_id)
+          for (const leadId of leadIds) {
+            await supabase.rpc('mark_lead_sold', { p_lead_id: leadId })
+          }
+
+          // Update partner pending balances for commissions
+          const partnerCommissions = items.reduce<Record<string, number>>((acc, item) => {
+            if (item.partner_id && item.commission_amount) {
+              acc[item.partner_id] = (acc[item.partner_id] || 0) + item.commission_amount
+            }
+            return acc
+          }, {})
+
+          for (const [partnerId, amount] of Object.entries(partnerCommissions)) {
+            const { data: partner } = await supabase
+              .from('partners')
+              .select('pending_balance, total_earnings')
+              .eq('id', partnerId)
+              .single()
+
+            if (partner) {
+              await supabase
+                .from('partners')
+                .update({
+                  pending_balance: (partner.pending_balance || 0) + amount,
+                  total_earnings: (partner.total_earnings || 0) + amount,
+                  total_leads_sold: supabase.sql`COALESCE(total_leads_sold, 0) + 1`,
+                  updated_at: new Date().toISOString(),
+                } as never)
+                .eq('id', partnerId)
+            }
+          }
+        }
+
+        console.log(`✅ Lead purchase completed: ${purchaseId} for workspace ${workspaceId}`)
+        return NextResponse.json({ received: true })
+      }
 
       // Handle marketplace credit purchase
       if (purchaseType === 'credit_purchase') {

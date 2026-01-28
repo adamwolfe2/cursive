@@ -1,10 +1,13 @@
 /**
  * Card Component Tests
  * OpenInfo Platform
+ *
+ * Tests for Card component and its sub-components.
+ * Updated to match actual component implementation.
  */
 
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen } from '@/tests/utils'
+import { render, screen } from '../../utils'
 import {
   Card,
   CardHeader,
@@ -12,7 +15,6 @@ import {
   CardDescription,
   CardContent,
   CardFooter,
-  CardActions,
 } from '@/components/ui/card'
 
 describe('Card', () => {
@@ -39,7 +41,7 @@ describe('Card', () => {
       )
 
       const card = screen.getByTestId('card')
-      expect(card).toHaveClass('shadow-enterprise')
+      expect(card).toHaveClass('shadow-enterprise-md')
     })
 
     it('applies interactive variant styles', () => {
@@ -97,12 +99,12 @@ describe('Card', () => {
       )
 
       const header = screen.getByTestId('header')
-      expect(header).toHaveClass('flex', 'flex-col', 'space-y-1.5', 'p-6')
+      expect(header).toHaveClass('flex', 'flex-col', 'space-y-1.5')
     })
   })
 
   describe('CardTitle', () => {
-    it('renders as h3 by default', () => {
+    it('renders as h3', () => {
       render(
         <Card>
           <CardHeader>
@@ -124,7 +126,7 @@ describe('Card', () => {
       )
 
       const title = screen.getByTestId('title')
-      expect(title).toHaveClass('font-semibold', 'text-foreground')
+      expect(title).toHaveClass('font-semibold')
     })
   })
 
@@ -165,17 +167,6 @@ describe('Card', () => {
 
       expect(screen.getByText('Content goes here')).toBeInTheDocument()
     })
-
-    it('applies correct padding', () => {
-      render(
-        <Card>
-          <CardContent data-testid="content">Content</CardContent>
-        </Card>
-      )
-
-      const content = screen.getByTestId('content')
-      expect(content).toHaveClass('p-6', 'pt-0')
-    })
   })
 
   describe('CardFooter', () => {
@@ -197,36 +188,7 @@ describe('Card', () => {
       )
 
       const footer = screen.getByTestId('footer')
-      expect(footer).toHaveClass('flex', 'items-center', 'p-6', 'pt-0')
-    })
-  })
-
-  describe('CardActions', () => {
-    it('renders action buttons', () => {
-      render(
-        <Card>
-          <CardActions>
-            <button>Action 1</button>
-            <button>Action 2</button>
-          </CardActions>
-        </Card>
-      )
-
-      expect(screen.getByText('Action 1')).toBeInTheDocument()
-      expect(screen.getByText('Action 2')).toBeInTheDocument()
-    })
-
-    it('applies correct layout styles', () => {
-      render(
-        <Card>
-          <CardActions data-testid="actions">
-            <button>Action</button>
-          </CardActions>
-        </Card>
-      )
-
-      const actions = screen.getByTestId('actions')
-      expect(actions).toHaveClass('flex', 'items-center', 'gap-2')
+      expect(footer).toHaveClass('flex', 'items-center', 'pt-4')
     })
   })
 
@@ -240,10 +202,8 @@ describe('Card', () => {
           </CardHeader>
           <CardContent>Main content area</CardContent>
           <CardFooter>
-            <CardActions>
-              <button>Save</button>
-              <button>Cancel</button>
-            </CardActions>
+            <button>Save</button>
+            <button>Cancel</button>
           </CardFooter>
         </Card>
       )

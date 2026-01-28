@@ -4,18 +4,36 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import crypto from 'crypto'
 
-// Referral configuration
+// Referral configuration - EXACT SPEC VALUES
 export const REFERRAL_CONFIG = {
-  // Buyer referral rewards (credits)
-  BUYER_REFERRER_CREDIT: 25, // Credits for the referrer when referee makes first purchase
-  BUYER_REFEREE_CREDIT: 10, // Credits for the new buyer on signup
+  // =============================================================================
+  // BUYER REFERRAL REWARDS (Credits)
+  // =============================================================================
+  // Milestone 1: When referred user creates account
+  BUYER_SIGNUP_REFERRER_CREDIT: 50,
 
-  // Partner referral rewards
-  PARTNER_REFERRER_BONUS: 0.02, // 2% bonus on referee's first 90 days of sales
-  PARTNER_REFEREE_BONUS: 0.05, // 5% bonus commission for first 90 days
+  // Milestone 2: When referred user makes first purchase
+  BUYER_FIRST_PURCHASE_REFERRER_CREDIT: 200,
+  BUYER_FIRST_PURCHASE_REFEREE_CREDIT: 100,
 
-  // Time limits
-  PARTNER_BONUS_DAYS: 90,
+  // Milestone 3: When referred user reaches $500 cumulative spend
+  BUYER_SPEND_MILESTONE_AMOUNT: 500, // dollars
+  BUYER_SPEND_MILESTONE_REFERRER_CREDIT: 500,
+
+  // =============================================================================
+  // PARTNER REFERRAL REWARDS (Cash milestones, NOT ongoing override)
+  // =============================================================================
+  // Milestone 1: Referred partner uploads 1K verified leads
+  PARTNER_MILESTONE_1_LEADS: 1000,
+  PARTNER_MILESTONE_1_REWARD: 50, // $50
+
+  // Milestone 2: Referred partner earns $500 in commissions
+  PARTNER_MILESTONE_2_COMMISSIONS: 500,
+  PARTNER_MILESTONE_2_REWARD: 100, // $100
+
+  // Milestone 3: Referred partner earns $2,000 in commissions
+  PARTNER_MILESTONE_3_COMMISSIONS: 2000,
+  PARTNER_MILESTONE_3_REWARD: 250, // $250
 
   // Referral code format
   CODE_LENGTH: 8,
@@ -148,17 +166,21 @@ export async function createReferral(params: CreateReferralParams): Promise<stri
   return data.id
 }
 
+// =============================================================================
+// BUYER REFERRAL MILESTONE PROCESSING
+// =============================================================================
+
 /**
- * Process referral reward when qualifying action occurs
- * For buyers: first purchase
- * For partners: first lead sale
+ * Process buyer signup milestone (Milestone 1)
+ * Called when a referred buyer creates their account
+ * Reward: 50 credits to referrer
  */
-export async function processReferralReward(
-  referralId: string
-): Promise<ReferralRewardResult | null> {
+export async function processBuyerSignupMilestone(referralId: string): Promise<{
+  rewarded: boolean
+  creditsAwarded: number
+}> {
   const supabase = createAdminClient()
 
-  // Get referral details
   const { data: referral, error } = await supabase
     .from('referrals')
     .select('*')
@@ -169,74 +191,315 @@ export async function processReferralReward(
     throw new Error('Referral not found')
   }
 
-  // Check if already processed
-  if (referral.status === 'completed') {
-    return null
+  // Check if milestone already achieved
+  const milestones = (referral.milestones_achieved as string[]) || []
+  if (milestones.includes('signup')) {
+    return { rewarded: false, creditsAwarded: 0 }
   }
 
-  let referrerReward = 0
-  let refereeReward = 0
-  let rewardType: 'credits' | 'commission_bonus' = 'credits'
+  // Award credits to referrer
+  const creditsAwarded = REFERRAL_CONFIG.BUYER_SIGNUP_REFERRER_CREDIT
+  await addCreditsToWorkspace(referral.referrer_user_id!, creditsAwarded, 'referral')
 
-  if (referral.referee_type === 'buyer') {
-    // Buyer referral - give credits
-    rewardType = 'credits'
-    referrerReward = REFERRAL_CONFIG.BUYER_REFERRER_CREDIT
-    refereeReward = REFERRAL_CONFIG.BUYER_REFEREE_CREDIT
-
-    // Add credits to referrer's workspace
-    if (referral.referrer_type === 'buyer') {
-      await addCreditsToWorkspace(referral.referrer_id, referrerReward, 'referral')
-    }
-
-    // Add credits to referee's workspace
-    await addCreditsToWorkspace(referral.referee_id, refereeReward, 'referral')
-  } else if (referral.referee_type === 'partner') {
-    // Partner referral - give commission bonus
-    rewardType = 'commission_bonus'
-    referrerReward = REFERRAL_CONFIG.PARTNER_REFERRER_BONUS * 100 // Store as percentage
-    refereeReward = REFERRAL_CONFIG.PARTNER_REFEREE_BONUS * 100
-
-    // Set bonus commission rates on both partners
-    const bonusExpiry = new Date()
-    bonusExpiry.setDate(bonusExpiry.getDate() + REFERRAL_CONFIG.PARTNER_BONUS_DAYS)
-
-    if (referral.referrer_type === 'partner') {
-      await supabase
-        .from('partners')
-        .update({
-          bonus_commission_rate: REFERRAL_CONFIG.PARTNER_REFERRER_BONUS,
-          bonus_expires_at: bonusExpiry.toISOString(),
-        })
-        .eq('id', referral.referrer_id)
-    }
-
-    await supabase
-      .from('partners')
-      .update({
-        bonus_commission_rate: REFERRAL_CONFIG.PARTNER_REFEREE_BONUS,
-        bonus_expires_at: bonusExpiry.toISOString(),
-      })
-      .eq('id', referral.referee_id)
-  }
-
-  // Update referral status
+  // Record milestone
   await supabase
     .from('referrals')
     .update({
-      status: 'completed',
-      referrer_reward: referrerReward,
-      referee_reward: refereeReward,
-      reward_type: rewardType,
-      completed_at: new Date().toISOString(),
+      milestones_achieved: [...milestones, 'signup'],
+      rewards_issued: [
+        ...((referral.rewards_issued as object[]) || []),
+        { milestone: 'signup', type: 'credits', amount: creditsAwarded, to: 'referrer', at: new Date().toISOString() }
+      ],
+      total_rewards_value: (referral.total_rewards_value || 0) + creditsAwarded,
+      status: 'converted',
+      converted_at: referral.converted_at || new Date().toISOString(),
     })
     .eq('id', referralId)
 
-  return {
-    referrerReward,
-    refereeReward,
-    rewardType,
-    status: 'applied',
+  return { rewarded: true, creditsAwarded }
+}
+
+/**
+ * Process buyer first purchase milestone (Milestone 2)
+ * Called when a referred buyer makes their first purchase
+ * Reward: 200 credits to referrer, 100 credits to referee
+ */
+export async function processBuyerFirstPurchaseMilestone(referralId: string): Promise<{
+  rewarded: boolean
+  referrerCredits: number
+  refereeCredits: number
+}> {
+  const supabase = createAdminClient()
+
+  const { data: referral, error } = await supabase
+    .from('referrals')
+    .select('*')
+    .eq('id', referralId)
+    .single()
+
+  if (error || !referral) {
+    throw new Error('Referral not found')
+  }
+
+  const milestones = (referral.milestones_achieved as string[]) || []
+  if (milestones.includes('first_purchase')) {
+    return { rewarded: false, referrerCredits: 0, refereeCredits: 0 }
+  }
+
+  const referrerCredits = REFERRAL_CONFIG.BUYER_FIRST_PURCHASE_REFERRER_CREDIT
+  const refereeCredits = REFERRAL_CONFIG.BUYER_FIRST_PURCHASE_REFEREE_CREDIT
+
+  // Award credits
+  await addCreditsToWorkspace(referral.referrer_user_id!, referrerCredits, 'referral')
+  await addCreditsToWorkspace(referral.referred_user_id!, refereeCredits, 'referral')
+
+  // Record milestone
+  await supabase
+    .from('referrals')
+    .update({
+      milestones_achieved: [...milestones, 'first_purchase'],
+      rewards_issued: [
+        ...((referral.rewards_issued as object[]) || []),
+        { milestone: 'first_purchase', type: 'credits', amount: referrerCredits, to: 'referrer', at: new Date().toISOString() },
+        { milestone: 'first_purchase', type: 'credits', amount: refereeCredits, to: 'referee', at: new Date().toISOString() }
+      ],
+      total_rewards_value: (referral.total_rewards_value || 0) + referrerCredits + refereeCredits,
+    })
+    .eq('id', referralId)
+
+  return { rewarded: true, referrerCredits, refereeCredits }
+}
+
+/**
+ * Process buyer spend milestone (Milestone 3)
+ * Called when referred buyer reaches $500 cumulative spend
+ * Reward: 500 additional credits to referrer
+ */
+export async function processBuyerSpendMilestone(referralId: string): Promise<{
+  rewarded: boolean
+  creditsAwarded: number
+}> {
+  const supabase = createAdminClient()
+
+  const { data: referral, error } = await supabase
+    .from('referrals')
+    .select('*')
+    .eq('id', referralId)
+    .single()
+
+  if (error || !referral) {
+    throw new Error('Referral not found')
+  }
+
+  const milestones = (referral.milestones_achieved as string[]) || []
+  if (milestones.includes('spend_500')) {
+    return { rewarded: false, creditsAwarded: 0 }
+  }
+
+  // Check if referee has reached $500 spend
+  const { data: purchases } = await supabase
+    .from('marketplace_purchases')
+    .select('total_price')
+    .eq('buyer_workspace_id', referral.referred_user_id)
+    .eq('status', 'completed')
+
+  const totalSpend = purchases?.reduce((sum, p) => sum + (p.total_price || 0), 0) || 0
+  if (totalSpend < REFERRAL_CONFIG.BUYER_SPEND_MILESTONE_AMOUNT) {
+    return { rewarded: false, creditsAwarded: 0 }
+  }
+
+  const creditsAwarded = REFERRAL_CONFIG.BUYER_SPEND_MILESTONE_REFERRER_CREDIT
+  await addCreditsToWorkspace(referral.referrer_user_id!, creditsAwarded, 'referral')
+
+  await supabase
+    .from('referrals')
+    .update({
+      milestones_achieved: [...milestones, 'spend_500'],
+      rewards_issued: [
+        ...((referral.rewards_issued as object[]) || []),
+        { milestone: 'spend_500', type: 'credits', amount: creditsAwarded, to: 'referrer', at: new Date().toISOString() }
+      ],
+      total_rewards_value: (referral.total_rewards_value || 0) + creditsAwarded,
+      status: 'rewarded',
+    })
+    .eq('id', referralId)
+
+  return { rewarded: true, creditsAwarded }
+}
+
+// =============================================================================
+// PARTNER REFERRAL MILESTONE PROCESSING
+// =============================================================================
+
+/**
+ * Check and process partner referral milestones
+ * Called periodically or after partner events
+ */
+export async function processPartnerReferralMilestones(referralId: string): Promise<{
+  milestonesAwarded: string[]
+  totalCashAwarded: number
+}> {
+  const supabase = createAdminClient()
+
+  const { data: referral, error } = await supabase
+    .from('referrals')
+    .select('*')
+    .eq('id', referralId)
+    .single()
+
+  if (error || !referral || !referral.referred_partner_id) {
+    return { milestonesAwarded: [], totalCashAwarded: 0 }
+  }
+
+  // Get referred partner stats
+  const { data: partner } = await supabase
+    .from('partners')
+    .select('total_leads_uploaded, total_earnings, verification_pass_rate')
+    .eq('id', referral.referred_partner_id)
+    .single()
+
+  if (!partner) {
+    return { milestonesAwarded: [], totalCashAwarded: 0 }
+  }
+
+  const milestones = (referral.milestones_achieved as string[]) || []
+  const newMilestones: string[] = []
+  let totalCashAwarded = 0
+
+  // Milestone 1: 1K verified leads
+  const verifiedLeads = Math.floor((partner.total_leads_uploaded || 0) * ((partner.verification_pass_rate || 0) / 100))
+  if (!milestones.includes('partner_1k_leads') && verifiedLeads >= REFERRAL_CONFIG.PARTNER_MILESTONE_1_LEADS) {
+    newMilestones.push('partner_1k_leads')
+    totalCashAwarded += REFERRAL_CONFIG.PARTNER_MILESTONE_1_REWARD
+
+    // Add to referrer's available balance (as cash, not credits)
+    if (referral.referrer_partner_id) {
+      await supabase
+        .from('partners')
+        .update({
+          available_balance: supabase.rpc('coalesce', { value: 'available_balance', default_value: 0 }) + REFERRAL_CONFIG.PARTNER_MILESTONE_1_REWARD,
+        })
+        .eq('id', referral.referrer_partner_id)
+
+      // Actually use a proper update
+      const { data: referrerPartner } = await supabase
+        .from('partners')
+        .select('available_balance')
+        .eq('id', referral.referrer_partner_id)
+        .single()
+
+      await supabase
+        .from('partners')
+        .update({
+          available_balance: (referrerPartner?.available_balance || 0) + REFERRAL_CONFIG.PARTNER_MILESTONE_1_REWARD,
+        })
+        .eq('id', referral.referrer_partner_id)
+    }
+  }
+
+  // Milestone 2: $500 in commissions
+  if (!milestones.includes('partner_500_commissions') && (partner.total_earnings || 0) >= REFERRAL_CONFIG.PARTNER_MILESTONE_2_COMMISSIONS) {
+    newMilestones.push('partner_500_commissions')
+    totalCashAwarded += REFERRAL_CONFIG.PARTNER_MILESTONE_2_REWARD
+
+    if (referral.referrer_partner_id) {
+      const { data: referrerPartner } = await supabase
+        .from('partners')
+        .select('available_balance')
+        .eq('id', referral.referrer_partner_id)
+        .single()
+
+      await supabase
+        .from('partners')
+        .update({
+          available_balance: (referrerPartner?.available_balance || 0) + REFERRAL_CONFIG.PARTNER_MILESTONE_2_REWARD,
+        })
+        .eq('id', referral.referrer_partner_id)
+    }
+  }
+
+  // Milestone 3: $2,000 in commissions
+  if (!milestones.includes('partner_2000_commissions') && (partner.total_earnings || 0) >= REFERRAL_CONFIG.PARTNER_MILESTONE_3_COMMISSIONS) {
+    newMilestones.push('partner_2000_commissions')
+    totalCashAwarded += REFERRAL_CONFIG.PARTNER_MILESTONE_3_REWARD
+
+    if (referral.referrer_partner_id) {
+      const { data: referrerPartner } = await supabase
+        .from('partners')
+        .select('available_balance')
+        .eq('id', referral.referrer_partner_id)
+        .single()
+
+      await supabase
+        .from('partners')
+        .update({
+          available_balance: (referrerPartner?.available_balance || 0) + REFERRAL_CONFIG.PARTNER_MILESTONE_3_REWARD,
+        })
+        .eq('id', referral.referrer_partner_id)
+    }
+  }
+
+  // Update referral record
+  if (newMilestones.length > 0) {
+    const rewardsIssued = (referral.rewards_issued as object[]) || []
+    const newRewards = newMilestones.map(m => ({
+      milestone: m,
+      type: 'cash',
+      amount: m === 'partner_1k_leads' ? REFERRAL_CONFIG.PARTNER_MILESTONE_1_REWARD :
+              m === 'partner_500_commissions' ? REFERRAL_CONFIG.PARTNER_MILESTONE_2_REWARD :
+              REFERRAL_CONFIG.PARTNER_MILESTONE_3_REWARD,
+      to: 'referrer',
+      at: new Date().toISOString()
+    }))
+
+    await supabase
+      .from('referrals')
+      .update({
+        milestones_achieved: [...milestones, ...newMilestones],
+        rewards_issued: [...rewardsIssued, ...newRewards],
+        total_rewards_value: (referral.total_rewards_value || 0) + totalCashAwarded,
+        status: newMilestones.length > 0 ? 'rewarded' : referral.status,
+      })
+      .eq('id', referralId)
+  }
+
+  return { milestonesAwarded: newMilestones, totalCashAwarded }
+}
+
+/**
+ * Legacy function - redirects to milestone-based processing
+ * @deprecated Use specific milestone functions instead
+ */
+export async function processReferralReward(
+  referralId: string
+): Promise<ReferralRewardResult | null> {
+  // For backward compatibility, process signup milestone for buyer referrals
+  const supabase = createAdminClient()
+
+  const { data: referral } = await supabase
+    .from('referrals')
+    .select('referral_type')
+    .eq('id', referralId)
+    .single()
+
+  if (!referral) return null
+
+  if (referral.referral_type === 'user_to_user') {
+    const result = await processBuyerSignupMilestone(referralId)
+    return {
+      referrerReward: result.creditsAwarded,
+      refereeReward: 0,
+      rewardType: 'credits',
+      status: result.rewarded ? 'applied' : 'pending',
+    }
+  } else {
+    const result = await processPartnerReferralMilestones(referralId)
+    return {
+      referrerReward: result.totalCashAwarded,
+      refereeReward: 0,
+      rewardType: 'commission_bonus',
+      status: result.milestonesAwarded.length > 0 ? 'applied' : 'pending',
+    }
   }
 }
 
