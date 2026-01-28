@@ -41,8 +41,27 @@ const navigationItems = [
     ],
   },
   {
+    name: 'My Leads',
+    href: '/my-leads',
+    icon: (
+      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+        />
+      </svg>
+    ),
+    children: [
+      { name: 'Assigned Leads', href: '/my-leads' },
+      { name: 'Targeting Preferences', href: '/my-leads/preferences' },
+    ],
+  },
+  {
     name: 'Leads',
     href: '/leads',
+    adminOnly: true,
     icon: (
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path
