@@ -159,6 +159,34 @@ export interface Database {
           routing_rule_id: string | null
           routing_metadata: Json | null
           created_at: string
+          // New fields for DataShopper integration
+          contact_title: string | null
+          contact_seniority: string | null
+          contact_department: string | null
+          company_size: string | null
+          company_revenue: string | null
+          company_website: string | null
+          company_employee_count: number | null
+          company_founded_year: number | null
+          company_description: string | null
+          city: string | null
+          state: string | null
+          state_code: string | null
+          country: string | null
+          country_code: string | null
+          postal_code: string | null
+          intent_topic: string | null
+          intent_topic_id: string | null
+          intent_score: string | null
+          intent_signals: Json
+          datashopper_person_id: string | null
+          datashopper_company_id: string | null
+          datashopper_record_type: string | null
+          datashopper_raw_data: Json
+          status: string
+          secondary_email: string | null
+          mobile_phone: string | null
+          work_phone: string | null
         }
         Insert: {
           id?: string
@@ -181,6 +209,34 @@ export interface Database {
           routing_rule_id?: string | null
           routing_metadata?: Json | null
           created_at?: string
+          // New fields for DataShopper integration
+          contact_title?: string | null
+          contact_seniority?: string | null
+          contact_department?: string | null
+          company_size?: string | null
+          company_revenue?: string | null
+          company_website?: string | null
+          company_employee_count?: number | null
+          company_founded_year?: number | null
+          company_description?: string | null
+          city?: string | null
+          state?: string | null
+          state_code?: string | null
+          country?: string | null
+          country_code?: string | null
+          postal_code?: string | null
+          intent_topic?: string | null
+          intent_topic_id?: string | null
+          intent_score?: string | null
+          intent_signals?: Json
+          datashopper_person_id?: string | null
+          datashopper_company_id?: string | null
+          datashopper_record_type?: string | null
+          datashopper_raw_data?: Json
+          status?: string
+          secondary_email?: string | null
+          mobile_phone?: string | null
+          work_phone?: string | null
         }
         Update: {
           id?: string
@@ -203,6 +259,34 @@ export interface Database {
           routing_rule_id?: string | null
           routing_metadata?: Json | null
           created_at?: string
+          // New fields for DataShopper integration
+          contact_title?: string | null
+          contact_seniority?: string | null
+          contact_department?: string | null
+          company_size?: string | null
+          company_revenue?: string | null
+          company_website?: string | null
+          company_employee_count?: number | null
+          company_founded_year?: number | null
+          company_description?: string | null
+          city?: string | null
+          state?: string | null
+          state_code?: string | null
+          country?: string | null
+          country_code?: string | null
+          postal_code?: string | null
+          intent_topic?: string | null
+          intent_topic_id?: string | null
+          intent_score?: string | null
+          intent_signals?: Json
+          datashopper_person_id?: string | null
+          datashopper_company_id?: string | null
+          datashopper_record_type?: string | null
+          datashopper_raw_data?: Json
+          status?: string
+          secondary_email?: string | null
+          mobile_phone?: string | null
+          work_phone?: string | null
         }
       }
       lead_routing_rules: {
