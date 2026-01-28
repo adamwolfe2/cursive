@@ -279,7 +279,7 @@ describe('Marketplace Pricing', () => {
         hasPhone: false,
         verificationStatus: 'pending',
       })
-      expect(verified - unverified).toBe(0.02)
+      expect(verified - unverified).toBeCloseTo(0.02, 4)
     })
 
     it('should NOT add/subtract for catch_all (per spec)', () => {

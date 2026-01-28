@@ -268,7 +268,7 @@ describe('Commission Calculation', () => {
         partnerMonthlyLeads: 600,
       })
       expect(result.bonuses).toHaveLength(2)
-      expect(result.totalRate).toBe(0.40) // 30% + 5% + 5%
+      expect(result.totalRate).toBeCloseTo(0.40, 4) // 30% + 5% + 5%
     })
 
     it('should stack all bonuses up to cap', () => {
@@ -376,8 +376,8 @@ describe('Commission Calculation', () => {
         partnerMonthlyLeads: 2000,
       })
       // 30% + 5% verification + 5% volume = 40%
-      expect(result.totalRate).toBe(0.40)
-      expect(result.totalAmount).toBe(0.08) // $0.20 * 40%
+      expect(result.totalRate).toBeCloseTo(0.40, 4)
+      expect(result.totalAmount).toBeCloseTo(0.08, 4) // $0.20 * 40%
     })
 
     it('should calculate commission for premium partner on hot lead', () => {
