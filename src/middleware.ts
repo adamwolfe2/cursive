@@ -5,7 +5,8 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/middleware'
 
 export async function middleware(req: NextRequest) {
-  const { supabase, response } = createClient(req)
+  const client = createClient(req)
+  const { supabase } = client
 
   const { pathname } = req.nextUrl
 
@@ -21,6 +22,7 @@ export async function middleware(req: NextRequest) {
     pathname.startsWith('/reset-password') ||
     pathname.startsWith('/verify-email') ||
     pathname.startsWith('/auth/callback') ||
+    pathname.startsWith('/auth/accept-invite') ||
     pathname === '/' ||
     pathname.startsWith('/_next') ||
     pathname.startsWith('/api/webhooks') || // Webhooks are authenticated differently
@@ -32,7 +34,7 @@ export async function middleware(req: NextRequest) {
   // Auth routes (login, signup) - redirect to dashboard if already authenticated
   const isAuthRoute = pathname.startsWith('/login') || pathname.startsWith('/signup')
 
-  // Try to get session - handle errors gracefully
+  // Try to get session - this also refreshes the session if needed
   let session = null
   try {
     const { data } = await supabase.auth.getSession()
@@ -42,15 +44,28 @@ export async function middleware(req: NextRequest) {
     console.error('Middleware: Failed to get session', e)
   }
 
+  // Helper to create redirect with cookies preserved
+  const redirectWithCookies = (url: URL) => {
+    const redirectResponse = NextResponse.redirect(url)
+    // Copy cookies from supabase response to redirect response
+    client.response.cookies.getAll().forEach((cookie) => {
+      redirectResponse.cookies.set(cookie.name, cookie.value, cookie)
+    })
+    return redirectResponse
+  }
+
   if (isAuthRoute && session) {
-    return NextResponse.redirect(new URL('/dashboard', req.url))
+    // Check for redirect param
+    const redirectTo = req.nextUrl.searchParams.get('redirect')
+    const destination = redirectTo || '/dashboard'
+    return redirectWithCookies(new URL(destination, req.url))
   }
 
   // Protected routes require authentication
   if (!isPublicRoute && !session) {
     const redirectUrl = new URL('/login', req.url)
     redirectUrl.searchParams.set('redirect', pathname)
-    return NextResponse.redirect(redirectUrl)
+    return redirectWithCookies(redirectUrl)
   }
 
   // API routes require authentication
@@ -70,7 +85,7 @@ export async function middleware(req: NextRequest) {
       // User doesn't have a workspace - redirect to onboarding
       if (!user || !(user as any).workspace_id) {
         if (pathname !== '/onboarding') {
-          return NextResponse.redirect(new URL('/onboarding', req.url))
+          return redirectWithCookies(new URL('/onboarding', req.url))
         }
       }
 
@@ -93,20 +108,17 @@ export async function middleware(req: NextRequest) {
       // If database query fails, redirect to onboarding
       console.error('Middleware: Failed to query user', e)
       if (pathname !== '/onboarding') {
-        return NextResponse.redirect(new URL('/onboarding', req.url))
+        return redirectWithCookies(new URL('/onboarding', req.url))
       }
     }
   }
 
-  // Add custom headers for subdomain information
-  const responseWithHeaders = NextResponse.next({
-    request: {
-      headers: req.headers,
-    },
-  })
+  // Get the response with updated cookies
+  const response = client.response
 
+  // Add custom headers for subdomain information
   if (subdomain) {
-    responseWithHeaders.headers.set('x-subdomain', subdomain)
+    response.headers.set('x-subdomain', subdomain)
   }
 
   return response

@@ -6,10 +6,9 @@ import { NextResponse, type NextRequest } from 'next/server'
 import type { Database } from '@/types/database.types'
 
 export const createClient = (request: NextRequest) => {
-  let response = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
+  // Create a response object that can be mutated
+  let supabaseResponse = NextResponse.next({
+    request,
   })
 
   const supabase = createServerClient<Database>(
@@ -20,20 +19,29 @@ export const createClient = (request: NextRequest) => {
         getAll() {
           return request.cookies.getAll()
         },
-        setAll(cookiesToSet: { name: string; value: string; options?: any }[]) {
-          cookiesToSet.forEach(({ name, value }: { name: string; value: string }) =>
+        setAll(cookiesToSet) {
+          // First update request cookies
+          cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value)
           )
-          response = NextResponse.next({
+          // Create new response with updated request
+          supabaseResponse = NextResponse.next({
             request,
           })
-          cookiesToSet.forEach(({ name, value, options }: { name: string; value: string; options?: any }) =>
-            response.cookies.set(name, value, options)
+          // Set cookies on the response
+          cookiesToSet.forEach(({ name, value, options }) =>
+            supabaseResponse.cookies.set(name, value, options)
           )
         },
       },
     }
   )
 
-  return { supabase, response }
+  // Return a getter so we always get the latest response
+  return {
+    supabase,
+    get response() {
+      return supabaseResponse
+    },
+  }
 }
