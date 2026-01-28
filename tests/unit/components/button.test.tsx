@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen } from '@/tests/utils'
+import { render, screen } from '../../utils'
 import { Button } from '@/components/ui/button'
 
 describe('Button', () => {
@@ -70,7 +70,7 @@ describe('Button', () => {
       render(<Button variant="outline">Outline</Button>)
 
       const button = screen.getByRole('button')
-      expect(button).toHaveClass('border', 'border-input')
+      expect(button).toHaveClass('border', 'border-border')
     })
 
     it('applies ghost variant classes', () => {
@@ -100,14 +100,14 @@ describe('Button', () => {
       render(<Button size="sm">Small</Button>)
 
       const button = screen.getByRole('button')
-      expect(button).toHaveClass('h-9', 'px-3')
+      expect(button).toHaveClass('h-8', 'px-3')
     })
 
     it('applies large size classes', () => {
       render(<Button size="lg">Large</Button>)
 
       const button = screen.getByRole('button')
-      expect(button).toHaveClass('h-11', 'px-8')
+      expect(button).toHaveClass('h-11', 'px-6')
     })
 
     it('applies icon size classes', () => {

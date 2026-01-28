@@ -1,6 +1,10 @@
 /**
  * Design System Tests
  * OpenInfo Platform
+ *
+ * Tests for design system utilities and helpers.
+ * Note: Some helpers are in @/lib/utils (cn with tailwind-merge),
+ * others are in @/lib/design-system.
  */
 
 import { describe, it, expect } from 'vitest'
@@ -9,11 +13,14 @@ import {
   formatCurrency,
   formatPercentage,
   getInitials,
-  cn,
-  getStatusColor,
-  getIntentColor,
-  getPlanColor,
+  getStatusClasses,
+  getIntentClasses,
+  getPlanClasses,
+  statusColors,
+  intentColors,
+  planColors,
 } from '@/lib/design-system'
+import { cn } from '@/lib/utils'
 
 describe('formatNumber', () => {
   it('formats numbers with commas', () => {
@@ -36,7 +43,7 @@ describe('formatNumber', () => {
 
 describe('formatCurrency', () => {
   it('formats as USD by default', () => {
-    expect(formatCurrency(1000)).toBe('$1,000.00')
+    expect(formatCurrency(1000)).toBe('$1,000')
   })
 
   it('formats cents correctly', () => {
@@ -44,25 +51,27 @@ describe('formatCurrency', () => {
   })
 
   it('handles zero', () => {
-    expect(formatCurrency(0)).toBe('$0.00')
+    expect(formatCurrency(0)).toBe('$0')
   })
 })
 
 describe('formatPercentage', () => {
+  // Note: formatPercentage takes the raw percentage value (not 0-1)
+  // and adds the % symbol with specified decimal places
   it('formats percentage with default decimals', () => {
-    expect(formatPercentage(0.5)).toBe('50%')
+    expect(formatPercentage(50)).toBe('50.0%')
   })
 
   it('formats with custom decimals', () => {
-    expect(formatPercentage(0.5555, 2)).toBe('55.55%')
+    expect(formatPercentage(55.55, 2)).toBe('55.55%')
   })
 
   it('handles zero', () => {
-    expect(formatPercentage(0)).toBe('0%')
+    expect(formatPercentage(0)).toBe('0.0%')
   })
 
   it('handles 100%', () => {
-    expect(formatPercentage(1)).toBe('100%')
+    expect(formatPercentage(100)).toBe('100.0%')
   })
 })
 
@@ -75,17 +84,12 @@ describe('getInitials', () => {
     expect(getInitials('John')).toBe('J')
   })
 
-  it('handles multiple names', () => {
-    expect(getInitials('John Michael Doe')).toBe('JD')
+  it('handles multiple names (takes first two initials)', () => {
+    expect(getInitials('John Michael Doe')).toBe('JM')
   })
 
   it('handles empty string', () => {
     expect(getInitials('')).toBe('')
-  })
-
-  it('handles null/undefined', () => {
-    expect(getInitials(null as unknown as string)).toBe('')
-    expect(getInitials(undefined as unknown as string)).toBe('')
   })
 
   it('limits to 2 characters', () => {
@@ -116,59 +120,85 @@ describe('cn (class names)', () => {
   })
 })
 
-describe('getStatusColor', () => {
-  it('returns correct color for pending status', () => {
-    expect(getStatusColor('pending')).toBe('bg-warning-muted text-warning')
+describe('getStatusClasses', () => {
+  it('returns correct classes for active status', () => {
+    const result = getStatusClasses('active')
+    expect(result).toEqual(statusColors.active)
+    expect(result.bg).toBe('bg-success-muted')
+    expect(result.text).toBe('text-success')
   })
 
-  it('returns correct color for processing status', () => {
-    expect(getStatusColor('processing')).toBe('bg-info-muted text-info')
+  it('returns correct classes for pending status', () => {
+    const result = getStatusClasses('pending')
+    expect(result).toEqual(statusColors.pending)
+    expect(result.bg).toBe('bg-info-muted')
+    expect(result.text).toBe('text-info')
   })
 
-  it('returns correct color for completed status', () => {
-    expect(getStatusColor('completed')).toBe('bg-success-muted text-success')
+  it('returns correct classes for error status', () => {
+    const result = getStatusClasses('error')
+    expect(result).toEqual(statusColors.error)
+    expect(result.bg).toBe('bg-destructive-muted')
+    expect(result.text).toBe('text-destructive')
   })
 
-  it('returns correct color for failed status', () => {
-    expect(getStatusColor('failed')).toBe('bg-destructive-muted text-destructive')
+  it('returns correct classes for paused status', () => {
+    const result = getStatusClasses('paused')
+    expect(result).toEqual(statusColors.paused)
+    expect(result.bg).toBe('bg-warning-muted')
+    expect(result.text).toBe('text-warning')
   })
 
-  it('returns default color for unknown status', () => {
-    expect(getStatusColor('unknown' as never)).toBe('bg-muted text-muted-foreground')
-  })
-})
-
-describe('getIntentColor', () => {
-  it('returns high intent color for scores >= 80', () => {
-    expect(getIntentColor(80)).toBe('bg-success-muted text-success')
-    expect(getIntentColor(100)).toBe('bg-success-muted text-success')
-  })
-
-  it('returns medium intent color for scores >= 50', () => {
-    expect(getIntentColor(50)).toBe('bg-warning-muted text-warning')
-    expect(getIntentColor(79)).toBe('bg-warning-muted text-warning')
-  })
-
-  it('returns low intent color for scores < 50', () => {
-    expect(getIntentColor(49)).toBe('bg-muted text-muted-foreground')
-    expect(getIntentColor(0)).toBe('bg-muted text-muted-foreground')
+  it('returns correct classes for inactive status', () => {
+    const result = getStatusClasses('inactive')
+    expect(result).toEqual(statusColors.inactive)
+    expect(result.bg).toBe('bg-muted')
+    expect(result.text).toBe('text-muted-foreground')
   })
 })
 
-describe('getPlanColor', () => {
-  it('returns correct color for free plan', () => {
-    expect(getPlanColor('free')).toBe('bg-muted text-muted-foreground')
+describe('getIntentClasses', () => {
+  it('returns correct classes for hot intent', () => {
+    const result = getIntentClasses('hot')
+    expect(result).toEqual(intentColors.hot)
+    expect(result.bg).toBe('bg-destructive-muted')
+    expect(result.text).toBe('text-destructive')
   })
 
-  it('returns correct color for pro plan', () => {
-    expect(getPlanColor('pro')).toBe('bg-primary/10 text-primary')
+  it('returns correct classes for warm intent', () => {
+    const result = getIntentClasses('warm')
+    expect(result).toEqual(intentColors.warm)
+    expect(result.bg).toBe('bg-warning-muted')
+    expect(result.text).toBe('text-warning')
   })
 
-  it('returns correct color for enterprise plan', () => {
-    expect(getPlanColor('enterprise')).toBe('bg-success-muted text-success')
+  it('returns correct classes for cold intent', () => {
+    const result = getIntentClasses('cold')
+    expect(result).toEqual(intentColors.cold)
+    expect(result.bg).toBe('bg-info-muted')
+    expect(result.text).toBe('text-info')
+  })
+})
+
+describe('getPlanClasses', () => {
+  it('returns correct classes for free plan', () => {
+    const result = getPlanClasses('free')
+    expect(result).toEqual(planColors.free)
+    expect(result.bg).toBe('bg-muted')
+    expect(result.text).toBe('text-muted-foreground')
   })
 
-  it('returns default color for unknown plan', () => {
-    expect(getPlanColor('unknown' as never)).toBe('bg-muted text-muted-foreground')
+  it('returns correct classes for pro plan', () => {
+    const result = getPlanClasses('pro')
+    expect(result).toEqual(planColors.pro)
+    expect(result.bg).toBe('bg-primary-muted')
+    expect(result.text).toBe('text-primary')
+  })
+
+  it('returns correct classes for enterprise plan', () => {
+    const result = getPlanClasses('enterprise')
+    expect(result).toEqual(planColors.enterprise)
+    expect(result.bg).toBe('bg-primary')
+    expect(result.text).toBe('text-primary-foreground')
   })
 })

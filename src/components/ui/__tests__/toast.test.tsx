@@ -2,10 +2,14 @@
  * Toast Component Tests
  *
  * Tests for the toast notification system.
+ *
+ * Note: The Toast component uses requestAnimationFrame for progress updates.
+ * RAF is mocked globally in tests/setup.ts to use setTimeout, allowing
+ * fake timers to work correctly.
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, fireEvent, act } from '@testing-library/react'
 import { Toast, ToastProps } from '../toast'
 
 describe('Toast', () => {
@@ -24,6 +28,7 @@ describe('Toast', () => {
 
   afterEach(() => {
     vi.clearAllMocks()
+    vi.useRealTimers()
   })
 
   it('renders success toast with correct styling', () => {
@@ -69,8 +74,10 @@ describe('Toast', () => {
     expect(screen.queryByText('Test Title')).not.toBeInTheDocument()
   })
 
-  it('renders action button when provided', () => {
+  it('renders action button and calls onClick when clicked', () => {
+    vi.useFakeTimers()
     const mockAction = vi.fn()
+
     render(
       <Toast
         {...defaultProps}
@@ -83,93 +90,117 @@ describe('Toast', () => {
 
     fireEvent.click(button)
     expect(mockAction).toHaveBeenCalledTimes(1)
+
+    // handleClose uses setTimeout(300ms) before calling onClose
+    act(() => {
+      vi.advanceTimersByTime(350)
+    })
+
     expect(mockOnClose).toHaveBeenCalledWith('test-toast')
   })
 
-  it('calls onClose when close button is clicked', () => {
+  it('calls onClose when close button is clicked after animation', () => {
+    vi.useFakeTimers()
+
     render(<Toast {...defaultProps} />)
 
     const closeButton = screen.getByLabelText('Close notification')
     fireEvent.click(closeButton)
 
+    // onClose is called after 300ms animation delay
+    expect(mockOnClose).not.toHaveBeenCalled()
+
+    act(() => {
+      vi.advanceTimersByTime(350)
+    })
+
     expect(mockOnClose).toHaveBeenCalledWith('test-toast')
   })
 
-  it('auto-dismisses after duration', async () => {
+  it('auto-dismisses after duration', () => {
     vi.useFakeTimers()
 
     render(<Toast {...defaultProps} duration={1000} />)
 
-    // Fast-forward time
-    vi.advanceTimersByTime(1300) // Duration + exit animation
-
-    await waitFor(() => {
-      expect(mockOnClose).toHaveBeenCalledWith('test-toast')
+    // Advance through the duration + RAF cycles (16ms per frame)
+    act(() => {
+      vi.advanceTimersByTime(1100)
     })
 
-    vi.useRealTimers()
+    // After duration, handleClose is called which adds 300ms delay
+    act(() => {
+      vi.advanceTimersByTime(350)
+    })
+
+    expect(mockOnClose).toHaveBeenCalledWith('test-toast')
   })
 
-  it('does not auto-dismiss when duration is 0', async () => {
+  it('does not auto-dismiss when duration is 0', () => {
     vi.useFakeTimers()
 
     render(<Toast {...defaultProps} duration={0} />)
 
-    // Fast-forward time
-    vi.advanceTimersByTime(10000)
+    act(() => {
+      vi.advanceTimersByTime(10000)
+    })
 
     expect(mockOnClose).not.toHaveBeenCalled()
-
-    vi.useRealTimers()
   })
 
-  it('pauses auto-dismiss on hover', async () => {
+  it('pauses auto-dismiss on hover', () => {
     vi.useFakeTimers()
 
     render(<Toast {...defaultProps} duration={2000} />)
 
     const toast = screen.getByRole('alert')
 
-    // Hover after 1 second
-    vi.advanceTimersByTime(1000)
-    fireEvent.mouseEnter(toast)
-
-    // Wait another 2 seconds (should not dismiss)
-    vi.advanceTimersByTime(2000)
-    expect(mockOnClose).not.toHaveBeenCalled()
-
-    // Mouse leave and wait for remaining time
-    fireEvent.mouseLeave(toast)
-    vi.advanceTimersByTime(1300)
-
-    await waitFor(() => {
-      expect(mockOnClose).toHaveBeenCalledWith('test-toast')
+    // Advance partway through duration
+    act(() => {
+      vi.advanceTimersByTime(500)
     })
 
-    vi.useRealTimers()
+    // Hover to pause
+    fireEvent.mouseEnter(toast)
+
+    // Advance time while hovering - should not dismiss
+    act(() => {
+      vi.advanceTimersByTime(3000)
+    })
+    expect(mockOnClose).not.toHaveBeenCalled()
+
+    // Mouse leave to resume
+    fireEvent.mouseLeave(toast)
+
+    // Advance to complete the remaining duration + animation
+    act(() => {
+      vi.advanceTimersByTime(2000)
+    })
+    act(() => {
+      vi.advanceTimersByTime(350)
+    })
+
+    expect(mockOnClose).toHaveBeenCalledWith('test-toast')
   })
 
-  it('applies exit animation before closing', async () => {
+  it('applies exit animation class when closing', () => {
     vi.useFakeTimers()
 
-    const { rerender } = render(<Toast {...defaultProps} />)
+    render(<Toast {...defaultProps} />)
 
     const closeButton = screen.getByLabelText('Close notification')
     fireEvent.click(closeButton)
 
     const toast = screen.getByRole('alert')
 
-    // Should have exit animation class immediately
+    // Should have exit animation class immediately after click
     expect(toast).toHaveClass('translate-x-[400px]', 'opacity-0')
 
-    // Should call onClose after animation duration
-    vi.advanceTimersByTime(300)
-
-    await waitFor(() => {
-      expect(mockOnClose).toHaveBeenCalledWith('test-toast')
+    // onClose called after animation duration
+    act(() => {
+      vi.advanceTimersByTime(350)
     })
 
-    vi.useRealTimers()
+    expect(mockOnClose).toHaveBeenCalledWith('test-toast')
   })
 
   it('renders with correct accessibility attributes', () => {
