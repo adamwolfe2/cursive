@@ -34,14 +34,18 @@ export async function middleware(req: NextRequest) {
   // Auth routes (login, signup) - redirect to dashboard if already authenticated
   const isAuthRoute = pathname.startsWith('/login') || pathname.startsWith('/signup')
 
-  // Try to get session - this also refreshes the session if needed
-  let session = null
+  // Validate session using getUser() - this contacts Supabase server to validate
+  // and refresh tokens, which is required for proper session management
+  // Note: getSession() only reads from cookies without validation and may miss token refresh
+  let user = null
   try {
-    const { data } = await supabase.auth.getSession()
-    session = data?.session
+    const { data: { user: authUser }, error } = await supabase.auth.getUser()
+    if (!error && authUser) {
+      user = authUser
+    }
   } catch (e) {
     // If Supabase fails, treat as not authenticated
-    console.error('Middleware: Failed to get session', e)
+    console.error('Middleware: Failed to validate user', e)
   }
 
   // Helper to create redirect with cookies preserved
@@ -54,7 +58,7 @@ export async function middleware(req: NextRequest) {
     return redirectResponse
   }
 
-  if (isAuthRoute && session) {
+  if (isAuthRoute && user) {
     // Check for redirect param
     const redirectTo = req.nextUrl.searchParams.get('redirect')
     const destination = redirectTo || '/dashboard'
@@ -62,36 +66,36 @@ export async function middleware(req: NextRequest) {
   }
 
   // Protected routes require authentication
-  if (!isPublicRoute && !session) {
+  if (!isPublicRoute && !user) {
     const redirectUrl = new URL('/login', req.url)
     redirectUrl.searchParams.set('redirect', pathname)
     return redirectWithCookies(redirectUrl)
   }
 
   // API routes require authentication
-  if (isApiRoute && !session) {
+  if (isApiRoute && !user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
   // If authenticated, verify workspace access
-  if (session && !isPublicRoute && !pathname.startsWith('/onboarding')) {
+  if (user && !isPublicRoute && !pathname.startsWith('/onboarding')) {
     try {
-      const { data: user } = await supabase
+      const { data: dbUser } = await supabase
         .from('users')
         .select('*, workspaces(*)')
-        .eq('auth_user_id', session.user.id)
+        .eq('auth_user_id', user.id)
         .single()
 
       // User doesn't have a workspace - redirect to onboarding
-      if (!user || !(user as any).workspace_id) {
+      if (!dbUser || !(dbUser as any).workspace_id) {
         if (pathname !== '/onboarding') {
           return redirectWithCookies(new URL('/onboarding', req.url))
         }
       }
 
       // Validate subdomain matches user's workspace (if subdomain is present)
-      if (user && subdomain && subdomain !== 'www') {
-        const workspace = (user as any).workspaces
+      if (dbUser && subdomain && subdomain !== 'www') {
+        const workspace = (dbUser as any).workspaces
 
         if (
           workspace?.subdomain !== subdomain &&
