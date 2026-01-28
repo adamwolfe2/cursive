@@ -152,6 +152,82 @@ export interface CompanyData {
   }>
 }
 
+// ============================================================================
+// LEAD DATA TYPES (for DataShopper integration)
+// ============================================================================
+
+/**
+ * Intent signal from DataShopper
+ */
+export interface IntentSignal {
+  signal_type: string
+  detected_at: string
+  strength: 'high' | 'medium' | 'low'
+  topic?: string
+  source?: string
+}
+
+/**
+ * Company size ranges
+ */
+export const COMPANY_SIZE_RANGES = [
+  { value: '1-10', label: '1-10 employees' },
+  { value: '11-50', label: '11-50 employees' },
+  { value: '51-200', label: '51-200 employees' },
+  { value: '201-500', label: '201-500 employees' },
+  { value: '501-1000', label: '501-1,000 employees' },
+  { value: '1001-5000', label: '1,001-5,000 employees' },
+  { value: '5001-10000', label: '5,001-10,000 employees' },
+  { value: '10000+', label: '10,000+ employees' },
+] as const
+
+/**
+ * Revenue ranges
+ */
+export const REVENUE_RANGES = [
+  { value: 'Under 1 Million', label: 'Under $1M' },
+  { value: '1 Million to 10 Million', label: '$1M - $10M' },
+  { value: '10 Million to 50 Million', label: '$10M - $50M' },
+  { value: '50 Million to 100 Million', label: '$50M - $100M' },
+  { value: '100 Million to 250 Million', label: '$100M - $250M' },
+  { value: '250 Million to 500 Million', label: '$250M - $500M' },
+  { value: '500 Million to 1 Billion', label: '$500M - $1B' },
+  { value: 'Over 1 Billion', label: '$1B+' },
+] as const
+
+/**
+ * Intent score levels
+ */
+export const INTENT_SCORES = [
+  { value: 'hot', label: 'Hot', color: 'red' },
+  { value: 'warm', label: 'Warm', color: 'amber' },
+  { value: 'cold', label: 'Cold', color: 'blue' },
+] as const
+
+/**
+ * Lead source types
+ */
+export const LEAD_SOURCES = [
+  { value: 'datashopper', label: 'DataShopper' },
+  { value: 'csv', label: 'CSV Import' },
+  { value: 'manual', label: 'Manual Entry' },
+  { value: 'query', label: 'Query' },
+  { value: 'api', label: 'API' },
+] as const
+
+/**
+ * DataShopper raw data structure
+ */
+export interface DataShopperRawData {
+  person_id?: string
+  company_id?: string
+  record_type?: 'person' | 'company'
+  matched_topics?: string[]
+  intent_signals?: IntentSignal[]
+  enrichment_date?: string
+  data_quality_score?: number
+}
+
 export interface ContactData {
   contacts: Array<{
     full_name: string
