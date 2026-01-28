@@ -16,6 +16,7 @@ import {
   PasswordResetEmail,
   CampaignCompletedEmail,
   PaymentFailedEmail,
+  NewLeadEmail,
 } from './templates'
 
 // ============================================
@@ -326,6 +327,46 @@ export async function sendPaymentFailedEmail(
     tags: [
       { name: 'category', value: 'billing' },
       { name: 'type', value: 'payment_failed' },
+    ],
+  })
+}
+
+/**
+ * Send new lead assignment notification
+ */
+export async function sendNewLeadEmail(
+  email: string,
+  userName: string,
+  lead: {
+    name: string
+    company?: string | null
+    title?: string | null
+    location?: string | null
+    leadId: string
+  },
+  matchedOn?: string | null
+): Promise<EmailResult> {
+  const dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL}/my-leads?leadId=${lead.leadId}`
+
+  const html = await renderEmail(
+    NewLeadEmail({
+      userName,
+      leadName: lead.name,
+      leadCompany: lead.company || null,
+      leadTitle: lead.title || null,
+      leadLocation: lead.location || null,
+      matchedOn: matchedOn || null,
+      dashboardUrl,
+    })
+  )
+
+  return sendEmail({
+    to: email,
+    subject: `New lead: ${lead.name}${lead.company ? ` at ${lead.company}` : ''}`,
+    html,
+    tags: [
+      { name: 'category', value: 'notification' },
+      { name: 'type', value: 'new_lead' },
     ],
   })
 }

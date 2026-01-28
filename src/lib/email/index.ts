@@ -12,6 +12,7 @@ export {
   sendExportReadyEmail,
   sendWeeklyDigestEmail,
   sendPasswordResetEmail,
+  sendNewLeadEmail,
   sendBatchEmails,
   EMAIL_CATEGORIES,
   type EmailCategory,
@@ -31,5 +32,6 @@ export {
   ExportReadyEmail,
   WeeklyDigestEmail,
   PasswordResetEmail,
+  NewLeadEmail,
   renderEmail,
 } from './templates'

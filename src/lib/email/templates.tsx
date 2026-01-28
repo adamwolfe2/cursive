@@ -661,3 +661,87 @@ export function PaymentFailedEmail({
     </EmailLayout>
   )
 }
+
+interface NewLeadEmailProps {
+  userName: string
+  leadName: string
+  leadCompany: string | null
+  leadTitle: string | null
+  leadLocation: string | null
+  matchedOn: string | null
+  dashboardUrl: string
+}
+
+export function NewLeadEmail({
+  userName,
+  leadName,
+  leadCompany,
+  leadTitle,
+  leadLocation,
+  matchedOn,
+  dashboardUrl,
+}: NewLeadEmailProps) {
+  return (
+    <EmailLayout preview={`New lead: ${leadName}${leadCompany ? ` at ${leadCompany}` : ''}`}>
+      <Heading>New Lead Assigned!</Heading>
+      <Text>Hi {userName},</Text>
+      <Text>
+        Great news! A new lead has been matched to your targeting preferences and assigned to you.
+      </Text>
+
+      <table
+        width="100%"
+        cellPadding="0"
+        cellSpacing="0"
+        style={{
+          margin: '16px 0',
+          backgroundColor: '#f9fafb',
+          borderRadius: '8px',
+          padding: '16px',
+        }}
+      >
+        <tbody>
+          <tr>
+            <td style={{ padding: '16px' }}>
+              <div style={{ fontSize: '18px', fontWeight: 600, color: '#111827', marginBottom: '8px' }}>
+                {leadName}
+              </div>
+              {leadTitle && (
+                <div style={{ fontSize: '14px', color: '#4b5563', marginBottom: '4px' }}>
+                  {leadTitle}
+                </div>
+              )}
+              {leadCompany && (
+                <div style={{ fontSize: '14px', color: '#4b5563', marginBottom: '4px' }}>
+                  <strong>Company:</strong> {leadCompany}
+                </div>
+              )}
+              {leadLocation && (
+                <div style={{ fontSize: '14px', color: '#6b7280' }}>
+                  {leadLocation}
+                </div>
+              )}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      {matchedOn && (
+        <Callout variant="info">
+          <Text style={{ margin: 0 }}>
+            <strong>Matched on:</strong> {matchedOn}
+          </Text>
+        </Callout>
+      )}
+
+      <div style={{ textAlign: 'center', margin: '24px 0' }}>
+        <Button href={dashboardUrl}>View Lead Details</Button>
+      </div>
+
+      <Text style={{ color: '#6b7280', fontSize: '12px' }}>
+        This lead was automatically routed to you based on your industry and location preferences.
+        You can update your targeting settings at any time.
+      </Text>
+    </EmailLayout>
+  )
+}
