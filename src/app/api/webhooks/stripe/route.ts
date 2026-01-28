@@ -32,14 +32,70 @@ export async function POST(req: NextRequest) {
     // Handle payment success
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object as Stripe.Checkout.Session
+      const purchaseType = session.metadata?.type
 
+      // Handle marketplace credit purchase
+      if (purchaseType === 'credit_purchase') {
+        const creditPurchaseId = session.metadata?.credit_purchase_id
+        const workspaceId = session.metadata?.workspace_id
+        const credits = parseInt(session.metadata?.credits || '0', 10)
+
+        if (!creditPurchaseId || !workspaceId || !credits) {
+          console.error('Missing metadata for credit purchase')
+          return NextResponse.json({ error: 'Missing metadata' }, { status: 400 })
+        }
+
+        // Complete the credit purchase
+        await supabase
+          .from('credit_purchases')
+          .update({
+            status: 'completed',
+            completed_at: new Date().toISOString(),
+            stripe_payment_intent_id: session.payment_intent as string,
+          })
+          .eq('id', creditPurchaseId)
+
+        // Add credits to workspace
+        const { data: existingCredits } = await supabase
+          .from('workspace_credits')
+          .select('*')
+          .eq('workspace_id', workspaceId)
+          .single()
+
+        if (existingCredits) {
+          await supabase
+            .from('workspace_credits')
+            .update({
+              balance: existingCredits.balance + credits,
+              total_purchased: existingCredits.total_purchased + credits,
+              updated_at: new Date().toISOString(),
+            })
+            .eq('workspace_id', workspaceId)
+        } else {
+          await supabase
+            .from('workspace_credits')
+            .insert({
+              workspace_id: workspaceId,
+              balance: credits,
+              total_purchased: credits,
+              total_used: 0,
+              total_earned: 0,
+            })
+        }
+
+        console.log(`✅ Credit purchase completed: ${credits} credits for workspace ${workspaceId}`)
+        return NextResponse.json({ received: true })
+      }
+
+      // Handle legacy lead purchase
       const leadId = session.metadata?.lead_id
       const buyerEmail = session.metadata?.buyer_email
       const companyName = session.metadata?.company_name
 
       if (!leadId || !buyerEmail) {
-        console.error('Missing metadata in checkout session')
-        return NextResponse.json({ error: 'Missing metadata' }, { status: 400 })
+        // Not a lead purchase or credit purchase - might be another type
+        console.log('Checkout session without lead/credit metadata - skipping')
+        return NextResponse.json({ received: true })
       }
 
       // Get or create buyer

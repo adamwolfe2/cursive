@@ -1,312 +1,334 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import {
+  TrendingUp,
+  Upload,
+  DollarSign,
+  CheckCircle,
+  Clock,
+  Users,
+  ArrowRight,
+} from 'lucide-react'
 
-interface PartnerStats {
-  total_leads: number
-  this_month_leads: number
-  total_earnings: number
-  this_month_earnings: number
+interface DashboardStats {
+  totalLeadsUploaded: number
+  totalLeadsSold: number
+  totalEarnings: number
+  pendingBalance: number
+  availableBalance: number
+  verificationPassRate: number
+  duplicateRate: number
+  partnerScore: number
+  partnerTier: string
+  leadsUploadedThisMonth: number
+  leadsSoldThisMonth: number
+  earningsThisMonth: number
 }
 
-interface UploadHistory {
-  id: string
-  file_name: string
-  total_leads: number
-  successful: number
-  failed: number
-  created_at: string
-}
+export default function PartnerDashboard() {
+  const [stats, setStats] = useState<DashboardStats | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-export default function PartnerPortalPage() {
-  const [apiKey, setApiKey] = useState('')
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [partnerName, setPartnerName] = useState('')
-  const [stats, setStats] = useState<PartnerStats | null>(null)
-  const [uploadHistory, setUploadHistory] = useState<UploadHistory[]>([])
-  const [uploading, setUploading] = useState(false)
-  const [uploadResult, setUploadResult] = useState<any>(null)
-  const [error, setError] = useState('')
-  const fileInputRef = useRef<HTMLInputElement>(null)
-
-  // Authenticate with API key
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-
-    try {
-      const response = await fetch('/api/partner/auth', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ api_key: apiKey }),
-      })
-
-      const data = await response.json()
-
-      if (response.ok && data.success) {
-        setIsAuthenticated(true)
-        setPartnerName(data.partner_name)
-        setStats(data.stats)
-        localStorage.setItem('partner_api_key', apiKey)
-        fetchUploadHistory()
-      } else {
-        setError(data.error || 'Invalid API key')
-      }
-    } catch (err) {
-      setError('Authentication failed')
-    }
-  }
-
-  // Check for stored API key on mount
   useEffect(() => {
-    const storedKey = localStorage.getItem('partner_api_key')
-    if (storedKey) {
-      setApiKey(storedKey)
-      // Auto-authenticate
-      fetch('/api/partner/auth', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ api_key: storedKey }),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.success) {
-            setIsAuthenticated(true)
-            setPartnerName(data.partner_name)
-            setStats(data.stats)
-            fetchUploadHistory()
-          }
-        })
-        .catch(() => {})
+    async function fetchStats() {
+      try {
+        const response = await fetch('/api/partner/dashboard')
+        if (!response.ok) {
+          throw new Error('Failed to fetch dashboard stats')
+        }
+        const data = await response.json()
+        setStats(data)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred')
+      } finally {
+        setLoading(false)
+      }
     }
+
+    fetchStats()
   }, [])
 
-  const fetchUploadHistory = async () => {
-    // For now, return empty - would fetch from API
-    setUploadHistory([])
-  }
-
-  // Handle file upload
-  const handleUpload = async (file: File) => {
-    setUploading(true)
-    setUploadResult(null)
-
-    const formData = new FormData()
-    formData.append('file', file)
-
-    try {
-      const response = await fetch('/api/partner/upload', {
-        method: 'POST',
-        headers: {
-          'X-API-Key': apiKey,
-        },
-        body: formData,
-      })
-
-      const result = await response.json()
-      setUploadResult(result)
-
-      if (result.success) {
-        // Refresh stats
-        const authRes = await fetch('/api/partner/auth', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ api_key: apiKey }),
-        })
-        const authData = await authRes.json()
-        if (authData.success) {
-          setStats(authData.stats)
-        }
-      }
-    } catch (err) {
-      setUploadResult({ success: false, errors: ['Upload failed'] })
-    }
-
-    setUploading(false)
-  }
-
-  const handleLogout = () => {
-    setIsAuthenticated(false)
-    setApiKey('')
-    setStats(null)
-    localStorage.removeItem('partner_api_key')
-  }
-
-  // Login form
-  if (!isAuthenticated) {
+  if (loading) {
     return (
-      <div className="min-h-screen bg-zinc-50 flex items-center justify-center px-4">
-        <div className="w-full max-w-md">
-          <div className="text-center mb-8">
-            <div className="flex justify-center mb-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 text-white">
-                <svg className="h-7 w-7" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-                </svg>
-              </div>
-            </div>
-            <h1 className="text-xl font-medium text-zinc-900">Cursive Partner Portal</h1>
-            <p className="text-[13px] text-zinc-600 mt-2">Enter your API key to access the portal</p>
-          </div>
-
-          <form onSubmit={handleLogin} className="bg-white border border-zinc-200 rounded-lg p-6">
-            {error && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-[13px] text-red-700">
-                {error}
-              </div>
-            )}
-
-            <div className="mb-4">
-              <label className="block text-[13px] font-medium text-zinc-700 mb-2">API Key</label>
-              <input
-                type="text"
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                placeholder="pk_..."
-                className="w-full h-10 px-3 text-[13px] border border-zinc-300 rounded-lg focus:outline-none focus:border-violet-500"
-              />
-            </div>
-
-            <button
-              type="submit"
-              className="w-full h-10 text-[13px] font-medium bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-lg hover:from-violet-700 hover:to-indigo-700"
-            >
-              Sign In
-            </button>
-
-            <p className="mt-4 text-[12px] text-zinc-500 text-center">
-              Don&apos;t have an API key?{' '}
-              <a href="mailto:adam@meetcursive.com" className="text-violet-600 hover:underline">
-                Contact us
-              </a>
-            </p>
-          </form>
+      <div className="animate-pulse space-y-6">
+        <div className="h-8 w-48 rounded bg-zinc-800" />
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="h-32 rounded-lg bg-zinc-800" />
+          ))}
         </div>
       </div>
     )
   }
 
-  // Partner dashboard
+  if (error) {
+    return (
+      <div className="rounded-lg border border-red-800 bg-red-950/50 p-6">
+        <p className="text-red-400">{error}</p>
+      </div>
+    )
+  }
+
+  if (!stats) return null
+
+  const getTierColor = (tier: string) => {
+    switch (tier) {
+      case 'premium':
+        return 'text-yellow-400'
+      case 'standard':
+        return 'text-blue-400'
+      case 'probation':
+        return 'text-orange-400'
+      default:
+        return 'text-zinc-400'
+    }
+  }
+
+  const getScoreColor = (score: number) => {
+    if (score >= 80) return 'text-green-400'
+    if (score >= 60) return 'text-blue-400'
+    if (score >= 40) return 'text-yellow-400'
+    return 'text-red-400'
+  }
+
   return (
-    <div className="min-h-screen bg-zinc-50">
+    <div className="space-y-6">
       {/* Header */}
-      <header className="bg-white border-b border-zinc-200">
-        <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 text-white">
-              <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-              </svg>
-            </div>
-            <div>
-              <div className="text-[13px] font-medium text-zinc-900">Cursive Partner Portal</div>
-              <div className="text-[12px] text-zinc-500">{partnerName}</div>
-            </div>
-          </div>
-          <div className="flex items-center gap-4">
-            <Link href="/partner/payouts" className="text-[13px] text-violet-600 hover:text-violet-700">
-              Payouts
-            </Link>
-            <button
-              onClick={handleLogout}
-              className="text-[13px] text-zinc-600 hover:text-zinc-900"
-            >
-              Sign Out
-            </button>
-          </div>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-white">Partner Dashboard</h1>
+          <p className="text-zinc-400">
+            Welcome back. Here&apos;s your performance overview.
+          </p>
         </div>
-      </header>
+        <Link
+          href="/partner/upload"
+          className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+        >
+          <Upload className="h-4 w-4" />
+          Upload Leads
+        </Link>
+      </div>
 
-      <main className="max-w-5xl mx-auto px-6 py-8">
-        {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-white border border-zinc-200 rounded-lg p-4">
-            <div className="text-[12px] text-zinc-600">Total Leads</div>
-            <div className="text-2xl font-medium text-zinc-900 mt-1">{stats?.total_leads || 0}</div>
+      {/* Partner Score Card */}
+      <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm text-zinc-400">Partner Score</p>
+            <div className="mt-1 flex items-baseline gap-2">
+              <span className={`text-4xl font-bold ${getScoreColor(stats.partnerScore)}`}>
+                {stats.partnerScore}
+              </span>
+              <span className="text-lg text-zinc-500">/100</span>
+            </div>
           </div>
-          <div className="bg-white border border-zinc-200 rounded-lg p-4">
-            <div className="text-[12px] text-zinc-600">This Month</div>
-            <div className="text-2xl font-medium text-violet-600 mt-1">{stats?.this_month_leads || 0}</div>
-          </div>
-          <div className="bg-white border border-zinc-200 rounded-lg p-4">
-            <div className="text-[12px] text-zinc-600">Total Earnings</div>
-            <div className="text-2xl font-medium text-emerald-600 mt-1">${stats?.total_earnings?.toFixed(2) || '0.00'}</div>
-          </div>
-          <div className="bg-white border border-zinc-200 rounded-lg p-4">
-            <div className="text-[12px] text-zinc-600">This Month</div>
-            <div className="text-2xl font-medium text-emerald-600 mt-1">${stats?.this_month_earnings?.toFixed(2) || '0.00'}</div>
-          </div>
-        </div>
-
-        {/* Upload Section */}
-        <div className="bg-white border border-zinc-200 rounded-lg p-6 mb-8">
-          <h2 className="text-[15px] font-medium text-zinc-900 mb-4">Upload Leads</h2>
-
-          <div className="bg-violet-50 border border-violet-200 rounded-lg p-4 mb-6">
-            <h3 className="text-[13px] font-medium text-violet-900 mb-2">CSV Format</h3>
-            <p className="text-[12px] text-violet-700">
-              Required: first_name, last_name, email, phone, city, state, industry, intent_signal
+          <div className="text-right">
+            <p className="text-sm text-zinc-400">Tier</p>
+            <p className={`mt-1 text-xl font-semibold capitalize ${getTierColor(stats.partnerTier)}`}>
+              {stats.partnerTier}
             </p>
           </div>
-
-          <div
-            className="border-2 border-dashed border-zinc-300 rounded-lg p-8 text-center hover:border-violet-400 transition-colors cursor-pointer"
-            onClick={() => fileInputRef.current?.click()}
-          >
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".csv"
-              onChange={(e) => e.target.files?.[0] && handleUpload(e.target.files[0])}
-              className="hidden"
-            />
-
-            {uploading ? (
-              <p className="text-[13px] text-zinc-600">Uploading...</p>
-            ) : (
-              <>
-                <p className="text-[13px] font-medium text-zinc-900">Click to upload CSV</p>
-                <p className="text-[12px] text-zinc-500 mt-1">or drag and drop</p>
-              </>
-            )}
-          </div>
-
-          {uploadResult && (
-            <div className={`mt-4 p-4 rounded-lg ${uploadResult.success ? 'bg-emerald-50 border border-emerald-200' : 'bg-red-50 border border-red-200'}`}>
-              <h3 className={`text-[13px] font-medium ${uploadResult.success ? 'text-emerald-900' : 'text-red-900'}`}>
-                {uploadResult.success ? 'Upload Complete' : 'Upload Failed'}
-              </h3>
-              {uploadResult.successful !== undefined && (
-                <p className="text-[12px] mt-1 text-zinc-600">
-                  {uploadResult.successful} of {uploadResult.total} leads uploaded successfully
-                </p>
-              )}
-              {uploadResult.errors?.length > 0 && (
-                <ul className="text-[12px] mt-2 text-red-700">
-                  {uploadResult.errors.slice(0, 5).map((err: string, i: number) => (
-                    <li key={i}>{err}</li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          )}
         </div>
 
-        {/* API Documentation */}
-        <div className="bg-white border border-zinc-200 rounded-lg p-6">
-          <h2 className="text-[15px] font-medium text-zinc-900 mb-4">API Upload</h2>
-          <p className="text-[13px] text-zinc-600 mb-4">
-            You can also upload leads programmatically using our API.
+        {/* Score breakdown */}
+        <div className="mt-6 grid grid-cols-3 gap-4 border-t border-zinc-800 pt-4">
+          <div>
+            <p className="text-xs text-zinc-500">Verification Rate</p>
+            <p className="mt-1 text-lg font-medium text-white">
+              {stats.verificationPassRate.toFixed(1)}%
+            </p>
+          </div>
+          <div>
+            <p className="text-xs text-zinc-500">Duplicate Rate</p>
+            <p className="mt-1 text-lg font-medium text-white">
+              {stats.duplicateRate.toFixed(1)}%
+            </p>
+          </div>
+          <div>
+            <p className="text-xs text-zinc-500">Conversion Rate</p>
+            <p className="mt-1 text-lg font-medium text-white">
+              {stats.totalLeadsUploaded > 0
+                ? ((stats.totalLeadsSold / stats.totalLeadsUploaded) * 100).toFixed(1)
+                : 0}
+              %
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Stats Grid */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {/* Total Leads Uploaded */}
+        <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-4">
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-zinc-400">Total Leads Uploaded</p>
+            <Upload className="h-4 w-4 text-zinc-500" />
+          </div>
+          <p className="mt-2 text-2xl font-bold text-white">
+            {stats.totalLeadsUploaded.toLocaleString()}
           </p>
+          <p className="mt-1 text-xs text-zinc-500">
+            +{stats.leadsUploadedThisMonth.toLocaleString()} this month
+          </p>
+        </div>
 
-          <div className="bg-zinc-900 text-zinc-100 rounded-lg p-4 text-[12px] font-mono overflow-x-auto">
-            <pre>{`curl -X POST "https://meetcursive.com/api/partner/upload" \\
-  -H "X-API-Key: ${apiKey.slice(0, 12)}..." \\
-  -F "file=@leads.csv"`}</pre>
+        {/* Leads Sold */}
+        <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-4">
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-zinc-400">Leads Sold</p>
+            <Users className="h-4 w-4 text-zinc-500" />
+          </div>
+          <p className="mt-2 text-2xl font-bold text-white">
+            {stats.totalLeadsSold.toLocaleString()}
+          </p>
+          <p className="mt-1 text-xs text-zinc-500">
+            +{stats.leadsSoldThisMonth.toLocaleString()} this month
+          </p>
+        </div>
+
+        {/* Total Earnings */}
+        <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-4">
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-zinc-400">Total Earnings</p>
+            <DollarSign className="h-4 w-4 text-zinc-500" />
+          </div>
+          <p className="mt-2 text-2xl font-bold text-white">
+            ${stats.totalEarnings.toFixed(2)}
+          </p>
+          <p className="mt-1 text-xs text-zinc-500">
+            +${stats.earningsThisMonth.toFixed(2)} this month
+          </p>
+        </div>
+
+        {/* Available Balance */}
+        <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-4">
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-zinc-400">Available for Payout</p>
+            <CheckCircle className="h-4 w-4 text-green-500" />
+          </div>
+          <p className="mt-2 text-2xl font-bold text-green-400">
+            ${stats.availableBalance.toFixed(2)}
+          </p>
+          <p className="mt-1 text-xs text-zinc-500">
+            ${stats.pendingBalance.toFixed(2)} pending
+          </p>
+        </div>
+      </div>
+
+      {/* Earnings Breakdown */}
+      <div className="grid gap-4 md:grid-cols-2">
+        {/* Balance Status */}
+        <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-6">
+          <h3 className="text-lg font-semibold text-white">Balance Status</h3>
+          <div className="mt-4 space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Clock className="h-4 w-4 text-yellow-500" />
+                <span className="text-sm text-zinc-400">Pending (14-day holdback)</span>
+              </div>
+              <span className="font-medium text-white">
+                ${stats.pendingBalance.toFixed(2)}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <CheckCircle className="h-4 w-4 text-green-500" />
+                <span className="text-sm text-zinc-400">Available for Withdrawal</span>
+              </div>
+              <span className="font-medium text-green-400">
+                ${stats.availableBalance.toFixed(2)}
+              </span>
+            </div>
+            <div className="border-t border-zinc-800 pt-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-zinc-300">Total Earned</span>
+                <span className="font-bold text-white">
+                  ${stats.totalEarnings.toFixed(2)}
+                </span>
+              </div>
+            </div>
+          </div>
+          <Link
+            href="/partner/earnings"
+            className="mt-4 flex items-center justify-center gap-2 rounded-lg border border-zinc-700 px-4 py-2 text-sm text-zinc-300 hover:bg-zinc-800"
+          >
+            View Earnings Details
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-6">
+          <h3 className="text-lg font-semibold text-white">Quick Actions</h3>
+          <div className="mt-4 space-y-3">
+            <Link
+              href="/partner/upload"
+              className="flex items-center justify-between rounded-lg bg-zinc-800 p-4 hover:bg-zinc-700"
+            >
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600/20">
+                  <Upload className="h-5 w-5 text-blue-400" />
+                </div>
+                <div>
+                  <p className="font-medium text-white">Upload Leads</p>
+                  <p className="text-xs text-zinc-400">Upload a new CSV file</p>
+                </div>
+              </div>
+              <ArrowRight className="h-4 w-4 text-zinc-500" />
+            </Link>
+
+            <Link
+              href="/partner/uploads"
+              className="flex items-center justify-between rounded-lg bg-zinc-800 p-4 hover:bg-zinc-700"
+            >
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-600/20">
+                  <Clock className="h-5 w-5 text-purple-400" />
+                </div>
+                <div>
+                  <p className="font-medium text-white">View Upload History</p>
+                  <p className="text-xs text-zinc-400">Check previous uploads</p>
+                </div>
+              </div>
+              <ArrowRight className="h-4 w-4 text-zinc-500" />
+            </Link>
+
+            <Link
+              href="/partner/settings"
+              className="flex items-center justify-between rounded-lg bg-zinc-800 p-4 hover:bg-zinc-700"
+            >
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-600/20">
+                  <DollarSign className="h-5 w-5 text-green-400" />
+                </div>
+                <div>
+                  <p className="font-medium text-white">Setup Payouts</p>
+                  <p className="text-xs text-zinc-400">Connect Stripe account</p>
+                </div>
+              </div>
+              <ArrowRight className="h-4 w-4 text-zinc-500" />
+            </Link>
           </div>
         </div>
-      </main>
+      </div>
+
+      {/* Commission Info */}
+      <div className="rounded-lg border border-blue-800/50 bg-blue-950/20 p-4">
+        <div className="flex items-start gap-3">
+          <TrendingUp className="mt-0.5 h-5 w-5 text-blue-400" />
+          <div>
+            <h4 className="font-medium text-blue-300">Commission Structure</h4>
+            <p className="mt-1 text-sm text-blue-200/70">
+              Earn <strong>30% base commission</strong> on every lead sold. Bonuses available:
+              +10% for leads sold within 7 days, +5% for 95%+ verification rate, +5% for 10K+ monthly uploads.
+              Maximum commission: 50%.
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

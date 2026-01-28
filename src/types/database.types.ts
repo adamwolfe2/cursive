@@ -1285,3 +1285,314 @@ export type ActivityType =
   | 'assigned'
   | 'enriched'
   | 'created'
+
+// ============================================================================
+// MARKETPLACE TYPES
+// ============================================================================
+
+export type VerificationStatus = 'pending' | 'valid' | 'invalid' | 'catch_all' | 'risky' | 'unknown'
+export type SeniorityLevel = 'c_suite' | 'vp' | 'director' | 'manager' | 'ic' | 'unknown'
+export type PartnerTier = 'premium' | 'standard' | 'probation' | 'suspended'
+export type PartnerStatus = 'pending' | 'approved' | 'suspended' | 'terminated'
+export type CommissionStatus = 'pending_holdback' | 'payable' | 'paid' | 'cancelled'
+export type PurchaseStatus = 'pending' | 'completed' | 'refunded' | 'partially_refunded'
+export type ReferralType = 'user_to_user' | 'partner_to_partner'
+export type ReferralStatus = 'pending' | 'converted' | 'rewarded' | 'expired'
+export type UploadBatchStatus = 'pending' | 'validating' | 'verifying' | 'completed' | 'failed'
+
+// Extended Lead type with marketplace fields
+export interface MarketplaceLead {
+  id: string
+  workspace_id: string
+  email: string | null
+  first_name: string | null
+  last_name: string | null
+  full_name: string | null
+  job_title: string | null
+  phone: string | null
+  company_name: string
+  company_domain: string | null
+  company_industry: string | null
+  company_size: string | null
+  company_employee_count: number | null
+  city: string | null
+  state: string | null
+  state_code: string | null
+  country: string | null
+  postal_code: string | null
+  seniority_level: SeniorityLevel | null
+  sic_code: string | null
+  sic_codes: string[]
+  intent_score_calculated: number
+  freshness_score: number
+  verification_status: VerificationStatus
+  hash_key: string | null
+  sold_count: number
+  first_sold_at: string | null
+  marketplace_price: number | null
+  is_marketplace_listed: boolean
+  partner_id: string | null
+  upload_batch_id: string | null
+  created_at: string
+}
+
+// Partner type
+export interface Partner {
+  id: string
+  name: string
+  email: string
+  company_name: string | null
+  api_key: string
+  payout_rate: number
+  is_active: boolean
+  total_leads_uploaded: number
+  total_leads_sold: number
+  total_earnings: number
+  pending_balance: number
+  available_balance: number
+  verification_pass_rate: number
+  duplicate_rate: number
+  data_completeness_rate: number
+  partner_score: number
+  partner_tier: PartnerTier
+  base_commission_rate: number
+  bonus_commission_rate: number
+  referral_code: string | null
+  referred_by_partner_id: string | null
+  stripe_account_id: string | null
+  stripe_onboarding_complete: boolean
+  payout_threshold: number
+  status: PartnerStatus
+  suspended_at: string | null
+  suspension_reason: string | null
+  last_upload_at: string | null
+  created_at: string
+  updated_at: string
+}
+
+// Marketplace Purchase
+export interface MarketplacePurchase {
+  id: string
+  buyer_workspace_id: string
+  buyer_user_id: string
+  total_leads: number
+  total_price: number
+  payment_method: 'credits' | 'stripe' | 'mixed'
+  stripe_payment_intent_id: string | null
+  stripe_checkout_session_id: string | null
+  credits_used: number
+  card_amount: number
+  status: PurchaseStatus
+  refund_amount: number
+  refund_reason: string | null
+  filters_used: Json | null
+  download_url: string | null
+  download_expires_at: string | null
+  created_at: string
+  completed_at: string | null
+}
+
+// Marketplace Purchase Item
+export interface MarketplacePurchaseItem {
+  id: string
+  purchase_id: string
+  lead_id: string
+  price_at_purchase: number
+  intent_score_at_purchase: number | null
+  freshness_score_at_purchase: number | null
+  partner_id: string | null
+  commission_rate: number | null
+  commission_amount: number | null
+  commission_bonuses: Json
+  commission_status: CommissionStatus
+  commission_payable_at: string | null
+  commission_paid_at: string | null
+  payout_id: string | null
+  created_at: string
+}
+
+// Workspace Credits
+export interface WorkspaceCredits {
+  id: string
+  workspace_id: string
+  balance: number
+  total_purchased: number
+  total_used: number
+  total_earned: number
+  updated_at: string
+}
+
+// Credit Purchase
+export interface CreditPurchase {
+  id: string
+  workspace_id: string
+  user_id: string
+  credits: number
+  package_name: string | null
+  amount_paid: number
+  price_per_credit: number
+  stripe_payment_intent_id: string | null
+  stripe_checkout_session_id: string | null
+  status: 'pending' | 'completed' | 'failed'
+  created_at: string
+  completed_at: string | null
+}
+
+// Referral
+export interface Referral {
+  id: string
+  referrer_user_id: string | null
+  referrer_partner_id: string | null
+  referred_user_id: string | null
+  referred_partner_id: string | null
+  referral_type: ReferralType
+  referral_code: string
+  status: ReferralStatus
+  milestones_achieved: Json
+  rewards_issued: Json
+  total_rewards_value: number
+  created_at: string
+  converted_at: string | null
+}
+
+// Partner Upload Batch
+export interface PartnerUploadBatch {
+  id: string
+  partner_id: string
+  file_name: string
+  file_url: string | null
+  file_size_bytes: number | null
+  file_type: string | null
+  field_mappings: Json
+  industry_category_id: string | null
+  default_sic_codes: string[]
+  skip_invalid_rows: boolean
+  status: UploadBatchStatus
+  total_rows: number
+  processed_rows: number
+  valid_rows: number
+  invalid_rows: number
+  duplicate_rows: number
+  verification_pending: number
+  verification_complete: number
+  verification_valid: number
+  verification_invalid: number
+  marketplace_listed: number
+  preview_data: Json | null
+  detected_columns: string[]
+  error_message: string | null
+  error_log: Json
+  rejected_rows_url: string | null
+  started_at: string | null
+  completed_at: string | null
+  created_at: string
+  updated_at: string
+}
+
+// Email Verification Queue Item
+export interface EmailVerificationQueueItem {
+  id: string
+  lead_id: string
+  email: string
+  priority: number
+  status: 'pending' | 'processing' | 'completed' | 'failed'
+  attempts: number
+  max_attempts: number
+  verification_result: VerificationStatus | null
+  verification_provider: string | null
+  verification_response: Json | null
+  scheduled_at: string
+  started_at: string | null
+  completed_at: string | null
+  next_retry_at: string | null
+  created_at: string
+}
+
+// Partner Score History
+export interface PartnerScoreHistory {
+  id: string
+  partner_id: string
+  score: number
+  previous_score: number | null
+  verification_pass_rate: number | null
+  duplicate_rate: number | null
+  data_completeness_rate: number | null
+  avg_freshness_at_sale: number | null
+  tier: PartnerTier | null
+  previous_tier: PartnerTier | null
+  change_reason: string | null
+  calculated_at: string
+}
+
+// Marketplace Audit Log Entry
+export interface MarketplaceAuditLog {
+  id: string
+  action: string
+  actor_type: 'user' | 'partner' | 'system' | 'admin'
+  actor_id: string | null
+  actor_email: string | null
+  target_type: string | null
+  target_id: string | null
+  details: Json | null
+  ip_address: string | null
+  user_agent: string | null
+  created_at: string
+}
+
+// Credit Package Configuration
+export interface CreditPackage {
+  id: string
+  credits: number
+  price: number
+  pricePerCredit: number
+  name: string
+  popular?: boolean
+}
+
+// Marketplace Filter Options
+export interface MarketplaceFilters {
+  industries?: string[]
+  sicCodes?: string[]
+  states?: string[]
+  cities?: string[]
+  companySizes?: string[]
+  seniorityLevels?: SeniorityLevel[]
+  intentScoreMin?: number
+  intentScoreMax?: number
+  freshnessMin?: number
+  hasPhone?: boolean
+  hasVerifiedEmail?: boolean
+  verificationStatus?: VerificationStatus[]
+  priceMin?: number
+  priceMax?: number
+}
+
+// Marketplace Lead Preview (obfuscated for unpurchased leads)
+export interface MarketplaceLeadPreview {
+  id: string
+  first_name: string | null
+  last_name: string | null
+  job_title: string | null
+  company_name: string
+  company_industry: string | null
+  company_size: string | null
+  city: string | null
+  state: string | null
+  seniority_level: SeniorityLevel | null
+  intent_score: number
+  freshness_score: number
+  verification_status: VerificationStatus
+  has_phone: boolean
+  has_email: boolean
+  price: number
+  // Obfuscated fields (revealed after purchase)
+  email_preview: string | null // j***@company.com
+  phone_preview: string | null // +1 (555) ***-**89
+}
+
+// Commission Calculation Result
+export interface CommissionCalculation {
+  rate: number
+  amount: number
+  bonuses: string[]
+}
