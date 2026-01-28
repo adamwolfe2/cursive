@@ -4,8 +4,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { MarketplaceRepository } from '@/lib/repositories/marketplace.repository'
 import { COMMISSION_CONFIG } from '@/lib/services/commission.service'
+import Stripe from 'stripe'
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: '2024-12-18.acacia',
+})
 
 const purchaseSchema = z.object({
   leadIds: z.array(z.string().uuid()).min(1).max(100),
@@ -129,16 +135,86 @@ export async function POST(request: NextRequest) {
       })
     } else {
       // Stripe payment - create checkout session
-      // For now, return a message that Stripe is not yet configured
-      // TODO: Implement Stripe checkout for lead purchases
-      return NextResponse.json(
-        {
-          error: 'Stripe payments for marketplace purchases coming soon',
-          totalPrice,
-          leadCount: leads.length,
+      const adminClient = createAdminClient()
+
+      // Create pending purchase record
+      const purchase = await repo.createPurchase({
+        buyerWorkspaceId: userData.workspace_id,
+        buyerUserId: userData.id,
+        leadIds: validated.leadIds,
+        totalPrice,
+        paymentMethod: 'stripe',
+        creditsUsed: 0,
+        status: 'pending',
+      })
+
+      // Add purchase items with commission calculations
+      const purchaseItems = leads.map((lead) => {
+        const price = lead.marketplace_price || 0.05
+        const hasPartner = !!lead.partner_id
+        const commissionRate = hasPartner ? COMMISSION_CONFIG.BASE_RATE : 0
+        const commissionAmount = hasPartner ? price * commissionRate : 0
+
+        return {
+          leadId: lead.id,
+          priceAtPurchase: price,
+          intentScoreAtPurchase: lead.intent_score_calculated,
+          freshnessScoreAtPurchase: lead.freshness_score,
+          partnerId: lead.partner_id || undefined,
+          commissionRate: hasPartner ? commissionRate : undefined,
+          commissionAmount: hasPartner ? commissionAmount : undefined,
+          commissionBonuses: [],
+        }
+      })
+
+      await repo.addPurchaseItems(purchase.id, purchaseItems)
+
+      // Get app URL for redirect
+      const origin = request.headers.get('origin') || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+
+      // Create Stripe checkout session
+      const session = await stripe.checkout.sessions.create({
+        mode: 'payment',
+        payment_method_types: ['card'],
+        line_items: [
+          {
+            price_data: {
+              currency: 'usd',
+              product_data: {
+                name: `Lead Purchase (${leads.length} leads)`,
+                description: `Purchase of ${leads.length} marketplace leads`,
+              },
+              unit_amount: Math.round(totalPrice * 100), // Convert to cents
+            },
+            quantity: 1,
+          },
+        ],
+        metadata: {
+          type: 'lead_purchase',
+          purchase_id: purchase.id,
+          workspace_id: userData.workspace_id,
+          user_id: userData.id,
+          lead_count: String(leads.length),
         },
-        { status: 501 }
-      )
+        success_url: `${origin}/marketplace/history?success=true&purchase=${purchase.id}`,
+        cancel_url: `${origin}/marketplace?canceled=true`,
+      })
+
+      // Store Stripe session ID on purchase
+      await adminClient
+        .from('marketplace_purchases')
+        .update({
+          stripe_session_id: session.id,
+        })
+        .eq('id', purchase.id)
+
+      return NextResponse.json({
+        success: true,
+        checkoutUrl: session.url,
+        purchaseId: purchase.id,
+        totalPrice,
+        leadCount: leads.length,
+      })
     }
   } catch (error) {
     console.error('Failed to process purchase:', error)
