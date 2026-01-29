@@ -9,7 +9,21 @@ export { weeklyTrends } from './weekly-trends'
 
 // Marketplace functions
 export { processPartnerUpload } from './partner-upload-processor'
-export { processCommissions } from './process-commissions'
-export { processPartnerPayout } from './partner-payout-processor'
-export { updateFreshnessScores } from './update-freshness-scores'
 export { processEmailVerification } from './email-verification-processor'
+
+// Marketplace jobs (scoring, freshness, bonuses)
+export {
+  dailyFreshnessDecay,
+  dailyPartnerScoreCalculation,
+  monthlyVolumeBonusUpdate,
+  processReferralMilestones,
+  updatePartnerDataCompleteness,
+} from './marketplace-jobs'
+
+// Partner payout functions
+export {
+  weeklyPartnerPayouts,
+  triggerManualPayout,
+  dailyCommissionRelease,
+  reconcilePayouts,
+} from './partner-payouts'
