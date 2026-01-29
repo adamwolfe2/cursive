@@ -330,16 +330,22 @@ export class MarketplaceRepository {
   }
 
   /**
-   * Get purchase by ID
+   * Get purchase by ID with workspace validation
    */
-  async getPurchase(purchaseId: string): Promise<MarketplacePurchase | null> {
+  async getPurchase(purchaseId: string, workspaceId?: string): Promise<MarketplacePurchase | null> {
     const supabase = await createClient()
 
-    const { data, error } = await supabase
+    let query = supabase
       .from('marketplace_purchases')
       .select('*')
       .eq('id', purchaseId)
-      .single()
+
+    // SECURITY: Filter by workspace if provided (prevents cross-workspace access)
+    if (workspaceId) {
+      query = query.eq('buyer_workspace_id', workspaceId)
+    }
+
+    const { data, error } = await query.single()
 
     if (error || !data) return null
     return data as MarketplacePurchase

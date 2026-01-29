@@ -268,6 +268,17 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    // Get user data with workspace
+    const { data: userData } = await supabase
+      .from('users')
+      .select('id, workspace_id, full_name, email')
+      .eq('auth_user_id', user.id)
+      .single()
+
+    if (!userData?.workspace_id) {
+      return NextResponse.json({ error: 'User workspace not found' }, { status: 403 })
+    }
+
     const purchaseId = request.nextUrl.searchParams.get('purchaseId')
 
     if (!purchaseId) {
@@ -275,7 +286,8 @@ export async function GET(request: NextRequest) {
     }
 
     const repo = new MarketplaceRepository()
-    const purchase = await repo.getPurchase(purchaseId)
+    // SECURITY: Validate purchase belongs to user's workspace
+    const purchase = await repo.getPurchase(purchaseId, userData.workspace_id)
 
     if (!purchase) {
       return NextResponse.json({ error: 'Purchase not found' }, { status: 404 })
