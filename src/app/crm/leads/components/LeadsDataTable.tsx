@@ -24,6 +24,7 @@ import {
 } from '@/components/ui/table'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { leadsTableColumns } from './LeadsTableColumns'
+import { PaginationControls } from './PaginationControls'
 import { useCRMStore } from '@/lib/crm/crm-state'
 import type { LeadTableRow } from '@/types/crm.types'
 import { cn } from '@/lib/utils'
@@ -45,6 +46,7 @@ export function LeadsDataTable({
     columnVisibility: storedColumnVisibility,
     setColumnVisibility: setStoredColumnVisibility,
     density,
+    filters,
   } = useCRMStore()
 
   const [sorting, setSorting] = useState<SortingState>([])
@@ -108,10 +110,10 @@ export function LeadsDataTable({
   const rowHeightClass = density === 'compact' ? 'h-9' : 'h-12'
 
   return (
-    <div className="w-full space-y-4">
+    <div className="w-full space-y-4" role="region" aria-label="Leads table">
       <ScrollArea className="h-[calc(100vh-240px)] rounded-md border">
         <Table>
-          <TableHeader className="sticky top-0 bg-background z-10">
+          <TableHeader className="sticky top-0 bg-background z-10" role="rowgroup">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id} className="hover:bg-transparent">
                 {headerGroup.headers.map((header) => (
@@ -172,13 +174,13 @@ export function LeadsDataTable({
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
 
-      {/* Table info and pagination */}
-      <div className="flex items-center justify-between px-2">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of {totalCount} row(s)
-          selected.
-        </div>
-      </div>
+      {/* Pagination controls */}
+      <PaginationControls
+        currentPage={filters.page}
+        pageSize={filters.pageSize}
+        totalCount={totalCount}
+        pageCount={pageCount}
+      />
     </div>
   )
 }

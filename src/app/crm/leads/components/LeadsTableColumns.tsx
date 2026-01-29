@@ -20,8 +20,21 @@ import { Badge } from '@/components/ui/badge'
 import { StatusBadge } from '@/app/crm/components/StatusBadge'
 import { LeadAvatar } from '@/app/crm/components/LeadAvatar'
 import { URLPill } from '@/app/crm/components/URLPill'
+import { InlineStatusEdit } from './InlineStatusEdit'
+import { InlineAssignUserEdit } from './InlineAssignUserEdit'
+import { InlineTagsEdit } from './InlineTagsEdit'
 import type { LeadTableRow } from '@/types/crm.types'
 import { cn } from '@/lib/utils'
+
+// Mock available users - TODO: Replace with actual workspace users from API
+const MOCK_AVAILABLE_USERS = [
+  { id: '1', full_name: 'John Doe', email: 'john@example.com' },
+  { id: '2', full_name: 'Jane Smith', email: 'jane@example.com' },
+  { id: '3', full_name: 'Bob Johnson', email: 'bob@example.com' },
+]
+
+// Mock common tags - TODO: Replace with actual workspace tags from API
+const MOCK_COMMON_TAGS = ['hot-lead', 'qualified', 'enterprise', 'follow-up', 'demo-scheduled']
 
 // Helper to format currency
 function formatCurrency(amount: number | null): string {
@@ -81,7 +94,7 @@ export const leadsTableColumns: ColumnDef<LeadTableRow>[] = [
     size: 40,
   },
 
-  // Status column
+  // Status column (with inline editing)
   {
     accessorKey: 'status',
     header: ({ column }) => (
@@ -95,8 +108,10 @@ export const leadsTableColumns: ColumnDef<LeadTableRow>[] = [
         <ArrowUpDown className="ml-2 h-3.5 w-3.5" />
       </Button>
     ),
-    cell: ({ row }) => <StatusBadge status={row.getValue('status')} />,
-    size: 120,
+    cell: ({ row }) => (
+      <InlineStatusEdit leadId={row.original.id} currentStatus={row.getValue('status')} />
+    ),
+    size: 140,
   },
 
   // Name column (with avatar)
@@ -348,26 +363,33 @@ export const leadsTableColumns: ColumnDef<LeadTableRow>[] = [
     size: 100,
   },
 
-  // Owner column
+  // Owner column (with inline editing)
   {
     accessorKey: 'assigned_user',
     header: 'Owner',
-    cell: ({ row }) => {
-      const user = row.original.assigned_user
-      if (!user) return <span className="text-muted-foreground text-sm">Unassigned</span>
+    cell: ({ row }) => (
+      <InlineAssignUserEdit
+        leadId={row.original.id}
+        currentUser={row.original.assigned_user || null}
+        availableUsers={MOCK_AVAILABLE_USERS}
+      />
+    ),
+    size: 160,
+    enableSorting: false,
+  },
 
-      return (
-        <div className="flex items-center gap-2">
-          <LeadAvatar
-            firstName={user.full_name}
-            email={user.email}
-            size="xs"
-          />
-          <span className="text-sm truncate">{user.full_name || user.email}</span>
-        </div>
-      )
-    },
-    size: 140,
+  // Tags column (with inline editing)
+  {
+    accessorKey: 'tags',
+    header: 'Tags',
+    cell: ({ row }) => (
+      <InlineTagsEdit
+        leadId={row.original.id}
+        currentTags={row.original.tags || []}
+        commonTags={MOCK_COMMON_TAGS}
+      />
+    ),
+    size: 180,
     enableSorting: false,
   },
 
