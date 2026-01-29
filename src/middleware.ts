@@ -12,7 +12,26 @@ export async function middleware(req: NextRequest) {
 
   // Extract subdomain for multi-tenant routing
   const hostname = req.headers.get('host') || ''
+  const host = hostname.split(':')[0] // Remove port if present
   const subdomain = getSubdomain(hostname)
+
+  // Check if this is the leads.meetcursive.com domain (waitlist mode)
+  const isWaitlistDomain = host === 'leads.meetcursive.com'
+
+  // If on waitlist domain, redirect everything to the waitlist page
+  // except for the waitlist page itself, API routes, and static assets
+  if (isWaitlistDomain) {
+    const isWaitlistPath =
+      pathname === '/waitlist' ||
+      pathname.startsWith('/api/waitlist') ||
+      pathname.startsWith('/api/health') ||
+      pathname.startsWith('/_next') ||
+      pathname.startsWith('/auth/callback')
+
+    if (!isWaitlistPath) {
+      return NextResponse.redirect(new URL('/waitlist', req.url))
+    }
+  }
 
   // Public routes that don't require authentication
   const isPublicRoute =
@@ -24,12 +43,16 @@ export async function middleware(req: NextRequest) {
     pathname.startsWith('/auth/callback') ||
     pathname.startsWith('/auth/accept-invite') ||
     pathname === '/' ||
+    pathname === '/waitlist' || // Waitlist page is public
     pathname.startsWith('/_next') ||
     pathname.startsWith('/api/webhooks') || // Webhooks are authenticated differently
+    pathname.startsWith('/api/waitlist') || // Waitlist API is public
     pathname === '/api/health' // Health check endpoint for monitoring
 
-  // API routes (except webhooks) require authentication
-  const isApiRoute = pathname.startsWith('/api') && !pathname.startsWith('/api/webhooks')
+  // API routes (except webhooks and waitlist) require authentication
+  const isApiRoute = pathname.startsWith('/api') &&
+    !pathname.startsWith('/api/webhooks') &&
+    !pathname.startsWith('/api/waitlist')
 
   // Auth routes (login, signup) - redirect to dashboard if already authenticated
   const isAuthRoute = pathname.startsWith('/login') || pathname.startsWith('/signup')
