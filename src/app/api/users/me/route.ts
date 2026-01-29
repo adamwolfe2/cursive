@@ -170,7 +170,27 @@ export async function DELETE(request: NextRequest) {
       return unauthorized()
     }
 
-    // 2. Delete user account
+    // 2. Require email confirmation to prevent accidental deletion
+    const body = await request.json()
+    const { confirm_email } = body
+
+    if (!confirm_email || typeof confirm_email !== 'string') {
+      return validationError('Email confirmation is required to delete account')
+    }
+
+    if (confirm_email.toLowerCase() !== user.email.toLowerCase()) {
+      return validationError('Email confirmation does not match your account email')
+    }
+
+    // 3. Audit log before deletion (for security tracking)
+    console.log('[Account Deletion] User requesting deletion:', {
+      user_id: user.id,
+      email: user.email,
+      workspace_id: user.workspace_id,
+      timestamp: new Date().toISOString(),
+    })
+
+    // 4. Delete user account
     // Note: This should cascade delete related data based on FK constraints
     const supabase = await createClient()
 

@@ -149,6 +149,9 @@ export async function POST(req: NextRequest) {
       updateData.webhook_events = webhook_events
     }
 
+    // Track if we're generating a new secret
+    let isNewSecret = false
+
     // Generate new secret if URL is being set for the first time
     if (webhook_url && webhook_url.length > 0) {
       const { data: existing } = await supabase
@@ -159,6 +162,7 @@ export async function POST(req: NextRequest) {
 
       if (!existing?.webhook_secret) {
         updateData.webhook_secret = crypto.randomBytes(32).toString('hex')
+        isNewSecret = true
       }
     }
 
@@ -185,9 +189,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       webhook_url: updated?.webhook_url,
-      webhook_secret: updated?.webhook_secret,
+      // Only return full secret if we just generated it, otherwise mask
+      webhook_secret: isNewSecret
+        ? updated?.webhook_secret
+        : (updated?.webhook_secret ? '••••••••' : null),
       webhook_enabled: updated?.webhook_enabled,
       webhook_events: updated?.webhook_events,
+      ...(isNewSecret && {
+        message: 'Webhook secret generated. Save it now - you won\'t see it again.',
+      }),
     })
   } catch (error: any) {
     console.error('[Webhook Settings] POST error:', error)
@@ -335,7 +345,8 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({
       success: true,
       webhook_secret: newSecret,
-      message: 'Webhook secret regenerated successfully',
+      message: 'Webhook secret regenerated successfully. Save it now - you won\'t see it again.',
+      warning: 'Update your webhook consumer with this new secret immediately to avoid delivery failures.',
     })
   } catch (error: any) {
     console.error('[Webhook Settings] DELETE error:', error)
