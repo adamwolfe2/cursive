@@ -52,25 +52,17 @@ export async function middleware(req: NextRequest) {
   // Auth routes (login, signup) - redirect to dashboard if already authenticated
   const isAuthRoute = pathname.startsWith('/login') || pathname.startsWith('/signup')
 
-  // Validate session using getUser() - this contacts Supabase server to validate
-  // and refresh tokens, which is required for proper session management
-  // Note: getSession() only reads from cookies without validation and may miss token refresh
+  // Use getSession() instead of getUser() to avoid API calls on every request
+  // This reads directly from cookies which is much faster and more reliable
   let user = null
   try {
-    const { data: { user: authUser }, error } = await supabase.auth.getUser()
-    console.log('Middleware auth check:', {
-      pathname,
-      hasUser: !!authUser,
-      hasError: !!error,
-      error: error?.message,
-      cookies: req.cookies.getAll().map(c => c.name)
-    })
-    if (!error && authUser) {
-      user = authUser
+    const { data: { session } } = await supabase.auth.getSession()
+    if (session?.user) {
+      user = session.user
     }
   } catch (e) {
-    // If Supabase fails, treat as not authenticated
-    console.error('Middleware: Failed to validate user', e)
+    // If session read fails, treat as not authenticated
+    console.error('Middleware: Failed to read session', e)
   }
 
   // Check if user is admin (adam@meetcursive.com) - they bypass waitlist
