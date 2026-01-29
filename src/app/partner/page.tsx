@@ -285,8 +285,8 @@ export default function PartnerDashboard() {
               className="flex items-center justify-between rounded-lg bg-zinc-800 p-4 hover:bg-zinc-700"
             >
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-600/20">
-                  <Clock className="h-5 w-5 text-purple-400" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600/20">
+                  <Clock className="h-5 w-5 text-blue-400" />
                 </div>
                 <div>
                   <p className="font-medium text-white">View Upload History</p>

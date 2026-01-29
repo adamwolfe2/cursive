@@ -152,13 +152,13 @@ export default function AdminAccountsPage() {
       return <span className="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-md bg-amber-100 text-amber-700">Enterprise</span>
     }
     if (tierSlug === 'growth' || tierName === 'Growth') {
-      return <span className="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-md bg-violet-100 text-violet-700">Growth</span>
+      return <span className="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-md bg-blue-100 text-blue-700">Growth</span>
     }
     if (tierSlug === 'starter' || tierName === 'Starter') {
       return <span className="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-md bg-blue-100 text-blue-700">Starter</span>
     }
     if (plan === 'pro') {
-      return <span className="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-md bg-violet-100 text-violet-700">Pro</span>
+      return <span className="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-md bg-blue-100 text-blue-700">Pro</span>
     }
     return <span className="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-md bg-zinc-100 text-zinc-600">Free</span>
   }
@@ -195,14 +195,14 @@ export default function AdminAccountsPage() {
               placeholder="Search by business name or slug..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full h-10 px-3 text-[13px] text-zinc-900 placeholder:text-zinc-400 bg-white border border-zinc-300 rounded-lg focus:outline-none focus:border-violet-500"
+              className="w-full h-10 px-3 text-[13px] text-zinc-900 placeholder:text-zinc-400 bg-white border border-zinc-300 rounded-lg focus:outline-none focus:border-primary"
             />
           </div>
           <div className="w-48">
             <select
               value={industryFilter}
               onChange={(e) => setIndustryFilter(e.target.value)}
-              className="w-full h-10 px-3 text-[13px] text-zinc-900 bg-white border border-zinc-300 rounded-lg focus:outline-none focus:border-violet-500"
+              className="w-full h-10 px-3 text-[13px] text-zinc-900 bg-white border border-zinc-300 rounded-lg focus:outline-none focus:border-primary"
             >
               <option value="">All Industries</option>
               {industries.map((ind) => (
@@ -214,7 +214,7 @@ export default function AdminAccountsPage() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as typeof statusFilter)}
-              className="w-full h-10 px-3 text-[13px] text-zinc-900 bg-white border border-zinc-300 rounded-lg focus:outline-none focus:border-violet-500"
+              className="w-full h-10 px-3 text-[13px] text-zinc-900 bg-white border border-zinc-300 rounded-lg focus:outline-none focus:border-primary"
             >
               <option value="all">All Status</option>
               <option value="active">Active</option>
@@ -244,7 +244,7 @@ export default function AdminAccountsPage() {
         </div>
         <div className="bg-white border border-zinc-200 rounded-lg p-4">
           <div className="text-[13px] text-zinc-600">Paid Plans</div>
-          <div className="text-2xl font-medium text-violet-600 mt-1">
+          <div className="text-2xl font-medium text-primary mt-1">
             {workspaces?.filter(w =>
               w.users?.some(u => u.plan === 'pro') ||
               w.workspace_tiers?.product_tiers?.slug !== 'free'
@@ -304,8 +304,8 @@ export default function AdminAccountsPage() {
                             className="h-8 w-8 rounded-lg object-cover border border-zinc-200"
                           />
                         ) : (
-                          <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-violet-100 to-indigo-100 flex items-center justify-center">
-                            <span className="text-xs font-bold text-violet-600">
+                          <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
+                            <span className="text-xs font-bold text-blue-600">
                               {workspace.name?.charAt(0)?.toUpperCase() || '?'}
                             </span>
                           </div>
@@ -345,7 +345,7 @@ export default function AdminAccountsPage() {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => handleImpersonate(workspace)}
-                          className="text-[12px] text-violet-600 hover:text-violet-700 font-medium bg-violet-50 hover:bg-violet-100 px-2 py-1 rounded transition-colors"
+                          className="text-[12px] text-primary hover:text-primary/80 font-medium bg-primary-muted hover:bg-primary-muted/80 px-2 py-1 rounded transition-colors"
                         >
                           Switch Into
                         </button>
@@ -406,7 +406,7 @@ export default function AdminAccountsPage() {
                 value={impersonateReason}
                 onChange={(e) => setImpersonateReason(e.target.value)}
                 placeholder="e.g., Customer support request #1234"
-                className="w-full h-10 px-3 text-sm text-zinc-900 placeholder:text-zinc-400 bg-white border border-zinc-300 rounded-lg focus:outline-none focus:border-violet-500"
+                className="w-full h-10 px-3 text-sm text-zinc-900 placeholder:text-zinc-400 bg-white border border-zinc-300 rounded-lg focus:outline-none focus:border-primary"
               />
             </div>
 
@@ -420,7 +420,7 @@ export default function AdminAccountsPage() {
               <button
                 onClick={confirmImpersonate}
                 disabled={impersonateMutation.isPending}
-                className="px-4 py-2 text-sm font-medium text-white bg-violet-600 hover:bg-violet-700 rounded-lg transition-colors disabled:opacity-50"
+                className="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-lg transition-colors disabled:opacity-50"
               >
                 {impersonateMutation.isPending ? 'Switching...' : 'Switch Into Account'}
               </button>

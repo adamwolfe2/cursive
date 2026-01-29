@@ -106,7 +106,7 @@ export default function AdminPayoutsPage() {
       case 'approved':
         return 'bg-blue-100 text-blue-700'
       case 'processing':
-        return 'bg-purple-100 text-purple-700'
+        return 'bg-blue-100 text-blue-700'
       case 'pending':
         return 'bg-amber-100 text-amber-700'
       case 'rejected':
@@ -153,7 +153,7 @@ export default function AdminPayoutsPage() {
         </div>
         <div className="bg-white border border-zinc-200 rounded-lg p-4">
           <div className="text-[12px] text-zinc-600">Processing</div>
-          <div className="text-xl font-medium text-purple-600 mt-1">
+          <div className="text-xl font-medium text-primary mt-1">
             {stats?.processing_count || 0}
           </div>
           <div className="text-[12px] text-zinc-500 mt-1">
@@ -176,7 +176,7 @@ export default function AdminPayoutsPage() {
             onClick={() => setFilter(status)}
             className={`px-4 py-2 text-[13px] font-medium rounded-lg transition-colors ${
               filter === status
-                ? 'bg-violet-600 text-white'
+                ? 'bg-primary text-white'
                 : 'bg-zinc-100 text-zinc-700 hover:bg-zinc-200'
             }`}
           >
@@ -260,7 +260,7 @@ export default function AdminPayoutsPage() {
                             setSelectedPayout(payout)
                             setActionModal('process')
                           }}
-                          className="px-3 py-1.5 text-[12px] font-medium bg-violet-100 text-violet-700 rounded hover:bg-violet-200"
+                          className="px-3 py-1.5 text-[12px] font-medium bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
                         >
                           Process Payout
                         </button>
@@ -310,7 +310,7 @@ export default function AdminPayoutsPage() {
                   value={rejectionReason}
                   onChange={(e) => setRejectionReason(e.target.value)}
                   placeholder="Explain why this request is being rejected..."
-                  className="w-full h-24 px-3 py-2 text-[13px] border border-zinc-300 rounded-lg focus:outline-none focus:border-violet-500 resize-none"
+                  className="w-full h-24 px-3 py-2 text-[13px] border border-zinc-300 rounded-lg focus:outline-none focus:border-primary resize-none"
                   required
                 />
               </div>
@@ -324,7 +324,7 @@ export default function AdminPayoutsPage() {
                 value={adminNotes}
                 onChange={(e) => setAdminNotes(e.target.value)}
                 placeholder="Internal notes..."
-                className="w-full h-20 px-3 py-2 text-[13px] border border-zinc-300 rounded-lg focus:outline-none focus:border-violet-500 resize-none"
+                className="w-full h-20 px-3 py-2 text-[13px] border border-zinc-300 rounded-lg focus:outline-none focus:border-primary resize-none"
               />
             </div>
 
@@ -354,7 +354,7 @@ export default function AdminPayoutsPage() {
                 className={`flex-1 h-10 text-[13px] font-medium rounded-lg disabled:opacity-50 ${
                   actionModal === 'reject'
                     ? 'bg-red-600 text-white hover:bg-red-700'
-                    : 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white hover:from-violet-700 hover:to-indigo-700'
+                    : 'bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800'
                 }`}
               >
                 {processing ? 'Processing...' : actionModal.charAt(0).toUpperCase() + actionModal.slice(1)}
