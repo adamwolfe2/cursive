@@ -21,9 +21,6 @@ export async function middleware(req: NextRequest) {
   // Check for admin bypass cookie
   const hasAdminBypass = req.cookies.get('admin_bypass_waitlist')?.value === 'true'
 
-  // Check if user is admin (adam@meetcursive.com) - they bypass waitlist
-  const isAdminEmail = user?.email === 'adam@meetcursive.com'
-
   // If on waitlist domain, redirect everything to the waitlist page
   // except for the waitlist page itself, API routes, static assets, and admin bypass
   if (isWaitlistDomain && !hasAdminBypass && !isAdminEmail) {
@@ -77,6 +74,9 @@ export async function middleware(req: NextRequest) {
     // If Supabase fails, treat as not authenticated
     console.error('Middleware: Failed to validate user', e)
   }
+
+  // Check if user is admin (adam@meetcursive.com) - they bypass waitlist
+  const isAdminEmail = user?.email === 'adam@meetcursive.com'
 
   // Helper to create redirect with cookies preserved
   const redirectWithCookies = (url: URL) => {
