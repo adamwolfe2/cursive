@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { MarketplaceRepository } from '@/lib/repositories/marketplace.repository'
 import { COMMISSION_CONFIG } from '@/lib/services/commission.service'
+import { sendPurchaseConfirmationEmail } from '@/lib/email/service'
 import Stripe from 'stripe'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -34,7 +35,7 @@ export async function POST(request: NextRequest) {
     // Get user's workspace
     const { data: userData } = await supabase
       .from('users')
-      .select('id, workspace_id')
+      .select('id, workspace_id, full_name, email')
       .eq('auth_user_id', user.id)
       .single()
 
@@ -125,6 +126,28 @@ export async function POST(request: NextRequest) {
 
       // Get full lead details for the buyer
       const purchasedLeads = await repo.getPurchasedLeads(purchase.id)
+
+      // Send purchase confirmation email
+      try {
+        const downloadUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/marketplace/download/${purchase.id}`
+        const downloadExpiresAt = new Date()
+        downloadExpiresAt.setDate(downloadExpiresAt.getDate() + 90) // 90 days from now
+
+        await sendPurchaseConfirmationEmail(
+          userData.email || user.email!,
+          userData.full_name || 'Valued Customer',
+          {
+            totalLeads: leads.length,
+            totalPrice,
+            purchaseId: purchase.id,
+            downloadUrl,
+            downloadExpiresAt,
+          }
+        )
+      } catch (emailError) {
+        console.error('[Purchase] Failed to send confirmation email:', emailError)
+        // Don't fail the purchase if email fails
+      }
 
       return NextResponse.json({
         success: true,

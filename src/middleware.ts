@@ -18,12 +18,16 @@ export async function middleware(req: NextRequest) {
   // Check if this is the leads.meetcursive.com domain (waitlist mode)
   const isWaitlistDomain = host === 'leads.meetcursive.com'
 
+  // Check for admin bypass cookie
+  const hasAdminBypass = req.cookies.get('admin_bypass_waitlist')?.value === 'true'
+
   // If on waitlist domain, redirect everything to the waitlist page
-  // except for the waitlist page itself, API routes, and static assets
-  if (isWaitlistDomain) {
+  // except for the waitlist page itself, API routes, static assets, and admin bypass
+  if (isWaitlistDomain && !hasAdminBypass) {
     const isWaitlistPath =
       pathname === '/waitlist' ||
       pathname.startsWith('/api/waitlist') ||
+      pathname.startsWith('/api/admin/bypass-waitlist') ||
       pathname.startsWith('/api/health') ||
       pathname.startsWith('/_next') ||
       pathname.startsWith('/auth/callback')

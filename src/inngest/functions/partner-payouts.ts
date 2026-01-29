@@ -5,6 +5,7 @@ import { inngest } from '../client'
 import { createAdminClient } from '@/lib/supabase/admin'
 import Stripe from 'stripe'
 import { COMMISSION_CONFIG, processPendingCommissions, getPartnersEligibleForPayout } from '@/lib/services/commission.service'
+import { sendPayoutCompletedEmail } from '@/lib/email/service'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2024-12-18.acacia',
@@ -183,7 +184,7 @@ async function processPartnerPayout(partner: {
       .eq('id', partner.partnerId)
 
     // Mark commissions as paid
-    await supabase
+    const { data: paidItems } = await supabase
       .from('marketplace_purchase_items')
       .update({
         commission_status: 'paid',
@@ -191,6 +192,29 @@ async function processPartnerPayout(partner: {
       })
       .eq('partner_id', partner.partnerId)
       .eq('commission_status', 'payable')
+      .select('lead_id')
+
+    // Send payout completion email
+    try {
+      const weekEnd = new Date()
+      const weekStartDate = new Date(weekStart)
+
+      await sendPayoutCompletedEmail(
+        partner.partnerEmail,
+        partner.partnerName,
+        {
+          amount: partner.availableBalance,
+          currency: 'usd',
+          leadsCount: paidItems?.length || 0,
+          periodStart: weekStartDate,
+          periodEnd: weekEnd,
+          payoutId: transfer.id,
+        }
+      )
+    } catch (emailError) {
+      console.error('[Payout] Failed to send completion email:', emailError)
+      // Don't fail the payout if email fails
+    }
 
     return {
       success: true,

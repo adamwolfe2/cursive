@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { sendPartnerApprovedEmail } from '@/lib/email/service'
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { partnerId: string } }
+  { params }: { params: Promise<{ partnerId: string }> }
 ) {
   const supabase = await createClient()
+  const { partnerId } = await params
 
   // Verify admin
   const {
@@ -33,7 +35,7 @@ export async function POST(
       status: 'active',
       updated_at: new Date().toISOString(),
     })
-    .eq('id', params.partnerId)
+    .eq('id', partnerId)
     .eq('status', 'pending')
     .select()
     .single()
@@ -56,7 +58,18 @@ export async function POST(
     },
   })
 
-  // TODO: Send approval email to partner
+  // Send approval email to partner
+  try {
+    await sendPartnerApprovedEmail(
+      partner.email,
+      partner.contact_name,
+      partner.company_name,
+      partner.api_key
+    )
+  } catch (emailError) {
+    console.error('[Partner Approval] Failed to send email:', emailError)
+    // Don't fail the approval if email fails
+  }
 
   return NextResponse.json({ success: true, partner })
 }

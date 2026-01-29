@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { sendPurchaseConfirmationEmail, sendCreditPurchaseConfirmationEmail } from '@/lib/email/service'
 
 export async function POST(req: NextRequest) {
   try {
@@ -128,6 +129,44 @@ export async function POST(req: NextRequest) {
           }
         }
 
+        // Send purchase confirmation email
+        try {
+          const { data: purchase } = await supabase
+            .from('marketplace_purchases')
+            .select('buyer_user_id, total_price')
+            .eq('id', purchaseId)
+            .single()
+
+          if (purchase?.buyer_user_id) {
+            const { data: user } = await supabase
+              .from('users')
+              .select('email, full_name')
+              .eq('id', purchase.buyer_user_id)
+              .single()
+
+            if (user) {
+              const downloadUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/marketplace/download/${purchaseId}`
+              const downloadExpiresAt = new Date()
+              downloadExpiresAt.setDate(downloadExpiresAt.getDate() + 90)
+
+              await sendPurchaseConfirmationEmail(
+                user.email,
+                user.full_name || 'Valued Customer',
+                {
+                  totalLeads: items?.length || 0,
+                  totalPrice: purchase.total_price,
+                  purchaseId,
+                  downloadUrl,
+                  downloadExpiresAt,
+                }
+              )
+            }
+          }
+        } catch (emailError) {
+          console.error('[Stripe Webhook] Failed to send purchase confirmation:', emailError)
+          // Don't fail the webhook if email fails
+        }
+
         console.log(`✅ Lead purchase completed: ${purchaseId} for workspace ${workspaceId}`)
         return NextResponse.json({ received: true })
       }
@@ -179,6 +218,46 @@ export async function POST(req: NextRequest) {
               total_used: 0,
               total_earned: 0,
             })
+        }
+
+        // Send credit purchase confirmation email
+        try {
+          const { data: creditPurchase } = await supabase
+            .from('credit_purchases')
+            .select('user_id, amount, package_name')
+            .eq('id', creditPurchaseId)
+            .single()
+
+          if (creditPurchase?.user_id) {
+            const { data: user } = await supabase
+              .from('users')
+              .select('email, full_name')
+              .eq('id', creditPurchase.user_id)
+              .single()
+
+            if (user) {
+              // Get new balance
+              const { data: updatedCredits } = await supabase
+                .from('workspace_credits')
+                .select('balance')
+                .eq('workspace_id', workspaceId)
+                .single()
+
+              await sendCreditPurchaseConfirmationEmail(
+                user.email,
+                user.full_name || 'Valued Customer',
+                {
+                  creditsAmount: credits,
+                  totalPrice: creditPurchase.amount,
+                  packageName: creditPurchase.package_name || `${credits} Credits`,
+                  newBalance: updatedCredits?.balance || credits,
+                }
+              )
+            }
+          }
+        } catch (emailError) {
+          console.error('[Stripe Webhook] Failed to send credit confirmation:', emailError)
+          // Don't fail the webhook if email fails
         }
 
         console.log(`✅ Credit purchase completed: ${credits} credits for workspace ${workspaceId}`)
