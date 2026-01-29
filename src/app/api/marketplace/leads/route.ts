@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { MarketplaceRepository } from '@/lib/repositories/marketplace.repository'
+import { withRateLimit } from '@/lib/middleware/rate-limiter'
 import type { MarketplaceFilters } from '@/types/database.types'
 
 const filtersSchema = z.object({
@@ -36,6 +37,16 @@ export async function GET(request: NextRequest) {
 
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // RATE LIMITING: Check browse rate limit (60 per minute per user)
+    const rateLimitResult = await withRateLimit(
+      request,
+      'marketplace-browse',
+      `user:${user.id}`
+    )
+    if (rateLimitResult) {
+      return rateLimitResult
     }
 
     // Parse query params

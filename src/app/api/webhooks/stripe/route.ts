@@ -50,8 +50,46 @@ export async function POST(req: NextRequest) {
       processed_at: new Date().toISOString(),
     })
 
-    // Handle payment success
-    if (event.type === 'checkout.session.completed') {
+    // WEBHOOK RETRY LOGIC: Wrap event processing in try-catch
+    try {
+      await processWebhookEvent(event, supabase)
+      return NextResponse.json({ received: true })
+    } catch (processingError: any) {
+      console.error(`[Webhook] Failed to process ${event.type}:`, processingError)
+
+      // Queue for retry with exponential backoff
+      try {
+        const { data: queueId } = await supabase.rpc('queue_webhook_retry', {
+          p_stripe_event_id: event.id,
+          p_event_type: event.type,
+          p_event_data: event as any,
+          p_error: processingError.message || 'Unknown error',
+        })
+
+        console.log(`[Webhook] Queued for retry: ${event.id}, queue_id: ${queueId}`)
+      } catch (queueError) {
+        console.error(`[Webhook] Failed to queue retry:`, queueError)
+      }
+
+      // Still return 500 to inform Stripe of failure
+      return NextResponse.json(
+        { error: 'Webhook processing failed, queued for retry' },
+        { status: 500 }
+      )
+    }
+  } catch (error: any) {
+    console.error('Webhook error:', error)
+    return NextResponse.json(
+      { error: error.message || 'Webhook handler failed' },
+      { status: 500 }
+    )
+  }
+}
+
+// Extract event processing logic into separate function for reuse in retry processor
+async function processWebhookEvent(event: Stripe.Event, supabase: any) {
+  // Handle payment success
+  if (event.type === 'checkout.session.completed') {
       const session = event.data.object as Stripe.Checkout.Session
       const purchaseType = session.metadata?.type
 
@@ -323,6 +361,177 @@ export async function POST(req: NextRequest) {
       console.error('Payment failed:', paymentIntent.id)
     }
 
+    // Handle refunds
+    if (event.type === 'charge.refunded') {
+      const charge = event.data.object as Stripe.Charge
+      const paymentIntentId = charge.payment_intent as string
+
+      if (!paymentIntentId) {
+        console.error('Charge refunded but no payment_intent found')
+        return NextResponse.json({ received: true })
+      }
+
+      // Check if this is a credit purchase refund
+      const { data: creditPurchase } = await supabase
+        .from('credit_purchases')
+        .select('id, workspace_id, credits, user_id, package_name')
+        .eq('stripe_payment_intent_id', paymentIntentId)
+        .single()
+
+      if (creditPurchase) {
+        // Mark credit purchase as refunded
+        await supabase
+          .from('credit_purchases')
+          .update({
+            status: 'refunded',
+            refunded_at: new Date().toISOString(),
+          })
+          .eq('id', creditPurchase.id)
+
+        // Deduct credits from workspace balance
+        const { data: workspaceCredits } = await supabase
+          .from('workspace_credits')
+          .select('balance, total_purchased')
+          .eq('workspace_id', creditPurchase.workspace_id)
+          .single()
+
+        if (workspaceCredits) {
+          await supabase
+            .from('workspace_credits')
+            .update({
+              balance: Math.max(0, workspaceCredits.balance - creditPurchase.credits),
+              total_purchased: Math.max(0, workspaceCredits.total_purchased - creditPurchase.credits),
+              updated_at: new Date().toISOString(),
+            })
+            .eq('workspace_id', creditPurchase.workspace_id)
+        }
+
+        // Send refund confirmation email
+        try {
+          const { data: user } = await supabase
+            .from('users')
+            .select('email, full_name')
+            .eq('id', creditPurchase.user_id)
+            .single()
+
+          if (user) {
+            // Note: sendCreditRefundEmail would need to be created in email service
+            console.log(`Credit refund for user ${user.email}: ${creditPurchase.credits} credits`)
+          }
+        } catch (emailError) {
+          console.error('[Stripe Webhook] Failed to send refund notification:', emailError)
+        }
+
+        console.log(`✅ Credit refund processed: ${creditPurchase.credits} credits for workspace ${creditPurchase.workspace_id}`)
+        return NextResponse.json({ received: true })
+      }
+
+      // Check if this is a marketplace purchase refund
+      const { data: marketplacePurchase } = await supabase
+        .from('marketplace_purchases')
+        .select('id, buyer_workspace_id, credits_used, buyer_user_id, total_leads')
+        .eq('stripe_payment_intent_id', paymentIntentId)
+        .single()
+
+      if (marketplacePurchase) {
+        // Mark purchase as refunded
+        await supabase
+          .from('marketplace_purchases')
+          .update({
+            status: 'refunded',
+            refunded_at: new Date().toISOString(),
+          })
+          .eq('id', marketplacePurchase.id)
+
+        // Get purchase items to reverse operations
+        const { data: items } = await supabase
+          .from('marketplace_purchase_items')
+          .select('lead_id, partner_id, commission_amount')
+          .eq('purchase_id', marketplacePurchase.id)
+
+        if (items && items.length > 0) {
+          // Return leads to marketplace (make available again)
+          const leadIds = items.map(item => item.lead_id)
+          await supabase
+            .from('leads')
+            .update({
+              is_marketplace_listed: true,
+              marketplace_status: 'listed',
+              updated_at: new Date().toISOString(),
+            })
+            .in('id', leadIds)
+
+          // Reverse partner commissions
+          const partnerCommissions = items.reduce<Record<string, number>>((acc, item) => {
+            if (item.partner_id && item.commission_amount) {
+              acc[item.partner_id] = (acc[item.partner_id] || 0) + item.commission_amount
+            }
+            return acc
+          }, {})
+
+          for (const [partnerId, amount] of Object.entries(partnerCommissions)) {
+            const { data: partner } = await supabase
+              .from('partners')
+              .select('pending_balance, total_earnings, total_leads_sold')
+              .eq('id', partnerId)
+              .single()
+
+            if (partner) {
+              await supabase
+                .from('partners')
+                .update({
+                  pending_balance: Math.max(0, (partner.pending_balance || 0) - amount),
+                  total_earnings: Math.max(0, (partner.total_earnings || 0) - amount),
+                  total_leads_sold: Math.max(0, (partner.total_leads_sold || 0) - 1),
+                  updated_at: new Date().toISOString(),
+                } as never)
+                .eq('id', partnerId)
+            }
+          }
+        }
+
+        // Return credits to workspace (if purchase used credits)
+        if (marketplacePurchase.credits_used > 0) {
+          const { data: workspaceCredits } = await supabase
+            .from('workspace_credits')
+            .select('balance')
+            .eq('workspace_id', marketplacePurchase.buyer_workspace_id)
+            .single()
+
+          if (workspaceCredits) {
+            await supabase
+              .from('workspace_credits')
+              .update({
+                balance: workspaceCredits.balance + marketplacePurchase.credits_used,
+                updated_at: new Date().toISOString(),
+              })
+              .eq('workspace_id', marketplacePurchase.buyer_workspace_id)
+          }
+        }
+
+        // Send refund confirmation email
+        try {
+          const { data: user } = await supabase
+            .from('users')
+            .select('email, full_name')
+            .eq('id', marketplacePurchase.buyer_user_id)
+            .single()
+
+          if (user) {
+            console.log(`Lead purchase refund for user ${user.email}: ${marketplacePurchase.total_leads} leads`)
+          }
+        } catch (emailError) {
+          console.error('[Stripe Webhook] Failed to send refund notification:', emailError)
+        }
+
+        console.log(`✅ Marketplace purchase refund processed: ${marketplacePurchase.total_leads} leads for workspace ${marketplacePurchase.buyer_workspace_id}`)
+        return NextResponse.json({ received: true })
+      }
+
+      // Refund doesn't match any known purchase type
+      console.log(`Refund for payment_intent ${paymentIntentId} - no matching purchase found`)
+    }
+
     // Handle subscription events
     if (event.type === 'customer.subscription.created' || event.type === 'customer.subscription.updated') {
       const subscription = event.data.object as Stripe.Subscription
@@ -427,13 +636,4 @@ export async function POST(req: NextRequest) {
         })
       }
     }
-
-    return NextResponse.json({ received: true })
-  } catch (error: any) {
-    console.error('Webhook error:', error)
-    return NextResponse.json(
-      { error: error.message || 'Webhook handler failed' },
-      { status: 500 }
-    )
-  }
 }

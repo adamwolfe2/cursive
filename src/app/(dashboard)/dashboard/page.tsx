@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import { OnboardingChecklist } from '@/components/onboarding/checklist'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -79,6 +80,11 @@ export default async function DashboardPage() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-8">
+        {/* Onboarding Checklist */}
+        <div className="mb-8">
+          <OnboardingChecklist />
+        </div>
+
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-white rounded-lg border border-gray-200 p-6">

@@ -56,6 +56,7 @@ export const { GET, POST, PUT } = serve({
     functions.processRetryQueue,
     functions.cleanupFailedJobs,
     functions.onJobRetryRequested,
+    functions.webhookRetryProcessor,
 
     // Webhook Delivery
     functions.deliverLeadWebhook,

@@ -6,8 +6,9 @@ import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { MarketplaceRepository } from '@/lib/repositories/marketplace.repository'
-import { COMMISSION_CONFIG } from '@/lib/services/commission.service'
+import { COMMISSION_CONFIG, calculateCommission } from '@/lib/services/commission.service'
 import { sendPurchaseConfirmationEmail } from '@/lib/email/service'
+import { withRateLimit } from '@/lib/middleware/rate-limiter'
 import Stripe from 'stripe'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -17,9 +18,13 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 const purchaseSchema = z.object({
   leadIds: z.array(z.string().uuid()).min(1).max(100),
   paymentMethod: z.enum(['credits', 'stripe']).default('credits'),
+  idempotencyKey: z.string().uuid().optional(),
 })
 
 export async function POST(request: NextRequest) {
+  let idempotencyKey: string | undefined
+  let workspaceId: string | undefined
+
   try {
     const supabase = await createClient()
 
@@ -43,8 +48,59 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No workspace found' }, { status: 404 })
     }
 
+    workspaceId = userData.workspace_id
+
+    // RATE LIMITING: Check purchase rate limit (10 per minute per user)
+    const rateLimitResult = await withRateLimit(
+      request,
+      'marketplace-purchase',
+      `user:${user.id}`
+    )
+    if (rateLimitResult) {
+      return rateLimitResult
+    }
+
     const body = await request.json()
     const validated = purchaseSchema.parse(body)
+    idempotencyKey = validated.idempotencyKey
+
+    // IDEMPOTENCY: Check if request already processed
+    if (validated.idempotencyKey) {
+      const adminClient = createAdminClient()
+      const { data: existingKey } = await adminClient
+        .from('api_idempotency_keys')
+        .select('status, response_data, completed_at')
+        .eq('idempotency_key', validated.idempotencyKey)
+        .eq('workspace_id', userData.workspace_id)
+        .eq('endpoint', '/api/marketplace/purchase')
+        .single()
+
+      if (existingKey) {
+        // Request already processed - return cached response
+        if (existingKey.status === 'completed' && existingKey.response_data) {
+          console.log(`Idempotent request detected: ${validated.idempotencyKey}`)
+          return NextResponse.json(existingKey.response_data)
+        }
+
+        // Request currently processing - return conflict
+        if (existingKey.status === 'processing') {
+          return NextResponse.json(
+            { error: 'Request already in progress. Please try again shortly.' },
+            { status: 409 }
+          )
+        }
+
+        // Request failed previously - allow retry (don't return early)
+      } else {
+        // Create new idempotency key record
+        await adminClient.from('api_idempotency_keys').insert({
+          idempotency_key: validated.idempotencyKey,
+          workspace_id: userData.workspace_id,
+          endpoint: '/api/marketplace/purchase',
+          status: 'processing',
+        })
+      }
+    }
 
     const repo = new MarketplaceRepository()
 
@@ -56,6 +112,21 @@ export async function POST(request: NextRequest) {
         { error: 'Some leads are no longer available' },
         { status: 400 }
       )
+    }
+
+    // Fetch partner data for commission calculation with bonuses
+    const uniquePartnerIds = [...new Set(leads.map(l => l.partner_id).filter(Boolean))] as string[]
+    const partnersMap = new Map<string, any>()
+
+    if (uniquePartnerIds.length > 0) {
+      const { data: partners } = await supabase
+        .from('partners')
+        .select('id, verification_pass_rate, bonus_commission_rate, base_commission_rate')
+        .in('id', uniquePartnerIds)
+
+      if (partners) {
+        partners.forEach(p => partnersMap.set(p.id, p))
+      }
     }
 
     // Calculate total price
@@ -90,25 +161,46 @@ export async function POST(request: NextRequest) {
         creditsUsed: totalPrice,
       })
 
-      // Add purchase items with commission calculations
-      // Note: Full commission calculation with bonuses happens via recordCommission
+      // Add purchase items with commission calculations including bonuses
       const purchaseItems = leads.map((lead) => {
         const price = lead.marketplace_price || 0.05
 
-        // Basic commission calculation using base rate
-        // Full calculation with partner-specific bonuses happens in background
-        const hasPartner = !!lead.partner_id
-        const commissionRate = hasPartner ? COMMISSION_CONFIG.BASE_RATE : 0
-        const commissionAmount = hasPartner ? price * commissionRate : 0
+        // Calculate commission with bonuses if lead has a partner
+        if (lead.partner_id && partnersMap.has(lead.partner_id)) {
+          const partner = partnersMap.get(lead.partner_id)!
+          const commissionCalc = calculateCommission({
+            salePrice: price,
+            partner: {
+              id: partner.id,
+              verification_pass_rate: partner.verification_pass_rate || 0,
+              bonus_commission_rate: partner.bonus_commission_rate || 0,
+              base_commission_rate: partner.base_commission_rate,
+            },
+            leadCreatedAt: new Date(lead.created_at),
+            saleDate: new Date(),
+          })
 
+          return {
+            leadId: lead.id,
+            priceAtPurchase: price,
+            intentScoreAtPurchase: lead.intent_score_calculated,
+            freshnessScoreAtPurchase: lead.freshness_score,
+            partnerId: lead.partner_id,
+            commissionRate: commissionCalc.rate,
+            commissionAmount: commissionCalc.amount,
+            commissionBonuses: commissionCalc.bonuses,
+          }
+        }
+
+        // No partner = no commission
         return {
           leadId: lead.id,
           priceAtPurchase: price,
           intentScoreAtPurchase: lead.intent_score_calculated,
           freshnessScoreAtPurchase: lead.freshness_score,
-          partnerId: lead.partner_id || undefined,
-          commissionRate: hasPartner ? commissionRate : undefined,
-          commissionAmount: hasPartner ? commissionAmount : undefined,
+          partnerId: undefined,
+          commissionRate: undefined,
+          commissionAmount: undefined,
           commissionBonuses: [],
         }
       })
@@ -149,13 +241,29 @@ export async function POST(request: NextRequest) {
         // Don't fail the purchase if email fails
       }
 
-      return NextResponse.json({
+      const response = {
         success: true,
         purchase: completedPurchase,
         leads: purchasedLeads,
         totalPrice,
         creditsRemaining: balance - totalPrice,
-      })
+      }
+
+      // Update idempotency key with successful response
+      if (validated.idempotencyKey) {
+        const adminClient = createAdminClient()
+        await adminClient
+          .from('api_idempotency_keys')
+          .update({
+            status: 'completed',
+            response_data: response,
+            completed_at: new Date().toISOString(),
+          })
+          .eq('idempotency_key', validated.idempotencyKey)
+          .eq('workspace_id', userData.workspace_id)
+      }
+
+      return NextResponse.json(response)
     } else {
       // Stripe payment - create checkout session
       const adminClient = createAdminClient()
@@ -171,21 +279,46 @@ export async function POST(request: NextRequest) {
         status: 'pending',
       })
 
-      // Add purchase items with commission calculations
+      // Add purchase items with commission calculations including bonuses
       const purchaseItems = leads.map((lead) => {
         const price = lead.marketplace_price || 0.05
-        const hasPartner = !!lead.partner_id
-        const commissionRate = hasPartner ? COMMISSION_CONFIG.BASE_RATE : 0
-        const commissionAmount = hasPartner ? price * commissionRate : 0
 
+        // Calculate commission with bonuses if lead has a partner
+        if (lead.partner_id && partnersMap.has(lead.partner_id)) {
+          const partner = partnersMap.get(lead.partner_id)!
+          const commissionCalc = calculateCommission({
+            salePrice: price,
+            partner: {
+              id: partner.id,
+              verification_pass_rate: partner.verification_pass_rate || 0,
+              bonus_commission_rate: partner.bonus_commission_rate || 0,
+              base_commission_rate: partner.base_commission_rate,
+            },
+            leadCreatedAt: new Date(lead.created_at),
+            saleDate: new Date(),
+          })
+
+          return {
+            leadId: lead.id,
+            priceAtPurchase: price,
+            intentScoreAtPurchase: lead.intent_score_calculated,
+            freshnessScoreAtPurchase: lead.freshness_score,
+            partnerId: lead.partner_id,
+            commissionRate: commissionCalc.rate,
+            commissionAmount: commissionCalc.amount,
+            commissionBonuses: commissionCalc.bonuses,
+          }
+        }
+
+        // No partner = no commission
         return {
           leadId: lead.id,
           priceAtPurchase: price,
           intentScoreAtPurchase: lead.intent_score_calculated,
           freshnessScoreAtPurchase: lead.freshness_score,
-          partnerId: lead.partner_id || undefined,
-          commissionRate: hasPartner ? commissionRate : undefined,
-          commissionAmount: hasPartner ? commissionAmount : undefined,
+          partnerId: undefined,
+          commissionRate: undefined,
+          commissionAmount: undefined,
           commissionBonuses: [],
         }
       })
@@ -231,16 +364,50 @@ export async function POST(request: NextRequest) {
         })
         .eq('id', purchase.id)
 
-      return NextResponse.json({
+      const response = {
         success: true,
         checkoutUrl: session.url,
         purchaseId: purchase.id,
         totalPrice,
         leadCount: leads.length,
-      })
+      }
+
+      // Update idempotency key with Stripe session info
+      if (validated.idempotencyKey) {
+        const adminClient = createAdminClient()
+        await adminClient
+          .from('api_idempotency_keys')
+          .update({
+            status: 'completed',
+            response_data: response,
+            completed_at: new Date().toISOString(),
+          })
+          .eq('idempotency_key', validated.idempotencyKey)
+          .eq('workspace_id', userData.workspace_id)
+      }
+
+      return NextResponse.json(response)
     }
   } catch (error) {
     console.error('Failed to process purchase:', error)
+
+    // Mark idempotency key as failed to allow retry
+    if (idempotencyKey && workspaceId) {
+      try {
+        const adminClient = createAdminClient()
+        await adminClient
+          .from('api_idempotency_keys')
+          .update({
+            status: 'failed',
+            completed_at: new Date().toISOString(),
+          })
+          .eq('idempotency_key', idempotencyKey)
+          .eq('workspace_id', workspaceId)
+      } catch (idempotencyError) {
+        console.error('Failed to update idempotency key:', idempotencyError)
+      }
+    }
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Invalid request', details: error.errors },
@@ -268,6 +435,17 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    // Get user data with workspace
+    const { data: userData } = await supabase
+      .from('users')
+      .select('id, workspace_id, full_name, email')
+      .eq('auth_user_id', user.id)
+      .single()
+
+    if (!userData?.workspace_id) {
+      return NextResponse.json({ error: 'User workspace not found' }, { status: 403 })
+    }
+
     const purchaseId = request.nextUrl.searchParams.get('purchaseId')
 
     if (!purchaseId) {
@@ -275,7 +453,8 @@ export async function GET(request: NextRequest) {
     }
 
     const repo = new MarketplaceRepository()
-    const purchase = await repo.getPurchase(purchaseId)
+    // SECURITY: Validate purchase belongs to user's workspace
+    const purchase = await repo.getPurchase(purchaseId, userData.workspace_id)
 
     if (!purchase) {
       return NextResponse.json({ error: 'Purchase not found' }, { status: 404 })

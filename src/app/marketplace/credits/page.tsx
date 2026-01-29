@@ -4,52 +4,7 @@ import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import { NavBar } from '@/components/nav-bar'
 import { useToast } from '@/lib/hooks/use-toast'
-
-interface CreditPackage {
-  id: string
-  name: string
-  credits: number
-  price: number
-  pricePerCredit: number
-  savings: number
-  popular?: boolean
-}
-
-const CREDIT_PACKAGES: CreditPackage[] = [
-  {
-    id: 'starter',
-    name: 'Starter',
-    credits: 100,
-    price: 99,
-    pricePerCredit: 0.99,
-    savings: 0,
-  },
-  {
-    id: 'growth',
-    name: 'Growth',
-    credits: 500,
-    price: 399,
-    pricePerCredit: 0.80,
-    savings: 20,
-    popular: true,
-  },
-  {
-    id: 'scale',
-    name: 'Scale',
-    credits: 1000,
-    price: 699,
-    pricePerCredit: 0.70,
-    savings: 30,
-  },
-  {
-    id: 'enterprise',
-    name: 'Enterprise',
-    credits: 5000,
-    price: 2999,
-    pricePerCredit: 0.60,
-    savings: 40,
-  },
-]
+import { CREDIT_PACKAGES, type CreditPackage } from '@/lib/constants/credit-packages'
 
 export default function CreditsPage() {
   const { toast } = useToast()
