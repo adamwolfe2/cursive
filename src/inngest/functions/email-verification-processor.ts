@@ -2,7 +2,7 @@
 // Process email verification queue with MillionVerifier/ZeroBounce
 
 import { inngest } from '../client'
-import { createClient as createAdminClient } from '@/lib/supabase/admin'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 // Support multiple verification providers
 const verifyEmail = async (email: string): Promise<{

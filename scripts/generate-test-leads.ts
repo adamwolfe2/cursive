@@ -369,8 +369,8 @@ export function generateLead(industryKey: string, stateCode: string): GeneratedL
     company_name: companyName,
     company_industry: industry.name,
     source: 'test-seed',
-    enrichment_status: 'completed',
-    delivery_status: 'ready',
+    enrichment_status: 'enriched',
+    delivery_status: 'pending',
     status: 'new',
 
     email,

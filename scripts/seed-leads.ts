@@ -5,9 +5,14 @@
  * Run with: pnpm seed:leads
  */
 
+import { config } from 'dotenv'
+import { resolve } from 'path'
 import { createClient } from '@supabase/supabase-js'
 import type { Database } from '../src/types/database.types'
 import { generateAllTestLeads, type GeneratedLead } from './generate-test-leads'
+
+// Load .env.local
+config({ path: resolve(process.cwd(), '.env.local') })
 
 // ============================================================================
 // SUPABASE CLIENT
@@ -27,6 +32,14 @@ const supabase = createClient<Database>(supabaseUrl, supabaseServiceKey, {
     autoRefreshToken: false,
     persistSession: false,
   },
+  db: {
+    schema: 'public',
+  },
+  global: {
+    headers: {
+      'Prefer': 'return=representation',
+    },
+  },
 })
 
 // ============================================================================
@@ -40,6 +53,7 @@ const WORKSPACES = [
     slug: 'healthcare',
     subdomain: 'healthcare',
     industry_vertical: 'Healthcare',
+    onboarding_status: 'completed',
   },
   {
     id: '00000000-0000-0000-0000-000000000002',
@@ -47,6 +61,7 @@ const WORKSPACES = [
     slug: 'hvac',
     subdomain: 'hvac',
     industry_vertical: 'HVAC',
+    onboarding_status: 'completed',
   },
   {
     id: '00000000-0000-0000-0000-000000000003',
@@ -54,6 +69,7 @@ const WORKSPACES = [
     slug: 'solar',
     subdomain: 'solar',
     industry_vertical: 'Solar',
+    onboarding_status: 'completed',
   },
   {
     id: '00000000-0000-0000-0000-000000000004',
@@ -61,6 +77,7 @@ const WORKSPACES = [
     slug: 'default',
     subdomain: 'default',
     industry_vertical: 'General',
+    onboarding_status: 'completed',
   },
 ]
 
@@ -230,19 +247,37 @@ function matchLeadToWorkspace(lead: GeneratedLead): string {
 async function clearExistingData() {
   console.log('\n🗑️  Clearing existing test data...')
 
-  // Delete leads from test workspaces
-  const { error: leadsError } = await supabase
+  // First, check total leads in database
+  const { data: allLeads, count: totalCount, error: countError } = await supabase
     .from('leads')
-    .delete()
-    .in('workspace_id', WORKSPACES.map((w) => w.id))
+    .select('id, workspace_id, source, hash_key', { count: 'exact' })
+    .limit(10)
 
-  if (leadsError) {
-    console.error('   ⚠️  Error deleting leads:', leadsError.message)
+  if (countError) {
+    console.error('   ⚠️  Error counting leads:', countError.message)
   } else {
-    console.log('   ✓ Cleared existing leads')
+    console.log(`   Database has ${totalCount || 0} total leads`)
+    if (allLeads && allLeads.length > 0) {
+      console.log(`   Sample leads:`)
+      allLeads.slice(0, 3).forEach((lead, i) => {
+        console.log(`     ${i + 1}. workspace=${lead.workspace_id?.substring(0, 8)}..., source=${lead.source || 'null'}, hash=${lead.hash_key?.substring(0, 16)}...`)
+      })
+    }
   }
 
-  // Delete routing rules
+  // Delete ALL leads with source='test-seed' (most aggressive cleanup)
+  const { error: testLeadsError, count: deletedCount } = await supabase
+    .from('leads')
+    .delete({ count: 'exact' })
+    .eq('source', 'test-seed')
+
+  if (testLeadsError) {
+    console.error('   ⚠️  Error deleting test leads:', testLeadsError.message)
+  } else if (deletedCount && deletedCount > 0) {
+    console.log(`   ✓ Deleted ${deletedCount} test seed leads`)
+  }
+
+  // Delete routing rules FIRST (before workspaces, due to foreign keys)
   const { error: rulesError } = await supabase
     .from('lead_routing_rules')
     .delete()
@@ -254,16 +289,57 @@ async function clearExistingData() {
     console.log('   ✓ Cleared existing routing rules')
   }
 
-  // Delete workspaces
+  // Delete workspaces by ID (this should CASCADE delete all leads in those workspaces)
   const { error: workspacesError } = await supabase
     .from('workspaces')
     .delete()
     .in('id', WORKSPACES.map((w) => w.id))
 
   if (workspacesError) {
-    console.error('   ⚠️  Error deleting workspaces:', workspacesError.message)
+    console.error('   ⚠️  Error deleting workspaces by ID:', workspacesError.message)
   } else {
-    console.log('   ✓ Cleared existing workspaces')
+    console.log('   ✓ Cleared existing workspaces by ID')
+  }
+
+  // Also delete by slug to handle any duplicates
+  const { error: workspaceSlugError } = await supabase
+    .from('workspaces')
+    .delete()
+    .in('slug', WORKSPACES.map((w) => w.slug))
+
+  if (workspaceSlugError) {
+    console.error('   ⚠️  Error deleting workspaces by slug:', workspaceSlugError.message)
+  } else {
+    console.log('   ✓ Cleared existing workspaces by slug')
+  }
+
+  // Double-check: delete any orphaned leads from test workspaces that CASCADE didn't catch
+  const { error: leadsError, count: workspaceLeadsCount } = await supabase
+    .from('leads')
+    .delete({ count: 'exact' })
+    .in('workspace_id', WORKSPACES.map((w) => w.id))
+
+  if (leadsError) {
+    console.error('   ⚠️  Error deleting leads by workspace:', leadsError.message)
+  } else if (workspaceLeadsCount && workspaceLeadsCount > 0) {
+    console.log(`   ✓ Deleted ${workspaceLeadsCount} orphaned leads from test workspaces`)
+  }
+
+  // Verify cleanup
+  const { count: remainingTestLeads } = await supabase
+    .from('leads')
+    .select('*', { count: 'exact', head: true })
+    .eq('source', 'test-seed')
+
+  const { count: remainingWorkspaceLeads } = await supabase
+    .from('leads')
+    .select('*', { count: 'exact', head: true })
+    .in('workspace_id', WORKSPACES.map((w) => w.id))
+
+  if ((remainingTestLeads && remainingTestLeads > 0) || (remainingWorkspaceLeads && remainingWorkspaceLeads > 0)) {
+    console.warn(`   ⚠️  Warning: ${remainingTestLeads || 0} test leads and ${remainingWorkspaceLeads || 0} workspace leads still remain`)
+  } else {
+    console.log('   ✓ Verified all test data deleted')
   }
 
   console.log('✅ Cleared existing data\n')
@@ -312,9 +388,13 @@ async function seedLeads() {
   console.log('📍 Routing leads to workspaces...')
 
   // Convert to database format with routing
-  const leadsToInsert = generatedLeads.map((lead) => {
+  const crypto = require('crypto')
+  const leadsToInsert = generatedLeads.map((lead, index) => {
     const workspaceId = matchLeadToWorkspace(lead)
     const createdAt = new Date(Date.now() - lead.days_old * 24 * 60 * 60 * 1000).toISOString()
+
+    // Generate a truly unique hash_key using randomBytes
+    const hash_key = crypto.randomBytes(32).toString('hex')
 
     return {
       workspace_id: workspaceId,
@@ -348,11 +428,29 @@ async function seedLeads() {
       intent_score: lead.intent_score,
       intent_signals: lead.intent_signals,
 
+      hash_key,
       created_at: createdAt,
     }
   })
 
   console.log(`   ✓ Routed ${leadsToInsert.length} leads\n`)
+
+  // Check for duplicate hash_keys in our generated leads
+  const hashKeys = leadsToInsert.map((l) => l.hash_key)
+  const uniqueHashKeys = new Set(hashKeys)
+  if (hashKeys.length !== uniqueHashKeys.size) {
+    console.error(`   ⚠️  WARNING: Generated ${hashKeys.length - uniqueHashKeys.size} duplicate hash_keys!`)
+    // Find duplicates
+    const seen = new Set()
+    const duplicates = hashKeys.filter((h) => {
+      if (seen.has(h)) return true
+      seen.add(h)
+      return false
+    })
+    console.error(`   Duplicate hash_keys: ${duplicates.slice(0, 3).join(', ')}`)
+  } else {
+    console.log(`   ✓ All ${uniqueHashKeys.size} hash_keys are unique`)
+  }
 
   // Insert in batches of 100
   const batchSize = 100
@@ -361,17 +459,51 @@ async function seedLeads() {
   for (let i = 0; i < leadsToInsert.length; i += batchSize) {
     const batch = leadsToInsert.slice(i, i + batchSize)
 
-    const { error } = await supabase
-      .from('leads')
-      .insert(batch as any)
+    // Temporarily omit intent_score and intent_signals due to schema cache issue
+    const batchWithoutIntentFields = batch.map(({ intent_score, intent_signals, ...rest }) => rest)
 
-    if (error) {
-      console.error(`❌ Error inserting batch ${i / batchSize + 1}:`, error.message)
-      throw error
+    // Try inserting each lead individually to identify which one has the conflict
+    let batchInserted = 0
+    const errors: any[] = []
+
+    for (const leadData of batchWithoutIntentFields) {
+      const { error: leadError } = await supabase
+        .from('leads')
+        .insert([leadData] as any)
+
+      if (leadError) {
+        // If it's a duplicate, regenerate hash_key and try again
+        if (leadError.code === '23505' && leadError.message.includes('hash_key')) {
+          const crypto = require('crypto')
+          const newHashKey = crypto.randomBytes(32).toString('hex')
+          const { error: retryError } = await supabase
+            .from('leads')
+            .insert([{ ...leadData, hash_key: newHashKey }] as any)
+
+          if (retryError) {
+            errors.push({ lead: leadData.company_name, error: retryError.message })
+          } else {
+            batchInserted++
+          }
+        } else {
+          errors.push({ lead: leadData.company_name, error: leadError.message })
+        }
+      } else {
+        batchInserted++
+      }
     }
 
-    inserted += batch.length
-    console.log(`   ✓ Inserted ${inserted}/${leadsToInsert.length} leads...`)
+    if (errors.length > 0 && errors.length === batchWithoutIntentFields.length) {
+      console.error(`❌ Error inserting batch ${i / batchSize + 1}:`, errors[0].error)
+      throw new Error(errors[0].error)
+    }
+
+    inserted += batchInserted
+    if (errors.length > 0) {
+      console.log(`   ⚠️  Inserted ${batchInserted}/${batch.length} leads (${errors.length} skipped due to errors)`)
+    } else {
+      console.log(`   ✓ Inserted ${inserted}/${leadsToInsert.length} leads...`)
+    }
   }
 
   console.log(`\n✅ Inserted ${inserted} leads total\n`)

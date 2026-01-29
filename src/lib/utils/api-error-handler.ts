@@ -223,6 +223,13 @@ export function badRequest(message: string, details?: any) {
   )
 }
 
+export function validationError(message: string = 'Validation error', details?: any) {
+  return NextResponse.json(
+    { error: message, code: 'VALIDATION_ERROR', ...(details && { details }) },
+    { status: 400 }
+  )
+}
+
 export function success<T>(data: T, status: number = 200) {
   return NextResponse.json({ success: true, data }, { status })
 }
