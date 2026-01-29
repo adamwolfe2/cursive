@@ -4,10 +4,6 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { FormLabel } from '@/components/ui/form-label'
-import { FormInput } from '@/components/ui/form-input'
-import { FormError } from '@/components/ui/form-error'
-import { Button } from '@/components/ui/button'
 
 // Validation schema
 const waitlistSchema = z.object({
@@ -82,11 +78,10 @@ export function WaitlistForm({ source = 'website', onSuccess }: WaitlistFormProp
 
       if (!response.ok) {
         if (result.code === 'DUPLICATE_EMAIL') {
-          setSubmitError('This email is already on the waitlist. We\'ll be in touch soon!')
+          setSubmitError('This email is already on the waitlist.')
         } else if (result.details) {
-          // Validation error
           const firstError = result.details[0]
-          setSubmitError(firstError?.message || 'Please check your information and try again.')
+          setSubmitError(firstError?.message || 'Please check your information.')
         } else {
           setSubmitError(result.error || 'Something went wrong. Please try again.')
         }
@@ -97,7 +92,7 @@ export function WaitlistForm({ source = 'website', onSuccess }: WaitlistFormProp
       reset()
       onSuccess?.()
     } catch {
-      setSubmitError('Network error. Please check your connection and try again.')
+      setSubmitError('Network error. Please try again.')
     } finally {
       setIsSubmitting(false)
     }
@@ -106,16 +101,16 @@ export function WaitlistForm({ source = 'website', onSuccess }: WaitlistFormProp
   if (submitSuccess) {
     return (
       <div className="text-center py-8">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-100 mb-4">
-          <svg className="w-8 h-8 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+        <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 mb-4">
+          <svg className="w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <h3 className="text-xl font-semibold text-zinc-900 mb-2">
-          You&apos;re on the list!
+        <h3 className="text-lg font-semibold text-zinc-900 mb-1">
+          You&apos;re on the list
         </h3>
-        <p className="text-zinc-600">
-          Thanks for joining. We&apos;ll notify you as soon as early access opens.
+        <p className="text-sm text-zinc-600">
+          We&apos;ll notify you when early access opens.
         </p>
       </div>
     )
@@ -123,102 +118,106 @@ export function WaitlistForm({ source = 'website', onSuccess }: WaitlistFormProp
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      {submitError && <FormError message={submitError} />}
+      {submitError && (
+        <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
+          {submitError}
+        </div>
+      )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-3">
         <div>
-          <FormLabel htmlFor="first_name" required>
-            First Name
-          </FormLabel>
-          <FormInput
+          <label htmlFor="first_name" className="block text-sm font-medium text-zinc-700 mb-1.5">
+            First name <span className="text-red-500">*</span>
+          </label>
+          <input
             id="first_name"
             type="text"
-            placeholder="John"
-            error={errors.first_name}
+            className={`w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+              errors.first_name ? 'border-red-300' : 'border-zinc-300'
+            }`}
             {...register('first_name')}
           />
           {errors.first_name && (
-            <p className="mt-1 text-[12px] text-red-600">{errors.first_name.message}</p>
+            <p className="mt-1 text-xs text-red-600">{errors.first_name.message}</p>
           )}
         </div>
 
         <div>
-          <FormLabel htmlFor="last_name" required>
-            Last Name
-          </FormLabel>
-          <FormInput
+          <label htmlFor="last_name" className="block text-sm font-medium text-zinc-700 mb-1.5">
+            Last name <span className="text-red-500">*</span>
+          </label>
+          <input
             id="last_name"
             type="text"
-            placeholder="Smith"
-            error={errors.last_name}
+            className={`w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+              errors.last_name ? 'border-red-300' : 'border-zinc-300'
+            }`}
             {...register('last_name')}
           />
           {errors.last_name && (
-            <p className="mt-1 text-[12px] text-red-600">{errors.last_name.message}</p>
+            <p className="mt-1 text-xs text-red-600">{errors.last_name.message}</p>
           )}
         </div>
       </div>
 
       <div>
-        <FormLabel htmlFor="email" required>
-          Email
-        </FormLabel>
-        <FormInput
+        <label htmlFor="email" className="block text-sm font-medium text-zinc-700 mb-1.5">
+          Work email <span className="text-red-500">*</span>
+        </label>
+        <input
           id="email"
           type="email"
-          placeholder="john@company.com"
-          error={errors.email}
+          className={`w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+            errors.email ? 'border-red-300' : 'border-zinc-300'
+          }`}
           {...register('email')}
         />
         {errors.email && (
-          <p className="mt-1 text-[12px] text-red-600">{errors.email.message}</p>
+          <p className="mt-1 text-xs text-red-600">{errors.email.message}</p>
         )}
       </div>
 
       <div>
-        <FormLabel htmlFor="industry" optional>
-          Industry
-        </FormLabel>
-        <FormInput
+        <label htmlFor="industry" className="block text-sm font-medium text-zinc-700 mb-1.5">
+          Industry <span className="text-zinc-400 font-normal">(optional)</span>
+        </label>
+        <input
           id="industry"
           type="text"
           placeholder="e.g., Solar, HVAC, Insurance"
-          error={errors.industry}
+          className="w-full px-3 py-2 text-sm border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-zinc-400"
           {...register('industry')}
         />
-        {errors.industry && (
-          <p className="mt-1 text-[12px] text-red-600">{errors.industry.message}</p>
-        )}
       </div>
 
       <div>
-        <FormLabel htmlFor="linkedin_url" optional>
-          LinkedIn Profile
-        </FormLabel>
-        <FormInput
+        <label htmlFor="linkedin_url" className="block text-sm font-medium text-zinc-700 mb-1.5">
+          LinkedIn <span className="text-zinc-400 font-normal">(optional)</span>
+        </label>
+        <input
           id="linkedin_url"
           type="url"
           placeholder="https://linkedin.com/in/yourprofile"
-          error={errors.linkedin_url}
+          className={`w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-zinc-400 ${
+            errors.linkedin_url ? 'border-red-300' : 'border-zinc-300'
+          }`}
           {...register('linkedin_url')}
         />
         {errors.linkedin_url && (
-          <p className="mt-1 text-[12px] text-red-600">{errors.linkedin_url.message}</p>
+          <p className="mt-1 text-xs text-red-600">{errors.linkedin_url.message}</p>
         )}
       </div>
 
-      <Button
+      <button
         type="submit"
-        className="w-full"
-        size="lg"
-        loading={isSubmitting}
         disabled={isSubmitting}
+        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
       >
-        {isSubmitting ? 'Joining...' : 'Join the Waitlist'}
-      </Button>
+        {isSubmitting ? 'Joining...' : 'Join Waitlist'}
+      </button>
 
-      <p className="text-center text-[12px] text-zinc-500">
-        We&apos;ll only use your email to notify you about early access. No spam, ever.
+      <p className="text-xs text-zinc-500 text-center">
+        No spam. Unsubscribe anytime.
       </p>
     </form>
   )
