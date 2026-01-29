@@ -114,7 +114,7 @@ async function setupAdminUser() {
         name: 'Admin Workspace',
         slug: 'admin',
         subdomain: 'admin',
-        plan: 'enterprise',
+        onboarding_status: 'completed',
       })
 
     if (workspaceError) {
@@ -133,6 +133,22 @@ async function setupAdminUser() {
 
   if (existingDbUser) {
     console.log('✅ Database user record already exists')
+
+    // Update to ensure correct workspace and role
+    const { error: updateError } = await supabase
+      .from('users')
+      .update({
+        workspace_id: adminWorkspaceId,
+        role: 'owner',
+        plan: 'pro',
+      })
+      .eq('auth_user_id', authUserId)
+
+    if (updateError) {
+      console.error('❌ Failed to update database user:', updateError)
+    } else {
+      console.log('✅ Updated database user record')
+    }
   } else {
     const { error: dbUserError } = await supabase
       .from('users')
@@ -142,7 +158,8 @@ async function setupAdminUser() {
         email: adminEmail,
         full_name: 'Adam',
         role: 'owner',
-        plan: 'enterprise',
+        plan: 'pro',
+        daily_credit_limit: 10000,
       })
 
     if (dbUserError) {
