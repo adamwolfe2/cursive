@@ -44,30 +44,46 @@ export default function AdminDashboard() {
   const [showAddRuleModal, setShowAddRuleModal] = useState(false)
   const [webhookResponse, setWebhookResponse] = useState<string>('')
   const [loading, setLoading] = useState(false)
+  const [rulesLoading, setRulesLoading] = useState(true)
+  const [leadsLoading, setLeadsLoading] = useState(true)
 
   const supabase = createClient()
 
   const fetchRules = async () => {
-    const { data } = await supabase
-      .from('lead_routing_rules')
-      .select('*')
-      .order('priority', { ascending: false })
-    if (data) setRules(data)
+    setRulesLoading(true)
+    try {
+      const { data } = await supabase
+        .from('lead_routing_rules')
+        .select('*')
+        .order('priority', { ascending: false })
+      if (data) setRules(data)
+    } catch (error) {
+      console.error('Failed to fetch rules:', error)
+    } finally {
+      setRulesLoading(false)
+    }
   }
 
   const fetchLeads = async () => {
-    const { data } = await supabase
-      .from('leads')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .limit(20)
-    if (data) setLeads(data)
+    setLeadsLoading(true)
+    try {
+      const { data } = await supabase
+        .from('leads')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(20)
+      if (data) setLeads(data)
 
-    const stats: Record<string, number> = {}
-    data?.forEach((lead) => {
-      stats[lead.workspace_id] = (stats[lead.workspace_id] || 0) + 1
-    })
-    setLeadsStats(stats)
+      const stats: Record<string, number> = {}
+      data?.forEach((lead) => {
+        stats[lead.workspace_id] = (stats[lead.workspace_id] || 0) + 1
+      })
+      setLeadsStats(stats)
+    } catch (error) {
+      console.error('Failed to fetch leads:', error)
+    } finally {
+      setLeadsLoading(false)
+    }
   }
 
   useEffect(() => {
@@ -218,37 +234,54 @@ export default function AdminDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {rules.map((rule) => (
-                    <tr key={rule.id} className="border-b border-zinc-100 hover:bg-zinc-50 transition-colors">
-                      <td className="px-5 py-3 text-[13px] text-zinc-900">{rule.rule_name}</td>
-                      <td className="px-5 py-3 text-[13px] text-zinc-600">{rule.priority}</td>
-                      <td className="px-5 py-3 text-[13px] text-zinc-600">
-                        {rule.conditions.industries.join(', ') || 'All'}
-                      </td>
-                      <td className="px-5 py-3 text-[13px] text-zinc-600">
-                        {rule.conditions.us_states.join(', ') || 'All'}
-                      </td>
-                      <td className="px-5 py-3">
-                        <span
-                          className={`inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-md ${
-                            rule.is_active
-                              ? 'bg-emerald-50 text-emerald-700'
-                              : 'bg-zinc-100 text-zinc-600'
-                          }`}
-                        >
-                          {rule.is_active ? 'Active' : 'Inactive'}
-                        </span>
-                      </td>
-                      <td className="px-5 py-3">
-                        <button
-                          onClick={() => deleteRule(rule.id)}
-                          className="text-[13px] text-red-600 hover:text-red-700 font-medium transition-colors"
-                        >
-                          Delete
-                        </button>
+                  {rulesLoading ? (
+                    <tr>
+                      <td colSpan={6} className="px-5 py-12">
+                        <div className="flex flex-col items-center justify-center gap-3">
+                          <div className="animate-spin h-8 w-8 border-3 border-zinc-200 border-t-zinc-900 rounded-full" />
+                          <p className="text-[13px] text-zinc-500">Loading routing rules...</p>
+                        </div>
                       </td>
                     </tr>
-                  ))}
+                  ) : rules.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="px-5 py-12 text-center text-zinc-500 text-[13px]">
+                        No routing rules configured. Click "+ Add Rule" to create one.
+                      </td>
+                    </tr>
+                  ) : (
+                    rules.map((rule) => (
+                      <tr key={rule.id} className="border-b border-zinc-100 hover:bg-zinc-50 transition-colors">
+                        <td className="px-5 py-3 text-[13px] text-zinc-900">{rule.rule_name}</td>
+                        <td className="px-5 py-3 text-[13px] text-zinc-600">{rule.priority}</td>
+                        <td className="px-5 py-3 text-[13px] text-zinc-600">
+                          {rule.conditions.industries.join(', ') || 'All'}
+                        </td>
+                        <td className="px-5 py-3 text-[13px] text-zinc-600">
+                          {rule.conditions.us_states.join(', ') || 'All'}
+                        </td>
+                        <td className="px-5 py-3">
+                          <span
+                            className={`inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-md ${
+                              rule.is_active
+                                ? 'bg-emerald-50 text-emerald-700'
+                                : 'bg-zinc-100 text-zinc-600'
+                            }`}
+                          >
+                            {rule.is_active ? 'Active' : 'Inactive'}
+                          </span>
+                        </td>
+                        <td className="px-5 py-3">
+                          <button
+                            onClick={() => deleteRule(rule.id)}
+                            className="text-[13px] text-red-600 hover:text-red-700 font-medium transition-colors"
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
@@ -260,21 +293,30 @@ export default function AdminDashboard() {
               <h2 className="text-[15px] font-medium text-zinc-900">Leads Overview</h2>
             </div>
             <div className="p-5">
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                <div className="bg-zinc-50 border border-zinc-200 rounded-lg p-4">
-                  <div className="text-[13px] text-zinc-600 mb-1">Total Leads</div>
-                  <div className="text-2xl font-medium text-zinc-900 tracking-tight">{leads.length}</div>
+              {leadsLoading ? (
+                <div className="flex flex-col items-center justify-center py-12 gap-3">
+                  <div className="animate-spin h-8 w-8 border-3 border-zinc-200 border-t-zinc-900 rounded-full" />
+                  <p className="text-[13px] text-zinc-500">Loading leads data...</p>
                 </div>
-                {Object.entries(leadsStats).slice(0, 3).map(([workspace, count]) => (
-                  <div key={workspace} className="bg-zinc-50 border border-zinc-200 rounded-lg p-4">
-                    <div className="text-[13px] text-zinc-600 mb-1">Workspace</div>
-                    <div className="text-2xl font-medium text-zinc-900 tracking-tight">{count}</div>
-                    <div className="text-[12px] text-zinc-500 mt-1">{workspace.slice(0, 8)}</div>
+              ) : (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                    <div className="bg-zinc-50 border border-zinc-200 rounded-lg p-4">
+                      <div className="text-[13px] text-zinc-600 mb-1">Total Leads</div>
+                      <div className="text-2xl font-medium text-zinc-900 tracking-tight">{leads.length}</div>
+                    </div>
+                    {Object.entries(leadsStats).slice(0, 3).map(([workspace, count]) => (
+                      <div key={workspace} className="bg-zinc-50 border border-zinc-200 rounded-lg p-4">
+                        <div className="text-[13px] text-zinc-600 mb-1">Workspace</div>
+                        <div className="text-2xl font-medium text-zinc-900 tracking-tight">{count}</div>
+                        <div className="text-[12px] text-zinc-500 mt-1">{workspace.slice(0, 8)}</div>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
 
-              <h3 className="text-[15px] font-medium text-zinc-900 mb-3">Recent 20 Leads</h3>
+                  <h3 className="text-[15px] font-medium text-zinc-900 mb-3">Recent 20 Leads</h3>
+                </>
+              )}
               <div className="overflow-x-auto border border-zinc-200 rounded-lg">
                 <table className="w-full">
                   <thead className="bg-zinc-50 border-b border-zinc-100">
@@ -287,17 +329,34 @@ export default function AdminDashboard() {
                     </tr>
                   </thead>
                   <tbody>
-                    {leads.map((lead) => (
-                      <tr key={lead.id} className="border-b border-zinc-100 hover:bg-zinc-50 transition-colors">
-                        <td className="px-4 py-3 text-[13px] text-zinc-900">{lead.company_name}</td>
-                        <td className="px-4 py-3 text-[13px] text-zinc-600">{lead.company_industry || 'N/A'}</td>
-                        <td className="px-4 py-3 text-[13px] text-zinc-600">{lead.company_location?.state || 'N/A'}</td>
-                        <td className="px-4 py-3 text-[12px] text-zinc-500">{lead.workspace_id.slice(0, 8)}</td>
-                        <td className="px-4 py-3 text-[12px] text-zinc-500">
-                          {new Date(lead.created_at).toLocaleString()}
+                    {leadsLoading ? (
+                      <tr>
+                        <td colSpan={5} className="px-4 py-12">
+                          <div className="flex flex-col items-center justify-center gap-3">
+                            <div className="animate-spin h-8 w-8 border-3 border-zinc-200 border-t-zinc-900 rounded-full" />
+                            <p className="text-[13px] text-zinc-500">Loading leads...</p>
+                          </div>
                         </td>
                       </tr>
-                    ))}
+                    ) : leads.length === 0 ? (
+                      <tr>
+                        <td colSpan={5} className="px-4 py-12 text-center text-zinc-500 text-[13px]">
+                          No leads found. Leads will appear here once uploaded or received from webhooks.
+                        </td>
+                      </tr>
+                    ) : (
+                      leads.map((lead) => (
+                        <tr key={lead.id} className="border-b border-zinc-100 hover:bg-zinc-50 transition-colors">
+                          <td className="px-4 py-3 text-[13px] text-zinc-900">{lead.company_name}</td>
+                          <td className="px-4 py-3 text-[13px] text-zinc-600">{lead.company_industry || 'N/A'}</td>
+                          <td className="px-4 py-3 text-[13px] text-zinc-600">{lead.company_location?.state || 'N/A'}</td>
+                          <td className="px-4 py-3 text-[12px] text-zinc-500">{lead.workspace_id.slice(0, 8)}</td>
+                          <td className="px-4 py-3 text-[12px] text-zinc-500">
+                            {new Date(lead.created_at).toLocaleString()}
+                          </td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
               </div>

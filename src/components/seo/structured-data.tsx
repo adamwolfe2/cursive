@@ -17,12 +17,11 @@ export function OrganizationSchema() {
       'B2B intent lead intelligence platform that identifies companies actively researching specific topics',
     sameAs: [
       'https://twitter.com/meetcursive',
-      'https://linkedin.com/company/meetcursive',
     ],
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'Customer Support',
-      email: 'support@meetcursive.com',
+      email: 'hey@meetcursive.com',
     },
   }
 

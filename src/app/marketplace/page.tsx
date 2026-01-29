@@ -338,18 +338,22 @@ export default function MarketplacePage() {
             {/* Filters Sidebar */}
             <div className={`${showFilters ? 'w-64 flex-shrink-0' : 'w-0'} transition-all duration-200`}>
               {showFilters && (
-                <div className="bg-white border border-zinc-200 rounded-lg p-4 sticky top-4">
+                <div className="bg-white border border-zinc-200 rounded-lg p-4 sticky top-4" role="region" aria-label="Lead filters">
                   <div className="flex items-center justify-between mb-4">
                     <h2 className="text-[14px] font-semibold text-zinc-900">Filters</h2>
-                    <button onClick={clearFilters} className="text-[12px] text-zinc-500 hover:text-zinc-700">
+                    <button
+                      onClick={clearFilters}
+                      className="text-[12px] text-zinc-500 hover:text-zinc-700"
+                      aria-label="Clear all filters"
+                    >
                       Clear all
                     </button>
                   </div>
 
                   {/* Industry Filter */}
-                  <div className="mb-4">
-                    <h3 className="text-[12px] font-medium text-zinc-700 mb-2">Industry</h3>
-                    <div className="space-y-1 max-h-40 overflow-y-auto">
+                  <fieldset className="mb-4">
+                    <legend className="text-[12px] font-medium text-zinc-700 mb-2">Industry</legend>
+                    <div className="space-y-1 max-h-40 overflow-y-auto" role="group" aria-label="Industry filters">
                       {INDUSTRIES.map((industry) => (
                         <label key={industry} className="flex items-center gap-2 cursor-pointer">
                           <input
@@ -357,17 +361,18 @@ export default function MarketplacePage() {
                             checked={filters.industries.includes(industry)}
                             onChange={() => toggleFilter('industries', industry)}
                             className="w-3.5 h-3.5 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-500"
+                            aria-label={`Filter by ${industry} industry`}
                           />
                           <span className="text-[12px] text-zinc-600">{industry}</span>
                         </label>
                       ))}
                     </div>
-                  </div>
+                  </fieldset>
 
                   {/* State Filter */}
-                  <div className="mb-4">
-                    <h3 className="text-[12px] font-medium text-zinc-700 mb-2">State</h3>
-                    <div className="flex flex-wrap gap-1">
+                  <fieldset className="mb-4">
+                    <legend className="text-[12px] font-medium text-zinc-700 mb-2">State</legend>
+                    <div className="flex flex-wrap gap-1" role="group" aria-label="State filters">
                       {STATES.slice(0, 10).map((state) => (
                         <button
                           key={state}
@@ -377,17 +382,19 @@ export default function MarketplacePage() {
                               ? 'bg-zinc-900 text-white'
                               : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
                           }`}
+                          aria-label={`Filter by ${state} state`}
+                          aria-pressed={filters.states.includes(state)}
                         >
                           {state}
                         </button>
                       ))}
                     </div>
-                  </div>
+                  </fieldset>
 
                   {/* Company Size Filter */}
-                  <div className="mb-4">
-                    <h3 className="text-[12px] font-medium text-zinc-700 mb-2">Company Size</h3>
-                    <div className="space-y-1">
+                  <fieldset className="mb-4">
+                    <legend className="text-[12px] font-medium text-zinc-700 mb-2">Company Size</legend>
+                    <div className="space-y-1" role="group" aria-label="Company size filters">
                       {COMPANY_SIZES.map((size) => (
                         <label key={size} className="flex items-center gap-2 cursor-pointer">
                           <input
@@ -395,17 +402,18 @@ export default function MarketplacePage() {
                             checked={filters.companySizes.includes(size)}
                             onChange={() => toggleFilter('companySizes', size)}
                             className="w-3.5 h-3.5 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-500"
+                            aria-label={`Filter by company size ${size} employees`}
                           />
                           <span className="text-[12px] text-zinc-600">{size} employees</span>
                         </label>
                       ))}
                     </div>
-                  </div>
+                  </fieldset>
 
                   {/* Seniority Filter */}
-                  <div className="mb-4">
-                    <h3 className="text-[12px] font-medium text-zinc-700 mb-2">Seniority</h3>
-                    <div className="space-y-1">
+                  <fieldset className="mb-4">
+                    <legend className="text-[12px] font-medium text-zinc-700 mb-2">Seniority</legend>
+                    <div className="space-y-1" role="group" aria-label="Seniority level filters">
                       {SENIORITY_LEVELS.map((level) => (
                         <label key={level.value} className="flex items-center gap-2 cursor-pointer">
                           <input
@@ -413,23 +421,25 @@ export default function MarketplacePage() {
                             checked={filters.seniorityLevels.includes(level.value)}
                             onChange={() => toggleFilter('seniorityLevels', level.value)}
                             className="w-3.5 h-3.5 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-500"
+                            aria-label={`Filter by ${level.label} seniority level`}
                           />
                           <span className="text-[12px] text-zinc-600">{level.label}</span>
                         </label>
                       ))}
                     </div>
-                  </div>
+                  </fieldset>
 
                   {/* Contact Quality Filters */}
-                  <div className="mb-4">
-                    <h3 className="text-[12px] font-medium text-zinc-700 mb-2">Contact Quality</h3>
-                    <div className="space-y-1">
+                  <fieldset className="mb-4">
+                    <legend className="text-[12px] font-medium text-zinc-700 mb-2">Contact Quality</legend>
+                    <div className="space-y-1" role="group" aria-label="Contact quality filters">
                       <label className="flex items-center gap-2 cursor-pointer">
                         <input
                           type="checkbox"
                           checked={filters.hasVerifiedEmail}
                           onChange={() => setFilters((prev) => ({ ...prev, hasVerifiedEmail: !prev.hasVerifiedEmail }))}
                           className="w-3.5 h-3.5 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-500"
+                          aria-label="Filter by verified email only"
                         />
                         <span className="text-[12px] text-zinc-600">Verified email only</span>
                       </label>
@@ -439,16 +449,17 @@ export default function MarketplacePage() {
                           checked={filters.hasPhone}
                           onChange={() => setFilters((prev) => ({ ...prev, hasPhone: !prev.hasPhone }))}
                           className="w-3.5 h-3.5 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-500"
+                          aria-label="Filter by has phone number"
                         />
                         <span className="text-[12px] text-zinc-600">Has phone number</span>
                       </label>
                     </div>
-                  </div>
+                  </fieldset>
 
                   {/* Intent Score Filter */}
-                  <div className="mb-4">
-                    <h3 className="text-[12px] font-medium text-zinc-700 mb-2">Minimum Intent Score</h3>
-                    <div className="flex gap-2">
+                  <fieldset className="mb-4">
+                    <legend className="text-[12px] font-medium text-zinc-700 mb-2">Minimum Intent Score</legend>
+                    <div className="flex gap-2" role="group" aria-label="Intent score filters">
                       {[0, 40, 70].map((score) => (
                         <button
                           key={score}
@@ -458,17 +469,19 @@ export default function MarketplacePage() {
                               ? 'bg-zinc-900 text-white'
                               : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
                           }`}
+                          aria-label={`Filter by intent score ${score === 0 ? 'all levels' : score === 40 ? 'warm and above' : 'hot only'}`}
+                          aria-pressed={filters.intentScoreMin === score}
                         >
                           {score === 0 ? 'All' : score === 40 ? 'Warm+' : 'Hot'}
                         </button>
                       ))}
                     </div>
-                  </div>
+                  </fieldset>
 
                   {/* Freshness Filter */}
-                  <div>
-                    <h3 className="text-[12px] font-medium text-zinc-700 mb-2">Minimum Freshness</h3>
-                    <div className="flex gap-2">
+                  <fieldset>
+                    <legend className="text-[12px] font-medium text-zinc-700 mb-2">Minimum Freshness</legend>
+                    <div className="flex gap-2" role="group" aria-label="Freshness filters">
                       {[0, 40, 70].map((score) => (
                         <button
                           key={score}
@@ -478,12 +491,14 @@ export default function MarketplacePage() {
                               ? 'bg-zinc-900 text-white'
                               : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
                           }`}
+                          aria-label={`Filter by freshness ${score === 0 ? 'all levels' : score === 40 ? 'recent and above' : 'fresh only'}`}
+                          aria-pressed={filters.freshnessMin === score}
                         >
                           {score === 0 ? 'All' : score === 40 ? 'Recent+' : 'Fresh'}
                         </button>
                       ))}
                     </div>
-                  </div>
+                  </fieldset>
                 </div>
               )}
             </div>

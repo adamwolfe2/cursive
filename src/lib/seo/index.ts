@@ -22,7 +22,6 @@ export const siteConfig = {
   links: {
     twitter: 'https://twitter.com/meetcursive',
     github: 'https://github.com/meetcursive',
-    linkedin: 'https://linkedin.com/company/meetcursive',
   },
   author: {
     name: 'Cursive Team',
@@ -183,7 +182,6 @@ export function generateOrganizationSchema() {
     description: siteConfig.description,
     sameAs: [
       siteConfig.links.twitter,
-      siteConfig.links.linkedin,
       siteConfig.links.github,
     ],
     contactPoint: {

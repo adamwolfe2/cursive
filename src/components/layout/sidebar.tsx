@@ -197,10 +197,10 @@ export function Sidebar({ items, workspace, className }: SidebarProps) {
         <div className="rounded-lg bg-muted/50 p-3">
           <p className="text-xs font-medium text-muted-foreground">Need help?</p>
           <p className="mt-1 text-xs text-muted-foreground">
-            Contact support@meetcursive.com
+            Contact hey@meetcursive.com
           </p>
           <a
-            href="mailto:support@meetcursive.com"
+            href="mailto:hey@meetcursive.com"
             className="mt-2 inline-flex items-center text-xs font-medium text-primary hover:underline"
           >
             Contact support

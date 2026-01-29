@@ -194,8 +194,8 @@ export function BusinessForm({ vslAnswers, onSubmit, onBack }: BusinessFormProps
             {/* Contact Link */}
             <p className="text-xs text-muted-foreground text-center mt-4">
               Questions?{' '}
-              <a href="mailto:hello@meetcursive.com" className="text-primary hover:underline">
-                hello@meetcursive.com
+              <a href="mailto:hey@meetcursive.com" className="text-primary hover:underline">
+                hey@meetcursive.com
               </a>
             </p>
           </form>
