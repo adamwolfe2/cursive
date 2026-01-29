@@ -416,7 +416,7 @@ export async function sendPartnerRejectedEmail(
   companyName: string,
   reason: string
 ): Promise<EmailResult> {
-  const supportEmail = process.env.SUPPORT_EMAIL || 'support@meetcursive.com'
+  const supportEmail = process.env.SUPPORT_EMAIL || 'hey@meetcursive.com'
 
   const html = await renderEmail(
     PartnerRejectedEmail({

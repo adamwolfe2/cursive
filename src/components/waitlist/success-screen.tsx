@@ -49,27 +49,14 @@ export function SuccessScreen({ userType, email }: SuccessScreenProps) {
         </motion.p>
 
         {/* Optional CTAs */}
-        <motion.div variants={fadeInVariants} className="flex flex-col sm:flex-row gap-4 justify-center">
-          <motion.a
-            href="https://www.linkedin.com/company/cursive-leads"
-            target="_blank"
-            rel="noopener noreferrer"
-            variants={buttonVariants}
-            initial="initial"
-            whileHover="hover"
-            whileTap="tap"
-            className="inline-flex items-center justify-center h-12 px-6 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 transition-colors"
-          >
-            Follow us on LinkedIn
-          </motion.a>
-
+        <motion.div variants={fadeInVariants} className="flex justify-center">
           <motion.a
             href="https://meetcursive.com"
             variants={buttonVariants}
             initial="initial"
             whileHover="hover"
             whileTap="tap"
-            className="inline-flex items-center justify-center h-12 px-6 border border-border text-foreground font-medium rounded-lg hover:bg-accent transition-colors"
+            className="inline-flex items-center justify-center h-12 px-6 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 transition-colors"
           >
             Back to Homepage
           </motion.a>
