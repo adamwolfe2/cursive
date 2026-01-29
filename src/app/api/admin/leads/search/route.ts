@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
     const adminContext = await getAdminContext()
 
     const body = await request.json()
-    const {
+    let {
       workspaceId,
       filters,
       provider,
@@ -34,10 +34,16 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // SECURITY: If admin is impersonating a workspace, restrict to that workspace only
+    // This prevents accidental cross-workspace operations during impersonation
+    if (adminContext?.isImpersonating && adminContext.impersonatedWorkspace) {
+      workspaceId = adminContext.impersonatedWorkspace.id
+    }
+
     const leadProvider = getLeadProviderService()
 
     // If workspaceId provided, search with workspace limits
-    // Otherwise, search without limits (admin mode)
+    // Otherwise, search without limits (super admin mode - only when NOT impersonating)
     let result
     if (workspaceId) {
       result = await leadProvider.searchLeads(workspaceId, filters, provider)
@@ -185,10 +191,17 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     await requireAdmin()
+    const adminContext = await getAdminContext()
 
     const { searchParams } = new URL(request.url)
-    const workspaceId = searchParams.get('workspaceId')
+    let workspaceId = searchParams.get('workspaceId')
     const limit = parseInt(searchParams.get('limit') || '10')
+
+    // SECURITY: If admin is impersonating a workspace, restrict to that workspace only
+    // This prevents accidental cross-workspace data access during impersonation
+    if (adminContext?.isImpersonating && adminContext.impersonatedWorkspace) {
+      workspaceId = adminContext.impersonatedWorkspace.id
+    }
 
     const supabase = await createClient()
 
@@ -199,6 +212,7 @@ export async function GET(request: NextRequest) {
       .order('created_at', { ascending: false })
       .limit(limit)
 
+    // Apply workspace filter if specified or if impersonating
     if (workspaceId) {
       query = query.eq('workspace_id', workspaceId)
     }
@@ -212,6 +226,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       leads,
+      impersonating: adminContext?.isImpersonating || false,
+      workspaceFilter: workspaceId || null,
     })
   } catch (error: any) {
     console.error('Admin lead search history error:', error)
