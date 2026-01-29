@@ -9,7 +9,7 @@ import { z } from 'zod'
 
 const leadFiltersSchema = z.object({
   query_id: z.string().uuid().optional(),
-  enrichment_status: z.enum(['pending', 'completed', 'failed']).optional(),
+  enrichment_status: z.enum(['pending', 'enriching', 'enriched', 'failed']).optional(),
   delivery_status: z.enum(['pending', 'delivered', 'failed']).optional(),
   intent_score: z.enum(['hot', 'warm', 'cold']).optional(),
   date_from: z.string().optional(),
