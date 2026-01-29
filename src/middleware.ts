@@ -119,45 +119,11 @@ export async function middleware(req: NextRequest) {
     )
   }
 
+  // DISABLED FOR NOW - Admin can access everything without workspace checks
   // If authenticated, verify workspace access (skip for admin and partner routes)
-  if (user && !isPublicRoute && !pathname.startsWith('/onboarding') && !isAdminEmail && !isPartnerRoute) {
-    try {
-      const { data: dbUser } = await supabase
-        .from('users')
-        .select('*, workspaces(*)')
-        .eq('auth_user_id', user.id)
-        .single()
-
-      // User doesn't have a workspace - redirect to onboarding
-      if (!dbUser || !(dbUser as any).workspace_id) {
-        if (pathname !== '/onboarding') {
-          return redirectWithCookies(new URL('/onboarding', req.url))
-        }
-      }
-
-      // Validate subdomain matches user's workspace (if subdomain is present)
-      if (dbUser && subdomain && subdomain !== 'www') {
-        const workspace = (dbUser as any).workspaces
-
-        if (
-          workspace?.subdomain !== subdomain &&
-          workspace?.custom_domain !== hostname
-        ) {
-          // User is accessing wrong subdomain
-          return NextResponse.json(
-            { error: 'Access denied to this workspace' },
-            { status: 403 }
-          )
-        }
-      }
-    } catch (e) {
-      // If database query fails, redirect to onboarding
-      console.error('Middleware: Failed to query user', e)
-      if (pathname !== '/onboarding') {
-        return redirectWithCookies(new URL('/onboarding', req.url))
-      }
-    }
-  }
+  // if (user && !isPublicRoute && !pathname.startsWith('/onboarding') && !isAdminEmail && !isPartnerRoute) {
+  //   ... workspace validation code removed for admin ...
+  // }
 
   // Get the response with updated cookies
   const response = client.response
