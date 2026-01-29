@@ -21,9 +21,12 @@ export async function middleware(req: NextRequest) {
   // Check for admin bypass cookie
   const hasAdminBypass = req.cookies.get('admin_bypass_waitlist')?.value === 'true'
 
+  // Check if user is admin (adam@meetcursive.com) - they bypass waitlist
+  const isAdminEmail = user?.email === 'adam@meetcursive.com'
+
   // If on waitlist domain, redirect everything to the waitlist page
   // except for the waitlist page itself, API routes, static assets, and admin bypass
-  if (isWaitlistDomain && !hasAdminBypass) {
+  if (isWaitlistDomain && !hasAdminBypass && !isAdminEmail) {
     const isWaitlistPath =
       pathname === '/waitlist' ||
       pathname.startsWith('/api/waitlist') ||
@@ -146,6 +149,17 @@ export async function middleware(req: NextRequest) {
 
   // Get the response with updated cookies
   const response = client.response
+
+  // If user is admin on waitlist domain, set the bypass cookie
+  if (isWaitlistDomain && isAdminEmail && !hasAdminBypass) {
+    response.cookies.set('admin_bypass_waitlist', 'true', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 365, // 1 year
+      path: '/',
+    })
+  }
 
   // Add custom headers for subdomain information
   if (subdomain) {
