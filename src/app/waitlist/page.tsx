@@ -38,12 +38,12 @@ export default function WaitlistPage() {
 
           {/* Headline */}
           <h1 className="text-2xl font-semibold text-zinc-900 text-center mb-3">
-            Join the Waitlist
+            Free High-Intent Leads for Your Industry
           </h1>
 
           {/* Subheadline */}
           <p className="text-sm text-zinc-600 text-center mb-8">
-            Get early access to Cursive Leads. We help sales teams find high-intent prospects automatically.
+            We deliver verified buyers actively searching for solutions in your vertical. No cost, no contracts.
           </p>
 
           {/* Form Card */}

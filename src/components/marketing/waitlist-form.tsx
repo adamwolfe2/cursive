@@ -213,7 +213,7 @@ export function WaitlistForm({ source = 'website', onSuccess }: WaitlistFormProp
         disabled={isSubmitting}
         className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
       >
-        {isSubmitting ? 'Joining...' : 'Join Waitlist'}
+        {isSubmitting ? 'Joining...' : 'Get Early Access'}
       </button>
 
       <p className="text-xs text-zinc-500 text-center">
