@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import type { Table } from '@tanstack/react-table'
 import { debounce } from '@/lib/utils'
 import Link from 'next/link'
+import { useToast } from '@/lib/hooks/use-toast'
 
 interface Tag {
   id: string
@@ -35,6 +36,7 @@ export function LeadsTableToolbar({
   isDeleting,
 }: LeadsTableToolbarProps) {
   const queryClient = useQueryClient()
+  const { toast } = useToast()
   const [isExporting, setIsExporting] = useState(false)
   const [searchValue, setSearchValue] = useState(globalFilter)
   const [showColumnPicker, setShowColumnPicker] = useState(false)
@@ -175,9 +177,18 @@ export function LeadsTableToolbar({
       a.click()
       window.URL.revokeObjectURL(url)
       document.body.removeChild(a)
+      toast({
+        title: 'Export successful',
+        message: 'Leads exported successfully',
+        type: 'success',
+      })
     } catch (error) {
       console.error('Export error:', error)
-      alert('Failed to export leads')
+      toast({
+        title: 'Export failed',
+        message: 'Failed to export leads. Please try again.',
+        type: 'error',
+      })
     } finally {
       setIsExporting(false)
     }

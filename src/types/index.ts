@@ -361,7 +361,7 @@ export class InsufficientCreditsError extends Error {
 export const LEAD_STATUSES = [
   { value: 'new', label: 'New', color: 'gray' },
   { value: 'contacted', label: 'Contacted', color: 'blue' },
-  { value: 'qualified', label: 'Qualified', color: 'purple' },
+  { value: 'qualified', label: 'Qualified', color: 'blue' },
   { value: 'proposal', label: 'Proposal', color: 'yellow' },
   { value: 'negotiation', label: 'Negotiation', color: 'orange' },
   { value: 'won', label: 'Won', color: 'green' },

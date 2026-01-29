@@ -122,7 +122,7 @@ Jane,Smith,jane@example.com,555-987-6543,456 Oak Ave,Dallas,TX,75201,roofing,loo
             onClick={() => setActiveTab('view')}
             className={`${
               activeTab === 'view'
-                ? 'border-violet-600 text-violet-600'
+                ? 'border-primary text-primary'
                 : 'border-transparent text-zinc-600 hover:border-zinc-300 hover:text-zinc-900'
             } whitespace-nowrap border-b-2 py-4 px-1 text-[13px] font-medium transition-colors`}
           >
@@ -132,7 +132,7 @@ Jane,Smith,jane@example.com,555-987-6543,456 Oak Ave,Dallas,TX,75201,roofing,loo
             onClick={() => setActiveTab('upload')}
             className={`${
               activeTab === 'upload'
-                ? 'border-violet-600 text-violet-600'
+                ? 'border-primary text-primary'
                 : 'border-transparent text-zinc-600 hover:border-zinc-300 hover:text-zinc-900'
             } whitespace-nowrap border-b-2 py-4 px-1 text-[13px] font-medium transition-colors`}
           >
@@ -224,9 +224,9 @@ Jane,Smith,jane@example.com,555-987-6543,456 Oak Ave,Dallas,TX,75201,roofing,loo
               Bulk Lead Upload
             </h2>
 
-            <div className="bg-violet-50 border border-violet-200 rounded-lg p-4 mb-6">
-              <h3 className="text-[13px] font-medium text-violet-900 mb-2">Required Columns</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-[12px] text-violet-700">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+              <h3 className="text-[13px] font-medium text-blue-900 mb-2">Required Columns</h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-[12px] text-blue-700">
                 <span>first_name</span>
                 <span>last_name</span>
                 <span>email</span>
@@ -236,7 +236,7 @@ Jane,Smith,jane@example.com,555-987-6543,456 Oak Ave,Dallas,TX,75201,roofing,loo
                 <span>industry</span>
                 <span>intent_signal</span>
               </div>
-              <p className="mt-3 text-[12px] text-violet-600">
+              <p className="mt-3 text-[12px] text-blue-600">
                 Optional: address, zip, data_source, utm_source, utm_medium, utm_campaign
               </p>
             </div>
@@ -252,7 +252,7 @@ Jane,Smith,jane@example.com,555-987-6543,456 Oak Ave,Dallas,TX,75201,roofing,loo
 
             {/* Upload Zone */}
             <div
-              className="border-2 border-dashed border-zinc-300 rounded-lg p-8 text-center hover:border-violet-400 transition-colors cursor-pointer"
+              className="border-2 border-dashed border-zinc-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors cursor-pointer"
               onClick={() => fileInputRef.current?.click()}
             >
               <input
@@ -264,8 +264,8 @@ Jane,Smith,jane@example.com,555-987-6543,456 Oak Ave,Dallas,TX,75201,roofing,loo
               />
 
               <div className="flex justify-center mb-4">
-                <div className="h-12 w-12 rounded-full bg-violet-100 flex items-center justify-center">
-                  <svg className="h-6 w-6 text-violet-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center">
+                  <svg className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                   </svg>
                 </div>

@@ -5,6 +5,7 @@ export const dynamic = 'force-dynamic'
 import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import { NavBar } from '@/components/nav-bar'
+import { useToast } from '@/lib/hooks/use-toast'
 
 // Types for marketplace leads
 interface MarketplaceLeadPreview {
@@ -88,6 +89,7 @@ function getFreshnessBadge(score: number): { label: string; color: string } {
 }
 
 export default function MarketplacePage() {
+  const { toast } = useToast()
   const [leads, setLeads] = useState<MarketplaceLeadPreview[]>([])
   const [totalLeads, setTotalLeads] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
@@ -221,13 +223,26 @@ export default function MarketplacePage() {
         setCredits(data.creditsRemaining || 0)
         fetchLeads() // Refresh to remove purchased leads
         setTimeout(() => setShowSuccessMessage(false), 5000)
+        toast({
+          title: 'Purchase successful',
+          message: `${data.leads?.length || selectedLeads.size} lead(s) purchased successfully`,
+          type: 'success',
+        })
       } else {
         const error = await response.json()
-        alert(error.error || 'Purchase failed')
+        toast({
+          title: 'Purchase failed',
+          message: error.error || 'Failed to purchase leads. Please try again.',
+          type: 'error',
+        })
       }
     } catch (error) {
       console.error('Purchase failed:', error)
-      alert('Purchase failed. Please try again.')
+      toast({
+        title: 'Purchase failed',
+        message: 'An error occurred while purchasing leads. Please try again.',
+        type: 'error',
+      })
     } finally {
       setIsPurchasing(false)
     }

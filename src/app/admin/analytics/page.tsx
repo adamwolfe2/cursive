@@ -92,7 +92,7 @@ export default function AdminAnalyticsPage() {
         <select
           value={dateRange}
           onChange={(e) => setDateRange(e.target.value)}
-          className="h-9 px-3 text-[13px] border border-zinc-300 rounded-lg focus:outline-none focus:border-violet-500"
+          className="h-9 px-3 text-[13px] border border-zinc-300 rounded-lg focus:outline-none focus:border-primary"
         >
           <option value="7d">Last 7 days</option>
           <option value="30d">Last 30 days</option>
@@ -152,7 +152,7 @@ export default function AdminAnalyticsPage() {
                   return (
                     <div key={i} className="flex-1 flex flex-col items-center">
                       <div
-                        className="w-full bg-gradient-to-t from-violet-600 to-indigo-500 rounded-t"
+                        className="w-full bg-gradient-to-t from-blue-600 to-blue-500 rounded-t"
                         style={{ height: `${Math.max(height, 2)}%` }}
                         title={`${day.date}: ${day.count} leads`}
                       />
@@ -184,7 +184,7 @@ export default function AdminAnalyticsPage() {
                     </div>
                     <div className="h-2 bg-zinc-100 rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-gradient-to-r from-violet-500 to-indigo-500 rounded-full"
+                        className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full"
                         style={{ width: `${width}%` }}
                       />
                     </div>
@@ -205,7 +205,7 @@ export default function AdminAnalyticsPage() {
         <h2 className="text-[15px] font-medium text-zinc-900 mb-4">Conversion Funnel</h2>
         <div className="flex items-center justify-between">
           {[
-            { label: 'Delivered', value: analytics?.conversionFunnel.delivered || 0, color: 'bg-violet-500' },
+            { label: 'Delivered', value: analytics?.conversionFunnel.delivered || 0, color: 'bg-blue-500' },
             { label: 'Opened', value: analytics?.conversionFunnel.opened || 0, color: 'bg-indigo-500' },
             { label: 'Clicked', value: analytics?.conversionFunnel.clicked || 0, color: 'bg-blue-500' },
             { label: 'Replied', value: analytics?.conversionFunnel.replied || 0, color: 'bg-cyan-500' },

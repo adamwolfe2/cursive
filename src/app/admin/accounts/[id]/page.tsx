@@ -280,8 +280,8 @@ export default function AdminWorkspaceDetailPage() {
                 className="h-12 w-12 rounded-lg object-contain border border-zinc-200"
               />
             ) : (
-              <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-violet-100 to-indigo-100 flex items-center justify-center">
-                <span className="text-lg font-bold text-violet-600">
+              <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
+                <span className="text-lg font-bold text-blue-600">
                   {workspace.name?.charAt(0)?.toUpperCase()}
                 </span>
               </div>
@@ -296,7 +296,7 @@ export default function AdminWorkspaceDetailPage() {
           <button
             onClick={() => impersonateMutation.mutate()}
             disabled={impersonateMutation.isPending}
-            className="px-4 py-2 text-sm font-medium text-violet-600 bg-violet-50 hover:bg-violet-100 rounded-lg transition-colors"
+            className="px-4 py-2 text-sm font-medium text-primary bg-primary-muted hover:bg-primary-muted/80 rounded-lg transition-colors"
           >
             Switch Into
           </button>
@@ -321,7 +321,7 @@ export default function AdminWorkspaceDetailPage() {
               onClick={() => setActiveTab(tab)}
               className={`pb-3 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === tab
-                  ? 'text-violet-600 border-violet-600'
+                  ? 'text-primary border-primary'
                   : 'text-zinc-500 border-transparent hover:text-zinc-700'
               }`}
             >
@@ -404,13 +404,13 @@ export default function AdminWorkspaceDetailPage() {
               <h2 className="text-sm font-semibold text-zinc-900">Current Tier</h2>
               <button
                 onClick={() => setTierModalOpen(true)}
-                className="text-sm text-violet-600 hover:text-violet-700 font-medium"
+                className="text-sm text-primary hover:text-primary/80 font-medium"
               >
                 Change Tier
               </button>
             </div>
             <div className="flex items-center gap-4">
-              <div className="h-16 w-16 rounded-lg bg-gradient-to-br from-violet-500 to-indigo-500 flex items-center justify-center">
+              <div className="h-16 w-16 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
                 <span className="text-xl font-bold text-white">
                   {(currentTier?.name || 'F').charAt(0)}
                 </span>
@@ -434,7 +434,7 @@ export default function AdminWorkspaceDetailPage() {
                   setMonthlyOverride(workspace.workspace_tiers?.monthly_lead_limit_override?.toString() || '')
                   setOverrideModalOpen(true)
                 }}
-                className="text-sm text-violet-600 hover:text-violet-700 font-medium"
+                className="text-sm text-primary hover:text-primary/80 font-medium"
               >
                 Edit Overrides
               </button>
@@ -578,7 +578,7 @@ export default function AdminWorkspaceDetailPage() {
                   key={tier.id}
                   className={`flex items-center gap-3 p-3 border rounded-lg cursor-pointer transition-colors ${
                     selectedTier === tier.slug
-                      ? 'border-violet-500 bg-violet-50'
+                      ? 'border-primary bg-primary-muted'
                       : 'border-zinc-200 hover:border-zinc-300'
                   }`}
                 >
@@ -588,7 +588,7 @@ export default function AdminWorkspaceDetailPage() {
                     value={tier.slug}
                     checked={selectedTier === tier.slug}
                     onChange={(e) => setSelectedTier(e.target.value)}
-                    className="text-violet-600"
+                    className="text-primary"
                   />
                   <div className="flex-1">
                     <div className="text-sm font-medium text-zinc-900">{tier.name}</div>
@@ -619,7 +619,7 @@ export default function AdminWorkspaceDetailPage() {
               <button
                 onClick={() => assignTierMutation.mutate(selectedTier)}
                 disabled={!selectedTier || assignTierMutation.isPending}
-                className="px-4 py-2 text-sm font-medium text-white bg-violet-600 hover:bg-violet-700 rounded-lg disabled:opacity-50"
+                className="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-lg disabled:opacity-50"
               >
                 {assignTierMutation.isPending ? 'Saving...' : 'Save Changes'}
               </button>
@@ -679,7 +679,7 @@ export default function AdminWorkspaceDetailPage() {
               <button
                 onClick={() => overrideMutation.mutate()}
                 disabled={overrideMutation.isPending}
-                className="px-4 py-2 text-sm font-medium text-white bg-violet-600 hover:bg-violet-700 rounded-lg disabled:opacity-50"
+                className="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-lg disabled:opacity-50"
               >
                 {overrideMutation.isPending ? 'Saving...' : 'Save Overrides'}
               </button>

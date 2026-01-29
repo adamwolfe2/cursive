@@ -139,7 +139,7 @@ export default function PartnerPayoutsPage() {
       <div className="min-h-screen bg-zinc-50 flex items-center justify-center px-4">
         <div className="text-center">
           <p className="text-zinc-600 mb-4">Please sign in to view your payouts</p>
-          <Link href="/partner" className="text-violet-600 hover:underline">
+          <Link href="/partner" className="text-primary hover:underline">
             Go to Partner Portal
           </Link>
         </div>
@@ -177,7 +177,7 @@ export default function PartnerPayoutsPage() {
         <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link href="/partner" className="flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 text-white">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600 to-blue-700 text-white">
                 <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
                 </svg>
@@ -211,7 +211,7 @@ export default function PartnerPayoutsPage() {
             </p>
             <button
               onClick={handleConnectStripe}
-              className="h-9 px-4 text-[13px] font-medium bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-lg hover:from-violet-700 hover:to-indigo-700"
+              className="h-9 px-4 text-[13px] font-medium bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800"
             >
               Connect Stripe Account
             </button>

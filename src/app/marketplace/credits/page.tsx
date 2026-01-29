@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import { NavBar } from '@/components/nav-bar'
+import { useToast } from '@/lib/hooks/use-toast'
 
 interface CreditPackage {
   id: string
@@ -51,6 +52,7 @@ const CREDIT_PACKAGES: CreditPackage[] = [
 ]
 
 export default function CreditsPage() {
+  const { toast } = useToast()
   const [currentBalance, setCurrentBalance] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const [isPurchasing, setIsPurchasing] = useState<string | null>(null)
@@ -107,11 +109,19 @@ export default function CreditsPage() {
         }
       } else {
         const error = await response.json()
-        alert(error.error || 'Failed to initiate purchase')
+        toast({
+          title: 'Purchase failed',
+          message: error.error || 'Failed to initiate credit purchase',
+          type: 'error',
+        })
       }
     } catch (error) {
       console.error('Purchase failed:', error)
-      alert('Purchase failed. Please try again.')
+      toast({
+        title: 'Purchase failed',
+        message: 'An error occurred. Please try again.',
+        type: 'error',
+      })
     } finally {
       setIsPurchasing(null)
     }

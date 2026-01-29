@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { NavBar } from '@/components/nav-bar'
+import { useToast } from '@/lib/hooks/use-toast'
 
 interface RoutingRule {
   id: string
@@ -35,6 +36,7 @@ interface BulkUploadJob {
 }
 
 export default function AdminDashboard() {
+  const { toast } = useToast()
   const [rules, setRules] = useState<RoutingRule[]>([])
   const [leads, setLeads] = useState<Lead[]>([])
   const [leadsStats, setLeadsStats] = useState<Record<string, number>>({})
@@ -164,8 +166,17 @@ export default function AdminDashboard() {
       const data = await response.json()
       setUploadJob(data)
       fetchLeads()
+      toast({
+        title: 'Upload successful',
+        message: 'CSV file uploaded and processed successfully',
+        type: 'success',
+      })
     } catch (error: any) {
-      alert(`Upload failed: ${error.message}`)
+      toast({
+        title: 'Upload failed',
+        message: error.message || 'Failed to upload CSV file. Please try again.',
+        type: 'error',
+      })
     }
     setLoading(false)
   }
