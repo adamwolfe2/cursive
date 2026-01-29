@@ -3,9 +3,10 @@ import { createClient } from '@/lib/supabase/server'
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { purchaseId: string } }
+  { params }: { params: Promise<{ purchaseId: string }> }
 ) {
   const supabase = await createClient()
+  const { purchaseId } = await params
 
   // 1. Verify user owns this purchase
   const {
@@ -37,7 +38,7 @@ export async function GET(
       )
     `
     )
-    .eq('id', params.purchaseId)
+    .eq('id', purchaseId)
     .eq('buyer_workspace_id', userData?.workspace_id)
     .eq('status', 'completed')
     .single()

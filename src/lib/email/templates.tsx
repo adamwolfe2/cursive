@@ -745,3 +745,388 @@ export function NewLeadEmail({
     </EmailLayout>
   )
 }
+
+// ============================================
+// MARKETPLACE EMAIL TEMPLATES
+// ============================================
+
+interface PartnerApprovedEmailProps {
+  partnerName: string
+  companyName: string
+  apiKey: string
+  dashboardUrl: string
+}
+
+export function PartnerApprovedEmail({
+  partnerName,
+  companyName,
+  apiKey,
+  dashboardUrl,
+}: PartnerApprovedEmailProps) {
+  return (
+    <EmailLayout preview={`Your partner application for ${companyName} has been approved!`}>
+      <Heading>Welcome to the Marketplace!</Heading>
+
+      <Text>Hi {partnerName},</Text>
+
+      <Text>
+        Great news! Your partner application for <strong>{companyName}</strong> has been approved.
+        You can now start uploading leads to the marketplace and earning commissions.
+      </Text>
+
+      <Callout variant="success">
+        <Text style={{ margin: 0 }}>
+          <strong>Your API Key:</strong>
+          <br />
+          <code style={{ fontSize: '12px', padding: '4px 8px', backgroundColor: '#f3f4f6', borderRadius: '4px', display: 'inline-block', marginTop: '8px' }}>
+            {apiKey}
+          </code>
+        </Text>
+        <Text style={{ fontSize: '12px', color: '#6b7280', marginTop: '8px', marginBottom: 0 }}>
+          Save this API key securely. You'll need it to upload leads via CSV or API.
+        </Text>
+      </Callout>
+
+      <Heading style={{ fontSize: '18px', marginTop: '24px' }}>Next Steps</Heading>
+
+      <ol style={{ paddingLeft: '20px', margin: '0 0 16px' }}>
+        <li style={{ marginBottom: '8px', fontSize: '14px', color: '#4b5563' }}>
+          Log in to your partner dashboard
+        </li>
+        <li style={{ marginBottom: '8px', fontSize: '14px', color: '#4b5563' }}>
+          Upload your first batch of leads
+        </li>
+        <li style={{ marginBottom: '8px', fontSize: '14px', color: '#4b5563' }}>
+          Connect your Stripe account to receive payouts
+        </li>
+        <li style={{ marginBottom: '8px', fontSize: '14px', color: '#4b5563' }}>
+          Start earning commissions when your leads sell
+        </li>
+      </ol>
+
+      <div style={{ textAlign: 'center', margin: '24px 0' }}>
+        <Button href={dashboardUrl}>Go to Partner Dashboard</Button>
+      </div>
+
+      <Text style={{ color: '#6b7280', fontSize: '12px' }}>
+        Questions? Check out our partner documentation or contact our support team at support@meetcursive.com
+      </Text>
+    </EmailLayout>
+  )
+}
+
+interface PartnerRejectedEmailProps {
+  partnerName: string
+  companyName: string
+  reason: string
+  supportEmail: string
+}
+
+export function PartnerRejectedEmail({
+  partnerName,
+  companyName,
+  reason,
+  supportEmail,
+}: PartnerRejectedEmailProps) {
+  return (
+    <EmailLayout preview={`Update on your partner application for ${companyName}`}>
+      <Heading>Partner Application Status</Heading>
+
+      <Text>Hi {partnerName},</Text>
+
+      <Text>
+        Thank you for your interest in becoming a data partner for <strong>{companyName}</strong>.
+        After reviewing your application, we're unable to approve your partnership at this time.
+      </Text>
+
+      <Callout variant="warning">
+        <Text style={{ margin: 0 }}>
+          <strong>Reason:</strong>
+          <br />
+          {reason}
+        </Text>
+      </Callout>
+
+      <Text>
+        If you'd like to discuss this decision or reapply in the future, please don't hesitate to
+        contact our team at <a href={`mailto:${supportEmail}`}>{supportEmail}</a>.
+      </Text>
+
+      <Text style={{ color: '#6b7280', fontSize: '12px' }}>
+        We appreciate your understanding and wish you the best in your business endeavors.
+      </Text>
+    </EmailLayout>
+  )
+}
+
+interface PurchaseConfirmationEmailProps {
+  buyerName: string
+  totalLeads: number
+  totalPrice: number
+  downloadUrl: string
+  downloadExpiresAt: string
+  purchaseId: string
+}
+
+export function PurchaseConfirmationEmail({
+  buyerName,
+  totalLeads,
+  totalPrice,
+  downloadUrl,
+  downloadExpiresAt,
+  purchaseId,
+}: PurchaseConfirmationEmailProps) {
+  return (
+    <EmailLayout preview={`Your purchase of ${totalLeads} leads is complete!`}>
+      <Heading>Purchase Confirmed!</Heading>
+
+      <Text>Hi {buyerName},</Text>
+
+      <Text>
+        Your purchase is complete! You now have access to <strong>{totalLeads} high-quality leads</strong>.
+      </Text>
+
+      <table
+        width="100%"
+        cellPadding="0"
+        cellSpacing="0"
+        style={{
+          backgroundColor: '#f9fafb',
+          borderRadius: '8px',
+          padding: '16px',
+          marginBottom: '24px',
+        }}
+      >
+        <tbody>
+          <tr>
+            <td style={{ padding: '8px 16px', borderBottom: '1px solid #e5e7eb' }}>
+              <div style={{ fontSize: '12px', color: '#6b7280' }}>Total Leads</div>
+              <div style={{ fontSize: '18px', fontWeight: 600, color: '#111827' }}>{totalLeads}</div>
+            </td>
+            <td style={{ padding: '8px 16px', borderBottom: '1px solid #e5e7eb' }}>
+              <div style={{ fontSize: '12px', color: '#6b7280' }}>Amount Paid</div>
+              <div style={{ fontSize: '18px', fontWeight: 600, color: '#111827' }}>${totalPrice.toFixed(2)}</div>
+            </td>
+          </tr>
+          <tr>
+            <td colSpan={2} style={{ padding: '8px 16px' }}>
+              <div style={{ fontSize: '12px', color: '#6b7280' }}>Purchase ID</div>
+              <div style={{ fontSize: '14px', fontFamily: 'monospace', color: '#4b5563' }}>{purchaseId}</div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <Callout variant="info">
+        <Text style={{ margin: 0 }}>
+          <strong>Download Available Until:</strong> {downloadExpiresAt}
+          <br />
+          <span style={{ fontSize: '12px', color: '#6b7280' }}>
+            You have 90 days to download your leads. After that, you'll need to access them from your purchase history.
+          </span>
+        </Text>
+      </Callout>
+
+      <div style={{ textAlign: 'center', margin: '24px 0' }}>
+        <Button href={downloadUrl}>Download Leads (CSV)</Button>
+      </div>
+
+      <Text style={{ color: '#6b7280', fontSize: '12px' }}>
+        Your leads include full contact information, company details, and intent scores. Start reaching out today!
+      </Text>
+    </EmailLayout>
+  )
+}
+
+interface PayoutCompletedEmailProps {
+  partnerName: string
+  amount: number
+  currency: string
+  leadsCount: number
+  periodStart: string
+  periodEnd: string
+  payoutId: string
+  dashboardUrl: string
+}
+
+export function PayoutCompletedEmail({
+  partnerName,
+  amount,
+  currency,
+  leadsCount,
+  periodStart,
+  periodEnd,
+  payoutId,
+  dashboardUrl,
+}: PayoutCompletedEmailProps) {
+  return (
+    <EmailLayout preview={`Payout of $${amount.toFixed(2)} processed successfully!`}>
+      <Heading>Payout Processed!</Heading>
+
+      <Text>Hi {partnerName},</Text>
+
+      <Text>
+        Great news! Your payout has been processed and funds are on their way to your connected Stripe account.
+      </Text>
+
+      <table
+        width="100%"
+        cellPadding="0"
+        cellSpacing="0"
+        style={{
+          backgroundColor: '#f0fdf4',
+          borderRadius: '8px',
+          padding: '16px',
+          marginBottom: '24px',
+          border: '1px solid #86efac',
+        }}
+      >
+        <tbody>
+          <tr>
+            <td style={{ textAlign: 'center', padding: '16px' }}>
+              <div style={{ fontSize: '14px', color: '#16a34a', marginBottom: '8px' }}>Payout Amount</div>
+              <div style={{ fontSize: '32px', fontWeight: 700, color: '#15803d' }}>
+                ${amount.toFixed(2)} {currency.toUpperCase()}
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <table
+        width="100%"
+        cellPadding="0"
+        cellSpacing="0"
+        style={{
+          backgroundColor: '#f9fafb',
+          borderRadius: '8px',
+          padding: '16px',
+          marginBottom: '24px',
+        }}
+      >
+        <tbody>
+          <tr>
+            <td style={{ padding: '8px 16px', borderBottom: '1px solid #e5e7eb' }}>
+              <div style={{ fontSize: '12px', color: '#6b7280' }}>Leads Sold</div>
+              <div style={{ fontSize: '16px', fontWeight: 600, color: '#111827' }}>{leadsCount}</div>
+            </td>
+            <td style={{ padding: '8px 16px', borderBottom: '1px solid #e5e7eb' }}>
+              <div style={{ fontSize: '12px', color: '#6b7280' }}>Period</div>
+              <div style={{ fontSize: '14px', color: '#4b5563' }}>{periodStart} - {periodEnd}</div>
+            </td>
+          </tr>
+          <tr>
+            <td colSpan={2} style={{ padding: '8px 16px' }}>
+              <div style={{ fontSize: '12px', color: '#6b7280' }}>Payout ID</div>
+              <div style={{ fontSize: '14px', fontFamily: 'monospace', color: '#4b5563' }}>{payoutId}</div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <Text style={{ color: '#6b7280', fontSize: '12px' }}>
+        Funds typically arrive in your account within 2-3 business days. You can track your payout status in your partner dashboard.
+      </Text>
+
+      <div style={{ textAlign: 'center', margin: '24px 0' }}>
+        <Button href={dashboardUrl}>View Payout History</Button>
+      </div>
+    </EmailLayout>
+  )
+}
+
+interface CreditPurchaseConfirmationEmailProps {
+  buyerName: string
+  creditsAmount: number
+  totalPrice: number
+  packageName: string
+  newBalance: number
+}
+
+export function CreditPurchaseConfirmationEmail({
+  buyerName,
+  creditsAmount,
+  totalPrice,
+  packageName,
+  newBalance,
+}: CreditPurchaseConfirmationEmailProps) {
+  return (
+    <EmailLayout preview={`${creditsAmount} credits added to your account!`}>
+      <Heading>Credits Purchased!</Heading>
+
+      <Text>Hi {buyerName},</Text>
+
+      <Text>
+        Your credit purchase is complete! <strong>{creditsAmount} credits</strong> have been added to your account.
+      </Text>
+
+      <table
+        width="100%"
+        cellPadding="0"
+        cellSpacing="0"
+        style={{
+          backgroundColor: '#eff6ff',
+          borderRadius: '8px',
+          padding: '16px',
+          marginBottom: '24px',
+          border: '1px solid #93c5fd',
+        }}
+      >
+        <tbody>
+          <tr>
+            <td style={{ textAlign: 'center', padding: '16px' }}>
+              <div style={{ fontSize: '14px', color: '#1d4ed8', marginBottom: '8px' }}>New Credit Balance</div>
+              <div style={{ fontSize: '32px', fontWeight: 700, color: '#1e40af' }}>
+                {newBalance} credits
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <table
+        width="100%"
+        cellPadding="0"
+        cellSpacing="0"
+        style={{
+          backgroundColor: '#f9fafb',
+          borderRadius: '8px',
+          padding: '16px',
+          marginBottom: '24px',
+        }}
+      >
+        <tbody>
+          <tr>
+            <td style={{ padding: '8px 16px', borderBottom: '1px solid #e5e7eb' }}>
+              <div style={{ fontSize: '12px', color: '#6b7280' }}>Package</div>
+              <div style={{ fontSize: '16px', fontWeight: 600, color: '#111827' }}>{packageName}</div>
+            </td>
+            <td style={{ padding: '8px 16px', borderBottom: '1px solid #e5e7eb' }}>
+              <div style={{ fontSize: '12px', color: '#6b7280' }}>Credits Added</div>
+              <div style={{ fontSize: '16px', fontWeight: 600, color: '#111827' }}>{creditsAmount}</div>
+            </td>
+          </tr>
+          <tr>
+            <td colSpan={2} style={{ padding: '8px 16px' }}>
+              <div style={{ fontSize: '12px', color: '#6b7280' }}>Amount Paid</div>
+              <div style={{ fontSize: '16px', fontWeight: 600, color: '#111827' }}>${totalPrice.toFixed(2)}</div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <Text>
+        You can now use your credits to purchase high-quality leads from the marketplace.
+        Each lead costs 1 credit, and credits never expire.
+      </Text>
+
+      <div style={{ textAlign: 'center', margin: '24px 0' }}>
+        <Button href={`${process.env.NEXT_PUBLIC_APP_URL}/marketplace`}>Browse Marketplace</Button>
+      </div>
+
+      <Text style={{ color: '#6b7280', fontSize: '12px' }}>
+        Need more credits? You can purchase additional credits anytime from your account settings.
+      </Text>
+    </EmailLayout>
+  )
+}

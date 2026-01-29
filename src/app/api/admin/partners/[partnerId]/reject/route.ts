@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
+import { sendPartnerRejectedEmail } from '@/lib/email/service'
 
 const rejectSchema = z.object({
   reason: z.string().min(10, 'Please provide a reason'),
@@ -8,9 +9,10 @@ const rejectSchema = z.object({
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { partnerId: string } }
+  { params }: { params: Promise<{ partnerId: string }> }
 ) {
   const supabase = await createClient()
+  const { partnerId } = await params
 
   // Verify admin
   const {
@@ -46,7 +48,7 @@ export async function POST(
       suspension_reason: parsed.data.reason,
       updated_at: new Date().toISOString(),
     })
-    .eq('id', params.partnerId)
+    .eq('id', partnerId)
     .eq('status', 'pending')
     .select()
     .single()
@@ -70,7 +72,18 @@ export async function POST(
     },
   })
 
-  // TODO: Send rejection email to partner
+  // Send rejection email to partner
+  try {
+    await sendPartnerRejectedEmail(
+      partner.email,
+      partner.contact_name,
+      partner.company_name,
+      parsed.data.reason
+    )
+  } catch (emailError) {
+    console.error('[Partner Rejection] Failed to send email:', emailError)
+    // Don't fail the rejection if email fails
+  }
 
   return NextResponse.json({ success: true, partner })
 }
