@@ -7,7 +7,7 @@
 
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { isAdmin, getCurrentAdminEmail } from '@/lib/auth/admin'
+import { createClient } from '@/lib/supabase/server'
 
 export const dynamic = 'force-dynamic'
 
@@ -16,13 +16,17 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode
 }) {
-  const isAdminUser = await isAdmin()
+  // Simple admin check - just verify email
+  const supabase = await createClient()
+  const { data: { session } } = await supabase.auth.getSession()
+
+  const isAdminUser = session?.user?.email === 'adam@meetcursive.com'
 
   if (!isAdminUser) {
     redirect('/login?error=unauthorized')
   }
 
-  const adminEmail = await getCurrentAdminEmail()
+  const adminEmail = session?.user?.email || 'Admin'
 
   return (
     <div className="min-h-screen bg-zinc-50">
