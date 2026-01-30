@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { motion } from 'framer-motion'
 import { PartnerUploadBatch } from '@/types/database.types'
 import { formatDistanceToNow } from 'date-fns'
 import {
@@ -23,6 +24,7 @@ import {
   Eye,
 } from 'lucide-react'
 import { EmptyState } from '@/components/animations/EmptyState'
+import { useSafeAnimation } from '@/hooks/use-reduced-motion'
 
 interface UploadHistoryClientProps {
   initialBatches: PartnerUploadBatch[]
@@ -64,6 +66,7 @@ export function UploadHistoryClient({
   partnerId,
 }: UploadHistoryClientProps) {
   const [batches] = useState(initialBatches)
+  const shouldAnimate = useSafeAnimation()
 
   if (batches.length === 0) {
     return (
@@ -80,21 +83,47 @@ export function UploadHistoryClient({
     )
   }
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  }
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.3 },
+    },
+  }
+
   return (
     <div className="space-y-6">
       {/* Stats Summary */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <motion.div
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+        variants={shouldAnimate ? containerVariants : undefined}
+        initial={shouldAnimate ? 'hidden' : undefined}
+        animate={shouldAnimate ? 'visible' : undefined}
+      >
         <StatCard
           label="Total Uploads"
           value={totalCount}
           icon={FileText}
           color="blue"
+          shouldAnimate={shouldAnimate}
         />
         <StatCard
           label="Completed"
           value={batches.filter((b) => b.status === 'completed').length}
           icon={CheckCircle}
           color="green"
+          shouldAnimate={shouldAnimate}
         />
         <StatCard
           label="Processing"
@@ -104,14 +133,16 @@ export function UploadHistoryClient({
           }
           icon={Clock}
           color="amber"
+          shouldAnimate={shouldAnimate}
         />
         <StatCard
           label="Failed"
           value={batches.filter((b) => b.status === 'failed').length}
           icon={XCircle}
           color="red"
+          shouldAnimate={shouldAnimate}
         />
-      </div>
+      </motion.div>
 
       {/* Desktop Table */}
       <div className="hidden md:block bg-white rounded-lg border border-blue-100/50 shadow-sm overflow-hidden">
@@ -130,12 +161,24 @@ export function UploadHistoryClient({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {batches.map((batch) => {
+            {batches.map((batch, index) => {
               const config = statusConfig[batch.status]
               const StatusIcon = config.icon
 
+              const RowWrapper = shouldAnimate ? motion.tr : TableRow
+
               return (
-                <TableRow key={batch.id}>
+                <RowWrapper
+                  key={batch.id}
+                  {...(shouldAnimate
+                    ? {
+                        initial: { opacity: 0, x: -20 },
+                        animate: { opacity: 1, x: 0 },
+                        transition: { delay: index * 0.05, duration: 0.3 },
+                        whileHover: { backgroundColor: 'rgba(59, 130, 246, 0.03)' },
+                      }
+                    : {})}
+                >
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <FileText className="h-4 w-4 text-muted-foreground" />
@@ -191,7 +234,7 @@ export function UploadHistoryClient({
                       )}
                     </div>
                   </TableCell>
-                </TableRow>
+                </RowWrapper>
               )
             })}
           </TableBody>
@@ -200,14 +243,24 @@ export function UploadHistoryClient({
 
       {/* Mobile Cards */}
       <div className="md:hidden space-y-4">
-        {batches.map((batch) => {
+        {batches.map((batch, index) => {
           const config = statusConfig[batch.status]
           const StatusIcon = config.icon
 
+          const CardWrapper = shouldAnimate ? motion.div : 'div'
+
           return (
-            <div
+            <CardWrapper
               key={batch.id}
               className="bg-white rounded-lg border border-blue-100/50 shadow-sm p-4 space-y-3"
+              {...(shouldAnimate
+                ? {
+                    initial: { opacity: 0, y: 20 },
+                    animate: { opacity: 1, y: 0 },
+                    transition: { delay: index * 0.05, duration: 0.3 },
+                    whileHover: { y: -2, shadow: 'md' },
+                  }
+                : {})}
             >
               {/* Header */}
               <div className="flex items-start justify-between">
@@ -268,7 +321,7 @@ export function UploadHistoryClient({
                   </Button>
                 )}
               </div>
-            </div>
+            </CardWrapper>
           )
         })}
       </div>
@@ -281,11 +334,13 @@ function StatCard({
   value,
   icon: Icon,
   color,
+  shouldAnimate,
 }: {
   label: string
   value: number
   icon: React.ElementType
   color: 'blue' | 'green' | 'amber' | 'red'
+  shouldAnimate: boolean
 }) {
   const colorClasses = {
     blue: 'bg-blue-50 text-blue-700 border-blue-100',
@@ -294,9 +349,20 @@ function StatCard({
     red: 'bg-red-50 text-red-700 border-red-100',
   }
 
+  const CardWrapper = shouldAnimate ? motion.div : 'div'
+
   return (
-    <div
-      className={`rounded-lg border p-4 ${colorClasses[color]} bg-gradient-to-br from-white/50`}
+    <CardWrapper
+      className={`rounded-lg border p-4 ${colorClasses[color]} bg-gradient-to-br from-white/50 transition-all duration-200`}
+      {...(shouldAnimate
+        ? {
+            whileHover: { y: -4, shadow: 'lg' },
+            variants: {
+              hidden: { opacity: 0, y: 20 },
+              visible: { opacity: 1, y: 0 },
+            },
+          }
+        : {})}
     >
       <div className="flex items-center justify-between">
         <div>
@@ -305,7 +371,7 @@ function StatCard({
         </div>
         <Icon className="h-8 w-8 opacity-50" />
       </div>
-    </div>
+    </CardWrapper>
   )
 }
 

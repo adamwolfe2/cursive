@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { motion } from 'framer-motion'
 import { formatDistanceToNow } from 'date-fns'
 import {
   Table,
@@ -20,6 +21,7 @@ import {
   Download,
 } from 'lucide-react'
 import { EmptyState } from '@/components/animations/EmptyState'
+import { useSafeAnimation } from '@/hooks/use-reduced-motion'
 
 interface Earning {
   id: string
@@ -68,12 +70,13 @@ export function EarningsClient({
   stats,
 }: EarningsClientProps) {
   const [earnings] = useState(initialEarnings)
+  const shouldAnimate = useSafeAnimation()
 
   if (earnings.length === 0) {
     return (
       <div className="space-y-6">
         {/* Stats Summary */}
-        <StatsGrid stats={stats} />
+        <StatsGrid stats={stats} shouldAnimate={shouldAnimate} />
 
         <EmptyState
           icon={<DollarSign className="h-12 w-12" />}
@@ -87,7 +90,7 @@ export function EarningsClient({
   return (
     <div className="space-y-6">
       {/* Stats Summary */}
-      <StatsGrid stats={stats} />
+      <StatsGrid stats={stats} shouldAnimate={shouldAnimate} />
 
       {/* Desktop Table */}
       <div className="hidden md:block bg-white rounded-lg border border-blue-100/50 shadow-sm overflow-hidden">
@@ -115,12 +118,24 @@ export function EarningsClient({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {earnings.map((earning) => {
+            {earnings.map((earning, index) => {
               const config = statusConfig[earning.status as keyof typeof statusConfig] || statusConfig.pending
               const StatusIcon = config.icon
 
+              const RowWrapper = shouldAnimate ? motion.tr : TableRow
+
               return (
-                <TableRow key={earning.id}>
+                <RowWrapper
+                  key={earning.id}
+                  {...(shouldAnimate
+                    ? {
+                        initial: { opacity: 0, x: -20 },
+                        animate: { opacity: 1, x: 0 },
+                        transition: { delay: index * 0.05, duration: 0.3 },
+                        whileHover: { backgroundColor: 'rgba(59, 130, 246, 0.03)' },
+                      }
+                    : {})}
+                >
                   <TableCell>
                     <div className="text-sm">
                       {new Date(earning.created_at).toLocaleDateString('en-US', {
@@ -160,7 +175,7 @@ export function EarningsClient({
                       +${earning.amount.toFixed(2)}
                     </div>
                   </TableCell>
-                </TableRow>
+                </RowWrapper>
               )
             })}
           </TableBody>
@@ -181,14 +196,24 @@ export function EarningsClient({
           </Button>
         </div>
 
-        {earnings.map((earning) => {
+        {earnings.map((earning, index) => {
           const config = statusConfig[earning.status as keyof typeof statusConfig] || statusConfig.pending
           const StatusIcon = config.icon
 
+          const CardWrapper = shouldAnimate ? motion.div : 'div'
+
           return (
-            <div
+            <CardWrapper
               key={earning.id}
               className="bg-white rounded-lg border border-blue-100/50 shadow-sm p-4 space-y-3"
+              {...(shouldAnimate
+                ? {
+                    initial: { opacity: 0, y: 20 },
+                    animate: { opacity: 1, y: 0 },
+                    transition: { delay: index * 0.05, duration: 0.3 },
+                    whileHover: { y: -2, shadow: 'md' },
+                  }
+                : {})}
             >
               {/* Header */}
               <div className="flex items-start justify-between">
@@ -219,7 +244,7 @@ export function EarningsClient({
                   +${earning.amount.toFixed(2)}
                 </div>
               </div>
-            </div>
+            </CardWrapper>
           )
         })}
       </div>
@@ -227,15 +252,37 @@ export function EarningsClient({
   )
 }
 
-function StatsGrid({ stats }: { stats: EarningsClientProps['stats'] }) {
+function StatsGrid({
+  stats,
+  shouldAnimate,
+}: {
+  stats: EarningsClientProps['stats']
+  shouldAnimate: boolean
+}) {
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  }
+
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <motion.div
+      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+      variants={shouldAnimate ? containerVariants : undefined}
+      initial={shouldAnimate ? 'hidden' : undefined}
+      animate={shouldAnimate ? 'visible' : undefined}
+    >
       <StatCard
         label="Total Earnings"
         value={`$${stats.totalEarnings.toFixed(2)}`}
         icon={DollarSign}
         color="green"
         subtitle="All-time revenue"
+        shouldAnimate={shouldAnimate}
       />
       <StatCard
         label="Available Balance"
@@ -243,6 +290,7 @@ function StatsGrid({ stats }: { stats: EarningsClientProps['stats'] }) {
         icon={CheckCircle}
         color="blue"
         subtitle="Ready for payout"
+        shouldAnimate={shouldAnimate}
       />
       <StatCard
         label="Pending"
@@ -250,6 +298,7 @@ function StatsGrid({ stats }: { stats: EarningsClientProps['stats'] }) {
         icon={Clock}
         color="amber"
         subtitle="Processing"
+        shouldAnimate={shouldAnimate}
       />
       <StatCard
         label="Leads Sold"
@@ -257,8 +306,9 @@ function StatsGrid({ stats }: { stats: EarningsClientProps['stats'] }) {
         icon={TrendingUp}
         color="purple"
         subtitle={`${(stats.commissionRate * 100).toFixed(0)}% commission`}
+        shouldAnimate={shouldAnimate}
       />
-    </div>
+    </motion.div>
   )
 }
 
@@ -268,12 +318,14 @@ function StatCard({
   icon: Icon,
   color,
   subtitle,
+  shouldAnimate,
 }: {
   label: string
   value: string
   icon: React.ElementType
   color: 'green' | 'blue' | 'amber' | 'purple'
   subtitle?: string
+  shouldAnimate: boolean
 }) {
   const colorClasses = {
     green: 'bg-green-50 text-green-700 border-green-100',
@@ -282,9 +334,20 @@ function StatCard({
     purple: 'bg-purple-50 text-purple-700 border-purple-100',
   }
 
+  const CardWrapper = shouldAnimate ? motion.div : 'div'
+
   return (
-    <div
-      className={`rounded-lg border p-4 ${colorClasses[color]} bg-gradient-to-br from-white/50`}
+    <CardWrapper
+      className={`rounded-lg border p-4 ${colorClasses[color]} bg-gradient-to-br from-white/50 transition-all duration-200`}
+      {...(shouldAnimate
+        ? {
+            whileHover: { y: -4, shadow: 'lg' },
+            variants: {
+              hidden: { opacity: 0, y: 20 },
+              visible: { opacity: 1, y: 0 },
+            },
+          }
+        : {})}
     >
       <div className="flex items-start justify-between">
         <div className="flex-1">
@@ -296,6 +359,6 @@ function StatCard({
         </div>
         <Icon className="h-8 w-8 opacity-50 flex-shrink-0" />
       </div>
-    </div>
+    </CardWrapper>
   )
 }

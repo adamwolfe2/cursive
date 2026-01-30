@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { motion } from 'framer-motion'
 import { Partner } from '@/types/database.types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -24,6 +25,7 @@ import {
   ExternalLink,
 } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
+import { useSafeAnimation } from '@/hooks/use-reduced-motion'
 
 interface Payout {
   id: string
@@ -68,6 +70,7 @@ const payoutStatusConfig = {
 
 export function SettingsClient({ partner, payouts }: SettingsClientProps) {
   const [isConnecting, setIsConnecting] = useState(false)
+  const shouldAnimate = useSafeAnimation()
 
   const hasStripeAccount = !!partner.stripe_account_id
 
@@ -90,10 +93,37 @@ export function SettingsClient({ partner, payouts }: SettingsClientProps) {
     }
   }
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.15,
+      },
+    },
+  }
+
+  const sectionVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.3 },
+    },
+  }
+
   return (
-    <div className="space-y-6 max-w-4xl">
+    <motion.div
+      className="space-y-6 max-w-4xl"
+      variants={shouldAnimate ? containerVariants : undefined}
+      initial={shouldAnimate ? 'hidden' : undefined}
+      animate={shouldAnimate ? 'visible' : undefined}
+    >
       {/* Payout Account */}
-      <div className="bg-white rounded-lg border border-blue-100/50 shadow-sm">
+      <motion.div
+        className="bg-white rounded-lg border border-blue-100/50 shadow-sm"
+        variants={shouldAnimate ? sectionVariants : undefined}
+      >
         <div className="p-6 border-b border-gray-100">
           <h2 className="text-lg font-semibold flex items-center gap-2">
             <CreditCard className="h-5 w-5 text-blue-600" />
@@ -214,10 +244,13 @@ export function SettingsClient({ partner, payouts }: SettingsClientProps) {
             </div>
           )}
         </div>
-      </div>
+      </motion.div>
 
       {/* Payout History */}
-      <div className="bg-white rounded-lg border border-blue-100/50 shadow-sm overflow-hidden">
+      <motion.div
+        className="bg-white rounded-lg border border-blue-100/50 shadow-sm overflow-hidden"
+        variants={shouldAnimate ? sectionVariants : undefined}
+      >
         <div className="p-6 border-b border-gray-100">
           <h2 className="text-lg font-semibold">Payout History</h2>
           <p className="text-sm text-muted-foreground mt-1">
@@ -250,12 +283,24 @@ export function SettingsClient({ partner, payouts }: SettingsClientProps) {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {payouts.map((payout) => {
+                  {payouts.map((payout, index) => {
                     const config = payoutStatusConfig[payout.status as keyof typeof payoutStatusConfig] || payoutStatusConfig.pending
                     const StatusIcon = config.icon
 
+                    const RowWrapper = shouldAnimate ? motion.tr : TableRow
+
                     return (
-                      <TableRow key={payout.id}>
+                      <RowWrapper
+                        key={payout.id}
+                        {...(shouldAnimate
+                          ? {
+                              initial: { opacity: 0, x: -20 },
+                              animate: { opacity: 1, x: 0 },
+                              transition: { delay: index * 0.05, duration: 0.3 },
+                              whileHover: { backgroundColor: 'rgba(59, 130, 246, 0.03)' },
+                            }
+                          : {})}
+                      >
                         <TableCell>
                           <div className="text-sm">
                             {new Date(payout.period_start).toLocaleDateString()} -{' '}
@@ -287,7 +332,7 @@ export function SettingsClient({ partner, payouts }: SettingsClientProps) {
                             <span className="text-muted-foreground text-sm">—</span>
                           )}
                         </TableCell>
-                      </TableRow>
+                      </RowWrapper>
                     )
                   })}
                 </TableBody>
@@ -296,14 +341,24 @@ export function SettingsClient({ partner, payouts }: SettingsClientProps) {
 
             {/* Mobile Cards */}
             <div className="md:hidden p-4 space-y-3">
-              {payouts.map((payout) => {
+              {payouts.map((payout, index) => {
                 const config = payoutStatusConfig[payout.status as keyof typeof payoutStatusConfig] || payoutStatusConfig.pending
                 const StatusIcon = config.icon
 
+                const CardWrapper = shouldAnimate ? motion.div : 'div'
+
                 return (
-                  <div
+                  <CardWrapper
                     key={payout.id}
                     className="border border-gray-200 rounded-lg p-4 space-y-2"
+                    {...(shouldAnimate
+                      ? {
+                          initial: { opacity: 0, y: 20 },
+                          animate: { opacity: 1, y: 0 },
+                          transition: { delay: index * 0.05, duration: 0.3 },
+                          whileHover: { y: -2, shadow: 'md' },
+                        }
+                      : {})}
                   >
                     <div className="flex items-start justify-between">
                       <div className="text-sm text-muted-foreground">
@@ -323,16 +378,19 @@ export function SettingsClient({ partner, payouts }: SettingsClientProps) {
                         ${payout.amount.toFixed(2)}
                       </div>
                     </div>
-                  </div>
+                  </CardWrapper>
                 )
               })}
             </div>
           </>
         )}
-      </div>
+      </motion.div>
 
       {/* Account Information */}
-      <div className="bg-white rounded-lg border border-blue-100/50 shadow-sm">
+      <motion.div
+        className="bg-white rounded-lg border border-blue-100/50 shadow-sm"
+        variants={shouldAnimate ? sectionVariants : undefined}
+      >
         <div className="p-6 border-b border-gray-100">
           <h2 className="text-lg font-semibold">Account Information</h2>
         </div>
@@ -358,7 +416,7 @@ export function SettingsClient({ partner, payouts }: SettingsClientProps) {
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   )
 }
