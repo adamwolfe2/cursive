@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import Link from 'next/link'
 import { Users, Plus, Filter, ArrowUpDown } from 'lucide-react'
 import { CRMPageContainer } from '@/components/crm/layout/CRMPageContainer'
@@ -126,27 +126,30 @@ export function LeadsPageClient({ initialData }: LeadsPageClientProps) {
     },
   ]
 
-  // Kanban board configuration
-  const newLeads = leads.filter((l) => l.status === 'new')
-  const contactedLeads = leads.filter((l) => l.status === 'contacted')
-  const qualifiedLeads = leads.filter((l) => l.status === 'qualified')
-  const wonLeads = leads.filter((l) => l.status === 'won')
+  // Memoize board configuration to prevent unnecessary recalculations
+  const { boardColumns, boardData } = useMemo(() => {
+    const newLeads = leads.filter((l) => l.status === 'new')
+    const contactedLeads = leads.filter((l) => l.status === 'contacted')
+    const qualifiedLeads = leads.filter((l) => l.status === 'qualified')
+    const wonLeads = leads.filter((l) => l.status === 'won')
 
-  const boardColumns = [
-    { id: 'new', title: 'New', color: '#3B82F6', count: newLeads.length },
-    { id: 'contacted', title: 'Contacted', color: '#F59E0B', count: contactedLeads.length },
-    { id: 'qualified', title: 'Qualified', color: '#10B981', count: qualifiedLeads.length },
-    { id: 'won', title: 'Won', color: '#059669', count: wonLeads.length },
-  ]
+    return {
+      boardColumns: [
+        { id: 'new', title: 'New', color: '#3B82F6', count: newLeads.length },
+        { id: 'contacted', title: 'Contacted', color: '#F59E0B', count: contactedLeads.length },
+        { id: 'qualified', title: 'Qualified', color: '#10B981', count: qualifiedLeads.length },
+        { id: 'won', title: 'Won', color: '#059669', count: wonLeads.length },
+      ],
+      boardData: {
+        new: newLeads,
+        contacted: contactedLeads,
+        qualified: qualifiedLeads,
+        won: wonLeads,
+      },
+    }
+  }, [leads])
 
-  const boardData = {
-    new: newLeads,
-    contacted: contactedLeads,
-    qualified: qualifiedLeads,
-    won: wonLeads,
-  }
-
-  const renderCard = (lead: LeadTableRow) => (
+  const renderCard = useCallback((lead: LeadTableRow) => (
     <div className="space-y-2">
       <div className="font-medium text-gray-900">
         {[lead.first_name, lead.last_name].filter(Boolean).join(' ') || 'Unnamed Lead'}
@@ -159,12 +162,12 @@ export function LeadsPageClient({ initialData }: LeadsPageClientProps) {
         </span>
       </div>
     </div>
-  )
+  ), [])
 
-  const handleRowClick = (lead: LeadTableRow) => {
+  const handleRowClick = useCallback((lead: LeadTableRow) => {
     setSelectedLead(lead.id)
     setDrawerOpen(true)
-  }
+  }, [])
 
   const selectedLeadData = leads.find((l) => l.id === selectedLead)
 

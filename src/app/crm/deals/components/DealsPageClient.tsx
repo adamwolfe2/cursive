@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import Link from 'next/link'
 import { TrendingUp, Plus, Filter, ArrowUpDown, Inbox, DollarSign, Calendar } from 'lucide-react'
 import { CRMPageContainer } from '@/components/crm/layout/CRMPageContainer'
@@ -131,29 +131,32 @@ export function DealsPageClient({ initialData }: DealsPageClientProps) {
     },
   ]
 
-  const qualifiedDeals = deals.filter((d) => d.stage === 'Qualified')
-  const proposalDeals = deals.filter((d) => d.stage === 'Proposal')
-  const negotiationDeals = deals.filter((d) => d.stage === 'Negotiation')
-  const closedWonDeals = deals.filter((d) => d.stage === 'Closed Won')
-  const closedLostDeals = deals.filter((d) => d.stage === 'Closed Lost')
+  const { boardColumns, boardData } = useMemo(() => {
+    const qualifiedDeals = deals.filter((d) => d.stage === 'Qualified')
+    const proposalDeals = deals.filter((d) => d.stage === 'Proposal')
+    const negotiationDeals = deals.filter((d) => d.stage === 'Negotiation')
+    const closedWonDeals = deals.filter((d) => d.stage === 'Closed Won')
+    const closedLostDeals = deals.filter((d) => d.stage === 'Closed Lost')
 
-  const boardColumns = [
-    { id: 'qualified', title: 'Qualified', color: '#3B82F6', count: qualifiedDeals.length },
-    { id: 'proposal', title: 'Proposal', color: '#8B5CF6', count: proposalDeals.length },
-    { id: 'negotiation', title: 'Negotiation', color: '#F59E0B', count: negotiationDeals.length },
-    { id: 'closedWon', title: 'Closed Won', color: '#10B981', count: closedWonDeals.length },
-    { id: 'closedLost', title: 'Closed Lost', color: '#EF4444', count: closedLostDeals.length },
-  ]
+    return {
+      boardColumns: [
+        { id: 'qualified', title: 'Qualified', color: '#3B82F6', count: qualifiedDeals.length },
+        { id: 'proposal', title: 'Proposal', color: '#8B5CF6', count: proposalDeals.length },
+        { id: 'negotiation', title: 'Negotiation', color: '#F59E0B', count: negotiationDeals.length },
+        { id: 'closedWon', title: 'Closed Won', color: '#10B981', count: closedWonDeals.length },
+        { id: 'closedLost', title: 'Closed Lost', color: '#EF4444', count: closedLostDeals.length },
+      ],
+      boardData: {
+        qualified: qualifiedDeals,
+        proposal: proposalDeals,
+        negotiation: negotiationDeals,
+        closedWon: closedWonDeals,
+        closedLost: closedLostDeals,
+      },
+    }
+  }, [deals])
 
-  const boardData = {
-    qualified: qualifiedDeals,
-    proposal: proposalDeals,
-    negotiation: negotiationDeals,
-    closedWon: closedWonDeals,
-    closedLost: closedLostDeals,
-  }
-
-  const renderCard = (deal: Deal) => (
+  const renderCard = useCallback((deal: Deal) => (
     <div className="space-y-2">
       <div className="font-medium text-gray-900">{deal.name}</div>
       <div className="text-sm text-gray-600">{deal.stage}</div>
@@ -166,12 +169,12 @@ export function DealsPageClient({ initialData }: DealsPageClientProps) {
         {deal.close_date ? format(new Date(deal.close_date), 'MMM d') : 'N/A'}
       </div>
     </div>
-  )
+  ), [])
 
-  const handleRowClick = (deal: Deal) => {
+  const handleRowClick = useCallback((deal: Deal) => {
     setSelectedDeal(deal.id)
     setDrawerOpen(true)
-  }
+  }, [])
 
   const selectedDealData = deals.find((d) => d.id === selectedDeal)
 

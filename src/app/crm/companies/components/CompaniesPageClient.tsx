@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import Link from 'next/link'
 import { Building2, Plus, Filter, ArrowUpDown } from 'lucide-react'
 import { CRMPageContainer } from '@/components/crm/layout/CRMPageContainer'
@@ -118,26 +118,30 @@ export function CompaniesPageClient({ initialData }: CompaniesPageClientProps) {
     },
   ]
 
-  const prospectCompanies = companies.filter((c) => c.status === 'Prospect')
-  const activeCompanies = companies.filter((c) => c.status === 'Active')
-  const inactiveCompanies = companies.filter((c) => c.status === 'Inactive')
-  const lostCompanies = companies.filter((c) => c.status === 'Lost')
+  // Memoize board configuration
+  const { boardColumns, boardData } = useMemo(() => {
+    const prospectCompanies = companies.filter((c) => c.status === 'Prospect')
+    const activeCompanies = companies.filter((c) => c.status === 'Active')
+    const inactiveCompanies = companies.filter((c) => c.status === 'Inactive')
+    const lostCompanies = companies.filter((c) => c.status === 'Lost')
 
-  const boardColumns = [
-    { id: 'prospect', title: 'Prospect', color: '#3B82F6', count: prospectCompanies.length },
-    { id: 'active', title: 'Active', color: '#10B981', count: activeCompanies.length },
-    { id: 'inactive', title: 'Inactive', color: '#6B7280', count: inactiveCompanies.length },
-    { id: 'lost', title: 'Lost', color: '#EF4444', count: lostCompanies.length },
-  ]
+    return {
+      boardColumns: [
+        { id: 'prospect', title: 'Prospect', color: '#3B82F6', count: prospectCompanies.length },
+        { id: 'active', title: 'Active', color: '#10B981', count: activeCompanies.length },
+        { id: 'inactive', title: 'Inactive', color: '#6B7280', count: inactiveCompanies.length },
+        { id: 'lost', title: 'Lost', color: '#EF4444', count: lostCompanies.length },
+      ],
+      boardData: {
+        prospect: prospectCompanies,
+        active: activeCompanies,
+        inactive: inactiveCompanies,
+        lost: lostCompanies,
+      },
+    }
+  }, [companies])
 
-  const boardData = {
-    prospect: prospectCompanies,
-    active: activeCompanies,
-    inactive: inactiveCompanies,
-    lost: lostCompanies,
-  }
-
-  const renderCard = (company: Company) => (
+  const renderCard = useCallback((company: Company) => (
     <div className="space-y-2">
       <div className="font-medium text-gray-900">{company.name}</div>
       <div className="text-sm text-gray-600">{company.industry || 'N/A'}</div>
@@ -146,12 +150,12 @@ export function CompaniesPageClient({ initialData }: CompaniesPageClientProps) {
         <span className="text-xs text-gray-500">{company.employees_range || 'N/A'}</span>
       </div>
     </div>
-  )
+  ), [])
 
-  const handleRowClick = (company: Company) => {
+  const handleRowClick = useCallback((company: Company) => {
     setSelectedCompany(company.id)
     setDrawerOpen(true)
-  }
+  }, [])
 
   const selectedCompanyData = companies.find((c) => c.id === selectedCompany)
 

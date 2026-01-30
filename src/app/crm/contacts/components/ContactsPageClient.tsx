@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import Link from 'next/link'
 import { Users, Plus, Filter, ArrowUpDown, Mail, Phone } from 'lucide-react'
 import { CRMPageContainer } from '@/components/crm/layout/CRMPageContainer'
@@ -122,26 +122,29 @@ export function ContactsPageClient({ initialData }: ContactsPageClientProps) {
     },
   ]
 
-  const prospectContacts = contacts.filter((c) => c.status === 'Prospect')
-  const activeContacts = contacts.filter((c) => c.status === 'Active')
-  const inactiveContacts = contacts.filter((c) => c.status === 'Inactive')
-  const lostContacts = contacts.filter((c) => c.status === 'Lost')
+  const { boardColumns, boardData } = useMemo(() => {
+    const prospectContacts = contacts.filter((c) => c.status === 'Prospect')
+    const activeContacts = contacts.filter((c) => c.status === 'Active')
+    const inactiveContacts = contacts.filter((c) => c.status === 'Inactive')
+    const lostContacts = contacts.filter((c) => c.status === 'Lost')
 
-  const boardColumns = [
-    { id: 'prospect', title: 'Prospect', color: '#3B82F6', count: prospectContacts.length },
-    { id: 'active', title: 'Active', color: '#10B981', count: activeContacts.length },
-    { id: 'inactive', title: 'Inactive', color: '#6B7280', count: inactiveContacts.length },
-    { id: 'lost', title: 'Lost', color: '#EF4444', count: lostContacts.length },
-  ]
+    return {
+      boardColumns: [
+        { id: 'prospect', title: 'Prospect', color: '#3B82F6', count: prospectContacts.length },
+        { id: 'active', title: 'Active', color: '#10B981', count: activeContacts.length },
+        { id: 'inactive', title: 'Inactive', color: '#6B7280', count: inactiveContacts.length },
+        { id: 'lost', title: 'Lost', color: '#EF4444', count: lostContacts.length },
+      ],
+      boardData: {
+        prospect: prospectContacts,
+        active: activeContacts,
+        inactive: inactiveContacts,
+        lost: lostContacts,
+      },
+    }
+  }, [contacts])
 
-  const boardData = {
-    prospect: prospectContacts,
-    active: activeContacts,
-    inactive: inactiveContacts,
-    lost: lostContacts,
-  }
-
-  const renderCard = (contact: Contact) => (
+  const renderCard = useCallback((contact: Contact) => (
     <div className="space-y-2">
       <div className="font-medium text-gray-900">{contact.full_name || 'Unnamed Contact'}</div>
       <div className="text-sm text-gray-600">{contact.title || 'N/A'}</div>
@@ -151,12 +154,12 @@ export function ContactsPageClient({ initialData }: ContactsPageClientProps) {
         {contact.email || 'N/A'}
       </div>
     </div>
-  )
+  ), [])
 
-  const handleRowClick = (contact: Contact) => {
+  const handleRowClick = useCallback((contact: Contact) => {
     setSelectedContact(contact.id)
     setDrawerOpen(true)
-  }
+  }, [])
 
   const selectedContactData = contacts.find((c) => c.id === selectedContact)
 

@@ -2,7 +2,7 @@
 
 export const dynamic = 'force-dynamic'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useMemo } from 'react'
 import Link from 'next/link'
 import { NavBar } from '@/components/nav-bar'
 import { useToast } from '@/lib/hooks/use-toast'
@@ -200,13 +200,14 @@ export default function MarketplacePage() {
     }
   }
 
-  const getSelectedTotal = () => {
+  // Memoize expensive calculations
+  const selectedTotal = useMemo(() => {
     return leads
       .filter((l) => selectedLeads.has(l.id))
       .reduce((sum, l) => sum + l.price, 0)
-  }
+  }, [leads, selectedLeads])
 
-  const getActiveFilterCount = () => {
+  const activeFilterCount = useMemo(() => {
     let count = 0
     if (filters.industries.length > 0) count++
     if (filters.states.length > 0) count++
@@ -217,9 +218,10 @@ export default function MarketplacePage() {
     if (filters.intentScoreMin !== undefined && filters.intentScoreMin > 0) count++
     if (filters.freshnessMin !== undefined && filters.freshnessMin > 0) count++
     return count
-  }
+  }, [filters])
 
-  const purchaseSelected = async () => {
+  // Memoize callbacks to prevent unnecessary re-renders
+  const purchaseSelected = useCallback(async () => {
     if (selectedLeads.size === 0) return
 
     setIsPurchasing(true)
@@ -264,9 +266,9 @@ export default function MarketplacePage() {
     } finally {
       setIsPurchasing(false)
     }
-  }
+  }, [selectedLeads, fetchLeads, toast])
 
-  const toggleFilter = (category: keyof Filters, value: string) => {
+  const toggleFilter = useCallback((category: keyof Filters, value: string) => {
     setFilters((prev) => {
       const current = prev[category] as string[]
       if (current.includes(value)) {
@@ -276,9 +278,9 @@ export default function MarketplacePage() {
       }
     })
     setPage(0) // Reset to first page when filters change
-  }
+  }, [])
 
-  const clearFilters = () => {
+  const clearFilters = useCallback(() => {
     setFilters({
       industries: [],
       states: [],
@@ -286,9 +288,9 @@ export default function MarketplacePage() {
       seniorityLevels: [],
     })
     setPage(0)
-  }
+  }, [])
 
-  const totalPages = Math.ceil(totalLeads / limit)
+  const totalPages = useMemo(() => Math.ceil(totalLeads / limit), [totalLeads, limit])
 
   return (
     <>
@@ -575,7 +577,7 @@ export default function MarketplacePage() {
                   </button>
 
                   {/* Mobile: Filter Sheet */}
-                  <MobileFilters filterCount={getActiveFilterCount()}>
+                  <MobileFilters filterCount={activeFilterCount}>
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <button
@@ -758,11 +760,11 @@ export default function MarketplacePage() {
                 {selectedLeads.size > 0 && (
                   <div className="flex items-center gap-3">
                     <span className="text-[13px] text-zinc-600">
-                      {selectedLeads.size} selected (${getSelectedTotal().toFixed(2)})
+                      {selectedLeads.size} selected (${selectedTotal.toFixed(2)})
                     </span>
                     <Button
                       onClick={purchaseSelected}
-                      disabled={isPurchasing || getSelectedTotal() > credits}
+                      disabled={isPurchasing || selectedTotal > credits}
                       loading={isPurchasing}
                       size="sm"
                     >
