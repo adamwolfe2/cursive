@@ -52,7 +52,10 @@ export interface Database {
           plan: string
           daily_credit_limit: number
           daily_credits_used: number
+          is_partner: boolean
+          linked_partner_id: string | null
           created_at: string
+          updated_at: string
         }
         Insert: {
           id?: string
@@ -64,7 +67,10 @@ export interface Database {
           plan?: string
           daily_credit_limit?: number
           daily_credits_used?: number
+          is_partner?: boolean
+          linked_partner_id?: string | null
           created_at?: string
+          updated_at?: string
         }
         Update: {
           id?: string
@@ -76,7 +82,10 @@ export interface Database {
           plan?: string
           daily_credit_limit?: number
           daily_credits_used?: number
+          is_partner?: boolean
+          linked_partner_id?: string | null
           created_at?: string
+          updated_at?: string
         }
       }
       queries: {

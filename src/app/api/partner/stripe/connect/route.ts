@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if already has a Stripe account
-    let accountId = partner.stripe_connect_account_id
+    let accountId = partner.stripe_account_id
 
     if (!accountId) {
       // Create new Stripe Connect account
@@ -56,8 +56,7 @@ export async function POST(request: NextRequest) {
 
       // Update partner with Stripe account ID
       await repo.update(user.linked_partner_id, {
-        // @ts-expect-error - stripe_connect_account_id not in update type yet
-        stripe_connect_account_id: accountId,
+        stripeAccountId: accountId,
       })
     }
 
@@ -91,7 +90,7 @@ export async function GET(request: NextRequest) {
     const repo = new PartnerRepository()
     const partner = await repo.findById(user.linked_partner_id)
 
-    if (!partner || !partner.stripe_connect_account_id) {
+    if (!partner || !partner.stripe_account_id) {
       return NextResponse.json(
         { error: 'No Stripe account connected' },
         { status: 404 }
@@ -100,7 +99,7 @@ export async function GET(request: NextRequest) {
 
     // Get Stripe account details
     const account = await stripe.accounts.retrieve(
-      partner.stripe_connect_account_id
+      partner.stripe_account_id
     )
 
     return NextResponse.json({

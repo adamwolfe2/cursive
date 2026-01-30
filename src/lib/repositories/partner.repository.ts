@@ -173,6 +173,7 @@ export class PartnerRepository {
       baseCommissionRate: number
       isActive: boolean
       suspensionReason: string
+      stripeAccountId: string
     }>
   ): Promise<Partner> {
     const updateData: Record<string, unknown> = {
@@ -187,6 +188,7 @@ export class PartnerRepository {
     if (updates.partnerTier !== undefined) updateData.partner_tier = updates.partnerTier
     if (updates.baseCommissionRate !== undefined) updateData.base_commission_rate = updates.baseCommissionRate
     if (updates.isActive !== undefined) updateData.is_active = updates.isActive
+    if (updates.stripeAccountId !== undefined) updateData.stripe_account_id = updates.stripeAccountId
 
     if (updates.status === 'suspended') {
       updateData.suspended_at = new Date().toISOString()

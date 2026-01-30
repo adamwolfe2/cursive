@@ -69,7 +69,7 @@ const payoutStatusConfig = {
 export function SettingsClient({ partner, payouts }: SettingsClientProps) {
   const [isConnecting, setIsConnecting] = useState(false)
 
-  const hasStripeAccount = !!partner.stripe_connect_account_id
+  const hasStripeAccount = !!partner.stripe_account_id
 
   const handleConnectStripe = async () => {
     setIsConnecting(true)
@@ -117,9 +117,9 @@ export function SettingsClient({ partner, payouts }: SettingsClientProps) {
                   <div className="text-sm text-green-700 mt-1">
                     Your Stripe account is connected and ready to receive payouts.
                   </div>
-                  {partner.stripe_connect_account_id && (
+                  {partner.stripe_account_id && (
                     <div className="text-xs text-green-600 mt-2">
-                      Account ID: {partner.stripe_connect_account_id}
+                      Account ID: {partner.stripe_account_id}
                     </div>
                   )}
                 </div>
@@ -137,7 +137,7 @@ export function SettingsClient({ partner, payouts }: SettingsClientProps) {
                         type="number"
                         min="25"
                         step="5"
-                        defaultValue={partner.min_payout_threshold || 100}
+                        defaultValue={partner.payout_threshold || 100}
                         className="pl-9"
                       />
                     </div>
@@ -163,7 +163,7 @@ export function SettingsClient({ partner, payouts }: SettingsClientProps) {
               <div className="pt-4 border-t border-gray-100">
                 <Button variant="outline" className="w-full sm:w-auto" asChild>
                   <a
-                    href={`https://dashboard.stripe.com/connect/accounts/${partner.stripe_connect_account_id}`}
+                    href={`https://dashboard.stripe.com/connect/accounts/${partner.stripe_account_id}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
