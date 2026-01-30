@@ -77,7 +77,7 @@ export function TitleScreen({ onSelectUserType }: TitleScreenProps) {
             </div>
 
             {/* User Type Cards */}
-            <div className="flex flex-col gap-3 items-center">
+            <div className="flex flex-col gap-3 items-center w-full max-w-md mx-auto">
               {/* Business Card */}
               <motion.button
                 onClick={() => onSelectUserType('business')}
@@ -85,7 +85,7 @@ export function TitleScreen({ onSelectUserType }: TitleScreenProps) {
                 initial="initial"
                 whileHover="hover"
                 whileTap="tap"
-                className="group relative bg-card border-2 border-border rounded-xl px-5 py-4 text-left transition-all hover:border-primary hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                className="w-full group relative bg-card border-2 border-border rounded-xl px-5 py-4 text-left transition-all hover:border-primary hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
               >
                 <div className="flex items-start gap-3">
                   <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
@@ -105,7 +105,7 @@ export function TitleScreen({ onSelectUserType }: TitleScreenProps) {
                 initial="initial"
                 whileHover="hover"
                 whileTap="tap"
-                className="group relative bg-card border-2 border-border rounded-xl px-5 py-4 text-left transition-all hover:border-primary hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                className="w-full group relative bg-card border-2 border-border rounded-xl px-5 py-4 text-left transition-all hover:border-primary hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
               >
                 <div className="flex items-start gap-3">
                   <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
