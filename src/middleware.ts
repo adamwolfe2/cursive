@@ -44,6 +44,7 @@ export async function middleware(req: NextRequest) {
       pathname.startsWith('/_next') ||
       pathname.startsWith('/api/webhooks') || // Webhooks are authenticated differently
       pathname.startsWith('/api/waitlist') || // Waitlist API is public
+      pathname.startsWith('/api/admin/set-bypass') || // Admin bypass cookie endpoint
       pathname === '/api/health' || // Health check endpoint for monitoring
       pathname.startsWith('/api/inngest') // Inngest routes
 
