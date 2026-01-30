@@ -43,6 +43,14 @@ export function TitleScreen({ onSelectUserType }: TitleScreenProps) {
         animate="animate"
       >
         <div className="w-full max-w-2xl">
+          {/* Logo above headline */}
+          <motion.div
+            variants={staggerItemVariants}
+            className="flex justify-center mb-8"
+          >
+            <Image src="/cursive-logo.png" alt="Cursive" width={64} height={64} className="w-16 h-16" />
+          </motion.div>
+
           {/* Headline */}
           <motion.h1
             variants={staggerItemVariants}
@@ -69,7 +77,7 @@ export function TitleScreen({ onSelectUserType }: TitleScreenProps) {
             </div>
 
             {/* User Type Cards */}
-            <div className="flex flex-col gap-3 max-w-md mx-auto">
+            <div className="flex flex-col gap-3 max-w-lg mx-auto">
               {/* Business Card */}
               <motion.button
                 onClick={() => onSelectUserType('business')}
