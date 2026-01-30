@@ -5,6 +5,8 @@ export const dynamic = 'force-dynamic'
 import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import { NavBar } from '@/components/nav-bar'
+import { buttonVariants } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 
 interface MarketplacePurchase {
   id: string
@@ -122,7 +124,10 @@ export default function PurchaseHistoryPage() {
             </div>
             <Link
               href="/marketplace"
-              className="h-9 px-4 text-[13px] font-medium bg-zinc-900 text-white hover:bg-zinc-800 rounded-lg transition-all duration-150 inline-flex items-center gap-2"
+              className={cn(
+                buttonVariants({ variant: 'default', size: 'sm' }),
+                'bg-zinc-900 hover:bg-zinc-800 gap-2'
+              )}
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />

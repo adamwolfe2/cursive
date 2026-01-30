@@ -4,6 +4,8 @@ import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import { NavBar } from '@/components/nav-bar'
 import { useToast } from '@/lib/hooks/use-toast'
+import { buttonVariants } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 import { CREDIT_PACKAGES, type CreditPackage } from '@/lib/constants/credit-packages'
 
 export default function CreditsPage() {
@@ -115,7 +117,10 @@ export default function CreditsPage() {
             </div>
             <Link
               href="/marketplace"
-              className="h-9 px-4 text-[13px] font-medium border border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50 rounded-lg inline-flex items-center gap-2"
+              className={cn(
+                buttonVariants({ variant: 'outline', size: 'sm' }),
+                'gap-2'
+              )}
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />

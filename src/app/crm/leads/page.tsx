@@ -1,10 +1,11 @@
 // CRM Leads Page - Twenty CRM Inspired
 // Updated with professional three-column layout and view switching
 
-import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
 import { QueryProvider } from '@/components/providers/query-provider'
 import { LeadsPageClient } from './components/LeadsPageClient'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { CRMLeadRepository } from '@/lib/repositories/crm-lead.repository'
+import { redirect } from 'next/navigation'
 
 export const metadata = {
   title: 'Leads - CRM',
@@ -12,10 +13,22 @@ export const metadata = {
 }
 
 export default async function CRMLeadsPage() {
-  // Middleware already validated auth
+  // Fetch current user
+  const user = await getCurrentUser()
+  if (!user) {
+    redirect('/login')
+  }
+
+  // Fetch initial leads data
+  const leadRepo = new CRMLeadRepository()
+  const { leads } = await leadRepo.findByWorkspace(user.workspace_id, {
+    page: 1,
+    pageSize: 100,
+  })
+
   return (
     <QueryProvider>
-      <LeadsPageClient />
+      <LeadsPageClient initialData={leads} />
     </QueryProvider>
   )
 }

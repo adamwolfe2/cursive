@@ -7,6 +7,8 @@ import Link from 'next/link'
 import { NavBar } from '@/components/nav-bar'
 import { useToast } from '@/lib/hooks/use-toast'
 import { useDebounce } from '@/hooks/use-debounce'
+import { Button, buttonVariants } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 import { MobileFilters } from './components/MobileFilters'
 
 // Types for marketplace leads
@@ -758,23 +760,14 @@ export default function MarketplacePage() {
                     <span className="text-[13px] text-zinc-600">
                       {selectedLeads.size} selected (${getSelectedTotal().toFixed(2)})
                     </span>
-                    <button
+                    <Button
                       onClick={purchaseSelected}
                       disabled={isPurchasing || getSelectedTotal() > credits}
-                      className="h-9 px-4 text-[13px] font-medium bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
+                      loading={isPurchasing}
+                      size="sm"
                     >
-                      {isPurchasing ? (
-                        <>
-                          <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                          </svg>
-                          Purchasing...
-                        </>
-                      ) : (
-                        <>Purchase Selected</>
-                      )}
-                    </button>
+                      Purchase Selected
+                    </Button>
                   </div>
                 )}
               </div>
@@ -904,23 +897,25 @@ export default function MarketplacePage() {
                         Showing {page * limit + 1} - {Math.min((page + 1) * limit, totalLeads)} of {totalLeads} leads
                       </p>
                       <div className="flex items-center gap-2">
-                        <button
+                        <Button
                           onClick={() => setPage((p) => Math.max(0, p - 1))}
                           disabled={page === 0}
-                          className="h-9 px-3 text-[13px] font-medium border border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                          variant="outline"
+                          size="sm"
                         >
                           Previous
-                        </button>
+                        </Button>
                         <span className="text-[13px] text-zinc-600">
                           Page {page + 1} of {totalPages}
                         </span>
-                        <button
+                        <Button
                           onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
                           disabled={page >= totalPages - 1}
-                          className="h-9 px-3 text-[13px] font-medium border border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                          variant="outline"
+                          size="sm"
                         >
                           Next
-                        </button>
+                        </Button>
                       </div>
                     </div>
                   )}

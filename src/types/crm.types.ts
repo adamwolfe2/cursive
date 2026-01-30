@@ -179,3 +179,63 @@ export interface PaginatedResult<T> {
     totalPages: number
   }
 }
+
+// ============================================================================
+// CRM LEADS (Marketplace Leads in CRM Interface)
+// ============================================================================
+
+// LeadTableRow represents a marketplace lead with joined user data
+export interface LeadTableRow {
+  id: string
+  workspace_id: string
+  first_name?: string
+  last_name?: string
+  email?: string
+  phone?: string
+  company_name?: string
+  company_industry?: string
+  state?: string
+  company_size?: string
+  status: string
+  assigned_user_id?: string
+  assigned_user?: {
+    id: string
+    full_name: string
+    email: string
+  }
+  tags?: string[]
+  intent_score_calculated?: number
+  freshness_score?: number
+  verification_status?: string
+  created_at: string
+  updated_at: string
+  last_contacted_at?: string
+  next_follow_up_at?: string
+  notes?: string
+}
+
+export interface LeadFilters extends PaginationParams {
+  status?: string[]
+  industries?: string[]
+  states?: string[]
+  companySizes?: string[]
+  intentScoreMin?: number
+  intentScoreMax?: number
+  freshnessMin?: number
+  hasPhone?: boolean
+  hasVerifiedEmail?: boolean
+  assignedUserId?: string
+  tags?: string[]
+  search?: string
+  orderBy?: string
+  orderDirection?: 'asc' | 'desc'
+}
+
+export interface LeadUpdatePayload {
+  status?: string
+  assigned_user_id?: string | null
+  tags?: string[]
+  notes?: string
+  last_contacted_at?: string
+  next_follow_up_at?: string
+}
