@@ -1,16 +1,15 @@
 'use client'
 
 import { useState, Suspense } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Link from 'next/link'
 import Image from 'next/image'
-import { createClient } from '@/lib/supabase/client'
+import { loginAction, googleLoginAction } from '../actions'
 import { loginSchema, type LoginFormData } from '@/lib/validation/schemas'
 
 function LoginForm() {
-  const router = useRouter()
   const searchParams = useSearchParams()
   const redirect = searchParams.get('redirect') || '/dashboard'
 
@@ -30,58 +29,55 @@ function LoginForm() {
     setLoading(true)
     setError(null)
 
-    console.log('🔐 Starting login flow...')
-    const supabase = createClient()
+    console.log('🔐 Client: Starting login flow with Server Action...')
 
-    console.log('📝 Calling signInWithPassword...')
-    const { data: sessionData, error: signInError } = await supabase.auth.signInWithPassword({
-      email: data.email,
-      password: data.password,
-    })
+    // Create FormData for Server Action
+    const formData = new FormData()
+    formData.append('email', data.email)
+    formData.append('password', data.password)
+    formData.append('redirect', redirect)
 
-    if (signInError) {
-      console.error('❌ Login error:', signInError)
-      setError(signInError.message)
+    try {
+      // Call Server Action which properly sets cookies
+      const result = await loginAction(formData)
+
+      if (result?.error) {
+        console.error('❌ Client: Login error from Server Action:', result.error)
+        setError(result.error)
+        setLoading(false)
+        return
+      }
+
+      // Server Action will redirect automatically if successful
+      console.log('✅ Client: Login successful, Server Action handling redirect')
+    } catch (err) {
+      console.error('❌ Client: Exception during login:', err)
+      setError('An unexpected error occurred')
       setLoading(false)
-      return
     }
-
-    console.log('✅ Login successful, session:', {
-      hasSession: !!sessionData.session,
-      hasUser: !!sessionData.user,
-      userId: sessionData.user?.id,
-    })
-
-    // Check if cookies were set
-    const allCookies = document.cookie
-    const supabaseCookies = allCookies.split(';').filter(c => c.includes('sb-'))
-    console.log('🍪 Cookies after login:', {
-      totalCookies: allCookies.split(';').length,
-      supabaseCookies: supabaseCookies.length,
-      cookieNames: supabaseCookies.map(c => c.trim().split('=')[0]),
-    })
-
-    console.log(`🔄 Redirecting to: ${redirect}`)
-    // CRITICAL: Use window.location.href for full page reload to trigger middleware
-    // This ensures session cookies are properly set and validated
-    window.location.href = redirect
   }
 
   const handleGoogleLogin = async () => {
     setLoading(true)
     setError(null)
 
-    const supabase = createClient()
+    console.log('🔐 Client: Starting Google login with Server Action...')
 
-    const { error: signInError } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=${redirect}`,
-      },
-    })
+    try {
+      const result = await googleLoginAction(redirect)
 
-    if (signInError) {
-      setError(signInError.message)
+      if (result?.error) {
+        console.error('❌ Client: Google login error:', result.error)
+        setError(result.error)
+        setLoading(false)
+        return
+      }
+
+      // Server Action will redirect automatically if successful
+      console.log('✅ Client: Google login initiated, redirecting to OAuth...')
+    } catch (err) {
+      console.error('❌ Client: Exception during Google login:', err)
+      setError('An unexpected error occurred')
       setLoading(false)
     }
   }
