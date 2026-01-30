@@ -106,6 +106,15 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    // Validation: Max leads per webhook (10,000)
+    const MAX_LEADS_PER_WEBHOOK = 10000
+    if (leads.length > MAX_LEADS_PER_WEBHOOK) {
+      return NextResponse.json(
+        { error: `Payload contains ${leads.length.toLocaleString()} leads, which exceeds the 10,000 lead limit per webhook.` },
+        { status: 400 }
+      )
+    }
+
     // Use admin client for database operations
     const supabase = createAdminClient()
 

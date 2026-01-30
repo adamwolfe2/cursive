@@ -119,6 +119,26 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 })
     }
 
+    // Validation: File type must be CSV
+    const allowedTypes = ['text/csv', 'application/csv', 'text/plain']
+    const fileExtension = file.name.toLowerCase().endsWith('.csv')
+
+    if (!allowedTypes.includes(file.type) && !fileExtension) {
+      return NextResponse.json({
+        success: false,
+        error: 'Invalid file type. Please upload a CSV file (.csv)',
+      }, { status: 400 })
+    }
+
+    // Validation: File size limit (10 MB)
+    const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10 MB in bytes
+    if (file.size > MAX_FILE_SIZE) {
+      return NextResponse.json({
+        success: false,
+        error: `File size exceeds 10 MB limit. Your file is ${(file.size / (1024 * 1024)).toFixed(2)} MB.`,
+      }, { status: 400 })
+    }
+
     // Parse CSV
     const csvContent = await file.text()
     let records: Record<string, string>[]
@@ -142,6 +162,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         success: false,
         error: 'CSV file is empty',
+      }, { status: 400 })
+    }
+
+    // Validation: Row limit (10,000 rows)
+    const MAX_ROWS = 10000
+    if (records.length > MAX_ROWS) {
+      return NextResponse.json({
+        success: false,
+        error: `File contains ${records.length.toLocaleString()} rows, which exceeds the 10,000 row limit. Please split your file into smaller batches.`,
       }, { status: 400 })
     }
 
