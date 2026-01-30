@@ -4,6 +4,7 @@
 export const dynamic = 'force-dynamic'
 
 import { redirect } from 'next/navigation'
+import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { AppShell } from '@/components/layout'
 import { ImpersonationBanner } from '@/components/admin'
@@ -15,12 +16,58 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode
 }) {
+  const cookieStore = await cookies()
+  const hasAdminBypass = cookieStore.get('admin_bypass_waitlist')?.value === 'true'
+
   const supabase = await createClient()
 
   // Check authentication
   const {
     data: { session },
   } = await supabase.auth.getSession()
+
+  // For admin with bypass cookie, provide mock data
+  if (!session && hasAdminBypass) {
+    console.log('Dashboard layout: Admin bypass active, using mock data')
+    const mockUser = {
+      id: '00000000-0000-0000-0000-000000000000',
+      full_name: 'Admin',
+      email: 'adam@meetcursive.com',
+      plan: 'pro' as const,
+      role: 'owner',
+      daily_credit_limit: 10000,
+      daily_credits_used: 0,
+      workspaces: {
+        name: 'Admin Workspace',
+        subdomain: 'admin',
+        website_url: null,
+        branding: null,
+      },
+    }
+
+    return (
+      <TierProvider>
+        <ImpersonationBanner />
+        <AppShell
+          user={{
+            name: mockUser.full_name,
+            email: mockUser.email,
+            plan: mockUser.plan,
+            role: mockUser.role,
+            creditsRemaining: mockUser.daily_credit_limit,
+            totalCredits: mockUser.daily_credit_limit,
+            avatarUrl: null,
+          }}
+          workspace={{
+            name: mockUser.workspaces.name,
+            logoUrl: null,
+          }}
+        >
+          {children}
+        </AppShell>
+      </TierProvider>
+    )
+  }
 
   if (!session) {
     redirect('/login')
