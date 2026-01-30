@@ -4,6 +4,7 @@
 import Link from 'next/link'
 import { TrendingUp, Plus } from 'lucide-react'
 import { QueryProvider } from '@/components/providers/query-provider'
+import { MobileMenu } from '@/components/ui/mobile-menu'
 
 export const metadata = {
   title: 'Deals - CRM',
@@ -11,39 +12,44 @@ export const metadata = {
 }
 
 export default async function CRMDealsPage() {
+  // Sidebar content for reuse in both mobile drawer and desktop sidebar
+  const sidebarContent = (
+    <div className="p-6">
+      <h2 className="text-xl font-semibold bg-gradient-cursive bg-clip-text text-transparent">
+        CRM
+      </h2>
+      <nav className="mt-6 space-y-1.5">
+        <Link
+          href="/crm/leads"
+          className="block px-3 py-2.5 text-muted-foreground hover:bg-gradient-cursive-subtle rounded-lg transition-all"
+        >
+          Leads
+        </Link>
+        <Link
+          href="/crm/companies"
+          className="block px-3 py-2.5 text-muted-foreground hover:bg-gradient-cursive-subtle rounded-lg transition-all"
+        >
+          Companies
+        </Link>
+        <Link
+          href="/crm/contacts"
+          className="block px-3 py-2.5 text-muted-foreground hover:bg-gradient-cursive-subtle rounded-lg transition-all"
+        >
+          Contacts
+        </Link>
+        <div className="px-3 py-2.5 bg-gradient-cursive text-white rounded-lg font-medium shadow-sm">
+          Deals
+        </div>
+      </nav>
+    </div>
+  )
+
   return (
     <QueryProvider>
       <div className="flex h-screen bg-gradient-cursive-soft">
-        {/* CRM Sidebar - With Cursive Branding */}
-        <aside className="w-64 border-r border-blue-100/50 bg-white/80 backdrop-blur-sm">
-          <div className="p-6">
-            <h2 className="text-xl font-semibold bg-gradient-cursive bg-clip-text text-transparent">
-              CRM
-            </h2>
-            <nav className="mt-6 space-y-1.5">
-              <Link
-                href="/crm/leads"
-                className="block px-3 py-2.5 text-muted-foreground hover:bg-gradient-cursive-subtle rounded-lg transition-all"
-              >
-                Leads
-              </Link>
-              <Link
-                href="/crm/companies"
-                className="block px-3 py-2.5 text-muted-foreground hover:bg-gradient-cursive-subtle rounded-lg transition-all"
-              >
-                Companies
-              </Link>
-              <Link
-                href="/crm/contacts"
-                className="block px-3 py-2.5 text-muted-foreground hover:bg-gradient-cursive-subtle rounded-lg transition-all"
-              >
-                Contacts
-              </Link>
-              <div className="px-3 py-2.5 bg-gradient-cursive text-white rounded-lg font-medium shadow-sm">
-                Deals
-              </div>
-            </nav>
-          </div>
+        {/* CRM Sidebar - Desktop Only */}
+        <aside className="hidden lg:block lg:w-64 border-r border-blue-100/50 bg-white/80 backdrop-blur-sm">
+          {sidebarContent}
         </aside>
 
         {/* Main Content */}
@@ -52,13 +58,21 @@ export default async function CRMDealsPage() {
             {/* Header with Gradient */}
             <header className="border-b border-blue-100/50 bg-white/80 backdrop-blur-sm px-6 py-5">
               <div className="flex items-center justify-between">
-                <div>
-                  <h1 className="text-2xl font-bold bg-gradient-cursive bg-clip-text text-transparent">
-                    Deals
-                  </h1>
-                  <p className="text-sm text-muted-foreground mt-1.5">
-                    Track your sales pipeline and opportunities
-                  </p>
+                <div className="flex items-center gap-3">
+                  {/* Mobile Menu - Only visible on mobile */}
+                  <div className="lg:hidden">
+                    <MobileMenu triggerClassName="h-11 w-11">
+                      {sidebarContent}
+                    </MobileMenu>
+                  </div>
+                  <div>
+                    <h1 className="text-2xl font-bold bg-gradient-cursive bg-clip-text text-transparent">
+                      Deals
+                    </h1>
+                    <p className="text-sm text-muted-foreground mt-1.5">
+                      Track your sales pipeline and opportunities
+                    </p>
+                  </div>
                 </div>
                 <button className="btn-gradient-cursive px-4 py-2 rounded-lg flex items-center gap-2">
                   <Plus className="h-4 w-4" />

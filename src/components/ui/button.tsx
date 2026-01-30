@@ -3,6 +3,8 @@
 import * as React from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/design-system'
+import { motion, type HTMLMotionProps } from 'framer-motion'
+import { useSafeAnimation } from '@/hooks/use-reduced-motion'
 
 const buttonVariants = cva(
   'inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
@@ -31,6 +33,10 @@ const buttonVariants = cva(
         icon: 'h-10 w-10',
         'icon-sm': 'h-8 w-8',
         'icon-xs': 'h-6 w-6',
+        // Touch-friendly variants (44px minimum on mobile, smaller on desktop)
+        'touch-sm': 'h-11 min-w-[44px] sm:h-8 sm:min-w-0 px-3 text-sm',
+        'touch-default': 'h-11 min-w-[44px] sm:h-10 sm:min-w-0 px-4 py-2',
+        'touch-icon': 'h-11 w-11 min-w-[44px] sm:h-10 sm:w-10 sm:min-w-0',
       },
     },
     defaultVariants: {
@@ -64,11 +70,17 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref
   ) => {
+    const safeAnimation = useSafeAnimation()
+    const isDisabled = disabled || loading
+
     return (
-      <button
+      <motion.button
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
-        disabled={disabled || loading}
+        disabled={isDisabled}
+        whileHover={!isDisabled && safeAnimation ? { scale: 1.02 } : undefined}
+        whileTap={!isDisabled && safeAnimation ? { scale: 0.98 } : undefined}
+        transition={{ duration: 0.15, type: 'spring', stiffness: 300, damping: 30 }}
         {...props}
       >
         {loading ? (
@@ -97,7 +109,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ) : null}
         {children}
         {rightIcon && !loading && <span className="ml-2">{rightIcon}</span>}
-      </button>
+      </motion.button>
     )
   }
 )

@@ -3,6 +3,8 @@
 import * as React from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/design-system'
+import { motion } from 'framer-motion'
+import { useSafeAnimation } from '@/hooks/use-reduced-motion'
 
 const inputVariants = cva(
   'flex w-full rounded-lg border bg-background text-foreground ring-offset-background transition-all duration-200 placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50',
@@ -37,10 +39,26 @@ export interface InputProps
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, variant, inputSize, leftIcon, rightIcon, error, ...props }, ref) => {
     const inputVariant = error ? 'error' : variant
+    const safeAnimation = useSafeAnimation()
+    const [isFocused, setIsFocused] = React.useState(false)
+
+    const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+      setIsFocused(true)
+      props.onFocus?.(e)
+    }
+
+    const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+      setIsFocused(false)
+      props.onBlur?.(e)
+    }
 
     if (leftIcon || rightIcon) {
       return (
-        <div className="relative">
+        <motion.div
+          className="relative"
+          animate={safeAnimation && isFocused ? { scale: 1.01 } : { scale: 1 }}
+          transition={{ duration: 0.2 }}
+        >
           {leftIcon && (
             <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
               {leftIcon}
@@ -54,6 +72,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
               rightIcon && 'pr-10'
             )}
             ref={ref}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
             {...props}
           />
           {rightIcon && (
@@ -61,15 +81,19 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
               {rightIcon}
             </div>
           )}
-        </div>
+        </motion.div>
       )
     }
 
     return (
-      <input
+      <motion.input
         type={type}
         className={cn(inputVariants({ variant: inputVariant, inputSize, className }))}
         ref={ref}
+        animate={safeAnimation && isFocused ? { scale: 1.01 } : { scale: 1 }}
+        transition={{ duration: 0.2 }}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
         {...props}
       />
     )

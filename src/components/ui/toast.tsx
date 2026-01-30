@@ -2,6 +2,8 @@
 
 import React, { useEffect, useState } from 'react'
 import { X, CheckCircle, XCircle, AlertTriangle, Info } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useSafeAnimation } from '@/hooks/use-reduced-motion'
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info'
 
@@ -103,18 +105,23 @@ export function Toast({
     }, 300) // Match animation duration
   }
 
+  const safeAnimation = useSafeAnimation()
+
   return (
-    <div
+    <motion.div
       className={`
         relative w-[380px] rounded-lg border shadow-lg p-4
-        transition-all duration-300 ease-out
         ${style.container}
-        ${
-          isExiting
-            ? 'translate-x-[400px] opacity-0'
-            : 'translate-x-0 opacity-100'
-        }
       `}
+      initial={safeAnimation ? { x: 400, opacity: 0, scale: 0.9 } : { x: 400, opacity: 0 }}
+      animate={safeAnimation ? { x: 0, opacity: 1, scale: 1 } : { x: 0, opacity: 1 }}
+      exit={safeAnimation ? { x: 400, opacity: 0, scale: 0.9 } : { x: 400, opacity: 0 }}
+      transition={{
+        type: 'spring',
+        stiffness: 300,
+        damping: 30,
+        duration: 0.3,
+      }}
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       role="alert"
@@ -201,6 +208,6 @@ export function Toast({
           }}
         />
       )}
-    </div>
+    </motion.div>
   )
 }

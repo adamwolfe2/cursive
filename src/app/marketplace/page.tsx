@@ -6,6 +6,8 @@ import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import { NavBar } from '@/components/nav-bar'
 import { useToast } from '@/lib/hooks/use-toast'
+import { useDebounce } from '@/hooks/use-debounce'
+import { MobileFilters } from './components/MobileFilters'
 
 // Types for marketplace leads
 interface MarketplaceLeadPreview {
@@ -99,13 +101,14 @@ export default function MarketplacePage() {
   const [showSuccessMessage, setShowSuccessMessage] = useState(false)
   const [purchasedLeadCount, setPurchasedLeadCount] = useState(0)
 
-  // Filters
+  // Filters (with debouncing for better performance)
   const [filters, setFilters] = useState<Filters>({
     industries: [],
     states: [],
     companySizes: [],
     seniorityLevels: [],
   })
+  const debouncedFilters = useDebounce(filters, 300) // 300ms debounce
   const [showFilters, setShowFilters] = useState(true)
 
   // Pagination
@@ -121,14 +124,14 @@ export default function MarketplacePage() {
     try {
       const params = new URLSearchParams()
 
-      if (filters.industries.length) params.set('industries', filters.industries.join(','))
-      if (filters.states.length) params.set('states', filters.states.join(','))
-      if (filters.companySizes.length) params.set('companySizes', filters.companySizes.join(','))
-      if (filters.seniorityLevels.length) params.set('seniorityLevels', filters.seniorityLevels.join(','))
-      if (filters.intentScoreMin !== undefined) params.set('intentScoreMin', String(filters.intentScoreMin))
-      if (filters.freshnessMin !== undefined) params.set('freshnessMin', String(filters.freshnessMin))
-      if (filters.hasPhone) params.set('hasPhone', 'true')
-      if (filters.hasVerifiedEmail) params.set('hasVerifiedEmail', 'true')
+      if (debouncedFilters.industries.length) params.set('industries', debouncedFilters.industries.join(','))
+      if (debouncedFilters.states.length) params.set('states', debouncedFilters.states.join(','))
+      if (debouncedFilters.companySizes.length) params.set('companySizes', debouncedFilters.companySizes.join(','))
+      if (debouncedFilters.seniorityLevels.length) params.set('seniorityLevels', debouncedFilters.seniorityLevels.join(','))
+      if (debouncedFilters.intentScoreMin !== undefined) params.set('intentScoreMin', String(debouncedFilters.intentScoreMin))
+      if (debouncedFilters.freshnessMin !== undefined) params.set('freshnessMin', String(debouncedFilters.freshnessMin))
+      if (debouncedFilters.hasPhone) params.set('hasPhone', 'true')
+      if (debouncedFilters.hasVerifiedEmail) params.set('hasVerifiedEmail', 'true')
 
       params.set('limit', String(limit))
       params.set('offset', String(page * limit))
@@ -146,7 +149,7 @@ export default function MarketplacePage() {
     } finally {
       setIsLoading(false)
     }
-  }, [filters, page, limit, orderBy, orderDirection])
+  }, [debouncedFilters, page, limit, orderBy, orderDirection])
 
   const fetchCredits = useCallback(async () => {
     try {
@@ -199,6 +202,19 @@ export default function MarketplacePage() {
     return leads
       .filter((l) => selectedLeads.has(l.id))
       .reduce((sum, l) => sum + l.price, 0)
+  }
+
+  const getActiveFilterCount = () => {
+    let count = 0
+    if (filters.industries.length > 0) count++
+    if (filters.states.length > 0) count++
+    if (filters.companySizes.length > 0) count++
+    if (filters.seniorityLevels.length > 0) count++
+    if (filters.hasVerifiedEmail) count++
+    if (filters.hasPhone) count++
+    if (filters.intentScoreMin !== undefined && filters.intentScoreMin > 0) count++
+    if (filters.freshnessMin !== undefined && filters.freshnessMin > 0) count++
+    return count
   }
 
   const purchaseSelected = async () => {
@@ -299,11 +315,39 @@ export default function MarketplacePage() {
 
           {/* Header */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-            <div>
+            <div className="flex-1 min-w-0">
               <h1 className="text-xl font-semibold text-zinc-900">Lead Marketplace</h1>
               <p className="text-[13px] text-zinc-500 mt-1">{totalLeads.toLocaleString()} leads available</p>
             </div>
-            <div className="flex items-center gap-3">
+
+            {/* Mobile: Show only essential buttons + filters */}
+            <div className="flex lg:hidden items-center gap-2 w-full sm:w-auto flex-wrap">
+              <div className="flex items-center gap-1.5 px-3 py-2 bg-white border border-zinc-200 rounded-lg flex-1 sm:flex-initial min-w-[100px]">
+                <svg className="w-4 h-4 text-zinc-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span className="text-[13px] font-medium text-zinc-900">${credits.toFixed(2)}</span>
+              </div>
+              <Link
+                href="/marketplace/my-leads"
+                className="h-11 sm:h-9 px-4 text-[13px] font-medium border border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50 rounded-lg transition-all duration-150 inline-flex items-center gap-2"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                <span className="hidden sm:inline">My Leads</span>
+              </Link>
+              <Link
+                href="/marketplace/credits"
+                className="h-11 sm:h-9 px-4 text-[13px] font-medium bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-all duration-150 inline-flex items-center"
+              >
+                <span className="hidden sm:inline">Buy Credits</span>
+                <span className="sm:hidden">Buy</span>
+              </Link>
+            </div>
+
+            {/* Desktop: Show all buttons */}
+            <div className="hidden lg:flex items-center gap-3">
               <div className="flex items-center gap-2 px-4 py-2 bg-white border border-zinc-200 rounded-lg">
                 <svg className="w-4 h-4 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -344,8 +388,8 @@ export default function MarketplacePage() {
           </div>
 
           <div className="flex gap-6">
-            {/* Filters Sidebar */}
-            <div className={`${showFilters ? 'w-64 flex-shrink-0' : 'w-0'} transition-all duration-200`}>
+            {/* Filters Sidebar - Desktop Only */}
+            <div className={`hidden lg:block ${showFilters ? 'w-64 flex-shrink-0' : 'w-0'} transition-all duration-200`}>
               {showFilters && (
                 <div className="bg-white border border-zinc-200 rounded-lg p-4 sticky top-4" role="region" aria-label="Lead filters">
                   <div className="flex items-center justify-between mb-4">
@@ -381,12 +425,12 @@ export default function MarketplacePage() {
                   {/* State Filter */}
                   <fieldset className="mb-4">
                     <legend className="text-[12px] font-medium text-zinc-700 mb-2">State</legend>
-                    <div className="flex flex-wrap gap-1" role="group" aria-label="State filters">
+                    <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-5 gap-1.5" role="group" aria-label="State filters">
                       {STATES.slice(0, 10).map((state) => (
                         <button
                           key={state}
                           onClick={() => toggleFilter('states', state)}
-                          className={`px-2 py-1 text-[11px] rounded ${
+                          className={`h-11 lg:h-auto lg:px-2 lg:py-1 px-1 text-[11px] rounded flex items-center justify-center ${
                             filters.states.includes(state)
                               ? 'bg-zinc-900 text-white'
                               : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
@@ -517,15 +561,181 @@ export default function MarketplacePage() {
               {/* Toolbar */}
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
+                  {/* Desktop: Toggle Filters Sidebar */}
                   <button
                     onClick={() => setShowFilters(!showFilters)}
-                    className="h-9 px-3 text-[13px] font-medium border border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50 rounded-lg inline-flex items-center gap-2"
+                    className="hidden lg:inline-flex h-9 px-3 text-[13px] font-medium border border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50 rounded-lg items-center gap-2"
                   >
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                     </svg>
                     Filters
                   </button>
+
+                  {/* Mobile: Filter Sheet */}
+                  <MobileFilters filterCount={getActiveFilterCount()}>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <button
+                          onClick={clearFilters}
+                          className="text-[13px] text-zinc-500 hover:text-zinc-700"
+                          aria-label="Clear all filters"
+                        >
+                          Clear all
+                        </button>
+                      </div>
+
+                      {/* Industry Filter */}
+                      <fieldset>
+                        <legend className="text-[13px] font-medium text-zinc-900 mb-3">Industry</legend>
+                        <div className="space-y-2 max-h-60 overflow-y-auto" role="group" aria-label="Industry filters">
+                          {INDUSTRIES.map((industry) => (
+                            <label key={industry} className="flex items-center gap-3 cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={filters.industries.includes(industry)}
+                                onChange={() => toggleFilter('industries', industry)}
+                                className="w-4 h-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-500"
+                                aria-label={`Filter by ${industry} industry`}
+                              />
+                              <span className="text-[14px] text-zinc-700">{industry}</span>
+                            </label>
+                          ))}
+                        </div>
+                      </fieldset>
+
+                      {/* State Filter */}
+                      <fieldset>
+                        <legend className="text-[13px] font-medium text-zinc-900 mb-3">State</legend>
+                        <div className="grid grid-cols-4 gap-2" role="group" aria-label="State filters">
+                          {STATES.slice(0, 10).map((state) => (
+                            <button
+                              key={state}
+                              onClick={() => toggleFilter('states', state)}
+                              className={`h-11 px-2 text-[12px] rounded flex items-center justify-center font-medium ${
+                                filters.states.includes(state)
+                                  ? 'bg-zinc-900 text-white'
+                                  : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
+                              }`}
+                              aria-label={`Filter by ${state} state`}
+                              aria-pressed={filters.states.includes(state)}
+                            >
+                              {state}
+                            </button>
+                          ))}
+                        </div>
+                      </fieldset>
+
+                      {/* Company Size Filter */}
+                      <fieldset>
+                        <legend className="text-[13px] font-medium text-zinc-900 mb-3">Company Size</legend>
+                        <div className="space-y-2" role="group" aria-label="Company size filters">
+                          {COMPANY_SIZES.map((size) => (
+                            <label key={size} className="flex items-center gap-3 cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={filters.companySizes.includes(size)}
+                                onChange={() => toggleFilter('companySizes', size)}
+                                className="w-4 h-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-500"
+                                aria-label={`Filter by company size ${size} employees`}
+                              />
+                              <span className="text-[14px] text-zinc-700">{size} employees</span>
+                            </label>
+                          ))}
+                        </div>
+                      </fieldset>
+
+                      {/* Seniority Filter */}
+                      <fieldset>
+                        <legend className="text-[13px] font-medium text-zinc-900 mb-3">Seniority</legend>
+                        <div className="space-y-2" role="group" aria-label="Seniority level filters">
+                          {SENIORITY_LEVELS.map((level) => (
+                            <label key={level.value} className="flex items-center gap-3 cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={filters.seniorityLevels.includes(level.value)}
+                                onChange={() => toggleFilter('seniorityLevels', level.value)}
+                                className="w-4 h-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-500"
+                                aria-label={`Filter by ${level.label} seniority level`}
+                              />
+                              <span className="text-[14px] text-zinc-700">{level.label}</span>
+                            </label>
+                          ))}
+                        </div>
+                      </fieldset>
+
+                      {/* Contact Quality Filters */}
+                      <fieldset>
+                        <legend className="text-[13px] font-medium text-zinc-900 mb-3">Contact Quality</legend>
+                        <div className="space-y-2" role="group" aria-label="Contact quality filters">
+                          <label className="flex items-center gap-3 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={filters.hasVerifiedEmail}
+                              onChange={() => setFilters((prev) => ({ ...prev, hasVerifiedEmail: !prev.hasVerifiedEmail }))}
+                              className="w-4 h-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-500"
+                              aria-label="Filter by verified email only"
+                            />
+                            <span className="text-[14px] text-zinc-700">Verified email only</span>
+                          </label>
+                          <label className="flex items-center gap-3 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={filters.hasPhone}
+                              onChange={() => setFilters((prev) => ({ ...prev, hasPhone: !prev.hasPhone }))}
+                              className="w-4 h-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-500"
+                              aria-label="Filter by has phone number"
+                            />
+                            <span className="text-[14px] text-zinc-700">Has phone number</span>
+                          </label>
+                        </div>
+                      </fieldset>
+
+                      {/* Intent Score Filter */}
+                      <fieldset>
+                        <legend className="text-[13px] font-medium text-zinc-900 mb-3">Minimum Intent Score</legend>
+                        <div className="grid grid-cols-3 gap-2" role="group" aria-label="Intent score filters">
+                          {[0, 40, 70].map((score) => (
+                            <button
+                              key={score}
+                              onClick={() => setFilters((prev) => ({ ...prev, intentScoreMin: prev.intentScoreMin === score ? undefined : score }))}
+                              className={`h-11 px-3 text-[13px] font-medium rounded ${
+                                filters.intentScoreMin === score
+                                  ? 'bg-zinc-900 text-white'
+                                  : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
+                              }`}
+                              aria-label={`Filter by intent score ${score === 0 ? 'all levels' : score === 40 ? 'warm and above' : 'hot only'}`}
+                              aria-pressed={filters.intentScoreMin === score}
+                            >
+                              {score === 0 ? 'All' : score === 40 ? 'Warm+' : 'Hot'}
+                            </button>
+                          ))}
+                        </div>
+                      </fieldset>
+
+                      {/* Freshness Filter */}
+                      <fieldset>
+                        <legend className="text-[13px] font-medium text-zinc-900 mb-3">Minimum Freshness</legend>
+                        <div className="grid grid-cols-3 gap-2" role="group" aria-label="Freshness filters">
+                          {[0, 40, 70].map((score) => (
+                            <button
+                              key={score}
+                              onClick={() => setFilters((prev) => ({ ...prev, freshnessMin: prev.freshnessMin === score ? undefined : score }))}
+                              className={`h-11 px-3 text-[13px] font-medium rounded ${
+                                filters.freshnessMin === score
+                                  ? 'bg-zinc-900 text-white'
+                                  : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
+                              }`}
+                              aria-label={`Filter by freshness ${score === 0 ? 'all levels' : score === 40 ? 'recent and above' : 'fresh only'}`}
+                              aria-pressed={filters.freshnessMin === score}
+                            >
+                              {score === 0 ? 'All' : score === 40 ? 'Recent+' : 'Fresh'}
+                            </button>
+                          ))}
+                        </div>
+                      </fieldset>
+                    </div>
+                  </MobileFilters>
 
                   <select
                     value={`${orderBy}-${orderDirection}`}

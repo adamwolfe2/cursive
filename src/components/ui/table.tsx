@@ -1,6 +1,7 @@
 import * as React from "react"
-
+import { motion } from "framer-motion"
 import { cn } from "@/lib/utils"
+import { useSafeAnimation } from "@/hooks/use-reduced-motion"
 
 const Table = React.forwardRef<
   HTMLTableElement,
@@ -54,16 +55,22 @@ TableFooter.displayName = "TableFooter"
 const TableRow = React.forwardRef<
   HTMLTableRowElement,
   React.HTMLAttributes<HTMLTableRowElement>
->(({ className, ...props }, ref) => (
-  <tr
-    ref={ref}
-    className={cn(
-      "border-b border-border/10 transition-colors hover:bg-muted/30 data-[state=selected]:bg-muted/50",
-      className
-    )}
-    {...props}
-  />
-))
+>(({ className, ...props }, ref) => {
+  const safeAnimation = useSafeAnimation()
+
+  return (
+    <motion.tr
+      ref={ref}
+      className={cn(
+        "border-b border-border/10 transition-colors hover:bg-muted/30 data-[state=selected]:bg-muted/50",
+        className
+      )}
+      whileHover={safeAnimation ? { y: -1 } : undefined}
+      transition={{ duration: 0.15 }}
+      {...props}
+    />
+  )
+})
 TableRow.displayName = "TableRow"
 
 const TableHead = React.forwardRef<

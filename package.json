@@ -20,7 +20,8 @@
     "test:routing:live": "tsx scripts/test-routing-live.ts",
     "validate": "pnpm typecheck && pnpm lint && pnpm test",
     "seed:marketplace": "npx tsx scripts/seed-marketplace.ts",
-    "seed:leads": "tsx scripts/seed-leads.ts"
+    "seed:leads": "tsx scripts/seed-leads.ts",
+    "analyze": "ANALYZE=true pnpm build"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.71.2",
@@ -79,6 +80,7 @@
     "@types/react-dom": "^19.0.2",
     "@typescript-eslint/eslint-plugin": "^8.53.1",
     "@typescript-eslint/parser": "^8.53.1",
+    "@next/bundle-analyzer": "^15.1.4",
     "@vitejs/plugin-react": "^5.1.2",
     "@vitest/ui": "^4.0.18",
     "autoprefixer": "^10.4.23",

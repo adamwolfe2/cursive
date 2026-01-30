@@ -25,6 +25,7 @@ import {
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { leadsTableColumns } from './LeadsTableColumns'
 import { PaginationControls } from './PaginationControls'
+import { LeadMobileCard } from './LeadMobileCard'
 import { useCRMStore } from '@/lib/crm/crm-state'
 import type { LeadTableRow } from '@/types/crm.types'
 import { cn } from '@/lib/utils'
@@ -111,7 +112,35 @@ export function LeadsDataTable({
 
   return (
     <div className="w-full space-y-4" role="region" aria-label="Leads table">
-      <ScrollArea className="h-[calc(100vh-240px)] rounded-md border-border/10">
+      {/* Mobile Card View */}
+      <div className="md:hidden space-y-3">
+        {data.length === 0 ? (
+          <div className="text-center py-12 text-muted-foreground">
+            No leads found
+          </div>
+        ) : (
+          data.map((lead, index) => (
+            <LeadMobileCard
+              key={lead.id}
+              lead={lead}
+              selected={selectedLeadIds.includes(lead.id)}
+              onSelect={(checked) => {
+                const newSelection = checked
+                  ? [...selectedLeadIds, lead.id]
+                  : selectedLeadIds.filter(id => id !== lead.id)
+                setSelectedLeads(newSelection)
+              }}
+              onView={() => {
+                // TODO: Navigate to lead details
+                console.log('View lead:', lead.id)
+              }}
+            />
+          ))
+        )}
+      </div>
+
+      {/* Desktop Table View */}
+      <ScrollArea className="hidden md:block h-[calc(100vh-240px)] rounded-md border-border/10">
         <Table>
           <TableHeader className="sticky top-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-10" role="rowgroup">
             {table.getHeaderGroups().map((headerGroup) => (
