@@ -46,9 +46,20 @@ function CursiveLogo() {
 
 export function Sidebar({ items, workspace, className }: SidebarProps) {
   const pathname = usePathname()
+  const [logoError, setLogoError] = React.useState(false)
 
   // Show workspace logo if available
   const showWorkspaceLogo = workspace?.branding?.logo_url
+
+  // Extract domain from website URL for favicon fallback
+  const workspaceDomain = workspace?.website_url
+    ? workspace.website_url.replace(/^https?:\/\//, '').replace(/\/$/, '').split('/')[0]
+    : null
+
+  // Google Favicon fallback URL
+  const faviconFallback = workspaceDomain
+    ? `https://www.google.com/s2/favicons?domain=${workspaceDomain}&sz=64`
+    : null
 
   return (
     <aside
@@ -69,17 +80,23 @@ export function Sidebar({ items, workspace, className }: SidebarProps) {
       {workspace && (
         <div className="border-b border-border px-4 py-4">
           <div className="flex items-center gap-3">
-            {showWorkspaceLogo ? (
+            {showWorkspaceLogo && !logoError ? (
               <div className="relative h-10 w-10 overflow-hidden rounded-lg border border-border bg-muted">
                 <Image
                   src={workspace.branding!.logo_url!}
                   alt={workspace.name}
                   fill
                   className="object-contain"
-                  onError={(e) => {
-                    // Hide image on error
-                    (e.target as HTMLImageElement).style.display = 'none'
-                  }}
+                  onError={() => setLogoError(true)}
+                />
+              </div>
+            ) : faviconFallback && !logoError ? (
+              <div className="h-10 w-10 overflow-hidden rounded-lg border border-border bg-white flex items-center justify-center">
+                <img
+                  src={faviconFallback}
+                  alt={workspace.name}
+                  className="h-6 w-6 object-contain"
+                  onError={() => setLogoError(true)}
                 />
               </div>
             ) : (

@@ -343,6 +343,17 @@ export class CompanyEnrichmentService {
       }
     }
 
+    // CRITICAL: Ensure we ALWAYS have at least a favicon (even if all services failed)
+    // This uses Google's free favicon service - no API key required
+    if (fetchLogo && !result.data.logoUrl && !result.data.faviconUrl) {
+      result.data.faviconUrl = getGoogleFaviconUrl(cleanDomain)
+      // Mark as success if we at least have a favicon
+      if (!result.success) {
+        result.success = true
+        result.source = 'logo_api'
+      }
+    }
+
     // Cache successful results
     if (result.success && useCache) {
       await this.cacheEnrichment(cleanDomain, result)

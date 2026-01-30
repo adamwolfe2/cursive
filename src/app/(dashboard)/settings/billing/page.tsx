@@ -363,7 +363,7 @@ export default function BillingSettingsPage() {
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-medium text-foreground">Daily Credits</span>
               <span className="text-sm text-muted-foreground">
-                {user?.credits_remaining || 0} / {isPro ? '1,000' : '3'} remaining
+                {user?.credits_remaining || 0} / {user?.daily_credit_limit || (isPro ? 1000 : 3)} remaining
               </span>
             </div>
             <div className="w-full bg-muted rounded-full h-2.5">
@@ -371,7 +371,7 @@ export default function BillingSettingsPage() {
                 className="bg-primary h-2.5 rounded-full transition-all"
                 style={{
                   width: `${
-                    ((user?.credits_remaining || 0) / (isPro ? 1000 : 3)) * 100
+                    Math.min(100, Math.max(0, ((user?.credits_remaining || 0) / (user?.daily_credit_limit || (isPro ? 1000 : 3))) * 100))
                   }%`,
                 }}
               />
