@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Users, Plus, Filter, ArrowUpDown, Inbox, Mail, Phone } from 'lucide-react'
+import { Users, Plus, Filter, ArrowUpDown, Mail, Phone } from 'lucide-react'
 import { CRMPageContainer } from '@/components/crm/layout/CRMPageContainer'
 import { CRMViewBar } from '@/components/crm/layout/CRMViewBar'
 import { CRMThreeColumnLayout } from '@/components/crm/layout/CRMThreeColumnLayout'
@@ -15,42 +15,14 @@ import { Badge } from '@/components/ui/badge'
 import { useCRMViewStore } from '@/lib/stores/crm-view-store'
 import { MobileMenu } from '@/components/ui/mobile-menu'
 import { formatDistanceToNow } from 'date-fns'
+import type { Contact } from '@/types/crm.types'
 
-// Mock data
-const mockContacts = [
-  {
-    id: '1',
-    name: 'Sarah Johnson',
-    email: 'sarah.j@acme.com',
-    phone: '+1 (555) 123-4567',
-    company: 'Acme Corp',
-    title: 'VP of Sales',
-    status: 'Active',
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 15),
-  },
-  {
-    id: '2',
-    name: 'Michael Chen',
-    email: 'mchen@techcorp.com',
-    phone: '+1 (555) 987-6543',
-    company: 'Tech Corp',
-    title: 'CTO',
-    status: 'Active',
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7),
-  },
-  {
-    id: '3',
-    name: 'Emily Rodriguez',
-    email: 'emily@startup.io',
-    phone: '+1 (555) 456-7890',
-    company: 'Startup Inc',
-    title: 'CEO',
-    status: 'Prospect',
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3),
-  },
-]
+interface ContactsPageClientProps {
+  initialData: Contact[]
+}
 
-export function ContactsPageClient() {
+export function ContactsPageClient({ initialData }: ContactsPageClientProps) {
+  const [contacts] = useState<Contact[]>(initialData)
   const viewType = useCRMViewStore((state) => state.getViewType('contacts'))
   const setViewType = useCRMViewStore((state) => state.setViewType)
 
@@ -93,29 +65,29 @@ export function ContactsPageClient() {
       key: 'name',
       header: 'Contact',
       width: '25%',
-      render: (contact: typeof mockContacts[0]) => (
+      render: (contact: Contact) => (
         <div>
-          <div className="font-medium text-gray-900">{contact.name}</div>
-          <div className="text-sm text-gray-500">{contact.title}</div>
+          <div className="font-medium text-gray-900">{contact.full_name || 'Unnamed Contact'}</div>
+          <div className="text-sm text-gray-500">{contact.title || 'N/A'}</div>
         </div>
       ),
     },
     {
-      key: 'company',
-      header: 'Company',
+      key: 'seniority',
+      header: 'Seniority',
       width: '20%',
-      render: (contact: typeof mockContacts[0]) => (
-        <span className="text-gray-700">{contact.company}</span>
+      render: (contact: Contact) => (
+        <span className="text-gray-700">{contact.seniority_level || 'N/A'}</span>
       ),
     },
     {
       key: 'email',
       header: 'Email',
       width: '20%',
-      render: (contact: typeof mockContacts[0]) => (
+      render: (contact: Contact) => (
         <div className="flex items-center gap-2 text-gray-700">
           <Mail className="h-4 w-4 text-gray-400" />
-          <span className="text-sm">{contact.email}</span>
+          <span className="text-sm">{contact.email || 'N/A'}</span>
         </div>
       ),
     },
@@ -123,10 +95,10 @@ export function ContactsPageClient() {
       key: 'phone',
       header: 'Phone',
       width: '15%',
-      render: (contact: typeof mockContacts[0]) => (
+      render: (contact: Contact) => (
         <div className="flex items-center gap-2 text-gray-700">
           <Phone className="h-4 w-4 text-gray-400" />
-          <span className="text-sm">{contact.phone}</span>
+          <span className="text-sm">{contact.phone || 'N/A'}</span>
         </div>
       ),
     },
@@ -134,11 +106,12 @@ export function ContactsPageClient() {
       key: 'status',
       header: 'Status',
       width: '10%',
-      render: (contact: typeof mockContacts[0]) => {
+      render: (contact: Contact) => {
         const colors = {
           Active: 'bg-green-100 text-green-800',
           Prospect: 'bg-blue-100 text-blue-800',
           Inactive: 'bg-gray-100 text-gray-800',
+          Lost: 'bg-red-100 text-red-800',
         }
         return (
           <Badge className={colors[contact.status as keyof typeof colors] || ''}>
@@ -149,36 +122,43 @@ export function ContactsPageClient() {
     },
   ]
 
+  const prospectContacts = contacts.filter((c) => c.status === 'Prospect')
+  const activeContacts = contacts.filter((c) => c.status === 'Active')
+  const inactiveContacts = contacts.filter((c) => c.status === 'Inactive')
+  const lostContacts = contacts.filter((c) => c.status === 'Lost')
+
   const boardColumns = [
-    { id: 'prospect', title: 'Prospect', color: '#3B82F6', count: 1 },
-    { id: 'active', title: 'Active', color: '#10B981', count: 2 },
-    { id: 'inactive', title: 'Inactive', color: '#6B7280', count: 0 },
+    { id: 'prospect', title: 'Prospect', color: '#3B82F6', count: prospectContacts.length },
+    { id: 'active', title: 'Active', color: '#10B981', count: activeContacts.length },
+    { id: 'inactive', title: 'Inactive', color: '#6B7280', count: inactiveContacts.length },
+    { id: 'lost', title: 'Lost', color: '#EF4444', count: lostContacts.length },
   ]
 
   const boardData = {
-    prospect: mockContacts.filter((c) => c.status === 'Prospect'),
-    active: mockContacts.filter((c) => c.status === 'Active'),
-    inactive: mockContacts.filter((c) => c.status === 'Inactive'),
+    prospect: prospectContacts,
+    active: activeContacts,
+    inactive: inactiveContacts,
+    lost: lostContacts,
   }
 
-  const renderCard = (contact: typeof mockContacts[0]) => (
+  const renderCard = (contact: Contact) => (
     <div className="space-y-2">
-      <div className="font-medium text-gray-900">{contact.name}</div>
-      <div className="text-sm text-gray-600">{contact.title}</div>
-      <div className="text-sm text-gray-600">{contact.company}</div>
+      <div className="font-medium text-gray-900">{contact.full_name || 'Unnamed Contact'}</div>
+      <div className="text-sm text-gray-600">{contact.title || 'N/A'}</div>
+      <div className="text-sm text-gray-600">{contact.seniority_level || 'N/A'}</div>
       <div className="flex items-center gap-2 text-sm text-gray-500">
         <Mail className="h-3 w-3" />
-        {contact.email}
+        {contact.email || 'N/A'}
       </div>
     </div>
   )
 
-  const handleRowClick = (contact: typeof mockContacts[0]) => {
+  const handleRowClick = (contact: Contact) => {
     setSelectedContact(contact.id)
     setDrawerOpen(true)
   }
 
-  const selectedContactData = mockContacts.find((c) => c.id === selectedContact)
+  const selectedContactData = contacts.find((c) => c.id === selectedContact)
 
   return (
     <CRMPageContainer>
@@ -214,7 +194,7 @@ export function ContactsPageClient() {
         />
 
         <div className="flex-1 overflow-hidden">
-          {mockContacts.length === 0 ? (
+          {contacts.length === 0 ? (
             <EmptyState
               icon={<Users className="h-12 w-12" />}
               title="No contacts yet"
@@ -232,7 +212,7 @@ export function ContactsPageClient() {
             <>
               {viewType === 'table' && (
                 <CRMTableView
-                  data={mockContacts}
+                  data={contacts}
                   columns={tableColumns}
                   onRowClick={handleRowClick}
                 />
@@ -254,7 +234,7 @@ export function ContactsPageClient() {
       <RecordDrawer
         isOpen={drawerOpen}
         onClose={() => setDrawerOpen(false)}
-        title={selectedContactData?.name || ''}
+        title={selectedContactData?.full_name || 'Unnamed Contact'}
         subtitle={selectedContactData?.title}
       >
         <div className="space-y-6">
@@ -263,19 +243,19 @@ export function ContactsPageClient() {
             <div className="space-y-2">
               <div>
                 <span className="text-sm text-gray-500">Email: </span>
-                <span className="text-sm text-gray-900">{selectedContactData?.email}</span>
+                <span className="text-sm text-gray-900">{selectedContactData?.email || 'N/A'}</span>
               </div>
               <div>
                 <span className="text-sm text-gray-500">Phone: </span>
-                <span className="text-sm text-gray-900">{selectedContactData?.phone}</span>
+                <span className="text-sm text-gray-900">{selectedContactData?.phone || 'N/A'}</span>
               </div>
               <div>
-                <span className="text-sm text-gray-500">Company: </span>
-                <span className="text-sm text-gray-900">{selectedContactData?.company}</span>
+                <span className="text-sm text-gray-500">Seniority: </span>
+                <span className="text-sm text-gray-900">{selectedContactData?.seniority_level || 'N/A'}</span>
               </div>
               <div>
                 <span className="text-sm text-gray-500">Title: </span>
-                <span className="text-sm text-gray-900">{selectedContactData?.title}</span>
+                <span className="text-sm text-gray-900">{selectedContactData?.title || 'N/A'}</span>
               </div>
               <div>
                 <span className="text-sm text-gray-500">Status: </span>
@@ -285,7 +265,7 @@ export function ContactsPageClient() {
                 <span className="text-sm text-gray-500">Created: </span>
                 <span className="text-sm text-gray-900">
                   {selectedContactData &&
-                    formatDistanceToNow(selectedContactData.createdAt, { addSuffix: true })}
+                    formatDistanceToNow(new Date(selectedContactData.created_at), { addSuffix: true })}
                 </span>
               </div>
             </div>
