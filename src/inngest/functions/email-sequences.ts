@@ -46,6 +46,7 @@ export const processSequenceEnrollment = inngest.createFunction(
     id: 'sequence-enrollment-process',
     name: 'Process Sequence Enrollment',
     retries: 3,
+    timeout: 300000, // 5 minutes
   },
   { event: 'sequence/enroll' },
   async ({ event, step, logger }) => {
@@ -134,6 +135,7 @@ export const processSequenceStep = inngest.createFunction(
     id: 'sequence-step-process',
     name: 'Process Sequence Step',
     retries: 3,
+    timeout: 300000, // 5 minutes
   },
   { event: 'sequence/process-step' },
   async ({ event, step, logger }) => {
@@ -573,6 +575,7 @@ export const batchEnrollSequence = inngest.createFunction(
     id: 'sequence-batch-enroll',
     name: 'Batch Enroll in Sequence',
     retries: 2,
+    timeout: 300000, // 5 minutes
   },
   { event: 'sequence/batch-enroll' },
   async ({ event, step, logger }) => {
@@ -617,6 +620,7 @@ export const processScheduledSteps = inngest.createFunction(
   {
     id: 'sequence-scheduled-processor',
     name: 'Process Scheduled Sequence Steps',
+    timeout: 300000, // 5 minutes
   },
   { cron: '*/5 * * * *' }, // Every 5 minutes
   async ({ step, logger }) => {

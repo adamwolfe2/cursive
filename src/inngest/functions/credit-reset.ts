@@ -8,6 +8,7 @@ export const creditReset = inngest.createFunction(
   {
     id: 'credit-reset',
     name: 'Daily Credit Reset',
+    timeout: 300000, // 5 minutes
   },
   { cron: '0 0 * * *' }, // Every day at midnight
   async ({ step, logger }) => {

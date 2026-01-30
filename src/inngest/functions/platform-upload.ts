@@ -9,6 +9,7 @@ export const platformUpload = inngest.createFunction(
     id: 'platform-upload',
     name: 'Platform Upload',
     retries: 2,
+    timeout: 300000, // 5 minutes
   },
   { event: 'lead/upload-to-platform' },
   async ({ event, step, logger }) => {

@@ -18,6 +18,7 @@ export const leadDelivery = inngest.createFunction(
     id: 'lead-delivery',
     name: 'Lead Delivery',
     retries: 2,
+    timeout: 300000, // 5 minutes
   },
   { event: 'lead/deliver' },
   async ({ event, step, logger }) => {

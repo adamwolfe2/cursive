@@ -49,9 +49,13 @@ function verifySignature(
   signature: string | null,
   secret: string
 ): boolean {
-  if (!signature || !secret) {
-    // If no secret configured, skip verification (dev mode)
-    return !secret
+  // SECURITY: Always require signature and secret - no dev mode bypass
+  if (!signature) {
+    return false
+  }
+
+  if (!secret) {
+    return false
   }
 
   const expectedSignature = crypto
@@ -127,16 +131,27 @@ function analyzeCallOutcome(payload: BlandWebhookPayload): {
 }
 
 export async function POST(req: NextRequest) {
+  let call_id: string | undefined
+  let workspace_id: string | undefined
+
   try {
     // Get raw body for signature verification
     const rawBody = await req.text()
 
-    // Verify webhook signature (optional - depends on Bland.ai configuration)
+    // Verify webhook signature - REQUIRED for security
     const webhookSecret = process.env.BLAND_WEBHOOK_SECRET
+    if (!webhookSecret) {
+      console.error('[Bland Webhook] Missing BLAND_WEBHOOK_SECRET')
+      return NextResponse.json(
+        { error: 'Webhook not configured' },
+        { status: 500 }
+      )
+    }
+
     const signature = req.headers.get('x-bland-signature') ||
                       req.headers.get('x-webhook-signature')
 
-    if (webhookSecret && !verifySignature(rawBody, signature, webhookSecret)) {
+    if (!verifySignature(rawBody, signature, webhookSecret)) {
       console.error('[Bland Webhook] Invalid signature')
       return NextResponse.json(
         { error: 'Invalid signature' },
@@ -155,7 +170,9 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const { call_id, status, metadata } = payload
+    const { status, metadata } = payload
+    call_id = payload.call_id
+    workspace_id = metadata?.workspace_id
 
     if (!call_id) {
       return NextResponse.json(
@@ -165,6 +182,47 @@ export async function POST(req: NextRequest) {
     }
 
     const supabase = createAdminClient()
+
+    // IDEMPOTENCY: Check if this call webhook has already been processed
+    if (call_id) {
+      // Use workspace_id from metadata or a default for non-workspace calls
+      const idempWorkspaceId = workspace_id || 'system'
+
+      const { data: existingKey } = await supabase
+        .from('api_idempotency_keys')
+        .select('status, response_data, completed_at')
+        .eq('idempotency_key', call_id)
+        .eq('workspace_id', idempWorkspaceId)
+        .eq('endpoint', '/api/webhooks/bland')
+        .single()
+
+      if (existingKey) {
+        // Request already processed successfully - return cached response
+        if (existingKey.status === 'completed' && existingKey.response_data) {
+          console.log(`[Bland Webhook] Idempotent request detected: ${call_id}`)
+          return NextResponse.json(existingKey.response_data)
+        }
+
+        // Request currently processing - return conflict
+        if (existingKey.status === 'processing') {
+          console.log(`[Bland Webhook] Duplicate processing attempt: ${call_id}`)
+          return NextResponse.json(
+            { error: 'Webhook already being processed. Please retry later.' },
+            { status: 409 }
+          )
+        }
+
+        // Request failed previously - allow retry (don't return early)
+      } else {
+        // Create new idempotency key record
+        await supabase.from('api_idempotency_keys').insert({
+          idempotency_key: call_id,
+          workspace_id: idempWorkspaceId,
+          endpoint: '/api/webhooks/bland',
+          status: 'processing',
+        })
+      }
+    }
 
     // Analyze call outcome
     const { outcome, interested, callbackRequested } = analyzeCallOutcome(payload)
@@ -279,15 +337,51 @@ export async function POST(req: NextRequest) {
       })
     }
 
-    return NextResponse.json({
+    // Prepare successful response
+    const response = {
       success: true,
       call_id,
       status: mapCallStatus(status),
       outcome,
       saved_id: savedCall?.id,
-    })
+    }
+
+    // Update idempotency key with successful response
+    if (call_id) {
+      const idempWorkspaceId = workspace_id || 'system'
+      await supabase
+        .from('api_idempotency_keys')
+        .update({
+          status: 'completed',
+          response_data: response,
+          completed_at: new Date().toISOString(),
+        })
+        .eq('idempotency_key', call_id)
+        .eq('workspace_id', idempWorkspaceId)
+    }
+
+    return NextResponse.json(response)
   } catch (error: any) {
     console.error('[Bland Webhook] Error:', error)
+
+    // Mark idempotency key as failed to allow retry
+    if (call_id) {
+      try {
+        const supabase = createAdminClient()
+        const idempWorkspaceId = workspace_id || 'system'
+        await supabase
+          .from('api_idempotency_keys')
+          .update({
+            status: 'failed',
+            completed_at: new Date().toISOString(),
+          })
+          .eq('idempotency_key', call_id)
+          .eq('workspace_id', idempWorkspaceId)
+      } catch (idempotencyError) {
+        console.error('[Bland Webhook] Failed to update idempotency key:', idempotencyError)
+      }
+    }
+
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

@@ -88,6 +88,7 @@ export const processPartnerUpload = inngest.createFunction(
     id: 'partner-upload-processor',
     name: 'Process Partner Upload',
     retries: 3,
+    timeout: 300000, // 5 minutes
     concurrency: {
       limit: 5, // Max 5 concurrent uploads
     },
@@ -481,6 +482,7 @@ export const retryStatledUploads = inngest.createFunction(
     id: 'retry-stalled-uploads',
     name: 'Retry Stalled Uploads',
     retries: 1,
+    timeout: 300000, // 5 minutes
   },
   { cron: '*/10 * * * *' },
   async ({ step, logger }) => {

@@ -196,11 +196,24 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     let workspaceId = searchParams.get('workspaceId')
     const limit = parseInt(searchParams.get('limit') || '10')
+    const allWorkspaces = searchParams.get('allWorkspaces') === 'true'
 
     // SECURITY: If admin is impersonating a workspace, restrict to that workspace only
     // This prevents accidental cross-workspace data access during impersonation
     if (adminContext?.isImpersonating && adminContext.impersonatedWorkspace) {
       workspaceId = adminContext.impersonatedWorkspace.id
+    }
+
+    // SECURITY: Require explicit intent for cross-workspace queries
+    // Admin must either specify a workspace OR explicitly request all workspaces
+    if (!workspaceId && !allWorkspaces && !adminContext?.isImpersonating) {
+      return NextResponse.json(
+        {
+          error: 'Workspace ID required',
+          details: 'Specify workspaceId parameter or allWorkspaces=true for cross-workspace search',
+        },
+        { status: 400 }
+      )
     }
 
     const supabase = await createClient()
@@ -212,7 +225,7 @@ export async function GET(request: NextRequest) {
       .order('created_at', { ascending: false })
       .limit(limit)
 
-    // Apply workspace filter if specified or if impersonating
+    // Apply workspace filter if specified (not when allWorkspaces=true)
     if (workspaceId) {
       query = query.eq('workspace_id', workspaceId)
     }
@@ -228,6 +241,8 @@ export async function GET(request: NextRequest) {
       leads,
       impersonating: adminContext?.isImpersonating || false,
       workspaceFilter: workspaceId || null,
+      crossWorkspaceQuery: allWorkspaces && !workspaceId,
+      warning: allWorkspaces && !workspaceId ? 'Results include leads from all workspaces' : undefined,
     })
   } catch (error: any) {
     console.error('Admin lead search history error:', error)

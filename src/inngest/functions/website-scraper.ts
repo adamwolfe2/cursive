@@ -14,6 +14,7 @@ export const scrapeWebsite = inngest.createFunction(
   {
     id: 'scrape-website',
     retries: 2,
+    timeout: 300000, // 5 minutes
   },
   { event: 'workspace/scrape-website' },
   async ({ event, step }) => {

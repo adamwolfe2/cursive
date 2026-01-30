@@ -104,12 +104,50 @@ export async function POST(request: NextRequest) {
 
     const repo = new MarketplaceRepository()
 
-    // Get the leads being purchased
-    const leads = await repo.getLeadsByIds(validated.leadIds)
+    // SECURITY: Get leads and validate they are available for marketplace purchase
+    // This prevents users from purchasing:
+    // 1. Leads that are not in the marketplace
+    // 2. Leads that have already been sold
+    // 3. Leads from other workspaces (via marketplace_status check)
+    const adminClient = createAdminClient()
+    const { data: leads, error: leadsError } = await adminClient
+      .from('leads')
+      .select('*')
+      .in('id', validated.leadIds)
+      .eq('marketplace_status', 'available') // Only available leads
+      .is('sold_at', null) // Not already sold
+      .not('marketplace_price', 'is', null) // Has marketplace price
 
-    if (leads.length !== validated.leadIds.length) {
+    if (leadsError) {
+      console.error('Failed to fetch leads:', leadsError)
       return NextResponse.json(
-        { error: 'Some leads are no longer available' },
+        { error: 'Failed to fetch leads' },
+        { status: 500 }
+      )
+    }
+
+    if (!leads || leads.length !== validated.leadIds.length) {
+      return NextResponse.json(
+        { error: 'Some leads are no longer available for purchase' },
+        { status: 400 }
+      )
+    }
+
+    // Additional check: Prevent duplicate purchases by this workspace
+    const { data: existingPurchases } = await adminClient
+      .from('marketplace_purchase_items')
+      .select('lead_id, marketplace_purchases!inner(buyer_workspace_id, status)')
+      .in('lead_id', validated.leadIds)
+      .eq('marketplace_purchases.buyer_workspace_id', userData.workspace_id)
+      .in('marketplace_purchases.status', ['completed', 'pending'])
+
+    if (existingPurchases && existingPurchases.length > 0) {
+      const alreadyPurchasedIds = existingPurchases.map(p => p.lead_id)
+      return NextResponse.json(
+        {
+          error: 'You have already purchased some of these leads',
+          alreadyPurchasedLeadIds: alreadyPurchasedIds,
+        },
         { status: 400 }
       )
     }

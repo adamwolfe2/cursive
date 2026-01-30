@@ -3,6 +3,7 @@
 
 import { NextResponse, type NextRequest } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import crypto from 'crypto'
 import {
   verifyWebhookSignature,
   parseWebhookEvent,
@@ -21,22 +22,31 @@ const WEBHOOK_SECRET = process.env.EMAILBISON_WEBHOOK_SECRET || ''
 
 export async function POST(request: NextRequest, context: RouteContext) {
   const { agentId } = await context.params
+  let idempotencyKey: string | undefined
+  let workspaceId: string | undefined
 
   try {
     // Get raw body for signature verification
     const rawBody = await request.text()
     const signature = request.headers.get('x-emailbison-signature') || ''
 
-    // Verify signature if webhook secret is configured
-    if (WEBHOOK_SECRET) {
-      const verification = verifyWebhookSignature(rawBody, signature, WEBHOOK_SECRET)
-      if (!verification.isValid) {
-        console.error('[EmailBison Webhook] Signature verification failed:', verification.error)
-        return NextResponse.json(
-          { error: 'Invalid signature' },
-          { status: 401 }
-        )
-      }
+    // SECURITY: Always require webhook secret for signature verification
+    if (!WEBHOOK_SECRET) {
+      console.error('[EmailBison Webhook] Missing EMAILBISON_WEBHOOK_SECRET')
+      return NextResponse.json(
+        { error: 'Webhook not configured' },
+        { status: 500 }
+      )
+    }
+
+    // Verify signature - REQUIRED for security
+    const verification = verifyWebhookSignature(rawBody, signature, WEBHOOK_SECRET)
+    if (!verification.isValid) {
+      console.error('[EmailBison Webhook] Signature verification failed:', verification.error)
+      return NextResponse.json(
+        { error: 'Invalid signature' },
+        { status: 401 }
+      )
     }
 
     // Parse the webhook payload
@@ -63,6 +73,60 @@ export async function POST(request: NextRequest, context: RouteContext) {
       )
     }
 
+    workspaceId = agent.workspace_id
+
+    // IDEMPOTENCY: Generate unique key from event data to prevent duplicates
+    // Hash agentId + event type + key identifying fields
+    const eventData = event.data as any
+    const idempotencyData = [
+      agentId,
+      event.event.type,
+      eventData.from_email || eventData.email || '',
+      eventData.campaign_id || '',
+      eventData.timestamp || new Date().toISOString(),
+    ].filter(Boolean).join('|')
+
+    idempotencyKey = crypto
+      .createHash('sha256')
+      .update(idempotencyData)
+      .digest('hex')
+
+    // Check if this webhook has already been processed
+    const { data: existingKey } = await supabase
+      .from('api_idempotency_keys')
+      .select('status, response_data, completed_at')
+      .eq('idempotency_key', idempotencyKey)
+      .eq('workspace_id', workspaceId)
+      .eq('endpoint', '/api/webhooks/emailbison')
+      .single()
+
+    if (existingKey) {
+      // Request already processed successfully - return cached response
+      if (existingKey.status === 'completed' && existingKey.response_data) {
+        console.log(`[EmailBison Webhook] Idempotent request detected`)
+        return NextResponse.json(existingKey.response_data)
+      }
+
+      // Request currently processing - return conflict
+      if (existingKey.status === 'processing') {
+        console.log(`[EmailBison Webhook] Duplicate processing attempt`)
+        return NextResponse.json(
+          { error: 'Webhook already being processed. Please retry later.' },
+          { status: 409 }
+        )
+      }
+
+      // Request failed previously - allow retry (don't return early)
+    } else {
+      // Create new idempotency key record
+      await supabase.from('api_idempotency_keys').insert({
+        idempotency_key: idempotencyKey,
+        workspace_id: workspaceId,
+        endpoint: '/api/webhooks/emailbison',
+        status: 'processing',
+      })
+    }
+
     // Handle different event types
     if (isReplyReceivedEvent(event)) {
       await handleReplyReceived(supabase, agent, event)
@@ -72,9 +136,43 @@ export async function POST(request: NextRequest, context: RouteContext) {
       await handleBounce(supabase, agent, event)
     }
 
-    return NextResponse.json({ success: true })
+    // Prepare successful response
+    const response = { success: true }
+
+    // Update idempotency key with successful response
+    if (idempotencyKey && workspaceId) {
+      await supabase
+        .from('api_idempotency_keys')
+        .update({
+          status: 'completed',
+          response_data: response,
+          completed_at: new Date().toISOString(),
+        })
+        .eq('idempotency_key', idempotencyKey)
+        .eq('workspace_id', workspaceId)
+    }
+
+    return NextResponse.json(response)
   } catch (error) {
     console.error('[EmailBison Webhook] Error:', error)
+
+    // Mark idempotency key as failed to allow retry
+    if (idempotencyKey && workspaceId) {
+      try {
+        const supabase = createAdminClient()
+        await supabase
+          .from('api_idempotency_keys')
+          .update({
+            status: 'failed',
+            completed_at: new Date().toISOString(),
+          })
+          .eq('idempotency_key', idempotencyKey)
+          .eq('workspace_id', workspaceId)
+      } catch (idempotencyError) {
+        console.error('[EmailBison Webhook] Failed to update idempotency key:', idempotencyError)
+      }
+    }
+
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

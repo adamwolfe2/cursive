@@ -35,6 +35,7 @@ export const enrichCampaignLead = inngest.createFunction(
     id: 'campaign-lead-enrichment',
     name: 'Campaign Lead Enrichment',
     retries: 3,
+    timeout: 300000, // 5 minutes
     throttle: {
       limit: 10,
       period: '1m',
@@ -161,6 +162,7 @@ export const batchEnrichCampaignLeads = inngest.createFunction(
     id: 'batch-campaign-lead-enrichment',
     name: 'Batch Campaign Lead Enrichment',
     retries: 2,
+    timeout: 300000, // 5 minutes
   },
   { event: 'campaign/batch-enrich' },
   async ({ event, step, logger }) => {

@@ -66,6 +66,7 @@ export const processEmailVerification = inngest.createFunction(
   {
     id: 'email-verification-processor',
     retries: 3,
+    timeout: 300000, // 5 minutes
     concurrency: {
       limit: 5, // Process 5 at a time to respect rate limits
     },

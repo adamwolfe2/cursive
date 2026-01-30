@@ -11,6 +11,7 @@ export const composeCampaignEmail = inngest.createFunction(
     id: 'campaign-compose-email',
     name: 'Campaign Email Composition',
     retries: 3,
+    timeout: 300000, // 5 minutes
     throttle: {
       limit: 20,
       period: '1m',
@@ -252,6 +253,7 @@ export const batchComposeCampaignEmails = inngest.createFunction(
     id: 'batch-campaign-compose',
     name: 'Batch Campaign Email Composition',
     retries: 2,
+    timeout: 300000, // 5 minutes
   },
   { event: 'campaign/batch-compose' },
   async ({ event, step, logger }) => {

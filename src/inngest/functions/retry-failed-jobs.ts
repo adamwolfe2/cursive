@@ -20,6 +20,7 @@ export const processRetryQueue = inngest.createFunction(
     id: 'process-retry-queue',
     name: 'Process Failed Jobs Retry Queue',
     retries: 1, // Don't retry the retry processor itself
+    timeout: 300000, // 5 minutes
   },
   { cron: '*/5 * * * *' }, // Every 5 minutes
   async ({ step, logger }) => {
@@ -171,6 +172,7 @@ export const cleanupFailedJobs = inngest.createFunction(
     id: 'cleanup-failed-jobs',
     name: 'Cleanup Old Failed Jobs',
     retries: 2,
+    timeout: 300000, // 5 minutes
   },
   { cron: '0 3 * * *' }, // Daily at 3 AM UTC
   async ({ step, logger }) => {
@@ -191,6 +193,7 @@ export const onJobRetryRequested = inngest.createFunction(
   {
     id: 'on-job-retry-requested',
     name: 'Handle Job Retry Request',
+    timeout: 300000, // 5 minutes
   },
   { event: 'job/retry-requested' },
   async ({ event, step, logger }) => {

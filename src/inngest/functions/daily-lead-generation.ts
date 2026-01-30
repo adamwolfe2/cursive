@@ -11,6 +11,7 @@ export const dailyLeadGeneration = inngest.createFunction(
     id: 'daily-lead-generation',
     name: 'Daily Lead Generation',
     retries: 3,
+    timeout: 300000, // 5 minutes
   },
   { cron: '0 2 * * *' }, // Every day at 2 AM
   async ({ step, logger }) => {

@@ -24,6 +24,7 @@ export const dailyFreshnessDecay = inngest.createFunction(
     id: 'marketplace-freshness-decay',
     name: 'Daily Freshness Score Decay',
     retries: 2,
+    timeout: 300000, // 5 minutes
   },
   { cron: '0 0 * * *' }, // Midnight daily
   async ({ step, logger }) => {
@@ -104,6 +105,7 @@ export const dailyPartnerScoreCalculation = inngest.createFunction(
     id: 'marketplace-partner-score',
     name: 'Daily Partner Score Calculation',
     retries: 2,
+    timeout: 300000, // 5 minutes
   },
   { cron: '0 2 * * *' }, // 2 AM daily
   async ({ step, logger }) => {
@@ -227,6 +229,7 @@ export const monthlyVolumeBonusUpdate = inngest.createFunction(
     id: 'marketplace-volume-bonus',
     name: 'Monthly Volume Bonus Update',
     retries: 2,
+    timeout: 300000, // 5 minutes
   },
   { cron: '0 3 1 * *' }, // 3 AM on 1st of each month
   async ({ step, logger }) => {
@@ -283,6 +286,7 @@ export const processReferralMilestones = inngest.createFunction(
     id: 'marketplace-referral-milestones',
     name: 'Process Referral Milestones',
     retries: 2,
+    timeout: 300000, // 5 minutes
   },
   { cron: '0 4 * * *' }, // 4 AM daily
   async ({ step, logger }) => {
@@ -328,6 +332,7 @@ export const updatePartnerDataCompleteness = inngest.createFunction(
     id: 'marketplace-data-completeness',
     name: 'Update Partner Data Completeness',
     retries: 2,
+    timeout: 300000, // 5 minutes
   },
   { cron: '0 5 * * *' }, // 5 AM daily
   async ({ step, logger }) => {

@@ -60,6 +60,9 @@ function verifySignature(
 
 
 export async function POST(req: NextRequest) {
+  let idempotencyKey: string | undefined
+  let workspace_id: string | undefined
+
   try {
     // Get raw body for signature verification
     const rawBody = await req.text()
@@ -96,7 +99,8 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const { lead, workspace_id } = payload
+    const { lead } = payload
+    workspace_id = payload.workspace_id
 
     if (!lead || !workspace_id) {
       return NextResponse.json(
@@ -120,6 +124,56 @@ export async function POST(req: NextRequest) {
         { error: 'Invalid workspace_id' },
         { status: 400 }
       )
+    }
+
+    // IDEMPOTENCY: Generate unique key from lead data to prevent duplicates
+    // Hash workspace_id + company_name + email/name combination
+    const idempotencyData = [
+      workspace_id,
+      lead.company_name,
+      lead.email || `${lead.first_name}:${lead.last_name}`,
+      payload.timestamp || '',
+    ].filter(Boolean).join('|')
+
+    idempotencyKey = crypto
+      .createHash('sha256')
+      .update(idempotencyData)
+      .digest('hex')
+
+    // Check if this webhook has already been processed
+    const { data: existingKey } = await supabase
+      .from('api_idempotency_keys')
+      .select('status, response_data, completed_at')
+      .eq('idempotency_key', idempotencyKey)
+      .eq('workspace_id', workspace_id)
+      .eq('endpoint', '/api/webhooks/datashopper')
+      .single()
+
+    if (existingKey) {
+      // Request already processed successfully - return cached response
+      if (existingKey.status === 'completed' && existingKey.response_data) {
+        console.log(`[DataShopper Webhook] Idempotent request detected`)
+        return NextResponse.json(existingKey.response_data)
+      }
+
+      // Request currently processing - return conflict
+      if (existingKey.status === 'processing') {
+        console.log(`[DataShopper Webhook] Duplicate processing attempt`)
+        return NextResponse.json(
+          { error: 'Webhook already being processed. Please retry later.' },
+          { status: 409 }
+        )
+      }
+
+      // Request failed previously - allow retry (don't return early)
+    } else {
+      // Create new idempotency key record
+      await supabase.from('api_idempotency_keys').insert({
+        idempotency_key: idempotencyKey,
+        workspace_id: workspace_id,
+        endpoint: '/api/webhooks/datashopper',
+        status: 'processing',
+      })
     }
 
     // Insert lead
@@ -149,6 +203,19 @@ export async function POST(req: NextRequest) {
 
     if (leadError) {
       console.error('[DataShopper Webhook] Failed to insert lead:', leadError)
+
+      // Mark idempotency key as failed
+      if (idempotencyKey) {
+        await supabase
+          .from('api_idempotency_keys')
+          .update({
+            status: 'failed',
+            completed_at: new Date().toISOString(),
+          })
+          .eq('idempotency_key', idempotencyKey)
+          .eq('workspace_id', workspace_id!)
+      }
+
       return NextResponse.json(
         { error: 'Failed to create lead' },
         { status: 500 }
@@ -167,14 +234,48 @@ export async function POST(req: NextRequest) {
       // Don't fail the webhook - lead was created successfully
     }
 
-    return NextResponse.json({
+    // Prepare successful response
+    const response = {
       success: true,
       lead_id: insertedLead.id,
       routed_to_workspace: routedWorkspaceId || workspace_id,
       message: 'Lead received and processed successfully',
-    })
+    }
+
+    // Update idempotency key with successful response
+    if (idempotencyKey) {
+      await supabase
+        .from('api_idempotency_keys')
+        .update({
+          status: 'completed',
+          response_data: response,
+          completed_at: new Date().toISOString(),
+        })
+        .eq('idempotency_key', idempotencyKey)
+        .eq('workspace_id', workspace_id!)
+    }
+
+    return NextResponse.json(response)
   } catch (error: any) {
     console.error('[DataShopper Webhook] Error:', error)
+
+    // Mark idempotency key as failed to allow retry
+    if (idempotencyKey && workspace_id) {
+      try {
+        const supabase = createAdminClient()
+        await supabase
+          .from('api_idempotency_keys')
+          .update({
+            status: 'failed',
+            completed_at: new Date().toISOString(),
+          })
+          .eq('idempotency_key', idempotencyKey)
+          .eq('workspace_id', workspace_id)
+      } catch (idempotencyError) {
+        console.error('[DataShopper Webhook] Failed to update idempotency key:', idempotencyError)
+      }
+    }
+
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

@@ -19,6 +19,7 @@ export const recalculateOptimalTimes = inngest.createFunction(
     id: 'recalculate-optimal-send-times',
     name: 'Recalculate Optimal Send Times',
     retries: 2,
+    timeout: 300000, // 5 minutes
   },
   { cron: '0 */6 * * *' }, // Every 6 hours
   async ({ step, logger }) => {
@@ -97,6 +98,7 @@ export const inferLeadTimezones = inngest.createFunction(
     id: 'infer-lead-timezones',
     name: 'Infer Lead Timezones',
     retries: 2,
+    timeout: 300000, // 5 minutes
   },
   { cron: '30 2 * * *' }, // Daily at 2:30 AM UTC
   async ({ step, logger }) => {
@@ -179,6 +181,7 @@ export const onCampaignScheduleChanged = inngest.createFunction(
     id: 'on-campaign-schedule-changed',
     name: 'Handle Campaign Schedule Change',
     retries: 2,
+    timeout: 300000, // 5 minutes
   },
   { event: 'campaign/schedule-changed' },
   async ({ event, step, logger }) => {
@@ -209,6 +212,7 @@ export const updateLeadTimezoneFromEnrichment = inngest.createFunction(
   {
     id: 'update-lead-timezone-from-enrichment',
     name: 'Update Lead Timezone from Enrichment',
+    timeout: 300000, // 5 minutes
   },
   { event: 'lead/enrichment-complete' },
   async ({ event, step, logger }) => {

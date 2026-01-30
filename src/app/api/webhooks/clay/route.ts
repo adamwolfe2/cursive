@@ -68,6 +68,9 @@ function verifySignature(
 
 
 export async function POST(req: NextRequest) {
+  let clay_record_id: string | undefined
+  let targetWorkspaceId: string | undefined
+
   try {
     // Get raw body for signature verification
     const rawBody = await req.text()
@@ -104,7 +107,8 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const { person, company, clay_record_id, workspace_id, enrichment_job_id } = payload
+    const { person, company, workspace_id, enrichment_job_id } = payload
+    clay_record_id = payload.clay_record_id
 
     if (!person || !company) {
       return NextResponse.json(
@@ -117,7 +121,7 @@ export async function POST(req: NextRequest) {
     const supabase = createAdminClient()
 
     // Determine workspace - use provided or find from enrichment job
-    let targetWorkspaceId = workspace_id
+    targetWorkspaceId = workspace_id
 
     if (!targetWorkspaceId && enrichment_job_id) {
       // Look up workspace from enrichment job
@@ -130,22 +134,58 @@ export async function POST(req: NextRequest) {
       targetWorkspaceId = job?.workspace_id
     }
 
+    // SECURITY: Fail if workspace cannot be determined - do not fallback to admin
     if (!targetWorkspaceId) {
-      // Fallback to default admin workspace
-      const { data: adminWorkspace } = await supabase
-        .from('workspaces')
-        .select('id')
-        .eq('is_admin', true)
-        .single()
-
-      targetWorkspaceId = adminWorkspace?.id
-    }
-
-    if (!targetWorkspaceId) {
+      console.error('[Clay Webhook] Could not determine target workspace', {
+        workspace_id_provided: !!workspace_id,
+        enrichment_job_id_provided: !!enrichment_job_id,
+        clay_record_id,
+      })
       return NextResponse.json(
-        { error: 'Could not determine target workspace' },
+        {
+          error: 'Could not determine target workspace',
+          details: 'Webhook must include workspace_id or valid enrichment_job_id',
+        },
         { status: 400 }
       )
+    }
+
+    // IDEMPOTENCY: Check if this webhook has already been processed
+    if (clay_record_id) {
+      const { data: existingKey } = await supabase
+        .from('api_idempotency_keys')
+        .select('status, response_data, completed_at')
+        .eq('idempotency_key', clay_record_id)
+        .eq('workspace_id', targetWorkspaceId)
+        .eq('endpoint', '/api/webhooks/clay')
+        .single()
+
+      if (existingKey) {
+        // Request already processed successfully - return cached response
+        if (existingKey.status === 'completed' && existingKey.response_data) {
+          console.log(`[Clay Webhook] Idempotent request detected: ${clay_record_id}`)
+          return NextResponse.json(existingKey.response_data)
+        }
+
+        // Request currently processing - return conflict
+        if (existingKey.status === 'processing') {
+          console.log(`[Clay Webhook] Duplicate processing attempt: ${clay_record_id}`)
+          return NextResponse.json(
+            { error: 'Webhook already being processed. Please retry later.' },
+            { status: 409 }
+          )
+        }
+
+        // Request failed previously - allow retry (don't return early)
+      } else {
+        // Create new idempotency key record
+        await supabase.from('api_idempotency_keys').insert({
+          idempotency_key: clay_record_id,
+          workspace_id: targetWorkspaceId,
+          endpoint: '/api/webhooks/clay',
+          status: 'processing',
+        })
+      }
     }
 
     // Build full name from parts if not provided
@@ -187,6 +227,19 @@ export async function POST(req: NextRequest) {
 
     if (leadError) {
       console.error('[Clay Webhook] Failed to insert lead:', leadError)
+
+      // Mark idempotency key as failed
+      if (clay_record_id) {
+        await supabase
+          .from('api_idempotency_keys')
+          .update({
+            status: 'failed',
+            completed_at: new Date().toISOString(),
+          })
+          .eq('idempotency_key', clay_record_id)
+          .eq('workspace_id', targetWorkspaceId)
+      }
+
       return NextResponse.json(
         { error: 'Failed to create lead' },
         { status: 500 }
@@ -217,15 +270,49 @@ export async function POST(req: NextRequest) {
         .eq('id', enrichment_job_id)
     }
 
-    return NextResponse.json({
+    // Prepare successful response
+    const response = {
       success: true,
       lead_id: lead.id,
       clay_record_id,
       routed_to_workspace: routedWorkspaceId || targetWorkspaceId,
       message: 'Clay enrichment received and processed successfully',
-    })
+    }
+
+    // Update idempotency key with successful response
+    if (clay_record_id) {
+      await supabase
+        .from('api_idempotency_keys')
+        .update({
+          status: 'completed',
+          response_data: response,
+          completed_at: new Date().toISOString(),
+        })
+        .eq('idempotency_key', clay_record_id)
+        .eq('workspace_id', targetWorkspaceId)
+    }
+
+    return NextResponse.json(response)
   } catch (error: any) {
     console.error('[Clay Webhook] Error:', error)
+
+    // Mark idempotency key as failed to allow retry
+    if (clay_record_id && targetWorkspaceId) {
+      try {
+        const supabase = createAdminClient()
+        await supabase
+          .from('api_idempotency_keys')
+          .update({
+            status: 'failed',
+            completed_at: new Date().toISOString(),
+          })
+          .eq('idempotency_key', clay_record_id)
+          .eq('workspace_id', targetWorkspaceId)
+      } catch (idempotencyError) {
+        console.error('[Clay Webhook] Failed to update idempotency key:', idempotencyError)
+      }
+    }
+
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

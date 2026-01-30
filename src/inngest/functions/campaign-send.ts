@@ -27,6 +27,7 @@ export const sendApprovedEmail = inngest.createFunction(
     id: 'campaign-send-email',
     name: 'Send Approved Email',
     retries: 3,
+    timeout: 300000, // 5 minutes
     throttle: {
       limit: 30,
       period: '1m',
@@ -261,6 +262,7 @@ export const batchSendApprovedEmails = inngest.createFunction(
     id: 'campaign-batch-send',
     name: 'Batch Send Approved Emails',
     retries: 2,
+    timeout: 300000, // 5 minutes
   },
   { event: 'campaign/batch-send' },
   async ({ event, step, logger }) => {
@@ -349,6 +351,7 @@ export const onEmailApproved = inngest.createFunction(
     id: 'campaign-email-approved',
     name: 'Handle Email Approval',
     retries: 2,
+    timeout: 300000, // 5 minutes
   },
   { event: 'campaign/email-approved' },
   async ({ event, step, logger }) => {
