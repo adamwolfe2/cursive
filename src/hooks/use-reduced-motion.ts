@@ -3,30 +3,38 @@
 import { useEffect, useState } from 'react'
 
 /**
- * Hook to detect user's motion preference for accessibility
- * Returns true if user prefers reduced motion
+ * Hook to respect user's motion preferences for accessibility.
+ * Returns true if user prefers reduced motion.
  *
- * Usage:
+ * Use this to disable or simplify animations for users who have
+ * enabled "Reduce Motion" in their OS settings.
+ *
+ * @example
  * ```tsx
- * const prefersReducedMotion = useReducedMotion()
+ * function AnimatedComponent() {
+ *   const prefersReducedMotion = useReducedMotion()
  *
- * <motion.div
- *   animate={prefersReducedMotion ? {} : { y: [0, -10, 0] }}
- * />
+ *   return (
+ *     <motion.div
+ *       animate={prefersReducedMotion ? {} : { scale: 1.2 }}
+ *     >
+ *       Content
+ *     </motion.div>
+ *   )
+ * }
  * ```
  */
 export function useReducedMotion(): boolean {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
 
   useEffect(() => {
-    // Check if window is available (SSR safety)
-    if (typeof window === 'undefined') {
+    // Check if matchMedia is supported
+    if (typeof window === 'undefined' || !window.matchMedia) {
       return
     }
 
-    // Create media query
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-
+    
     // Set initial value
     setPrefersReducedMotion(mediaQuery.matches)
 
@@ -40,11 +48,9 @@ export function useReducedMotion(): boolean {
       mediaQuery.addEventListener('change', listener)
       return () => mediaQuery.removeEventListener('change', listener)
     }
-    // Legacy browsers (Safari < 14)
-    else {
-      // @ts-ignore - legacy API
+    // Legacy browsers
+    else if (mediaQuery.addListener) {
       mediaQuery.addListener(listener)
-      // @ts-ignore - legacy API
       return () => mediaQuery.removeListener(listener)
     }
   }, [])
@@ -53,56 +59,48 @@ export function useReducedMotion(): boolean {
 }
 
 /**
- * Hook that provides safe animation props based on motion preference
- * Returns animation config that respects user's motion preference
+ * Get animation props that respect reduced motion preference.
+ * Returns empty object if user prefers reduced motion.
  *
- * Usage:
+ * @example
  * ```tsx
- * const animation = useSafeAnimation({
- *   y: [0, -10, 0],
- *   transition: { duration: 0.5 }
- * })
+ * function Component() {
+ *   const animation = useAnimationProps({
+ *     initial: { opacity: 0 },
+ *     animate: { opacity: 1 }
+ *   })
  *
- * <motion.div animate={animation} />
+ *   return <motion.div {...animation}>Content</motion.div>
+ * }
  * ```
  */
-export function useSafeAnimation(
-  animationProps: Record<string, any>
-): Record<string, any> {
+export function useAnimationProps<T extends Record<string, any>>(
+  props: T
+): T | Record<string, never> {
   const prefersReducedMotion = useReducedMotion()
-
-  if (prefersReducedMotion) {
-    // Return minimal animation config
-    return {
-      transition: { duration: 0.01 }
-    }
-  }
-
-  return animationProps
+  return prefersReducedMotion ? {} : props
 }
 
 /**
- * Hook that conditionally returns animation variants
- * Returns null if user prefers reduced motion
+ * Alias for useReducedMotion that returns inverted boolean.
+ * Returns true if animations are safe to use (reduced motion is OFF).
  *
- * Usage:
+ * @example
  * ```tsx
- * const variants = useAnimationVariants({
- *   initial: { opacity: 0, y: 20 },
- *   animate: { opacity: 1, y: 0 }
- * })
+ * function Component() {
+ *   const shouldAnimate = useSafeAnimation()
  *
- * <motion.div variants={variants} />
+ *   return (
+ *     <motion.div
+ *       animate={shouldAnimate ? { scale: 1.2 } : {}}
+ *     >
+ *       Content
+ *     </motion.div>
+ *   )
+ * }
  * ```
  */
-export function useAnimationVariants(
-  variants: Record<string, any>
-): Record<string, any> | null {
+export function useSafeAnimation(): boolean {
   const prefersReducedMotion = useReducedMotion()
-
-  if (prefersReducedMotion) {
-    return null
-  }
-
-  return variants
+  return !prefersReducedMotion
 }

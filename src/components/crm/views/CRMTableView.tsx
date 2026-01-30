@@ -1,7 +1,9 @@
 'use client'
 
 import { ReactNode } from 'react'
+import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
+import { useSafeAnimation } from '@/hooks/use-reduced-motion'
 
 interface Column<T> {
   key: string
@@ -29,6 +31,8 @@ export function CRMTableView<T extends { id: string }>({
   loading = false,
   className,
 }: CRMTableViewProps<T>) {
+  const shouldAnimate = useSafeAnimation()
+
   if (loading) {
     return (
       <div className="h-full w-full animate-pulse">
@@ -58,13 +62,15 @@ export function CRMTableView<T extends { id: string }>({
         </thead>
         <tbody className="divide-y divide-gray-100">
           {data.map((item) => (
-            <tr
+            <motion.tr
               key={item.id}
               onClick={() => onRowClick?.(item)}
               className={cn(
                 'transition-colors hover:bg-gray-50',
                 onRowClick && 'cursor-pointer'
               )}
+              whileHover={shouldAnimate && onRowClick ? { scale: 1.005 } : undefined}
+              transition={{ duration: 0.15, ease: 'easeOut' }}
             >
               {columns.map((column) => (
                 <td
@@ -74,7 +80,7 @@ export function CRMTableView<T extends { id: string }>({
                   {column.render(item)}
                 </td>
               ))}
-            </tr>
+            </motion.tr>
           ))}
         </tbody>
       </table>

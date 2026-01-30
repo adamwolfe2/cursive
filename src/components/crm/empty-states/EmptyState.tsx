@@ -1,8 +1,11 @@
 'use client'
 
 import { ReactNode } from 'react'
+import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
+import { animationVariants } from '@/lib/animations/variants'
+import { useAnimationProps } from '@/hooks/use-reduced-motion'
 
 interface EmptyStateProps {
   icon: ReactNode
@@ -31,12 +34,15 @@ export function EmptyState({
   secondaryAction,
   className,
 }: EmptyStateProps) {
+  const bounceAnimation = useAnimationProps(animationVariants.emptyStateBounce)
+
   return (
-    <div
+    <motion.div
       className={cn(
         'flex h-full flex-col items-center justify-center py-12',
         className
       )}
+      {...bounceAnimation}
     >
       {/* Icon */}
       <div className="mb-4 text-gray-400">{icon}</div>
@@ -64,6 +70,6 @@ export function EmptyState({
           )}
         </div>
       )}
-    </div>
+    </motion.div>
   )
 }

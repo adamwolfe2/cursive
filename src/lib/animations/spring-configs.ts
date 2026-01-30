@@ -1,132 +1,51 @@
 /**
- * Reusable Spring Configuration Presets
- * For use with Framer Motion spring animations
+ * Reusable spring configurations for natural motion.
+ * Use these with Framer Motion's animate prop.
  */
 
 export const springConfigs = {
-  // Snappy - Quick, responsive interactions (buttons, toggles)
+  // Snappy interactions (buttons, toggles)
   snappy: {
     type: 'spring' as const,
     stiffness: 300,
     damping: 30,
-    mass: 1
   },
 
-  // Bouncy - Playful with noticeable bounce (notifications, celebrations)
+  // Bouncy animations (empty states, success indicators)
   bouncy: {
     type: 'spring' as const,
     stiffness: 400,
     damping: 20,
-    mass: 1
   },
 
-  // Smooth - Balanced, professional feel (modals, dropdowns)
+  // Smooth transitions (modals, drawers)
   smooth: {
     type: 'spring' as const,
     stiffness: 200,
     damping: 25,
-    mass: 1
   },
 
-  // Gentle - Soft, subtle motion (page transitions, fades)
+  // Gentle animations (page transitions, fades)
   gentle: {
     type: 'spring' as const,
     stiffness: 100,
     damping: 20,
-    mass: 1
   },
 
-  // Stiff - Minimal overshoot (precise interactions)
+  // Stiff spring (instant feedback)
   stiff: {
     type: 'spring' as const,
     stiffness: 500,
-    damping: 40,
-    mass: 1
+    damping: 35,
   },
+} as const
 
-  // Wobbly - Maximum bounce (fun interactions, gamification)
-  wobbly: {
-    type: 'spring' as const,
-    stiffness: 300,
-    damping: 15,
-    mass: 1
-  }
-}
-
-// Transition presets for non-spring animations
-export const transitionConfigs = {
-  // Quick fade/slide
-  quick: {
-    duration: 0.15,
-    ease: [0, 0, 0.2, 1] // easeOut
-  },
-
-  // Default transitions
-  default: {
-    duration: 0.2,
-    ease: [0.4, 0, 0.2, 1] // easeInOut
-  },
-
-  // Slow, smooth transitions
-  slow: {
-    duration: 0.3,
-    ease: [0.4, 0, 0.2, 1]
-  },
-
-  // Sharp, snappy (no easing)
-  sharp: {
-    duration: 0.1,
-    ease: 'linear' as const
-  }
-}
-
-// Layout transition configs (for layout animations)
-export const layoutTransitions = {
-  default: {
-    type: 'spring' as const,
-    stiffness: 300,
-    damping: 30
-  },
-
-  smooth: {
-    type: 'spring' as const,
-    stiffness: 200,
-    damping: 25
-  }
-}
-
-// Recommended use cases
-export const recommendedUsage = {
-  // Button interactions
-  button: springConfigs.snappy,
-
-  // Modal/Dialog entrance
-  modal: springConfigs.smooth,
-
-  // Dropdown/Popover
-  dropdown: transitionConfigs.quick,
-
-  // Page transitions
-  page: springConfigs.gentle,
-
-  // Toast notifications
-  toast: springConfigs.snappy,
-
-  // Checkbox/Toggle
-  toggle: springConfigs.bouncy,
-
-  // Drag & Drop
-  drag: springConfigs.stiff,
-
-  // Success celebrations
-  success: springConfigs.bouncy,
-
-  // Error shake
-  error: transitionConfigs.sharp,
-
-  // Loading states
-  loading: transitionConfigs.slow,
-
-  // List/Table items
-  list: transitionConfigs.default
-}
+/**
+ * Easing curves for non-spring transitions
+ */
+export const easings = {
+  easeOut: [0.16, 1, 0.3, 1],
+  easeIn: [0.7, 0, 0.84, 0],
+  easeInOut: [0.65, 0, 0.35, 1],
+  bounce: [0.34, 1.56, 0.64, 1],
+} as const
