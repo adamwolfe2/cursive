@@ -4,6 +4,15 @@
 - Email: adam@meetcursive.com
 - Password: AdminPass123!
 
+## IMPORTANT: Enable Full Access
+
+If you're experiencing redirect loops, visit this URL to enable full platform access:
+```
+https://leads.meetcursive.com/api/admin/set-bypass
+```
+
+This sets a bypass cookie that allows navigation without session checks.
+
 ## Main Routes
 
 ### Waitlist (Public)
@@ -27,11 +36,24 @@
 
 ### Buyer Dashboard
 - `/dashboard` - Main buyer dashboard
+- `/queries` - Search queries and discovery
+- `/my-leads` - Your assigned leads
+- `/leads` - All leads management (admin only)
+  - `/leads/discover` - Discover new leads
+  - `/data` - Lead data analytics
+- `/people-search` - People search tool
+- `/agents` - AI agents (admin only)
+- `/campaigns` - Email campaigns (admin only)
+- `/templates` - Email templates (admin only)
+- `/trends` - Analytics and trends
+- `/settings` - Account settings
+- `/crm` - **CRM for lead management** (Full CRM interface)
+
+### Marketplace
 - `/marketplace` - Browse and purchase leads
 - `/marketplace/credits` - Purchase credits
 - `/marketplace/my-leads` - View purchased leads
 - `/marketplace/history` - Purchase history
-- `/crm` - CRM for lead management
 
 ## Color Scheme
 - All gradients and accents are now BLUE (no purple/green/emerald)
