@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Building2, Plus, Filter, ArrowUpDown, Inbox } from 'lucide-react'
+import { Building2, Plus, Filter, ArrowUpDown } from 'lucide-react'
 import { CRMPageContainer } from '@/components/crm/layout/CRMPageContainer'
 import { CRMViewBar } from '@/components/crm/layout/CRMViewBar'
 import { CRMThreeColumnLayout } from '@/components/crm/layout/CRMThreeColumnLayout'
@@ -15,39 +15,14 @@ import { Badge } from '@/components/ui/badge'
 import { useCRMViewStore } from '@/lib/stores/crm-view-store'
 import { MobileMenu } from '@/components/ui/mobile-menu'
 import { formatDistanceToNow } from 'date-fns'
+import type { Company } from '@/types/crm.types'
 
-// Mock data
-const mockCompanies = [
-  {
-    id: '1',
-    name: 'Acme Corp',
-    industry: 'Technology',
-    employees: '500-1000',
-    status: 'Active',
-    revenue: '$5M ARR',
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 10),
-  },
-  {
-    id: '2',
-    name: 'Tech Industries',
-    industry: 'Software',
-    employees: '100-500',
-    status: 'Active',
-    revenue: '$2M ARR',
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5),
-  },
-  {
-    id: '3',
-    name: 'Global Solutions Inc',
-    industry: 'Consulting',
-    employees: '1000+',
-    status: 'Prospect',
-    revenue: '$15M ARR',
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2),
-  },
-]
+interface CompaniesPageClientProps {
+  initialData: Company[]
+}
 
-export function CompaniesPageClient() {
+export function CompaniesPageClient({ initialData }: CompaniesPageClientProps) {
+  const [companies] = useState<Company[]>(initialData)
   const viewType = useCRMViewStore((state) => state.getViewType('companies'))
   const setViewType = useCRMViewStore((state) => state.setViewType)
 
@@ -90,10 +65,10 @@ export function CompaniesPageClient() {
       key: 'name',
       header: 'Company',
       width: '30%',
-      render: (company: typeof mockCompanies[0]) => (
+      render: (company: Company) => (
         <div>
           <div className="font-medium text-gray-900">{company.name}</div>
-          <div className="text-sm text-gray-500">{company.industry}</div>
+          <div className="text-sm text-gray-500">{company.industry || 'N/A'}</div>
         </div>
       ),
     },
@@ -101,19 +76,20 @@ export function CompaniesPageClient() {
       key: 'employees',
       header: 'Employees',
       width: '15%',
-      render: (company: typeof mockCompanies[0]) => (
-        <span className="text-gray-700">{company.employees}</span>
+      render: (company: Company) => (
+        <span className="text-gray-700">{company.employees_range || 'N/A'}</span>
       ),
     },
     {
       key: 'status',
       header: 'Status',
       width: '15%',
-      render: (company: typeof mockCompanies[0]) => {
+      render: (company: Company) => {
         const colors = {
           Active: 'bg-green-100 text-green-800',
           Prospect: 'bg-blue-100 text-blue-800',
           Inactive: 'bg-gray-100 text-gray-800',
+          Lost: 'bg-red-100 text-red-800',
         }
         return (
           <Badge className={colors[company.status as keyof typeof colors] || ''}>
@@ -126,51 +102,58 @@ export function CompaniesPageClient() {
       key: 'revenue',
       header: 'Revenue',
       width: '15%',
-      render: (company: typeof mockCompanies[0]) => (
-        <span className="font-medium text-gray-900">{company.revenue}</span>
+      render: (company: Company) => (
+        <span className="font-medium text-gray-900">{company.revenue_range || 'N/A'}</span>
       ),
     },
     {
       key: 'created',
       header: 'Created',
       width: '15%',
-      render: (company: typeof mockCompanies[0]) => (
+      render: (company: Company) => (
         <span className="text-sm text-gray-500">
-          {formatDistanceToNow(company.createdAt, { addSuffix: true })}
+          {formatDistanceToNow(new Date(company.created_at), { addSuffix: true })}
         </span>
       ),
     },
   ]
 
+  const prospectCompanies = companies.filter((c) => c.status === 'Prospect')
+  const activeCompanies = companies.filter((c) => c.status === 'Active')
+  const inactiveCompanies = companies.filter((c) => c.status === 'Inactive')
+  const lostCompanies = companies.filter((c) => c.status === 'Lost')
+
   const boardColumns = [
-    { id: 'prospect', title: 'Prospect', color: '#3B82F6', count: 1 },
-    { id: 'active', title: 'Active', color: '#10B981', count: 2 },
-    { id: 'inactive', title: 'Inactive', color: '#6B7280', count: 0 },
+    { id: 'prospect', title: 'Prospect', color: '#3B82F6', count: prospectCompanies.length },
+    { id: 'active', title: 'Active', color: '#10B981', count: activeCompanies.length },
+    { id: 'inactive', title: 'Inactive', color: '#6B7280', count: inactiveCompanies.length },
+    { id: 'lost', title: 'Lost', color: '#EF4444', count: lostCompanies.length },
   ]
 
   const boardData = {
-    prospect: mockCompanies.filter((c) => c.status === 'Prospect'),
-    active: mockCompanies.filter((c) => c.status === 'Active'),
-    inactive: mockCompanies.filter((c) => c.status === 'Inactive'),
+    prospect: prospectCompanies,
+    active: activeCompanies,
+    inactive: inactiveCompanies,
+    lost: lostCompanies,
   }
 
-  const renderCard = (company: typeof mockCompanies[0]) => (
+  const renderCard = (company: Company) => (
     <div className="space-y-2">
       <div className="font-medium text-gray-900">{company.name}</div>
-      <div className="text-sm text-gray-600">{company.industry}</div>
+      <div className="text-sm text-gray-600">{company.industry || 'N/A'}</div>
       <div className="flex items-center justify-between">
-        <span className="text-sm font-medium text-gray-900">{company.revenue}</span>
-        <span className="text-xs text-gray-500">{company.employees}</span>
+        <span className="text-sm font-medium text-gray-900">{company.revenue_range || 'N/A'}</span>
+        <span className="text-xs text-gray-500">{company.employees_range || 'N/A'}</span>
       </div>
     </div>
   )
 
-  const handleRowClick = (company: typeof mockCompanies[0]) => {
+  const handleRowClick = (company: Company) => {
     setSelectedCompany(company.id)
     setDrawerOpen(true)
   }
 
-  const selectedCompanyData = mockCompanies.find((c) => c.id === selectedCompany)
+  const selectedCompanyData = companies.find((c) => c.id === selectedCompany)
 
   return (
     <CRMPageContainer>
@@ -206,7 +189,7 @@ export function CompaniesPageClient() {
         />
 
         <div className="flex-1 overflow-hidden">
-          {mockCompanies.length === 0 ? (
+          {companies.length === 0 ? (
             <EmptyState
               icon={<Building2 className="h-12 w-12" />}
               title="No companies yet"
@@ -224,7 +207,7 @@ export function CompaniesPageClient() {
             <>
               {viewType === 'table' && (
                 <CRMTableView
-                  data={mockCompanies}
+                  data={companies}
                   columns={tableColumns}
                   onRowClick={handleRowClick}
                 />
@@ -247,7 +230,7 @@ export function CompaniesPageClient() {
         isOpen={drawerOpen}
         onClose={() => setDrawerOpen(false)}
         title={selectedCompanyData?.name || ''}
-        subtitle={selectedCompanyData?.industry}
+        subtitle={selectedCompanyData?.industry || undefined}
       >
         <div className="space-y-6">
           <div>
@@ -255,11 +238,11 @@ export function CompaniesPageClient() {
             <div className="space-y-2">
               <div>
                 <span className="text-sm text-gray-500">Industry: </span>
-                <span className="text-sm text-gray-900">{selectedCompanyData?.industry}</span>
+                <span className="text-sm text-gray-900">{selectedCompanyData?.industry || 'N/A'}</span>
               </div>
               <div>
                 <span className="text-sm text-gray-500">Employees: </span>
-                <span className="text-sm text-gray-900">{selectedCompanyData?.employees}</span>
+                <span className="text-sm text-gray-900">{selectedCompanyData?.employees_range || 'N/A'}</span>
               </div>
               <div>
                 <span className="text-sm text-gray-500">Status: </span>
@@ -268,14 +251,27 @@ export function CompaniesPageClient() {
               <div>
                 <span className="text-sm text-gray-500">Revenue: </span>
                 <span className="text-sm font-medium text-gray-900">
-                  {selectedCompanyData?.revenue}
+                  {selectedCompanyData?.revenue_range || 'N/A'}
                 </span>
               </div>
+              {selectedCompanyData?.website && (
+                <div>
+                  <span className="text-sm text-gray-500">Website: </span>
+                  <a
+                    href={selectedCompanyData.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-blue-600 hover:underline"
+                  >
+                    {selectedCompanyData.website}
+                  </a>
+                </div>
+              )}
               <div>
                 <span className="text-sm text-gray-500">Created: </span>
                 <span className="text-sm text-gray-900">
                   {selectedCompanyData &&
-                    formatDistanceToNow(selectedCompanyData.createdAt, { addSuffix: true })}
+                    formatDistanceToNow(new Date(selectedCompanyData.created_at), { addSuffix: true })}
                 </span>
               </div>
             </div>
