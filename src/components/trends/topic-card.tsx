@@ -1,9 +1,19 @@
 'use client'
 
 import { useState } from 'react'
-import { TrendChart } from './trend-chart'
+import dynamic from 'next/dynamic'
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment } from 'react'
+
+// Dynamically import TrendChart (uses recharts) only when modal is opened
+const TrendChart = dynamic(() => import('./trend-chart').then(mod => ({ default: mod.TrendChart })), {
+  loading: () => (
+    <div className="flex h-64 items-center justify-center">
+      <div className="text-sm text-gray-500">Loading chart...</div>
+    </div>
+  ),
+  ssr: false,
+})
 
 interface TopicCardProps {
   topic: {

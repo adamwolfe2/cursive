@@ -2,11 +2,22 @@
 
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { redirect } from 'next/navigation'
-import { LeadsTable } from '@/components/leads/leads-table'
+import dynamic from 'next/dynamic'
 import { LeadStats } from '@/components/leads/lead-stats'
 import { PageContainer, PageHeader } from '@/components/layout'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
+
+// Dynamically import LeadsTable to reduce initial bundle size
+const LeadsTable = dynamic(() => import('@/components/leads/leads-table').then(mod => ({ default: mod.LeadsTable })), {
+  loading: () => (
+    <div className="rounded-lg border border-zinc-200 bg-white p-12">
+      <div className="flex items-center justify-center">
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-zinc-300 border-t-blue-600" />
+      </div>
+    </div>
+  ),
+})
 
 export default async function DataPage({
   searchParams,
