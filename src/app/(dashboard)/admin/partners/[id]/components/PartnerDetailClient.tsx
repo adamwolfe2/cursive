@@ -44,7 +44,7 @@ import {
 } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 import { useSafeAnimation } from '@/hooks/use-reduced-motion'
-import { toast } from 'sonner'
+import { useToast } from '@/lib/hooks/use-toast'
 
 interface PartnerDetailClientProps {
   partner: Partner
@@ -92,6 +92,7 @@ export function PartnerDetailClient({
 }: PartnerDetailClientProps) {
   const router = useRouter()
   const shouldAnimate = useSafeAnimation()
+  const toast = useToast()
   const [partner, setPartner] = useState(initialPartner)
   const [isEditingCommission, setIsEditingCommission] = useState(false)
   const [newCommissionRate, setNewCommissionRate] = useState(partner.payout_rate)
