@@ -55,7 +55,7 @@ export default function AdminPayoutsPage() {
   const fetchPayouts = async () => {
     setLoading(true)
     try {
-      const url = \`/api/admin/payouts?status=\${statusFilter}\`
+      const url = `/api/admin/payouts?status=${statusFilter}`
       const response = await fetch(url)
       const data = await response.json()
 
@@ -89,10 +89,10 @@ export default function AdminPayoutsPage() {
         alert(data.message)
         fetchPayouts()
       } else {
-        alert(\`Failed to approve payout: \${data.error}\`)
+        alert(`Failed to approve payout: ${data.error}`)
       }
     } catch (error: any) {
-      alert(\`Error: \${error.message}\`)
+      alert(`Error: ${error.message}`)
     } finally {
       setProcessingPayoutId(null)
     }
@@ -116,10 +116,10 @@ export default function AdminPayoutsPage() {
         alert(data.message)
         fetchPayouts()
       } else {
-        alert(\`Failed to reject payout: \${data.error}\`)
+        alert(`Failed to reject payout: ${data.error}`)
       }
     } catch (error: any) {
-      alert(\`Error: \${error.message}\`)
+      alert(`Error: ${error.message}`)
     } finally {
       setProcessingPayoutId(null)
     }
@@ -135,7 +135,7 @@ export default function AdminPayoutsPage() {
     }
 
     return (
-      <span className={\`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium \${colors[status] || 'bg-gray-100 text-gray-800'}\`}>
+      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${colors[status] || 'bg-gray-100 text-gray-800'}`}>
         {status.charAt(0).toUpperCase() + status.slice(1)}
       </span>
     )
@@ -156,7 +156,7 @@ export default function AdminPayoutsPage() {
           <div className="px-4 py-5 sm:p-6">
             <dt className="text-sm font-medium text-gray-500 truncate">Pending</dt>
             <dd className="mt-1 text-3xl font-semibold text-yellow-600">
-              \${totals.pending_amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              ${totals.pending_amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </dd>
           </div>
         </div>
@@ -165,7 +165,7 @@ export default function AdminPayoutsPage() {
           <div className="px-4 py-5 sm:p-6">
             <dt className="text-sm font-medium text-gray-500 truncate">Approved</dt>
             <dd className="mt-1 text-3xl font-semibold text-blue-600">
-              \${totals.approved_amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              ${totals.approved_amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </dd>
           </div>
         </div>
@@ -174,7 +174,7 @@ export default function AdminPayoutsPage() {
           <div className="px-4 py-5 sm:p-6">
             <dt className="text-sm font-medium text-gray-500 truncate">Completed</dt>
             <dd className="mt-1 text-3xl font-semibold text-green-600">
-              \${totals.completed_amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              ${totals.completed_amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </dd>
           </div>
         </div>
@@ -183,7 +183,7 @@ export default function AdminPayoutsPage() {
           <div className="px-4 py-5 sm:p-6">
             <dt className="text-sm font-medium text-gray-500 truncate">Rejected</dt>
             <dd className="mt-1 text-3xl font-semibold text-red-600">
-              \${totals.rejected_amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              ${totals.rejected_amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </dd>
           </div>
         </div>
@@ -193,25 +193,25 @@ export default function AdminPayoutsPage() {
       <div className="mb-6 flex space-x-2">
         <button
           onClick={() => setStatusFilter('all')}
-          className={\`px-4 py-2 rounded-md text-sm font-medium \${statusFilter === 'all' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}\`}
+          className={`px-4 py-2 rounded-md text-sm font-medium ${statusFilter === 'all' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
         >
           All
         </button>
         <button
           onClick={() => setStatusFilter('pending')}
-          className={\`px-4 py-2 rounded-md text-sm font-medium \${statusFilter === 'pending' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}\`}
+          className={`px-4 py-2 rounded-md text-sm font-medium ${statusFilter === 'pending' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
         >
           Pending
         </button>
         <button
           onClick={() => setStatusFilter('completed')}
-          className={\`px-4 py-2 rounded-md text-sm font-medium \${statusFilter === 'completed' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}\`}
+          className={`px-4 py-2 rounded-md text-sm font-medium ${statusFilter === 'completed' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
         >
           Completed
         </button>
         <button
           onClick={() => setStatusFilter('rejected')}
-          className={\`px-4 py-2 rounded-md text-sm font-medium \${statusFilter === 'rejected' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}\`}
+          className={`px-4 py-2 rounded-md text-sm font-medium ${statusFilter === 'rejected' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
         >
           Rejected
         </button>
@@ -243,7 +243,7 @@ export default function AdminPayoutsPage() {
                       {payout.partner.email}
                     </p>
                     <div className="mt-2 flex items-center space-x-4 text-sm text-gray-500">
-                      <span>Amount: \${payout.amount.toFixed(2)}</span>
+                      <span>Amount: ${payout.amount.toFixed(2)}</span>
                       <span>•</span>
                       <span>Leads: {payout.lead_count}</span>
                       <span>•</span>

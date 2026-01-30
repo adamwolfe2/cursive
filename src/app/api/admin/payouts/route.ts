@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
     // Build query
     let query = adminClient
       .from('partner_payouts')
-      .select(\`
+      .select(`
         *,
         partner:partners(
           id,
@@ -50,7 +50,7 @@ export async function GET(req: NextRequest) {
           stripe_account_id,
           payout_rate
         )
-      \`)
+      `)
       .order('created_at', { ascending: false })
 
     // Filter by status
