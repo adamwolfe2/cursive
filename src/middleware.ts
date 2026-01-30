@@ -57,13 +57,22 @@ export async function middleware(req: NextRequest) {
 
     // Use getSession() to read session from cookies - faster and more reliable
     let user = null
+    const allCookies = req.cookies.getAll().map(c => c.name)
+    const authCookies = allCookies.filter(name => name.includes('supabase') || name.includes('auth'))
+    console.log('Middleware cookies:', {
+      pathname,
+      totalCookies: allCookies.length,
+      authCookies: authCookies.length > 0 ? authCookies : 'none',
+      hasAdminBypass
+    })
+
     try {
       const { data: { session } } = await supabase.auth.getSession()
       if (session?.user) {
         user = session.user
         console.log('Middleware: Session found for', pathname, '- User:', user.email)
       } else {
-        console.log('Middleware: No session found for', pathname)
+        console.log('Middleware: No session found for', pathname, 'despite', authCookies.length, 'auth cookies')
       }
     } catch (e) {
       console.error('Middleware: Failed to read session', e)
