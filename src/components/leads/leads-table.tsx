@@ -18,6 +18,7 @@ import {
 import type { Lead } from '@/types'
 import { LeadsTableToolbar } from './leads-table-toolbar'
 import { LeadDetailPanel } from './lead-detail-panel'
+import { LeadMobileCardList } from './lead-mobile-card'
 import { formatDate, cn } from '@/lib/utils'
 import { TableSkeleton } from '@/components/skeletons'
 import { ErrorDisplay } from '@/components/error-display'
@@ -467,8 +468,22 @@ export function LeadsTable({ initialFilters }: LeadsTableProps) {
         Showing {data?.data?.length || 0} leads (of {data?.pagination?.total || 0} matching)
       </div>
 
-      {/* Table */}
-      <div className="rounded-lg border border-zinc-200 bg-white shadow-sm">
+      {/* Mobile Card View (< md) */}
+      <div className="md:hidden">
+        {table.getRowModel().rows.length === 0 ? (
+          <div className="rounded-lg border border-zinc-200 bg-white shadow-sm px-6 py-12 text-center text-sm text-zinc-500">
+            No leads found
+          </div>
+        ) : (
+          <LeadMobileCardList
+            leads={table.getRowModel().rows.map((row) => row.original)}
+            onLeadClick={(lead) => setSelectedLead(lead)}
+          />
+        )}
+      </div>
+
+      {/* Desktop Table View (>= md) */}
+      <div className="hidden md:block rounded-lg border border-zinc-200 bg-white shadow-sm">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-zinc-200">
             <thead className="bg-zinc-50">
