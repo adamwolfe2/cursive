@@ -12,6 +12,7 @@ import { EmptyState } from '@/components/crm/empty-states/EmptyState'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useCRMViewStore } from '@/lib/stores/crm-view-store'
+import { useToast } from '@/lib/hooks/use-toast'
 import { formatDistanceToNow } from 'date-fns'
 import type { LeadTableRow } from '@/types/crm.types'
 
@@ -23,6 +24,7 @@ export function LeadsPageClient({ initialData }: LeadsPageClientProps) {
   const [leads] = useState<LeadTableRow[]>(initialData)
   const viewType = useCRMViewStore((state) => state.getViewType('leads'))
   const setViewType = useCRMViewStore((state) => state.setViewType)
+  const toast = useToast()
 
   const [selectedLead, setSelectedLead] = useState<string | null>(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
@@ -175,11 +177,11 @@ export function LeadsPageClient({ initialData }: LeadsPageClientProps) {
               description="Get started by creating your first lead or importing leads from a CSV file."
               primaryAction={{
                 label: 'Create Lead',
-                onClick: () => console.log('Create lead'),
+                onClick: () => toast.info('Create lead functionality coming soon'),
               }}
               secondaryAction={{
                 label: 'Import Leads',
-                onClick: () => console.log('Import leads'),
+                onClick: () => toast.info('Import leads functionality coming soon'),
               }}
             />
           ) : (
@@ -198,7 +200,7 @@ export function LeadsPageClient({ initialData }: LeadsPageClientProps) {
                   data={boardData}
                   renderCard={renderCard}
                   onCardClick={handleRowClick}
-                  onAddCard={(columnId) => console.log('Add card to', columnId)}
+                  onAddCard={(columnId) => toast.info(`Add lead to ${columnId} - coming soon`)}
                 />
               )}
             </>

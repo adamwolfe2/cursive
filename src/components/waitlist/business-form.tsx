@@ -17,6 +17,7 @@ import {
   textRevealVariants,
   staggerItemVariants,
   buttonVariants,
+  logoVariants,
 } from '@/lib/utils/waitlist-animations'
 import { businessFormSchema, industryOptions, businessQ1Options, type BusinessFormData } from '@/lib/utils/waitlist-validation'
 import { BackButton } from './back-button'
@@ -54,27 +55,32 @@ export function BusinessForm({ vslAnswers, onSubmit, onBack }: BusinessFormProps
     <motion.div
       initial="initial"
       animate="animate"
-      className="min-h-screen bg-background flex flex-col px-6 py-12"
+      className="min-h-screen bg-background flex items-center justify-center px-6 py-12"
     >
-      {/* Logo Header */}
-      <header className="w-full max-w-2xl mx-auto mb-8">
-        <Link href="https://meetcursive.com" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
-          <Image src="/cursive-logo.png" alt="Cursive" width={32} height={32} className="w-8 h-8" />
-          <span className="text-lg font-semibold text-foreground">Cursive</span>
-        </Link>
-      </header>
+      <div className="w-full max-w-2xl">
+        <BackButton onClick={onBack} />
 
-      <div className="flex-1 flex items-center justify-center">
-        <div className="w-full max-w-2xl">
-          <BackButton onClick={onBack} />
+        <ProgressBar current={5} total={5} label="Step 5 of 5 - Almost There!" />
 
-          <ProgressBar current={5} total={5} label="Step 5 of 5 - Almost There!" />
+        <motion.div variants={staggerContainerVariants} className="space-y-6">
+          {/* Large Centered Logo */}
+          <motion.div variants={logoVariants} className="flex justify-center">
+            <Link href="https://meetcursive.com" className="hover:opacity-80 transition-opacity">
+              <Image
+                src="/cursive-logo.png"
+                alt="Cursive"
+                width={96}
+                height={96}
+                className="w-20 h-20 md:w-24 md:h-24"
+              />
+            </Link>
+          </motion.div>
 
-        <motion.div variants={staggerContainerVariants} className="bg-card border border-border rounded-xl p-6 md:p-8">
-          <motion.h2 variants={headingVariants} className="text-2xl font-bold text-foreground mb-2">
+        <motion.div className="bg-card border border-border rounded-xl p-6 md:p-8">
+          <motion.h2 variants={headingVariants} className="text-2xl font-bold text-foreground mb-2 text-center">
             Join the First 100 Businesses
           </motion.h2>
-          <motion.p variants={textRevealVariants} className="text-sm text-muted-foreground mb-6">
+          <motion.p variants={textRevealVariants} className="text-sm text-muted-foreground mb-6 text-center">
             Get qualified leads delivered to your inbox daily
           </motion.p>
 
@@ -219,7 +225,7 @@ export function BusinessForm({ vslAnswers, onSubmit, onBack }: BusinessFormProps
             </p>
           </motion.form>
         </motion.div>
-        </div>
+        </motion.div>
       </div>
     </motion.div>
   )

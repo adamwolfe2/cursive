@@ -4,6 +4,7 @@
 'use client'
 
 import { useRef } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { useLeads } from '@/lib/hooks/use-leads'
 import { useCRMStore } from '@/lib/crm/crm-state'
 import { LeadsDataTable } from './LeadsDataTable'
@@ -11,6 +12,7 @@ import { LeadsFilterBar, type LeadsFilterBarRef } from './LeadsFilterBar'
 import { BulkActionsToolbar } from './BulkActionsToolbar'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useKeyboardShortcuts } from '../hooks/use-keyboard-shortcuts'
+import type { WorkspaceUser } from './LeadsTableColumns'
 
 export function LeadsTableClient() {
   const { filters } = useCRMStore()
@@ -19,6 +21,26 @@ export function LeadsTableClient() {
   // Setup keyboard shortcuts
   useKeyboardShortcuts({
     onFocusSearch: () => filterBarRef.current?.focusSearch(),
+  })
+
+  // Fetch workspace users for assignment dropdown
+  const { data: usersData } = useQuery({
+    queryKey: ['workspace', 'users'],
+    queryFn: async () => {
+      const res = await fetch('/api/crm/workspace/users')
+      if (!res.ok) throw new Error('Failed to fetch users')
+      return res.json()
+    },
+  })
+
+  // Fetch workspace tags
+  const { data: tagsData } = useQuery({
+    queryKey: ['workspace', 'tags'],
+    queryFn: async () => {
+      const res = await fetch('/api/crm/workspace/tags')
+      if (!res.ok) throw new Error('Failed to fetch tags')
+      return res.json()
+    },
   })
 
   // Fetch leads with current filters
@@ -50,11 +72,16 @@ export function LeadsTableClient() {
           data={data?.leads || []}
           totalCount={data?.total || 0}
           pageCount={data?.pageCount || 0}
+          availableUsers={usersData?.users || []}
+          commonTags={tagsData?.tags || []}
         />
       )}
 
       {/* Bulk actions toolbar (slides up when leads selected) */}
-      <BulkActionsToolbar />
+      <BulkActionsToolbar
+        availableUsers={usersData?.users || []}
+        commonTags={tagsData?.tags || []}
+      />
     </div>
   )
 }

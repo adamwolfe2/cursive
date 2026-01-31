@@ -42,7 +42,7 @@ const noteTypeIcons: Record<NoteType, React.ReactNode> = {
 const noteTypeColors: Record<NoteType, string> = {
   note: 'bg-zinc-100 text-zinc-600',
   call: 'bg-blue-100 text-blue-600',
-  email: 'bg-blue-100 text-purple-600',
+  email: 'bg-cyan-100 text-cyan-600',
   meeting: 'bg-orange-100 text-orange-600',
   task: 'bg-blue-100 text-blue-600',
 }

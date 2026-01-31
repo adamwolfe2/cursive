@@ -28,7 +28,6 @@ export default async function DashboardLayout({
 
   // For admin with bypass cookie, provide mock data
   if (!session && hasAdminBypass) {
-    console.log('Dashboard layout: Admin bypass active, using mock data')
     const mockUser = {
       id: '00000000-0000-0000-0000-000000000000',
       full_name: 'Admin',

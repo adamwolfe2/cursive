@@ -29,8 +29,6 @@ function LoginForm() {
     setLoading(true)
     setError(null)
 
-    console.log('🔐 Client: Starting login flow with Server Action...')
-
     // Create FormData for Server Action
     const formData = new FormData()
     formData.append('email', data.email)
@@ -49,7 +47,6 @@ function LoginForm() {
       }
 
       // Server Action will redirect automatically if successful
-      console.log('✅ Client: Login successful, Server Action handling redirect')
     } catch (err) {
       console.error('❌ Client: Exception during login:', err)
       setError('An unexpected error occurred')
@@ -60,8 +57,6 @@ function LoginForm() {
   const handleGoogleLogin = async () => {
     setLoading(true)
     setError(null)
-
-    console.log('🔐 Client: Starting Google login with Server Action...')
 
     try {
       const result = await googleLoginAction(redirect)
@@ -74,7 +69,6 @@ function LoginForm() {
       }
 
       // Server Action will redirect automatically if successful
-      console.log('✅ Client: Google login initiated, redirecting to OAuth...')
     } catch (err) {
       console.error('❌ Client: Exception during Google login:', err)
       setError('An unexpected error occurred')

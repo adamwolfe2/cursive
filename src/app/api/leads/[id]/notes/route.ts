@@ -8,6 +8,7 @@ import { getCurrentUser } from '@/lib/auth/helpers'
 import { LeadActivityRepository } from '@/lib/repositories/lead-activity.repository'
 import { LeadRepository } from '@/lib/repositories/lead.repository'
 import { handleApiError, unauthorized, notFound, success, badRequest } from '@/lib/utils/api-error-handler'
+import type { NoteType } from '@/types'
 
 interface RouteContext {
   params: Promise<{ id: string }>
@@ -42,9 +43,15 @@ export async function GET(
     }
 
     // 3. Get notes with optional filters
+    const noteTypeParam = searchParams.get('note_type')
+    const validNoteTypes: NoteType[] = ['note', 'call', 'email', 'meeting', 'task']
+    const noteType = noteTypeParam && validNoteTypes.includes(noteTypeParam as NoteType)
+      ? (noteTypeParam as NoteType)
+      : undefined
+
     const activityRepo = new LeadActivityRepository()
     const notes = await activityRepo.getNotes(id, user.workspace_id, {
-      note_type: searchParams.get('note_type') as any,
+      note_type: noteType,
       is_pinned: searchParams.get('is_pinned') === 'true' ? true : undefined,
     })
 

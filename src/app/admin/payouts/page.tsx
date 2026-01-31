@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
+import { useToast } from '@/lib/hooks/use-toast'
 
 interface Partner {
   id: string
@@ -37,6 +38,7 @@ interface PayoutTotals {
 }
 
 export default function AdminPayoutsPage() {
+  const toast = useToast()
   const [payouts, setPayouts] = useState<Payout[]>([])
   const [totals, setTotals] = useState<PayoutTotals>({
     pending_amount: 0,
@@ -47,6 +49,8 @@ export default function AdminPayoutsPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [loading, setLoading] = useState(true)
   const [processingPayoutId, setProcessingPayoutId] = useState<string | null>(null)
+  const [rejectDialogOpen, setRejectDialogOpen] = useState<string | null>(null)
+  const [rejectReason, setRejectReason] = useState('')
 
   useEffect(() => {
     fetchPayouts()
@@ -86,40 +90,49 @@ export default function AdminPayoutsPage() {
       const data = await response.json()
 
       if (data.success) {
-        alert(data.message)
+        toast.success(data.message || 'Payout approved successfully')
         fetchPayouts()
       } else {
-        alert(`Failed to approve payout: ${data.error}`)
+        toast.error(`Failed to approve payout: ${data.error}`)
       }
     } catch (error: any) {
-      alert(`Error: ${error.message}`)
+      toast.error(`Error: ${error.message}`)
     } finally {
       setProcessingPayoutId(null)
     }
   }
 
+  const handleRejectClick = (payoutId: string) => {
+    setRejectDialogOpen(payoutId)
+    setRejectReason('')
+  }
+
   const handleReject = async (payoutId: string) => {
-    const reason = prompt('Enter rejection reason:')
-    if (!reason) return
+    if (!rejectReason.trim()) {
+      toast.warning('Please provide a rejection reason')
+      return
+    }
 
     setProcessingPayoutId(payoutId)
     try {
       const response = await fetch('/api/admin/payouts/reject', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ payout_id: payoutId, reason }),
+        body: JSON.stringify({ payout_id: payoutId, reason: rejectReason }),
       })
 
       const data = await response.json()
 
       if (data.success) {
-        alert(data.message)
+        toast.success(data.message || 'Payout rejected successfully')
+        setRejectDialogOpen(null)
+        setRejectReason('')
         fetchPayouts()
       } else {
-        alert(`Failed to reject payout: ${data.error}`)
+        toast.error(`Failed to reject payout: ${data.error}`)
       }
     } catch (error: any) {
-      alert(`Error: ${error.message}`)
+      toast.error(`Error: ${error.message}`)
     } finally {
       setProcessingPayoutId(null)
     }
@@ -277,7 +290,7 @@ export default function AdminPayoutsPage() {
                         {processingPayoutId === payout.id ? 'Processing...' : 'Approve'}
                       </Button>
                       <Button
-                        onClick={() => handleReject(payout.id)}
+                        onClick={() => handleRejectClick(payout.id)}
                         disabled={processingPayoutId === payout.id}
                         variant="outline"
                         size="sm"
@@ -292,6 +305,42 @@ export default function AdminPayoutsPage() {
           </ul>
         )}
       </div>
+
+      {/* Reject Dialog */}
+      {rejectDialogOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold mb-4">Reject Payout</h3>
+            <p className="text-sm text-gray-600 mb-4">
+              Please provide a reason for rejecting this payout:
+            </p>
+            <textarea
+              value={rejectReason}
+              onChange={(e) => setRejectReason(e.target.value)}
+              className="w-full border border-gray-300 rounded-md p-2 mb-4 min-h-[100px]"
+              placeholder="Enter rejection reason..."
+            />
+            <div className="flex gap-3 justify-end">
+              <Button
+                onClick={() => {
+                  setRejectDialogOpen(null)
+                  setRejectReason('')
+                }}
+                variant="outline"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={() => handleReject(rejectDialogOpen)}
+                disabled={!rejectReason.trim() || processingPayoutId === rejectDialogOpen}
+                className="bg-red-600 hover:bg-red-700"
+              >
+                {processingPayoutId === rejectDialogOpen ? 'Rejecting...' : 'Reject Payout'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

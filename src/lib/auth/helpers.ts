@@ -203,3 +203,26 @@ export async function hasCompletedOnboarding(): Promise<boolean> {
   // User has completed onboarding if they have a workspace
   return !!user.workspace_id
 }
+
+/**
+ * Verify workspace ownership
+ * Checks if a brand workspace belongs to the current user's workspace
+ * @param brandWorkspaceId - The brand workspace ID to verify
+ * @returns true if user owns the workspace, false otherwise
+ */
+export async function verifyWorkspaceOwnership(brandWorkspaceId: string): Promise<boolean> {
+  const user = await getCurrentUser()
+  if (!user || !user.workspace_id) return false
+
+  const supabase = await createClient()
+
+  const { data: workspace, error } = await supabase
+    .from('brand_workspaces')
+    .select('workspace_id')
+    .eq('id', brandWorkspaceId)
+    .single()
+
+  if (error || !workspace) return false
+
+  return workspace.workspace_id === user.workspace_id
+}

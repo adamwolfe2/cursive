@@ -23,7 +23,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
-import { leadsTableColumns } from './LeadsTableColumns'
+import { createLeadsTableColumns, type WorkspaceUser } from './LeadsTableColumns'
 import { PaginationControls } from './PaginationControls'
 import { LeadMobileCard } from './LeadMobileCard'
 import { useCRMStore } from '@/lib/crm/crm-state'
@@ -34,12 +34,16 @@ export interface LeadsDataTableProps {
   data: LeadTableRow[]
   totalCount: number
   pageCount: number
+  availableUsers?: WorkspaceUser[]
+  commonTags?: string[]
 }
 
 export function LeadsDataTable({
   data,
   totalCount,
   pageCount,
+  availableUsers = [],
+  commonTags = [],
 }: LeadsDataTableProps) {
   const {
     selectedLeadIds,
@@ -75,7 +79,7 @@ export function LeadsDataTable({
 
   const table = useReactTable({
     data,
-    columns: leadsTableColumns,
+    columns: createLeadsTableColumns(availableUsers, commonTags),
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     onSortingChange: setSorting,
@@ -131,8 +135,7 @@ export function LeadsDataTable({
                 setSelectedLeads(newSelection)
               }}
               onView={() => {
-                // TODO: Navigate to lead details
-                console.log('View lead:', lead.id)
+                window.location.href = `/crm/leads/${lead.id}`
               }}
             />
           ))
@@ -186,7 +189,7 @@ export function LeadsDataTable({
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={leadsTableColumns.length}
+                  colSpan={table.getAllColumns().length}
                   className="h-24 text-center"
                 >
                   <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground">

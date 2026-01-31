@@ -184,6 +184,9 @@ export interface PaginatedResult<T> {
 // CRM LEADS (Marketplace Leads in CRM Interface)
 // ============================================================================
 
+// Lead status enum (imported from database types)
+export type LeadStatus = 'new' | 'contacted' | 'qualified' | 'proposal' | 'negotiation' | 'won' | 'lost'
+
 // LeadTableRow represents a marketplace lead with joined user data
 export interface LeadTableRow {
   id: string
@@ -196,7 +199,7 @@ export interface LeadTableRow {
   company_industry?: string
   state?: string
   company_size?: string
-  status: string
+  status: LeadStatus
   assigned_user_id?: string
   assigned_user?: {
     id: string
@@ -232,10 +235,71 @@ export interface LeadFilters extends PaginationParams {
 }
 
 export interface LeadUpdatePayload {
-  status?: string
+  status?: LeadStatus
   assigned_user_id?: string | null
   tags?: string[]
   notes?: string
   last_contacted_at?: string
   next_follow_up_at?: string
+}
+
+// Lead with joined relations (for repository queries)
+export interface LeadWithRelations {
+  id: string
+  workspace_id: string
+  query_id: string | null
+  company_name: string
+  company_industry: string | null
+  company_location: any | null
+  email: string | null
+  first_name: string | null
+  last_name: string | null
+  full_name: string | null
+  job_title: string | null
+  phone: string | null
+  linkedin_url: string | null
+  company_domain: string | null
+  source: string
+  enrichment_status: string
+  delivery_status: string
+  routing_rule_id: string | null
+  routing_metadata: any | null
+  created_at: string
+  contact_title: string | null
+  contact_seniority: string | null
+  contact_department: string | null
+  company_size: string | null
+  company_revenue: string | null
+  company_website: string | null
+  company_employee_count: number | null
+  company_founded_year: number | null
+  company_description: string | null
+  city: string | null
+  state: string | null
+  state_code: string | null
+  country: string | null
+  country_code: string | null
+  postal_code: string | null
+  address: string | null
+  datashopper_id: number | null
+  intent_topic: string | null
+  intent_topic_id: string | null
+  intent_score: string | null
+  intent_signals: any
+  datashopper_person_id: string | null
+  datashopper_company_id: string | null
+  datashopper_record_type: string | null
+  datashopper_raw_data: any
+  status: LeadStatus
+  secondary_email: string | null
+  mobile_phone: string | null
+  work_phone: string | null
+  // Joined relations
+  queries?: {
+    name: string
+    global_topics: {
+      topic: string
+      category: string
+    } | null
+  } | null
 }

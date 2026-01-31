@@ -13,8 +13,10 @@ import { EmptyState } from '@/components/crm/empty-states/EmptyState'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useCRMViewStore } from '@/lib/stores/crm-view-store'
+import { useToast } from '@/lib/hooks/use-toast'
 import { MobileMenu } from '@/components/ui/mobile-menu'
 import { formatDistanceToNow } from 'date-fns'
+import { CreateContactDialog } from './CreateContactDialog'
 import type { Contact } from '@/types/crm.types'
 
 interface ContactsPageClientProps {
@@ -25,9 +27,11 @@ export function ContactsPageClient({ initialData }: ContactsPageClientProps) {
   const [contacts] = useState<Contact[]>(initialData)
   const viewType = useCRMViewStore((state) => state.getViewType('contacts'))
   const setViewType = useCRMViewStore((state) => state.setViewType)
+  const toast = useToast()
 
   const [selectedContact, setSelectedContact] = useState<string | null>(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const [createDialogOpen, setCreateDialogOpen] = useState(false)
 
 
   const tableColumns = [
@@ -157,7 +161,7 @@ export function ContactsPageClient({ initialData }: ContactsPageClientProps) {
             <>
               <div className="lg:hidden">
               </div>
-              <Button size="sm">
+              <Button size="sm" onClick={() => setCreateDialogOpen(true)}>
                 <Plus className="mr-2 h-4 w-4" />
                 Add Contact
               </Button>
@@ -173,11 +177,11 @@ export function ContactsPageClient({ initialData }: ContactsPageClientProps) {
               description="Build your network by adding contacts. Track conversations, relationships, and engagement with decision makers."
               primaryAction={{
                 label: 'Add Contact',
-                onClick: () => console.log('Add contact'),
+                onClick: () => setCreateDialogOpen(true),
               }}
               secondaryAction={{
                 label: 'Import Contacts',
-                onClick: () => console.log('Import contacts'),
+                onClick: () => toast.info('Import contacts functionality coming soon'),
               }}
             />
           ) : (
@@ -195,7 +199,7 @@ export function ContactsPageClient({ initialData }: ContactsPageClientProps) {
                   data={boardData}
                   renderCard={renderCard}
                   onCardClick={handleRowClick}
-                  onAddCard={(columnId) => console.log('Add card to', columnId)}
+                  onAddCard={(columnId) => toast.info(`Add contact to ${columnId} - coming soon`)}
                 />
               )}
             </>
@@ -244,6 +248,8 @@ export function ContactsPageClient({ initialData }: ContactsPageClientProps) {
           </div>
         </div>
       </RecordDrawer>
+
+      <CreateContactDialog open={createDialogOpen} onOpenChange={setCreateDialogOpen} />
     </CRMPageContainer>
   )
 }

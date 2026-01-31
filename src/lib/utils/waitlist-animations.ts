@@ -162,8 +162,8 @@ export const staggerContainerVariants: Variants = {
   initial: {},
   animate: {
     transition: {
-      staggerChildren: 0.08,
-      delayChildren: 0.1,
+      staggerChildren: 0.2, // Increased for more noticeable cascade
+      delayChildren: 0.2,
     },
   },
 }
@@ -178,19 +178,19 @@ export const staggerItemVariants: Variants = {
     opacity: 1,
     y: 0,
     transition: {
-      duration: 0.5,
+      duration: 0.6,
       ease: [0.25, 0.1, 0.25, 1],
     },
   },
 }
 
-// Fast stagger for option buttons - very quick cascade
+// Fast stagger for option buttons - noticeable cascade
 export const fastStaggerContainerVariants: Variants = {
   initial: {},
   animate: {
     transition: {
-      staggerChildren: 0.015, // 15ms between each button
-      delayChildren: 0.2, // slight delay after screen transition
+      staggerChildren: 0.08, // Increased from 15ms to 80ms for more visible flow
+      delayChildren: 0.3,
     },
   },
 }
@@ -206,6 +206,22 @@ export const optionItemVariants: Variants = {
     y: 0,
     transition: {
       duration: 0.35,
+      ease: [0.25, 0.1, 0.25, 1],
+    },
+  },
+}
+
+// Logo animation - centered, large logo reveal
+export const logoVariants: Variants = {
+  initial: {
+    opacity: 0,
+    scale: 0.95,
+  },
+  animate: {
+    opacity: 1,
+    scale: 1,
+    transition: {
+      duration: 0.7,
       ease: [0.25, 0.1, 0.25, 1],
     },
   },

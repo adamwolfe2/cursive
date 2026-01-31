@@ -20,12 +20,9 @@ export async function loginAction(formData: FormData) {
     return { error: 'Invalid email or password format' }
   }
 
-  console.log('🔐 Server Action: Starting login flow...')
-
   // Use server client which properly sets cookies
   const supabase = await createClient()
 
-  console.log('📝 Server Action: Calling signInWithPassword...')
   const { data: sessionData, error: signInError } = await supabase.auth.signInWithPassword({
     email: result.data.email,
     password: result.data.password,
@@ -36,14 +33,7 @@ export async function loginAction(formData: FormData) {
     return { error: signInError.message }
   }
 
-  console.log('✅ Server Action: Login successful', {
-    hasSession: !!sessionData.session,
-    hasUser: !!sessionData.user,
-    userId: sessionData.user?.id,
-  })
-
   // Redirect will trigger middleware with cookies now set
-  console.log(`🔄 Server Action: Redirecting to: ${redirectTo}`)
   redirect(redirectTo)
 }
 

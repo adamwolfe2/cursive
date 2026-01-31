@@ -28,15 +28,12 @@ import { InlineTagsEdit } from './InlineTagsEdit'
 import type { LeadTableRow } from '@/types/crm.types'
 import { cn } from '@/lib/utils'
 
-// Mock available users - TODO: Replace with actual workspace users from API
-const MOCK_AVAILABLE_USERS = [
-  { id: '1', full_name: 'John Doe', email: 'john@example.com' },
-  { id: '2', full_name: 'Jane Smith', email: 'jane@example.com' },
-  { id: '3', full_name: 'Bob Johnson', email: 'bob@example.com' },
-]
-
-// Mock common tags - TODO: Replace with actual workspace tags from API
-const MOCK_COMMON_TAGS = ['hot-lead', 'qualified', 'enterprise', 'follow-up', 'demo-scheduled']
+// Types for workspace data
+interface WorkspaceUser {
+  id: string
+  full_name: string
+  email: string
+}
 
 // Helper to format currency
 function formatCurrency(amount: number | null): string {
@@ -63,7 +60,11 @@ function formatPhone(phone: string | null): string {
 }
 
 
-export const leadsTableColumns: ColumnDef<LeadTableRow>[] = [
+export function createLeadsTableColumns(
+  availableUsers: WorkspaceUser[] = [],
+  commonTags: string[] = []
+): ColumnDef<LeadTableRow>[] {
+  return [
   // Selection column
   {
     id: 'select',
@@ -357,7 +358,7 @@ export const leadsTableColumns: ColumnDef<LeadTableRow>[] = [
       <InlineAssignUserEdit
         leadId={row.original.id}
         currentUser={row.original.assigned_user || null}
-        availableUsers={MOCK_AVAILABLE_USERS}
+        availableUsers={availableUsers}
       />
     ),
     size: 160,
@@ -372,7 +373,7 @@ export const leadsTableColumns: ColumnDef<LeadTableRow>[] = [
       <InlineTagsEdit
         leadId={row.original.id}
         currentTags={row.original.tags || []}
-        commonTags={MOCK_COMMON_TAGS}
+        commonTags={commonTags}
       />
     ),
     size: 180,
@@ -427,10 +428,25 @@ export const leadsTableColumns: ColumnDef<LeadTableRow>[] = [
               Copy email
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View details</DropdownMenuItem>
-            <DropdownMenuItem>Edit lead</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => window.location.href = `/crm/leads/${lead.id}`}>
+              View details
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => alert('Edit functionality coming soon')}>
+              Edit lead
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
+            <DropdownMenuItem
+              className="text-destructive"
+              onClick={() => {
+                if (confirm(`Are you sure you want to delete this lead?`)) {
+                  fetch(`/api/leads/${lead.id}`, { method: 'DELETE' })
+                    .then(() => window.location.reload())
+                    .catch((err) => alert('Failed to delete lead'))
+                }
+              }}
+            >
+              Delete
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       )
@@ -438,4 +454,8 @@ export const leadsTableColumns: ColumnDef<LeadTableRow>[] = [
     size: 60,
     enableHiding: false,
   },
-]
+  ]
+}
+
+// Export the type for consumers
+export type { WorkspaceUser }

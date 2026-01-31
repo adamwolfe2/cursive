@@ -13,8 +13,10 @@ import { EmptyState } from '@/components/crm/empty-states/EmptyState'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useCRMViewStore } from '@/lib/stores/crm-view-store'
+import { useToast } from '@/lib/hooks/use-toast'
 import { MobileMenu } from '@/components/ui/mobile-menu'
 import { formatDistanceToNow, format } from 'date-fns'
+import { CreateDealDialog } from './CreateDealDialog'
 import type { Deal } from '@/types/crm.types'
 
 interface DealsPageClientProps {
@@ -25,9 +27,11 @@ export function DealsPageClient({ initialData }: DealsPageClientProps) {
   const [deals] = useState<Deal[]>(initialData)
   const viewType = useCRMViewStore((state) => state.getViewType('deals'))
   const setViewType = useCRMViewStore((state) => state.setViewType)
+  const toast = useToast()
 
   const [selectedDeal, setSelectedDeal] = useState<string | null>(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const [createDialogOpen, setCreateDialogOpen] = useState(false)
 
 
   const formatCurrency = (value: number) => {
@@ -68,7 +72,7 @@ export function DealsPageClient({ initialData }: DealsPageClientProps) {
       render: (deal: Deal) => {
         const colors = {
           Qualified: 'bg-blue-100 text-blue-800',
-          Proposal: 'bg-purple-100 text-purple-800',
+          Proposal: 'bg-cyan-100 text-cyan-800',
           Negotiation: 'bg-amber-100 text-amber-800',
           'Closed Won': 'bg-green-100 text-green-800',
           'Closed Lost': 'bg-red-100 text-red-800',
@@ -172,7 +176,7 @@ export function DealsPageClient({ initialData }: DealsPageClientProps) {
             <>
               <div className="lg:hidden">
               </div>
-              <Button size="sm">
+              <Button size="sm" onClick={() => setCreateDialogOpen(true)}>
                 <Plus className="mr-2 h-4 w-4" />
                 Add Deal
               </Button>
@@ -188,11 +192,11 @@ export function DealsPageClient({ initialData }: DealsPageClientProps) {
               description="Start tracking your sales opportunities. Create deals, set stages, and close more business with organized pipeline management."
               primaryAction={{
                 label: 'Create Deal',
-                onClick: () => console.log('Create deal'),
+                onClick: () => setCreateDialogOpen(true),
               }}
               secondaryAction={{
                 label: 'Import Deals',
-                onClick: () => console.log('Import deals'),
+                onClick: () => toast.info('Import deals functionality coming soon'),
               }}
             />
           ) : (
@@ -210,7 +214,7 @@ export function DealsPageClient({ initialData }: DealsPageClientProps) {
                   data={boardData}
                   renderCard={renderCard}
                   onCardClick={handleRowClick}
-                  onAddCard={(columnId) => console.log('Add card to', columnId)}
+                  onAddCard={(columnId) => toast.info(`Add deal to ${columnId} - coming soon`)}
                 />
               )}
             </>
@@ -276,6 +280,8 @@ export function DealsPageClient({ initialData }: DealsPageClientProps) {
           </div>
         </div>
       </RecordDrawer>
+
+      <CreateDealDialog open={createDialogOpen} onOpenChange={setCreateDialogOpen} />
     </CRMPageContainer>
   )
 }

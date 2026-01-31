@@ -304,7 +304,7 @@ function StatsGrid({
         label="Leads Sold"
         value={stats.totalLeadsSold.toLocaleString()}
         icon={TrendingUp}
-        color="purple"
+        color="cyan"
         subtitle={`${(stats.commissionRate * 100).toFixed(0)}% commission`}
         shouldAnimate={shouldAnimate}
       />
@@ -323,7 +323,7 @@ function StatCard({
   label: string
   value: string
   icon: React.ElementType
-  color: 'green' | 'blue' | 'amber' | 'purple'
+  color: 'green' | 'blue' | 'amber' | 'cyan'
   subtitle?: string
   shouldAnimate: boolean
 }) {
@@ -331,7 +331,7 @@ function StatCard({
     green: 'bg-green-50 text-green-700 border-green-100',
     blue: 'bg-blue-50 text-blue-700 border-blue-100',
     amber: 'bg-amber-50 text-amber-700 border-amber-100',
-    purple: 'bg-purple-50 text-purple-700 border-purple-100',
+    cyan: 'bg-cyan-50 text-cyan-700 border-cyan-100',
   }
 
   const CardWrapper = shouldAnimate ? motion.div : 'div'

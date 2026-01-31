@@ -44,7 +44,7 @@ export async function GET(
     const history = await activityRepo.getStatusHistory(id, user.workspace_id)
 
     return success({
-      current_status: (lead as any).status || 'new',
+      current_status: lead.status || 'new',
       history,
     })
   } catch (error: any) {

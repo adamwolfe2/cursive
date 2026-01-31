@@ -5,7 +5,7 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -48,6 +48,9 @@ export default function BrandingPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  const pollAttemptsRef = useRef(0)
+  const MAX_POLL_ATTEMPTS = 60 // 60 attempts * 3 seconds = 3 minutes max
+
   useEffect(() => {
     if (!workspaceId) {
       router.push('/ai-studio')
@@ -55,9 +58,18 @@ export default function BrandingPage() {
     }
 
     fetchWorkspace()
+    pollAttemptsRef.current = 0
 
     const interval = setInterval(() => {
       if (workspace?.extraction_status === 'processing') {
+        pollAttemptsRef.current += 1
+
+        if (pollAttemptsRef.current >= MAX_POLL_ATTEMPTS) {
+          clearInterval(interval)
+          setError('Extraction is taking longer than expected. Please refresh the page to check status.')
+          return
+        }
+
         fetchWorkspace()
       }
     }, 3000)
@@ -85,7 +97,7 @@ export default function BrandingPage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      <div className="flex items-center justify-center min-h-screen bg-[#F8F9FA]">
         <div className="text-center">
           <Loader2 className="h-12 w-12 animate-spin mx-auto text-blue-600 mb-4" />
           <p className="text-gray-600 text-lg">Loading brand workspace...</p>
@@ -96,7 +108,7 @@ export default function BrandingPage() {
 
   if (error || !workspace) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      <div className="flex items-center justify-center min-h-screen bg-[#F8F9FA]">
         <div className="text-center max-w-md">
           <XCircle className="h-16 w-16 mx-auto text-red-600 mb-4" />
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Oops!</h2>
@@ -112,7 +124,7 @@ export default function BrandingPage() {
 
   if (workspace.extraction_status === 'processing') {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      <div className="flex items-center justify-center min-h-screen bg-[#F8F9FA]">
         <div className="text-center max-w-md">
           <Loader2 className="h-16 w-16 animate-spin mx-auto text-blue-600 mb-6" />
           <h2 className="text-3xl font-bold text-gray-900 mb-3">
@@ -133,7 +145,7 @@ export default function BrandingPage() {
 
   if (workspace.extraction_status === 'failed') {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      <div className="flex items-center justify-center min-h-screen bg-[#F8F9FA]">
         <div className="text-center max-w-md">
           <XCircle className="h-16 w-16 mx-auto text-red-600 mb-4" />
           <h2 className="text-3xl font-bold text-gray-900 mb-3">

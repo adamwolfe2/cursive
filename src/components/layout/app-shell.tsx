@@ -83,24 +83,7 @@ const navigationItems = [
     href: '/ai-studio',
     adminOnly: true,
     icon: (
-      <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none">
-        <path
-          d="M7 8C5.34315 8 4 9.34315 4 11C4 12.6569 5.34315 14 7 14C8.65685 14 10 12.6569 10 11C10 9.34315 8.65685 8 7 8Z"
-          stroke="currentColor"
-          strokeWidth="2"
-        />
-        <path
-          d="M17 10C15.3431 10 14 11.3431 14 13C14 14.6569 15.3431 16 17 16C18.6569 16 20 14.6569 20 13C20 11.3431 18.6569 10 17 10Z"
-          stroke="currentColor"
-          strokeWidth="2"
-        />
-        <path
-          d="M9.5 12.5C10.5 14 13.5 14 14.5 12.5"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-        />
-      </svg>
+      <img src="/cursive-logo.png" alt="Cursive" className="h-5 w-5 object-contain" />
     ),
     children: [
       { name: 'Home', href: '/ai-studio' },

@@ -13,8 +13,10 @@ import { EmptyState } from '@/components/crm/empty-states/EmptyState'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useCRMViewStore } from '@/lib/stores/crm-view-store'
+import { useToast } from '@/lib/hooks/use-toast'
 import { MobileMenu } from '@/components/ui/mobile-menu'
 import { formatDistanceToNow } from 'date-fns'
+import { CreateCompanyDialog } from './CreateCompanyDialog'
 import type { Company } from '@/types/crm.types'
 
 interface CompaniesPageClientProps {
@@ -25,9 +27,11 @@ export function CompaniesPageClient({ initialData }: CompaniesPageClientProps) {
   const [companies] = useState<Company[]>(initialData)
   const viewType = useCRMViewStore((state) => state.getViewType('companies'))
   const setViewType = useCRMViewStore((state) => state.setViewType)
+  const toast = useToast()
 
   const [selectedCompany, setSelectedCompany] = useState<string | null>(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const [createDialogOpen, setCreateDialogOpen] = useState(false)
 
   const tableColumns = [
     {
@@ -152,7 +156,7 @@ export function CompaniesPageClient({ initialData }: CompaniesPageClientProps) {
             <>
               <div className="lg:hidden">
               </div>
-              <Button size="sm">
+              <Button size="sm" onClick={() => setCreateDialogOpen(true)}>
                 <Plus className="mr-2 h-4 w-4" />
                 Add Company
               </Button>
@@ -168,11 +172,11 @@ export function CompaniesPageClient({ initialData }: CompaniesPageClientProps) {
               description="Start managing your business accounts by adding your first company. Track deals, contacts, and activities all in one place."
               primaryAction={{
                 label: 'Create Company',
-                onClick: () => console.log('Create company'),
+                onClick: () => setCreateDialogOpen(true),
               }}
               secondaryAction={{
                 label: 'Import Companies',
-                onClick: () => console.log('Import companies'),
+                onClick: () => toast.info('Import companies functionality coming soon'),
               }}
             />
           ) : (
@@ -190,7 +194,7 @@ export function CompaniesPageClient({ initialData }: CompaniesPageClientProps) {
                   data={boardData}
                   renderCard={renderCard}
                   onCardClick={handleRowClick}
-                  onAddCard={(columnId) => console.log('Add card to', columnId)}
+                  onAddCard={(columnId) => toast.info(`Add company to ${columnId} - coming soon`)}
                 />
               )}
             </>
@@ -250,6 +254,8 @@ export function CompaniesPageClient({ initialData }: CompaniesPageClientProps) {
           </div>
         </div>
       </RecordDrawer>
+
+      <CreateCompanyDialog open={createDialogOpen} onOpenChange={setCreateDialogOpen} />
     </CRMPageContainer>
   )
 }

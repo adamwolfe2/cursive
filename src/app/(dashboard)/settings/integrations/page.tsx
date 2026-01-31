@@ -27,7 +27,7 @@ function FallbackIcon({ name }: { name: string }) {
     hubspot: 'bg-orange-500',
     pipedrive: 'bg-green-600',
     'google-sheets': 'bg-green-500',
-    'microsoft-teams': 'bg-purple-600',
+    'microsoft-teams': 'bg-indigo-500',
     discord: 'bg-indigo-600',
   }
 

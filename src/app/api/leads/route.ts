@@ -9,7 +9,7 @@ import { z } from 'zod'
 
 const leadFiltersSchema = z.object({
   query_id: z.string().uuid().optional(),
-  enrichment_status: z.enum(['pending', 'enriching', 'enriched', 'failed']).optional(),
+  enrichment_status: z.enum(['pending', 'completed', 'failed']).optional(),
   delivery_status: z.enum(['pending', 'delivered', 'failed']).optional(),
   intent_score: z.enum(['hot', 'warm', 'cold']).optional(),
   date_from: z.string().optional(),
@@ -53,9 +53,9 @@ export async function GET(request: NextRequest) {
       user.workspace_id,
       {
         query_id: validated.query_id,
-        enrichment_status: validated.enrichment_status as any,
-        delivery_status: validated.delivery_status as any,
-        intent_score: validated.intent_score as any,
+        enrichment_status: validated.enrichment_status,
+        delivery_status: validated.delivery_status,
+        intent_score: validated.intent_score,
         date_from: validated.date_from,
         date_to: validated.date_to,
         search: validated.search,

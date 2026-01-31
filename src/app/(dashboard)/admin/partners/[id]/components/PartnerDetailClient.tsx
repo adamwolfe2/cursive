@@ -246,7 +246,7 @@ export function PartnerDetailClient({
           label="Leads Sold"
           value={partner.total_leads_sold.toLocaleString()}
           icon={TrendingUp}
-          color="purple"
+          color="cyan"
         />
         <StatCard
           label="Referred Partners"
@@ -519,12 +519,12 @@ function StatCard({
   label: string
   value: string | number
   icon: React.ElementType
-  color: 'green' | 'blue' | 'purple' | 'amber'
+  color: 'green' | 'blue' | 'cyan' | 'amber'
 }) {
   const colorClasses = {
     green: 'bg-green-50 text-green-700 border-green-100',
     blue: 'bg-blue-50 text-blue-700 border-blue-100',
-    purple: 'bg-purple-50 text-purple-700 border-purple-100',
+    cyan: 'bg-cyan-50 text-cyan-700 border-cyan-100',
     amber: 'bg-amber-50 text-amber-700 border-amber-100',
   }
 

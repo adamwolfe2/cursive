@@ -28,7 +28,7 @@ export function LeadMobileCard({ lead, selected, onSelect, onView }: LeadMobileC
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'new': return 'bg-blue-100 text-blue-700'
-      case 'contacted': return 'bg-purple-100 text-purple-700'
+      case 'contacted': return 'bg-amber-100 text-amber-700'
       case 'qualified': return 'bg-green-100 text-green-700'
       case 'unqualified': return 'bg-gray-100 text-gray-700'
       case 'converted': return 'bg-emerald-100 text-emerald-700'

@@ -35,7 +35,21 @@ const STATUS_OPTIONS: { value: LeadStatus; label: string }[] = [
   { value: 'lost', label: 'Lost' },
 ]
 
-export function BulkActionsToolbar() {
+interface WorkspaceUser {
+  id: string
+  full_name: string
+  email: string
+}
+
+interface BulkActionsToolbarProps {
+  availableUsers?: WorkspaceUser[]
+  commonTags?: string[]
+}
+
+export function BulkActionsToolbar({
+  availableUsers = [],
+  commonTags = [],
+}: BulkActionsToolbarProps) {
   const { selectedLeadIds, clearSelection, setBulkActionInProgress } = useCRMStore()
   const bulkUpdateMutation = useBulkUpdateLeads()
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
@@ -48,6 +62,28 @@ export function BulkActionsToolbar() {
       ids: selectedLeadIds,
       action: 'update_status',
       data: { status },
+    })
+    setBulkActionInProgress(false)
+    clearSelection()
+  }
+
+  const handleAssignUser = async (userId: string) => {
+    setBulkActionInProgress(true)
+    await bulkUpdateMutation.mutateAsync({
+      ids: selectedLeadIds,
+      action: 'assign_user',
+      data: { assigned_user_id: userId },
+    })
+    setBulkActionInProgress(false)
+    clearSelection()
+  }
+
+  const handleAddTag = async (tag: string) => {
+    setBulkActionInProgress(true)
+    await bulkUpdateMutation.mutateAsync({
+      ids: selectedLeadIds,
+      action: 'add_tag',
+      data: { tag },
     })
     setBulkActionInProgress(false)
     clearSelection()
@@ -114,17 +150,58 @@ export function BulkActionsToolbar() {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              {/* Assign (placeholder - will implement in detail) */}
-              <Button variant="outline" size="sm" disabled>
-                <UserPlus className="h-4 w-4 mr-2" />
-                Assign
-              </Button>
+              {/* Assign User */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm" disabled={availableUsers.length === 0}>
+                    <UserPlus className="h-4 w-4 mr-2" />
+                    Assign
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  {availableUsers.length === 0 ? (
+                    <DropdownMenuItem disabled>No users available</DropdownMenuItem>
+                  ) : (
+                    availableUsers.map((user) => (
+                      <DropdownMenuItem
+                        key={user.id}
+                        onClick={() => handleAssignUser(user.id)}
+                        disabled={bulkUpdateMutation.isPending}
+                      >
+                        <div className="flex flex-col">
+                          <span className="font-medium">{user.full_name}</span>
+                          <span className="text-xs text-muted-foreground">{user.email}</span>
+                        </div>
+                      </DropdownMenuItem>
+                    ))
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
 
-              {/* Tags (placeholder - will implement in detail) */}
-              <Button variant="outline" size="sm" disabled>
-                <Tag className="h-4 w-4 mr-2" />
-                Tags
-              </Button>
+              {/* Add Tag */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm" disabled={commonTags.length === 0}>
+                    <Tag className="h-4 w-4 mr-2" />
+                    Tags
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  {commonTags.length === 0 ? (
+                    <DropdownMenuItem disabled>No tags available</DropdownMenuItem>
+                  ) : (
+                    commonTags.map((tag) => (
+                      <DropdownMenuItem
+                        key={tag}
+                        onClick={() => handleAddTag(tag)}
+                        disabled={bulkUpdateMutation.isPending}
+                      >
+                        {tag}
+                      </DropdownMenuItem>
+                    ))
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
 
               {/* Delete */}
               <Button

@@ -3,6 +3,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import type { Lead, LeadInsert, LeadUpdate } from '@/types'
+import type { LeadWithRelations, LeadStatus } from '@/types/crm.types'
 
 export interface LeadFilters {
   query_id?: string
@@ -15,7 +16,7 @@ export interface LeadFilters {
 }
 
 export interface LeadListResult {
-  leads: Lead[]
+  leads: LeadWithRelations[]
   total: number
   page: number
   per_page: number
@@ -88,7 +89,7 @@ export class LeadRepository {
     }
 
     return {
-      leads: (data as any) || [],
+      leads: (data || []) as LeadWithRelations[],
       total: count || 0,
       page,
       per_page: perPage,
@@ -98,7 +99,7 @@ export class LeadRepository {
   /**
    * Find lead by ID
    */
-  async findById(id: string, workspaceId: string): Promise<Lead | null> {
+  async findById(id: string, workspaceId: string): Promise<LeadWithRelations | null> {
     const supabase = await createClient()
 
     const { data, error } = await supabase
@@ -116,7 +117,7 @@ export class LeadRepository {
       throw new Error(`Failed to fetch lead: ${error.message}`)
     }
 
-    return data as any
+    return data as LeadWithRelations
   }
 
   /**
@@ -138,7 +139,7 @@ export class LeadRepository {
       throw new Error(`Failed to fetch leads by intent score: ${error.message}`)
     }
 
-    return (data as any) || []
+    return (data as Lead[]) || []
   }
 
   /**
@@ -160,7 +161,7 @@ export class LeadRepository {
       throw new Error(`Failed to fetch leads ready for upload: ${error.message}`)
     }
 
-    return (data as any) || []
+    return (data as Lead[]) || []
   }
 
   /**
@@ -194,7 +195,14 @@ export class LeadRepository {
       }
     }
 
-    return data as any
+    return data as {
+      hot_count: number
+      warm_count: number
+      cold_count: number
+      total_count: number
+      hot_percentage: number
+      warm_percentage: number
+    }
   }
 
   /**
@@ -220,7 +228,15 @@ export class LeadRepository {
       return []
     }
 
-    return (data as any) || []
+    return (
+      data as Array<{
+        platform_name: string
+        hot_leads: number
+        warm_leads: number
+        total_leads: number
+        last_upload: string
+      }>
+    ) || []
   }
 
   /**
@@ -240,7 +256,7 @@ export class LeadRepository {
       throw new Error(`Failed to create lead: ${error.message}`)
     }
 
-    return data as any
+    return data as Lead
   }
 
   /**
@@ -266,7 +282,7 @@ export class LeadRepository {
       throw new Error(`Failed to update lead: ${error.message}`)
     }
 
-    return data as any
+    return data as Lead
   }
 
   /**

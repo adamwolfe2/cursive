@@ -18,6 +18,7 @@ import {
   TrendingUp,
   Rocket,
   ExternalLink,
+  XCircle,
 } from 'lucide-react'
 
 interface Creative {
@@ -54,7 +55,7 @@ const PRICING_TIERS = [
     price: 1000,
     leads: 100,
     icon: TrendingUp,
-    color: 'purple',
+    color: 'blue',
     popular: true,
     features: [
       '100 guaranteed leads',
@@ -71,7 +72,7 @@ const PRICING_TIERS = [
     price: 1500,
     leads: 200,
     icon: Rocket,
-    color: 'green',
+    color: 'blue',
     features: [
       '200 guaranteed leads',
       '5+ ad creatives',
@@ -92,6 +93,8 @@ export default function CampaignsPage() {
   const [creatives, setCreatives] = useState<Creative[]>([])
   const [profiles, setProfiles] = useState<CustomerProfile[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [isCreatingCheckout, setIsCreatingCheckout] = useState(false)
+  const [checkoutError, setCheckoutError] = useState<string | null>(null)
 
   const [selectedTier, setSelectedTier] = useState<string>('growth')
   const [selectedCreatives, setSelectedCreatives] = useState<string[]>([])
@@ -129,17 +132,50 @@ export default function CampaignsPage() {
 
   async function handleCreateCampaign() {
     if (!landingUrl.trim()) {
-      alert('Please enter a landing page URL')
+      setCheckoutError('Please enter a landing page URL')
       return
     }
 
     if (selectedCreatives.length === 0) {
-      alert('Please select at least one creative')
+      setCheckoutError('Please select at least one creative')
       return
     }
 
-    // TODO: Create Stripe checkout session
-    alert('Campaign creation and Stripe checkout coming soon!')
+    try {
+      setIsCreatingCheckout(true)
+      setCheckoutError(null)
+
+      // Create Stripe checkout session
+      const response = await fetch('/api/ai-studio/campaigns/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          workspaceId,
+          tier: selectedTier,
+          creativeIds: selectedCreatives,
+          profileIds: selectedProfiles,
+          landingUrl: landingUrl.trim(),
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create checkout session')
+      }
+
+      // Redirect to Stripe checkout
+      if (data.sessionUrl) {
+        window.location.href = data.sessionUrl
+      } else {
+        throw new Error('No checkout URL returned')
+      }
+
+    } catch (error: any) {
+      console.error('Checkout error:', error)
+      setCheckoutError(error.message || 'Failed to create checkout session')
+      setIsCreatingCheckout(false)
+    }
   }
 
   if (isLoading) {
@@ -170,6 +206,22 @@ export default function CampaignsPage() {
               Choose a plan and we'll run your Meta ads campaign
             </p>
           </div>
+
+          {/* Error Message */}
+          {checkoutError && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
+              <XCircle className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
+              <div className="flex-1">
+                <p className="text-sm text-red-800">{checkoutError}</p>
+              </div>
+              <button
+                onClick={() => setCheckoutError(null)}
+                className="text-red-600 hover:text-red-700"
+              >
+                <XCircle className="h-4 w-4" />
+              </button>
+            </div>
+          )}
 
         {/* Pricing Tiers */}
         <div>
@@ -358,9 +410,9 @@ export default function CampaignsPage() {
               onChange={(e) => setLandingUrl(e.target.value)}
               className="flex-1"
             />
-            <Button variant="outline" className="gap-2">
+            <Button variant="outline" className="gap-2" disabled title="Coming soon">
               <ExternalLink className="h-4 w-4" />
-              Preview
+              Preview (Coming Soon)
             </Button>
           </div>
           <p className="text-xs text-gray-500 mt-2">
@@ -369,17 +421,23 @@ export default function CampaignsPage() {
         </Card>
 
         {/* Create Campaign Button */}
-        <div className="flex justify-end gap-3">
-          <Button variant="outline" onClick={() => router.push('/ai-studio')}>
-            Save as Draft
-          </Button>
+        <div className="flex justify-end">
           <Button
             onClick={handleCreateCampaign}
             className="bg-blue-600 hover:bg-blue-700"
-            disabled={!landingUrl.trim() || selectedCreatives.length === 0}
+            disabled={!landingUrl.trim() || selectedCreatives.length === 0 || isCreatingCheckout}
           >
-            Proceed to Checkout
-            <ArrowLeft className="ml-2 h-4 w-4 rotate-180" />
+            {isCreatingCheckout ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Creating checkout...
+              </>
+            ) : (
+              <>
+                Proceed to Checkout
+                <ArrowLeft className="ml-2 h-4 w-4 rotate-180" />
+              </>
+            )}
           </Button>
         </div>
         </div>

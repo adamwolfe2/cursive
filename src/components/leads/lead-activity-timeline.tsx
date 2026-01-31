@@ -32,7 +32,7 @@ const activityIcons: Record<ActivityType, { icon: React.ReactNode; bg: string }>
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
       </svg>
     ),
-    bg: 'bg-blue-100 text-purple-600',
+    bg: 'bg-cyan-100 text-cyan-600',
   },
   email_opened: {
     icon: (

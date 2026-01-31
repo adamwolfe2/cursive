@@ -21,6 +21,7 @@ import {
   Wand2,
   ArrowUp,
   ChevronRight,
+  XCircle,
 } from 'lucide-react'
 
 interface BrandWorkspace {
@@ -46,6 +47,8 @@ export default function AIStudioPage() {
   const [screenshot, setScreenshot] = useState<string | null>(null)
   const [workspaces, setWorkspaces] = useState<BrandWorkspace[]>([])
   const [isLoadingWorkspaces, setIsLoadingWorkspaces] = useState(true)
+  const [userName, setUserName] = useState<string>('there')
+  const [extractionError, setExtractionError] = useState<string | null>(null)
 
   const [loadingSteps, setLoadingSteps] = useState<LoadingStep[]>([
     { id: '1', label: 'Capturing website', icon: Globe, status: 'pending' },
@@ -58,7 +61,21 @@ export default function AIStudioPage() {
 
   useEffect(() => {
     fetchWorkspaces()
+    fetchUserName()
   }, [])
+
+  async function fetchUserName() {
+    try {
+      const response = await fetch('/api/user/me')
+      const data = await response.json()
+      if (data.user?.full_name) {
+        const firstName = data.user.full_name.split(' ')[0]
+        setUserName(firstName)
+      }
+    } catch (error) {
+      console.error('Failed to load user:', error)
+    }
+  }
 
   async function fetchWorkspaces() {
     try {
@@ -72,34 +89,20 @@ export default function AIStudioPage() {
     }
   }
 
-  async function simulateLoadingSteps() {
-    for (let i = 0; i < loadingSteps.length; i++) {
-      setLoadingSteps(prev => prev.map((step, idx) =>
-        idx === i ? { ...step, status: 'loading' } : step
-      ))
-
-      await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 400))
-
-      setLoadingSteps(prev => prev.map((step, idx) =>
-        idx === i ? { ...step, status: 'complete' } : step
-      ))
-
-      if (i === 1) {
-        setScreenshot('https://placehold.co/1200x600/f1f5f9/64748b?text=Website+Preview')
-      }
-    }
-  }
 
   async function handleExtract() {
     if (!url.trim()) return
 
     setIsExtracting(true)
+    setExtractionError(null)
     setLoadingSteps(steps => steps.map(s => ({ ...s, status: 'pending' })))
     setScreenshot(null)
 
-    simulateLoadingSteps()
+    let pollInterval: NodeJS.Timeout | null = null
+    let timeoutId: NodeJS.Timeout | null = null
 
     try {
+      // Start extraction
       const response = await fetch('/api/ai-studio/brand/extract', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -112,10 +115,66 @@ export default function AIStudioPage() {
         throw new Error(data.error || 'Failed to extract brand DNA')
       }
 
-      await new Promise(resolve => setTimeout(resolve, 5000))
-      router.push(`/ai-studio/branding?workspace=${data.workspaceId}`)
+      // Poll for progress and update loading steps based on actual status
+      const workspaceId = data.workspaceId
+      let currentStep = 0
+
+      pollInterval = setInterval(async () => {
+        try {
+          const progressRes = await fetch('/api/ai-studio/workspaces')
+          const progressData = await progressRes.json()
+          const workspace = progressData.workspaces?.find((w: any) => w.id === workspaceId)
+
+          if (!workspace) return
+
+          // Update screenshot when available
+          if (workspace.brand_data?.screenshot && !screenshot) {
+            setScreenshot(workspace.brand_data.screenshot)
+          }
+
+          // Update loading steps based on actual progress
+          if (workspace.extraction_status === 'processing') {
+            // Increment steps gradually
+            if (currentStep < loadingSteps.length) {
+              setLoadingSteps(prev => prev.map((step, idx) =>
+                idx < currentStep ? { ...step, status: 'complete' } :
+                idx === currentStep ? { ...step, status: 'loading' } :
+                step
+              ))
+              currentStep++
+            }
+          } else if (workspace.extraction_status === 'completed') {
+            // Mark all complete
+            setLoadingSteps(prev => prev.map(s => ({ ...s, status: 'complete' })))
+            if (pollInterval) clearInterval(pollInterval)
+            if (timeoutId) clearTimeout(timeoutId)
+
+            // Navigate to branding page
+            setTimeout(() => {
+              router.push(`/ai-studio/branding?workspace=${workspaceId}`)
+            }, 1000)
+          } else if (workspace.extraction_status === 'failed') {
+            if (pollInterval) clearInterval(pollInterval)
+            if (timeoutId) clearTimeout(timeoutId)
+            setIsExtracting(false)
+            setExtractionError(workspace.extraction_error || 'Extraction failed')
+          }
+        } catch (error) {
+          console.error('Polling error:', error)
+        }
+      }, 2000) // Poll every 2 seconds
+
+      // Safety timeout: stop polling after 2 minutes
+      timeoutId = setTimeout(() => {
+        if (pollInterval) clearInterval(pollInterval)
+        setIsExtracting(false)
+        setExtractionError('Extraction is taking longer than expected. Please check back in a moment.')
+      }, 120000)
+
     } catch (error: any) {
-      alert(error.message || 'Failed to extract brand DNA')
+      if (pollInterval) clearInterval(pollInterval)
+      if (timeoutId) clearTimeout(timeoutId)
+      setExtractionError(error.message || 'Failed to extract brand DNA')
       setIsExtracting(false)
     }
   }
@@ -126,7 +185,7 @@ export default function AIStudioPage() {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-3">
-            Welcome back, <span className="italic">User</span>!
+            Welcome back, <span className="italic">{userName}</span>!
           </h1>
           <p className="text-lg text-gray-600">
             Enter your website to create on-brand content, or select a workspace.
@@ -164,6 +223,22 @@ export default function AIStudioPage() {
           <p className="text-sm text-gray-500 mt-3">
             We'll analyze your brand and generate content
           </p>
+
+          {/* Error Message */}
+          {extractionError && !isExtracting && (
+            <div className="mt-4 bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
+              <XCircle className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
+              <div className="flex-1">
+                <p className="text-sm text-red-800">{extractionError}</p>
+              </div>
+              <button
+                onClick={() => setExtractionError(null)}
+                className="text-red-600 hover:text-red-700"
+              >
+                <XCircle className="h-4 w-4" />
+              </button>
+            </div>
+          )}
 
           {/* Loading Progress */}
           {isExtracting && (

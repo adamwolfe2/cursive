@@ -95,9 +95,9 @@ export default function OffersPage() {
               <p className="text-gray-600 mb-4">
                 Offers are automatically extracted during brand analysis
               </p>
-              <Button variant="outline" className="gap-2">
+              <Button variant="outline" className="gap-2" disabled title="Coming soon">
                 <Plus className="h-4 w-4" />
-                Add Manual Offer
+                Add Manual Offer (Coming Soon)
               </Button>
             </Card>
           ) : (
@@ -136,9 +136,9 @@ export default function OffersPage() {
           {/* Add Offer Button */}
           {offers.length > 0 && (
             <div className="flex justify-center pt-6">
-              <Button variant="outline" className="gap-2">
+              <Button variant="outline" className="gap-2" disabled title="Coming soon">
                 <Plus className="h-4 w-4" />
-                Add Manual Offer
+                Add Manual Offer (Coming Soon)
               </Button>
             </div>
           )}

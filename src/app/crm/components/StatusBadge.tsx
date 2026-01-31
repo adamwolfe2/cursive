@@ -14,7 +14,7 @@ const statusBadgeVariants = cva(
         contacted:
           'bg-yellow-50 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-300',
         qualified:
-          'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-purple-300',
+          'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300',
         won: 'bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300',
         lost: 'bg-gray-50 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
       },
