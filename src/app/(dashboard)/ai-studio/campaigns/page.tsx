@@ -19,7 +19,6 @@ import {
   Rocket,
   ExternalLink,
 } from 'lucide-react'
-import { StudioLayout } from '@/components/ai-studio/studio-layout'
 
 interface Creative {
   id: string
@@ -152,38 +151,41 @@ export default function CampaignsPage() {
   }
 
   return (
-    <StudioLayout>
-      <div className="space-y-8">
-        {/* Header */}
-        <div>
-          <Button
-            onClick={() => router.push(`/ai-studio/creatives?workspace=${workspaceId}`)}
-            variant="ghost"
-            size="sm"
-            className="mb-2"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Creatives
-          </Button>
-          <h1 className="text-2xl font-bold text-gray-900">Create Campaign</h1>
-          <p className="text-sm text-gray-500">
-            Choose a plan and we'll run your Meta ads campaign
-          </p>
-        </div>
+    <div className="min-h-screen bg-[#F8F9FA]">
+      <div className="mx-auto max-w-6xl px-6 py-8">
+        <div className="space-y-8">
+          {/* Header */}
+          <div>
+            <Button
+              onClick={() => router.push(`/ai-studio/creatives?workspace=${workspaceId}`)}
+              variant="ghost"
+              size="sm"
+              className="mb-2"
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Creatives
+            </Button>
+            <h1 className="text-2xl font-bold text-gray-900">Create Campaign</h1>
+            <p className="text-sm text-gray-500">
+              Choose a plan and we'll run your Meta ads campaign
+            </p>
+          </div>
 
         {/* Pricing Tiers */}
         <div>
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Select Your Plan</h2>
+          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
+            Select Your Plan
+          </h2>
           <div className="grid gap-6 md:grid-cols-3">
             {PRICING_TIERS.map((tier) => {
               const Icon = tier.icon
               return (
                 <Card
                   key={tier.tier}
-                  className={`relative p-6 cursor-pointer transition-all ${
+                  className={`relative p-6 cursor-pointer transition-all bg-white ${
                     selectedTier === tier.tier
-                      ? 'border-2 border-blue-500 shadow-lg'
-                      : 'border border-gray-200 hover:border-blue-300 hover:shadow-md'
+                      ? 'border-2 border-blue-500 shadow-md'
+                      : 'border border-gray-200 hover:border-gray-300 hover:shadow-sm'
                   }`}
                   onClick={() => setSelectedTier(tier.tier)}
                 >
@@ -196,8 +198,8 @@ export default function CampaignsPage() {
                   )}
 
                   <div className="flex items-center gap-3 mb-4">
-                    <div className={`rounded-lg bg-${tier.color}-100 p-3`}>
-                      <Icon className={`h-6 w-6 text-${tier.color}-600`} />
+                    <div className="rounded-lg bg-blue-100 p-3 border border-blue-200">
+                      <Icon className="h-6 w-6 text-blue-600" />
                     </div>
                     <div>
                       <h3 className="font-bold text-gray-900">{tier.name}</h3>
@@ -248,8 +250,10 @@ export default function CampaignsPage() {
         {/* Campaign Configuration */}
         <div className="grid gap-6 lg:grid-cols-2">
           {/* Select Creatives */}
-          <Card className="p-6">
-            <h3 className="font-semibold text-gray-900 mb-4">Select Ad Creatives</h3>
+          <Card className="p-6 bg-white shadow-sm border border-gray-200">
+            <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
+              Select Ad Creatives
+            </h3>
             {creatives.length === 0 ? (
               <p className="text-sm text-gray-500">
                 No creatives available. Create some creatives first.
@@ -289,8 +293,8 @@ export default function CampaignsPage() {
           </Card>
 
           {/* Select Target Audiences */}
-          <Card className="p-6">
-            <h3 className="font-semibold text-gray-900 mb-4">
+          <Card className="p-6 bg-white shadow-sm border border-gray-200">
+            <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
               Target Customer Profiles
             </h3>
             {profiles.length === 0 ? (
@@ -342,8 +346,10 @@ export default function CampaignsPage() {
         </div>
 
         {/* Landing Page URL */}
-        <Card className="p-6">
-          <h3 className="font-semibold text-gray-900 mb-4">Landing Page</h3>
+        <Card className="p-6 bg-white shadow-sm border border-gray-200">
+          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
+            Landing Page
+          </h3>
           <div className="flex gap-3">
             <Input
               type="url"
@@ -376,7 +382,8 @@ export default function CampaignsPage() {
             <ArrowLeft className="ml-2 h-4 w-4 rotate-180" />
           </Button>
         </div>
+        </div>
       </div>
-    </StudioLayout>
+    </div>
   )
 }

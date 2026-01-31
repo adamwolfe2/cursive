@@ -18,12 +18,9 @@ import {
   User,
   Monitor,
   Zap,
-  Type,
   Megaphone,
   ArrowUp,
-  Lock,
 } from 'lucide-react'
-import { StudioLayout } from '@/components/ai-studio/studio-layout'
 
 interface Creative {
   id: string
@@ -155,8 +152,8 @@ export default function CreativesPage() {
   }
 
   return (
-    <StudioLayout>
-      <div className="flex flex-col h-full">
+    <div className="min-h-screen bg-[#F8F9FA]">
+      <div className="mx-auto max-w-7xl px-6 py-8 pb-64">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
@@ -183,9 +180,9 @@ export default function CreativesPage() {
         </div>
 
         {/* Creatives Gallery */}
-        <div className="flex-1 overflow-y-auto pb-64">
+        <div>
           {creatives.length === 0 ? (
-            <Card className="p-12 text-center">
+            <Card className="p-12 text-center bg-white shadow-sm border border-gray-200">
               <ImageIcon className="h-12 w-12 mx-auto text-gray-400 mb-4" />
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
                 No creatives yet
@@ -199,9 +196,9 @@ export default function CreativesPage() {
               {creatives.map((creative) => (
                 <Card
                   key={creative.id}
-                  className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+                  className="overflow-hidden bg-white shadow-sm border border-gray-200 hover:shadow-md transition-shadow cursor-pointer"
                 >
-                  <div className="relative aspect-square bg-gray-100">
+                  <div className="relative aspect-square bg-gray-50">
                     <img
                       src={creative.image_url}
                       alt={creative.prompt}
@@ -214,11 +211,11 @@ export default function CreativesPage() {
                     </p>
                     <div className="flex items-center gap-2 text-xs text-gray-500">
                       {creative.style_preset && (
-                        <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded">
+                        <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded border border-blue-200">
                           {creative.style_preset}
                         </span>
                       )}
-                      <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded">
+                      <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded border border-gray-200">
                         {FORMATS.find((f) => f.value === creative.format)?.label || creative.format}
                       </span>
                     </div>
@@ -229,9 +226,11 @@ export default function CreativesPage() {
           )}
         </div>
 
-        {/* Creative Generator - Fixed Bottom Bar */}
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg lg:left-64">
-          <div className="max-w-7xl mx-auto px-6 py-4 pr-[25rem]">
+      </div>
+
+      {/* Creative Generator - Fixed Bottom Bar */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg lg:left-64">
+        <div className="max-w-7xl mx-auto px-6 py-4">
             {/* Style Presets */}
             <div className="flex items-center gap-2 mb-4 overflow-x-auto pb-2">
               {STYLE_PRESETS.map((style) => (
@@ -364,6 +363,6 @@ export default function CreativesPage() {
           </div>
         </div>
       </div>
-    </StudioLayout>
+    </div>
   )
 }
