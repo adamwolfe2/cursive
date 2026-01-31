@@ -4,7 +4,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { createCheckoutSession } from '@/lib/stripe/client'
-import { createServerClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server'
 import { handleApiError, unauthorized, badRequest } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'
 
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
 
     if (!finalPriceId && planName) {
       // Look up price ID from subscription_plans table
-      const supabase = await createServerClient()
+      const supabase = await createClient()
       const priceColumn = billingPeriod === 'monthly'
         ? 'stripe_price_id_monthly'
         : 'stripe_price_id_yearly'
@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 4. Check if user already has an active subscription
-    const supabase = await createServerClient()
+    const supabase = await createClient()
     const { data: existingSubscription } = await supabase
       .from('subscriptions')
       .select('status, plan_id')

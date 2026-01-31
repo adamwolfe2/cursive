@@ -3,7 +3,7 @@
  * Cursive Platform - Interactive pricing with live Stripe checkout
  */
 
-import { createServerClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server'
 import { PricingCards } from '@/components/pricing/pricing-cards'
 import { getCurrentUser } from '@/lib/auth'
 
@@ -26,7 +26,7 @@ interface SubscriptionPlan {
 }
 
 export default async function PricingPage() {
-  const supabase = await createServerClient()
+  const supabase = await createClient()
 
   // Fetch subscription plans from database
   const { data: plans, error } = await supabase
