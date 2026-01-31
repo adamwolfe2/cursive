@@ -2,12 +2,13 @@
  * Admin Layout
  * Cursive Platform
  *
- * Protected layout for admin pages with authentication.
+ * Protected layout for admin pages with role-based authentication.
  */
 
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
+import { isAdmin, getUserWithRole } from '@/lib/auth/roles'
 
 export const dynamic = 'force-dynamic'
 
@@ -16,17 +17,22 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode
 }) {
-  // Simple admin check - just verify email
+  // Check admin role from database
   const supabase = await createClient()
   const { data: { session } } = await supabase.auth.getSession()
 
-  const isAdminUser = session?.user?.email === 'adam@meetcursive.com'
-
-  if (!isAdminUser) {
+  if (!session?.user) {
     redirect('/login?error=unauthorized')
   }
 
-  const adminEmail = session?.user?.email || 'Admin'
+  // Verify user has admin or owner role
+  const hasAdminAccess = await isAdmin(session.user)
+  if (!hasAdminAccess) {
+    redirect('/dashboard?error=admin_required')
+  }
+
+  const user = await getUserWithRole(session.user)
+  const adminEmail = user?.email || session.user.email || 'Admin'
 
   return (
     <div className="min-h-screen bg-zinc-50">

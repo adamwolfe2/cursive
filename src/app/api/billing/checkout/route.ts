@@ -3,12 +3,14 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
-import { createCheckoutSession, STRIPE_PRICES } from '@/lib/stripe/client'
+import { createCheckoutSession } from '@/lib/stripe/client'
+import { createServerClient } from '@/lib/supabase/server'
 import { handleApiError, unauthorized, badRequest } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'
 
 const checkoutSchema = z.object({
   priceId: z.string().optional(),
+  planName: z.string().optional(),
   billingPeriod: z.enum(['monthly', 'yearly']).default('monthly'),
 })
 
@@ -20,30 +22,62 @@ export async function POST(request: NextRequest) {
       return unauthorized()
     }
 
-    // Check if user already has active subscription
-    if (user.plan === 'pro' && user.subscription_status === 'active') {
-      return badRequest('You already have an active Pro subscription')
-    }
-
     // 2. Validate input with Zod
     const body = await request.json()
-    const { priceId, billingPeriod } = checkoutSchema.parse(body)
+    const { priceId, planName, billingPeriod } = checkoutSchema.parse(body)
 
-    // Determine price ID based on billing period
-    const finalPriceId =
-      priceId ||
-      (billingPeriod === 'yearly'
-        ? STRIPE_PRICES.PRO_YEARLY
-        : STRIPE_PRICES.PRO_MONTHLY)
+    // 3. Get price ID - either from request or from database plan
+    let finalPriceId = priceId
+
+    if (!finalPriceId && planName) {
+      // Look up price ID from subscription_plans table
+      const supabase = await createServerClient()
+      const priceColumn = billingPeriod === 'monthly'
+        ? 'stripe_price_id_monthly'
+        : 'stripe_price_id_yearly'
+
+      const { data: plan, error: planError } = await supabase
+        .from('subscription_plans')
+        .select(`name, ${priceColumn}`)
+        .eq('name', planName)
+        .single()
+
+      if (planError || !plan) {
+        return NextResponse.json(
+          { error: 'Plan not found' },
+          { status: 404 }
+        )
+      }
+
+      finalPriceId = billingPeriod === 'monthly'
+        ? plan.stripe_price_id_monthly
+        : plan.stripe_price_id_yearly
+    }
 
     if (!finalPriceId) {
       return NextResponse.json(
-        { error: 'Price ID not configured' },
+        {
+          error: 'Stripe Price ID not configured for this plan. Please contact support.',
+          details: 'The administrator needs to configure Stripe Price IDs in the subscription_plans table.'
+        },
         { status: 500 }
       )
     }
 
-    // 3. Create checkout session
+    // 4. Check if user already has an active subscription
+    const supabase = await createServerClient()
+    const { data: existingSubscription } = await supabase
+      .from('subscriptions')
+      .select('status, plan_id')
+      .eq('workspace_id', user.workspace_id)
+      .in('status', ['active', 'trialing'])
+      .single()
+
+    if (existingSubscription) {
+      return badRequest('You already have an active subscription. Please manage your subscription from the billing page.')
+    }
+
+    // 5. Create checkout session
     const baseUrl = request.nextUrl.origin
     const session = await createCheckoutSession({
       userId: user.id,
@@ -54,7 +88,7 @@ export async function POST(request: NextRequest) {
       cancelUrl: `${baseUrl}/pricing?checkout=cancelled`,
     })
 
-    // 4. Return response
+    // 6. Return response
     return NextResponse.json({
       success: true,
       sessionId: session.id,

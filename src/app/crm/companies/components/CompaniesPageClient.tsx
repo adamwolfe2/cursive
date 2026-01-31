@@ -29,37 +29,6 @@ export function CompaniesPageClient({ initialData }: CompaniesPageClientProps) {
   const [selectedCompany, setSelectedCompany] = useState<string | null>(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
 
-  const sidebarContent = (
-    <div className="flex h-full flex-col p-6">
-      <h2 className="bg-gradient-cursive bg-clip-text text-xl font-semibold text-transparent">
-        CRM
-      </h2>
-      <nav className="mt-6 space-y-1.5">
-        <Link
-          href="/crm/leads"
-          className="block rounded-lg px-3 py-2.5 text-muted-foreground transition-all hover:bg-gradient-cursive-subtle"
-        >
-          Leads
-        </Link>
-        <div className="rounded-lg bg-gradient-cursive px-3 py-2.5 font-medium text-white shadow-sm">
-          Companies
-        </div>
-        <Link
-          href="/crm/contacts"
-          className="block rounded-lg px-3 py-2.5 text-muted-foreground transition-all hover:bg-gradient-cursive-subtle"
-        >
-          Contacts
-        </Link>
-        <Link
-          href="/crm/deals"
-          className="block rounded-lg px-3 py-2.5 text-muted-foreground transition-all hover:bg-gradient-cursive-subtle"
-        >
-          Deals
-        </Link>
-      </nav>
-    </div>
-  )
-
   const tableColumns = [
     {
       key: 'name',
@@ -161,7 +130,7 @@ export function CompaniesPageClient({ initialData }: CompaniesPageClientProps) {
 
   return (
     <CRMPageContainer>
-      <CRMThreeColumnLayout sidebar={<div className="hidden lg:block">{sidebarContent}</div>}>
+      <CRMThreeColumnLayout>
         <CRMViewBar
           title="Companies"
           icon={<Building2 className="h-5 w-5" />}
@@ -182,7 +151,6 @@ export function CompaniesPageClient({ initialData }: CompaniesPageClientProps) {
           actions={
             <>
               <div className="lg:hidden">
-                <MobileMenu triggerClassName="h-9 px-3">{sidebarContent}</MobileMenu>
               </div>
               <Button size="sm">
                 <Plus className="mr-2 h-4 w-4" />

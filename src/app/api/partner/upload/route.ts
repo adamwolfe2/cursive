@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
     // Validate partner
     const { data: partner, error: partnerError } = await supabase
       .from('partners')
-      .select('id, name, payout_rate, is_active, status')
+      .select('id, name, payout_rate, is_active, status, stripe_onboarding_complete')
       .eq('api_key', apiKey)
       .single()
 
@@ -107,8 +107,23 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid API key' }, { status: 401 })
     }
 
-    if (!partner.is_active || partner.status === 'suspended') {
-      return NextResponse.json({ error: 'Partner account is suspended' }, { status: 403 })
+    // Comprehensive partner approval check
+    if (!partner.is_active) {
+      return NextResponse.json({
+        error: 'Partner account is not active. Please contact support.'
+      }, { status: 403 })
+    }
+
+    if (partner.status !== 'active') {
+      return NextResponse.json({
+        error: `Partner account status is '${partner.status}'. Only active partners can upload leads.`
+      }, { status: 403 })
+    }
+
+    if (!partner.stripe_onboarding_complete) {
+      return NextResponse.json({
+        error: 'Stripe Connect onboarding must be completed before uploading leads.'
+      }, { status: 403 })
     }
 
     // Parse form data

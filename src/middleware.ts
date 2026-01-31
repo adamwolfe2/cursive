@@ -17,11 +17,6 @@ export async function middleware(req: NextRequest) {
     try {
       const result = await supabase.auth.getSession()
       session = result.data.session
-
-      // Admin bypass
-      if (session?.user?.email === 'adam@meetcursive.com') {
-        return client.response
-      }
     } catch (e) {
       console.error('Failed to check session:', e)
     }

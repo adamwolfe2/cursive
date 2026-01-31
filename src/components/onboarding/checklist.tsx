@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 
 interface ChecklistItem {
   id: string
@@ -16,7 +17,7 @@ const CHECKLIST_ITEMS: Omit<ChecklistItem, 'completed'>[] = [
     id: 'profile',
     title: 'Complete your profile',
     description: 'Add your company details and contact information',
-    href: '/settings/profile',
+    href: '/settings/client-profile',
   },
   {
     id: 'team',
@@ -38,9 +39,9 @@ const CHECKLIST_ITEMS: Omit<ChecklistItem, 'completed'>[] = [
   },
   {
     id: 'routing',
-    title: 'Set up lead routing',
-    description: 'Configure how leads are distributed to your team',
-    href: '/leads/routing',
+    title: 'Set up lead preferences',
+    description: 'Configure your lead targeting and preferences',
+    href: '/my-leads/preferences',
   },
 ]
 
@@ -111,15 +112,14 @@ export function OnboardingChecklist() {
       {/* Header */}
       <div className="px-6 py-4 flex items-center justify-between bg-white/50 backdrop-blur-sm">
         <div className="flex items-center gap-4">
-          <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-            <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
+          <div className="w-10 h-10 bg-blue-400 rounded-lg flex items-center justify-center p-1.5">
+            <Image
+              src="/cursive-logo.png"
+              alt="Cursive Logo"
+              width={40}
+              height={40}
+              className="w-full h-full object-contain"
+            />
           </div>
           <div>
             <h3 className="text-[15px] font-semibold text-zinc-900">Get Started with Cursive</h3>
@@ -130,12 +130,12 @@ export function OnboardingChecklist() {
         </div>
         <div className="flex items-center gap-3">
           <div className="text-right">
-            <div className="text-[13px] font-medium text-blue-700">
+            <div className="text-[13px] font-medium text-blue-600">
               {completedCount} of {totalCount} completed
             </div>
             <div className="w-32 h-2 bg-zinc-200 rounded-full mt-1 overflow-hidden">
               <div
-                className="h-full bg-blue-600 rounded-full transition-all duration-300"
+                className="h-full bg-blue-500 rounded-full transition-all duration-300"
                 style={{ width: `${progressPercent}%` }}
               />
             </div>
@@ -179,8 +179,8 @@ export function OnboardingChecklist() {
                 onClick={() => toggleItemCompletion(item.id)}
                 className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
                   item.completed
-                    ? 'bg-blue-600 border-blue-600'
-                    : 'border-zinc-300 hover:border-blue-600'
+                    ? 'bg-blue-500 border-blue-500'
+                    : 'border-zinc-300 hover:border-blue-500'
                 }`}
               >
                 {item.completed && (

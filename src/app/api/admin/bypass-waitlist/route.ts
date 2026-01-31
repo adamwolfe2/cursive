@@ -9,7 +9,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 
 // Store in environment variable for security
-const ADMIN_BYPASS_PASSWORD = process.env.ADMIN_BYPASS_PASSWORD || 'cursiveadmin1!'
+// Default passcode: Cursive2026!
+const ADMIN_BYPASS_PASSWORD = process.env.ADMIN_BYPASS_PASSWORD || 'Cursive2026!'
 
 // Simple in-memory rate limiting (resets on server restart)
 const rateLimitMap = new Map<string, { attempts: number; resetAt: number }>()

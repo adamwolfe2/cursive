@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { sendPurchaseConfirmationEmail, sendCreditPurchaseConfirmationEmail } from '@/lib/email/service'
+import {
+  sendPurchaseConfirmationEmail,
+  sendCreditPurchaseConfirmationEmail,
+  sendPaymentFailedEmail
+} from '@/lib/email/service'
 
 export async function POST(req: NextRequest) {
   try {
@@ -309,6 +313,37 @@ async function processWebhookEvent(event: Stripe.Event, supabase: any) {
         return NextResponse.json({ received: true })
       }
 
+      // Handle subscription checkout
+      if (purchaseType === 'subscription') {
+        const userId = session.metadata?.user_id
+        const workspaceId = session.metadata?.workspace_id
+        const customerId = session.customer as string
+
+        if (!userId || !workspaceId || !customerId) {
+          console.error('[Stripe Webhook] Missing metadata for subscription checkout')
+          return NextResponse.json({ error: 'Missing metadata' }, { status: 400 })
+        }
+
+        // Update workspace with Stripe customer ID
+        // This allows customer.subscription.created/updated events to find the workspace
+        const { error: workspaceError } = await supabase
+          .from('workspaces')
+          .update({
+            stripe_customer_id: customerId,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', workspaceId)
+
+        if (workspaceError) {
+          console.error('[Stripe Webhook] Failed to update workspace with customer ID:', workspaceError)
+          return NextResponse.json({ error: 'Failed to update workspace' }, { status: 500 })
+        }
+
+        console.log(`✅ Subscription checkout completed: Customer ${customerId} linked to workspace ${workspaceId}`)
+        console.log('   → Subscription will be created by customer.subscription.created event')
+        return NextResponse.json({ received: true })
+      }
+
       // Handle legacy lead purchase
       const leadId = session.metadata?.lead_id
       const buyerEmail = session.metadata?.buyer_email
@@ -435,17 +470,22 @@ async function processWebhookEvent(event: Stripe.Event, supabase: any) {
           .single()
 
         if (user) {
-          // TODO: Implement sendPaymentFailureEmail in email service
-          console.log(`[Stripe Webhook] Should send payment failure email to ${user.email} (attempt ${failedCount}/3)`)
-          // await sendPaymentFailureEmail(user.email, user.full_name || 'User', {
-          //   workspaceName: workspace.name,
-          //   attemptNumber: failedCount,
-          //   invoiceUrl: invoice.hosted_invoice_url,
-          //   willDisableAfter: 3 - failedCount,
-          // })
+          await sendPaymentFailedEmail(
+            user.email,
+            user.full_name || 'User',
+            {
+              workspaceName: workspace.name,
+              attemptNumber: failedCount,
+              invoiceUrl: invoice.hosted_invoice_url || '',
+              remainingAttempts: 3 - failedCount,
+              isDisabled: failedCount >= 3,
+            }
+          )
+          console.log(`✅ Payment failure email sent to ${user.email} (attempt ${failedCount}/3)`)
         }
       } catch (emailError) {
         console.error('[Stripe Webhook] Failed to send payment failure email:', emailError)
+        // Don't fail the webhook if email fails
       }
 
       console.log(`✅ Invoice payment failure handled: ${invoice.id}, attempt ${failedCount}/3`)

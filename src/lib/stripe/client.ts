@@ -82,7 +82,7 @@ export const PLAN_CONFIGS = {
 }
 
 /**
- * Create a Stripe Checkout session for Pro subscription
+ * Create a Stripe Checkout session for subscription
  */
 export async function createCheckoutSession(params: {
   userId: string
@@ -110,6 +110,7 @@ export async function createCheckoutSession(params: {
     customer_email: userEmail,
     client_reference_id: userId,
     metadata: {
+      type: 'subscription', // Critical for webhook routing
       user_id: userId,
       workspace_id: workspaceId,
     },
@@ -120,6 +121,11 @@ export async function createCheckoutSession(params: {
       },
     },
     allow_promotion_codes: true,
+    billing_address_collection: 'auto',
+    customer_update: {
+      address: 'auto',
+      name: 'auto',
+    },
   })
 
   return session

@@ -9,6 +9,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import crypto from 'crypto'
 import { calculateHashKey } from '@/lib/services/deduplication.service'
+import { sendNewLeadEmail } from '@/lib/email/service'
 
 // Types for Audience Labs webhook payload
 interface AudienceLabsLead {
@@ -319,6 +320,40 @@ export async function POST(req: NextRequest) {
           failed_leads: results.failed,
         })
         .eq('id', import_job_id)
+    }
+
+    // Send email notification to workspace owner about completed import
+    try {
+      const { data: workspace } = await supabase
+        .from('workspaces')
+        .select('id, name, owner_user_id')
+        .eq('id', targetWorkspaceId)
+        .single()
+
+      if (workspace?.owner_user_id) {
+        const { data: user } = await supabase
+          .from('users')
+          .select('email, full_name')
+          .eq('id', workspace.owner_user_id)
+          .single()
+
+        if (user && results.successful > 0) {
+          await sendNewLeadEmail(
+            user.email,
+            user.full_name || 'User',
+            {
+              leadCount: results.successful,
+              workspaceName: workspace.name,
+              source: 'Audience Labs',
+              viewLeadsUrl: `${process.env.NEXT_PUBLIC_APP_URL}/leads`,
+            }
+          )
+          console.log(`✅ Lead import notification sent to ${user.email}`)
+        }
+      }
+    } catch (emailError) {
+      console.error('[Audience Labs Webhook] Failed to send notification email:', emailError)
+      // Don't fail the webhook if email fails
     }
 
     return NextResponse.json({

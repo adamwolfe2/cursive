@@ -29,38 +29,6 @@ export function LeadsPageClient({ initialData }: LeadsPageClientProps) {
   const [selectedLead, setSelectedLead] = useState<string | null>(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
 
-  // Sidebar content
-  const sidebarContent = (
-    <div className="flex h-full flex-col p-6">
-      <h2 className="bg-gradient-cursive bg-clip-text text-xl font-semibold text-transparent">
-        CRM
-      </h2>
-      <nav className="mt-6 space-y-1.5">
-        <div className="rounded-lg bg-gradient-cursive px-3 py-2.5 font-medium text-white shadow-sm">
-          Leads
-        </div>
-        <Link
-          href="/crm/companies"
-          className="block rounded-lg px-3 py-2.5 text-muted-foreground transition-all hover:bg-gradient-cursive-subtle"
-        >
-          Companies
-        </Link>
-        <Link
-          href="/crm/contacts"
-          className="block rounded-lg px-3 py-2.5 text-muted-foreground transition-all hover:bg-gradient-cursive-subtle"
-        >
-          Contacts
-        </Link>
-        <Link
-          href="/crm/deals"
-          className="block rounded-lg px-3 py-2.5 text-muted-foreground transition-all hover:bg-gradient-cursive-subtle"
-        >
-          Deals
-        </Link>
-      </nav>
-    </div>
-  )
-
   // Table columns configuration
   const tableColumns = [
     {
@@ -173,13 +141,7 @@ export function LeadsPageClient({ initialData }: LeadsPageClientProps) {
 
   return (
     <CRMPageContainer>
-      <CRMThreeColumnLayout
-        sidebar={
-          <div className="hidden lg:block">
-            {sidebarContent}
-          </div>
-        }
-      >
+      <CRMThreeColumnLayout>
         {/* View Bar */}
         <CRMViewBar
           title="Leads"
@@ -202,8 +164,6 @@ export function LeadsPageClient({ initialData }: LeadsPageClientProps) {
             <>
               {/* Mobile menu */}
               <div className="lg:hidden">
-                <MobileMenu triggerClassName="h-9 px-3">
-                  {sidebarContent}
                 </MobileMenu>
               </div>
 

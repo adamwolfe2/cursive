@@ -1,19 +1,71 @@
 /**
  * Pricing Page
- * Cursive Platform
+ * Cursive Platform - Interactive pricing with live Stripe checkout
  */
 
-import Link from 'next/link'
+import { createServerClient } from '@/lib/supabase/server'
+import { PricingCards } from '@/components/pricing/pricing-cards'
+import { getCurrentUser } from '@/lib/auth'
 
 export const metadata = {
   title: 'Pricing',
   description: 'Simple, transparent pricing for B2B lead intelligence.',
 }
 
-export default function PricingPage() {
+interface SubscriptionPlan {
+  id: string
+  name: string
+  display_name: string
+  description: string
+  price_monthly: number
+  price_yearly: number
+  stripe_price_id_monthly: string | null
+  stripe_price_id_yearly: string | null
+  features: string[]
+  sort_order: number
+}
+
+export default async function PricingPage() {
+  const supabase = await createServerClient()
+
+  // Fetch subscription plans from database
+  const { data: plans, error } = await supabase
+    .from('subscription_plans')
+    .select('*')
+    .order('sort_order', { ascending: true })
+
+  if (error) {
+    console.error('Failed to fetch subscription plans:', error)
+  }
+
+  // Mark Pro plan as popular
+  const plansWithPopular = (plans || []).map(plan => ({
+    ...plan,
+    is_popular: plan.name === 'pro',
+  }))
+
+  // Get current user's plan if authenticated
+  let currentPlan: string | undefined
+  try {
+    const user = await getCurrentUser()
+    if (user) {
+      const { data: workspace } = await supabase
+        .from('workspaces')
+        .select('plan')
+        .eq('id', user.workspace_id)
+        .single()
+
+      currentPlan = workspace?.plan || 'free'
+    }
+  } catch (error) {
+    // User not authenticated, that's fine
+    currentPlan = undefined
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-zinc-50 py-20">
-      <div className="max-w-6xl mx-auto px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+        {/* Header */}
         <div className="text-center mb-16">
           <h1 className="text-4xl lg:text-5xl font-bold text-zinc-900 mb-4">
             Simple, transparent pricing
@@ -23,132 +75,95 @@ export default function PricingPage() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {/* Free Plan */}
-          <div className="bg-white border border-zinc-200 rounded-2xl p-8">
-            <h2 className="text-2xl font-bold text-zinc-900 mb-2">Free</h2>
-            <p className="text-zinc-600 mb-6">For getting started</p>
-            <div className="text-5xl font-bold text-zinc-900 mb-6">
-              $0<span className="text-lg font-normal text-zinc-500">/mo</span>
-            </div>
-
-            <ul className="space-y-4 text-zinc-600 mb-8">
-              <li className="flex items-center gap-3">
-                <svg className="w-5 h-5 text-blue-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                3 leads per day
-              </li>
-              <li className="flex items-center gap-3">
-                <svg className="w-5 h-5 text-blue-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                1 active query
-              </li>
-              <li className="flex items-center gap-3">
-                <svg className="w-5 h-5 text-blue-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                Email delivery
-              </li>
-              <li className="flex items-center gap-3">
-                <svg className="w-5 h-5 text-blue-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                Basic intent scoring
-              </li>
-            </ul>
-
-            <Link
-              href="/signup"
-              className="block w-full py-3 text-center border-2 border-zinc-900 text-zinc-900 font-semibold rounded-lg hover:bg-zinc-50 transition-colors"
-            >
-              Get Started Free
-            </Link>
-          </div>
-
-          {/* Pro Plan */}
-          <div className="bg-zinc-900 text-white rounded-2xl p-8 relative">
-            <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-blue-500 text-white text-sm font-medium rounded-full">
-              Most Popular
-            </span>
-            <h2 className="text-2xl font-bold mb-2">Pro</h2>
-            <p className="text-zinc-400 mb-6">For growing teams</p>
-            <div className="text-5xl font-bold mb-6">
-              $50<span className="text-lg font-normal text-zinc-400">/mo</span>
-            </div>
-
-            <ul className="space-y-4 text-zinc-300 mb-8">
-              <li className="flex items-center gap-3">
-                <svg className="w-5 h-5 text-emerald-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                1,000 leads per day
-              </li>
-              <li className="flex items-center gap-3">
-                <svg className="w-5 h-5 text-emerald-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                5 active queries
-              </li>
-              <li className="flex items-center gap-3">
-                <svg className="w-5 h-5 text-emerald-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                Email + Slack delivery
-              </li>
-              <li className="flex items-center gap-3">
-                <svg className="w-5 h-5 text-emerald-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                Webhooks & CSV exports
-              </li>
-              <li className="flex items-center gap-3">
-                <svg className="w-5 h-5 text-emerald-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                Advanced intent scoring
-              </li>
-              <li className="flex items-center gap-3">
-                <svg className="w-5 h-5 text-emerald-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                Contact enrichment
-              </li>
-              <li className="flex items-center gap-3">
-                <svg className="w-5 h-5 text-emerald-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                Priority support
-              </li>
-            </ul>
-
-            <Link
-              href="/signup"
-              className="block w-full py-3 text-center bg-white text-zinc-900 font-semibold rounded-lg hover:bg-zinc-100 transition-colors"
-            >
-              Start 14-Day Trial
-            </Link>
-          </div>
-        </div>
+        {/* Pricing Cards */}
+        <PricingCards plans={plansWithPopular} currentPlan={currentPlan} />
 
         {/* FAQ Section */}
-        <div className="mt-20 max-w-3xl mx-auto">
-          <h2 className="text-2xl font-bold text-zinc-900 text-center mb-8">
+        <div className="mt-24 max-w-3xl mx-auto">
+          <h2 className="text-3xl font-bold text-zinc-900 text-center mb-12">
             Frequently asked questions
           </h2>
           <div className="space-y-6">
-            <div className="bg-white border border-zinc-200 rounded-lg p-6">
-              <h3 className="font-semibold text-zinc-900 mb-2">What counts as a lead?</h3>
-              <p className="text-zinc-600">A lead is a company we identify that matches your query criteria and shows intent signals for your topic. Each enriched contact at that company also counts as one lead.</p>
+            <div className="bg-white border border-zinc-200 rounded-lg p-6 hover:border-zinc-300 transition-colors">
+              <h3 className="font-semibold text-zinc-900 mb-2 text-lg">
+                What counts as a lead?
+              </h3>
+              <p className="text-zinc-600">
+                A lead is a company we identify that matches your query criteria and shows intent signals for your topic. Each enriched contact at that company also counts as one lead.
+              </p>
             </div>
-            <div className="bg-white border border-zinc-200 rounded-lg p-6">
-              <h3 className="font-semibold text-zinc-900 mb-2">Can I cancel anytime?</h3>
-              <p className="text-zinc-600">Yes, you can cancel your subscription at any time. Your access will continue until the end of your billing period.</p>
+
+            <div className="bg-white border border-zinc-200 rounded-lg p-6 hover:border-zinc-300 transition-colors">
+              <h3 className="font-semibold text-zinc-900 mb-2 text-lg">
+                Can I cancel anytime?
+              </h3>
+              <p className="text-zinc-600">
+                Yes, you can cancel your subscription at any time. Your access will continue until the end of your billing period, and you won't be charged again.
+              </p>
             </div>
-            <div className="bg-white border border-zinc-200 rounded-lg p-6">
-              <h3 className="font-semibold text-zinc-900 mb-2">Do unused leads roll over?</h3>
-              <p className="text-zinc-600">Daily lead limits reset each day and do not roll over. This ensures you&apos;re always getting fresh, relevant leads.</p>
+
+            <div className="bg-white border border-zinc-200 rounded-lg p-6 hover:border-zinc-300 transition-colors">
+              <h3 className="font-semibold text-zinc-900 mb-2 text-lg">
+                Do unused leads roll over?
+              </h3>
+              <p className="text-zinc-600">
+                Monthly lead limits reset each billing cycle and do not roll over. This ensures you're always getting fresh, relevant leads matched to your current needs.
+              </p>
+            </div>
+
+            <div className="bg-white border border-zinc-200 rounded-lg p-6 hover:border-zinc-300 transition-colors">
+              <h3 className="font-semibold text-zinc-900 mb-2 text-lg">
+                What payment methods do you accept?
+              </h3>
+              <p className="text-zinc-600">
+                We accept all major credit cards (Visa, Mastercard, American Express) through our secure Stripe payment processor. Annual plans can also be paid via ACH transfer or wire.
+              </p>
+            </div>
+
+            <div className="bg-white border border-zinc-200 rounded-lg p-6 hover:border-zinc-300 transition-colors">
+              <h3 className="font-semibold text-zinc-900 mb-2 text-lg">
+                Can I upgrade or downgrade my plan?
+              </h3>
+              <p className="text-zinc-600">
+                Yes! You can upgrade at any time and the change takes effect immediately. Downgrades take effect at the end of your current billing period to ensure you get the value you paid for.
+              </p>
+            </div>
+
+            <div className="bg-white border border-zinc-200 rounded-lg p-6 hover:border-zinc-300 transition-colors">
+              <h3 className="font-semibold text-zinc-900 mb-2 text-lg">
+                Is there a free trial?
+              </h3>
+              <p className="text-zinc-600">
+                The Free plan is available forever with no credit card required. For paid plans, we offer a 14-day money-back guarantee - if you're not satisfied, we'll refund you in full.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* CTA Section */}
+        <div className="mt-24 text-center">
+          <div className="bg-zinc-900 rounded-2xl p-12 max-w-4xl mx-auto">
+            <h2 className="text-3xl font-bold text-white mb-4">
+              Ready to get started?
+            </h2>
+            <p className="text-zinc-300 text-lg mb-8 max-w-2xl mx-auto">
+              Join hundreds of businesses using Cursive to find and convert their ideal customers with AI-powered lead intelligence.
+            </p>
+            <div className="flex gap-4 justify-center">
+              <a
+                href="/signup"
+                className="px-8 py-4 bg-white text-zinc-900 font-semibold rounded-lg hover:bg-zinc-100 transition-colors"
+              >
+                Start Free
+              </a>
+              <a
+                href="https://calendly.com/meet-cursive/demo"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-8 py-4 border-2 border-white text-white font-semibold rounded-lg hover:bg-white/10 transition-colors"
+              >
+                Schedule Demo
+              </a>
             </div>
           </div>
         </div>
