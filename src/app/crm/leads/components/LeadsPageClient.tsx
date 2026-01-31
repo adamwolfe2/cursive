@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useMemo, useCallback } from 'react'
-import Link from 'next/link'
 import { Users, Plus, Filter, ArrowUpDown } from 'lucide-react'
 import { CRMPageContainer } from '@/components/crm/layout/CRMPageContainer'
 import { CRMViewBar } from '@/components/crm/layout/CRMViewBar'
@@ -13,7 +12,6 @@ import { EmptyState } from '@/components/crm/empty-states/EmptyState'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useCRMViewStore } from '@/lib/stores/crm-view-store'
-import { MobileMenu } from '@/components/ui/mobile-menu'
 import { formatDistanceToNow } from 'date-fns'
 import type { LeadTableRow } from '@/types/crm.types'
 
@@ -161,18 +159,10 @@ export function LeadsPageClient({ initialData }: LeadsPageClientProps) {
             </Button>
           }
           actions={
-            <>
-              {/* Mobile menu */}
-              <div className="lg:hidden">
-                </MobileMenu>
-              </div>
-
-              {/* Add lead button */}
-              <Button size="sm">
-                <Plus className="mr-2 h-4 w-4" />
-                Add Lead
-              </Button>
-            </>
+            <Button size="sm">
+              <Plus className="mr-2 h-4 w-4" />
+              Add Lead
+            </Button>
           }
         />
 
