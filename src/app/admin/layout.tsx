@@ -9,6 +9,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { isAdmin, getUserWithRole } from '@/lib/auth/roles'
+import { AdminMobileNav } from './components/AdminMobileNav'
 
 export const dynamic = 'force-dynamic'
 
@@ -38,16 +39,19 @@ export default async function AdminLayout({
     <div className="min-h-screen bg-zinc-50">
       {/* Admin Header */}
       <header className="sticky top-0 z-50 bg-zinc-900 text-white">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-3 sm:gap-6">
+              {/* Mobile menu */}
+              <AdminMobileNav />
+
               <Link href="/admin/dashboard" className="flex items-center gap-2">
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 text-white">
                   <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
                   </svg>
                 </div>
-                <span className="font-semibold">Cursive Admin</span>
+                <span className="font-semibold hidden sm:inline">Cursive Admin</span>
               </Link>
 
               <nav className="hidden md:flex items-center gap-4">
@@ -96,11 +100,11 @@ export default async function AdminLayout({
               </nav>
             </div>
 
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-zinc-400">{adminEmail}</span>
+            <div className="flex items-center gap-2 sm:gap-4">
+              <span className="text-xs sm:text-sm text-zinc-400 hidden sm:block truncate max-w-[150px]">{adminEmail}</span>
               <Link
                 href="/dashboard"
-                className="text-sm text-zinc-300 hover:text-white transition-colors"
+                className="text-xs sm:text-sm text-zinc-300 hover:text-white transition-colors hidden md:block"
               >
                 Exit Admin
               </Link>

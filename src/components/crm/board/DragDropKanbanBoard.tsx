@@ -184,7 +184,7 @@ export function DragDropKanbanBoard<T extends { id: string }>({
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <div className={cn('flex h-full gap-4 overflow-x-auto p-6 bg-gray-50', className)}>
+      <div className={cn('flex h-full gap-3 sm:gap-4 overflow-x-auto p-3 sm:p-6 bg-gray-50', className)}>
         {columns.map((column) => {
           const columnData = data[column.id] || []
 
@@ -192,7 +192,7 @@ export function DragDropKanbanBoard<T extends { id: string }>({
             <div
               key={column.id}
               id={column.id}
-              className="flex h-full w-80 flex-shrink-0 flex-col rounded-lg bg-white border border-gray-200 shadow-sm"
+              className="flex h-full w-64 sm:w-72 md:w-80 flex-shrink-0 flex-col rounded-lg bg-white border border-gray-200 shadow-sm"
             >
               {/* Column header */}
               <div className="flex items-center justify-between border-b border-gray-200 px-4 py-3">

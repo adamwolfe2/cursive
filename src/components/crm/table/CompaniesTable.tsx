@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Button } from '@/components/ui/button'
-import { Filter, ArrowUpDown, Settings2, ChevronDown, ExternalLink, Plus } from 'lucide-react'
+import { Filter, ArrowUpDown, Settings2, ChevronDown, ExternalLink, Plus, Building2, Users, DollarSign } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,6 +13,13 @@ import {
 import { cn } from '@/lib/utils'
 import type { Company } from '@/types/crm.types'
 import { formatDistanceToNow } from 'date-fns'
+import {
+  MobileCard,
+  MobileCardHeader,
+  MobileCardField,
+  MobileCardDivider,
+  MobileCardFooter,
+} from '@/components/ui/mobile-card'
 
 interface CompaniesTableProps {
   data: Company[]
@@ -79,10 +86,106 @@ export function CompaniesTable({ data, onRowClick }: CompaniesTableProps) {
   const emptyIndustries = data.filter((c) => !c.industry).length
   const emptyIndustryPercentage = data.length > 0 ? Math.round((emptyIndustries / data.length) * 100) : 0
 
+  // Mobile card rendering helper
+  const renderMobileCard = (company: Company) => {
+    const isSelected = selectedRows.has(company.id)
+    const faviconUrl = getCompanyFavicon(company.website)
+    const initials = company.name?.substring(0, 2).toUpperCase() || '??'
+    const logoColor = getLogoColor(company.name)
+
+    return (
+      <MobileCard
+        key={company.id}
+        selected={isSelected}
+        onClick={() => onRowClick?.(company)}
+      >
+        <div className="flex items-start gap-3">
+          {/* Checkbox */}
+          <div className="pt-1">
+            <Checkbox
+              checked={isSelected}
+              onCheckedChange={() => toggleRow(company.id, { stopPropagation: () => {} } as React.MouseEvent)}
+              onClick={(e) => e.stopPropagation()}
+              className="border-gray-300"
+            />
+          </div>
+
+          {/* Logo and Name */}
+          <div className="flex-1 min-w-0">
+            <MobileCardHeader
+              title={company.name || 'Unnamed Company'}
+              subtitle={company.industry || undefined}
+              avatar={
+                faviconUrl ? (
+                  <img
+                    src={faviconUrl}
+                    alt=""
+                    className="h-8 w-8 rounded"
+                    onError={(e) => { e.currentTarget.style.display = 'none' }}
+                  />
+                ) : (
+                  <div className={cn(
+                    "flex h-8 w-8 items-center justify-center rounded text-xs font-bold text-white",
+                    logoColor
+                  )}>
+                    {initials}
+                  </div>
+                )
+              }
+            />
+          </div>
+        </div>
+
+        {/* Website */}
+        {company.website && (
+          <div className="flex items-center gap-2 text-sm">
+            <ExternalLink className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+            <a
+              href={company.website.startsWith('http') ? company.website : `https://${company.website}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="text-blue-600 hover:underline truncate"
+            >
+              {company.website.replace(/^https?:\/\/(www\.)?/, '')}
+            </a>
+          </div>
+        )}
+
+        {/* Company Details */}
+        <div className="space-y-2">
+          {company.employees_range && (
+            <MobileCardField
+              icon={<Users className="h-4 w-4" />}
+              label="Employees"
+              value={company.employees_range}
+            />
+          )}
+          {company.revenue_range && (
+            <MobileCardField
+              icon={<DollarSign className="h-4 w-4" />}
+              label="Revenue"
+              value={company.revenue_range}
+            />
+          )}
+        </div>
+
+        <MobileCardDivider />
+
+        {/* Footer with metadata */}
+        <MobileCardFooter className="justify-between">
+          <span className="text-xs text-muted-foreground">
+            {formatDistanceToNow(new Date(company.created_at), { addSuffix: true })}
+          </span>
+        </MobileCardFooter>
+      </MobileCard>
+    )
+  }
+
   return (
     <div className="flex h-full flex-col bg-white">
       {/* Header Toolbar */}
-      <div className="flex items-center justify-between border-b border-gray-200 bg-white px-4 py-2.5">
+      <div className="flex items-center justify-between border-b border-gray-200 bg-white px-3 sm:px-4 py-2.5">
         <div className="flex items-center gap-3">
           {/* View Dropdown */}
           <DropdownMenu>
@@ -111,48 +214,62 @@ export function CompaniesTable({ data, onRowClick }: CompaniesTableProps) {
         </div>
 
         {/* Right toolbar */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 sm:gap-2">
           <Button
             variant="ghost"
             size="sm"
-            className="h-7 gap-1.5 px-2.5 text-sm font-normal text-gray-700 hover:bg-gray-100"
+            className="h-7 gap-1.5 px-2 sm:px-2.5 text-sm font-normal text-gray-700 hover:bg-gray-100"
           >
             <Filter className="h-3.5 w-3.5" />
-            Filter
+            <span className="hidden sm:inline">Filter</span>
           </Button>
           <Button
             variant="ghost"
             size="sm"
-            className="h-7 gap-1.5 px-2.5 text-sm font-normal text-gray-700 hover:bg-gray-100"
+            className="h-7 gap-1.5 px-2 sm:px-2.5 text-sm font-normal text-gray-700 hover:bg-gray-100"
           >
             <ArrowUpDown className="h-3.5 w-3.5" />
-            Sort
+            <span className="hidden sm:inline">Sort</span>
           </Button>
           <Button
             variant="ghost"
             size="sm"
-            className="h-7 gap-1.5 px-2.5 text-sm font-normal text-gray-700 hover:bg-gray-100"
+            className="h-7 gap-1.5 px-2 sm:px-2.5 text-sm font-normal text-gray-700 hover:bg-gray-100 hidden sm:flex"
           >
             <Settings2 className="h-3.5 w-3.5" />
-            Options
+            <span className="hidden sm:inline">Options</span>
           </Button>
 
           {/* Separator */}
-          <div className="mx-1 h-4 w-px bg-gray-300" />
+          <div className="mx-1 h-4 w-px bg-gray-300 hidden sm:block" />
 
           {/* New record button */}
           <Button
             size="sm"
-            className="h-7 gap-1.5 bg-gray-900 px-2.5 text-sm font-normal hover:bg-gray-800"
+            className="h-7 gap-1.5 bg-gray-900 px-2 sm:px-2.5 text-sm font-normal hover:bg-gray-800"
           >
             <Plus className="h-3.5 w-3.5" />
-            New company
+            <span className="hidden sm:inline">New company</span>
           </Button>
         </div>
       </div>
 
-      {/* Table */}
-      <div className="flex-1 overflow-auto">
+      {/* Mobile Card View */}
+      <div className="flex-1 overflow-auto p-4 space-y-3 md:hidden">
+        {data.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            <p className="text-sm font-medium text-gray-500">No companies yet</p>
+            <p className="text-xs text-gray-400 mt-1">
+              Add companies from your leads or import them
+            </p>
+          </div>
+        ) : (
+          data.map(renderMobileCard)
+        )}
+      </div>
+
+      {/* Desktop Table View */}
+      <div className="flex-1 overflow-auto hidden md:block">
         <table className="w-full">
           <thead className="sticky top-0 z-10 bg-gray-50">
             <tr className="border-b border-gray-200">
@@ -332,13 +449,15 @@ export function CompaniesTable({ data, onRowClick }: CompaniesTableProps) {
 
       {/* Bottom statistics bar */}
       {data.length > 0 && (
-        <div className="flex items-center gap-6 border-t border-gray-200 bg-gray-50 px-4 py-2">
-          <div className="flex items-center gap-2 text-xs">
-            <span className="font-medium text-gray-700">With Website</span>
+        <div className="flex items-center gap-4 sm:gap-6 border-t border-gray-200 bg-gray-50 px-3 sm:px-4 py-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 text-xs">
+            <span className="font-medium text-gray-700">Websites</span>
             <span className="font-semibold text-gray-900">{totalWebsites}</span>
           </div>
-          <div className="flex items-center gap-2 text-xs">
-            <span className="font-medium text-gray-700">Empty Industry</span>
+          <div className="flex items-center gap-1.5 sm:gap-2 text-xs">
+            <span className="font-medium text-gray-700 hidden sm:inline">Empty</span>
+            <span className="font-medium text-gray-700 sm:hidden">No</span>
+            <span className="font-medium text-gray-700">Industry</span>
             <span className="font-semibold text-gray-900">{emptyIndustryPercentage}%</span>
           </div>
         </div>

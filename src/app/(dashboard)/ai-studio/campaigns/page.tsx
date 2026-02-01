@@ -188,8 +188,8 @@ export default function CampaignsPage() {
 
   return (
     <div className="min-h-screen bg-[#F8F9FA]">
-      <div className="mx-auto max-w-6xl px-6 py-8">
-        <div className="space-y-8">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 py-6 sm:py-8">
+        <div className="space-y-6 sm:space-y-8">
           {/* Header */}
           <div>
             <Button
@@ -201,7 +201,7 @@ export default function CampaignsPage() {
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Creatives
             </Button>
-            <h1 className="text-2xl font-bold text-gray-900">Create Campaign</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Create Campaign</h1>
             <p className="text-sm text-gray-500">
               Choose a plan and we'll run your Meta ads campaign
             </p>

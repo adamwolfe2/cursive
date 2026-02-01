@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Button } from '@/components/ui/button'
-import { Filter, ArrowUpDown, Settings2, ChevronDown, Mail, Phone, Plus } from 'lucide-react'
+import { Filter, ArrowUpDown, Settings2, ChevronDown, Mail, Phone, Plus, Building2, Briefcase } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,6 +13,13 @@ import {
 import { cn } from '@/lib/utils'
 import type { Contact } from '@/types/crm.types'
 import { formatDistanceToNow } from 'date-fns'
+import {
+  MobileCard,
+  MobileCardHeader,
+  MobileCardField,
+  MobileCardDivider,
+  MobileCardFooter,
+} from '@/components/ui/mobile-card'
 
 interface ContactsTableProps {
   data: Contact[]
@@ -76,10 +83,118 @@ export function ContactsTable({ data, onRowClick }: ContactsTableProps) {
   const emptyPhones = data.filter((c) => !c.phone).length
   const emptyPhonePercentage = data.length > 0 ? Math.round((emptyPhones / data.length) * 100) : 0
 
+  // Mobile card rendering helper
+  const renderMobileCard = (contact: Contact) => {
+    const isSelected = selectedRows.has(contact.id)
+    const fullName = contact.full_name || [contact.first_name, contact.last_name].filter(Boolean).join(' ') || 'Unnamed Contact'
+    const initials = getInitials(fullName)
+    const avatarColor = getAvatarColor(fullName)
+
+    return (
+      <MobileCard
+        key={contact.id}
+        selected={isSelected}
+        onClick={() => onRowClick?.(contact)}
+      >
+        <div className="flex items-start gap-3">
+          {/* Checkbox */}
+          <div className="pt-1">
+            <Checkbox
+              checked={isSelected}
+              onCheckedChange={() => toggleRow(contact.id, { stopPropagation: () => {} } as React.MouseEvent)}
+              onClick={(e) => e.stopPropagation()}
+              className="border-gray-300"
+            />
+          </div>
+
+          {/* Avatar and Name */}
+          <div className="flex-1 min-w-0">
+            <MobileCardHeader
+              title={fullName}
+              subtitle={contact.title || undefined}
+              avatar={
+                <div className={cn(
+                  "flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold text-white",
+                  avatarColor
+                )}>
+                  {initials}
+                </div>
+              }
+            />
+          </div>
+        </div>
+
+        {/* Contact Info */}
+        <div className="space-y-2">
+          {contact.email && (
+            <MobileCardField
+              icon={<Mail className="h-4 w-4" />}
+              label="Email"
+              value={
+                <a
+                  href={`mailto:${contact.email}`}
+                  onClick={(e) => e.stopPropagation()}
+                  className="text-blue-600 hover:underline truncate"
+                >
+                  {contact.email}
+                </a>
+              }
+            />
+          )}
+          {contact.phone && (
+            <MobileCardField
+              icon={<Phone className="h-4 w-4" />}
+              label="Phone"
+              value={
+                <a
+                  href={`tel:${contact.phone}`}
+                  onClick={(e) => e.stopPropagation()}
+                  className="text-blue-600 hover:underline"
+                >
+                  {contact.phone}
+                </a>
+              }
+            />
+          )}
+          {contact.company_id && (
+            <MobileCardField
+              icon={<Building2 className="h-4 w-4" />}
+              label="Company"
+              value="Company Name"
+            />
+          )}
+        </div>
+
+        <MobileCardDivider />
+
+        {/* Footer with metadata */}
+        <MobileCardFooter className="justify-between">
+          <span className="text-xs text-muted-foreground">
+            {formatDistanceToNow(new Date(contact.created_at), { addSuffix: true })}
+          </span>
+          {contact.email && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-7"
+              onClick={(e) => {
+                e.stopPropagation()
+                window.location.href = `mailto:${contact.email}`
+              }}
+            >
+              <Mail className="h-3.5 w-3.5 mr-1.5" />
+              Email
+            </Button>
+          )}
+        </MobileCardFooter>
+      </MobileCard>
+    )
+  }
+
   return (
     <div className="flex h-full flex-col bg-white">
       {/* Header Toolbar */}
-      <div className="flex items-center justify-between border-b border-gray-200 bg-white px-4 py-2.5">
+      <div className="flex items-center justify-between border-b border-gray-200 bg-white px-3 sm:px-4 py-2.5">
         <div className="flex items-center gap-3">
           {/* View Dropdown */}
           <DropdownMenu>
@@ -108,48 +223,62 @@ export function ContactsTable({ data, onRowClick }: ContactsTableProps) {
         </div>
 
         {/* Right toolbar */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 sm:gap-2">
           <Button
             variant="ghost"
             size="sm"
-            className="h-7 gap-1.5 px-2.5 text-sm font-normal text-gray-700 hover:bg-gray-100"
+            className="h-7 gap-1.5 px-2 sm:px-2.5 text-sm font-normal text-gray-700 hover:bg-gray-100"
           >
             <Filter className="h-3.5 w-3.5" />
-            Filter
+            <span className="hidden sm:inline">Filter</span>
           </Button>
           <Button
             variant="ghost"
             size="sm"
-            className="h-7 gap-1.5 px-2.5 text-sm font-normal text-gray-700 hover:bg-gray-100"
+            className="h-7 gap-1.5 px-2 sm:px-2.5 text-sm font-normal text-gray-700 hover:bg-gray-100"
           >
             <ArrowUpDown className="h-3.5 w-3.5" />
-            Sort
+            <span className="hidden sm:inline">Sort</span>
           </Button>
           <Button
             variant="ghost"
             size="sm"
-            className="h-7 gap-1.5 px-2.5 text-sm font-normal text-gray-700 hover:bg-gray-100"
+            className="h-7 gap-1.5 px-2 sm:px-2.5 text-sm font-normal text-gray-700 hover:bg-gray-100 hidden sm:flex"
           >
             <Settings2 className="h-3.5 w-3.5" />
-            Options
+            <span className="hidden sm:inline">Options</span>
           </Button>
 
           {/* Separator */}
-          <div className="mx-1 h-4 w-px bg-gray-300" />
+          <div className="mx-1 h-4 w-px bg-gray-300 hidden sm:block" />
 
           {/* New record button */}
           <Button
             size="sm"
-            className="h-7 gap-1.5 bg-gray-900 px-2.5 text-sm font-normal hover:bg-gray-800"
+            className="h-7 gap-1.5 bg-gray-900 px-2 sm:px-2.5 text-sm font-normal hover:bg-gray-800"
           >
             <Plus className="h-3.5 w-3.5" />
-            New contact
+            <span className="hidden sm:inline">New contact</span>
           </Button>
         </div>
       </div>
 
-      {/* Table */}
-      <div className="flex-1 overflow-auto">
+      {/* Mobile Card View */}
+      <div className="flex-1 overflow-auto p-4 space-y-3 md:hidden">
+        {data.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            <p className="text-sm font-medium text-gray-500">No contacts yet</p>
+            <p className="text-xs text-gray-400 mt-1">
+              Add contacts to build your network and track relationships
+            </p>
+          </div>
+        ) : (
+          data.map(renderMobileCard)
+        )}
+      </div>
+
+      {/* Desktop Table View */}
+      <div className="flex-1 overflow-auto hidden md:block">
         <table className="w-full">
           <thead className="sticky top-0 z-10 bg-gray-50">
             <tr className="border-b border-gray-200">
@@ -317,13 +446,15 @@ export function ContactsTable({ data, onRowClick }: ContactsTableProps) {
 
       {/* Bottom statistics bar */}
       {data.length > 0 && (
-        <div className="flex items-center gap-6 border-t border-gray-200 bg-gray-50 px-4 py-2">
-          <div className="flex items-center gap-2 text-xs">
-            <span className="font-medium text-gray-700">With Email</span>
+        <div className="flex items-center gap-4 sm:gap-6 border-t border-gray-200 bg-gray-50 px-3 sm:px-4 py-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 text-xs">
+            <span className="font-medium text-gray-700">Emails</span>
             <span className="font-semibold text-gray-900">{totalEmails}</span>
           </div>
-          <div className="flex items-center gap-2 text-xs">
-            <span className="font-medium text-gray-700">Empty Phone</span>
+          <div className="flex items-center gap-1.5 sm:gap-2 text-xs">
+            <span className="font-medium text-gray-700 hidden sm:inline">Empty</span>
+            <span className="font-medium text-gray-700 sm:hidden">No</span>
+            <span className="font-medium text-gray-700">Phone</span>
             <span className="font-semibold text-gray-900">{emptyPhonePercentage}%</span>
           </div>
         </div>

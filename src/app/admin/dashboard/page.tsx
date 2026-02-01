@@ -201,10 +201,10 @@ export default function AdminDashboard() {
     <>
       <NavBar />
       <div className="min-h-screen bg-white">
-        <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
           {/* Page Header */}
           <div className="mb-6">
-            <h1 className="text-xl font-medium text-zinc-900">Admin Dashboard</h1>
+            <h1 className="text-lg sm:text-xl font-medium text-zinc-900">Admin Dashboard</h1>
             <p className="text-[13px] text-zinc-500 mt-1">
               Manage routing rules, monitor leads, and test integrations
             </p>
@@ -410,31 +410,31 @@ export default function AdminDashboard() {
 
           {/* Webhook Testing Panel */}
           <div className="bg-white border border-zinc-200 rounded-lg shadow-sm">
-            <div className="px-5 py-4 border-b border-zinc-100">
+            <div className="px-4 sm:px-5 py-4 border-b border-zinc-100">
               <h2 className="text-[15px] font-medium text-zinc-900">Webhook Testing</h2>
             </div>
-            <div className="p-5">
-              <div className="flex gap-3 mb-4">
+            <div className="p-4 sm:p-5">
+              <div className="flex flex-wrap gap-2 sm:gap-3 mb-4">
                 <button
                   onClick={() => testWebhook('datashopper')}
                   disabled={loading}
-                  className="h-9 px-4 text-[13px] font-medium bg-zinc-900 text-white hover:bg-zinc-800 rounded-lg transition-all duration-150 disabled:opacity-50"
+                  className="h-9 px-3 sm:px-4 text-[12px] sm:text-[13px] font-medium bg-zinc-900 text-white hover:bg-zinc-800 rounded-lg transition-all duration-150 disabled:opacity-50"
                 >
-                  Simulate DataShopper
+                  DataShopper
                 </button>
                 <button
                   onClick={() => testWebhook('clay')}
                   disabled={loading}
-                  className="h-9 px-4 text-[13px] font-medium bg-zinc-900 text-white hover:bg-zinc-800 rounded-lg transition-all duration-150 disabled:opacity-50"
+                  className="h-9 px-3 sm:px-4 text-[12px] sm:text-[13px] font-medium bg-zinc-900 text-white hover:bg-zinc-800 rounded-lg transition-all duration-150 disabled:opacity-50"
                 >
-                  Simulate Clay Enrichment
+                  Clay
                 </button>
                 <button
                   onClick={() => testWebhook('audience-labs')}
                   disabled={loading}
-                  className="h-9 px-4 text-[13px] font-medium bg-zinc-900 text-white hover:bg-zinc-800 rounded-lg transition-all duration-150 disabled:opacity-50"
+                  className="h-9 px-3 sm:px-4 text-[12px] sm:text-[13px] font-medium bg-zinc-900 text-white hover:bg-zinc-800 rounded-lg transition-all duration-150 disabled:opacity-50"
                 >
-                  Simulate Audience Labs
+                  Audience Labs
                 </button>
               </div>
               {webhookResponse && (
