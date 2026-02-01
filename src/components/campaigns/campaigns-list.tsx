@@ -43,6 +43,7 @@ export function CampaignsList() {
   const [campaigns, setCampaigns] = useState<Campaign[]>([])
   const [usage, setUsage] = useState<CampaignUsage | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState('all')
 
   const hasCampaignsFeature = hasFeature('campaigns')
@@ -50,23 +51,47 @@ export function CampaignsList() {
 
   useEffect(() => {
     async function fetchCampaigns() {
+      console.log('[Campaigns] Fetching campaigns, tab:', activeTab)
+      setLoading(true)
+      setError(null)
+
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 10000) // 10s timeout
+
       try {
         const params = activeTab !== 'all' ? `?status=${activeTab}&includeUsage=true` : '?includeUsage=true'
-        const response = await fetch(`/api/campaigns${params}`)
+        const response = await fetch(`/api/campaigns${params}`, {
+          signal: controller.signal,
+        })
+
+        clearTimeout(timeoutId)
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}))
-          console.error('API Error:', response.status, errorData)
-          throw new Error(errorData.error || `HTTP ${response.status}`)
+          console.error('[Campaigns] API Error:', response.status, errorData)
+          throw new Error(errorData.error || `Failed to load campaigns (HTTP ${response.status})`)
         }
 
         const result = await response.json()
-        console.log('Campaigns loaded:', result)
+        console.log('[Campaigns] Loaded:', result.data?.length || 0, 'campaigns')
         setCampaigns(result.data || [])
         setUsage(result.usage || null)
       } catch (error) {
-        console.error('Failed to fetch campaigns:', error)
-        // Set loading to false even on error so we show empty state instead of skeleton
+        clearTimeout(timeoutId)
+        console.error('[Campaigns] Error:', error)
+
+        if (error instanceof Error) {
+          if (error.name === 'AbortError') {
+            setError('Request timed out. Please try again.')
+          } else {
+            setError(error.message)
+          }
+        } else {
+          setError('Failed to load campaigns')
+        }
+
+        // Still show empty state on error
+        setCampaigns([])
       } finally {
         setLoading(false)
       }
@@ -208,6 +233,23 @@ export function CampaignsList() {
                   <div className="h-3 bg-muted rounded w-1/4" />
                 </Card>
               ))}
+            </div>
+          ) : error ? (
+            <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
+                <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </div>
+              <h3 className="mt-4 text-sm font-medium text-red-900">Failed to load campaigns</h3>
+              <p className="mt-2 text-sm text-red-700">{error}</p>
+              <Button
+                onClick={() => window.location.reload()}
+                variant="outline"
+                className="mt-4"
+              >
+                Retry
+              </Button>
             </div>
           ) : campaigns.length === 0 ? (
             <EmptyState
