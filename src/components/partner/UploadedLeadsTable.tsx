@@ -46,53 +46,99 @@ export function UploadedLeadsTable({ leads }: UploadedLeadsTableProps) {
   }
 
   return (
-    <div className="glass-card overflow-hidden rounded-lg border">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Company</TableHead>
-            <TableHead>Industry</TableHead>
-            <TableHead>Uploaded</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="text-right">Revenue</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {leads.map((lead) => (
-            <TableRow
-              key={lead.id}
-              className="hover:bg-muted/50 transition-colors"
-            >
-              <TableCell className="font-medium">
-                {lead.business_name || 'Unknown Business'}
-              </TableCell>
-              <TableCell>{lead.industry || 'N/A'}</TableCell>
-              <TableCell className="text-muted-foreground text-sm">
+    <>
+      {/* Mobile: Card view */}
+      <div className="md:hidden space-y-3">
+        {leads.map((lead) => (
+          <div
+            key={lead.id}
+            className="glass-card p-4 rounded-lg border space-y-3"
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex-1 min-w-0">
+                <h3 className="font-medium truncate">
+                  {lead.business_name || 'Unknown Business'}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {lead.industry || 'N/A'}
+                </p>
+              </div>
+              <Badge
+                variant={lead.status === 'sold' ? 'default' : 'secondary'}
+                className={
+                  lead.status === 'sold'
+                    ? 'bg-emerald-500 hover:bg-emerald-600'
+                    : ''
+                }
+              >
+                {lead.status === 'sold' ? '✓ Sold' : 'Available'}
+              </Badge>
+            </div>
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">
                 {formatDistanceToNow(new Date(lead.upload_date), {
                   addSuffix: true,
                 })}
-              </TableCell>
-              <TableCell>
-                <Badge
-                  variant={lead.status === 'sold' ? 'default' : 'secondary'}
-                  className={
-                    lead.status === 'sold'
-                      ? 'bg-emerald-500 hover:bg-emerald-600'
-                      : ''
-                  }
-                >
-                  {lead.status === 'sold' ? '✓ Sold' : 'Available'}
-                </Badge>
-              </TableCell>
-              <TableCell className="text-right font-semibold">
+              </span>
+              <span className="font-semibold">
                 {lead.status === 'sold' && lead.partner_commission
                   ? `$${lead.partner_commission.toFixed(2)}`
                   : '-'}
-              </TableCell>
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop: Table view */}
+      <div className="hidden md:block glass-card overflow-hidden rounded-lg border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Company</TableHead>
+              <TableHead>Industry</TableHead>
+              <TableHead>Uploaded</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="text-right">Revenue</TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
+          </TableHeader>
+          <TableBody>
+            {leads.map((lead) => (
+              <TableRow
+                key={lead.id}
+                className="hover:bg-muted/50 transition-colors"
+              >
+                <TableCell className="font-medium">
+                  {lead.business_name || 'Unknown Business'}
+                </TableCell>
+                <TableCell>{lead.industry || 'N/A'}</TableCell>
+                <TableCell className="text-muted-foreground text-sm">
+                  {formatDistanceToNow(new Date(lead.upload_date), {
+                    addSuffix: true,
+                  })}
+                </TableCell>
+                <TableCell>
+                  <Badge
+                    variant={lead.status === 'sold' ? 'default' : 'secondary'}
+                    className={
+                      lead.status === 'sold'
+                        ? 'bg-emerald-500 hover:bg-emerald-600'
+                        : ''
+                    }
+                  >
+                    {lead.status === 'sold' ? '✓ Sold' : 'Available'}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-right font-semibold">
+                  {lead.status === 'sold' && lead.partner_commission
+                    ? `$${lead.partner_commission.toFixed(2)}`
+                    : '-'}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    </>
   )
 }
