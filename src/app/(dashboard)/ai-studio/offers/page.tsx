@@ -59,10 +59,10 @@ export default function OffersPage() {
 
   return (
     <div className="min-h-screen bg-[#F8F9FA]">
-      <div className="mx-auto max-w-6xl px-6 py-8">
-        <div className="space-y-6">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 py-6 sm:py-8">
+        <div className="space-y-4 sm:space-y-6">
           {/* Header */}
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
               <Button
                 onClick={() => router.push(`/ai-studio/profiles?workspace=${workspaceId}`)}
@@ -79,7 +79,7 @@ export default function OffersPage() {
 
             <Button
               onClick={() => router.push(`/ai-studio/creatives?workspace=${workspaceId}`)}
-              className="bg-blue-600 hover:bg-blue-700"
+              className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto"
             >
               Next: Creatives
               <ArrowRight className="ml-2 h-4 w-4" />

@@ -172,7 +172,7 @@ export default function BrandingPage() {
 
   return (
     <div className="min-h-screen bg-[#F8F9FA]">
-      <div className="mx-auto max-w-6xl px-6 py-8">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 py-6 sm:py-8">
         {/* Header */}
         <div className="mb-8">
           <Button
@@ -185,31 +185,31 @@ export default function BrandingPage() {
             Back to AI Studio
           </Button>
 
-          <Card className="p-6 bg-white shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
+          <Card className="p-4 sm:p-6 bg-white shadow-sm border border-gray-200">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-3 sm:gap-4">
                 {workspace.logo_url && (
                   <img
                     src={workspace.logo_url}
                     alt={workspace.name}
-                    className="h-16 w-16 rounded object-contain bg-gray-50 border border-gray-200 p-2"
+                    className="h-12 w-12 sm:h-16 sm:w-16 rounded object-contain bg-gray-50 border border-gray-200 p-2"
                   />
                 )}
                 <div>
-                  <h1 className="text-2xl font-bold text-gray-900 mb-1">
+                  <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">
                     {workspace.name}
                   </h1>
-                  <p className="text-sm text-gray-600">{workspace.url}</p>
-                  <div className="flex items-center gap-2 mt-2">
-                    <CheckCircle2 className="h-4 w-4 text-green-600" />
-                    <span className="text-sm text-green-600">Brand DNA extracted</span>
+                  <p className="text-xs sm:text-sm text-gray-600 truncate max-w-[200px] sm:max-w-none">{workspace.url}</p>
+                  <div className="flex items-center gap-2 mt-1 sm:mt-2">
+                    <CheckCircle2 className="h-3 w-3 sm:h-4 sm:w-4 text-green-600" />
+                    <span className="text-xs sm:text-sm text-green-600">Brand DNA extracted</span>
                   </div>
                 </div>
               </div>
 
               <Button
                 onClick={() => router.push(`/ai-studio/knowledge?workspace=${workspace.id}`)}
-                className="bg-blue-600 hover:bg-blue-700"
+                className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto"
               >
                 Next: Knowledge Base
                 <ArrowRight className="ml-2 h-4 w-4" />

@@ -181,13 +181,13 @@ export default function AIStudioPage() {
 
   return (
     <div className="min-h-screen bg-[#F8F9FA]">
-      <div className="mx-auto max-w-5xl px-6 py-12">
+      <div className="mx-auto max-w-5xl px-4 sm:px-6 py-8 sm:py-12">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-3">
+        <div className="text-center mb-8 sm:mb-12">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3">
             Welcome back, <span className="italic">{userName}</span>!
           </h1>
-          <p className="text-lg text-gray-600">
+          <p className="text-base sm:text-lg text-gray-600">
             Enter your website to create on-brand content, or select a workspace.
           </p>
         </div>

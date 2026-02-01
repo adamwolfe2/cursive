@@ -156,9 +156,9 @@ export default function CreativesPage() {
 
   return (
     <div className="min-h-screen bg-[#F8F9FA]">
-      <div className="mx-auto max-w-7xl px-6 py-8 pb-64">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 py-6 sm:py-8 pb-64">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4 sm:mb-6">
           <div>
             <Button
               onClick={() => router.push(`/ai-studio/offers?workspace=${workspaceId}`)}
@@ -175,7 +175,7 @@ export default function CreativesPage() {
 
           <Button
             onClick={() => router.push(`/ai-studio/campaigns?workspace=${workspaceId}`)}
-            className="bg-blue-600 hover:bg-blue-700"
+            className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto"
           >
             Next: Campaigns
             <ArrowRight className="ml-2 h-4 w-4" />
