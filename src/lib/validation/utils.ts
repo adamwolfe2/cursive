@@ -301,7 +301,7 @@ export function makeOptional<T extends z.ZodRawShape>(schema: z.ZodObject<T>) {
   const optionalShape = Object.keys(shape).reduce((acc, key) => {
     acc[key as keyof T] = shape[key as keyof T].optional()
     return acc
-  }, {} as any)
+  }, {} as z.ZodRawShape)
   return z.object(optionalShape)
 }
 

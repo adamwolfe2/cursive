@@ -55,7 +55,7 @@ export default async function DashboardPage() {
     .order('created_at', { ascending: false })
     .limit(5)
 
-  const workspace = user.workspaces as any
+  const workspace = user.workspaces
 
   return (
     <div className="min-h-screen bg-gray-50">

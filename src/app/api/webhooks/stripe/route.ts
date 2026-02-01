@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
         const { data: queueId } = await supabase.rpc('queue_webhook_retry', {
           p_stripe_event_id: event.id,
           p_event_type: event.type,
-          p_event_data: event as any,
+          p_event_data: event as unknown as Record<string, unknown>,
           p_error: processingError.message || 'Unknown error',
         })
 
