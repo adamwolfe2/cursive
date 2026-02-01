@@ -45,14 +45,14 @@ export function CRMTableView<T extends { id: string }>({
   }
 
   return (
-    <div className={cn('h-full w-full overflow-auto bg-white', className)}>
+    <div className={cn('h-full w-full overflow-auto bg-zinc-50/30', className)}>
       <table className="w-full border-collapse">
-        <thead className="sticky top-0 z-10 bg-gray-50">
+        <thead className="sticky top-0 z-10 bg-white/80 backdrop-blur-md shadow-sm">
           <tr>
             {columns.map((column) => (
               <th
                 key={column.key}
-                className="border-b border-gray-200 px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                className="border-b border-zinc-200/60 px-6 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-zinc-600"
                 style={{ width: column.width }}
               >
                 {column.header}
@@ -60,22 +60,22 @@ export function CRMTableView<T extends { id: string }>({
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-gray-100">
+        <tbody className="divide-y divide-zinc-100">
           {data.map((item) => (
             <motion.tr
               key={item.id}
               onClick={() => onRowClick?.(item)}
               className={cn(
-                'transition-colors hover:bg-gray-50',
+                'relative bg-white transition-all duration-200 hover:bg-zinc-50/80 hover:shadow-md hover:z-10',
                 onRowClick && 'cursor-pointer'
               )}
-              whileHover={shouldAnimate && onRowClick ? { scale: 1.005 } : undefined}
-              transition={{ duration: 0.15, ease: 'easeOut' }}
+              whileHover={shouldAnimate && onRowClick ? { scale: 1.002, y: -2 } : undefined}
+              transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
             >
               {columns.map((column) => (
                 <td
                   key={column.key}
-                  className="px-4 py-3 text-sm text-gray-900"
+                  className="px-6 py-4 text-sm text-zinc-900"
                 >
                   {column.render(item)}
                 </td>

@@ -6,17 +6,17 @@ import { cn } from '@/lib/utils'
 import type { LeadStatus } from '@/types/crm.types'
 
 const statusBadgeVariants = cva(
-  'inline-flex items-center gap-1.5 px-2 h-5 text-xs font-normal rounded whitespace-nowrap transition-colors',
+  'inline-flex items-center gap-1.5 px-2.5 py-1 h-6 text-xs font-medium rounded-full whitespace-nowrap transition-all duration-200 shadow-sm ring-1 ring-inset',
   {
     variants: {
       status: {
-        new: 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300',
+        new: 'bg-blue-50/80 text-blue-700 ring-blue-200/50 dark:bg-blue-950 dark:text-blue-300',
         contacted:
-          'bg-yellow-50 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-300',
+          'bg-yellow-50/80 text-yellow-700 ring-yellow-200/50 dark:bg-yellow-950 dark:text-yellow-300',
         qualified:
-          'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300',
-        won: 'bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300',
-        lost: 'bg-gray-50 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
+          'bg-emerald-50/80 text-emerald-700 ring-emerald-200/50 dark:bg-emerald-950 dark:text-emerald-300',
+        won: 'bg-green-50/80 text-green-700 ring-green-200/50 dark:bg-green-950 dark:text-green-300',
+        lost: 'bg-zinc-50/80 text-zinc-600 ring-zinc-200/50 dark:bg-zinc-800 dark:text-zinc-300',
       },
       variant: {
         solid: '',
@@ -57,14 +57,14 @@ const statusBadgeVariants = cva(
   }
 )
 
-const statusDotVariants = cva('h-1.5 w-1.5 rounded-full', {
+const statusDotVariants = cva('h-1.5 w-1.5 rounded-full shadow-sm', {
   variants: {
     status: {
-      new: 'bg-blue-500',
-      contacted: 'bg-yellow-500',
-      qualified: 'bg-blue-500',
-      won: 'bg-green-500',
-      lost: 'bg-gray-400',
+      new: 'bg-blue-500 shadow-blue-500/50',
+      contacted: 'bg-yellow-500 shadow-yellow-500/50',
+      qualified: 'bg-emerald-500 shadow-emerald-500/50',
+      won: 'bg-green-500 shadow-green-500/50',
+      lost: 'bg-zinc-400 shadow-zinc-400/30',
     },
   },
   defaultVariants: {
