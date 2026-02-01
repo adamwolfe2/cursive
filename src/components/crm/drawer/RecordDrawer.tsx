@@ -40,7 +40,7 @@ export function RecordDrawer({
         <>
           {/* Overlay */}
           <motion.div
-            className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm"
+            className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm"
             onClick={onClose}
             {...overlayAnimation}
           />
@@ -48,35 +48,35 @@ export function RecordDrawer({
           {/* Drawer */}
           <motion.aside
             className={cn(
-              'fixed right-0 top-0 z-50 flex h-full w-96 flex-col border-l border-gray-200 bg-white shadow-2xl',
+              'fixed right-0 top-0 z-50 flex h-full w-96 flex-col border-l border-zinc-200/60 bg-white/95 backdrop-blur-xl shadow-2xl',
               className
             )}
             {...drawerAnimation}
           >
         {/* Header */}
-        <div className="flex items-start justify-between border-b border-gray-200 p-6">
+        <div className="flex items-start justify-between border-b border-zinc-200/60 bg-gradient-to-b from-white/80 to-white/60 px-6 py-5 backdrop-blur-sm">
           <div className="flex-1">
-            <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
+            <h2 className="text-lg font-bold text-zinc-900 tracking-tight">{title}</h2>
             {subtitle && (
-              <p className="mt-1 text-sm text-gray-500">{subtitle}</p>
+              <p className="mt-1 text-sm text-zinc-500">{subtitle}</p>
             )}
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 w-8 p-0"
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="h-8 w-8 rounded-lg hover:bg-zinc-100 transition-colors flex items-center justify-center text-zinc-500 hover:text-zinc-900"
             onClick={onClose}
           >
             <X className="h-4 w-4" />
-          </Button>
+          </motion.button>
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6">{children}</div>
+        <div className="flex-1 overflow-y-auto p-6 bg-zinc-50/30">{children}</div>
 
         {/* Footer (optional) */}
         {footer && (
-          <div className="border-t border-gray-200 p-4">{footer}</div>
+          <div className="border-t border-zinc-200/60 bg-white/80 backdrop-blur-sm p-4 shadow-lg">{footer}</div>
         )}
           </motion.aside>
         </>

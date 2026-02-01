@@ -434,6 +434,49 @@
   .nav-item-enterprise-active {
     @apply text-foreground;
   }
+
+  /* Modern Gradients - Clay.com/20.com Aesthetic */
+  .gradient-icon-bg {
+    @apply bg-gradient-to-br from-blue-50 to-blue-100/50;
+  }
+
+  .gradient-status-blue {
+    @apply bg-gradient-to-r from-blue-500 to-blue-600;
+  }
+
+  .gradient-status-green {
+    @apply bg-gradient-to-r from-emerald-500 to-green-600;
+  }
+
+  .gradient-status-yellow {
+    @apply bg-gradient-to-r from-yellow-500 to-amber-600;
+  }
+
+  .gradient-status-zinc {
+    @apply bg-gradient-to-r from-zinc-400 to-zinc-500;
+  }
+
+  /* Glassmorphism Effects */
+  .glass-card {
+    @apply bg-white/60 backdrop-blur-md ring-1 ring-zinc-200/50;
+  }
+
+  .glass-header {
+    @apply bg-white/80 backdrop-blur-md;
+  }
+
+  .glass-sidebar {
+    @apply bg-white/95 backdrop-blur-xl;
+  }
+
+  /* Enhanced Shadows for Depth */
+  .shadow-lift {
+    @apply shadow-md hover:shadow-lg transition-shadow duration-200;
+  }
+
+  .shadow-lift-sm {
+    @apply shadow-sm hover:shadow-md transition-shadow duration-200;
+  }
 }
 
 /* ============================================
