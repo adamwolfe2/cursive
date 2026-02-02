@@ -410,9 +410,9 @@ export default function CampaignsPage() {
               onChange={(e) => setLandingUrl(e.target.value)}
               className="flex-1"
             />
-            <Button variant="outline" className="gap-2" disabled title="Coming soon">
+            <Button variant="outline" className="gap-2" disabled title="Landing page preview coming soon">
               <ExternalLink className="h-4 w-4" />
-              Preview (Coming Soon)
+              Preview
             </Button>
           </div>
           <p className="text-xs text-gray-500 mt-2">

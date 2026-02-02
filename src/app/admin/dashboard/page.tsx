@@ -41,7 +41,6 @@ export default function AdminDashboard() {
   const [leads, setLeads] = useState<Lead[]>([])
   const [leadsStats, setLeadsStats] = useState<Record<string, number>>({})
   const [uploadJob, setUploadJob] = useState<BulkUploadJob | null>(null)
-  const [showAddRuleModal, setShowAddRuleModal] = useState(false)
   const [webhookResponse, setWebhookResponse] = useState<string>('')
   const [loading, setLoading] = useState(false)
   const [rulesLoading, setRulesLoading] = useState(true)
@@ -214,12 +213,8 @@ export default function AdminDashboard() {
           <div className="bg-white border border-zinc-200 rounded-lg shadow-sm mb-6">
             <div className="px-5 py-4 border-b border-zinc-100 flex items-center justify-between">
               <h2 className="text-[15px] font-medium text-zinc-900">Routing Rules</h2>
-              <button
-                onClick={() => setShowAddRuleModal(true)}
-                className="h-9 px-4 text-[13px] font-medium bg-zinc-900 text-white hover:bg-zinc-800 rounded-lg transition-all duration-150"
-              >
-                + Add Rule
-              </button>
+              {/* TODO: Implement routing rule creation form */}
+              <p className="text-[13px] text-zinc-500">Use Supabase SQL Editor to add rules</p>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full">
@@ -447,23 +442,6 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Add Rule Modal */}
-      {showAddRuleModal && (
-        <div className="fixed inset-0 bg-black/20 flex items-center justify-center p-4">
-          <div className="bg-white border border-zinc-200 rounded-lg p-6 max-w-md w-full shadow-xl">
-            <h3 className="text-[15px] font-medium text-zinc-900 mb-2">Add Routing Rule</h3>
-            <p className="text-[13px] text-zinc-600 mb-6">
-              Use Supabase SQL Editor to add rules for now
-            </p>
-            <button
-              onClick={() => setShowAddRuleModal(false)}
-              className="h-9 px-4 text-[13px] font-medium bg-zinc-900 text-white hover:bg-zinc-800 rounded-lg transition-all duration-150 w-full"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
     </>
   )
 }
