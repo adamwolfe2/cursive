@@ -1,6 +1,6 @@
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 
-export default function MarketplaceLayout({
+export default function CRMLayout({
   children,
 }: {
   children: React.ReactNode
