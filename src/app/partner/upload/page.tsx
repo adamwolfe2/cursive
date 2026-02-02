@@ -13,6 +13,7 @@ import {
   Download,
   Loader2,
 } from 'lucide-react'
+import { FileUploader } from '@/components/ui/file-uploader'
 
 interface FieldMapping {
   sourceColumn: string
@@ -53,7 +54,7 @@ const TARGET_FIELDS = [
 export default function PartnerUploadPage() {
   const router = useRouter()
   const [step, setStep] = useState<'upload' | 'mapping' | 'industry' | 'processing' | 'complete'>('upload')
-  const [file, setFile] = useState<File | null>(null)
+  const [files, setFiles] = useState<File[]>([])
   const [previewData, setPreviewData] = useState<PreviewData | null>(null)
   const [fieldMappings, setFieldMappings] = useState<FieldMapping[]>([])
   const [selectedIndustry, setSelectedIndustry] = useState<string>('')
@@ -69,7 +70,6 @@ export default function PartnerUploadPage() {
     rejectedRowsUrl?: string
   } | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [dragActive, setDragActive] = useState(false)
 
   // Fetch industry categories
   useEffect(() => {
@@ -87,38 +87,17 @@ export default function PartnerUploadPage() {
     fetchIndustries()
   }, [])
 
-  // Handle file drop
-  const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setDragActive(false)
-
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleFileSelect(e.dataTransfer.files[0])
+  // Handle file selection from FileUploader
+  const handleFilesChange = useCallback((newFiles: File[]) => {
+    setFiles(newFiles)
+    if (newFiles.length > 0) {
+      handleFileSelect(newFiles[0])
     }
   }, [])
 
-  const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setDragActive(true)
-  }, [])
-
-  const handleDragLeave = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setDragActive(false)
-  }, [])
-
-  // Handle file selection
+  // Handle file selection and parsing
   const handleFileSelect = async (selectedFile: File) => {
-    if (!selectedFile.name.endsWith('.csv')) {
-      setError('Please upload a CSV file')
-      return
-    }
-
     setError(null)
-    setFile(selectedFile)
     setUploading(true)
 
     try {
@@ -265,7 +244,7 @@ export default function PartnerUploadPage() {
 
   // Process the upload
   const processUpload = async () => {
-    if (!file) return
+    if (!files[0]) return
 
     setProcessing(true)
     setStep('processing')
@@ -273,7 +252,7 @@ export default function PartnerUploadPage() {
 
     try {
       const formData = new FormData()
-      formData.append('file', file)
+      formData.append('file', files[0])
       formData.append('fieldMappings', JSON.stringify(fieldMappings.filter(m => m.targetField !== 'ignore')))
       formData.append('industryId', selectedIndustry)
 
@@ -301,7 +280,7 @@ export default function PartnerUploadPage() {
   // Reset form
   const resetForm = () => {
     setStep('upload')
-    setFile(null)
+    setFiles([])
     setPreviewData(null)
     setFieldMappings([])
     setSelectedIndustry('')
@@ -363,54 +342,35 @@ export default function PartnerUploadPage() {
 
       {/* Step: Upload */}
       {step === 'upload' && (
-        <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-6">
-          <div
-            onDrop={handleDrop}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            className={`flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-12 transition-colors ${
-              dragActive
-                ? 'border-blue-500 bg-blue-500/10'
-                : 'border-zinc-700 hover:border-zinc-600'
-            }`}
-          >
-            <input
-              type="file"
-              accept=".csv"
-              onChange={(e) => e.target.files?.[0] && handleFileSelect(e.target.files[0])}
-              className="hidden"
-              id="file-upload"
+        <div className="space-y-6">
+          <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-6">
+            <FileUploader
+              value={files}
+              onValueChange={handleFilesChange}
+              accept={{
+                'text/csv': ['.csv'],
+              }}
+              maxSize={1024 * 1024 * 100} // 100MB
+              maxFiles={1}
+              multiple={false}
+              disabled={uploading}
             />
-            <label
-              htmlFor="file-upload"
-              className="flex cursor-pointer flex-col items-center"
-            >
-              {uploading ? (
-                <Loader2 className="h-12 w-12 animate-spin text-blue-400" />
-              ) : (
-                <FileSpreadsheet className="h-12 w-12 text-zinc-500" />
-              )}
-              <p className="mt-4 text-lg font-medium text-white">
-                {uploading ? 'Processing file...' : 'Drop your CSV file here'}
-              </p>
-              <p className="mt-1 text-sm text-zinc-400">or click to browse</p>
-            </label>
           </div>
 
-          <div className="mt-6 rounded-lg bg-zinc-800 p-4">
+          <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-6">
             <h3 className="font-medium text-white">Required Fields</h3>
             <ul className="mt-2 grid grid-cols-2 gap-2 text-sm text-zinc-400">
-              <li>- Email</li>
-              <li>- First Name</li>
-              <li>- Last Name</li>
-              <li>- Company Name</li>
+              <li>✓ Email</li>
+              <li>✓ First Name</li>
+              <li>✓ Last Name</li>
+              <li>✓ Company Name</li>
             </ul>
             <h3 className="mt-4 font-medium text-white">Optional Fields</h3>
             <ul className="mt-2 grid grid-cols-2 gap-2 text-sm text-zinc-400">
-              <li>- Job Title</li>
-              <li>- Phone</li>
-              <li>- City, State, Zip</li>
-              <li>- Company Size</li>
+              <li>• Job Title</li>
+              <li>• Phone</li>
+              <li>• City, State, Zip</li>
+              <li>• Company Size</li>
             </ul>
             <a
               href="/templates/lead-upload-template.csv"
@@ -431,7 +391,7 @@ export default function PartnerUploadPage() {
               <div>
                 <h3 className="font-medium text-white">Map Your Columns</h3>
                 <p className="text-sm text-zinc-400">
-                  {previewData.totalRows.toLocaleString()} rows detected in {file?.name}
+                  {previewData.totalRows.toLocaleString()} rows detected in {files[0]?.name}
                 </p>
               </div>
             </div>
@@ -555,7 +515,7 @@ export default function PartnerUploadPage() {
             <div className="mt-4 space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-zinc-400">File</span>
-                <span className="text-white">{file?.name}</span>
+                <span className="text-white">{files[0]?.name}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-zinc-400">Total Rows</span>
