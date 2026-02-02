@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { ImportLeadsDialog } from '@/components/crm/dialogs/ImportLeadsDialog'
 import {
   Table,
   TableBody,
@@ -76,6 +77,7 @@ export function EnhancedLeadsTable({
   const [sourceFilter, setSourceFilter] = React.useState<string>('all')
   const [currentPage, setCurrentPage] = React.useState(1)
   const [pageSize, setPageSize] = React.useState(20)
+  const [importDialogOpen, setImportDialogOpen] = React.useState(false)
 
   const hasActiveFilters = statusFilter !== 'all' || sourceFilter !== 'all'
 
@@ -244,28 +246,15 @@ export function EnhancedLeadsTable({
 
           <div className="hidden sm:block w-px h-[22px] bg-gray-200" />
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="h-9 gap-2 border-gray-200">
-                <FileInput className="size-4" />
-                <span className="hidden sm:inline">Import</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem>
-                <FileSpreadsheet className="size-4 mr-2" />
-                Import from CSV
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <FileText className="size-4 mr-2" />
-                Import from Excel
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Database className="size-4 mr-2" />
-                Import from CRM
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-9 gap-2 border-gray-200"
+            onClick={() => setImportDialogOpen(true)}
+          >
+            <FileInput className="size-4" />
+            <span className="hidden sm:inline">Import</span>
+          </Button>
 
           <Button
             size="sm"
@@ -529,6 +518,16 @@ export function EnhancedLeadsTable({
           </Button>
         </div>
       </div>
+
+      {/* Import Dialog */}
+      <ImportLeadsDialog
+        open={importDialogOpen}
+        onOpenChange={setImportDialogOpen}
+        onSuccess={() => {
+          // Refresh the page to show new leads
+          window.location.reload()
+        }}
+      />
     </div>
   )
 }
