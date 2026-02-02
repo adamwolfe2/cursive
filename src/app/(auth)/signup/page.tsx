@@ -36,7 +36,7 @@ export default function SignupPage() {
         data: {
           full_name: data.full_name,
         },
-        emailRedirectTo: `${window.location.origin}/auth/callback?next=/onboarding`,
+        emailRedirectTo: `${window.location.origin}/auth/callback?next=/welcome`,
       },
     })
 
@@ -46,8 +46,8 @@ export default function SignupPage() {
       return
     }
 
-    // Redirect to onboarding
-    router.push('/onboarding')
+    // Redirect to welcome page
+    router.push('/welcome')
     router.refresh()
   }
 
@@ -60,7 +60,7 @@ export default function SignupPage() {
     const { error: signInError } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=/onboarding`,
+        redirectTo: `${window.location.origin}/auth/callback?next=/welcome`,
       },
     })
 

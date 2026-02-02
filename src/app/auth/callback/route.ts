@@ -54,15 +54,15 @@ export async function GET(request: NextRequest) {
         .eq('auth_user_id', session.user.id)
         .single()
 
-      // Redirect to role selection if no user profile exists
+      // Redirect to welcome page if no user profile exists
       if (!user || !user.workspace_id) {
         // Update the redirect URL but keep the cookies
-        const roleSelectionUrl = new URL('/role-selection', requestUrl.origin)
-        const roleSelectionResponse = NextResponse.redirect(roleSelectionUrl)
+        const welcomeUrl = new URL('/welcome', requestUrl.origin)
+        const welcomeResponse = NextResponse.redirect(welcomeUrl)
 
         // Copy all cookies to the new response
         response.cookies.getAll().forEach((cookie) => {
-          roleSelectionResponse.cookies.set(cookie.name, cookie.value, {
+          welcomeResponse.cookies.set(cookie.name, cookie.value, {
             path: '/',
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
@@ -70,7 +70,7 @@ export async function GET(request: NextRequest) {
           })
         })
 
-        return roleSelectionResponse
+        return welcomeResponse
       }
     }
 

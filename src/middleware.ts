@@ -42,6 +42,9 @@ export async function middleware(req: NextRequest) {
     const isPublicRoute =
       pathname.startsWith('/login') ||
       pathname.startsWith('/signup') ||
+      pathname.startsWith('/welcome') || // Welcome/setup page
+      pathname.startsWith('/onboarding') || // Legacy onboarding pages
+      pathname.startsWith('/role-selection') || // Legacy role selection
       pathname.startsWith('/forgot-password') ||
       pathname.startsWith('/reset-password') ||
       pathname.startsWith('/verify-email') ||
