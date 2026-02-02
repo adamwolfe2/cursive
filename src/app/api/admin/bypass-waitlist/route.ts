@@ -8,6 +8,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 
+// Use edge runtime for instant response
+export const runtime = 'edge'
+
 // Store in environment variable for security
 // Default passcode: Cursive2026!
 const ADMIN_BYPASS_PASSWORD = process.env.ADMIN_BYPASS_PASSWORD || 'Cursive2026!'
