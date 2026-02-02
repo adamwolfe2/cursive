@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { ImportLeadsDialog } from '@/components/crm/dialogs/ImportLeadsDialog'
+import { CreateLeadDialog } from '@/components/crm/dialogs/CreateLeadDialog'
 import {
   Table,
   TableBody,
@@ -78,6 +79,7 @@ export function EnhancedLeadsTable({
   const [currentPage, setCurrentPage] = React.useState(1)
   const [pageSize, setPageSize] = React.useState(20)
   const [importDialogOpen, setImportDialogOpen] = React.useState(false)
+  const [createDialogOpen, setCreateDialogOpen] = React.useState(false)
 
   const hasActiveFilters = statusFilter !== 'all' || sourceFilter !== 'all'
 
@@ -258,7 +260,7 @@ export function EnhancedLeadsTable({
 
           <Button
             size="sm"
-            onClick={onCreateClick}
+            onClick={() => setCreateDialogOpen(true)}
             className="h-9 gap-2 bg-blue-600 hover:bg-blue-700 text-white"
           >
             <Plus className="size-4" />
@@ -409,7 +411,26 @@ export function EnhancedLeadsTable({
                             Duplicate
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem className="text-red-600">
+                          <DropdownMenuItem
+                            className="text-red-600"
+                            onClick={async (e) => {
+                              e.stopPropagation()
+                              if (confirm('Are you sure you want to delete this lead?')) {
+                                try {
+                                  const response = await fetch(`/api/crm/leads/${lead.id}`, {
+                                    method: 'DELETE',
+                                  })
+                                  if (response.ok) {
+                                    window.location.reload()
+                                  } else {
+                                    alert('Failed to delete lead')
+                                  }
+                                } catch (error) {
+                                  alert('Failed to delete lead')
+                                }
+                              }
+                            }}
+                          >
                             <Trash2 className="size-4 mr-2" />
                             Delete
                           </DropdownMenuItem>
@@ -524,7 +545,15 @@ export function EnhancedLeadsTable({
         open={importDialogOpen}
         onOpenChange={setImportDialogOpen}
         onSuccess={() => {
-          // Refresh the page to show new leads
+          window.location.reload()
+        }}
+      />
+
+      {/* Create Dialog */}
+      <CreateLeadDialog
+        open={createDialogOpen}
+        onOpenChange={setCreateDialogOpen}
+        onSuccess={() => {
           window.location.reload()
         }}
       />

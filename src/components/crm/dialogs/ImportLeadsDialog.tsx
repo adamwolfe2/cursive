@@ -75,9 +75,9 @@ export function ImportLeadsDialog({ open, onOpenChange, onSuccess }: ImportLeads
   }
 
   const downloadTemplate = () => {
-    const csvContent = 'first_name,last_name,email,phone,company_name,title,city,state,source\n' +
-      'John,Doe,john.doe@example.com,555-0100,Acme Corp,CEO,New York,NY,website\n' +
-      'Jane,Smith,jane.smith@example.com,555-0101,Tech Inc,CTO,San Francisco,CA,referral'
+    const csvContent = 'first_name,last_name,email,phone,company_name,company_industry,business_type,title,city,state,source\n' +
+      'John,Doe,john.doe@example.com,555-0100,Acme Corp,Healthcare,Medical Spa,CEO,New York,NY,website\n' +
+      'Jane,Smith,jane.smith@example.com,555-0101,Tech Inc,Technology,Software,CTO,San Francisco,CA,referral'
 
     const blob = new Blob([csvContent], { type: 'text/csv' })
     const url = URL.createObjectURL(blob)
@@ -173,10 +173,12 @@ export function ImportLeadsDialog({ open, onOpenChange, onSuccess }: ImportLeads
               <li>• <strong>last_name</strong> - Last name</li>
               <li>• <strong>phone</strong> - Phone number</li>
               <li>• <strong>company_name</strong> - Company name</li>
+              <li>• <strong>company_industry</strong> - Industry (e.g., Healthcare, Technology)</li>
+              <li>• <strong>business_type</strong> - Business type (e.g., Medical Spa, Retail)</li>
               <li>• <strong>title</strong> - Job title</li>
               <li>• <strong>city</strong> - City</li>
               <li>• <strong>state</strong> - State/Province</li>
-              <li>• <strong>source</strong> - Lead source</li>
+              <li>• <strong>source</strong> - Lead source (e.g., website, import, partner)</li>
             </ul>
           </div>
         </div>
