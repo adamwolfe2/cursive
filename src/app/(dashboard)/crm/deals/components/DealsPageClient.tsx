@@ -74,11 +74,26 @@ export function DealsPageClient({ initialData }: DealsPageClientProps) {
       )
     )
 
-    // TODO: Make API call to update deal stage
-    // await fetch(`/api/crm/deals/${dealId}`, {
-    //   method: 'PATCH',
-    //   body: JSON.stringify({ stage: newStage }),
-    // })
+    // Persist to database
+    try {
+      const response = await fetch(`/api/crm/deals/${dealId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ stage: newStage }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to update deal stage')
+      }
+    } catch (error) {
+      // Revert optimistic update on error
+      setDeals((prevDeals) =>
+        prevDeals.map((deal) =>
+          deal.id === dealId ? { ...deal, stage: fromColumn } : deal
+        )
+      )
+      console.error('Error updating deal stage:', error)
+    }
   }
 
   const handleRowClick = (deal: Deal) => {

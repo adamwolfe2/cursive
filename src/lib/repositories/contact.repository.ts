@@ -28,7 +28,7 @@ export class ContactRepository {
 
     let query = supabase
       .from('contacts')
-      .select('*', { count: 'exact' })
+      .select('*, companies(name)', { count: 'exact' })
       .eq('workspace_id', workspaceId)
 
     // Apply filters

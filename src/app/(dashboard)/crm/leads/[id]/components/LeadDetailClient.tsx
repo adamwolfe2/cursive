@@ -38,6 +38,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
+import { EditLeadDialog } from './EditLeadDialog'
 import { StatusBadge } from '@/app/(dashboard)/crm/components/StatusBadge'
 import { LeadAvatar } from '@/app/(dashboard)/crm/components/LeadAvatar'
 import { CompanyFavicon } from '@/app/(dashboard)/crm/components/CompanyFavicon'
@@ -55,9 +56,10 @@ export function LeadDetailClient({ initialLead }: LeadDetailClientProps) {
   const toast = useToast()
   const queryClient = useQueryClient()
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+  const [showEditDialog, setShowEditDialog] = useState(false)
 
   // Fetch lead data with React Query
-  const { data: lead } = useQuery({
+  const { data: lead, refetch } = useQuery({
     queryKey: ['lead', initialLead.id],
     queryFn: async () => {
       const res = await fetch(`/api/leads/${initialLead.id}`)
@@ -134,7 +136,7 @@ export function LeadDetailClient({ initialLead }: LeadDetailClientProps) {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => toast.info('Edit functionality coming soon')}>
+                <DropdownMenuItem onClick={() => setShowEditDialog(true)}>
                   <Edit2 className="h-4 w-4 mr-2" />
                   Edit Lead
                 </DropdownMenuItem>
@@ -399,6 +401,14 @@ export function LeadDetailClient({ initialLead }: LeadDetailClientProps) {
           </div>
         </div>
       </div>
+
+      {/* Edit Lead Dialog */}
+      <EditLeadDialog
+        open={showEditDialog}
+        onOpenChange={setShowEditDialog}
+        lead={lead}
+        onSuccess={() => refetch()}
+      />
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>

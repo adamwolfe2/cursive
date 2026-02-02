@@ -266,10 +266,10 @@ export function ContactsTable({ data, onRowClick, onCreateClick }: ContactsTable
                       )}
                     </td>
 
-                    {/* Company - TODO: Link to company when we have the relation */}
+                    {/* Company */}
                     <td className="px-3 py-2.5">
                       <span className="text-sm text-gray-600">
-                        {contact.company_id ? 'Company Name' : '-'}
+                        {(contact as any).companies?.name || '-'}
                       </span>
                     </td>
 
