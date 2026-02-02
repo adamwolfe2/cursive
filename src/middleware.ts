@@ -8,17 +8,45 @@ export async function middleware(req: NextRequest) {
   try {
     const { pathname } = req.nextUrl
 
+    // Quick check for static files - skip all middleware
+    if (
+      pathname.startsWith('/_next/static') ||
+      pathname.startsWith('/_next/image') ||
+      pathname.match(/\.(ico|png|jpg|jpeg|gif|webp|svg)$/)
+    ) {
+      return NextResponse.next()
+    }
+
     // Create Supabase client using SSR pattern
     const client = createClient(req)
     const { supabase } = client
 
-    // Refresh session to ensure cookies are up-to-date
+    // Check if this is a truly public route that doesn't need auth
+    const isTrulyPublicRoute =
+      pathname === '/waitlist' ||
+      pathname.startsWith('/api/waitlist') ||
+      pathname.startsWith('/api/webhooks') ||
+      pathname.startsWith('/api/admin/bypass-waitlist') ||
+      pathname === '/api/health' ||
+      pathname.startsWith('/api/inngest')
+
+    // Skip session check for truly public routes to improve performance
     let session = null
-    try {
-      const result = await supabase.auth.getSession()
-      session = result.data.session
-    } catch (e) {
-      console.error('Failed to check session:', e)
+    if (!isTrulyPublicRoute) {
+      try {
+        // Add 5 second timeout to prevent hanging
+        const sessionPromise = supabase.auth.getSession()
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Auth session timeout')), 5000)
+        )
+
+        const result = await Promise.race([sessionPromise, timeoutPromise]) as any
+        session = result?.data?.session || null
+      } catch (e) {
+        console.error('[Middleware] Failed to check session:', e)
+        // Continue without session - don't block the request
+        session = null
+      }
     }
 
     // Extract subdomain for multi-tenant routing
