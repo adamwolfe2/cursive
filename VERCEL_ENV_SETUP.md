@@ -18,11 +18,9 @@ TAVILY_API_KEY=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
 
 ### 3. FAL.ai API (Image Generation)
 ```
-FAL_KEY=<YOUR_FAL_KEY_HERE>
+FAL_KEY=8efc197a-415d-49e3-8c01-75da065f249b:1a6a53bb03edb80ed1845f16d7e06e4e
 ```
 **Used for:** AI-powered ad creative generation with Flux model
-
-**Get FAL.ai key from:** https://fal.ai/dashboard/keys
 
 ---
 
