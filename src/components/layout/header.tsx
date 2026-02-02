@@ -3,6 +3,7 @@
 import * as React from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import { cn } from '@/lib/design-system'
 import { Avatar } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
@@ -33,6 +34,8 @@ interface HeaderProps {
 }
 
 export function Header({ user, workspace, onMenuClick, className }: HeaderProps) {
+  const router = useRouter()
+
   return (
     <header
       className={cn(
@@ -159,7 +162,7 @@ export function Header({ user, workspace, onMenuClick, className }: HeaderProps)
                 </p>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => (window.location.href = '/settings')}>
+              <DropdownMenuItem onClick={() => router.push('/settings')}>
                 <svg
                   className="mr-2 h-4 w-4"
                   fill="none"
@@ -175,7 +178,7 @@ export function Header({ user, workspace, onMenuClick, className }: HeaderProps)
                 </svg>
                 Profile
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => (window.location.href = '/settings/billing')}>
+              <DropdownMenuItem onClick={() => router.push('/settings/billing')}>
                 <svg
                   className="mr-2 h-4 w-4"
                   fill="none"
@@ -191,7 +194,7 @@ export function Header({ user, workspace, onMenuClick, className }: HeaderProps)
                 </svg>
                 Billing
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => (window.location.href = '/settings/notifications')}>
+              <DropdownMenuItem onClick={() => router.push('/settings/notifications')}>
                 <svg
                   className="mr-2 h-4 w-4"
                   fill="none"
@@ -207,7 +210,7 @@ export function Header({ user, workspace, onMenuClick, className }: HeaderProps)
                 </svg>
                 Notifications
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => (window.location.href = '/integrations')}>
+              <DropdownMenuItem onClick={() => router.push('/integrations')}>
                 <svg
                   className="mr-2 h-4 w-4"
                   fill="none"
@@ -225,7 +228,7 @@ export function Header({ user, workspace, onMenuClick, className }: HeaderProps)
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
-                onClick={() => (window.location.href = '/auth/signout')}
+                onClick={() => router.push('/auth/signout')}
                 destructive
               >
                 <svg
