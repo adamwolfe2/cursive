@@ -55,3 +55,7 @@ Thumbs.db
 # Supabase
 supabase/.branches
 supabase/.temp
+
+# Temporary cloned repos
+square-ui/
+temp-file-uploader/
