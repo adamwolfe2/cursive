@@ -4,7 +4,8 @@ import Link from 'next/link'
 import { OnboardingChecklist } from '@/components/onboarding/checklist'
 import { GradientCard, GradientBadge } from '@/components/ui/gradient-card'
 import { PageContainer, PageHeader } from '@/components/layout/page-container'
-import { Users, TrendingUp, Crown, ArrowRight, Sparkles } from 'lucide-react'
+import { Users, TrendingUp, Crown, ArrowRight, Sparkles, Package } from 'lucide-react'
+import { serviceTierRepository } from '@/lib/repositories/service-tier.repository'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -57,6 +58,9 @@ export default async function DashboardPage() {
     .eq('workspace_id', user.workspace_id)
     .order('created_at', { ascending: false })
     .limit(5)
+
+  // Check for active service subscription
+  const activeSubscription = await serviceTierRepository.getWorkspaceActiveSubscription(user.workspace_id)
 
   const workspace = user.workspaces
 
@@ -134,6 +138,40 @@ export default async function DashboardPage() {
         </GradientCard>
       </div>
 
+      {/* Service Tier Upsell Banner */}
+      {!activeSubscription && user.plan === 'free' && (
+        <GradientCard variant="primary" className="mb-8">
+          <div className="flex flex-col sm:flex-row items-start gap-4">
+            <div className="p-3 rounded-lg bg-white/20">
+              <Sparkles className="h-8 w-8 text-white" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-xl font-bold text-white mb-2">
+                Unlock Custom Lead Lists
+              </h3>
+              <p className="text-white/90 mb-4">
+                Get 500+ fresh, high-intent leads every month with Cursive Data. Starting at just $1k/mo.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Link
+                  href="/services/cursive-data"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white hover:bg-zinc-50 text-blue-600 font-medium rounded-lg transition-colors"
+                >
+                  Explore Data Plans
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+                <Link
+                  href="/services"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 border-2 border-white hover:bg-white/10 text-white font-medium rounded-lg transition-colors"
+                >
+                  Compare All Services
+                </Link>
+              </div>
+            </div>
+          </div>
+        </GradientCard>
+      )}
+
       {/* Recent Leads Section */}
       <GradientCard variant="subtle" className="mb-8">
         <div className="flex items-center justify-between mb-6">
@@ -189,7 +227,7 @@ export default async function DashboardPage() {
       </GradientCard>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Link href="/ai-studio" className="group">
           <GradientCard variant="primary" className="hover:shadow-lg transition-all duration-200">
             <div className="flex items-start gap-4">
@@ -243,6 +281,30 @@ export default async function DashboardPage() {
                 </p>
               </div>
               <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
+            </div>
+          </GradientCard>
+        </Link>
+
+        <Link href="/services" className="group">
+          <GradientCard variant="primary" className="hover:shadow-lg transition-all duration-200">
+            <div className="flex items-start gap-4">
+              <div className="p-3 rounded-lg bg-white/20 group-hover:bg-white/30 transition-colors">
+                <Package className="h-6 w-6 text-white" />
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <h3 className="font-semibold text-white group-hover:text-white/90 transition-colors">
+                    Services
+                  </h3>
+                  <GradientBadge className="bg-white/20 text-white border-white/30 text-xs">
+                    New
+                  </GradientBadge>
+                </div>
+                <p className="text-sm text-white/80">
+                  From DIY to done-for-you
+                </p>
+              </div>
+              <ArrowRight className="h-5 w-5 text-white/80 group-hover:text-white group-hover:translate-x-1 transition-all" />
             </div>
           </GradientCard>
         </Link>
