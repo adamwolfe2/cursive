@@ -65,40 +65,40 @@ export function CompaniesPageClient({ initialData }: CompaniesPageClientProps) {
         <div className="space-y-6">
           {/* Company Information */}
           <div>
-            <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-500">
+            <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               Company Information
             </h3>
             <div className="space-y-3">
               <div className="flex items-start gap-3">
-                <span className="w-20 shrink-0 text-xs text-gray-500">Industry</span>
-                <span className="text-sm text-gray-900">
+                <span className="w-20 shrink-0 text-xs text-muted-foreground">Industry</span>
+                <span className="text-sm text-foreground">
                   {selectedCompanyData?.industry || '-'}
                 </span>
               </div>
               <div className="flex items-start gap-3">
-                <span className="w-20 shrink-0 text-xs text-gray-500">Website</span>
+                <span className="w-20 shrink-0 text-xs text-muted-foreground">Website</span>
                 {selectedCompanyData?.website ? (
                   <a
                     href={selectedCompanyData.website}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm text-blue-600 hover:underline"
+                    className="text-sm text-primary hover:underline"
                   >
                     {selectedCompanyData.website}
                   </a>
                 ) : (
-                  <span className="text-sm text-gray-400">-</span>
+                  <span className="text-sm text-muted-foreground">-</span>
                 )}
               </div>
               <div className="flex items-start gap-3">
-                <span className="w-20 shrink-0 text-xs text-gray-500">Employees</span>
-                <span className="text-sm text-gray-900">
+                <span className="w-20 shrink-0 text-xs text-muted-foreground">Employees</span>
+                <span className="text-sm text-foreground">
                   {selectedCompanyData?.employees_range || '-'}
                 </span>
               </div>
               <div className="flex items-start gap-3">
-                <span className="w-20 shrink-0 text-xs text-gray-500">Revenue</span>
-                <span className="text-sm text-gray-900">
+                <span className="w-20 shrink-0 text-xs text-muted-foreground">Revenue</span>
+                <span className="text-sm text-foreground">
                   {selectedCompanyData?.revenue_range || '-'}
                 </span>
               </div>
@@ -107,19 +107,19 @@ export function CompaniesPageClient({ initialData }: CompaniesPageClientProps) {
 
           {/* Metadata */}
           <div>
-            <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-500">
+            <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               Metadata
             </h3>
             <div className="space-y-3">
               <div className="flex items-start gap-3">
-                <span className="w-20 shrink-0 text-xs text-gray-500">Status</span>
-                <span className="inline-flex items-center rounded-md bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
+                <span className="w-20 shrink-0 text-xs text-muted-foreground">Status</span>
+                <span className="inline-flex items-center rounded-md bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
                   {selectedCompanyData?.status || 'Unknown'}
                 </span>
               </div>
               <div className="flex items-start gap-3">
-                <span className="w-20 shrink-0 text-xs text-gray-500">Created</span>
-                <span className="text-sm text-gray-900">
+                <span className="w-20 shrink-0 text-xs text-muted-foreground">Created</span>
+                <span className="text-sm text-foreground">
                   {selectedCompanyData &&
                     formatDistanceToNow(new Date(selectedCompanyData.created_at), {
                       addSuffix: true,

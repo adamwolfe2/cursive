@@ -7,14 +7,15 @@ import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { profileSettingsSchema, type ProfileSettingsFormData } from '@/lib/validation/schemas'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { GradientCard } from '@/components/ui/gradient-card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { FormField, FormActions } from '@/components/ui/form-field'
-import { Skeleton, SkeletonCard } from '@/components/ui/skeleton'
+import { Skeleton } from '@/components/ui/loading-states'
 import { useToast } from '@/lib/hooks/use-toast'
+import { PageContainer, PageHeader } from '@/components/layout/page-container'
 
 export default function ProfileSettingsPage() {
   const queryClient = useQueryClient()
@@ -117,29 +118,40 @@ export default function ProfileSettingsPage() {
 
   if (isLoading) {
     return (
-      <div className="space-y-6">
-        <Skeleton className="h-10 w-48" />
-        <SkeletonCard />
-        <SkeletonCard />
-      </div>
+      <PageContainer>
+        <div className="space-y-6">
+          <Skeleton className="h-10 w-48" />
+          <GradientCard variant="subtle">
+            <Skeleton className="h-32" />
+          </GradientCard>
+          <GradientCard variant="subtle">
+            <Skeleton className="h-32" />
+          </GradientCard>
+        </div>
+      </PageContainer>
     )
   }
 
   if (isError) {
     return (
-      <div className="space-y-6">
+      <PageContainer>
         <Alert variant="destructive">
           <AlertDescription>
             {error?.message || 'Failed to load user settings. Please refresh the page.'}
           </AlertDescription>
         </Alert>
-        <Button onClick={() => router.refresh()}>Retry</Button>
-      </div>
+        <Button onClick={() => router.refresh()} className="mt-4">Retry</Button>
+      </PageContainer>
     )
   }
 
   return (
-    <>
+    <PageContainer>
+      <PageHeader
+        title="Settings"
+        description="Manage your account and workspace preferences"
+      />
+
       {/* Success Message */}
       {successMessage && (
         <Alert variant="success" className="mb-6">
@@ -163,11 +175,11 @@ export default function ProfileSettingsPage() {
 
       <div className="space-y-6">
         {/* Profile Form */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Personal Information</CardTitle>
-          </CardHeader>
-          <CardContent>
+        <GradientCard variant="subtle">
+          <div className="mb-6">
+            <h2 className="text-lg font-semibold text-foreground">Personal Information</h2>
+          </div>
+          <div>
             <form onSubmit={handleSubmit(onSubmit)}>
               <div className="space-y-4 max-w-md">
                 <FormField
@@ -208,15 +220,15 @@ export default function ProfileSettingsPage() {
                 </Button>
               </FormActions>
             </form>
-          </CardContent>
-        </Card>
+          </div>
+        </GradientCard>
 
         {/* Workspace Info */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Workspace Information</CardTitle>
-          </CardHeader>
-          <CardContent>
+        <GradientCard variant="subtle">
+          <div className="mb-6">
+            <h2 className="text-lg font-semibold text-foreground">Workspace Information</h2>
+          </div>
+          <div>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4 max-w-md">
                 <div>
@@ -262,15 +274,15 @@ export default function ProfileSettingsPage() {
                 </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </GradientCard>
 
         {/* Referral Program */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Referral Program</CardTitle>
-          </CardHeader>
-          <CardContent>
+        <GradientCard variant="accent">
+          <div className="mb-6">
+            <h2 className="text-lg font-semibold text-foreground">Referral Program</h2>
+          </div>
+          <div>
             <p className="text-sm text-muted-foreground mb-4">
               Share Cursive with your network and earn bonus credits when they
               sign up using your referral link.
@@ -320,9 +332,9 @@ export default function ProfileSettingsPage() {
                 </div>
               </FormField>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </GradientCard>
       </div>
-    </>
+    </PageContainer>
   )
 }

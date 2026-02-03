@@ -1,25 +1,23 @@
 /**
  * AI Studio - Creatives Page
- * Generate and manage ad creatives (VIBIZ-inspired UI)
+ * Generate and manage ad creatives
  */
 
 'use client'
 
 import { useState, useEffect } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { GradientCard, GradientBadge } from '@/components/ui/gradient-card'
+import { PageContainer, PageHeader, PageSection } from '@/components/layout/page-container'
+import { PageLoading } from '@/components/ui/loading-states'
+import { EmptyState } from '@/components/ui/empty-states'
 import {
-  Loader2,
   ArrowLeft,
   ArrowRight,
   Image as ImageIcon,
-  User,
-  Monitor,
-  Zap,
-  Megaphone,
-  ArrowUp,
+  Sparkles,
   XCircle,
 } from 'lucide-react'
 
@@ -147,106 +145,241 @@ export default function CreativesPage() {
   }
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-      </div>
-    )
+    return <PageLoading message="Loading creatives..." />
   }
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA]">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 py-6 sm:py-8 pb-64">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4 sm:mb-6">
-          <div>
-            <Button
-              onClick={() => router.push(`/ai-studio/offers?workspace=${workspaceId}`)}
-              variant="ghost"
-              size="sm"
-              className="mb-2"
-            >
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Offers
-            </Button>
-            <h1 className="text-2xl font-bold text-gray-900">Creatives</h1>
-            <p className="text-sm text-gray-500">AI-generated ad creatives</p>
+    <PageContainer maxWidth="wide">
+      <div className="mb-6">
+        <Button
+          onClick={() => router.push(`/ai-studio/offers?workspace=${workspaceId}`)}
+          variant="ghost"
+          size="sm"
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back to Offers
+        </Button>
+      </div>
+
+      {/* Header */}
+      <GradientCard variant="primary" className="mb-8">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-primary/10">
+              <Sparkles className="h-6 w-6 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-semibold text-foreground">Creatives</h1>
+              <p className="text-sm text-muted-foreground">AI-generated ad creatives</p>
+            </div>
           </div>
 
           <Button
             onClick={() => router.push(`/ai-studio/campaigns?workspace=${workspaceId}`)}
-            className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto"
+            size="lg"
           >
             Next: Campaigns
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </div>
+      </GradientCard>
 
-        {/* Error Message */}
-        {generationError && (
-          <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
-            <XCircle className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
+      {/* Error Message */}
+      {generationError && (
+        <GradientCard className="mb-6 border-destructive/50">
+          <div className="flex items-start gap-3">
+            <XCircle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
             <div className="flex-1">
-              <p className="text-sm text-red-800">{generationError}</p>
+              <p className="text-sm text-destructive">{generationError}</p>
             </div>
             <button
               onClick={() => setGenerationError(null)}
-              className="text-red-600 hover:text-red-700"
+              className="text-destructive hover:text-destructive/80"
             >
               <XCircle className="h-4 w-4" />
             </button>
           </div>
-        )}
+        </GradientCard>
+      )}
 
-        {/* Creatives Gallery */}
-        <div>
-          {creatives.length === 0 ? (
-            <Card className="p-12 text-center bg-white shadow-sm border border-gray-200">
-              <ImageIcon className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                No creatives yet
-              </h3>
-              <p className="text-gray-600">
-                Use the generator below to create your first ad creative
-              </p>
-            </Card>
-          ) : (
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {creatives.map((creative) => (
-                <Card
-                  key={creative.id}
-                  className="overflow-hidden bg-white shadow-sm border border-gray-200 hover:shadow-md transition-shadow cursor-pointer"
-                >
-                  <div className="relative aspect-square bg-gray-50">
-                    <img
-                      src={creative.image_url}
-                      alt={creative.prompt}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="p-4">
-                    <p className="text-sm text-gray-700 mb-2 line-clamp-2">
-                      {creative.prompt}
-                    </p>
-                    <div className="flex items-center gap-2 text-xs text-gray-500">
-                      {creative.style_preset && (
-                        <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded border border-blue-200">
-                          {creative.style_preset}
-                        </span>
-                      )}
-                      <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded border border-gray-200">
-                        {FORMATS.find((f) => f.value === creative.format)?.label || creative.format}
-                      </span>
-                    </div>
-                  </div>
-                </Card>
-              ))}
+      {/* Generation Form */}
+      <PageSection
+        title="Generate New Creative"
+        description="Create on-brand ad creatives with AI"
+      >
+        <GradientCard variant="accent">
+          <form onSubmit={(e) => { e.preventDefault(); handleGenerate(); }} className="space-y-6">
+            {/* Prompt Input */}
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Creative Prompt
+              </label>
+              <Input
+                type="text"
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                placeholder="Describe the creative you want to generate..."
+                disabled={isGenerating}
+                className="bg-background"
+              />
             </div>
-          )}
-        </div>
 
-      </div>
-    </div>
+            {/* Options Grid */}
+            <div className="grid sm:grid-cols-2 gap-6">
+              {/* Style Preset */}
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  Style Preset
+                </label>
+                <select
+                  value={selectedStyle}
+                  onChange={(e) => setSelectedStyle(e.target.value)}
+                  disabled={isGenerating}
+                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                >
+                  {STYLE_PRESETS.map((style) => (
+                    <option key={style} value={style}>{style}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Format */}
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  Format
+                </label>
+                <div className="flex gap-2">
+                  {FORMATS.map((format) => (
+                    <button
+                      key={format.value}
+                      type="button"
+                      onClick={() => setSelectedFormat(format.value)}
+                      disabled={isGenerating}
+                      className={`flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                        selectedFormat === format.value
+                          ? 'bg-primary text-primary-foreground'
+                          : 'bg-background text-muted-foreground border border-border hover:bg-muted'
+                      }`}
+                    >
+                      {format.icon}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Customer Profile */}
+              {profiles.length > 0 && (
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Target Profile (Optional)
+                  </label>
+                  <select
+                    value={selectedIcp}
+                    onChange={(e) => setSelectedIcp(e.target.value)}
+                    disabled={isGenerating}
+                    className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                  >
+                    <option value="">Select profile...</option>
+                    {profiles.map((profile) => (
+                      <option key={profile.id} value={profile.id}>
+                        {profile.name} - {profile.title}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* Offer */}
+              {offers.length > 0 && (
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Offer (Optional)
+                  </label>
+                  <select
+                    value={selectedOffer}
+                    onChange={(e) => setSelectedOffer(e.target.value)}
+                    disabled={isGenerating}
+                    className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                  >
+                    <option value="">Select offer...</option>
+                    {offers.map((offer) => (
+                      <option key={offer.id} value={offer.id}>{offer.name}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+            </div>
+
+            {/* Generate Button */}
+            <div className="flex justify-end">
+              <Button
+                type="submit"
+                disabled={!prompt.trim() || isGenerating}
+                size="lg"
+                className="gap-2"
+              >
+                {isGenerating ? (
+                  <>Generating...</>
+                ) : (
+                  <>
+                    <Sparkles className="h-4 w-4" />
+                    Generate Creative
+                  </>
+                )}
+              </Button>
+            </div>
+          </form>
+        </GradientCard>
+      </PageSection>
+
+      {/* Creatives Gallery */}
+      <PageSection
+        title={creatives.length > 0 ? `Your Creatives (${creatives.length})` : 'Your Creatives'}
+        description="Previously generated ad creatives"
+      >
+        {creatives.length === 0 ? (
+          <EmptyState
+            icon={ImageIcon}
+            title="No creatives yet"
+            description="Use the generator above to create your first ad creative"
+          />
+        ) : (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {creatives.map((creative) => (
+              <GradientCard
+                key={creative.id}
+                variant="subtle"
+                noPadding
+                className="overflow-hidden hover:shadow-md transition-all duration-200 cursor-pointer"
+              >
+                <div className="relative aspect-square bg-muted">
+                  <img
+                    src={creative.image_url}
+                    alt={creative.prompt}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="p-4">
+                  <p className="text-sm text-foreground mb-3 line-clamp-2">
+                    {creative.prompt}
+                  </p>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {creative.style_preset && (
+                      <GradientBadge className="text-xs">
+                        {creative.style_preset}
+                      </GradientBadge>
+                    )}
+                    <GradientBadge className="text-xs">
+                      {FORMATS.find((f) => f.value === creative.format)?.label || creative.format}
+                    </GradientBadge>
+                  </div>
+                </div>
+              </GradientCard>
+            ))}
+          </div>
+        )}
+      </PageSection>
+    </PageContainer>
   )
 }
 

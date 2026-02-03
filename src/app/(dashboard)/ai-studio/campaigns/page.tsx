@@ -7,9 +7,11 @@
 
 import { useState, useEffect } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { GradientCard, GradientBadge } from '@/components/ui/gradient-card'
+import { PageContainer, PageHeader, PageSection } from '@/components/layout/page-container'
+import { PageLoading } from '@/components/ui/loading-states'
 import {
   Loader2,
   ArrowLeft,
@@ -19,6 +21,7 @@ import {
   Rocket,
   ExternalLink,
   XCircle,
+  Megaphone,
 } from 'lucide-react'
 
 interface Creative {
@@ -179,94 +182,103 @@ export default function CampaignsPage() {
   }
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-      </div>
-    )
+    return <PageLoading message="Loading campaign builder..." />
   }
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA]">
-      <div className="mx-auto max-w-6xl px-6 py-8">
-        <div className="space-y-8">
-          {/* Header */}
+    <PageContainer maxWidth="wide">
+      <div className="mb-6">
+        <Button
+          onClick={() => router.push(`/ai-studio/creatives?workspace=${workspaceId}`)}
+          variant="ghost"
+          size="sm"
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back to Creatives
+        </Button>
+      </div>
+
+      {/* Header */}
+      <GradientCard variant="primary" className="mb-8">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-lg bg-primary/10">
+            <Megaphone className="h-6 w-6 text-primary" />
+          </div>
           <div>
-            <Button
-              onClick={() => router.push(`/ai-studio/creatives?workspace=${workspaceId}`)}
-              variant="ghost"
-              size="sm"
-              className="mb-2"
-            >
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Creatives
-            </Button>
-            <h1 className="text-2xl font-bold text-gray-900">Create Campaign</h1>
-            <p className="text-sm text-gray-500">
+            <h1 className="text-2xl font-semibold text-foreground">Create Campaign</h1>
+            <p className="text-sm text-muted-foreground">
               Choose a plan and we'll run your Meta ads campaign
             </p>
           </div>
+        </div>
+      </GradientCard>
 
-          {/* Error Message */}
-          {checkoutError && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
-              <XCircle className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
-              <div className="flex-1">
-                <p className="text-sm text-red-800">{checkoutError}</p>
-              </div>
-              <button
-                onClick={() => setCheckoutError(null)}
-                className="text-red-600 hover:text-red-700"
-              >
-                <XCircle className="h-4 w-4" />
-              </button>
+      {/* Error Message */}
+      {checkoutError && (
+        <GradientCard className="mb-8 border-destructive/50">
+          <div className="flex items-start gap-3">
+            <XCircle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <p className="text-sm text-destructive">{checkoutError}</p>
             </div>
-          )}
+            <button
+              onClick={() => setCheckoutError(null)}
+              className="text-destructive hover:text-destructive/80"
+            >
+              <XCircle className="h-4 w-4" />
+            </button>
+          </div>
+        </GradientCard>
+      )}
 
-        {/* Pricing Tiers */}
-        <div>
-          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
-            Select Your Plan
-          </h2>
-          <div className="grid gap-6 md:grid-cols-3">
-            {PRICING_TIERS.map((tier) => {
-              const Icon = tier.icon
-              return (
-                <Card
-                  key={tier.tier}
-                  className={`relative p-6 cursor-pointer transition-all bg-white ${
-                    selectedTier === tier.tier
-                      ? 'border-2 border-blue-500 shadow-md'
-                      : 'border border-gray-200 hover:border-gray-300 hover:shadow-sm'
-                  }`}
-                  onClick={() => setSelectedTier(tier.tier)}
-                >
+      {/* Pricing Tiers */}
+      <PageSection
+        title="Select Your Plan"
+        description="Choose the campaign size that fits your goals"
+      >
+        <div className="grid gap-6 md:grid-cols-3">
+          {PRICING_TIERS.map((tier) => {
+            const Icon = tier.icon
+            return (
+              <GradientCard
+                key={tier.tier}
+                variant={selectedTier === tier.tier ? 'primary' : 'subtle'}
+                className={`relative cursor-pointer transition-all duration-200 ${
+                  selectedTier === tier.tier ? 'shadow-lg' : 'hover:shadow-md'
+                }`}
+                noPadding
+              >
+                <div onClick={() => setSelectedTier(tier.tier)} className="p-6">
                   {tier.popular && (
                     <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                      <span className="px-3 py-1 bg-blue-600 text-white text-xs font-semibold rounded-full">
+                      <GradientBadge className="bg-primary text-primary-foreground border-primary">
                         Most Popular
-                      </span>
+                      </GradientBadge>
                     </div>
                   )}
 
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="rounded-lg bg-blue-100 p-3 border border-blue-200">
-                      <Icon className="h-6 w-6 text-blue-600" />
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className={`rounded-lg p-3 ${
+                      selectedTier === tier.tier
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-primary/10 text-primary'
+                    }`}>
+                      <Icon className="h-6 w-6" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-gray-900">{tier.name}</h3>
-                      <p className="text-xs text-gray-500">{tier.leads} leads guaranteed</p>
+                      <h3 className="font-bold text-foreground">{tier.name}</h3>
+                      <p className="text-xs text-muted-foreground">{tier.leads} leads guaranteed</p>
                     </div>
                   </div>
 
                   <div className="mb-6">
                     <div className="flex items-baseline gap-1">
-                      <span className="text-3xl font-bold text-gray-900">
+                      <span className="text-3xl font-bold text-foreground">
                         ${tier.price.toLocaleString()}
                       </span>
-                      <span className="text-gray-500 text-sm">/campaign</span>
+                      <span className="text-muted-foreground text-sm">/campaign</span>
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-muted-foreground mt-1">
                       ${(tier.price / tier.leads).toFixed(2)} per lead
                     </p>
                   </div>
@@ -275,17 +287,14 @@ export default function CampaignsPage() {
                     {tier.features.map((feature, index) => (
                       <li key={index} className="flex items-start gap-2 text-sm">
                         <Check className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                        <span className="text-gray-700">{feature}</span>
+                        <span className="text-foreground">{feature}</span>
                       </li>
                     ))}
                   </ul>
 
                   <Button
-                    className={`w-full ${
-                      selectedTier === tier.tier
-                        ? 'bg-blue-600 hover:bg-blue-700'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
+                    className="w-full"
+                    variant={selectedTier === tier.tier ? 'default' : 'outline'}
                     onClick={(e) => {
                       e.stopPropagation()
                       setSelectedTier(tier.tier)
@@ -293,21 +302,23 @@ export default function CampaignsPage() {
                   >
                     {selectedTier === tier.tier ? 'Selected' : 'Select Plan'}
                   </Button>
-                </Card>
-              )
-            })}
-          </div>
+                </div>
+              </GradientCard>
+            )
+          })}
         </div>
+      </PageSection>
 
-        {/* Campaign Configuration */}
-        <div className="grid gap-6 lg:grid-cols-2">
-          {/* Select Creatives */}
-          <Card className="p-6 bg-white shadow-sm border border-gray-200">
-            <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
-              Select Ad Creatives
-            </h3>
+      {/* Campaign Configuration */}
+      <div className="grid gap-8 lg:grid-cols-2">
+        {/* Select Creatives */}
+        <PageSection
+          title="Select Ad Creatives"
+          description="Choose which ads to run"
+        >
+          <GradientCard variant="subtle">
             {creatives.length === 0 ? (
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-muted-foreground text-center py-8">
                 No creatives available. Create some creatives first.
               </p>
             ) : (
@@ -317,8 +328,8 @@ export default function CampaignsPage() {
                     key={creative.id}
                     className={`relative cursor-pointer rounded-lg overflow-hidden border-2 transition-all ${
                       selectedCreatives.includes(creative.id)
-                        ? 'border-blue-500 shadow-md'
-                        : 'border-gray-200 hover:border-blue-300'
+                        ? 'border-primary shadow-md'
+                        : 'border-border hover:border-primary/50'
                     }`}
                     onClick={() => {
                       setSelectedCreatives((prev) =>
@@ -334,7 +345,7 @@ export default function CampaignsPage() {
                       className="w-full aspect-square object-cover"
                     />
                     {selectedCreatives.includes(creative.id) && (
-                      <div className="absolute top-2 right-2 bg-blue-600 text-white rounded-full p-1">
+                      <div className="absolute top-2 right-2 bg-primary text-primary-foreground rounded-full p-1">
                         <Check className="h-4 w-4" />
                       </div>
                     )}
@@ -342,15 +353,17 @@ export default function CampaignsPage() {
                 ))}
               </div>
             )}
-          </Card>
+          </GradientCard>
+        </PageSection>
 
-          {/* Select Target Audiences */}
-          <Card className="p-6 bg-white shadow-sm border border-gray-200">
-            <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
-              Target Customer Profiles
-            </h3>
+        {/* Select Target Audiences */}
+        <PageSection
+          title="Target Customer Profiles"
+          description="Who should see your ads"
+        >
+          <GradientCard variant="subtle">
             {profiles.length === 0 ? (
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-muted-foreground text-center py-8">
                 No customer profiles available.
               </p>
             ) : (
@@ -360,8 +373,8 @@ export default function CampaignsPage() {
                     key={profile.id}
                     className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${
                       selectedProfiles.includes(profile.id)
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-200 hover:border-blue-300'
+                        ? 'border-primary bg-primary/5'
+                        : 'border-border hover:border-primary/50'
                     }`}
                     onClick={() => {
                       setSelectedProfiles((prev) =>
@@ -375,73 +388,74 @@ export default function CampaignsPage() {
                       <div
                         className={`rounded-full p-2 ${
                           selectedProfiles.includes(profile.id)
-                            ? 'bg-blue-600'
-                            : 'bg-gray-200'
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-muted'
                         }`}
                       >
                         {selectedProfiles.includes(profile.id) ? (
-                          <Check className="h-4 w-4 text-white" />
+                          <Check className="h-4 w-4" />
                         ) : (
                           <div className="h-4 w-4" />
                         )}
                       </div>
                       <div>
-                        <p className="font-medium text-gray-900">{profile.name}</p>
-                        <p className="text-xs text-gray-500">{profile.title}</p>
+                        <p className="font-medium text-foreground">{profile.name}</p>
+                        <p className="text-xs text-muted-foreground">{profile.title}</p>
                       </div>
                     </div>
                   </div>
                 ))}
               </div>
             )}
-          </Card>
-        </div>
+          </GradientCard>
+        </PageSection>
+      </div>
 
-        {/* Landing Page URL */}
-        <Card className="p-6 bg-white shadow-sm border border-gray-200">
-          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
-            Landing Page
-          </h3>
+      {/* Landing Page URL */}
+      <PageSection
+        title="Landing Page"
+        description="Where should we send the traffic?"
+      >
+        <GradientCard variant="subtle">
           <div className="flex gap-3">
             <Input
               type="url"
               placeholder="https://yourwebsite.com/landing-page"
               value={landingUrl}
               onChange={(e) => setLandingUrl(e.target.value)}
-              className="flex-1"
+              className="flex-1 bg-background"
             />
             <Button variant="outline" className="gap-2" disabled title="Landing page preview coming soon">
               <ExternalLink className="h-4 w-4" />
               Preview
             </Button>
           </div>
-          <p className="text-xs text-gray-500 mt-2">
-            Where should we send the traffic? This will be your Meta ad destination.
+          <p className="text-xs text-muted-foreground mt-2">
+            This will be your Meta ad destination URL
           </p>
-        </Card>
+        </GradientCard>
+      </PageSection>
 
-        {/* Create Campaign Button */}
-        <div className="flex justify-end">
-          <Button
-            onClick={handleCreateCampaign}
-            className="bg-blue-600 hover:bg-blue-700"
-            disabled={!landingUrl.trim() || selectedCreatives.length === 0 || isCreatingCheckout}
-          >
-            {isCreatingCheckout ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Creating checkout...
-              </>
-            ) : (
-              <>
-                Proceed to Checkout
-                <ArrowLeft className="ml-2 h-4 w-4 rotate-180" />
-              </>
-            )}
-          </Button>
-        </div>
-        </div>
+      {/* Create Campaign Button */}
+      <div className="flex justify-end pt-8">
+        <Button
+          onClick={handleCreateCampaign}
+          disabled={!landingUrl.trim() || selectedCreatives.length === 0 || isCreatingCheckout}
+          size="lg"
+        >
+          {isCreatingCheckout ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Creating checkout...
+            </>
+          ) : (
+            <>
+              Proceed to Checkout
+              <ArrowLeft className="ml-2 h-4 w-4 rotate-180" />
+            </>
+          )}
+        </Button>
       </div>
-    </div>
+    </PageContainer>
   )
 }

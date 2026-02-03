@@ -114,19 +114,19 @@ export function DealsPageClient({ initialData }: DealsPageClientProps) {
 
   const renderCard = (deal: Deal) => (
     <div className="space-y-2">
-      <div className="font-medium text-gray-900">{deal.name}</div>
+      <div className="font-medium text-foreground">{deal.name}</div>
       <div className="flex items-center justify-between">
-        <span className="text-lg font-semibold text-gray-900">{formatCurrency(deal.value || 0)}</span>
-        <span className="text-xs text-gray-500">{deal.probability || 0}%</span>
+        <span className="text-lg font-semibold text-foreground">{formatCurrency(deal.value || 0)}</span>
+        <span className="text-xs text-muted-foreground">{deal.probability || 0}%</span>
       </div>
       {deal.close_date && (
-        <div className="flex items-center gap-1 text-xs text-gray-500">
+        <div className="flex items-center gap-1 text-xs text-muted-foreground">
           <Calendar className="h-3 w-3" />
           {format(new Date(deal.close_date), 'MMM d')}
         </div>
       )}
       {deal.description && (
-        <p className="line-clamp-2 text-xs text-gray-600">{deal.description}</p>
+        <p className="line-clamp-2 text-xs text-muted-foreground">{deal.description}</p>
       )}
     </div>
   )
@@ -164,29 +164,29 @@ export function DealsPageClient({ initialData }: DealsPageClientProps) {
         <div className="space-y-6">
           {/* Deal Information */}
           <div>
-            <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-500">
+            <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               Deal Information
             </h3>
             <div className="space-y-3">
               <div className="flex items-start gap-3">
-                <span className="w-20 shrink-0 text-xs text-gray-500">Value</span>
-                <span className="text-lg font-semibold text-gray-900">
+                <span className="w-20 shrink-0 text-xs text-muted-foreground">Value</span>
+                <span className="text-lg font-semibold text-foreground">
                   {selectedDealData && formatCurrency(selectedDealData.value || 0)}
                 </span>
               </div>
               <div className="flex items-start gap-3">
-                <span className="w-20 shrink-0 text-xs text-gray-500">Stage</span>
-                <span className="inline-flex items-center rounded-md bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
+                <span className="w-20 shrink-0 text-xs text-muted-foreground">Stage</span>
+                <span className="inline-flex items-center rounded-md bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
                   {selectedDealData?.stage}
                 </span>
               </div>
               <div className="flex items-start gap-3">
-                <span className="w-20 shrink-0 text-xs text-gray-500">Probability</span>
-                <span className="text-sm text-gray-900">{selectedDealData?.probability || 0}%</span>
+                <span className="w-20 shrink-0 text-xs text-muted-foreground">Probability</span>
+                <span className="text-sm text-foreground">{selectedDealData?.probability || 0}%</span>
               </div>
               <div className="flex items-start gap-3">
-                <span className="w-20 shrink-0 text-xs text-gray-500">Close Date</span>
-                <span className="text-sm text-gray-900">
+                <span className="w-20 shrink-0 text-xs text-muted-foreground">Close Date</span>
+                <span className="text-sm text-foreground">
                   {selectedDealData?.close_date
                     ? format(new Date(selectedDealData.close_date), 'MMMM d, yyyy')
                     : '-'}
@@ -194,8 +194,8 @@ export function DealsPageClient({ initialData }: DealsPageClientProps) {
               </div>
               {selectedDealData?.description && (
                 <div className="flex items-start gap-3">
-                  <span className="w-20 shrink-0 text-xs text-gray-500">Description</span>
-                  <span className="text-sm text-gray-900">{selectedDealData.description}</span>
+                  <span className="w-20 shrink-0 text-xs text-muted-foreground">Description</span>
+                  <span className="text-sm text-foreground">{selectedDealData.description}</span>
                 </div>
               )}
             </div>
@@ -203,15 +203,15 @@ export function DealsPageClient({ initialData }: DealsPageClientProps) {
 
           {/* Weighted Value */}
           <div>
-            <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-500">
+            <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               Weighted Value
             </h3>
             <div className="space-y-1">
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="text-2xl font-bold text-foreground">
                 {selectedDealData &&
                   formatCurrency((selectedDealData.value || 0) * ((selectedDealData.probability || 0) / 100))}
               </div>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-muted-foreground">
                 Based on {selectedDealData?.probability || 0}% probability
               </p>
             </div>
@@ -219,17 +219,17 @@ export function DealsPageClient({ initialData }: DealsPageClientProps) {
 
           {/* Metadata */}
           <div>
-            <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-500">
+            <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               Metadata
             </h3>
             <div className="space-y-3">
               <div className="flex items-start gap-3">
-                <span className="w-20 shrink-0 text-xs text-gray-500">Currency</span>
-                <span className="text-sm text-gray-900">{selectedDealData?.currency || 'USD'}</span>
+                <span className="w-20 shrink-0 text-xs text-muted-foreground">Currency</span>
+                <span className="text-sm text-foreground">{selectedDealData?.currency || 'USD'}</span>
               </div>
               <div className="flex items-start gap-3">
-                <span className="w-20 shrink-0 text-xs text-gray-500">Created</span>
-                <span className="text-sm text-gray-900">
+                <span className="w-20 shrink-0 text-xs text-muted-foreground">Created</span>
+                <span className="text-sm text-foreground">
                   {selectedDealData &&
                     formatDistanceToNow(new Date(selectedDealData.created_at), {
                       addSuffix: true,
@@ -238,8 +238,8 @@ export function DealsPageClient({ initialData }: DealsPageClientProps) {
               </div>
               {selectedDealData?.closed_at && (
                 <div className="flex items-start gap-3">
-                  <span className="w-20 shrink-0 text-xs text-gray-500">Closed</span>
-                  <span className="text-sm text-gray-900">
+                  <span className="w-20 shrink-0 text-xs text-muted-foreground">Closed</span>
+                  <span className="text-sm text-foreground">
                     {formatDistanceToNow(new Date(selectedDealData.closed_at), { addSuffix: true })}
                   </span>
                 </div>

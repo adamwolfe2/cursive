@@ -1,15 +1,18 @@
 /**
  * AI Studio - Branding Page
- * Stunning visual display of extracted brand DNA
+ * Visual display of extracted brand DNA with Cursive design
  */
 
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Loader2, ArrowLeft, ArrowRight, CheckCircle2, XCircle } from 'lucide-react'
+import { GradientCard, GradientBadge } from '@/components/ui/gradient-card'
+import { PageContainer, PageHeader, PageSection } from '@/components/layout/page-container'
+import { PageLoading } from '@/components/ui/loading-states'
+import { EmptyState } from '@/components/ui/empty-states'
+import { ArrowLeft, ArrowRight, CheckCircle2, XCircle, Copy, Check } from 'lucide-react'
 
 interface BrandData {
   colors: {
@@ -23,7 +26,10 @@ interface BrandData {
     body: string
   }
   headline: string
+  tagline?: string
   images: string[]
+  hero_images?: string[]
+  product_images?: string[]
   screenshot?: string
 }
 
@@ -47,9 +53,10 @@ export default function BrandingPage() {
   const [workspace, setWorkspace] = useState<BrandWorkspace | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [copiedColor, setCopiedColor] = useState<string | null>(null)
 
   const pollAttemptsRef = useRef(0)
-  const MAX_POLL_ATTEMPTS = 60 // 60 attempts * 3 seconds = 3 minutes max
+  const MAX_POLL_ATTEMPTS = 60
 
   useEffect(() => {
     if (!workspaceId) {
@@ -66,7 +73,7 @@ export default function BrandingPage() {
 
         if (pollAttemptsRef.current >= MAX_POLL_ATTEMPTS) {
           clearInterval(interval)
-          setError('Extraction is taking longer than expected. Please refresh the page to check status.')
+          setError('Extraction is taking longer than expected. Please refresh the page.')
           return
         }
 
@@ -95,242 +102,259 @@ export default function BrandingPage() {
     }
   }
 
+  async function copyColor(color: string) {
+    await navigator.clipboard.writeText(color)
+    setCopiedColor(color)
+    setTimeout(() => setCopiedColor(null), 2000)
+  }
+
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-[#F8F9FA]">
-        <div className="text-center">
-          <Loader2 className="h-12 w-12 animate-spin mx-auto text-blue-600 mb-4" />
-          <p className="text-gray-600 text-lg">Loading brand workspace...</p>
-        </div>
-      </div>
-    )
+    return <PageLoading message="Loading brand workspace..." />
   }
 
   if (error || !workspace) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#F8F9FA]">
-        <div className="text-center max-w-md">
-          <XCircle className="h-16 w-16 mx-auto text-red-600 mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Oops!</h2>
-          <p className="text-gray-600 mb-6">{error || 'Workspace not found'}</p>
-          <Button onClick={() => router.push('/ai-studio')} size="lg">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to AI Studio
-          </Button>
-        </div>
-      </div>
+      <PageContainer>
+        <EmptyState
+          icon={XCircle}
+          title="Workspace Not Found"
+          description={error || 'Unable to load this brand workspace.'}
+          action={{
+            label: 'Back to AI Studio',
+            onClick: () => router.push('/ai-studio')
+          }}
+        />
+      </PageContainer>
     )
   }
 
   if (workspace.extraction_status === 'processing') {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#F8F9FA]">
-        <div className="text-center max-w-md">
-          <Loader2 className="h-16 w-16 animate-spin mx-auto text-blue-600 mb-6" />
-          <h2 className="text-3xl font-bold text-gray-900 mb-3">
+      <PageContainer>
+        <GradientCard variant="primary" className="text-center py-12">
+          <div className="animate-pulse mb-6">
+            <div className="h-16 w-16 bg-primary/20 rounded-full mx-auto"></div>
+          </div>
+          <h2 className="text-2xl font-semibold text-foreground mb-3">
             Analyzing {workspace.name}
           </h2>
-          <p className="text-gray-600 mb-4">
-            We're extracting your brand DNA from {workspace.url}
+          <p className="text-muted-foreground mb-4">
+            Extracting brand DNA from {workspace.url}
           </p>
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <p className="text-sm text-blue-800">
-              This may take 30-60 seconds. We'll automatically refresh when ready.
-            </p>
-          </div>
-        </div>
-      </div>
+          <GradientBadge>This may take 30-60 seconds</GradientBadge>
+        </GradientCard>
+      </PageContainer>
     )
   }
 
   if (workspace.extraction_status === 'failed') {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#F8F9FA]">
-        <div className="text-center max-w-md">
-          <XCircle className="h-16 w-16 mx-auto text-red-600 mb-4" />
-          <h2 className="text-3xl font-bold text-gray-900 mb-3">
-            Extraction Failed
-          </h2>
-          <p className="text-gray-600 mb-6">
-            {workspace.extraction_error || 'Failed to extract brand DNA'}
-          </p>
-          <div className="flex gap-3 justify-center">
-            <Button onClick={() => router.push('/ai-studio')} variant="outline" size="lg">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back
-            </Button>
-            <Button onClick={() => window.location.reload()} size="lg">
-              Try Again
-            </Button>
-          </div>
-        </div>
-      </div>
+      <PageContainer>
+        <EmptyState
+          icon={XCircle}
+          title="Extraction Failed"
+          description={workspace.extraction_error || 'Failed to extract brand DNA from this website.'}
+          action={{
+            label: 'Try Again',
+            onClick: () => window.location.reload()
+          }}
+          secondaryAction={{
+            label: 'Back',
+            onClick: () => router.push('/ai-studio')
+          }}
+        />
+      </PageContainer>
     )
   }
 
   const brandData = workspace.brand_data
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA]">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 py-6 sm:py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <Button
-            onClick={() => router.push('/ai-studio')}
-            variant="ghost"
-            className="mb-4"
-            size="sm"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to AI Studio
-          </Button>
+    <PageContainer maxWidth="wide">
+      <div className="mb-6">
+        <Button
+          onClick={() => router.push('/ai-studio')}
+          variant="ghost"
+          size="sm"
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back to AI Studio
+        </Button>
+      </div>
 
-          <Card className="p-4 sm:p-6 bg-white shadow-sm border border-gray-200">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <div className="flex items-center gap-3 sm:gap-4">
-                {workspace.logo_url && (
-                  <img
-                    src={workspace.logo_url}
-                    alt={workspace.name}
-                    className="h-12 w-12 sm:h-16 sm:w-16 rounded object-contain bg-gray-50 border border-gray-200 p-2"
-                  />
-                )}
-                <div>
-                  <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">
-                    {workspace.name}
-                  </h1>
-                  <p className="text-xs sm:text-sm text-gray-600 truncate max-w-[200px] sm:max-w-none">{workspace.url}</p>
-                  <div className="flex items-center gap-2 mt-1 sm:mt-2">
-                    <CheckCircle2 className="h-3 w-3 sm:h-4 sm:w-4 text-green-600" />
-                    <span className="text-xs sm:text-sm text-green-600">Brand DNA extracted</span>
-                  </div>
-                </div>
-              </div>
-
-              <Button
-                onClick={() => router.push(`/ai-studio/knowledge?workspace=${workspace.id}`)}
-                className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto"
-              >
-                Next: Knowledge Base
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </div>
-          </Card>
-        </div>
-
-        {/* Logo Section */}
-        {workspace.logo_url && (
-          <Card className="p-6 bg-white shadow-sm border border-gray-200 mb-6">
-            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
-              Logo
-            </h2>
-            <div className="flex items-center justify-center bg-gray-50 rounded-lg p-8 border border-gray-200">
+      {/* Header */}
+      <GradientCard variant="primary" className="mb-8">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            {workspace.logo_url && (
               <img
                 src={workspace.logo_url}
                 alt={workspace.name}
-                className="h-24 w-auto object-contain"
+                className="h-16 w-16 rounded-lg object-contain bg-background border border-border p-2"
               />
-            </div>
-          </Card>
-        )}
-
-        {/* Typography */}
-        <Card className="p-6 bg-white shadow-sm border border-gray-200 mb-6">
-          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
-            Typography
-          </h2>
-          <div className="space-y-4">
-            <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
-              <p className="text-xs text-gray-500 mb-2">Heading Font</p>
-              <p
-                className="text-3xl font-bold text-gray-900"
-                style={{ fontFamily: brandData.typography.heading }}
-              >
-                {brandData.typography.heading}
-              </p>
-            </div>
-            <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
-              <p className="text-xs text-gray-500 mb-2">Body Font</p>
-              <p
-                className="text-xl text-gray-900"
-                style={{ fontFamily: brandData.typography.body }}
-              >
-                {brandData.typography.body}
-              </p>
+            )}
+            <div>
+              <h1 className="text-2xl font-semibold text-foreground mb-1">
+                {workspace.name}
+              </h1>
+              <p className="text-sm text-muted-foreground">{workspace.url}</p>
+              <div className="flex items-center gap-2 mt-2">
+                <CheckCircle2 className="h-4 w-4 text-primary" />
+                <span className="text-sm text-primary font-medium">Brand DNA extracted</span>
+              </div>
             </div>
           </div>
-        </Card>
 
-        {/* Colors */}
-        <Card className="p-6 bg-white shadow-sm border border-gray-200 mb-6">
-          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
-            Colors
-          </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            {Object.entries(brandData.colors).map(([name, color]) => (
-              <div key={name}>
+          <Button
+            onClick={() => router.push(`/ai-studio/knowledge?workspace=${workspace.id}`)}
+            size="lg"
+          >
+            Next: Knowledge Base
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
+        </div>
+      </GradientCard>
+
+      {/* Colors */}
+      <PageSection title="Brand Colors" description="Your brand's color palette">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          {Object.entries(brandData.colors).map(([name, color]) => (
+            <GradientCard
+              key={name}
+              variant="subtle"
+              className="cursor-pointer group hover:shadow-md transition-all"
+              noPadding
+            >
+              <div onClick={() => copyColor(color)}>
                 <div
-                  className="h-24 rounded-lg border border-gray-200 shadow-sm"
+                  className="h-32 rounded-t-lg"
                   style={{ backgroundColor: color }}
                 />
-                <div className="mt-2">
-                  <p className="text-sm font-medium text-gray-900 capitalize">{name}</p>
-                  <p className="text-xs font-mono text-gray-600">{color}</p>
+                <div className="p-4">
+                  <p className="text-sm font-semibold text-foreground capitalize mb-1">
+                    {name}
+                  </p>
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs font-mono text-muted-foreground">{color}</p>
+                    {copiedColor === color ? (
+                      <Check className="h-3 w-3 text-primary" />
+                    ) : (
+                      <Copy className="h-3 w-3 text-muted-foreground group-hover:text-primary transition-colors" />
+                    )}
+                  </div>
                 </div>
               </div>
-            ))}
+            </GradientCard>
+          ))}
+        </div>
+      </PageSection>
+
+      {/* Typography */}
+      <PageSection title="Typography" description="Fonts used in your brand">
+        <div className="grid sm:grid-cols-2 gap-4">
+          <GradientCard variant="subtle">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+              Heading Font
+            </p>
+            <p
+              className="text-3xl font-bold text-foreground"
+              style={{ fontFamily: brandData.typography.heading }}
+            >
+              {brandData.typography.heading}
+            </p>
+          </GradientCard>
+
+          <GradientCard variant="subtle">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+              Body Font
+            </p>
+            <p
+              className="text-xl text-foreground"
+              style={{ fontFamily: brandData.typography.body }}
+            >
+              {brandData.typography.body}
+            </p>
+          </GradientCard>
+        </div>
+      </PageSection>
+
+      {/* Messaging */}
+      <PageSection title="Brand Messaging" description="Your value proposition and tagline">
+        <GradientCard variant="accent">
+          <div className="space-y-4">
+            <div>
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                Main Headline
+              </p>
+              <p className="text-2xl font-semibold text-foreground leading-tight">
+                {brandData.headline}
+              </p>
+            </div>
+            {brandData.tagline && (
+              <div>
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                  Tagline
+                </p>
+                <p className="text-lg text-foreground">
+                  {brandData.tagline}
+                </p>
+              </div>
+            )}
           </div>
-        </Card>
+        </GradientCard>
+      </PageSection>
 
-        {/* Value Proposition */}
-        <Card className="p-6 bg-white shadow-sm border border-gray-200 mb-6">
-          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
-            Value Proposition
-          </h2>
-          <p className="text-2xl font-bold text-gray-900 leading-tight">
-            {brandData.headline}
-          </p>
-        </Card>
+      {/* Logo */}
+      {workspace.logo_url && (
+        <PageSection title="Logo" description="Your brand's primary logo">
+          <GradientCard variant="subtle">
+            <div className="flex items-center justify-center bg-background rounded-lg p-12 border border-border">
+              <img
+                src={workspace.logo_url}
+                alt={workspace.name}
+                className="h-32 w-auto object-contain"
+              />
+            </div>
+          </GradientCard>
+        </PageSection>
+      )}
 
-        {/* Website Screenshot */}
-        {brandData.screenshot && (
-          <Card className="p-6 bg-white shadow-sm border border-gray-200 mb-6">
-            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
-              Website Preview
-            </h2>
-            <div className="rounded-lg overflow-hidden border border-gray-200">
+      {/* Website Screenshot */}
+      {brandData.screenshot && (
+        <PageSection title="Website Preview" description="Homepage screenshot">
+          <GradientCard variant="subtle" noPadding>
+            <div className="rounded-lg overflow-hidden">
               <img
                 src={brandData.screenshot}
                 alt="Website screenshot"
                 className="w-full"
               />
             </div>
-          </Card>
-        )}
+          </GradientCard>
+        </PageSection>
+      )}
 
-        {/* Brand Images Gallery */}
-        {brandData.images && brandData.images.length > 0 && (
-          <Card className="p-6 bg-white shadow-sm border border-gray-200">
-            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
-              Brand Imagery
-            </h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {brandData.images.slice(0, 8).map((image, index) => (
-                <div
-                  key={index}
-                  className="aspect-square rounded-lg overflow-hidden border border-gray-200 shadow-sm"
-                >
-                  <img
-                    src={image}
-                    alt={`Brand image ${index + 1}`}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ))}
-            </div>
-          </Card>
-        )}
-      </div>
-    </div>
+      {/* Brand Images */}
+      {brandData.images && brandData.images.length > 0 && (
+        <PageSection title="Brand Imagery" description="Visual assets from your brand">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {brandData.images.slice(0, 8).map((image, index) => (
+              <GradientCard
+                key={index}
+                variant="subtle"
+                noPadding
+                className="aspect-square overflow-hidden"
+              >
+                <img
+                  src={image}
+                  alt={`Brand image ${index + 1}`}
+                  className="w-full h-full object-cover"
+                />
+              </GradientCard>
+            ))}
+          </div>
+        </PageSection>
+      )}
+    </PageContainer>
   )
 }

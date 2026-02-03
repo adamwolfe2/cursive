@@ -108,11 +108,11 @@ export function OnboardingChecklist() {
   if (!isVisible) return null
 
   return (
-    <div className="bg-gradient-to-r from-blue-50 to-blue-50 border border-blue-200 rounded-lg overflow-hidden">
+    <div className="bg-gradient-to-r from-primary/5 to-accent/5 border border-border rounded-lg overflow-hidden backdrop-blur-sm">
       {/* Header */}
-      <div className="px-6 py-4 flex items-center justify-between bg-white/50 backdrop-blur-sm">
+      <div className="px-6 py-4 flex items-center justify-between bg-background/50">
         <div className="flex items-center gap-4">
-          <div className="w-10 h-10 bg-white border border-zinc-200 rounded-lg flex items-center justify-center p-1.5 shadow-sm">
+          <div className="w-10 h-10 bg-background border border-border rounded-lg flex items-center justify-center p-1.5 shadow-sm">
             <Image
               src="/cursive-logo.png"
               alt="Cursive Logo"
@@ -122,27 +122,27 @@ export function OnboardingChecklist() {
             />
           </div>
           <div>
-            <h3 className="text-[15px] font-semibold text-zinc-900">Get Started with Cursive</h3>
-            <p className="text-[13px] text-zinc-600 mt-0.5">
+            <h3 className="text-[15px] font-semibold text-foreground">Get Started with Cursive</h3>
+            <p className="text-[13px] text-muted-foreground mt-0.5">
               Complete these steps to unlock the full platform
             </p>
           </div>
         </div>
         <div className="flex items-center gap-3">
           <div className="text-right">
-            <div className="text-[13px] font-medium text-blue-600">
+            <div className="text-[13px] font-medium text-primary">
               {completedCount} of {totalCount} completed
             </div>
-            <div className="w-32 h-2 bg-zinc-200 rounded-full mt-1 overflow-hidden">
+            <div className="w-32 h-2 bg-muted rounded-full mt-1 overflow-hidden">
               <div
-                className="h-full bg-blue-500 rounded-full transition-all duration-300"
+                className="h-full bg-primary rounded-full transition-all duration-300"
                 style={{ width: `${progressPercent}%` }}
               />
             </div>
           </div>
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="p-2 text-zinc-600 hover:text-zinc-900 hover:bg-white/50 rounded-lg transition-colors"
+            className="p-2 text-muted-foreground hover:text-foreground hover:bg-background/50 rounded-lg transition-colors"
           >
             <svg
               className={`w-5 h-5 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
@@ -155,7 +155,7 @@ export function OnboardingChecklist() {
           </button>
           <button
             onClick={dismiss}
-            className="p-2 text-zinc-600 hover:text-zinc-900 hover:bg-white/50 rounded-lg transition-colors"
+            className="p-2 text-muted-foreground hover:text-foreground hover:bg-background/50 rounded-lg transition-colors"
             aria-label="Dismiss checklist"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -171,35 +171,37 @@ export function OnboardingChecklist() {
           {items.map((item) => (
             <div
               key={item.id}
-              className={`flex items-start gap-4 p-4 rounded-lg transition-all ${
-                item.completed ? 'bg-white/50' : 'bg-white'
+              className={`flex items-start gap-4 p-4 rounded-lg transition-all border ${
+                item.completed
+                  ? 'bg-background/50 border-border'
+                  : 'bg-background border-primary/20'
               }`}
             >
               <button
                 onClick={() => toggleItemCompletion(item.id)}
                 className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
                   item.completed
-                    ? 'bg-blue-500 border-blue-500'
-                    : 'border-zinc-300 hover:border-blue-500'
+                    ? 'bg-primary border-primary'
+                    : 'border-muted-foreground hover:border-primary'
                 }`}
               >
                 {item.completed && (
-                  <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="w-4 h-4 text-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                   </svg>
                 )}
               </button>
               <div className="flex-1 min-w-0">
                 <h4
-                  className={`text-[14px] font-medium ${item.completed ? 'text-zinc-500 line-through' : 'text-zinc-900'}`}
+                  className={`text-[14px] font-medium ${item.completed ? 'text-muted-foreground line-through' : 'text-foreground'}`}
                 >
                   {item.title}
                 </h4>
-                <p className="text-[13px] text-zinc-600 mt-0.5">{item.description}</p>
+                <p className="text-[13px] text-muted-foreground mt-0.5">{item.description}</p>
               </div>
               <Link
                 href={item.href}
-                className="flex-shrink-0 h-8 px-3 text-[12px] font-medium border border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50 rounded-lg inline-flex items-center gap-1.5 transition-colors"
+                className="flex-shrink-0 h-8 px-3 text-[12px] font-medium border border-border bg-background text-foreground hover:bg-muted rounded-lg inline-flex items-center gap-1.5 transition-colors"
               >
                 {item.completed ? 'Revisit' : 'Start'}
                 <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -213,9 +215,9 @@ export function OnboardingChecklist() {
 
       {/* Footer */}
       {isExpanded && completedCount === totalCount && (
-        <div className="px-6 py-4 bg-blue-100 border-t border-blue-200">
+        <div className="px-6 py-4 bg-primary/10 border-t border-primary/20">
           <div className="flex items-center gap-3">
-            <svg className="w-5 h-5 text-blue-700 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="w-5 h-5 text-primary flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -224,14 +226,14 @@ export function OnboardingChecklist() {
               />
             </svg>
             <div className="flex-1">
-              <p className="text-[14px] font-medium text-blue-900">All done!</p>
-              <p className="text-[13px] text-blue-700 mt-0.5">
+              <p className="text-[14px] font-medium text-foreground">All done!</p>
+              <p className="text-[13px] text-muted-foreground mt-0.5">
                 You're all set. Start exploring the platform.
               </p>
             </div>
             <button
               onClick={dismiss}
-              className="h-9 px-4 text-[13px] font-medium bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-colors"
+              className="h-9 px-4 text-[13px] font-medium bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg transition-colors"
             >
               Dismiss
             </button>

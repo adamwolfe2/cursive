@@ -7,9 +7,12 @@
 
 import { useState, useEffect } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Loader2, ArrowLeft, ArrowRight, Package, Plus } from 'lucide-react'
+import { GradientCard, GradientBadge } from '@/components/ui/gradient-card'
+import { PageContainer, PageHeader, PageSection } from '@/components/layout/page-container'
+import { PageLoading } from '@/components/ui/loading-states'
+import { EmptyState } from '@/components/ui/empty-states'
+import { ArrowLeft, ArrowRight, Package, Plus, Tag } from 'lucide-react'
 
 interface Offer {
   id: string
@@ -50,100 +53,106 @@ export default function OffersPage() {
   }
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-      </div>
-    )
+    return <PageLoading message="Loading offers..." />
   }
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA]">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 py-6 sm:py-8">
-        <div className="space-y-4 sm:space-y-6">
-          {/* Header */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div>
-              <Button
-                onClick={() => router.push(`/ai-studio/profiles?workspace=${workspaceId}`)}
-                variant="ghost"
-                size="sm"
-                className="mb-2"
-              >
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Customer Profiles
-              </Button>
-              <h1 className="text-2xl font-bold text-gray-900">Offers</h1>
-              <p className="text-sm text-gray-500">Your products and services</p>
-            </div>
+    <PageContainer maxWidth="wide">
+      <div className="mb-6">
+        <Button
+          onClick={() => router.push(`/ai-studio/profiles?workspace=${workspaceId}`)}
+          variant="ghost"
+          size="sm"
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back to Customer Profiles
+        </Button>
+      </div>
 
-            <Button
-              onClick={() => router.push(`/ai-studio/creatives?workspace=${workspaceId}`)}
-              className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto"
-            >
-              Next: Creatives
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
+      {/* Header */}
+      <GradientCard variant="primary" className="mb-8">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-primary/10">
+              <Tag className="h-6 w-6 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-semibold text-foreground">Offers</h1>
+              <p className="text-sm text-muted-foreground">Your products and services</p>
+            </div>
           </div>
 
-          {offers.length === 0 ? (
-            <Card className="p-12 text-center bg-white shadow-sm border border-gray-200">
-              <Package className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                No offers yet
-              </h3>
-              <p className="text-gray-600 mb-4">
-                Offers are automatically extracted during brand analysis
-              </p>
-              <Button variant="outline" className="gap-2" disabled title="Coming soon">
-                <Plus className="h-4 w-4" />
-                Add Manual Offer (Coming Soon)
-              </Button>
-            </Card>
-          ) : (
+          <Button
+            onClick={() => router.push(`/ai-studio/creatives?workspace=${workspaceId}`)}
+            size="lg"
+          >
+            Next: Creatives
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
+        </div>
+      </GradientCard>
+
+      {offers.length === 0 ? (
+        <EmptyState
+          icon={Package}
+          title="No offers yet"
+          description="Offers are automatically extracted during brand analysis. Try extracting a new brand to see products and services."
+          action={{
+            label: 'Add Manual Offer (Coming Soon)',
+            onClick: () => {}
+          }}
+        />
+      ) : (
+        <>
+          <PageSection
+            title={`Your Offers (${offers.length})`}
+            description="Products and services extracted from your brand"
+          >
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {offers.map((offer) => (
-                <Card key={offer.id} className="p-6 bg-white shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                <GradientCard
+                  key={offer.id}
+                  variant="subtle"
+                  className="hover:shadow-md transition-all duration-200"
+                >
                   <div className="flex items-start gap-3 mb-4">
-                    <div className="rounded-lg bg-blue-100 p-3 border border-blue-200">
-                      <Package className="h-6 w-6 text-blue-600" />
+                    <div className="rounded-lg bg-primary/10 p-3">
+                      <Package className="h-6 w-6 text-primary" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-gray-900 mb-1">{offer.name}</h3>
+                      <h3 className="font-semibold text-foreground mb-1">{offer.name}</h3>
                       {offer.pricing && (
-                        <p className="text-sm font-medium text-blue-600">{offer.pricing}</p>
+                        <p className="text-sm font-medium text-primary">{offer.pricing}</p>
                       )}
                     </div>
                   </div>
 
-                  <p className="text-sm text-gray-600 mb-4 line-clamp-3">
+                  <p className="text-sm text-muted-foreground mb-4 line-clamp-3">
                     {offer.description}
                   </p>
 
-                  <div className="flex items-center gap-2 pt-4 border-t border-gray-200">
-                    <span className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded-full border border-green-200">
+                  <div className="flex items-center gap-2 pt-4 border-t border-border">
+                    <GradientBadge className="bg-green-500/10 text-green-600 border-green-500/20">
                       Active
-                    </span>
-                    <span className="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded-full border border-gray-200">
+                    </GradientBadge>
+                    <GradientBadge>
                       {offer.source === 'extracted' ? 'Auto-extracted' : 'Manual'}
-                    </span>
+                    </GradientBadge>
                   </div>
-                </Card>
+                </GradientCard>
               ))}
             </div>
-          )}
+          </PageSection>
 
           {/* Add Offer Button */}
-          {offers.length > 0 && (
-            <div className="flex justify-center pt-6">
-              <Button variant="outline" className="gap-2" disabled title="Coming soon">
-                <Plus className="h-4 w-4" />
-                Add Manual Offer (Coming Soon)
-              </Button>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
+          <div className="flex justify-center pt-6">
+            <Button variant="outline" className="gap-2" disabled title="Coming soon">
+              <Plus className="h-4 w-4" />
+              Add Manual Offer (Coming Soon)
+            </Button>
+          </div>
+        </>
+      )}
+    </PageContainer>
   )
 }

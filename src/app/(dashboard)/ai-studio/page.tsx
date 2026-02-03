@@ -1,6 +1,6 @@
 /**
  * AI Studio - Home Page
- * Clean Cursive-inspired UI with brand extraction
+ * Brand extraction with Cursive design system
  */
 
 'use client'
@@ -9,9 +9,11 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Card } from '@/components/ui/card'
+import { GradientCard, GradientButton } from '@/components/ui/gradient-card'
+import { PageContainer, PageHeader } from '@/components/layout/page-container'
+import { PageLoading } from '@/components/ui/loading-states'
+import { EmptyState } from '@/components/ui/empty-states'
 import {
-  Loader2,
   Globe,
   Check,
   Image as ImageIcon,
@@ -19,9 +21,11 @@ import {
   Type,
   MessageSquare,
   Wand2,
-  ArrowUp,
+  ArrowRight,
   ChevronRight,
   XCircle,
+  Sparkles,
+  Clock,
 } from 'lucide-react'
 
 interface BrandWorkspace {
@@ -40,6 +44,15 @@ interface LoadingStep {
   status: 'pending' | 'loading' | 'complete'
 }
 
+const loadingSteps: LoadingStep[] = [
+  { id: '1', label: 'Capturing website', icon: Globe, status: 'pending' },
+  { id: '2', label: 'Extracting screenshots', icon: ImageIcon, status: 'pending' },
+  { id: '3', label: 'Analyzing brand colors', icon: Palette, status: 'pending' },
+  { id: '4', label: 'Identifying typography', icon: Type, status: 'pending' },
+  { id: '5', label: 'Understanding brand voice', icon: MessageSquare, status: 'pending' },
+  { id: '6', label: 'Generating insights', icon: Wand2, status: 'pending' },
+]
+
 export default function AIStudioPage() {
   const router = useRouter()
   const [url, setUrl] = useState('')
@@ -49,15 +62,7 @@ export default function AIStudioPage() {
   const [isLoadingWorkspaces, setIsLoadingWorkspaces] = useState(true)
   const [userName, setUserName] = useState<string>('there')
   const [extractionError, setExtractionError] = useState<string | null>(null)
-
-  const [loadingSteps, setLoadingSteps] = useState<LoadingStep[]>([
-    { id: '1', label: 'Capturing website', icon: Globe, status: 'pending' },
-    { id: '2', label: 'Extracting screenshots', icon: ImageIcon, status: 'pending' },
-    { id: '3', label: 'Analyzing brand colors', icon: Palette, status: 'pending' },
-    { id: '4', label: 'Identifying typography', icon: Type, status: 'pending' },
-    { id: '5', label: 'Understanding brand voice', icon: MessageSquare, status: 'pending' },
-    { id: '6', label: 'Generating insights', icon: Wand2, status: 'pending' },
-  ])
+  const [currentLoadingSteps, setLoadingSteps] = useState<LoadingStep[]>(loadingSteps)
 
   useEffect(() => {
     fetchWorkspaces()
@@ -66,14 +71,14 @@ export default function AIStudioPage() {
 
   async function fetchUserName() {
     try {
-      const response = await fetch('/api/users/me')
+      const response = await fetch('/api/auth/user')
       const data = await response.json()
       if (data.user?.full_name) {
         const firstName = data.user.full_name.split(' ')[0]
         setUserName(firstName)
       }
     } catch (error) {
-      console.error('Failed to load user:', error)
+      console.error('Failed to fetch user name:', error)
     }
   }
 
@@ -89,13 +94,12 @@ export default function AIStudioPage() {
     }
   }
 
-
   async function handleExtract() {
     if (!url.trim()) return
 
     setIsExtracting(true)
     setExtractionError(null)
-    setLoadingSteps(steps => steps.map(s => ({ ...s, status: 'pending' })))
+    setLoadingSteps(steps => steps.map(s => ({ ...s, status: 'pending' as const })))
     setScreenshot(null)
 
     let pollInterval: NodeJS.Timeout | null = null
@@ -104,7 +108,6 @@ export default function AIStudioPage() {
     try {
       console.log('[AI Studio] Starting extraction for:', url.trim())
 
-      // Start extraction
       const response = await fetch('/api/ai-studio/brand/extract', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -120,9 +123,9 @@ export default function AIStudioPage() {
         throw new Error(data.error || 'Failed to extract brand DNA')
       }
 
-      // Poll for progress and update loading steps based on actual status
       const workspaceId = data.workspaceId
       console.log('[AI Studio] Got workspace ID:', workspaceId)
+
       let currentStep = 0
       let consecutiveErrors = 0
       const MAX_CONSECUTIVE_ERRORS = 3
@@ -145,32 +148,26 @@ export default function AIStudioPage() {
 
           console.log('[AI Studio] Workspace status:', workspace.extraction_status)
 
-          // Reset error counter on successful response
           consecutiveErrors = 0
 
-          // Update screenshot when available
           if (workspace.brand_data?.screenshot && !screenshot) {
             setScreenshot(workspace.brand_data.screenshot)
           }
 
-          // Update loading steps based on actual progress
           if (workspace.extraction_status === 'processing') {
-            // Increment steps gradually
-            if (currentStep < loadingSteps.length) {
+            if (currentStep < currentLoadingSteps.length) {
               setLoadingSteps(prev => prev.map((step, idx) =>
-                idx < currentStep ? { ...step, status: 'complete' } :
-                idx === currentStep ? { ...step, status: 'loading' } :
+                idx < currentStep ? { ...step, status: 'complete' as const } :
+                idx === currentStep ? { ...step, status: 'loading' as const } :
                 step
               ))
               currentStep++
             }
           } else if (workspace.extraction_status === 'completed') {
-            // Mark all complete
-            setLoadingSteps(prev => prev.map(s => ({ ...s, status: 'complete' })))
+            setLoadingSteps(prev => prev.map(s => ({ ...s, status: 'complete' as const })))
             if (pollInterval) clearInterval(pollInterval)
             if (timeoutId) clearTimeout(timeoutId)
 
-            // Navigate to branding page
             setTimeout(() => {
               router.push(`/ai-studio/branding?workspace=${workspaceId}`)
             }, 1000)
@@ -184,22 +181,20 @@ export default function AIStudioPage() {
           console.error('Polling error:', error)
           consecutiveErrors++
 
-          // Stop polling after too many consecutive errors
           if (consecutiveErrors >= MAX_CONSECUTIVE_ERRORS) {
             if (pollInterval) clearInterval(pollInterval)
             if (timeoutId) clearTimeout(timeoutId)
             setIsExtracting(false)
-            setExtractionError('Unable to check extraction status. Please refresh the page and try again.')
+            setExtractionError('Unable to check extraction status. Please refresh and try again.')
           }
         }
-      }, 2000) // Poll every 2 seconds
+      }, 2000)
 
-      // Safety timeout: stop polling after 30 seconds
       timeoutId = setTimeout(() => {
         console.log('[AI Studio] Timeout reached, stopping extraction')
         if (pollInterval) clearInterval(pollInterval)
         setIsExtracting(false)
-        setExtractionError('Extraction timed out after 30 seconds. This usually means the API is overloaded or the API keys are not configured correctly. Please try again in a moment.')
+        setExtractionError('Extraction timed out. The API may be overloaded. Please try again.')
       }, 30000)
 
     } catch (error: any) {
@@ -210,188 +205,178 @@ export default function AIStudioPage() {
     }
   }
 
-  return (
-    <div className="min-h-screen bg-[#F8F9FA]">
-      <div className="mx-auto max-w-5xl px-4 sm:px-6 py-8 sm:py-12">
-        {/* Header */}
-        <div className="text-center mb-8 sm:mb-12">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3">
-            Welcome back, <span className="italic">{userName}</span>!
-          </h1>
-          <p className="text-base sm:text-lg text-gray-600">
-            Enter your website to create on-brand content, or select a workspace.
-          </p>
-        </div>
+  if (isLoadingWorkspaces) {
+    return <PageLoading message="Loading your brand workspaces..." />
+  }
 
-        {/* URL Input */}
-        <Card className="p-8 mb-12 bg-white shadow-sm border border-gray-200">
-          <div className="flex gap-3 items-center">
+  return (
+    <PageContainer>
+      <PageHeader
+        title={`Welcome back, ${userName}!`}
+        description="Enter your website to create on-brand content, or select a workspace."
+      />
+
+      {/* URL Input Section */}
+      <GradientCard variant="primary" className="mb-8">
+        <form onSubmit={(e) => { e.preventDefault(); handleExtract(); }} className="space-y-4">
+          <div className="relative">
             <Input
               type="url"
-              placeholder="yourwebsite.com"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && url.trim() && !isExtracting) {
-                  handleExtract()
-                }
-              }}
-              className="flex-1 h-12 text-base bg-gray-50 border-gray-300"
+              placeholder="https://stripe.com"
               disabled={isExtracting}
+              className="h-14 text-lg pr-32 bg-background"
             />
-            <Button
-              onClick={handleExtract}
-              disabled={isExtracting || !url.trim()}
-              className="bg-blue-600 hover:bg-blue-700 h-12 w-12 p-0"
-            >
-              {isExtracting ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
-              ) : (
-                <ArrowUp className="h-5 w-5" />
-              )}
-            </Button>
-          </div>
-          <p className="text-sm text-gray-500 mt-3">
-            We'll analyze your brand and generate content
-          </p>
-
-          {/* Error Message */}
-          {extractionError && !isExtracting && (
-            <div className="mt-4 bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
-              <XCircle className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
-              <div className="flex-1">
-                <p className="text-sm text-red-800">{extractionError}</p>
-              </div>
-              <button
-                onClick={() => setExtractionError(null)}
-                className="text-red-600 hover:text-red-700"
+            <div className="absolute right-2 top-2">
+              <GradientButton
+                type="submit"
+                disabled={!url.trim() || isExtracting}
+                className="h-10"
               >
-                <XCircle className="h-4 w-4" />
-              </button>
+                {isExtracting ? 'Analyzing...' : 'Extract Brand'}
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </GradientButton>
             </div>
-          )}
+          </div>
+          <p className="text-sm text-muted-foreground">
+            We'll analyze your brand and generate content, or select a workspace.
+          </p>
+        </form>
+      </GradientCard>
 
-          {/* Loading Progress */}
-          {isExtracting && (
-            <div className="mt-8 space-y-4">
-              {screenshot && (
-                <div className="rounded-lg overflow-hidden border border-gray-200">
-                  <img
-                    src={screenshot}
-                    alt="Website preview"
-                    className="w-full"
-                  />
-                </div>
-              )}
-
-              <div className="space-y-2">
-                {loadingSteps.map((step) => {
-                  const Icon = step.icon
-                  return (
-                    <div
-                      key={step.id}
-                      className={`flex items-center gap-3 p-3 rounded-lg ${
-                        step.status === 'complete'
-                          ? 'bg-green-50 border border-green-200'
-                          : step.status === 'loading'
-                          ? 'bg-blue-50 border border-blue-200'
-                          : 'bg-gray-50 border border-gray-200'
-                      }`}
-                    >
-                      {step.status === 'complete' ? (
-                        <Check className="h-5 w-5 text-green-600" />
-                      ) : step.status === 'loading' ? (
-                        <Loader2 className="h-5 w-5 animate-spin text-blue-600" />
-                      ) : (
-                        <Icon className="h-5 w-5 text-gray-400" />
-                      )}
-                      <span className={`text-sm ${
-                        step.status === 'complete' ? 'text-green-900' :
-                        step.status === 'loading' ? 'text-blue-900' :
-                        'text-gray-600'
-                      }`}>
-                        {step.label}
-                      </span>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-          )}
-        </Card>
-
-        {/* Workspaces */}
-        {!isExtracting && workspaces.length > 0 && (
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">
-                Your Workspaces
-              </h2>
-              <span className="text-sm text-gray-500">{workspaces.length} workspace{workspaces.length !== 1 ? 's' : ''}</span>
+      {/* Extraction Loading State */}
+      {isExtracting && (
+        <GradientCard variant="subtle" className="mb-8">
+          <div className="space-y-6">
+            <div className="text-center">
+              <h3 className="text-xl font-semibold text-foreground mb-2">
+                Analyzing your brand...
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                This usually takes 30-90 seconds
+              </p>
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-2">
-              {workspaces.map((workspace) => (
-                <Card
-                  key={workspace.id}
-                  className="p-6 cursor-pointer hover:shadow-md transition-shadow bg-white border border-gray-200"
-                  onClick={() => {
-                    if (workspace.extraction_status === 'completed') {
-                      router.push(`/ai-studio/branding?workspace=${workspace.id}`)
-                    }
-                  }}
+            <div className="grid gap-3">
+              {currentLoadingSteps.map((step) => (
+                <div
+                  key={step.id}
+                  className="flex items-center gap-3 p-3 rounded-lg bg-background/50"
                 >
-                  <div className="flex items-center gap-4">
+                  <div className={`
+                    flex-shrink-0 h-8 w-8 rounded-full flex items-center justify-center
+                    ${step.status === 'complete' ? 'bg-primary/20 text-primary' :
+                      step.status === 'loading' ? 'bg-primary/10 text-primary' :
+                      'bg-muted text-muted-foreground'}
+                  `}>
+                    {step.status === 'complete' ? (
+                      <Check className="h-4 w-4" />
+                    ) : (
+                      <step.icon className="h-4 w-4" />
+                    )}
+                  </div>
+                  <span className={`
+                    text-sm font-medium
+                    ${step.status === 'complete' ? 'text-foreground' :
+                      step.status === 'loading' ? 'text-primary' :
+                      'text-muted-foreground'}
+                  `}>
+                    {step.label}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            {screenshot && (
+              <div className="rounded-lg overflow-hidden border border-border">
+                <img src={screenshot} alt="Website preview" className="w-full" />
+              </div>
+            )}
+          </div>
+        </GradientCard>
+      )}
+
+      {/* Error State */}
+      {extractionError && (
+        <GradientCard className="mb-8 border-destructive/50">
+          <div className="flex gap-3">
+            <XCircle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
+            <div>
+              <h4 className="font-semibold text-destructive mb-1">Extraction Failed</h4>
+              <p className="text-sm text-muted-foreground">{extractionError}</p>
+            </div>
+          </div>
+        </GradientCard>
+      )}
+
+      {/* Existing Workspaces */}
+      {workspaces.length > 0 ? (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-foreground">Your Brand Workspaces</h2>
+            <span className="text-sm text-muted-foreground">{workspaces.length} workspace{workspaces.length !== 1 ? 's' : ''}</span>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {workspaces.map((workspace) => (
+              <GradientCard
+                key={workspace.id}
+                variant="subtle"
+                className="cursor-pointer hover:shadow-md transition-all duration-200 group"
+                noPadding
+              >
+                <div
+                  onClick={() => router.push(`/ai-studio/branding?workspace=${workspace.id}`)}
+                  className="p-6"
+                >
+                  <div className="flex items-start gap-3 mb-4">
                     {workspace.logo_url ? (
                       <img
                         src={workspace.logo_url}
                         alt={workspace.name}
-                        className="h-12 w-12 rounded object-contain bg-gray-50 border border-gray-200 p-1"
+                        className="h-12 w-12 rounded-lg object-contain bg-background border border-border p-2"
                       />
                     ) : (
-                      <div className="h-12 w-12 rounded bg-blue-100 flex items-center justify-center border border-blue-200">
-                        <span className="text-blue-600 font-semibold text-lg">
-                          {workspace.name.charAt(0).toUpperCase()}
-                        </span>
+                      <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <Sparkles className="h-6 w-6 text-primary" />
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-gray-900 truncate">
+                      <h3 className="font-semibold text-foreground mb-1 truncate group-hover:text-primary transition-colors">
                         {workspace.name}
                       </h3>
-                      <p className="text-sm text-gray-500 flex items-center gap-2 mt-1">
-                        {workspace.extraction_status === 'processing' && (
-                          <>
-                            <Loader2 className="h-3 w-3 animate-spin" />
-                            Processing...
-                          </>
-                        )}
-                        {workspace.extraction_status === 'completed' && (
-                          <>
-                            <Check className="h-3 w-3 text-green-600" />
-                            Ready
-                          </>
-                        )}
-                        {workspace.extraction_status === 'failed' && (
-                          <span className="text-red-600">Failed</span>
-                        )}
-                      </p>
+                      <p className="text-sm text-muted-foreground truncate">{workspace.url}</p>
                     </div>
-                    <ChevronRight className="h-5 w-5 text-gray-400" />
                   </div>
-                </Card>
-              ))}
-            </div>
-          </div>
-        )}
 
-        {/* Empty State */}
-        {!isLoadingWorkspaces && !isExtracting && workspaces.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-gray-500">No workspaces yet. Enter a URL above to get started.</p>
+                  <div className="flex items-center justify-between text-xs">
+                    {workspace.extraction_status === 'completed' && (
+                      <div className="flex items-center gap-1 text-primary">
+                        <Check className="h-3 w-3" />
+                        <span>Ready</span>
+                      </div>
+                    )}
+                    {workspace.extraction_status === 'processing' && (
+                      <div className="flex items-center gap-1 text-muted-foreground">
+                        <Clock className="h-3 w-3 animate-spin" />
+                        <span>Processing...</span>
+                      </div>
+                    )}
+                    <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
+                  </div>
+                </div>
+              </GradientCard>
+            ))}
           </div>
-        )}
-      </div>
-    </div>
+        </div>
+      ) : !isExtracting && (
+        <EmptyState
+          icon={Sparkles}
+          title="No brand workspaces yet"
+          description="Enter a website URL above to extract brand DNA and start creating on-brand content."
+        />
+      )}
+    </PageContainer>
   )
 }

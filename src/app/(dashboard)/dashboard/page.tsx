@@ -2,6 +2,9 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { OnboardingChecklist } from '@/components/onboarding/checklist'
+import { GradientCard, GradientBadge } from '@/components/ui/gradient-card'
+import { PageContainer, PageHeader } from '@/components/layout/page-container'
+import { Users, TrendingUp, Crown, ArrowRight, Sparkles } from 'lucide-react'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -58,97 +61,192 @@ export default async function DashboardPage() {
   const workspace = user.workspaces
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <PageContainer maxWidth="wide">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+      <GradientCard variant="primary" className="mb-8">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-lg sm:text-xl font-semibold text-gray-900">Dashboard</h1>
-            <p className="text-xs sm:text-sm text-gray-500">{workspace?.name || 'Your Workspace'}</p>
+            <h1 className="text-2xl sm:text-3xl font-semibold text-foreground mb-1">
+              Welcome back, {user.full_name?.split(' ')[0] || 'there'}!
+            </h1>
+            <p className="text-sm text-muted-foreground">{workspace?.name || 'Your Workspace'}</p>
           </div>
-          <div className="flex items-center gap-2 sm:gap-4">
-            <span className="hidden sm:inline text-sm text-gray-600">{user.email}</span>
+          <div className="flex items-center gap-3">
+            <span className="hidden sm:inline text-sm text-muted-foreground">{user.email}</span>
             <Link
               href="/auth/signout"
-              className="text-xs sm:text-sm text-gray-600 hover:text-gray-900"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               Sign out
             </Link>
           </div>
         </div>
-      </header>
+      </GradientCard>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
-        {/* Onboarding Checklist */}
-        <div className="mb-6 sm:mb-8">
-          <OnboardingChecklist />
+      {/* Onboarding Checklist */}
+      <div className="mb-8">
+        <OnboardingChecklist />
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        {/* Total Leads */}
+        <GradientCard variant="accent" className="hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground mb-1">Total Leads</p>
+              <p className="text-3xl sm:text-4xl font-bold text-foreground">{leadsCount || 0}</p>
+            </div>
+            <div className="p-3 rounded-lg bg-primary/10">
+              <Users className="h-6 w-6 text-primary" />
+            </div>
+          </div>
+        </GradientCard>
+
+        {/* Industry */}
+        <GradientCard variant="subtle" className="hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between">
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-muted-foreground mb-1">Industry</p>
+              <p className="text-2xl sm:text-3xl font-bold text-foreground truncate">
+                {workspace?.industry_vertical || 'Not set'}
+              </p>
+            </div>
+            <div className="p-3 rounded-lg bg-primary/10 flex-shrink-0">
+              <TrendingUp className="h-6 w-6 text-primary" />
+            </div>
+          </div>
+        </GradientCard>
+
+        {/* Plan */}
+        <GradientCard variant="subtle" className="hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground mb-1">Current Plan</p>
+              <p className="text-3xl sm:text-4xl font-bold text-foreground capitalize">
+                {user.plan || 'Free'}
+              </p>
+            </div>
+            <div className="p-3 rounded-lg bg-primary/10">
+              <Crown className="h-6 w-6 text-primary" />
+            </div>
+          </div>
+        </GradientCard>
+      </div>
+
+      {/* Recent Leads Section */}
+      <GradientCard variant="subtle" className="mb-8">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-lg font-semibold text-foreground">Recent Leads</h2>
+          <Link
+            href="/leads"
+            className="flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+          >
+            View all
+            <ArrowRight className="h-4 w-4" />
+          </Link>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
-          <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
-            <p className="text-xs sm:text-sm text-gray-500">Total Leads</p>
-            <p className="text-2xl sm:text-3xl font-semibold text-gray-900 mt-1">{leadsCount || 0}</p>
-          </div>
-          <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
-            <p className="text-xs sm:text-sm text-gray-500">Industry</p>
-            <p className="text-xl sm:text-2xl md:text-3xl font-semibold text-gray-900 mt-1 truncate">{workspace?.industry_vertical || 'Not set'}</p>
-          </div>
-          <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
-            <p className="text-xs sm:text-sm text-gray-500">Plan</p>
-            <p className="text-2xl sm:text-3xl font-semibold text-gray-900 mt-1 capitalize">{user.plan || 'Free'}</p>
-          </div>
-        </div>
-
-        {/* Recent Leads */}
-        <div className="bg-white rounded-lg border border-gray-200">
-          <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200 flex items-center justify-between">
-            <h2 className="text-sm sm:text-base font-semibold text-gray-900">Recent Leads</h2>
-            <Link href="/leads" className="text-xs sm:text-sm text-blue-600 hover:underline">
-              View all
-            </Link>
-          </div>
-
-          {recentLeads && recentLeads.length > 0 ? (
-            <div className="divide-y divide-gray-100">
-              {recentLeads.map((lead: any) => (
-                <div key={lead.id} className="px-4 sm:px-6 py-3 sm:py-4 flex items-start sm:items-center justify-between gap-3">
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-sm sm:text-base text-gray-900 truncate">{lead.company_name || lead.contact_name || 'Unknown'}</p>
-                    <p className="text-xs sm:text-sm text-gray-500 truncate">{lead.contact_email || lead.industry || 'No details'}</p>
-                  </div>
-                  <span className={`px-2 py-1 text-xs font-medium rounded-full whitespace-nowrap flex-shrink-0 ${
-                    lead.status === 'new' ? 'bg-blue-100 text-blue-700' :
-                    lead.status === 'contacted' ? 'bg-yellow-100 text-yellow-700' :
-                    lead.status === 'qualified' ? 'bg-green-100 text-green-700' :
-                    'bg-gray-100 text-gray-700'
-                  }`}>
-                    {lead.status || 'new'}
-                  </span>
+        {recentLeads && recentLeads.length > 0 ? (
+          <div className="space-y-3">
+            {recentLeads.map((lead: any) => (
+              <div
+                key={lead.id}
+                className="flex items-center justify-between gap-4 p-4 rounded-lg bg-background border border-border hover:border-primary/50 transition-colors"
+              >
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-foreground truncate">
+                    {lead.company_name || lead.contact_name || 'Unknown'}
+                  </p>
+                  <p className="text-sm text-muted-foreground truncate">
+                    {lead.contact_email || lead.industry || 'No details'}
+                  </p>
                 </div>
-              ))}
+                <GradientBadge className={`flex-shrink-0 ${
+                  lead.status === 'new' ? 'bg-primary/10 text-primary border-primary/20' :
+                  lead.status === 'contacted' ? 'bg-yellow-500/10 text-yellow-600 border-yellow-500/20' :
+                  lead.status === 'qualified' ? 'bg-green-500/10 text-green-600 border-green-500/20' :
+                  ''
+                }`}>
+                  {lead.status || 'new'}
+                </GradientBadge>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <div className="flex justify-center mb-4">
+              <div className="p-3 rounded-full bg-muted">
+                <Users className="h-8 w-8 text-muted-foreground" />
+              </div>
             </div>
-          ) : (
-            <div className="px-4 sm:px-6 py-8 sm:py-12 text-center">
-              <p className="text-sm sm:text-base text-gray-500 mb-2 sm:mb-4">No leads yet</p>
-              <p className="text-xs sm:text-sm text-gray-400">Leads will appear here once they are added to your workspace</p>
-            </div>
-          )}
-        </div>
+            <p className="text-foreground font-medium mb-2">No leads yet</p>
+            <p className="text-sm text-muted-foreground">
+              Leads will appear here once they are added to your workspace
+            </p>
+          </div>
+        )}
+      </GradientCard>
 
-        {/* Quick Links */}
-        <div className="mt-6 sm:mt-8 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-          <Link href="/leads" className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6 hover:border-blue-300 transition-colors">
-            <h3 className="text-sm sm:text-base font-semibold text-gray-900">View Leads</h3>
-            <p className="text-xs sm:text-sm text-gray-500 mt-1">Browse and manage your leads</p>
-          </Link>
-          <Link href="/settings" className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6 hover:border-blue-300 transition-colors">
-            <h3 className="text-sm sm:text-base font-semibold text-gray-900">Settings</h3>
-            <p className="text-xs sm:text-sm text-gray-500 mt-1">Manage your account and workspace</p>
-          </Link>
-        </div>
-      </main>
-    </div>
+      {/* Quick Actions */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <Link href="/ai-studio" className="group">
+          <GradientCard variant="primary" className="hover:shadow-lg transition-all duration-200">
+            <div className="flex items-start gap-4">
+              <div className="p-3 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                <Sparkles className="h-6 w-6 text-primary" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
+                  AI Studio
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Generate brand content with AI
+                </p>
+              </div>
+              <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
+            </div>
+          </GradientCard>
+        </Link>
+
+        <Link href="/crm/leads" className="group">
+          <GradientCard variant="subtle" className="hover:shadow-lg transition-all duration-200">
+            <div className="flex items-start gap-4">
+              <div className="p-3 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                <Users className="h-6 w-6 text-primary" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
+                  CRM
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Manage leads and pipeline
+                </p>
+              </div>
+              <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
+            </div>
+          </GradientCard>
+        </Link>
+
+        <Link href="/settings" className="group">
+          <GradientCard variant="subtle" className="hover:shadow-lg transition-all duration-200">
+            <div className="flex items-start gap-4">
+              <div className="p-3 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                <TrendingUp className="h-6 w-6 text-primary" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
+                  Settings
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Configure your workspace
+                </p>
+              </div>
+              <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
+            </div>
+          </GradientCard>
+        </Link>
+      </div>
+    </PageContainer>
   )
 }
