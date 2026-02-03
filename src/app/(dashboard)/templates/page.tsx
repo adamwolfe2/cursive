@@ -3,6 +3,7 @@
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { redirect } from 'next/navigation'
 import { TemplateBrowser } from '@/components/templates/template-browser'
+import { TemplatesWrapper } from '@/components/templates/templates-wrapper'
 
 export default async function TemplatesPage() {
   const user = await getCurrentUser()
@@ -11,5 +12,9 @@ export default async function TemplatesPage() {
     redirect('/login')
   }
 
-  return <TemplateBrowser />
+  return (
+    <TemplatesWrapper>
+      <TemplateBrowser />
+    </TemplatesWrapper>
+  )
 }
