@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
-import { handleServiceSubscriptionWebhook } from '@/lib/stripe/service-checkout'
+import { handleServiceWebhookEvent } from '@/lib/stripe/service-webhooks'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2024-12-18.acacia'
@@ -42,7 +42,6 @@ export async function POST(request: NextRequest) {
 
     // Handle service subscription events
     const serviceSubscriptionEvents = [
-      'checkout.session.completed',
       'customer.subscription.created',
       'customer.subscription.updated',
       'customer.subscription.deleted',
@@ -51,12 +50,14 @@ export async function POST(request: NextRequest) {
     ]
 
     if (serviceSubscriptionEvents.includes(event.type)) {
-      await handleServiceSubscriptionWebhook(event)
+      await handleServiceWebhookEvent(event)
+      return NextResponse.json({ received: true })
     }
 
-    // TODO: Handle other webhook events (credits, marketplace, etc.)
+    // TODO: Handle other webhook events (checkout, credits, marketplace, etc.)
 
-    return NextResponse.json({ received: true })
+    console.log('[Stripe Webhook] Unhandled event type:', event.type)
+    return NextResponse.json({ received: true, unhandled: true })
   } catch (error) {
     console.error('[Stripe Webhook] Error processing webhook:', error)
     return NextResponse.json(
