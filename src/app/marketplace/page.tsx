@@ -775,6 +775,39 @@ export default function MarketplacePage() {
                 )}
               </div>
 
+              {/* Service Tier Upsell Banner */}
+              {credits < 50 && (
+                <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg p-6 mb-6 text-white">
+                  <div className="flex flex-col sm:flex-row items-start gap-4">
+                    <div className="flex-1">
+                      <h3 className="text-lg font-bold mb-2">
+                        Running low on credits?
+                      </h3>
+                      <p className="text-white/90 text-sm mb-4">
+                        Save 40% with Cursive Data—get custom lead lists delivered automatically every month instead of buying one by one.
+                      </p>
+                      <div className="flex flex-col sm:flex-row gap-3">
+                        <Link
+                          href="/services/cursive-data"
+                          className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-white hover:bg-zinc-50 text-blue-600 font-medium rounded-lg transition-colors text-sm"
+                        >
+                          See Data Plans
+                          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </Link>
+                        <Link
+                          href="/marketplace/credits"
+                          className="inline-flex items-center justify-center gap-2 px-4 py-2 border-2 border-white hover:bg-white/10 text-white font-medium rounded-lg transition-colors text-sm"
+                        >
+                          Buy More Credits
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Lead Cards */}
               {isLoading ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -792,7 +825,26 @@ export default function MarketplacePage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                   </svg>
                   <h3 className="text-[14px] font-medium text-zinc-900 mb-1">No leads found</h3>
-                  <p className="text-[13px] text-zinc-500">Try adjusting your filters to see more results.</p>
+                  <p className="text-[13px] text-zinc-500 mb-4">Try adjusting your filters to see more results.</p>
+                  {credits === 0 && (
+                    <div className="mt-4 pt-4 border-t border-zinc-200">
+                      <p className="text-[13px] text-zinc-600 mb-3">Need leads?</p>
+                      <div className="flex items-center justify-center gap-3">
+                        <Link
+                          href="/services/cursive-data"
+                          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors text-sm"
+                        >
+                          Explore Data Plans
+                        </Link>
+                        <Link
+                          href="/marketplace/credits"
+                          className="inline-flex items-center gap-2 px-4 py-2 border border-zinc-300 hover:border-zinc-400 text-zinc-700 font-medium rounded-lg transition-colors text-sm"
+                        >
+                          Buy Credits
+                        </Link>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <>

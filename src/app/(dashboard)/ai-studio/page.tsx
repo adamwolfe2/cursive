@@ -26,7 +26,9 @@ import {
   XCircle,
   Sparkles,
   Clock,
+  Mail,
 } from 'lucide-react'
+import Link from 'next/link'
 
 interface BrandWorkspace {
   id: string
@@ -369,6 +371,38 @@ export default function AIStudioPage() {
               </GradientCard>
             ))}
           </div>
+
+          {/* Service Tier Upsell */}
+          <GradientCard variant="subtle" className="mt-8 border-primary/20">
+            <div className="flex flex-col sm:flex-row items-start gap-4">
+              <div className="p-3 rounded-lg bg-primary/10">
+                <Mail className="h-8 w-8 text-primary" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-foreground mb-2">
+                  Ready to launch campaigns?
+                </h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  We'll build and run email campaigns using your brand voice. Done-for-you outreach that converts.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Link
+                    href="/services/cursive-outbound"
+                    className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground font-medium rounded-lg transition-colors"
+                  >
+                    Explore Outbound
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                  <Link
+                    href="/services"
+                    className="inline-flex items-center justify-center gap-2 px-4 py-2 border border-border hover:bg-muted text-foreground font-medium rounded-lg transition-colors"
+                  >
+                    View All Services
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </GradientCard>
         </div>
       ) : !isExtracting && (
         <EmptyState
