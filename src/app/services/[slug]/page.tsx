@@ -19,9 +19,34 @@ export async function generateMetadata({ params }: ServiceTierPageProps) {
     }
   }
 
+  const priceRange = tier.monthly_price_max
+    ? `$${(tier.monthly_price_min / 1000).toFixed(0)}k-${(tier.monthly_price_max / 1000).toFixed(0)}k/mo`
+    : `$${(tier.monthly_price_min / 1000).toFixed(0)}k/mo`
+
   return {
-    title: `${tier.name} | Cursive Services`,
-    description: tier.description
+    title: `${tier.name} - ${priceRange} | Cursive`,
+    description: `${tier.description} Starting at ${priceRange}. ${tier.qualification_required ? 'Contact us for a custom quote.' : 'Get started today.'}`,
+    keywords: `${tier.name}, ${params.slug}, lead generation, B2B leads, sales outreach, ${tier.qualification_required ? 'enterprise sales' : 'done-for-you service'}`,
+    openGraph: {
+      title: `${tier.name} - ${priceRange}`,
+      description: tier.description,
+      type: 'website',
+      url: `https://leads.meetcursive.com/services/${params.slug}`,
+      images: [
+        {
+          url: `https://leads.meetcursive.com/og-${params.slug}.png`,
+          width: 1200,
+          height: 630,
+          alt: tier.name,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${tier.name} - ${priceRange}`,
+      description: tier.description,
+      images: [`https://leads.meetcursive.com/og-${params.slug}.png`],
+    },
   }
 }
 

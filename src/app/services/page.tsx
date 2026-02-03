@@ -7,8 +7,29 @@ import { GradientCard } from '@/components/ui/gradient-card'
 import { ServicePageTracker } from '@/components/analytics/ServicePageTracker'
 
 export const metadata = {
-  title: 'Services | Cursive',
-  description: 'From DIY lead generation to full-service growth partnership. Scale with Cursive.'
+  title: 'Service Tiers - From DIY to Done-For-You | Cursive',
+  description: 'Choose your perfect lead generation service: Cursive Data for custom lead lists ($1k-3k/mo), Cursive Outbound for managed campaigns ($3-5k/mo), or Cursive Pipeline for full-stack growth ($5-10k/mo).',
+  keywords: 'lead generation service, done-for-you leads, B2B outreach, email campaigns, sales pipeline',
+  openGraph: {
+    title: 'Cursive Service Tiers - Scale Your Lead Generation',
+    description: 'From DIY lead lists to full-service growth partnership. Choose the tier that matches your needs.',
+    type: 'website',
+    url: 'https://leads.meetcursive.com/services',
+    images: [
+      {
+        url: 'https://leads.meetcursive.com/og-services.png',
+        width: 1200,
+        height: 630,
+        alt: 'Cursive Service Tiers',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Cursive Service Tiers - Scale Your Lead Generation',
+    description: 'From DIY lead lists to full-service growth partnership.',
+    images: ['https://leads.meetcursive.com/og-services.png'],
+  },
 }
 
 async function getServiceTiers() {
