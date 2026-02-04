@@ -19,7 +19,7 @@ export default function CaseStudiesPage() {
           >
             <h1 className="text-5xl lg:text-6xl font-bold mb-6">
               Real Results from
-              <span className="block font-[var(--font-dancing-script)] text-6xl lg:text-7xl text-primary mt-2">
+              <span className="block font-cursive text-6xl lg:text-7xl text-primary mt-2">
                 Real Companies
               </span>
             </h1>
@@ -44,7 +44,7 @@ export default function CaseStudiesPage() {
               </div>
               <h2 className="text-4xl font-bold mb-4">
                 TechStart Scales from 3 to 50+
-                <span className="block font-[var(--font-dancing-script)] text-4xl text-primary mt-2">
+                <span className="block font-cursive text-4xl text-primary mt-2">
                   Qualified Leads per Month
                 </span>
               </h2>
@@ -218,7 +218,7 @@ export default function CaseStudiesPage() {
               </div>
               <h2 className="text-4xl font-bold mb-4">
                 GrowthCo Cuts Lead Costs by 65%
-                <span className="block font-[var(--font-dancing-script)] text-4xl text-primary mt-2">
+                <span className="block font-cursive text-4xl text-primary mt-2">
                   While Improving Quality
                 </span>
               </h2>
@@ -276,7 +276,7 @@ export default function CaseStudiesPage() {
               </div>
               <h2 className="text-4xl font-bold mb-4">
                 Pipeline Inc Books 10x More Meetings
-                <span className="block font-[var(--font-dancing-script)] text-4xl text-primary mt-2">
+                <span className="block font-cursive text-4xl text-primary mt-2">
                   With AI SDR Agents
                 </span>
               </h2>
@@ -381,7 +381,7 @@ export default function CaseStudiesPage() {
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-bold mb-4">
               Average Results
-              <span className="block font-[var(--font-dancing-script)] text-5xl lg:text-6xl text-primary mt-2">
+              <span className="block font-cursive text-5xl lg:text-6xl text-primary mt-2">
                 Across All Customers
               </span>
             </h2>

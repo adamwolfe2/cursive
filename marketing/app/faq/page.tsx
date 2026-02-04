@@ -31,12 +31,12 @@ export default function FAQPage() {
           >
             <h1 className="text-5xl lg:text-6xl font-light text-gray-900 mb-6">
               Frequently Asked
-              <span className="block font-[var(--font-dancing-script)] text-4xl lg:text-5xl text-gray-500 mt-2">
+              <span className="block font-cursive text-4xl lg:text-5xl text-gray-500 mt-2">
                 Questions
               </span>
             </h1>
             <p className="text-xl text-gray-600 mb-8">
-              Everything you need to know about <span className="font-[var(--font-dancing-script)] text-2xl text-gray-500">Cursive</span>. Can't find what you're looking for?{" "}
+              Everything you need to know about <span className="font-cursive text-2xl text-gray-500">Cursive</span>. Can't find what you're looking for?{" "}
               <a href="/contact" className="text-[#007AFF] hover:underline">Contact us</a>.
             </p>
 

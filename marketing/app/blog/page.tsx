@@ -20,7 +20,7 @@ export default function BlogPage() {
           >
             <h1 className="text-5xl lg:text-6xl font-bold mb-6">
               The Cursive
-              <span className="block font-[var(--font-dancing-script)] text-6xl lg:text-7xl text-primary mt-2">
+              <span className="block font-cursive text-6xl lg:text-7xl text-primary mt-2">
                 Blog
               </span>
             </h1>
@@ -130,7 +130,7 @@ export default function BlogPage() {
           <div className="bg-gradient-to-br from-blue-600 to-purple-600 rounded-3xl p-12 text-center text-white shadow-2xl max-w-4xl mx-auto">
             <h2 className="text-4xl lg:text-5xl font-bold mb-4">
               Get Weekly
-              <span className="block font-[var(--font-dancing-script)] text-5xl lg:text-6xl mt-2">
+              <span className="block font-cursive text-5xl lg:text-6xl mt-2">
                 Growth Tips
               </span>
             </h2>

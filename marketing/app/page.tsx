@@ -24,7 +24,7 @@ export default function HomePage() {
               </span>
             </h1>
             <p className="text-lg text-gray-600 mb-8 leading-relaxed max-w-3xl mx-auto">
-              <span className="font-[var(--font-dancing-script)] text-4xl text-[#007AFF]">Cursive</span> identifies real people actively searching for your service, enriches them with verified contact data, and activates them through automated outbound.
+              <span className="font-cursive text-4xl text-[#007AFF]">Cursive</span> identifies real people actively searching for your service, enriches them with verified contact data, and activates them through automated outbound.
             </p>
             <Button size="lg" href="https://cal.com/adamwolfe/cursive-ai-audit" target="_blank">
               Get started. It's FREE!
@@ -49,7 +49,7 @@ export default function HomePage() {
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
               Everything you need to run
             </h2>
-            <p className="font-[var(--font-dancing-script)] text-3xl lg:text-4xl text-gray-500">
+            <p className="font-cursive text-3xl lg:text-4xl text-gray-500">
               outbound at scale
             </p>
           </div>
@@ -118,7 +118,7 @@ export default function HomePage() {
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-2">
               Trusted by Growth Teams
             </h2>
-            <p className="font-[var(--font-dancing-script)] text-3xl lg:text-4xl text-gray-500">
+            <p className="font-cursive text-3xl lg:text-4xl text-gray-500">
               Who Move Fast
             </p>
           </div>
@@ -157,7 +157,7 @@ export default function HomePage() {
               Ready to Get Started?
             </h2>
             <p className="text-lg mb-8 opacity-90">
-              Book a call to see how <span className="font-[var(--font-dancing-script)] text-2xl opacity-80">Cursive</span> can transform your pipeline.
+              Book a call to see how <span className="font-cursive text-2xl opacity-80">Cursive</span> can transform your pipeline.
             </p>
             <Button
               size="lg"

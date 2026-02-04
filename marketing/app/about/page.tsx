@@ -19,12 +19,12 @@ export default function AboutPage() {
           >
             <h1 className="text-5xl lg:text-6xl font-light text-gray-900 mb-6">
               We Got Tired of Bad Lead Data
-              <span className="block font-[var(--font-dancing-script)] text-6xl lg:text-7xl text-[#007AFF] mt-2">
+              <span className="block font-cursive text-6xl lg:text-7xl text-[#007AFF] mt-2">
                 So We Built Something Better
               </span>
             </h1>
             <p className="text-xl text-gray-600 leading-relaxed">
-              <span className="font-[var(--font-dancing-script)] text-2xl text-[#007AFF]">Cursive</span> started because we were tired of paying for lead lists that didn't convert.
+              <span className="font-cursive text-2xl text-[#007AFF]">Cursive</span> started because we were tired of paying for lead lists that didn't convert.
               Outdated contacts. Generic emails. No personalization. No results.
             </p>
           </motion.div>
@@ -46,7 +46,7 @@ export default function AboutPage() {
               </p>
 
               <p className="text-xl text-gray-700 leading-relaxed">
-                Today, <span className="font-[var(--font-dancing-script)] text-2xl text-[#007AFF]">Cursive</span> powers pipeline for hundreds of B2B companies—from bootstrapped startups
+                Today, <span className="font-cursive text-2xl text-[#007AFF]">Cursive</span> powers pipeline for hundreds of B2B companies—from bootstrapped startups
                 to growth-stage companies scaling fast.
               </p>
 
@@ -64,7 +64,7 @@ export default function AboutPage() {
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
               Our Mission
-              <span className="block font-[var(--font-dancing-script)] text-5xl lg:text-6xl text-[#007AFF] mt-2">
+              <span className="block font-cursive text-5xl lg:text-6xl text-[#007AFF] mt-2">
                 Make Lead Gen Effortless
               </span>
             </h2>
@@ -138,7 +138,7 @@ export default function AboutPage() {
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
               Our
-              <span className="block font-[var(--font-dancing-script)] text-5xl lg:text-6xl text-[#007AFF] mt-2">
+              <span className="block font-cursive text-5xl lg:text-6xl text-[#007AFF] mt-2">
                 Values
               </span>
             </h2>
@@ -201,7 +201,7 @@ export default function AboutPage() {
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
               Who
-              <span className="block font-[var(--font-dancing-script)] text-5xl lg:text-6xl text-[#007AFF] mt-2">
+              <span className="block font-cursive text-5xl lg:text-6xl text-[#007AFF] mt-2">
                 We Are
               </span>
             </h2>
@@ -214,7 +214,7 @@ export default function AboutPage() {
           <div className="bg-white rounded-2xl shadow-sm p-12 max-w-4xl mx-auto border border-gray-200 text-center">
             <p className="text-xl text-gray-700 leading-relaxed mb-8">
               Started by founders who were tired of wasting money on bad data and ineffective outbound tools.
-              We built <span className="font-[var(--font-dancing-script)] text-2xl text-[#007AFF]">Cursive</span> to solve our own problem—then realized every B2B company faces the same challenges.
+              We built <span className="font-cursive text-2xl text-[#007AFF]">Cursive</span> to solve our own problem—then realized every B2B company faces the same challenges.
             </p>
             <p className="text-xl text-gray-700 leading-relaxed">
               Now we're on a mission to make high-quality lead generation accessible to every company,
@@ -230,12 +230,12 @@ export default function AboutPage() {
           <div className="bg-[#007AFF] rounded-3xl p-12 text-center text-white shadow-lg max-w-4xl mx-auto">
             <h2 className="text-4xl lg:text-5xl font-light mb-4">
               Let's Build Your Pipeline
-              <span className="block font-[var(--font-dancing-script)] text-5xl lg:text-6xl mt-2">
+              <span className="block font-cursive text-5xl lg:text-6xl mt-2">
                 Together
               </span>
             </h2>
             <p className="text-xl mb-8 opacity-90">
-              Book a call and we'll show you exactly how <span className="font-[var(--font-dancing-script)] text-2xl">Cursive</span> can transform your lead generation.
+              Book a call and we'll show you exactly how <span className="font-cursive text-2xl">Cursive</span> can transform your lead generation.
             </p>
             <Button
               size="lg"

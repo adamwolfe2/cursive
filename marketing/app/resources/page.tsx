@@ -19,7 +19,7 @@ export default function ResourcesPage() {
           >
             <h1 className="text-5xl lg:text-6xl font-bold mb-6">
               Free Resources to
-              <span className="block font-[var(--font-dancing-script)] text-6xl lg:text-7xl text-primary mt-2">
+              <span className="block font-cursive text-6xl lg:text-7xl text-primary mt-2">
                 Scale Your Pipeline
               </span>
             </h1>
@@ -81,7 +81,7 @@ export default function ResourcesPage() {
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold mb-4">
               Browse by
-              <span className="block font-[var(--font-dancing-script)] text-5xl text-primary mt-2">
+              <span className="block font-cursive text-5xl text-primary mt-2">
                 Category
               </span>
             </h2>
@@ -165,7 +165,7 @@ export default function ResourcesPage() {
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold mb-4">
               Learning
-              <span className="block font-[var(--font-dancing-script)] text-5xl text-primary mt-2">
+              <span className="block font-cursive text-5xl text-primary mt-2">
                 Center
               </span>
             </h2>
@@ -260,7 +260,7 @@ export default function ResourcesPage() {
           <div className="bg-gradient-to-br from-blue-600 to-purple-600 rounded-3xl p-12 text-center text-white shadow-2xl max-w-4xl mx-auto">
             <h2 className="text-4xl lg:text-5xl font-bold mb-4">
               Get New Resources
-              <span className="block font-[var(--font-dancing-script)] text-5xl lg:text-6xl mt-2">
+              <span className="block font-cursive text-5xl lg:text-6xl mt-2">
                 Every Week
               </span>
             </h2>
@@ -291,7 +291,7 @@ export default function ResourcesPage() {
           <div className="text-center max-w-3xl mx-auto">
             <h2 className="text-4xl lg:text-5xl font-bold mb-6">
               Ready to Put These
-              <span className="block font-[var(--font-dancing-script)] text-5xl lg:text-6xl text-primary mt-2">
+              <span className="block font-cursive text-5xl lg:text-6xl text-primary mt-2">
                 Into Action?
               </span>
             </h2>

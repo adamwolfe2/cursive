@@ -6,7 +6,7 @@ export default function PrivacyPage() {
       <Container>
         <div className="max-w-4xl mx-auto prose prose-lg">
           <h1 className="text-5xl font-bold mb-4">
-            Privacy <span className="font-[var(--font-dancing-script)] text-primary">Policy</span>
+            Privacy <span className="font-cursive text-primary">Policy</span>
           </h1>
 
           <p className="text-gray-600 mb-8">Last updated: February 4, 2026</p>

@@ -22,7 +22,7 @@ export default function PricingPage() {
           >
             <h1 className="text-5xl lg:text-6xl font-light text-gray-900 mb-6">
               Transparent Pricing
-              <span className="block font-[var(--font-dancing-script)] text-6xl lg:text-7xl text-[#007AFF] mt-2">
+              <span className="block font-cursive text-6xl lg:text-7xl text-[#007AFF] mt-2">
                 No Surprises
               </span>
             </h1>
@@ -46,7 +46,7 @@ export default function PricingPage() {
               className="bg-white rounded-2xl p-8 border border-gray-200 hover:border-[#007AFF] transition-all duration-300 hover:shadow-lg"
             >
               <div className="mb-6">
-                <h3 className="text-2xl font-light text-gray-900 mb-2"><span className="font-[var(--font-dancing-script)] text-3xl text-[#007AFF]">Cursive</span> Data</h3>
+                <h3 className="text-2xl font-light text-gray-900 mb-2"><span className="font-cursive text-3xl text-[#007AFF]">Cursive</span> Data</h3>
                 <p className="text-gray-600">Perfect for teams with existing outbound processes</p>
               </div>
 
@@ -100,7 +100,7 @@ export default function PricingPage() {
               </div>
 
               <div className="mb-6 text-white">
-                <h3 className="text-2xl font-light mb-2"><span className="font-[var(--font-dancing-script)] text-3xl">Cursive</span> Outbound</h3>
+                <h3 className="text-2xl font-light mb-2"><span className="font-cursive text-3xl">Cursive</span> Outbound</h3>
                 <p className="opacity-90">Done-for-you email campaigns</p>
               </div>
 
@@ -148,7 +148,7 @@ export default function PricingPage() {
               className="bg-white rounded-2xl p-8 border border-gray-200 hover:border-[#007AFF] transition-all duration-300 hover:shadow-lg"
             >
               <div className="mb-6">
-                <h3 className="text-2xl font-light text-gray-900 mb-2"><span className="font-[var(--font-dancing-script)] text-3xl text-[#007AFF]">Cursive</span> Pipeline</h3>
+                <h3 className="text-2xl font-light text-gray-900 mb-2"><span className="font-cursive text-3xl text-[#007AFF]">Cursive</span> Pipeline</h3>
                 <p className="text-gray-600">Full-stack AI SDR solution</p>
               </div>
 
@@ -220,7 +220,7 @@ export default function PricingPage() {
             <div className="text-center mb-12">
               <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
                 Frequently Asked
-                <span className="block font-[var(--font-dancing-script)] text-5xl lg:text-6xl text-[#007AFF] mt-2">
+                <span className="block font-cursive text-5xl lg:text-6xl text-[#007AFF] mt-2">
                   Questions
                 </span>
               </h2>
@@ -265,7 +265,7 @@ export default function PricingPage() {
               Ready to 3x Your Pipeline?
             </h2>
             <p className="text-xl mb-8 opacity-90">
-              Book a call. We'll audit your current lead gen and show you exactly how <span className="font-[var(--font-dancing-script)] text-2xl">Cursive</span> can help.
+              Book a call. We'll audit your current lead gen and show you exactly how <span className="font-cursive text-2xl">Cursive</span> can help.
             </p>
             <Button
               size="lg"

@@ -3,6 +3,7 @@
 @theme inline {
   --font-sans: var(--font-inter);
   --font-cursive: var(--font-dancing-script);
+  --font-family-cursive: var(--font-dancing-script), cursive;
 
   --color-primary: #007AFF;
   --color-primary-hover: #0066DD;
@@ -41,4 +42,9 @@ body {
 
 .prose a:hover {
   text-decoration: underline;
+}
+
+/* Cursive font utility */
+.font-cursive {
+  font-family: 'Dancing Script', cursive !important;
 }

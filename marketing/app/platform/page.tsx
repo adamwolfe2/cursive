@@ -19,12 +19,12 @@ export default function PlatformPage() {
           >
             <h1 className="text-5xl lg:text-6xl font-light text-gray-900 mb-6">
               The Tools Behind
-              <span className="block font-[var(--font-dancing-script)] text-4xl lg:text-5xl text-gray-500 mt-2">
+              <span className="block font-cursive text-4xl lg:text-5xl text-gray-500 mt-2">
                 The Results
               </span>
             </h1>
             <p className="text-xl text-gray-600 mb-8">
-              <span className="font-[var(--font-dancing-script)] text-2xl text-gray-500">Cursive</span> isn't just a service—it's a platform. Explore the features that power our
+              <span className="font-cursive text-2xl text-gray-500">Cursive</span> isn't just a service—it's a platform. Explore the features that power our
               managed services (or use them yourself).
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -54,7 +54,7 @@ export default function PlatformPage() {
               </div>
               <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
                 AI Studio
-                <span className="block font-[var(--font-dancing-script)] text-4xl lg:text-5xl text-gray-500 mt-2">
+                <span className="block font-cursive text-4xl lg:text-5xl text-gray-500 mt-2">
                   Build Your Brand Voice
                 </span>
               </h2>
@@ -222,7 +222,7 @@ export default function PlatformPage() {
               </div>
               <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
                 People Search
-                <span className="block font-[var(--font-dancing-script)] text-4xl lg:text-5xl text-gray-500 mt-2">
+                <span className="block font-cursive text-4xl lg:text-5xl text-gray-500 mt-2">
                   Find Anyone, Anywhere
                 </span>
               </h2>
@@ -277,7 +277,7 @@ export default function PlatformPage() {
               </div>
               <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
                 Lead Marketplace
-                <span className="block font-[var(--font-dancing-script)] text-4xl lg:text-5xl text-gray-500 mt-2">
+                <span className="block font-cursive text-4xl lg:text-5xl text-gray-500 mt-2">
                   Buy Leads On Demand
                 </span>
               </h2>
@@ -434,7 +434,7 @@ export default function PlatformPage() {
               </div>
               <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
                 Campaign Manager
-                <span className="block font-[var(--font-dancing-script)] text-4xl lg:text-5xl text-gray-500 mt-2">
+                <span className="block font-cursive text-4xl lg:text-5xl text-gray-500 mt-2">
                   Multi-Channel Outbound
                 </span>
               </h2>
@@ -489,7 +489,7 @@ export default function PlatformPage() {
               </div>
               <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
                 Visitor Intelligence
-                <span className="block font-[var(--font-dancing-script)] text-4xl lg:text-5xl text-gray-500 mt-2">
+                <span className="block font-cursive text-4xl lg:text-5xl text-gray-500 mt-2">
                   See Who's on Your Site
                 </span>
               </h2>
@@ -591,7 +591,7 @@ export default function PlatformPage() {
               Ready to See It in Action?
             </h2>
             <p className="text-xl mb-8 opacity-90">
-              Book a personalized demo and we'll show you exactly how <span className="font-[var(--font-dancing-script)] text-2xl">Cursive</span> can transform your pipeline.
+              Book a personalized demo and we'll show you exactly how <span className="font-cursive text-2xl">Cursive</span> can transform your pipeline.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Button

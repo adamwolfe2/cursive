@@ -7,14 +7,14 @@ export function DemoPeopleSearch() {
       </div>
 
       <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-        <div className="flex items-center gap-3 mb-4">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-4">
           <input
             type="text"
             placeholder="Search by name, company, or title..."
             className="flex-1 px-4 py-2 rounded border border-gray-300 text-sm"
             disabled
           />
-          <button className="px-4 py-2 bg-[#007AFF] text-white rounded text-sm">
+          <button className="px-4 py-2 bg-[#007AFF] text-white rounded text-sm whitespace-nowrap">
             Search
           </button>
         </div>
@@ -23,25 +23,18 @@ export function DemoPeopleSearch() {
 
       <div className="space-y-3">
         {[
-          { name: "Sarah Chen", title: "VP Marketing", company: "Acme Corp", verified: true },
-          { name: "Mike Rodriguez", title: "Head of Sales", company: "TechStart", verified: true },
-          { name: "Emily Johnson", title: "CEO", company: "GrowthCo", verified: true },
+          { name: "Sarah Chen", title: "VP Marketing", company: "Acme Corp", badge: "Live", badgeColor: "bg-green-100 text-green-700" },
+          { name: "Mike Rodriguez", title: "Head of Sales", company: "TechStart", badge: "Verified", badgeColor: "bg-blue-100 text-[#007AFF]" },
+          { name: "Emily Johnson", title: "CEO", company: "GrowthCo", badge: "Enriched", badgeColor: "bg-purple-100 text-purple-700" },
         ].map((contact, i) => (
-          <div key={i} className="bg-white rounded-lg p-4 border border-gray-200 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white text-sm">
-                {contact.name[0]}
-              </div>
-              <div>
-                <div className="text-sm text-gray-900">{contact.name}</div>
-                <div className="text-xs text-gray-600">{contact.title} at {contact.company}</div>
-              </div>
+          <div key={i} className="bg-white rounded-lg p-4 border border-gray-200 flex items-center justify-between hover:shadow-sm transition-shadow">
+            <div>
+              <div className="text-sm text-gray-900 font-medium mb-0.5">{contact.name}</div>
+              <div className="text-xs text-gray-600">{contact.title} at {contact.company}</div>
             </div>
-            {contact.verified && (
-              <div className="px-2 py-1 bg-blue-100 text-[#007AFF] text-xs rounded">
-                Verified
-              </div>
-            )}
+            <div className={`px-2 py-1 ${contact.badgeColor} text-xs rounded flex-shrink-0 ml-3`}>
+              {contact.badge}
+            </div>
           </div>
         ))}
       </div>

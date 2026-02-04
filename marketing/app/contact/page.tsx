@@ -39,7 +39,7 @@ export default function ContactPage() {
           >
             <h1 className="text-5xl lg:text-6xl font-light text-gray-900 mb-6">
               Let's Talk About
-              <span className="block font-[var(--font-dancing-script)] text-4xl lg:text-5xl text-gray-500 mt-2">
+              <span className="block font-cursive text-4xl lg:text-5xl text-gray-500 mt-2">
                 Your Growth
               </span>
             </h1>
@@ -239,7 +239,7 @@ export default function ContactPage() {
           <div className="text-center mb-12">
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
               Quick
-              <span className="block font-[var(--font-dancing-script)] text-4xl lg:text-5xl text-gray-500 mt-2">
+              <span className="block font-cursive text-4xl lg:text-5xl text-gray-500 mt-2">
                 Answers
               </span>
             </h2>
@@ -250,7 +250,7 @@ export default function ContactPage() {
             <div className="bg-white rounded-xl p-6 border border-gray-200">
               <h3 className="text-gray-900 mb-2">How fast can we start?</h3>
               <p className="text-gray-600 text-sm">
-                <span className="font-[var(--font-dancing-script)] text-base text-gray-500">Cursive</span> Data: 5-7 days. Outbound: 1-2 weeks. Pipeline: 2-3 weeks.
+                <span className="font-cursive text-base text-gray-500">Cursive</span> Data: 5-7 days. Outbound: 1-2 weeks. Pipeline: 2-3 weeks.
               </p>
             </div>
             <div className="bg-white rounded-xl p-6 border border-gray-200">
