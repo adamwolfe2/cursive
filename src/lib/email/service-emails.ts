@@ -12,7 +12,7 @@ import {
   createOnboardingReminderEmail,
   createRenewalReminderEmail,
   createDeliveryNotificationEmail,
-} from './templates'
+} from './templates.js' // Explicit .js extension forces .ts file resolution
 
 interface ServiceSubscriptionEmailData {
   customerEmail: string
