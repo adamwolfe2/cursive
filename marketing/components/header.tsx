@@ -16,7 +16,7 @@ export function Header() {
       <Container>
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
+          <Link href="/" className="flex items-center">
             <Image
               src="/cursive-logo.png"
               alt="Cursive"
@@ -24,9 +24,6 @@ export function Header() {
               height={32}
               className="w-8 h-8"
             />
-            <span className="font-[var(--font-great-vibes)] text-2xl text-[#007AFF]">
-              Cursive
-            </span>
           </Link>
 
           {/* Navigation */}

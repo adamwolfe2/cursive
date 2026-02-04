@@ -9,7 +9,7 @@ export function Footer() {
         <div className="grid md:grid-cols-4 gap-8">
           {/* Brand */}
           <div>
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center mb-4">
               <Image
                 src="/cursive-logo.png"
                 alt="Cursive"
@@ -17,9 +17,6 @@ export function Footer() {
                 height={32}
                 className="w-8 h-8"
               />
-              <span className="font-[var(--font-great-vibes)] text-2xl text-[#007AFF]">
-                Cursive
-              </span>
             </div>
             <p className="text-gray-600 text-sm">
               AI-powered lead generation and outbound automation for B2B companies.
