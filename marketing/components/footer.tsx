@@ -6,7 +6,7 @@ export function Footer() {
   return (
     <footer className="bg-white border-t border-gray-200 py-12">
       <Container>
-        <div className="grid md:grid-cols-4 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* Brand */}
           <div>
             <div className="flex items-center mb-4">
@@ -23,23 +23,75 @@ export function Footer() {
             </p>
           </div>
 
-          {/* Services */}
+          {/* Solutions */}
           <div>
-            <h3 className="text-gray-900 mb-4">Services</h3>
+            <h3 className="text-gray-900 mb-4">Solutions</h3>
             <ul className="space-y-2 text-sm text-gray-600">
               <li>
-                <Link href="/services#data" className="hover:text-[#007AFF] transition-colors">
-                  Cursive Data
+                <Link href="/visitor-identification" className="hover:text-[#007AFF] transition-colors">
+                  Visitor Identification
                 </Link>
               </li>
               <li>
-                <Link href="/services#outbound" className="hover:text-[#007AFF] transition-colors">
-                  Cursive Outbound
+                <Link href="/audience-builder" className="hover:text-[#007AFF] transition-colors">
+                  Audience Builder
                 </Link>
               </li>
               <li>
-                <Link href="/services#pipeline" className="hover:text-[#007AFF] transition-colors">
-                  Cursive Pipeline
+                <Link href="/direct-mail" className="hover:text-[#007AFF] transition-colors">
+                  Direct Mail
+                </Link>
+              </li>
+              <li>
+                <Link href="/intent-audiences" className="hover:text-[#007AFF] transition-colors">
+                  Intent Audiences
+                </Link>
+              </li>
+              <li>
+                <Link href="/clean-room" className="hover:text-[#007AFF] transition-colors">
+                  Data Clean Room
+                </Link>
+              </li>
+              <li>
+                <Link href="/data-access" className="hover:text-[#007AFF] transition-colors">
+                  Data Access
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Industries */}
+          <div>
+            <h3 className="text-gray-900 mb-4">Industries</h3>
+            <ul className="space-y-2 text-sm text-gray-600">
+              <li>
+                <Link href="/industries/financial-services" className="hover:text-[#007AFF] transition-colors">
+                  Financial Services
+                </Link>
+              </li>
+              <li>
+                <Link href="/industries/ecommerce" className="hover:text-[#007AFF] transition-colors">
+                  eCommerce
+                </Link>
+              </li>
+              <li>
+                <Link href="/industries/b2b-software" className="hover:text-[#007AFF] transition-colors">
+                  B2B Software
+                </Link>
+              </li>
+              <li>
+                <Link href="/industries/agencies" className="hover:text-[#007AFF] transition-colors">
+                  Agencies
+                </Link>
+              </li>
+              <li>
+                <Link href="/industries/home-services" className="hover:text-[#007AFF] transition-colors">
+                  Home Services
+                </Link>
+              </li>
+              <li>
+                <Link href="/industries/retail" className="hover:text-[#007AFF] transition-colors">
+                  Retail
                 </Link>
               </li>
             </ul>
@@ -50,23 +102,23 @@ export function Footer() {
             <h3 className="text-gray-900 mb-4">Platform</h3>
             <ul className="space-y-2 text-sm text-gray-600">
               <li>
-                <Link href="/platform#ai-studio" className="hover:text-[#007AFF] transition-colors">
-                  AI Studio
+                <Link href="/platform" className="hover:text-[#007AFF] transition-colors">
+                  Overview
                 </Link>
               </li>
               <li>
-                <Link href="/platform#people-search" className="hover:text-[#007AFF] transition-colors">
-                  People Search
+                <Link href="/pricing" className="hover:text-[#007AFF] transition-colors">
+                  Pricing
                 </Link>
               </li>
               <li>
-                <Link href="/platform#marketplace" className="hover:text-[#007AFF] transition-colors">
-                  Marketplace
+                <Link href="/integrations" className="hover:text-[#007AFF] transition-colors">
+                  Integrations
                 </Link>
               </li>
               <li>
-                <Link href="/platform#tracking" className="hover:text-[#007AFF] transition-colors">
-                  Visitor Tracking
+                <Link href="/services" className="hover:text-[#007AFF] transition-colors">
+                  Services
                 </Link>
               </li>
             </ul>
@@ -79,11 +131,6 @@ export function Footer() {
               <li>
                 <Link href="/about" className="hover:text-[#007AFF] transition-colors">
                   About
-                </Link>
-              </li>
-              <li>
-                <Link href="/pricing" className="hover:text-[#007AFF] transition-colors">
-                  Pricing
                 </Link>
               </li>
               <li>
@@ -105,16 +152,6 @@ export function Footer() {
                 <Link href="/faq" className="hover:text-[#007AFF] transition-colors">
                   FAQ
                 </Link>
-              </li>
-              <li>
-                <a
-                  href="https://cal.com/adamwolfe/cursive-ai-audit"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-[#007AFF] transition-colors"
-                >
-                  Book a Call
-                </a>
               </li>
               <li>
                 <a

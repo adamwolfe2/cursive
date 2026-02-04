@@ -3,6 +3,7 @@ import { Inter, Dancing_Script } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
+import { generateMetadata } from "@/lib/seo/metadata";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -14,10 +15,12 @@ const dancingScript = Dancing_Script({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Cursive - B2B Lead Generation & AI-Powered Outbound",
-  description: "Stop hunting for leads. Cursive delivers verified B2B contacts, done-for-you email campaigns, and AI SDR agents. From $1,000/month.",
-};
+export const metadata: Metadata = generateMetadata({
+  title: "AI Intent Systems That Never Sleep",
+  description: "Identify and track website visitors, build targeted lists, launch direct mail campaigns, and maximize ad performance—all from one platform that unites verified B2C and B2B data.",
+  keywords: ['B2B lead generation', 'visitor identification', 'intent data', 'direct mail marketing', 'audience targeting', 'AI SDR', 'outbound automation'],
+  canonical: 'https://meetcursive.com',
+});
 
 export default function RootLayout({
   children,

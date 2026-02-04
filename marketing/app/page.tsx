@@ -4,10 +4,15 @@ import { Button } from "@/components/ui/button"
 import { Container } from "@/components/ui/container"
 import { motion } from "framer-motion"
 import { InteractiveFeaturesShowcase } from "@/components/demos/interactive-features-showcase"
+import { StructuredData } from "@/components/seo/structured-data"
+import { generateOrganizationSchema } from "@/lib/seo/structured-data"
+import Link from "next/link"
 
 export default function HomePage() {
   return (
-    <main className="bg-white">
+    <>
+      <StructuredData data={generateOrganizationSchema()} />
+      <main className="bg-white">
       {/* Hero Section with Interactive Demo */}
       <section className="pt-24 pb-20 bg-white">
         <Container>
@@ -18,13 +23,13 @@ export default function HomePage() {
             className="text-center max-w-5xl mx-auto mb-16"
           >
             <h1 className="text-5xl lg:text-7xl font-light text-gray-900 mb-6 leading-tight">
-              AI Intent Systems
+              Make smarter decisions, have stronger outreach,
               <span className="block text-gray-500 mt-2">
-                That Never Sleep.
+                and measurable growth.
               </span>
             </h1>
             <p className="text-lg text-gray-600 mb-8 leading-relaxed max-w-3xl mx-auto">
-              <span className="font-cursive text-4xl text-gray-900">Cursive</span> identifies real people actively searching for your service, enriches them with verified contact data, and activates them through automated outbound.
+              Identify and track your website visitors, build highly targeted lists, launch direct mail campaigns, and maximize ad performance—all from one platform that unites verified B2C and B2B data.
             </p>
             <Button size="lg" href="https://cal.com/adamwolfe/cursive-ai-audit" target="_blank">
               Get started. It's FREE!
@@ -39,11 +44,78 @@ export default function HomePage() {
           >
             <InteractiveFeaturesShowcase />
           </motion.div>
+
+          {/* View All Demos Link */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            className="text-center mt-8"
+          >
+            <Link
+              href="/demos"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-white text-[#007AFF] border-2 border-[#007AFF] rounded-lg font-medium hover:bg-[#007AFF] hover:text-white transition-all group"
+            >
+              <span>View All 12 Interactive Demos</span>
+              <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </Link>
+          </motion.div>
+        </Container>
+      </section>
+
+      {/* Core Value Pillars */}
+      <section className="py-20 bg-white">
+        <Container>
+          <h2 className="text-3xl lg:text-4xl font-light text-gray-900 mb-12 text-center">
+            The Complete Data-Driven Marketing Solution
+          </h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {coreValuePillars.map((pillar, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                className="bg-gradient-to-br from-blue-50 to-transparent rounded-xl p-6 border border-blue-200"
+              >
+                <h3 className="text-xl text-gray-900 mb-3">{pillar.title}</h3>
+                <p className="text-gray-600 text-sm">{pillar.description}</p>
+              </motion.div>
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      {/* Data Stats */}
+      <section className="py-20 bg-[#F7F9FB]">
+        <Container>
+          <h2 className="text-3xl lg:text-4xl font-light text-gray-900 mb-4 text-center">
+            Direct Data Access,
+          </h2>
+          <p className="font-cursive text-5xl text-gray-900 mb-12 text-center">On Demand</p>
+          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+            {dataStats.map((stat, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                className="text-center"
+              >
+                <div className="text-5xl text-[#007AFF] mb-2">{stat.value}</div>
+                <div className="text-gray-600">{stat.label}</div>
+              </motion.div>
+            ))}
+          </div>
         </Container>
       </section>
 
       {/* Core Features Grid */}
-      <section className="py-20 bg-[#F7F9FB]">
+      <section className="py-20 bg-white">
         <Container>
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light text-gray-900 mb-2 whitespace-nowrap">
@@ -92,7 +164,7 @@ export default function HomePage() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-[#F7F9FB]">
         <Container>
           <div className="grid md:grid-cols-3 gap-12 text-center max-w-4xl mx-auto">
             {stats.map((stat, index) => (
@@ -112,7 +184,7 @@ export default function HomePage() {
       </section>
 
       {/* Testimonials */}
-      <section className="py-20 bg-[#F7F9FB]">
+      <section className="py-20 bg-white">
         <Container>
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-2">
@@ -150,7 +222,7 @@ export default function HomePage() {
       </section>
 
       {/* Final CTA */}
-      <section className="relative py-32 bg-white overflow-hidden">
+      <section className="relative py-32 bg-[#F7F9FB] overflow-hidden">
         <Container>
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -233,8 +305,36 @@ export default function HomePage() {
         </Container>
       </section>
     </main>
+    </>
   )
 }
+
+// Core Value Pillars Data
+const coreValuePillars = [
+  {
+    title: 'Powerful Visitor Identification',
+    description: 'Uncover up to 70% of your anonymous website traffic—turn hidden visitors into qualified prospects.',
+  },
+  {
+    title: 'Audience Builder Without Limits',
+    description: 'Create audiences instantly—no caps, no restrictions. Reach buyers actively showing intent across 25,000+ commercial categories.',
+  },
+  {
+    title: 'Real-Time Data, Real Results',
+    description: 'Update, capture, and enrich your data instantly—then take action the moment it matters.',
+  },
+  {
+    title: 'Maximum Value, Every Time',
+    description: 'Our advanced technology processes data faster and more cost-effectively, delivering exceptional value.',
+  },
+]
+
+// Data Stats
+const dataStats = [
+  { value: '220M+', label: 'Consumer Profiles' },
+  { value: '140M+', label: 'Business Profiles' },
+  { value: '30,000+', label: 'Intent Categories' },
+]
 
 // Core Features Data
 const coreFeatures = [

@@ -6,22 +6,45 @@ import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
 import { useState } from "react"
-import { Menu, X } from "lucide-react"
+import { Menu, X, ChevronDown } from "lucide-react"
 
-const navLinks = [
+interface NavLink {
+  href?: string
+  label: string
+  dropdown?: { href: string; label: string }[]
+}
+
+const navLinks: NavLink[] = [
   { href: "/services", label: "Services" },
+  {
+    label: "Solutions",
+    dropdown: [
+      { href: "/visitor-identification", label: "Visitor Identification" },
+      { href: "/audience-builder", label: "Audience Builder" },
+      { href: "/direct-mail", label: "Direct Mail" },
+      { href: "/intent-audiences", label: "Intent Audiences" },
+      { href: "/clean-room", label: "Data Clean Room" },
+      { href: "/data-access", label: "Data Access" },
+    ],
+  },
+  {
+    label: "Industries",
+    dropdown: [
+      { href: "/industries/financial-services", label: "Financial Services" },
+      { href: "/industries/ecommerce", label: "eCommerce" },
+      { href: "/industries/b2b-software", label: "B2B Software" },
+      { href: "/industries/agencies", label: "Agencies" },
+      { href: "/industries/home-services", label: "Home Services" },
+      { href: "/industries/retail", label: "Retail" },
+    ],
+  },
   { href: "/pricing", label: "Pricing" },
-  { href: "/platform", label: "Platform" },
-  { href: "/about", label: "About" },
   { href: "/resources", label: "Resources" },
-  { href: "/blog", label: "Blog" },
-  { href: "/case-studies", label: "Case Studies" },
-  { href: "/faq", label: "FAQ" },
-  { href: "/contact", label: "Contact" },
 ]
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null)
 
   return (
     <>
@@ -45,21 +68,45 @@ export function Header() {
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center gap-8">
-              <Link href="/services" className="text-gray-700 hover:text-[#007AFF] transition-colors">
-                Services
-              </Link>
-              <Link href="/pricing" className="text-gray-700 hover:text-[#007AFF] transition-colors">
-                Pricing
-              </Link>
-              <Link href="/platform" className="text-gray-700 hover:text-[#007AFF] transition-colors">
-                Platform
-              </Link>
-              <Link href="/resources" className="text-gray-700 hover:text-[#007AFF] transition-colors">
-                Resources
-              </Link>
-              <Link href="/blog" className="text-gray-700 hover:text-[#007AFF] transition-colors">
-                Blog
-              </Link>
+              {navLinks.map((link) => (
+                <div
+                  key={link.label}
+                  className="relative"
+                  onMouseEnter={() => link.dropdown && setOpenDropdown(link.label)}
+                  onMouseLeave={() => setOpenDropdown(null)}
+                >
+                  {link.dropdown ? (
+                    <button className="flex items-center gap-1 text-gray-700 hover:text-[#007AFF] transition-colors">
+                      {link.label}
+                      <ChevronDown className="w-4 h-4" />
+                    </button>
+                  ) : (
+                    <Link href={link.href!} className="text-gray-700 hover:text-[#007AFF] transition-colors">
+                      {link.label}
+                    </Link>
+                  )}
+
+                  {/* Dropdown Menu */}
+                  {link.dropdown && openDropdown === link.label && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 10 }}
+                      className="absolute top-full left-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50"
+                    >
+                      {link.dropdown.map((item) => (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-[#F7F9FB] hover:text-[#007AFF] transition-colors"
+                        >
+                          {item.label}
+                        </Link>
+                      ))}
+                    </motion.div>
+                  )}
+                </div>
+              ))}
             </nav>
 
             {/* Desktop CTA Buttons */}
@@ -111,14 +158,41 @@ export function Header() {
             >
               <nav className="flex flex-col p-6 space-y-1">
                 {navLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="px-4 py-3 text-gray-900 hover:bg-[#F7F9FB] hover:text-[#007AFF] rounded-lg transition-colors"
-                  >
-                    {link.label}
-                  </Link>
+                  <div key={link.label}>
+                    {link.dropdown ? (
+                      <div>
+                        <button
+                          onClick={() => setOpenDropdown(openDropdown === link.label ? null : link.label)}
+                          className="w-full px-4 py-3 text-left text-gray-900 hover:bg-[#F7F9FB] hover:text-[#007AFF] rounded-lg transition-colors flex items-center justify-between"
+                        >
+                          {link.label}
+                          <ChevronDown className={`w-4 h-4 transition-transform ${openDropdown === link.label ? 'rotate-180' : ''}`} />
+                        </button>
+                        {openDropdown === link.label && (
+                          <div className="ml-4 mt-1 space-y-1">
+                            {link.dropdown.map((item) => (
+                              <Link
+                                key={item.href}
+                                href={item.href}
+                                onClick={() => setMobileMenuOpen(false)}
+                                className="block px-4 py-2 text-sm text-gray-700 hover:bg-[#F7F9FB] hover:text-[#007AFF] rounded-lg transition-colors"
+                              >
+                                {item.label}
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <Link
+                        href={link.href!}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="block px-4 py-3 text-gray-900 hover:bg-[#F7F9FB] hover:text-[#007AFF] rounded-lg transition-colors"
+                      >
+                        {link.label}
+                      </Link>
+                    )}
+                  </div>
                 ))}
 
                 <div className="border-t border-gray-200 my-4" />

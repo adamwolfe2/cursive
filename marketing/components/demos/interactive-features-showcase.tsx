@@ -8,43 +8,96 @@ import { DemoLeadSequence } from "./demo-lead-sequence"
 import { DemoAIStudio } from "./demo-ai-studio"
 import { DemoPeopleSearch } from "./demo-people-search"
 import { DemoMarketplace } from "./demo-marketplace"
+import { DemoIntentHeatmap } from "./demo-intent-heatmap"
+import { DemoAudienceBuilder } from "./demo-audience-builder"
+import { DemoEnrichmentWaterfall } from "./demo-enrichment-waterfall"
+import { DemoEmailValidator } from "./demo-email-validator"
+import { DemoAttributionFlow } from "./demo-attribution-flow"
+import { DemoAccountIntelligence } from "./demo-account-intelligence"
 
 interface FeatureTab {
   id: string
   label: string
   component: React.ReactNode
+  category?: string
 }
 
 const features: FeatureTab[] = [
+  // Core Features
   {
     id: "visitor-tracking",
     label: "Visitor Tracking",
-    component: <DemoVisitorTracking />
+    component: <DemoVisitorTracking />,
+    category: "core"
   },
   {
-    id: "pipeline",
-    label: "Pipeline Dashboard",
-    component: <DemoPipelineDashboard />
+    id: "intent-heatmap",
+    label: "Intent Heatmap",
+    component: <DemoIntentHeatmap />,
+    category: "core"
   },
+  {
+    id: "audience-builder",
+    label: "Audience Builder",
+    component: <DemoAudienceBuilder />,
+    category: "core"
+  },
+  {
+    id: "enrichment",
+    label: "Data Enrichment",
+    component: <DemoEnrichmentWaterfall />,
+    category: "core"
+  },
+  // Engagement Tools
   {
     id: "sequences",
     label: "Lead Sequences",
-    component: <DemoLeadSequence />
+    component: <DemoLeadSequence />,
+    category: "engagement"
   },
   {
     id: "ai-studio",
     label: "AI Studio",
-    component: <DemoAIStudio />
+    component: <DemoAIStudio />,
+    category: "engagement"
   },
+  {
+    id: "email-validator",
+    label: "Email Validator",
+    component: <DemoEmailValidator />,
+    category: "engagement"
+  },
+  // Analytics
+  {
+    id: "pipeline",
+    label: "Pipeline Dashboard",
+    component: <DemoPipelineDashboard />,
+    category: "analytics"
+  },
+  {
+    id: "attribution",
+    label: "Attribution Flow",
+    component: <DemoAttributionFlow />,
+    category: "analytics"
+  },
+  {
+    id: "account-intel",
+    label: "Account Intelligence",
+    component: <DemoAccountIntelligence />,
+    category: "analytics"
+  },
+  // Data & Tools
   {
     id: "people-search",
     label: "People Search",
-    component: <DemoPeopleSearch />
+    component: <DemoPeopleSearch />,
+    category: "data"
   },
   {
     id: "marketplace",
     label: "Marketplace",
-    component: <DemoMarketplace />
+    component: <DemoMarketplace />,
+    category: "data"
   },
 ]
 
@@ -56,7 +109,7 @@ export function InteractiveFeaturesShowcase() {
   return (
     <div className="space-y-8">
       {/* Tab Navigation */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
         {features.map((feature) => (
           <button
             key={feature.id}
@@ -64,8 +117,8 @@ export function InteractiveFeaturesShowcase() {
             className={`
               px-4 py-3 rounded-lg text-sm transition-all
               ${activeTab === feature.id
-                ? 'bg-gradient-to-br from-blue-100 to-blue-200 text-[#007AFF] shadow-sm'
-                : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
+                ? 'bg-white text-gray-900 border-2 border-gray-900 shadow-sm font-medium'
+                : 'bg-white text-gray-600 hover:text-gray-900 hover:border-gray-300 border border-gray-200'
               }
             `}
           >
