@@ -163,11 +163,6 @@ export function createEmailTemplate({
     </div>
     <div class="email-body">
       ${content}
-      <div class="email-signature">
-        <p class="email-text" style="margin-bottom: 0;">
-          Adam @ Cursive
-        </p>
-      </div>
     </div>
     <div class="email-footer">
       <p style="margin: 0 0 8px 0;">Cursive</p>

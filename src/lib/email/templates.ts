@@ -18,24 +18,24 @@ export function createWelcomeEmail({
   monthlyPrice: number
 }) {
   const content = `
-    <h1 class="email-title">Welcome to ${tierName}</h1>
+    <h1 class="email-title">You're in. Here's what happens next.</h1>
 
     <p class="email-text">
       Hi ${customerName},
     </p>
 
     <p class="email-text">
-      Thank you for subscribing to ${tierName}. I'm excited to help you scale your lead generation and outreach.
+      Your ${tierName} subscription is live at $${monthlyPrice.toLocaleString()}/month.
     </p>
 
     <p class="email-text">
-      Your subscription is now active at $${monthlyPrice.toLocaleString()}/month. Here's what happens next:
+      Here's the plan:
     </p>
 
     <ul style="margin: 16px 0; padding-left: 24px;">
-      <li style="margin-bottom: 8px;">You'll receive your first delivery within 5-7 business days</li>
-      <li style="margin-bottom: 8px;">I'll reach out personally to schedule our kickoff call</li>
-      <li style="margin-bottom: 8px;">You can manage your subscription anytime from your dashboard</li>
+      <li style="margin-bottom: 8px;">Your first delivery hits your inbox within 5-7 business days</li>
+      <li style="margin-bottom: 8px;">I'll reach out to schedule our kickoff call</li>
+      <li style="margin-bottom: 8px;">You can manage everything from your dashboard anytime</li>
     </ul>
 
     <a href="${EMAIL_CONFIG.baseUrl}/services/manage" class="email-button">
@@ -43,34 +43,38 @@ export function createWelcomeEmail({
     </a>
 
     <p class="email-text">
-      If you have any questions or need anything, just reply to this email. I'm here to help.
+      Questions? Just reply here. I read every email.
+    </p>
+
+    <p class="email-text">
+      Adam
     </p>
   `
 
   const text = `
-Welcome to ${tierName}
+You're in. Here's what happens next.
 
 Hi ${customerName},
 
-Thank you for subscribing to ${tierName}. I'm excited to help you scale your lead generation and outreach.
+Your ${tierName} subscription is live at $${monthlyPrice.toLocaleString()}/month.
 
-Your subscription is now active at $${monthlyPrice.toLocaleString()}/month. Here's what happens next:
+Here's the plan:
 
-- You'll receive your first delivery within 5-7 business days
-- I'll reach out personally to schedule our kickoff call
-- You can manage your subscription anytime from your dashboard
+- Your first delivery hits your inbox within 5-7 business days
+- I'll reach out to schedule our kickoff call
+- You can manage everything from your dashboard anytime
 
 View Your Subscription: ${EMAIL_CONFIG.baseUrl}/services/manage
 
-If you have any questions or need anything, just reply to this email. I'm here to help.
+Questions? Just reply here. I read every email.
 
-Adam @ Cursive
+Adam
   `.trim()
 
   return {
     html: createEmailTemplate({
-      preheader: `Welcome to ${tierName} - Let's get started`,
-      title: `Welcome to ${tierName}`,
+      preheader: `You're in. Here's what happens next.`,
+      title: `You're in. Here's what happens next.`,
       content,
     }),
     text,
@@ -98,18 +102,14 @@ export function createPaymentSuccessEmail({
   })
 
   const content = `
-    <h1 class="email-title">Payment Received</h1>
+    <h1 class="email-title">Payment received for ${tierName}</h1>
 
     <p class="email-text">
       Hi ${customerName},
     </p>
 
     <p class="email-text">
-      Your payment of $${amount.toLocaleString()} for ${tierName} has been processed successfully.
-    </p>
-
-    <p class="email-text">
-      Your subscription is active through ${formattedDate}. You can view your invoice and subscription details anytime from your dashboard.
+      Just confirming your $${amount.toLocaleString()} payment went through. You're active through ${formattedDate}.
     </p>
 
     <a href="${EMAIL_CONFIG.baseUrl}/services/manage" class="email-button">
@@ -117,30 +117,32 @@ export function createPaymentSuccessEmail({
     </a>
 
     <p class="email-text">
-      Thank you for being a valued customer.
+      Thanks for sticking with us.
+    </p>
+
+    <p class="email-text">
+      Adam
     </p>
   `
 
   const text = `
-Payment Received
+Payment received for ${tierName}
 
 Hi ${customerName},
 
-Your payment of $${amount.toLocaleString()} for ${tierName} has been processed successfully.
-
-Your subscription is active through ${formattedDate}. You can view your invoice and subscription details anytime from your dashboard.
+Just confirming your $${amount.toLocaleString()} payment went through. You're active through ${formattedDate}.
 
 View Invoice: ${EMAIL_CONFIG.baseUrl}/services/manage
 
-Thank you for being a valued customer.
+Thanks for sticking with us.
 
-Adam @ Cursive
+Adam
   `.trim()
 
   return {
     html: createEmailTemplate({
       preheader: `Payment confirmed - $${amount.toLocaleString()}`,
-      title: 'Payment Received',
+      title: `Payment received for ${tierName}`,
       content,
     }),
     text,
@@ -160,18 +162,18 @@ export function createPaymentFailedEmail({
   amount: number
 }) {
   const content = `
-    <h1 class="email-title">Payment Issue</h1>
+    <h1 class="email-title">Quick heads up: payment didn't go through</h1>
 
     <p class="email-text">
       Hi ${customerName},
     </p>
 
     <p class="email-text">
-      We had trouble processing your payment of $${amount.toLocaleString()} for ${tierName}.
+      Your $${amount.toLocaleString()} charge for ${tierName} got declined. Usually it's an expired card or a bank flag.
     </p>
 
     <p class="email-text">
-      This can happen for several reasons - expired card, insufficient funds, or your bank declining the charge. To keep your subscription active, please update your payment method.
+      Takes 30 seconds to fix:
     </p>
 
     <a href="${EMAIL_CONFIG.baseUrl}/services/manage" class="email-button">
@@ -179,30 +181,34 @@ export function createPaymentFailedEmail({
     </a>
 
     <p class="email-text">
-      If you need help or have questions, just reply to this email and I'll sort it out with you personally.
+      If something's off or you want to chat about your subscription, just reply. I'll sort it out.
+    </p>
+
+    <p class="email-text">
+      Adam
     </p>
   `
 
   const text = `
-Payment Issue
+Quick heads up: payment didn't go through
 
 Hi ${customerName},
 
-We had trouble processing your payment of $${amount.toLocaleString()} for ${tierName}.
+Your $${amount.toLocaleString()} charge for ${tierName} got declined. Usually it's an expired card or a bank flag.
 
-This can happen for several reasons - expired card, insufficient funds, or your bank declining the charge. To keep your subscription active, please update your payment method.
+Takes 30 seconds to fix:
 
 Update Payment Method: ${EMAIL_CONFIG.baseUrl}/services/manage
 
-If you need help or have questions, just reply to this email and I'll sort it out with you personally.
+If something's off or you want to chat about your subscription, just reply. I'll sort it out.
 
-Adam @ Cursive
+Adam
   `.trim()
 
   return {
     html: createEmailTemplate({
-      preheader: 'Action needed - Update your payment method',
-      title: 'Payment Issue',
+      preheader: `Payment didn't go through - quick fix needed`,
+      title: `Quick heads up: payment didn't go through`,
       content,
     }),
     text,
@@ -228,22 +234,22 @@ export function createSubscriptionCancelledEmail({
   })
 
   const content = `
-    <h1 class="email-title">Subscription Cancelled</h1>
+    <h1 class="email-title">You're cancelled. Door's always open.</h1>
 
     <p class="email-text">
       Hi ${customerName},
     </p>
 
     <p class="email-text">
-      Your ${tierName} subscription has been cancelled. You'll continue to have access through ${formattedDate}.
+      Your ${tierName} subscription is cancelled. You'll still have access through ${formattedDate}.
     </p>
 
     <p class="email-text">
-      I'm sorry to see you go. If there's anything we could have done better, I'd genuinely appreciate hearing your feedback. Just reply to this email.
+      If there's something we missed or could've done better, I'd genuinely like to know. Just reply.
     </p>
 
     <p class="email-text">
-      If you change your mind, you can reactivate your subscription anytime.
+      And if you change your mind, reactivating takes one click:
     </p>
 
     <a href="${EMAIL_CONFIG.baseUrl}/services" class="email-button">
@@ -251,32 +257,36 @@ export function createSubscriptionCancelledEmail({
     </a>
 
     <p class="email-text">
-      Thank you for giving Cursive a try.
+      Thanks for giving Cursive a shot.
+    </p>
+
+    <p class="email-text">
+      Adam
     </p>
   `
 
   const text = `
-Subscription Cancelled
+You're cancelled. Door's always open.
 
 Hi ${customerName},
 
-Your ${tierName} subscription has been cancelled. You'll continue to have access through ${formattedDate}.
+Your ${tierName} subscription is cancelled. You'll still have access through ${formattedDate}.
 
-I'm sorry to see you go. If there's anything we could have done better, I'd genuinely appreciate hearing your feedback. Just reply to this email.
+If there's something we missed or could've done better, I'd genuinely like to know. Just reply.
 
-If you change your mind, you can reactivate your subscription anytime.
+And if you change your mind, reactivating takes one click:
 
 Reactivate Subscription: ${EMAIL_CONFIG.baseUrl}/services
 
-Thank you for giving Cursive a try.
+Thanks for giving Cursive a shot.
 
-Adam @ Cursive
+Adam
   `.trim()
 
   return {
     html: createEmailTemplate({
-      preheader: `Your subscription has been cancelled`,
-      title: 'Subscription Cancelled',
+      preheader: `You're cancelled. Door's always open.`,
+      title: `You're cancelled. Door's always open.`,
       content,
     }),
     text,
@@ -294,18 +304,18 @@ export function createOnboardingReminderEmail({
   tierName: string
 }) {
   const content = `
-    <h1 class="email-title">Let's Get You Started</h1>
+    <h1 class="email-title">Let's get your first leads rolling</h1>
 
     <p class="email-text">
       Hi ${customerName},
     </p>
 
     <p class="email-text">
-      I noticed you haven't completed your onboarding for ${tierName} yet. I want to make sure you get the most value from your subscription.
+      You signed up for ${tierName} a few days ago but haven't finished onboarding yet.
     </p>
 
     <p class="email-text">
-      Onboarding only takes about 10 minutes and helps me understand your goals so I can deliver exactly what you need.
+      It takes about 10 minutes. I use it to understand your ICP and targeting so your first delivery actually converts.
     </p>
 
     <a href="${EMAIL_CONFIG.baseUrl}/services/onboarding" class="email-button">
@@ -313,30 +323,34 @@ export function createOnboardingReminderEmail({
     </a>
 
     <p class="email-text">
-      If you're stuck or have questions, just reply to this email and I'll help you through it.
+      Stuck on something? Reply here and I'll walk you through it.
+    </p>
+
+    <p class="email-text">
+      Adam
     </p>
   `
 
   const text = `
-Let's Get You Started
+Let's get your first leads rolling
 
 Hi ${customerName},
 
-I noticed you haven't completed your onboarding for ${tierName} yet. I want to make sure you get the most value from your subscription.
+You signed up for ${tierName} a few days ago but haven't finished onboarding yet.
 
-Onboarding only takes about 10 minutes and helps me understand your goals so I can deliver exactly what you need.
+It takes about 10 minutes. I use it to understand your ICP and targeting so your first delivery actually converts.
 
 Complete Onboarding: ${EMAIL_CONFIG.baseUrl}/services/onboarding
 
-If you're stuck or have questions, just reply to this email and I'll help you through it.
+Stuck on something? Reply here and I'll walk you through it.
 
-Adam @ Cursive
+Adam
   `.trim()
 
   return {
     html: createEmailTemplate({
-      preheader: 'Complete your onboarding to get started',
-      title: "Let's Get You Started",
+      preheader: `Let's get your first leads rolling`,
+      title: `Let's get your first leads rolling`,
       content,
     }),
     text,
@@ -364,18 +378,22 @@ export function createRenewalReminderEmail({
   })
 
   const content = `
-    <h1 class="email-title">Upcoming Renewal</h1>
+    <h1 class="email-title">Heads up: renewal in 7 days</h1>
 
     <p class="email-text">
       Hi ${customerName},
     </p>
 
     <p class="email-text">
-      Your ${tierName} subscription will automatically renew on ${formattedDate} for $${amount.toLocaleString()}.
+      Your ${tierName} subscription renews on ${formattedDate} for $${amount.toLocaleString()}.
     </p>
 
     <p class="email-text">
-      No action needed - your payment method on file will be charged automatically. If you need to update your payment method or have any questions, you can manage your subscription from your dashboard.
+      Nothing to do on your end. Your card on file gets charged automatically.
+    </p>
+
+    <p class="email-text">
+      If you need to update your payment method or want to adjust anything before renewal:
     </p>
 
     <a href="${EMAIL_CONFIG.baseUrl}/services/manage" class="email-button">
@@ -383,30 +401,36 @@ export function createRenewalReminderEmail({
     </a>
 
     <p class="email-text">
-      Thank you for being a valued customer. If there's anything I can do to improve your experience, please let me know.
+      Let me know if there's anything I can do to make the next month better than the last.
+    </p>
+
+    <p class="email-text">
+      Adam
     </p>
   `
 
   const text = `
-Upcoming Renewal
+Heads up: renewal in 7 days
 
 Hi ${customerName},
 
-Your ${tierName} subscription will automatically renew on ${formattedDate} for $${amount.toLocaleString()}.
+Your ${tierName} subscription renews on ${formattedDate} for $${amount.toLocaleString()}.
 
-No action needed - your payment method on file will be charged automatically. If you need to update your payment method or have any questions, you can manage your subscription from your dashboard.
+Nothing to do on your end. Your card on file gets charged automatically.
+
+If you need to update your payment method or want to adjust anything before renewal:
 
 Manage Subscription: ${EMAIL_CONFIG.baseUrl}/services/manage
 
-Thank you for being a valued customer. If there's anything I can do to improve your experience, please let me know.
+Let me know if there's anything I can do to make the next month better than the last.
 
-Adam @ Cursive
+Adam
   `.trim()
 
   return {
     html: createEmailTemplate({
-      preheader: `Your subscription renews on ${formattedDate}`,
-      title: 'Upcoming Renewal',
+      preheader: `Renewal in 7 days - ${formattedDate}`,
+      title: `Heads up: renewal in 7 days`,
       content,
     }),
     text,
@@ -435,14 +459,14 @@ export function createDeliveryNotificationEmail({
   const deliveryLabel = typeLabels[deliveryType] || deliveryType
 
   const content = `
-    <h1 class="email-title">Your ${deliveryLabel} is Ready</h1>
+    <h1 class="email-title">Your ${deliveryLabel} is ready</h1>
 
     <p class="email-text">
       Hi ${customerName},
     </p>
 
     <p class="email-text">
-      Your ${deliveryLabel} has been completed and is ready for download.
+      Just finished your ${deliveryLabel}. It's ready to download.
     </p>
 
     <a href="${downloadUrl}" class="email-button">
@@ -450,28 +474,32 @@ export function createDeliveryNotificationEmail({
     </a>
 
     <p class="email-text">
-      If you have any questions about the delivery or need adjustments, just reply to this email and I'll help you out.
+      Take a look and let me know if you want any adjustments. Just reply here.
+    </p>
+
+    <p class="email-text">
+      Adam
     </p>
   `
 
   const text = `
-Your ${deliveryLabel} is Ready
+Your ${deliveryLabel} is ready
 
 Hi ${customerName},
 
-Your ${deliveryLabel} has been completed and is ready for download.
+Just finished your ${deliveryLabel}. It's ready to download.
 
 Download Now: ${downloadUrl}
 
-If you have any questions about the delivery or need adjustments, just reply to this email and I'll help you out.
+Take a look and let me know if you want any adjustments. Just reply here.
 
-Adam @ Cursive
+Adam
   `.trim()
 
   return {
     html: createEmailTemplate({
       preheader: `Your ${deliveryLabel} is ready to download`,
-      title: `${deliveryLabel} Ready`,
+      title: `Your ${deliveryLabel} is ready`,
       content,
     }),
     text,
