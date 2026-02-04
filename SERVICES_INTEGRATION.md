@@ -99,7 +99,7 @@ Automatically sent by the platform:
 - **Onboarding Reminder**: Sent 3 days after purchase if not completed
 - **Renewal Reminder**: Sent 7 days before renewal
 
-All emails sent from: `Adam at Cursive <send@meetcursive.com>`
+All emails sent from: `Adam @ Cursive <send@meetcursive.com>`
 
 ## Webhook Events
 

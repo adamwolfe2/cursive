@@ -1,6 +1,6 @@
 /**
  * Email Templates for Service Subscriptions
- * Clean, simple, personal - signed by Adam at Cursive
+ * Clean, simple, personal - signed by Adam @ Cursive
  */
 
 import { createEmailTemplate, EMAIL_CONFIG } from './resend-client'
@@ -64,7 +64,7 @@ View Your Subscription: ${EMAIL_CONFIG.baseUrl}/services/manage
 
 If you have any questions or need anything, just reply to this email. I'm here to help.
 
-Adam at Cursive
+Adam @ Cursive
   `.trim()
 
   return {
@@ -134,7 +134,7 @@ View Invoice: ${EMAIL_CONFIG.baseUrl}/services/manage
 
 Thank you for being a valued customer.
 
-Adam at Cursive
+Adam @ Cursive
   `.trim()
 
   return {
@@ -196,7 +196,7 @@ Update Payment Method: ${EMAIL_CONFIG.baseUrl}/services/manage
 
 If you need help or have questions, just reply to this email and I'll sort it out with you personally.
 
-Adam at Cursive
+Adam @ Cursive
   `.trim()
 
   return {
@@ -270,7 +270,7 @@ Reactivate Subscription: ${EMAIL_CONFIG.baseUrl}/services
 
 Thank you for giving Cursive a try.
 
-Adam at Cursive
+Adam @ Cursive
   `.trim()
 
   return {
@@ -330,7 +330,7 @@ Complete Onboarding: ${EMAIL_CONFIG.baseUrl}/services/onboarding
 
 If you're stuck or have questions, just reply to this email and I'll help you through it.
 
-Adam at Cursive
+Adam @ Cursive
   `.trim()
 
   return {
@@ -400,7 +400,7 @@ Manage Subscription: ${EMAIL_CONFIG.baseUrl}/services/manage
 
 Thank you for being a valued customer. If there's anything I can do to improve your experience, please let me know.
 
-Adam at Cursive
+Adam @ Cursive
   `.trim()
 
   return {
@@ -465,7 +465,7 @@ Download Now: ${downloadUrl}
 
 If you have any questions about the delivery or need adjustments, just reply to this email and I'll help you out.
 
-Adam at Cursive
+Adam @ Cursive
   `.trim()
 
   return {
