@@ -232,10 +232,10 @@ export default function HomePage() {
             className="text-center relative z-10 mb-16"
           >
             <h2 className="text-5xl lg:text-7xl font-light text-gray-900 mb-4 leading-tight">
-              We know who's searching
+              We Know Who's Searching For What
             </h2>
-            <p className="font-cursive text-6xl lg:text-8xl text-gray-900 mb-12">
-              with Cursive
+            <p className="font-cursive text-6xl lg:text-8xl text-gray-500 mb-12">
+              With Cursive
             </p>
             <Button
               size="lg"
