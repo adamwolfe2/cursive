@@ -9,7 +9,7 @@ export default function HomePage() {
   return (
     <main className="bg-white">
       {/* Hero Section with Interactive Demo */}
-      <section className="pt-32 pb-20 bg-white">
+      <section className="pt-24 pb-20 bg-white">
         <Container>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -24,7 +24,7 @@ export default function HomePage() {
               </span>
             </h1>
             <p className="text-lg text-gray-600 mb-8 leading-relaxed max-w-3xl mx-auto">
-              <span className="font-[var(--font-great-vibes)] text-3xl text-[#007AFF]">Cursive</span> identifies real people actively searching for your service, enriches them with verified contact data, and activates them through automated outbound.
+              <span className="font-[var(--font-great-vibes)] text-4xl text-[#007AFF]">Cursive</span> identifies real people actively searching for your service, enriches them with verified contact data, and activates them through automated outbound.
             </p>
             <Button size="lg" href="https://cal.com/adamwolfe/cursive-ai-audit" target="_blank">
               Get started. It's FREE!
