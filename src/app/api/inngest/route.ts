@@ -43,5 +43,9 @@ export const { GET, POST, PUT } = serve({
     functions.cleanupStaleRoutingLocks,
     functions.markExpiredLeads,
     functions.leadRoutingHealthCheck,
+
+    // Service Subscription Reminders
+    functions.sendOnboardingReminders,
+    functions.sendRenewalReminders,
   ],
 })

@@ -39,3 +39,7 @@ export {
   markExpiredLeads,
   leadRoutingHealthCheck,
 } from './lead-routing-retry'
+
+// Service subscription reminder emails
+export { sendOnboardingReminders } from './send-onboarding-reminders'
+export { sendRenewalReminders } from './send-renewal-reminders'
