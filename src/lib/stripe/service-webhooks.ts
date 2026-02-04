@@ -7,10 +7,41 @@
 import Stripe from 'stripe'
 import { createClient } from '@/lib/supabase/server'
 import { serviceTierRepository } from '@/lib/repositories/service-tier.repository'
+import {
+  sendWelcomeEmail,
+  sendPaymentSuccessEmail,
+  sendPaymentFailedEmail,
+  sendCancellationEmail,
+} from '@/lib/email/service-emails'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2024-12-18.acacia',
 })
+
+/**
+ * Helper to get workspace and user info for email sending
+ */
+async function getWorkspaceEmailInfo(workspaceId: string) {
+  const supabase = await createClient()
+
+  const { data: workspace } = await supabase
+    .from('workspaces')
+    .select('name, users(email, full_name)')
+    .eq('id', workspaceId)
+    .single()
+
+  if (!workspace || !workspace.users || workspace.users.length === 0) {
+    throw new Error(`Workspace or user not found: ${workspaceId}`)
+  }
+
+  const user = Array.isArray(workspace.users) ? workspace.users[0] : workspace.users
+
+  return {
+    customerEmail: user.email,
+    customerName: user.full_name || user.email.split('@')[0],
+    workspaceName: workspace.name,
+  }
+}
 
 /**
  * Handle subscription.created event
@@ -79,8 +110,20 @@ export async function handleSubscriptionCreated(subscription: Stripe.Subscriptio
 
     console.log('[Webhook] Created service subscription for workspace:', workspaceId)
 
-    // TODO: Send welcome email
-    // await sendWelcomeEmail(workspaceId, tier)
+    // Send welcome email
+    try {
+      const emailInfo = await getWorkspaceEmailInfo(workspaceId)
+      await sendWelcomeEmail({
+        customerEmail: emailInfo.customerEmail,
+        customerName: emailInfo.customerName,
+        tierName: tier.name,
+        monthlyPrice: monthlyPrice,
+      })
+      console.log('[Webhook] Welcome email sent to:', emailInfo.customerEmail)
+    } catch (emailError: any) {
+      console.error('[Webhook] Failed to send welcome email:', emailError)
+      // Don't throw - email failures shouldn't block webhook processing
+    }
 
     // TODO: Create initial delivery if applicable
     // await scheduleInitialDelivery(workspaceId, serviceTierId)
@@ -194,7 +237,29 @@ export async function handleSubscriptionDeleted(subscription: Stripe.Subscriptio
 
     console.log('[Webhook] Cancelled subscription:', subscription.id)
 
-    // TODO: Send cancellation confirmation email
+    // Send cancellation confirmation email
+    try {
+      const { data: serviceSubscription } = await supabase
+        .from('service_subscriptions')
+        .select('workspace_id, current_period_end, service_tier:service_tiers(name)')
+        .eq('stripe_subscription_id', subscription.id)
+        .single()
+
+      if (serviceSubscription) {
+        const emailInfo = await getWorkspaceEmailInfo(serviceSubscription.workspace_id)
+        const tier = serviceSubscription.service_tier as any
+        await sendCancellationEmail({
+          customerEmail: emailInfo.customerEmail,
+          customerName: emailInfo.customerName,
+          tierName: tier?.name || 'Cursive Service',
+          accessUntil: serviceSubscription.current_period_end || new Date().toISOString(),
+        })
+        console.log('[Webhook] Cancellation email sent to:', emailInfo.customerEmail)
+      }
+    } catch (emailError: any) {
+      console.error('[Webhook] Failed to send cancellation email:', emailError)
+    }
+
     // TODO: Schedule data retention/deletion if applicable
 
   } catch (error: any) {
@@ -233,8 +298,28 @@ export async function handleInvoicePaymentFailed(invoice: Stripe.Invoice): Promi
 
     console.log('[Webhook] Updated subscription to pending_payment due to failed payment')
 
-    // TODO: Send payment failed notification email
-    // await sendPaymentFailedEmail(...)
+    // Send payment failed notification email
+    try {
+      const { data: subscription } = await supabase
+        .from('service_subscriptions')
+        .select('workspace_id, service_tier:service_tiers(name)')
+        .eq('stripe_subscription_id', invoice.subscription as string)
+        .single()
+
+      if (subscription) {
+        const emailInfo = await getWorkspaceEmailInfo(subscription.workspace_id)
+        const tier = subscription.service_tier as any
+        await sendPaymentFailedEmail({
+          customerEmail: emailInfo.customerEmail,
+          customerName: emailInfo.customerName,
+          tierName: tier?.name || 'Cursive Service',
+          amount: (invoice.amount_due || 0) / 100,
+        })
+        console.log('[Webhook] Payment failed email sent to:', emailInfo.customerEmail)
+      }
+    } catch (emailError: any) {
+      console.error('[Webhook] Failed to send payment failed email:', emailError)
+    }
 
   } catch (error: any) {
     console.error('[Webhook] Error handling invoice.payment_failed:', error)
@@ -291,7 +376,24 @@ export async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice): Pr
 
     console.log('[Webhook] Payment succeeded, updated status to:', newStatus)
 
-    // TODO: Send payment receipt email
+    // Send payment success email (only for recurring payments, not initial)
+    if (invoice.billing_reason === 'subscription_cycle') {
+      try {
+        const emailInfo = await getWorkspaceEmailInfo(subscription.workspace_id)
+        const tier = subscription.service_tier
+        await sendPaymentSuccessEmail({
+          customerEmail: emailInfo.customerEmail,
+          customerName: emailInfo.customerName,
+          tierName: tier?.name || 'Cursive Service',
+          amount: (invoice.amount_paid || 0) / 100,
+          periodEnd: new Date(invoice.period_end! * 1000).toISOString(),
+        })
+        console.log('[Webhook] Payment success email sent to:', emailInfo.customerEmail)
+      } catch (emailError: any) {
+        console.error('[Webhook] Failed to send payment success email:', emailError)
+      }
+    }
+
     // TODO: Schedule next delivery if applicable
 
   } catch (error: any) {
