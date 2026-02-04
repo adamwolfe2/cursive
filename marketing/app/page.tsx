@@ -269,8 +269,96 @@ export default function HomePage() {
         </Container>
       </section>
 
-      {/* Final CTA Section */}
+      {/* Testimonials Section */}
+      <section className="py-24 bg-gradient-to-br from-gray-50 to-blue-50">
+        <Container>
+          <div className="text-center mb-16">
+            <h2 className="text-4xl lg:text-5xl font-bold mb-4">
+              Trusted by Growth Teams
+              <span className="block font-[var(--font-great-vibes)] text-5xl lg:text-6xl text-primary mt-2">
+                Who Move Fast
+              </span>
+            </h2>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {testimonials.map((testimonial, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                className="bg-white rounded-2xl p-8 border border-gray-200 shadow-lg"
+              >
+                <div className="flex items-center gap-1 mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <svg key={i} className="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                      <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                    </svg>
+                  ))}
+                </div>
+                <p className="text-gray-700 mb-6 leading-relaxed">"{testimonial.quote}"</p>
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
+                    {testimonial.name[0]}
+                  </div>
+                  <div>
+                    <div className="font-semibold">{testimonial.name}</div>
+                    <div className="text-sm text-gray-600">{testimonial.title}</div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      {/* Stats Section */}
       <section className="py-24 bg-white">
+        <Container>
+          <div className="grid md:grid-cols-4 gap-8 text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <div className="text-5xl font-bold text-primary mb-2">500M+</div>
+              <div className="text-gray-600">Verified B2B Contacts</div>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+            >
+              <div className="text-5xl font-bold text-primary mb-2">99%</div>
+              <div className="text-gray-600">Data Accuracy Rate</div>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+            >
+              <div className="text-5xl font-bold text-primary mb-2">24/7</div>
+              <div className="text-gray-600">AI Agents Active</div>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3 }}
+            >
+              <div className="text-5xl font-bold text-primary mb-2">3x</div>
+              <div className="text-gray-600">Average Pipeline Growth</div>
+            </motion.div>
+          </div>
+        </Container>
+      </section>
+
+      {/* Final CTA Section */}
+      <section className="py-24 bg-gradient-to-br from-gray-50 to-blue-50">
         <Container>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -368,5 +456,24 @@ const services = [
     icon: Users,
     name: "Conversational AI",
     description: "NLP-based chatbot that understands.",
+  },
+]
+
+// Testimonials Data
+const testimonials = [
+  {
+    quote: "We went from 3 leads per week to 50+ qualified conversations per month. Cursive eliminated our prospecting bottleneck.",
+    name: "Sarah Chen",
+    title: "VP Sales, TechStart",
+  },
+  {
+    quote: "The lead quality is unmatched. Every list is tailored to our ICP, verified, and ready to work. No more dead emails.",
+    name: "Mike Rodriguez",
+    title: "Head of Growth, SaaS Co",
+  },
+  {
+    quote: "Cursive's AI SDR books more meetings than our entire sales team combined. It's like having 10 BDRs for the cost of one.",
+    name: "Emily Johnson",
+    title: "CEO, Pipeline Inc",
   },
 ]
