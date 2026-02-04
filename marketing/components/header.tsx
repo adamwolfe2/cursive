@@ -16,48 +16,50 @@ export function Header() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                className="w-5 h-5 text-white"
-              >
-                <path d="M12 2L2 7l10 5 10-5-10-5z" />
-                <path d="M2 17l10 5 10-5" />
-                <path d="M2 12l10 5 10-5" />
-              </svg>
-            </div>
-            <span className="font-[var(--font-great-vibes)] text-2xl text-primary">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              className="w-8 h-8 text-[#007AFF]"
+            >
+              <path d="M12 2L2 7l10 5 10-5-10-5z" />
+              <path d="M2 17l10 5 10-5" />
+              <path d="M2 12l10 5 10-5" />
+            </svg>
+            <span className="font-[var(--font-great-vibes)] text-2xl text-[#007AFF]">
               Cursive
             </span>
           </Link>
 
           {/* Navigation */}
           <nav className="hidden md:flex items-center gap-8">
-            <Link href="/services" className="text-gray-700 hover:text-primary transition-colors">
+            <Link href="/services" className="text-gray-700 hover:text-[#007AFF] transition-colors">
               Services
             </Link>
-            <Link href="/pricing" className="text-gray-700 hover:text-primary transition-colors">
+            <Link href="/pricing" className="text-gray-700 hover:text-[#007AFF] transition-colors">
               Pricing
             </Link>
-            <Link href="/platform" className="text-gray-700 hover:text-primary transition-colors">
+            <Link href="/platform" className="text-gray-700 hover:text-[#007AFF] transition-colors">
               Platform
             </Link>
-            <Link href="/resources" className="text-gray-700 hover:text-primary transition-colors">
+            <Link href="/resources" className="text-gray-700 hover:text-[#007AFF] transition-colors">
               Resources
             </Link>
-            <Link href="/blog" className="text-gray-700 hover:text-primary transition-colors">
+            <Link href="/blog" className="text-gray-700 hover:text-[#007AFF] transition-colors">
               Blog
             </Link>
           </nav>
 
           {/* CTA Buttons */}
           <div className="flex items-center gap-4">
-            <Button variant="ghost" href="https://leads.meetcursive.com" target="_blank">
+            <Link
+              href="https://leads.meetcursive.com"
+              target="_blank"
+              className="text-gray-700 hover:text-[#007AFF] transition-colors"
+            >
               Login
-            </Button>
+            </Link>
             <Button size="sm" href="https://cal.com/adamwolfe/cursive-ai-audit" target="_blank">
               Book a Call
             </Button>

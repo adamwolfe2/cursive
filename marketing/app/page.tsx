@@ -3,109 +3,69 @@
 import { Button } from "@/components/ui/button"
 import { Container } from "@/components/ui/container"
 import { motion } from "framer-motion"
-import { ArrowRight, BarChart3, Mail, Sparkles, Users, Target, Zap } from "lucide-react"
 
 export default function HomePage() {
   return (
-    <main className="overflow-hidden">
+    <main className="bg-[#F7F9FB]">
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50">
-        <Container className="py-20">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center max-w-5xl mx-auto"
-          >
-            {/* Badge */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2 }}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 text-primary rounded-full text-sm font-medium mb-8"
-            >
-              <Sparkles className="w-4 h-4" />
-              AI-Powered Lead Generation
-            </motion.div>
-
-            {/* Main Headline */}
-            <h1 className="text-6xl lg:text-7xl font-bold mb-6">
-              <span className="block text-foreground">
-                AI Intent Systems
-              </span>
-              <span className="block font-[var(--font-great-vibes)] text-7xl lg:text-8xl text-primary mt-2">
-                That Never Sleep.
-              </span>
-            </h1>
-
-            {/* Subheadline */}
-            <p className="text-xl lg:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed">
-              <span className="font-semibold text-foreground">Cursive</span> identifies real people actively searching for your service, enriches them with verified contact data, and activates them through automated outbound.
-            </p>
-
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Button size="lg" href="https://cal.com/adamwolfe/cursive-ai-audit" target="_blank">
-                Free AI Audit
-                <ArrowRight className="w-5 h-5" />
-              </Button>
-              <Button size="lg" variant="outline" href="/services">
-                View Services
-              </Button>
-            </div>
-
-            {/* Stats */}
+      <section className="pt-32 pb-20 bg-[#F7F9FB]">
+        <Container>
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-              className="mt-16 grid grid-cols-3 gap-8 max-w-2xl mx-auto"
+              transition={{ duration: 0.6 }}
             >
-              <div>
-                <div className="text-4xl font-bold text-primary">500M+</div>
-                <div className="text-sm text-gray-600 mt-1">Verified Contacts</div>
-              </div>
-              <div>
-                <div className="text-4xl font-bold text-primary">99%</div>
-                <div className="text-sm text-gray-600 mt-1">Data Accuracy</div>
-              </div>
-              <div>
-                <div className="text-4xl font-bold text-primary">24/7</div>
-                <div className="text-sm text-gray-600 mt-1">AI Agents Active</div>
-              </div>
+              <h1 className="text-5xl lg:text-6xl font-light text-gray-900 mb-6 leading-tight">
+                AI Intent Systems
+                <span className="block text-gray-500 mt-2">
+                  That Never Sleep.
+                </span>
+              </h1>
+              <p className="text-lg text-gray-600 mb-8 leading-relaxed">
+                <span className="font-[var(--font-great-vibes)] text-3xl text-[#007AFF]">Cursive</span> identifies real people actively searching for your service, enriches them with verified contact data, and activates them through automated outbound.
+              </p>
+              <Button size="lg" href="https://cal.com/adamwolfe/cursive-ai-audit" target="_blank">
+                Free AI Audit
+              </Button>
             </motion.div>
-          </motion.div>
 
-          {/* Dashboard Preview */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8, duration: 1 }}
-            className="mt-20 relative"
-          >
-            <div className="bg-white rounded-2xl shadow-2xl p-6 border border-gray-200">
-              <div className="aspect-video bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg flex items-center justify-center">
-                <div className="text-center">
-                  <Sparkles className="w-16 h-16 text-primary mx-auto mb-4" />
-                  <p className="text-gray-600">Interactive Dashboard Demo</p>
-                  <p className="text-sm text-gray-500 mt-2">Live preview coming soon</p>
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="hidden lg:block"
+            >
+              <div className="bg-white rounded-xl shadow-lg p-6">
+                <div className="aspect-square bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg flex items-center justify-center">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1"
+                    className="w-32 h-32 text-[#007AFF]"
+                  >
+                    <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                    <path d="M2 17l10 5 10-5" />
+                    <path d="M2 12l10 5 10-5" />
+                  </svg>
                 </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </div>
         </Container>
       </section>
 
       {/* Enterprise Features, Startup Speed */}
-      <section className="py-24 bg-white">
+      <section className="py-20 bg-white">
         <Container>
           <div className="text-center mb-16">
-            <h2 className="text-5xl font-bold mb-4">
+            <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-2">
               Enterprise Features
-              <span className="block font-[var(--font-great-vibes)] text-6xl text-primary mt-2">
-                Startup Speed
-              </span>
             </h2>
+            <p className="font-[var(--font-great-vibes)] text-5xl lg:text-6xl text-[#007AFF]">
+              Startup Speed
+            </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -116,169 +76,76 @@ export default function HomePage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                className="text-center"
               >
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                  <feature.icon className="w-6 h-6 text-primary" />
+                <div className="w-12 h-12 mx-auto mb-4 flex items-center justify-center">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    className="w-8 h-8 text-[#007AFF]"
+                  >
+                    <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                    <path d="M2 17l10 5 10-5" />
+                    <path d="M2 12l10 5 10-5" />
+                  </svg>
                 </div>
-                <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-                <p className="text-gray-600">{feature.description}</p>
+                <h3 className="text-lg text-gray-900 mb-2">{feature.title}</h3>
+                <p className="text-gray-600 text-sm">{feature.description}</p>
               </motion.div>
             ))}
           </div>
         </Container>
       </section>
 
-      {/* Value Proposition Section */}
-      <section className="py-24 bg-gradient-to-br from-gray-50 to-blue-50">
+      {/* Value Proposition */}
+      <section className="py-20 bg-[#F7F9FB]">
         <Container>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-5xl font-bold mb-4">
+          <div className="text-center max-w-4xl mx-auto">
+            <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
               Every visitor identified,
-              <span className="block font-[var(--font-great-vibes)] text-6xl text-primary mt-2">
-                enriched, and scored
-              </span>
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto mt-6">
-              Cursive pixel sits above your site, identifies anonymous visitors, enriches with contact data,
-              and triggers intent scoring. Feeds data directly into your CRM—no manual data entry.
-              The intelligence layer learns from every session.
+            <p className="font-[var(--font-great-vibes)] text-5xl lg:text-6xl text-[#007AFF] mb-8">
+              enriched, and scored
             </p>
-          </motion.div>
+            <p className="text-lg text-gray-600 leading-relaxed">
+              Custom pixel sits above your site, identifies anonymous visitors, enriches with contact data, and triggers intent scoring. Feeds directly into your CRM—no manual data entry. The intelligence layer learns from every session.
+            </p>
+          </div>
+        </Container>
+      </section>
 
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="bg-white rounded-2xl shadow-xl p-8 border border-gray-200"
-          >
-            <div className="aspect-video bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg flex items-center justify-center">
-              <div className="text-center">
-                <Target className="w-16 h-16 text-primary mx-auto mb-4" />
-                <p className="text-gray-600">Intent Scoring Visualization</p>
-                <p className="text-sm text-gray-500 mt-2">See how visitors are tracked and scored</p>
-              </div>
+      {/* Stats */}
+      <section className="py-20 bg-white">
+        <Container>
+          <div className="grid md:grid-cols-3 gap-12 text-center max-w-4xl mx-auto">
+            <div>
+              <div className="text-5xl font-light text-[#007AFF] mb-2">500M+</div>
+              <div className="text-gray-600">Verified Contacts</div>
             </div>
-          </motion.div>
-
-          <div className="mt-12 text-center">
-            <Button size="lg" href="https://cal.com/adamwolfe/cursive-ai-audit" target="_blank">
-              Get Started Today
-              <ArrowRight className="w-5 h-5" />
-            </Button>
+            <div>
+              <div className="text-5xl font-light text-[#007AFF] mb-2">99%</div>
+              <div className="text-gray-600">Data Accuracy</div>
+            </div>
+            <div>
+              <div className="text-5xl font-light text-[#007AFF] mb-2">24/7</div>
+              <div className="text-gray-600">AI Agents Active</div>
+            </div>
           </div>
         </Container>
       </section>
 
-      {/* How Our AI Agents Solve Your Problems */}
-      <section className="py-24 bg-white">
+      {/* Testimonials */}
+      <section className="py-20 bg-[#F7F9FB]">
         <Container>
           <div className="text-center mb-16">
-            <h2 className="text-5xl font-bold mb-4">
-              How Our AI Agents
-              <span className="block font-[var(--font-great-vibes)] text-6xl text-primary mt-2">
-                Solve Your Problems
-              </span>
-            </h2>
-          </div>
-
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Left: Connect Your Stack */}
-            <motion.div
-              initial={{ opacity: 0, x: -40 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-8 border border-gray-200"
-            >
-              <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center mb-6">
-                <Zap className="w-6 h-6 text-primary" />
-              </div>
-              <h3 className="text-3xl font-bold mb-4">Connect Your Stack</h3>
-              <p className="text-gray-600 mb-6">
-                We sit above your existing tools, CRM, website, and existing tools & platforms.
-                Embed our pixel, provide ICP data, share your existing CRM, and we start aggregating.
-                Takes 1-2 days. You don't migrate, we unify.
-              </p>
-              <Button variant="outline" href="https://cal.com/adamwolfe/cursive-ai-audit" target="_blank">
-                Free AI Audit
-                <ArrowRight className="w-5 h-5" />
-              </Button>
-            </motion.div>
-
-            {/* Right: AI System Diagram */}
-            <motion.div
-              initial={{ opacity: 0, x: 40 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              className="bg-white rounded-2xl shadow-xl p-8 border border-gray-200"
-            >
-              <div className="aspect-square bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg flex items-center justify-center">
-                <div className="text-center">
-                  <Sparkles className="w-16 h-16 text-primary mx-auto mb-4" />
-                  <p className="text-gray-600">AI Agent Workflow</p>
-                  <p className="text-sm text-gray-500 mt-2">See how data flows through the system</p>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </Container>
-      </section>
-
-      {/* Services Overview - Get Them All in One */}
-      <section className="py-24 bg-gradient-to-br from-gray-50 to-blue-50">
-        <Container>
-          <div className="text-center mb-16">
-            <h2 className="text-5xl font-bold mb-4">
-              Forget Separate Tools
-              <span className="block font-[var(--font-great-vibes)] text-6xl text-primary mt-2">
-                Get Them All in One
-              </span>
-            </h2>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {services.map((service, index) => (
-              <motion.div
-                key={service.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="bg-white rounded-2xl p-6 border border-gray-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
-              >
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                  <service.icon className="w-6 h-6 text-primary" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2">{service.name}</h3>
-                <p className="text-gray-600 text-sm">{service.description}</p>
-              </motion.div>
-            ))}
-          </div>
-
-          <div className="mt-12 text-center">
-            <Button size="lg" href="/services">
-              Learn More
-              <ArrowRight className="w-5 h-5" />
-            </Button>
-          </div>
-        </Container>
-      </section>
-
-      {/* Testimonials Section */}
-      <section className="py-24 bg-gradient-to-br from-gray-50 to-blue-50">
-        <Container>
-          <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-bold mb-4">
+            <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-2">
               Trusted by Growth Teams
-              <span className="block font-[var(--font-great-vibes)] text-5xl lg:text-6xl text-primary mt-2">
-                Who Move Fast
-              </span>
             </h2>
+            <p className="font-[var(--font-great-vibes)] text-5xl lg:text-6xl text-[#007AFF]">
+              Who Move Fast
+            </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
@@ -289,22 +156,15 @@ export default function HomePage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="bg-white rounded-2xl p-8 border border-gray-200 shadow-lg"
+                className="bg-white rounded-lg p-8"
               >
-                <div className="flex items-center gap-1 mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <svg key={i} className="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 20 20">
-                      <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
-                    </svg>
-                  ))}
-                </div>
-                <p className="text-gray-700 mb-6 leading-relaxed">"{testimonial.quote}"</p>
+                <p className="text-gray-700 mb-6 leading-relaxed">&ldquo;{testimonial.quote}&rdquo;</p>
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
+                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white text-sm">
                     {testimonial.name[0]}
                   </div>
                   <div>
-                    <div className="font-semibold">{testimonial.name}</div>
+                    <div className="text-gray-900">{testimonial.name}</div>
                     <div className="text-sm text-gray-600">{testimonial.title}</div>
                   </div>
                 </div>
@@ -314,77 +174,25 @@ export default function HomePage() {
         </Container>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-24 bg-white">
+      {/* Final CTA */}
+      <section className="py-20 bg-white">
         <Container>
-          <div className="grid md:grid-cols-4 gap-8 text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-            >
-              <div className="text-5xl font-bold text-primary mb-2">500M+</div>
-              <div className="text-gray-600">Verified B2B Contacts</div>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-            >
-              <div className="text-5xl font-bold text-primary mb-2">99%</div>
-              <div className="text-gray-600">Data Accuracy Rate</div>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-            >
-              <div className="text-5xl font-bold text-primary mb-2">24/7</div>
-              <div className="text-gray-600">AI Agents Active</div>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.3 }}
-            >
-              <div className="text-5xl font-bold text-primary mb-2">3x</div>
-              <div className="text-gray-600">Average Pipeline Growth</div>
-            </motion.div>
-          </div>
-        </Container>
-      </section>
-
-      {/* Final CTA Section */}
-      <section className="py-24 bg-gradient-to-br from-gray-50 to-blue-50">
-        <Container>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="bg-gradient-to-br from-blue-600 to-purple-600 rounded-3xl p-12 text-center text-white shadow-2xl"
-          >
-            <h2 className="text-4xl lg:text-5xl font-bold mb-4">
-              Unlock Your Intelligence Layer
-              <span className="block font-[var(--font-great-vibes)] text-5xl lg:text-6xl mt-2">
-                With Cursive
-              </span>
+          <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl p-12 text-center text-white max-w-4xl mx-auto">
+            <h2 className="text-4xl lg:text-5xl font-light mb-4">
+              Ready to Get Started?
             </h2>
-            <p className="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
-              Cursive exists to give AI accelerators and venture studios the revenue intelligence they need to make deals close faster. You don't migrate, we unify.
+            <p className="text-lg mb-8 opacity-90">
+              Book a call to see how Cursive can transform your pipeline.
             </p>
             <Button
               size="lg"
-              className="bg-white text-primary hover:bg-gray-100"
+              className="bg-white text-[#007AFF] hover:bg-gray-100"
               href="https://cal.com/adamwolfe/cursive-ai-audit"
               target="_blank"
             >
-              Get Started Today
-              <ArrowRight className="w-5 h-5" />
+              Book a Call
             </Button>
-          </motion.div>
+          </div>
         </Container>
       </section>
     </main>
@@ -394,68 +202,20 @@ export default function HomePage() {
 // Features Data
 const features = [
   {
-    icon: Users,
     title: "Pixel Lead Tracking",
-    description: "Uncover site visitors between people, businesses.",
+    description: "Every visitor identified, enriched, and scored",
   },
   {
-    icon: Target,
-    title: "Database Reconciliation",
-    description: "Go beyond surface searches by analyzing competitors.",
+    title: "Database Reactivation",
+    description: "Wake up dormant leads with intent signals",
   },
   {
-    icon: BarChart3,
-    title: "Buyer Intent",
-    description: "Collect site visitors & run retargeting directly to leads.",
-  },
-  {
-    icon: Mail,
     title: "Multitouch Outreach",
-    description: "Capture site visitors and run retargeting campaigns.",
-  },
-]
-
-// Services Data
-const services = [
-  {
-    icon: Users,
-    name: "Lead Tracking",
-    description: "Uncover site visitors: people, businesses.",
+    description: "Automated sequences across email and LinkedIn",
   },
   {
-    icon: Target,
-    name: "Deep ICP Scanning",
-    description: "Go beyond surface searches by analyzing competitors.",
-  },
-  {
-    icon: BarChart3,
-    name: "Buyer Intent",
-    description: "Capture site visitors & run retargeting directly to leads.",
-  },
-  {
-    icon: Sparkles,
-    name: "Fluent Voice Agents",
-    description: "Multilingual support for global users.",
-  },
-  {
-    icon: Mail,
-    name: "Voice-to-Text",
-    description: "Adaptive responses based on user history and behavior.",
-  },
-  {
-    icon: Zap,
-    name: "Multimodal Input",
-    description: "Support for text, voice, and image-based queries.",
-  },
-  {
-    icon: Target,
-    name: "Real-Time Alerts",
-    description: "Stay ahead of threats with instant notifications.",
-  },
-  {
-    icon: Users,
-    name: "Conversational AI",
-    description: "NLP-based chatbot that understands.",
+    title: "Ask CursiveCore",
+    description: "AI assistant trained on your entire pipeline",
   },
 ]
 
