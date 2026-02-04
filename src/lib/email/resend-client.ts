@@ -13,7 +13,7 @@ export const resend = new Resend(process.env.RESEND_API_KEY)
 
 // Email configuration
 export const EMAIL_CONFIG = {
-  from: 'Adam @ Cursive <send@meetcursive.com>',
+  from: 'Adam <send@meetcursive.com>',
   replyTo: 'adam@meetcursive.com',
 
   // Brand colors
