@@ -20,7 +20,7 @@ export default function BlogPage() {
           >
             <h1 className="text-5xl lg:text-6xl font-bold mb-6">
               The Cursive
-              <span className="block font-cursive text-6xl lg:text-7xl text-primary mt-2">
+              <span className="block font-cursive text-6xl lg:text-7xl text-gray-900 mt-2">
                 Blog
               </span>
             </h1>

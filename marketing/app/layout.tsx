@@ -13,14 +13,22 @@ const inter = Inter({
 const dancingScript = Dancing_Script({
   variable: "--font-dancing-script",
   subsets: ["latin"],
+  weight: ['300', '400'],
 });
 
-export const metadata: Metadata = generateMetadata({
-  title: "AI Intent Systems That Never Sleep",
-  description: "Identify and track website visitors, build targeted lists, launch direct mail campaigns, and maximize ad performance—all from one platform that unites verified B2C and B2B data.",
-  keywords: ['B2B lead generation', 'visitor identification', 'intent data', 'direct mail marketing', 'audience targeting', 'AI SDR', 'outbound automation'],
-  canonical: 'https://meetcursive.com',
-});
+export const metadata: Metadata = {
+  ...generateMetadata({
+    title: "AI Intent Systems That Never Sleep",
+    description: "Identify and track website visitors, build targeted lists, launch direct mail campaigns, and maximize ad performance—all from one platform that unites verified B2C and B2B data.",
+    keywords: ['B2B lead generation', 'visitor identification', 'intent data', 'direct mail marketing', 'audience targeting', 'AI SDR', 'outbound automation'],
+    canonical: 'https://meetcursive.com',
+  }),
+  icons: {
+    icon: '/cursive-logo.png',
+    shortcut: '/cursive-logo.png',
+    apple: '/cursive-logo.png',
+  },
+};
 
 export default function RootLayout({
   children,

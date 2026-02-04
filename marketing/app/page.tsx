@@ -29,7 +29,7 @@ export default function HomePage() {
               </span>
             </h1>
             <p className="text-lg text-gray-600 mb-8 leading-relaxed max-w-3xl mx-auto">
-              <span className="font-cursive text-[#007AFF] text-2xl">Cursive</span> identifies real people actively searching for your service, enriches them with verified contact data, and activates them through automated outbound.
+              <span className="font-cursive text-gray-900 text-2xl">Cursive</span> identifies real people actively searching for your service, enriches them with verified contact data, and activates them through automated outbound.
             </p>
             <Button size="lg" href="https://cal.com/adamwolfe/cursive-ai-audit" target="_blank">
               Get started. It's FREE!
@@ -106,7 +106,7 @@ export default function HomePage() {
                 transition={{ delay: i * 0.1 }}
                 className="text-center"
               >
-                <div className="text-5xl text-[#007AFF] mb-2">{stat.value}</div>
+                <div className="text-5xl text-gray-900 mb-2 font-light">{stat.value}</div>
                 <div className="text-gray-600">{stat.label}</div>
               </motion.div>
             ))}
@@ -152,7 +152,7 @@ export default function HomePage() {
                 <ul className="space-y-2">
                   {feature.items.map((item, i) => (
                     <li key={i} className="flex items-center gap-2 text-sm text-gray-600">
-                      <div className="w-1.5 h-1.5 rounded-full bg-[#007AFF] flex-shrink-0" />
+                      <div className="w-1.5 h-1.5 rounded-full bg-gray-400 flex-shrink-0" />
                       {item}
                     </li>
                   ))}
@@ -282,9 +282,9 @@ export default function HomePage() {
                       { label: "Response Rate", value: "42%" },
                       { label: "Meetings Booked", value: "87" },
                     ].map((stat, i) => (
-                      <div key={i} className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
+                      <div key={i} className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-4 border border-gray-200">
                         <div className="text-xs text-gray-600 mb-1">{stat.label}</div>
-                        <div className="text-2xl text-[#007AFF]">{stat.value}</div>
+                        <div className="text-2xl text-gray-900 font-light">{stat.value}</div>
                       </div>
                     ))}
                   </div>

@@ -47,4 +47,5 @@ body {
 /* Cursive font utility */
 .font-cursive {
   font-family: 'Dancing Script', cursive !important;
+  font-weight: 300 !important;
 }

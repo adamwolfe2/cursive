@@ -6,7 +6,7 @@ export default function TermsPage() {
       <Container>
         <div className="max-w-4xl mx-auto prose prose-lg">
           <h1 className="text-5xl font-bold mb-4">
-            Terms of <span className="font-cursive text-primary">Service</span>
+            Terms of <span className="font-cursive text-gray-900">Service</span>
           </h1>
 
           <p className="text-gray-600 mb-8">Last updated: February 4, 2026</p>
