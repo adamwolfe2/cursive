@@ -1,20 +1,17 @@
 import { Container } from "@/components/ui/container"
 import Link from "next/link"
-import Image from "next/image"
 
 export function Footer() {
   return (
     <footer className="bg-white border-t border-gray-200 py-12">
       <Container>
-        <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
           {/* Brand */}
-          <div className="lg:col-span-2">
+          <div className="col-span-2 md:col-span-3 lg:col-span-2">
             <div className="flex items-center mb-4">
-              <Image
+              <img
                 src="/cursive-logo.png"
                 alt="Cursive"
-                width={32}
-                height={32}
                 className="w-8 h-8"
               />
             </div>
