@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Container } from "@/components/ui/container"
 import { motion } from "framer-motion"
 import { IntegrationsShowcase } from "@/components/integrations-showcase"
+import { ArrowRight } from "lucide-react"
 
 export default function IntegrationsPage() {
   return (
