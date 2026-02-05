@@ -6,6 +6,7 @@ import { motion } from "framer-motion"
 import { InteractiveFeaturesShowcase } from "@/components/demos/interactive-features-showcase"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateOrganizationSchema } from "@/lib/seo/structured-data"
+import { DashboardPreview } from "@/components/dashboard-preview"
 import Link from "next/link"
 
 export default function HomePage() {
@@ -247,7 +248,7 @@ export default function HomePage() {
             </Button>
           </motion.div>
 
-          {/* Dashboard Screenshot with Fade */}
+          {/* Dashboard Preview */}
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -255,51 +256,10 @@ export default function HomePage() {
             transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
             className="relative max-w-6xl mx-auto"
           >
-            <div className="relative rounded-xl overflow-hidden shadow-2xl border border-gray-200">
-              {/* Browser Chrome */}
-              <div className="bg-gray-100 px-4 py-3 flex items-center gap-1.5 border-b border-gray-200">
-                <div className="w-3 h-3 rounded-full bg-gray-300" />
-                <div className="w-3 h-3 rounded-full bg-gray-300" />
-                <div className="w-3 h-3 rounded-full bg-gray-300" />
-              </div>
-
-              {/* Dashboard Screenshot Placeholder */}
-              <div className="bg-white p-8">
-                <div className="space-y-6">
-                  {/* Dashboard Header */}
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-2xl text-gray-900">Pipeline Dashboard</h3>
-                    <div className="flex gap-2">
-                      <div className="px-3 py-1.5 bg-green-100 text-green-700 text-sm rounded">Live</div>
-                    </div>
-                  </div>
-
-                  {/* Stats Grid */}
-                  <div className="grid grid-cols-4 gap-4">
-                    {[
-                      { label: "Total Leads", value: "2,847" },
-                      { label: "Active Campaigns", value: "12" },
-                      { label: "Response Rate", value: "42%" },
-                      { label: "Meetings Booked", value: "87" },
-                    ].map((stat, i) => (
-                      <div key={i} className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-4 border border-gray-200">
-                        <div className="text-xs text-gray-600 mb-1">{stat.label}</div>
-                        <div className="text-2xl text-gray-900 font-light">{stat.value}</div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Chart Placeholder */}
-                  <div className="bg-gray-50 rounded-lg p-6 border border-gray-200 h-48 flex items-end justify-between gap-2">
-                    {[40, 65, 45, 80, 55, 90, 70, 85].map((height, i) => (
-                      <div key={i} className="flex-1 bg-gradient-to-t from-blue-500 to-blue-400 rounded-t" style={{ height: `${height}%` }} />
-                    ))}
-                  </div>
-                </div>
-              </div>
-
+            <div className="relative rounded-xl overflow-hidden shadow-2xl">
+              <DashboardPreview />
               {/* Fade to White at Bottom */}
-              <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none" />
+              <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#F7F9FB] via-[#F7F9FB]/80 to-transparent pointer-events-none" />
             </div>
           </motion.div>
         </Container>
