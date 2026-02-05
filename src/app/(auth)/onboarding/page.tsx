@@ -446,9 +446,11 @@ export default function OnboardingPage() {
                   <input
                     type="text"
                     required
+                    inputMode="text"
+                    autoComplete="organization"
                     value={businessName}
                     onChange={(e) => handleBusinessNameChange(e.target.value)}
-                    className="w-full rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm"
+                    className="w-full min-h-[44px] rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm"
                     placeholder="Smith HVAC Services"
                   />
                 </div>
@@ -461,7 +463,7 @@ export default function OnboardingPage() {
                     required
                     value={industry}
                     onChange={(e) => setIndustry(e.target.value)}
-                    className="w-full rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm"
+                    className="w-full min-h-[44px] rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm"
                   >
                     <option value="">Select your industry</option>
                     {SERVICE_INDUSTRIES.map((ind) => (
@@ -508,10 +510,12 @@ export default function OnboardingPage() {
                     </div>
                     <div className="flex-1">
                       <input
-                        type="text"
+                        type="url"
+                        inputMode="url"
+                        autoComplete="url"
                         value={websiteUrl}
                         onChange={(e) => setWebsiteUrl(e.target.value)}
-                        className={`w-full rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ${
+                        className={`w-full min-h-[44px] rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ${
                           websiteUrl && !isValidUrl(websiteUrl) ? 'ring-red-500' : 'ring-gray-300'
                         } placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm`}
                         placeholder="https://yourcompany.com"
@@ -537,7 +541,7 @@ export default function OnboardingPage() {
               <button
                 type="submit"
                 disabled={!businessName || !industry || !!(websiteUrl && !isValidUrl(websiteUrl))}
-                className="rounded-md bg-blue-600 px-6 py-2 text-sm font-semibold text-white hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="min-h-[44px] rounded-md bg-blue-600 px-6 py-2 text-sm font-semibold text-white hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Continue
               </button>
@@ -577,13 +581,13 @@ export default function OnboardingPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-2 max-h-64 overflow-y-auto p-1">
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2 max-h-64 overflow-y-auto p-1">
                 {US_STATES.map((state) => (
                   <button
                     key={state.code}
                     type="button"
                     onClick={() => toggleState(state.code)}
-                    className={`px-3 py-2 text-xs font-medium rounded-md border transition-all ${
+                    className={`min-h-[44px] px-3 py-2 text-xs font-medium rounded-md border transition-all ${
                       serviceAreas.includes(state.code)
                         ? 'bg-blue-600 text-white border-transparent'
                         : 'bg-white text-gray-600 border-gray-300 hover:border-blue-400'
@@ -605,14 +609,14 @@ export default function OnboardingPage() {
               <button
                 type="button"
                 onClick={() => setStep(1)}
-                className="rounded-md bg-white px-6 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                className="min-h-[44px] rounded-md bg-white px-6 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
               >
                 Back
               </button>
               <button
                 type="submit"
                 disabled={serviceAreas.length === 0}
-                className="rounded-md bg-blue-600 px-6 py-2 text-sm font-semibold text-white hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="min-h-[44px] rounded-md bg-blue-600 px-6 py-2 text-sm font-semibold text-white hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Continue
               </button>
@@ -683,14 +687,14 @@ export default function OnboardingPage() {
                 type="button"
                 onClick={() => setStep(2)}
                 disabled={loading}
-                className="rounded-md bg-white px-6 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:opacity-50"
+                className="min-h-[44px] rounded-md bg-white px-6 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:opacity-50"
               >
                 Back
               </button>
               <button
                 type="submit"
                 disabled={loading}
-                className="rounded-md bg-blue-600 px-6 py-2 text-sm font-semibold text-white hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="min-h-[44px] rounded-md bg-blue-600 px-6 py-2 text-sm font-semibold text-white hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? 'Creating...' : 'Start Getting Leads'}
               </button>

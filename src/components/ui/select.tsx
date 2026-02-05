@@ -17,8 +17,9 @@ interface SelectProps extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>
 }
 
 const sizeClasses = {
-  sm: 'h-8 text-sm',
-  default: 'h-10 text-sm',
+  // Mobile-first: 44px minimum for touch targets, smaller on desktop
+  sm: 'h-11 sm:h-8 text-sm',
+  default: 'h-11 sm:h-10 text-sm',
   lg: 'h-12 text-base',
 }
 

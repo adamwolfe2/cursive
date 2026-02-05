@@ -197,11 +197,11 @@ export function SearchForm({ onSearch, loading }: SearchFormProps) {
       </div>
 
       {/* Actions */}
-      <div className="flex space-x-3">
+      <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
         <button
           type="submit"
           disabled={loading || !isValid}
-          className="flex-1 h-9 px-4 text-[13px] font-medium bg-zinc-900 text-white hover:bg-zinc-800 rounded-lg transition-all duration-150 disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex-1 min-h-[44px] h-11 sm:h-9 px-4 text-[13px] font-medium bg-zinc-900 text-white hover:bg-zinc-800 rounded-lg transition-all duration-150 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {loading ? 'Searching...' : 'Search People'}
         </button>
@@ -212,7 +212,7 @@ export function SearchForm({ onSearch, loading }: SearchFormProps) {
             setSaveSearch(false)
           }}
           disabled={loading}
-          className="h-9 px-4 text-[13px] font-medium border border-zinc-300 text-zinc-700 hover:bg-zinc-50 rounded-lg transition-all duration-150 disabled:cursor-not-allowed disabled:opacity-50"
+          className="min-h-[44px] h-11 sm:h-9 px-4 text-[13px] font-medium border border-zinc-300 text-zinc-700 hover:bg-zinc-50 rounded-lg transition-all duration-150 disabled:cursor-not-allowed disabled:opacity-50"
         >
           Clear
         </button>

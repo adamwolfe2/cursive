@@ -231,6 +231,7 @@ export function CampaignRequestForm() {
                     <Label htmlFor="company_name">Company Name *</Label>
                     <Input
                       id="company_name"
+                      autoComplete="organization"
                       {...register('company_name')}
                       placeholder="Acme Corp"
                     />
@@ -245,6 +246,7 @@ export function CampaignRequestForm() {
                     <Label htmlFor="contact_name">Your Name *</Label>
                     <Input
                       id="contact_name"
+                      autoComplete="name"
                       {...register('contact_name')}
                       placeholder="John Doe"
                     />
@@ -260,6 +262,8 @@ export function CampaignRequestForm() {
                     <Input
                       id="contact_email"
                       type="email"
+                      inputMode="email"
+                      autoComplete="email"
                       {...register('contact_email')}
                       placeholder="john@acme.com"
                     />
@@ -274,6 +278,9 @@ export function CampaignRequestForm() {
                     <Label htmlFor="contact_phone">Phone (Optional)</Label>
                     <Input
                       id="contact_phone"
+                      type="tel"
+                      inputMode="tel"
+                      autoComplete="tel"
                       {...register('contact_phone')}
                       placeholder="+1 (555) 123-4567"
                     />
@@ -519,15 +526,15 @@ export function CampaignRequestForm() {
               </div>
 
               {/* Submit */}
-              <div className="flex items-center justify-between pt-6 border-t">
-                <p className="text-sm text-gray-500">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t">
+                <p className="text-sm text-gray-500 text-center sm:text-left">
                   We'll review your request and contact you within 24 hours
                 </p>
                 <Button
                   type="submit"
                   size="lg"
                   disabled={isSubmitting}
-                  className="min-w-[200px]"
+                  className="w-full sm:w-auto sm:min-w-[200px]"
                 >
                   {isSubmitting ? 'Submitting...' : 'Submit Application'}
                 </Button>

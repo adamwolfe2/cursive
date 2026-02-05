@@ -13,11 +13,12 @@ const inputVariants = cva(
       variant: {
         default: 'border-input',
         error: 'border-destructive focus-visible:ring-destructive',
-        success: 'border-success focus-visible:ring-success',
+        success: 'border-success focus-visual:ring-success',
       },
       inputSize: {
-        sm: 'h-8 px-3 text-sm',
-        default: 'h-10 px-3 py-2 text-sm',
+        // Mobile-first: 44px minimum for touch targets, smaller on desktop
+        sm: 'h-11 sm:h-8 px-3 text-sm',
+        default: 'h-11 sm:h-10 px-3 py-2 text-sm',
         lg: 'h-12 px-4 text-base',
       },
     },

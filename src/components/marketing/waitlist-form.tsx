@@ -124,7 +124,7 @@ export function WaitlistForm({ source = 'website', onSuccess }: WaitlistFormProp
         </div>
       )}
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label htmlFor="first_name" className="block text-sm font-medium text-zinc-700 mb-1.5">
             First name <span className="text-red-500">*</span>
@@ -132,7 +132,9 @@ export function WaitlistForm({ source = 'website', onSuccess }: WaitlistFormProp
           <input
             id="first_name"
             type="text"
-            className={`w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+            autoComplete="given-name"
+            inputMode="text"
+            className={`w-full min-h-[44px] px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
               errors.first_name ? 'border-red-300' : 'border-zinc-300'
             }`}
             {...register('first_name')}
@@ -149,7 +151,9 @@ export function WaitlistForm({ source = 'website', onSuccess }: WaitlistFormProp
           <input
             id="last_name"
             type="text"
-            className={`w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+            autoComplete="family-name"
+            inputMode="text"
+            className={`w-full min-h-[44px] px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
               errors.last_name ? 'border-red-300' : 'border-zinc-300'
             }`}
             {...register('last_name')}
@@ -167,7 +171,9 @@ export function WaitlistForm({ source = 'website', onSuccess }: WaitlistFormProp
         <input
           id="email"
           type="email"
-          className={`w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+          autoComplete="email"
+          inputMode="email"
+          className={`w-full min-h-[44px] px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
             errors.email ? 'border-red-300' : 'border-zinc-300'
           }`}
           {...register('email')}
@@ -184,8 +190,9 @@ export function WaitlistForm({ source = 'website', onSuccess }: WaitlistFormProp
         <input
           id="industry"
           type="text"
+          inputMode="text"
           placeholder="e.g., Solar, HVAC, Insurance"
-          className="w-full px-3 py-2 text-sm border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-zinc-400"
+          className="w-full min-h-[44px] px-3 py-2 text-sm border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-zinc-400"
           {...register('industry')}
         />
       </div>
@@ -197,8 +204,10 @@ export function WaitlistForm({ source = 'website', onSuccess }: WaitlistFormProp
         <input
           id="linkedin_url"
           type="url"
+          inputMode="url"
+          autoComplete="url"
           placeholder="https://linkedin.com/in/yourprofile"
-          className={`w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-zinc-400 ${
+          className={`w-full min-h-[44px] px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-zinc-400 ${
             errors.linkedin_url ? 'border-red-300' : 'border-zinc-300'
           }`}
           {...register('linkedin_url')}
@@ -211,7 +220,7 @@ export function WaitlistForm({ source = 'website', onSuccess }: WaitlistFormProp
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+        className="w-full min-h-[44px] bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
       >
         {isSubmitting ? 'Joining...' : 'Get Early Access'}
       </button>

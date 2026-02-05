@@ -128,7 +128,7 @@ function LoginForm() {
 
         {/* Login Form */}
         <form className="mt-8 space-y-6" onSubmit={handleSubmit(handleEmailLogin)}>
-          <div className="-space-y-px rounded-md shadow-sm">
+          <div className="space-y-4">
             <div>
               <label htmlFor="email" className="sr-only">
                 Email address
@@ -137,8 +137,9 @@ function LoginForm() {
                 id="email"
                 type="email"
                 autoComplete="email"
+                inputMode="email"
                 {...register('email')}
-                className={`relative block w-full rounded-t-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ${
+                className={`relative block w-full min-h-[44px] rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ${
                   errors.email ? 'ring-red-500' : 'ring-gray-300'
                 } placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6`}
                 placeholder="Email address"
@@ -154,7 +155,7 @@ function LoginForm() {
                 type="password"
                 autoComplete="current-password"
                 {...register('password')}
-                className={`relative block w-full rounded-b-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ${
+                className={`relative block w-full min-h-[44px] rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ${
                   errors.password ? 'ring-red-500' : 'ring-gray-300'
                 } placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6`}
                 placeholder="Password"
@@ -177,7 +178,7 @@ function LoginForm() {
                 id="remember-me"
                 type="checkbox"
                 {...register('remember')}
-                className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-600"
+                className="h-5 w-5 min-h-[20px] min-w-[20px] rounded border-gray-300 text-blue-600 focus:ring-blue-600"
               />
               <label
                 htmlFor="remember-me"
@@ -201,7 +202,7 @@ function LoginForm() {
             <button
               type="submit"
               disabled={loading}
-              className="group relative flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="group relative flex w-full min-h-[44px] justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Signing in...' : 'Sign in'}
             </button>
@@ -226,7 +227,7 @@ function LoginForm() {
             type="button"
             onClick={handleGoogleLogin}
             disabled={loading}
-            className="flex w-full items-center justify-center gap-3 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:ring-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            className="flex w-full min-h-[44px] items-center justify-center gap-3 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:ring-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
             {loading ? (
               <>

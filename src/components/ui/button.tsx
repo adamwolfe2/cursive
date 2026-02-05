@@ -26,14 +26,15 @@ const buttonVariants = cva(
           'bg-success text-success-foreground shadow-enterprise-sm hover:bg-success/90 active:bg-success/80',
       },
       size: {
-        xs: 'h-7 px-2.5 text-xs',
-        sm: 'h-8 px-3 text-sm',
-        default: 'h-10 px-4 py-2',
+        // Mobile-first: all sizes meet 44px minimum on mobile for better touch targets
+        xs: 'h-11 sm:h-7 px-2.5 text-xs',
+        sm: 'h-11 sm:h-8 px-3 text-sm',
+        default: 'h-11 sm:h-10 px-4 py-2',
         lg: 'h-11 px-6 text-base',
         xl: 'h-12 px-8 text-base',
-        icon: 'h-10 w-10',
-        'icon-sm': 'h-8 w-8',
-        'icon-xs': 'h-6 w-6',
+        icon: 'h-11 w-11 sm:h-10 sm:w-10',
+        'icon-sm': 'h-11 w-11 sm:h-8 sm:w-8',
+        'icon-xs': 'h-11 w-11 sm:h-6 sm:w-6',
         // Touch-friendly variants (44px minimum on mobile, smaller on desktop)
         'touch-sm': 'h-11 min-w-[44px] sm:h-8 sm:min-w-0 px-3 text-sm',
         'touch-default': 'h-11 min-w-[44px] sm:h-10 sm:min-w-0 px-4 py-2',

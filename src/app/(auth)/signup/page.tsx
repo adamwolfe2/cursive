@@ -120,8 +120,9 @@ export default function SignupPage() {
                 id="full_name"
                 type="text"
                 autoComplete="name"
+                inputMode="text"
                 {...register('full_name')}
-                className={`relative block w-full rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ${
+                className={`relative block w-full min-h-[44px] rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ${
                   errors.full_name ? 'ring-red-500' : 'ring-gray-300'
                 } placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6`}
                 placeholder="Full name"
@@ -140,8 +141,9 @@ export default function SignupPage() {
                 id="email"
                 type="email"
                 autoComplete="email"
+                inputMode="email"
                 {...register('email')}
-                className={`relative block w-full rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ${
+                className={`relative block w-full min-h-[44px] rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ${
                   errors.email ? 'ring-red-500' : 'ring-gray-300'
                 } placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6`}
                 placeholder="Email address"
@@ -161,7 +163,7 @@ export default function SignupPage() {
                 type="password"
                 autoComplete="new-password"
                 {...register('password')}
-                className={`relative block w-full rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ${
+                className={`relative block w-full min-h-[44px] rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ${
                   errors.password ? 'ring-red-500' : 'ring-gray-300'
                 } placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6`}
                 placeholder="Password (min. 8 characters)"
@@ -181,7 +183,7 @@ export default function SignupPage() {
                 type="password"
                 autoComplete="new-password"
                 {...register('confirm_password')}
-                className={`relative block w-full rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ${
+                className={`relative block w-full min-h-[44px] rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ${
                   errors.confirm_password ? 'ring-red-500' : 'ring-gray-300'
                 } placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6`}
                 placeholder="Confirm password"
@@ -198,7 +200,7 @@ export default function SignupPage() {
               id="terms"
               type="checkbox"
               {...register('terms')}
-              className={`h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-600 ${
+              className={`h-5 w-5 min-h-[20px] min-w-[20px] rounded border-gray-300 text-blue-600 focus:ring-blue-600 ${
                 errors.terms ? 'border-red-500' : ''
               }`}
             />
@@ -227,7 +229,7 @@ export default function SignupPage() {
             <button
               type="submit"
               disabled={loading}
-              className="group relative flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="group relative flex w-full min-h-[44px] justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Creating account...' : 'Create account'}
             </button>
@@ -252,7 +254,7 @@ export default function SignupPage() {
             type="button"
             onClick={handleGoogleSignup}
             disabled={loading}
-            className="flex w-full items-center justify-center gap-3 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:ring-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            className="flex w-full min-h-[44px] items-center justify-center gap-3 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:ring-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
             {loading ? (
               <>
