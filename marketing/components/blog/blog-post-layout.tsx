@@ -2,7 +2,6 @@ import Image from 'next/image'
 import { Clock, Calendar } from 'lucide-react'
 import { Breadcrumbs } from './breadcrumbs'
 import { TableOfContents } from './table-of-contents'
-import { AuthorBox } from './author-box'
 import { CTABox } from './cta-box'
 import { FAQSection } from './faq-section'
 import { RelatedPosts } from './related-posts'
@@ -218,10 +217,6 @@ export function BlogPostLayout({ post, relatedPosts = [] }: BlogPostLayoutProps)
                 </div>
               )}
 
-              {/* Author Box */}
-              <div className="mt-12">
-                <AuthorBox author={post.author} />
-              </div>
 
               {/* FAQ Section */}
               {post.faqs && post.faqs.length > 0 && (
