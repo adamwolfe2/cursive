@@ -58,7 +58,7 @@ The primary capability is revealing who's shopping on your site even when they d
 - Purchase history and brand preferences
 - Shopping behavior and product interests
 
-**Cursive identifies up to 70% of retail website visitors**, transforming anonymous browsers into actionable customer profiles with complete behavioral and demographic data.
+**[Cursive identifies up to 70% of retail website visitors](/visitor-identification)**, transforming anonymous browsers into actionable customer profiles with complete behavioral and demographic data.
 
 ### 2. Enrich Customer Records With Verified Consumer Data
 
@@ -89,7 +89,7 @@ Most retailer databases contain incomplete information: an email address but no 
 - Shopping frequency
 - Seasonal buying behavior
 
-**Cursive enriches profiles with verified data from 220M+ consumer records**, automatically filling gaps without manual research.
+**Cursive enriches profiles with verified data from 220M+ consumer records**, automatically filling gaps without manual research. Learn about [B2B data enrichment for better marketing outcomes](/blog/44-b2b-data-enrichment-for-better-marketing-outcomes).
 
 ### 3. Track Cross-Device and Cross-Session Behavior
 
@@ -125,7 +125,7 @@ Generic marketing wastes budget. Different customers care about different produc
 - Cross-sell/upsell likelihood
 - Churn risk indicators
 
-**Cursive's audience builder** combines demographic data, behavioral tracking, and 450 billion+ monthly intent signals to create precise segments automatically.
+**[Cursive's audience builder](/audience-builder)** combines demographic data, behavioral tracking, and 450 billion+ monthly [intent signals](/intent-audiences) to create precise segments automatically. Explore [creating behavioral audience segments easily](/blog/32-creating-behavioral-audience-segments-easily) and [multifactor audience segmentation for campaign success](/blog/34-multifactor-audience-segmentation-for-campaign-success).
 
 ## How Retailers Use B2C Database Providers
 
@@ -255,7 +255,7 @@ B2C database providers must comply with consumer privacy regulations including G
 - Regular security audits and certifications
 - SOC 2 compliance and privacy frameworks
 
-**Cursive is built compliance-first** with automatic opt-out synchronization across 200+ integrated platforms, encrypted data handling, and full GDPR/CCPA alignment.
+**Cursive is built compliance-first** with automatic opt-out synchronization across [200+ integrated platforms](/integrations), encrypted data handling, and full GDPR/CCPA alignment. See [improving CRM integration workflows](/blog/30-tips-for-improving-crm-integration-workflows).
 
 ### Best Practices for Retailers
 

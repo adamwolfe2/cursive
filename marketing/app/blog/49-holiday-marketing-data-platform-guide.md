@@ -81,7 +81,7 @@ The single biggest advantage data platforms provide is visibility into anonymous
 - Identify cart abandoners even if they never checked out
 - Reveal contact information for follow-up
 
-**Cursive identifies up to 70% of website visitors**, transforming anonymous holiday traffic into actionable leads with complete behavioral profiles.
+**[Cursive identifies up to 70% of website visitors](/visitor-identification)**, transforming anonymous holiday traffic into actionable leads with complete behavioral profiles.
 
 **Holiday implementation:**
 
@@ -169,7 +169,7 @@ Generic holiday promotions waste budget. Different customer segments need differ
 - **Messaging:** "We miss you" campaigns, special comeback offers, new product highlights
 - **Goal:** Reactivate inactive customers during peak buying season
 
-**Cursive's audience builder** combines firmographic data, behavioral tracking, and intent signals to create precise segments automatically—no manual list building required.
+**[Cursive's audience builder](/audience-builder)** combines firmographic data, behavioral tracking, and [intent signals](/intent-audiences) to create precise segments automatically—no manual list building required. Explore [creating behavioral audience segments easily](/blog/32-creating-behavioral-audience-segments-easily).
 
 ### 4. Coordinate Multi-Channel Campaigns Automatically
 
@@ -188,7 +188,7 @@ Holiday campaigns span email, ads, SMS, direct mail, and social. Manual coordina
 
 **All triggers happen automatically based on behavior**—no manual campaign coordination required.
 
-**Cursive syncs customer data across 200+ platforms**, ensuring every channel reflects current behavior and purchase status without manual updates.
+**[Cursive syncs customer data across 200+ platforms](/integrations)**, ensuring every channel reflects current behavior and purchase status without manual updates. Learn about [improving CRM integration workflows](/blog/30-tips-for-improving-crm-integration-workflows) and [why CRM integration is crucial for smooth operations](/blog/33-why-crm-integration-is-crucial-for-smooth-operations).
 
 ### 5. Optimize Ad Spend With Real-Time Audience Updates
 
