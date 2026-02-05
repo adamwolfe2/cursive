@@ -78,7 +78,75 @@ export default function MediaAdvertisingPage() {
           </Container>
         </section>
 
-        <section className="relative py-32 bg-white overflow-hidden">
+        {/* Industry Insights */}
+        <section className="py-20 bg-white">
+          <Container>
+            <div className="text-center mb-16">
+              <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
+                Media & Advertising Resources & Insights
+              </h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                Strategies and best practices for media companies and advertising agencies
+              </p>
+            </div>
+            <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+              {[
+                {
+                  title: "How to Identify Website Visitors: Technical Guide",
+                  description: "Track and identify visitors to prove campaign attribution for clients.",
+                  href: "/blog/how-to-identify-website-visitors-technical-guide"
+                },
+                {
+                  title: "Why Scalable Workflows Benefit Agencies",
+                  description: "Build scalable campaign workflows for multiple advertising clients.",
+                  href: "/blog/28-why-scalable-workflows-benefit-agencies"
+                },
+                {
+                  title: "How Omni-Channel Orchestration Aligns Marketing Efforts",
+                  description: "Coordinate campaigns across channels for consistent client results.",
+                  href: "/blog/35-how-omni-channel-orchestration-aligns-marketing-efforts"
+                },
+                {
+                  title: "B2B Audience Targeting Explained for Everyday Brands",
+                  description: "Build premium B2B audience segments for advertising clients.",
+                  href: "/blog/48-b2b-audience-targeting-explained-for-everyday-brands-UPDATED"
+                },
+                {
+                  title: "Tips for Improving CRM Integration Workflows",
+                  description: "Integrate campaign data with client CRMs for better reporting.",
+                  href: "/blog/30-tips-for-improving-crm-integration-workflows"
+                },
+                {
+                  title: "How Marketing Data Solutions Can Improve Campaigns",
+                  description: "Leverage audience data to maximize campaign performance.",
+                  href: "/blog/07-how-marketing-data-solutions-can-improve-campaigns"
+                }
+              ].map((resource, i) => (
+                <motion.a
+                  key={i}
+                  href={resource.href}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.05 }}
+                  className="block bg-gray-50 rounded-xl p-6 border border-gray-200 hover:border-[#007AFF] hover:shadow-lg transition-all group"
+                >
+                  <h3 className="text-lg text-gray-900 mb-2 font-medium group-hover:text-[#007AFF] transition-colors">
+                    {resource.title}
+                  </h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    {resource.description}
+                  </p>
+                  <div className="mt-4 text-[#007AFF] text-sm font-medium flex items-center gap-2">
+                    Read article <span>→</span>
+                  </div>
+                </motion.a>
+              ))}
+            </div>
+          </Container>
+        </section>
+
+        <section className="relative py-32 bg-[#F7F9FB] overflow-hidden">
           <Container>
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -138,7 +206,7 @@ export default function MediaAdvertisingPage() {
             >
               <div className="relative rounded-xl overflow-hidden shadow-2xl">
                 <DashboardPreview />
-                <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none" />
+                <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#F7F9FB] via-[#F7F9FB]/80 to-transparent pointer-events-none" />
               </div>
             </motion.div>
           </Container>

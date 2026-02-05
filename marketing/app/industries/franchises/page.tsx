@@ -78,7 +78,75 @@ export default function FranchisesPage() {
           </Container>
         </section>
 
-        <section className="relative py-32 bg-white overflow-hidden">
+        {/* Industry Insights */}
+        <section className="py-20 bg-white">
+          <Container>
+            <div className="text-center mb-16">
+              <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
+                Franchise Resources & Insights
+              </h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                Strategies and best practices for franchise marketing at scale
+              </p>
+            </div>
+            <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+              {[
+                {
+                  title: "Why Scalable Workflows Benefit Agencies",
+                  description: "Build scalable marketing systems across multiple franchise locations.",
+                  href: "/blog/28-why-scalable-workflows-benefit-agencies"
+                },
+                {
+                  title: "Guide to Direct Mail Marketing Automation for Agencies",
+                  description: "Automate territory-specific direct mail for all franchisees.",
+                  href: "/blog/10-guide-to-direct-mail-marketing-automation-for-agencies"
+                },
+                {
+                  title: "How Omni-Channel Orchestration Aligns Marketing Efforts",
+                  description: "Coordinate campaigns across all locations with consistent messaging.",
+                  href: "/blog/35-how-omni-channel-orchestration-aligns-marketing-efforts"
+                },
+                {
+                  title: "How to Identify Website Visitors: Technical Guide",
+                  description: "Identify and route leads to the correct franchise location.",
+                  href: "/blog/how-to-identify-website-visitors-technical-guide"
+                },
+                {
+                  title: "Tips for Improving CRM Integration Workflows",
+                  description: "Manage multi-location CRM workflows and franchisee access.",
+                  href: "/blog/30-tips-for-improving-crm-integration-workflows"
+                },
+                {
+                  title: "How Marketing Data Solutions Can Improve Campaigns",
+                  description: "Leverage data to improve performance across all franchise locations.",
+                  href: "/blog/07-how-marketing-data-solutions-can-improve-campaigns"
+                }
+              ].map((resource, i) => (
+                <motion.a
+                  key={i}
+                  href={resource.href}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.05 }}
+                  className="block bg-gray-50 rounded-xl p-6 border border-gray-200 hover:border-[#007AFF] hover:shadow-lg transition-all group"
+                >
+                  <h3 className="text-lg text-gray-900 mb-2 font-medium group-hover:text-[#007AFF] transition-colors">
+                    {resource.title}
+                  </h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    {resource.description}
+                  </p>
+                  <div className="mt-4 text-[#007AFF] text-sm font-medium flex items-center gap-2">
+                    Read article <span>→</span>
+                  </div>
+                </motion.a>
+              ))}
+            </div>
+          </Container>
+        </section>
+
+        <section className="relative py-32 bg-[#F7F9FB] overflow-hidden">
           <Container>
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -138,7 +206,7 @@ export default function FranchisesPage() {
             >
               <div className="relative rounded-xl overflow-hidden shadow-2xl">
                 <DashboardPreview />
-                <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none" />
+                <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#F7F9FB] via-[#F7F9FB]/80 to-transparent pointer-events-none" />
               </div>
             </motion.div>
           </Container>
