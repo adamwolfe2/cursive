@@ -4,11 +4,103 @@ import { Button } from "@/components/ui/button"
 import { Container } from "@/components/ui/container"
 import { motion } from "framer-motion"
 import { ArrowRight } from "lucide-react"
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Done-For-You Lead Generation Services | Cursive",
+  description: "Choose from Cursive Data (verified lead lists), Cursive Outbound (managed campaigns), or Cursive Pipeline (AI SDR automation). Scale your B2B pipeline without hiring SDRs. Starting at $1,000/mo.",
+  keywords: "done-for-you lead generation, B2B lead generation services, managed outbound campaigns, AI SDR services, lead list services, email campaign management, sales automation services",
+  openGraph: {
+    title: "Done-For-You Lead Generation Services | Cursive",
+    description: "Choose from Cursive Data, Cursive Outbound, or Cursive Pipeline. Scale your B2B pipeline without hiring SDRs. Starting at $1,000/mo.",
+    url: "https://meetcursive.com/services",
+    siteName: "Cursive",
+    images: [{ url: "/cursive-social-preview.png", width: 1200, height: 630 }],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Done-For-You Lead Generation Services | Cursive",
+    description: "Choose from Cursive Data, Cursive Outbound, or Cursive Pipeline. Scale your B2B pipeline without hiring SDRs.",
+    images: ["/cursive-social-preview.png"],
+    creator: "@meetcursive",
+  },
+  alternates: {
+    canonical: "https://meetcursive.com/services",
+  },
+}
 
 export default function ServicesPage() {
+  // Service Schema for SEO
+  const serviceSchema = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Service",
+        "@id": "https://meetcursive.com/services#data",
+        "name": "Cursive Data - Monthly Lead Lists",
+        "description": "Get verified B2B contacts delivered monthly. Custom targeting based on your ICP, ready to import into your CRM and activate immediately.",
+        "provider": {
+          "@type": "Organization",
+          "name": "Cursive"
+        },
+        "serviceType": "Lead Generation",
+        "areaServed": "Worldwide",
+        "offers": {
+          "@type": "Offer",
+          "priceCurrency": "USD",
+          "price": "1000",
+          "availability": "https://schema.org/InStock"
+        }
+      },
+      {
+        "@type": "Service",
+        "@id": "https://meetcursive.com/services#outbound",
+        "name": "Cursive Outbound - Done-For-You Campaigns",
+        "description": "We build, launch, and optimize email campaigns using your brand voice. You just close the meetings.",
+        "provider": {
+          "@type": "Organization",
+          "name": "Cursive"
+        },
+        "serviceType": "Email Marketing Automation",
+        "areaServed": "Worldwide",
+        "offers": {
+          "@type": "Offer",
+          "priceCurrency": "USD",
+          "price": "3000",
+          "availability": "https://schema.org/InStock"
+        }
+      },
+      {
+        "@type": "Service",
+        "@id": "https://meetcursive.com/services#pipeline",
+        "name": "Cursive Pipeline - AI SDR Automation",
+        "description": "Your AI team that never sleeps. Researches, writes, sends, follows up, and books meetings—automatically.",
+        "provider": {
+          "@type": "Organization",
+          "name": "Cursive"
+        },
+        "serviceType": "Sales Automation",
+        "areaServed": "Worldwide",
+        "offers": {
+          "@type": "Offer",
+          "priceCurrency": "USD",
+          "price": "5000",
+          "availability": "https://schema.org/InStock"
+        }
+      }
+    ]
+  }
+
   return (
-    <main className="overflow-hidden">
-      {/* Hero Section */}
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }}
+      />
+      <main className="overflow-hidden">
+        {/* Hero Section */}
       <section className="relative py-24 bg-white">
         <Container>
           <motion.div
@@ -473,6 +565,7 @@ export default function ServicesPage() {
         </Container>
       </section>
     </main>
+    </>
   )
 }
 

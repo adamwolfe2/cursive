@@ -9,6 +9,32 @@ import {
   ArrowRight, Sparkles, Database, Lock
 } from "lucide-react"
 import { DashboardPreview } from "@/components/dashboard-preview"
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Website Visitor Identification & Tracking | Cursive",
+  description: "Identify up to 70% of anonymous website visitors in real-time. Get company and individual-level data, verified emails, and behavior tracking. GDPR compliant. 200+ integrations. 5-minute setup.",
+  keywords: "website visitor identification, visitor tracking software, anonymous visitor identification, B2B visitor tracking, website analytics, lead identification, IP tracking, visitor intelligence",
+  openGraph: {
+    title: "Website Visitor Identification & Tracking | Cursive",
+    description: "Identify up to 70% of anonymous website visitors in real-time. Get company and individual-level data, verified emails, and behavior tracking.",
+    url: "https://meetcursive.com/visitor-identification",
+    siteName: "Cursive",
+    images: [{ url: "/cursive-social-preview.png", width: 1200, height: 630 }],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Website Visitor Identification & Tracking | Cursive",
+    description: "Identify up to 70% of anonymous website visitors in real-time. Get company and individual-level data with verified emails.",
+    images: ["/cursive-social-preview.png"],
+    creator: "@meetcursive",
+  },
+  alternates: {
+    canonical: "https://meetcursive.com/visitor-identification",
+  },
+}
 
 export default function VisitorIdentificationPage() {
   const schemaMarkup = {

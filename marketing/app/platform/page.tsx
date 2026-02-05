@@ -4,6 +4,32 @@ import { Button } from "@/components/ui/button"
 import { Container } from "@/components/ui/container"
 import { motion } from "framer-motion"
 import { ArrowRight, Sparkles, Search, ShoppingCart, Mail, Target, BarChart3, Zap } from "lucide-react"
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Complete Data-Driven Marketing Platform | Cursive",
+  description: "All-in-one B2B lead generation platform with AI Studio, People Search, Lead Marketplace, Campaign Manager, and Visitor Intelligence. 500M+ verified contacts, real-time identification, and automated outreach.",
+  keywords: "marketing platform, lead generation software, B2B sales platform, visitor tracking software, email automation platform, AI marketing tools, lead enrichment platform, outbound sales software",
+  openGraph: {
+    title: "Complete Data-Driven Marketing Platform | Cursive",
+    description: "All-in-one B2B lead generation platform with AI Studio, People Search, Lead Marketplace, Campaign Manager, and Visitor Intelligence. 500M+ verified contacts.",
+    url: "https://meetcursive.com/platform",
+    siteName: "Cursive",
+    images: [{ url: "/cursive-social-preview.png", width: 1200, height: 630 }],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Complete Data-Driven Marketing Platform | Cursive",
+    description: "All-in-one B2B lead generation platform with AI Studio, People Search, Lead Marketplace, Campaign Manager, and Visitor Intelligence.",
+    images: ["/cursive-social-preview.png"],
+    creator: "@meetcursive",
+  },
+  alternates: {
+    canonical: "https://meetcursive.com/platform",
+  },
+}
 
 export default function PlatformPage() {
   return (

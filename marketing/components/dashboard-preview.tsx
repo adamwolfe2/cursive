@@ -98,7 +98,7 @@ export function DashboardPreview() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={stat.icon} />
                     </svg>
                   </div>
-                  <span className="text-xs text-green-600 font-medium">{stat.change}</span>
+                  <span className="text-xs text-blue-600 font-medium">{stat.change}</span>
                 </div>
                 <div className="text-2xl font-light text-gray-900 mb-1">{stat.value}</div>
                 <div className="text-xs text-gray-600">{stat.label}</div>
@@ -154,10 +154,10 @@ export function DashboardPreview() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`px-2 py-1 text-xs rounded-full font-medium ${
                           lead.status === "Hot"
-                            ? "bg-red-50 text-red-700 border border-red-200"
+                            ? "bg-blue-50 text-blue-700 border border-blue-200"
                             : lead.status === "Warm"
-                            ? "bg-orange-50 text-orange-700 border border-orange-200"
-                            : "bg-green-50 text-green-700 border border-green-200"
+                            ? "bg-blue-50 text-blue-600 border border-blue-200"
+                            : "bg-gray-50 text-gray-700 border border-gray-200"
                         }`}>
                           {lead.status}
                         </span>

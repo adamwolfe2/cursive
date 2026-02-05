@@ -38,7 +38,7 @@ const ctaConfig: Record<
       'Install our tracking pixel in 5 minutes and start seeing which companies are visiting your site. No credit card required.',
     buttonText: 'Get Started Free',
     buttonHref: '/signup',
-    accentColor: 'bg-green-50 border-green-200',
+    accentColor: 'bg-blue-50 border-blue-200',
   },
   pricing: {
     icon: Sparkles,
@@ -47,7 +47,7 @@ const ctaConfig: Record<
       'Explore our flexible pricing plans designed for B2B SaaS companies, agencies, and enterprise sales teams.',
     buttonText: 'View Pricing',
     buttonHref: '/pricing',
-    accentColor: 'bg-purple-50 border-purple-200',
+    accentColor: 'bg-blue-50 border-blue-200',
   },
   newsletter: {
     icon: Sparkles,
@@ -56,7 +56,7 @@ const ctaConfig: Record<
       'Join 5,000+ marketers receiving our weekly newsletter with actionable tactics for visitor identification and lead generation.',
     buttonText: 'Subscribe Now',
     buttonHref: '/newsletter',
-    accentColor: 'bg-orange-50 border-orange-200',
+    accentColor: 'bg-blue-50 border-blue-200',
   },
 }
 

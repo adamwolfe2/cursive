@@ -353,7 +353,7 @@ const blogPosts = [
     categorySlug: "audience-targeting",
     date: "Jan 21, 2026",
     readTime: "10 min read",
-    color: "bg-gradient-to-br from-purple-500 to-purple-600",
+    color: "bg-gradient-to-br from-blue-500 to-blue-600",
     icon: TrendingUp,
   },
   {
@@ -364,7 +364,7 @@ const blogPosts = [
     categorySlug: "lead-generation",
     date: "Jan 14, 2026",
     readTime: "7 min read",
-    color: "bg-gradient-to-br from-green-500 to-green-600",
+    color: "bg-gradient-to-br from-blue-500 to-blue-600",
     icon: TrendingUp,
   },
 ]

@@ -5,6 +5,32 @@ import { Container } from "@/components/ui/container"
 import { motion } from "framer-motion"
 import { Mail, Phone, MapPin, Clock, MessageCircle, Calendar } from "lucide-react"
 import { useState } from "react"
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Contact Us | Cursive",
+  description: "Get in touch with Cursive for lead generation questions, demos, or custom solutions. Email hello@meetcursive.com or book a 15-minute call. We respond within 24 hours.",
+  keywords: "contact cursive, lead generation support, cursive demo, sales inquiry, customer support",
+  openGraph: {
+    title: "Contact Us | Cursive",
+    description: "Get in touch with Cursive for lead generation questions, demos, or custom solutions. Email hello@meetcursive.com or book a 15-minute call.",
+    url: "https://meetcursive.com/contact",
+    siteName: "Cursive",
+    images: [{ url: "/cursive-social-preview.png", width: 1200, height: 630 }],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Contact Us | Cursive",
+    description: "Get in touch with Cursive for lead generation questions, demos, or custom solutions.",
+    images: ["/cursive-social-preview.png"],
+    creator: "@meetcursive",
+  },
+  alternates: {
+    canonical: "https://meetcursive.com/contact",
+  },
+}
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
