@@ -6,6 +6,7 @@ import { motion } from "framer-motion"
 import { InteractiveFeaturesShowcase } from "@/components/demos/interactive-features-showcase"
 import { DashboardPreview } from "@/components/dashboard-preview"
 import { IntegrationsShowcase } from "@/components/integrations-showcase"
+import { HowItWorksInteractiveDemo } from "@/components/demos/how-it-works-demo"
 import Link from "next/link"
 import { Eye, Target, Bot, TrendingUp, type LucideIcon } from "lucide-react"
 
@@ -158,7 +159,7 @@ export function HumanHomePage() {
         </Container>
       </section>
 
-      {/* How It Works - Reduce Perceived Complexity */}
+      {/* How It Works - Interactive Demo */}
       <section className="py-20 bg-[#F7F9FB]">
         <Container>
           <div className="text-center mb-16">
@@ -168,24 +169,7 @@ export function HumanHomePage() {
             <p className="text-xl text-gray-600">Get started in minutes, not weeks</p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-12 max-w-5xl mx-auto">
-            {howItWorksSteps.map((step, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="text-center"
-              >
-                <div className="w-12 h-12 rounded-full bg-[#007AFF] text-white flex items-center justify-center text-xl font-light mx-auto mb-4">
-                  {i + 1}
-                </div>
-                <h3 className="text-xl text-gray-900 mb-3">{step.title}</h3>
-                <p className="text-gray-600 text-sm">{step.description}</p>
-              </motion.div>
-            ))}
-          </div>
+          <HowItWorksInteractiveDemo />
         </Container>
       </section>
 
@@ -345,22 +329,6 @@ const benefitPillars: Array<{
     icon: TrendingUp,
     title: 'Convert More Traffic',
     description: 'Stop wasting ad spend. Turn existing visitors into qualified leads without increasing your budget.',
-  },
-]
-
-// How It Works - Simple 3-step process
-const howItWorksSteps = [
-  {
-    title: 'Install Tracking Pixel',
-    description: 'Add one line of code to your site. Takes 5 minutes. Works with any platform.',
-  },
-  {
-    title: 'Cursive Identifies Visitors',
-    description: 'We reveal up to 70% of your anonymous traffic in real-time—with verified contact data.',
-  },
-  {
-    title: 'AI Automates Outreach',
-    description: 'Your AI SDR reaches out across email, LinkedIn, and SMS—personalized to each prospect.',
   },
 ]
 
