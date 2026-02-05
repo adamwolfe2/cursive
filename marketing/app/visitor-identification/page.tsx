@@ -628,6 +628,74 @@ export default function VisitorIdentificationPage() {
           </Container>
         </section>
 
+        {/* Related Resources */}
+        <section className="py-20 bg-white">
+          <Container>
+            <div className="text-center mb-16">
+              <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
+                Learn More About Visitor Identification
+              </h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                Deep-dive guides and strategies for maximizing your visitor identification results
+              </p>
+            </div>
+            <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+              {[
+                {
+                  title: "How to Use Website Visitor Tracking to Generate More B2B Leads",
+                  description: "Learn how visitor tracking turns anonymous traffic into qualified leads you can actually convert.",
+                  href: "/blog/22-using-website-visitor-tracking-for-lead-generation-UPDATED"
+                },
+                {
+                  title: "How to Convert Anonymous Website Visitors Into Sales-Ready Leads",
+                  description: "Stop losing qualified leads to anonymity and start converting traffic into paying customers.",
+                  href: "/blog/25-boosting-sales-through-anonymous-visitor-conversion-UPDATED"
+                },
+                {
+                  title: "Understanding Data-Driven Decision Making in Marketing",
+                  description: "Turn visitor data into actionable insights that drive better campaign performance.",
+                  href: "/blog/18-understanding-data-driven-decision-making-in-marketing"
+                },
+                {
+                  title: "Real-Time Analytics Strategies for Better ROI Decisions",
+                  description: "Use real-time visitor data to make faster, smarter marketing decisions.",
+                  href: "/blog/21-real-time-analytics-strategies-for-better-roi-decisions"
+                },
+                {
+                  title: "Leveraging Real-Time Data for Efficient Campaigns",
+                  description: "Respond to visitor behavior in real-time to maximize conversion rates.",
+                  href: "/blog/26-leveraging-real-time-data-for-efficient-campaigns-UPDATED"
+                },
+                {
+                  title: "How to Use Marketing Audience Data to Drive Real Results",
+                  description: "Organize your visitor data to send the right message at the right time.",
+                  href: "/blog/01-tips-for-using-marketing-audience-data-efficiently-UPDATED"
+                }
+              ].map((resource, i) => (
+                <motion.a
+                  key={i}
+                  href={resource.href}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.05 }}
+                  className="block bg-gray-50 rounded-xl p-6 border border-gray-200 hover:border-[#007AFF] hover:shadow-lg transition-all group"
+                >
+                  <h3 className="text-lg text-gray-900 mb-2 font-medium group-hover:text-[#007AFF] transition-colors">
+                    {resource.title}
+                  </h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    {resource.description}
+                  </p>
+                  <div className="mt-4 text-[#007AFF] text-sm font-medium flex items-center gap-2">
+                    Read article <ArrowRight className="h-4 w-4" />
+                  </div>
+                </motion.a>
+              ))}
+            </div>
+          </Container>
+        </section>
+
         {/* Final CTA */}
         <section className="relative py-32 bg-white overflow-hidden">
           <Container>

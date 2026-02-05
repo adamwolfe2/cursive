@@ -724,6 +724,74 @@ export default function IntentAudiencesPage() {
           </Container>
         </section>
 
+        {/* Related Resources */}
+        <section className="py-20 bg-white">
+          <Container>
+            <div className="text-center mb-16">
+              <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
+                Learn More About Intent Data
+              </h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                Master intent-based marketing with these expert guides
+              </p>
+            </div>
+            <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+              {[
+                {
+                  title: "Buyer Intent-Based Audience Segmentation Techniques",
+                  description: "Target ready-to-buy prospects using behavioral intent signals.",
+                  href: "/blog/38-buyer-intent-based-audience-segmentation-techniques-UPDATED"
+                },
+                {
+                  title: "Understanding the Impact of Buyer Intent on Campaigns",
+                  description: "Learn how intent data transforms campaign performance and ROI.",
+                  href: "/blog/29-understanding-the-impact-of-buyer-intent-on-campaigns"
+                },
+                {
+                  title: "Intent Signal Tracking for B2B Marketing",
+                  description: "Track and act on buyer signals before competitors do.",
+                  href: "/blog/40-intent-signal-tracking-for-b2b-marketing"
+                },
+                {
+                  title: "Intent-Based Marketing Tactics for B2B",
+                  description: "Practical strategies for implementing intent-driven campaigns.",
+                  href: "/blog/41-intent-based-marketing-tactics-for-b2b"
+                },
+                {
+                  title: "Understanding Data-Driven Retargeting Practices",
+                  description: "Use intent data to power smarter retargeting campaigns.",
+                  href: "/blog/05-understanding-data-driven-retargeting-practices"
+                },
+                {
+                  title: "Tips for Finding Data Targeting Solutions That Work",
+                  description: "Choose the right intent data platform for your needs.",
+                  href: "/blog/13-tips-for-finding-data-targeting-solutions-that-work-UPDATED"
+                }
+              ].map((resource, i) => (
+                <motion.a
+                  key={i}
+                  href={resource.href}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.05 }}
+                  className="block bg-gray-50 rounded-xl p-6 border border-gray-200 hover:border-[#007AFF] hover:shadow-lg transition-all group"
+                >
+                  <h3 className="text-lg text-gray-900 mb-2 font-medium group-hover:text-[#007AFF] transition-colors">
+                    {resource.title}
+                  </h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    {resource.description}
+                  </p>
+                  <div className="mt-4 text-[#007AFF] text-sm font-medium flex items-center gap-2">
+                    Read article <ArrowRight className="h-4 w-4" />
+                  </div>
+                </motion.a>
+              ))}
+            </div>
+          </Container>
+        </section>
+
         {/* Final CTA */}
         <section className="relative py-32 bg-white overflow-hidden">
           <Container>

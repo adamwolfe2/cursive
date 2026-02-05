@@ -78,7 +78,75 @@ export default function AgenciesPage() {
           </Container>
         </section>
 
-        <section className="relative py-32 bg-white overflow-hidden">
+        {/* Industry Insights */}
+        <section className="py-20 bg-white">
+          <Container>
+            <div className="text-center mb-16">
+              <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
+                Agency Resources & Insights
+              </h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                Strategies and best practices for scaling your marketing agency
+              </p>
+            </div>
+            <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+              {[
+                {
+                  title: "Why Scalable Workflows Benefit Agencies",
+                  description: "Build automated workflows that scale with your client base.",
+                  href: "/blog/28-why-scalable-workflows-benefit-agencies"
+                },
+                {
+                  title: "Guide to Direct Mail Marketing Automation for Agencies",
+                  description: "Deliver automated direct mail services to drive better client results.",
+                  href: "/blog/10-guide-to-direct-mail-marketing-automation-for-agencies"
+                },
+                {
+                  title: "How Omni-Channel Orchestration Aligns Marketing Efforts",
+                  description: "Coordinate campaigns across multiple channels for consistent messaging.",
+                  href: "/blog/35-how-omni-channel-orchestration-aligns-marketing-efforts"
+                },
+                {
+                  title: "B2B Audience Targeting Explained for Everyday Brands",
+                  description: "Make B2B targeting simple for your agency clients.",
+                  href: "/blog/48-b2b-audience-targeting-explained-for-everyday-brands-UPDATED"
+                },
+                {
+                  title: "Tips for Improving CRM Integration Workflows",
+                  description: "Optimize CRM integrations for multiple client accounts.",
+                  href: "/blog/30-tips-for-improving-crm-integration-workflows"
+                },
+                {
+                  title: "How Marketing Data Solutions Can Improve Campaigns",
+                  description: "Leverage data platforms to boost campaign ROI for clients.",
+                  href: "/blog/07-how-marketing-data-solutions-can-improve-campaigns"
+                }
+              ].map((resource, i) => (
+                <motion.a
+                  key={i}
+                  href={resource.href}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.05 }}
+                  className="block bg-gray-50 rounded-xl p-6 border border-gray-200 hover:border-[#007AFF] hover:shadow-lg transition-all group"
+                >
+                  <h3 className="text-lg text-gray-900 mb-2 font-medium group-hover:text-[#007AFF] transition-colors">
+                    {resource.title}
+                  </h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    {resource.description}
+                  </p>
+                  <div className="mt-4 text-[#007AFF] text-sm font-medium flex items-center gap-2">
+                    Read article <span>→</span>
+                  </div>
+                </motion.a>
+              ))}
+            </div>
+          </Container>
+        </section>
+
+        <section className="relative py-32 bg-[#F7F9FB] overflow-hidden">
           <Container>
             <motion.div
               initial={{ opacity: 0, y: 30 }}

@@ -40,13 +40,13 @@ Here's what integrated data enables:
 - Update contact records across all platforms when someone takes action
 - Trigger automated follow-ups based on real-time behavior
 
-**Cursive connects your audience data across 200+ CRM, ad, and email platforms**, ensuring your information stays up to date and your campaigns react to new signals in real time. When your stack is connected, you spend less time reconciling data and more time closing deals.
+**[Cursive's integrations](/integrations) connect your audience data across 200+ CRM, ad, and email platforms**, ensuring your information stays up to date and your campaigns react to new signals in real time. When your stack is connected, you spend less time reconciling data and more time closing deals. See our guide on [improving CRM integration workflows](/blog/30-tips-for-improving-crm-integration-workflows).
 
 ## Segment Your Audience Based on Behavior, Not Just Demographics
 
 Demographics tell you who someone is. Behavior tells you what they care about right now.
 
-Instead of broad segments like "marketing managers" or "SaaS companies," group people based on their actions:
+[Effective audience segmentation](/audience-builder) means going beyond basic demographics. Instead of broad segments like "marketing managers" or "SaaS companies," group people based on their actions:
 
 - Visitors who viewed your pricing page multiple times
 - Contacts who opened your last three emails but haven't booked a demo
@@ -54,7 +54,7 @@ Instead of broad segments like "marketing managers" or "SaaS companies," group p
 
 These behavioral signals reveal intent. Someone who returns to your pricing page three times in a week is further along than someone who read one blog post.
 
-**With Cursive's visitor identification**, you can see exactly which companies are visiting your site, which pages they view, and how often they return. This lets you prioritize outreach to prospects showing real buying signals.
+**With [Cursive's visitor identification](/visitor-identification)**, you can see exactly which companies are visiting your site, which pages they view, and how often they return. This lets you prioritize outreach to prospects showing real buying signals. Learn more about [behavioral audience segmentation](/blog/32-creating-behavioral-audience-segments-easily).
 
 ## Use Data to Time Your Messages, Not Just Craft Them
 

@@ -703,6 +703,74 @@ export default function DirectMailPage() {
           </Container>
         </section>
 
+        {/* Related Resources */}
+        <section className="py-20 bg-white">
+          <Container>
+            <div className="text-center mb-16">
+              <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
+                Learn More About Direct Mail Automation
+              </h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                Strategies and best practices for successful direct mail campaigns
+              </p>
+            </div>
+            <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+              {[
+                {
+                  title: "Guide to Direct Mail Marketing Automation for Agencies",
+                  description: "How agencies use automated direct mail to drive better client results.",
+                  href: "/blog/10-guide-to-direct-mail-marketing-automation-for-agencies"
+                },
+                {
+                  title: "Retargeting Tactics to Boost Offline Conversions",
+                  description: "Combine direct mail with digital retargeting for maximum impact.",
+                  href: "/blog/37-retargeting-tactics-to-boost-offline-conversions"
+                },
+                {
+                  title: "Direct Mail Audience Data for Smarter Winter Outreach",
+                  description: "Use seasonal direct mail campaigns to drive Q4 results.",
+                  href: "/blog/45-direct-mail-audience-data-for-smarter-winter-outreach"
+                },
+                {
+                  title: "How Omni-Channel Orchestration Aligns Marketing Efforts",
+                  description: "Coordinate direct mail with email, ads, and SMS for unified campaigns.",
+                  href: "/blog/35-how-omni-channel-orchestration-aligns-marketing-efforts"
+                },
+                {
+                  title: "Cross-Platform Retargeting Strategies to Explore",
+                  description: "Reach prospects across multiple channels including direct mail.",
+                  href: "/blog/17-cross-platform-retargeting-strategies-to-explore"
+                },
+                {
+                  title: "Why Scalable Workflows Benefit Agencies",
+                  description: "Build automated direct mail workflows that scale with your agency.",
+                  href: "/blog/28-why-scalable-workflows-benefit-agencies"
+                }
+              ].map((resource, i) => (
+                <motion.a
+                  key={i}
+                  href={resource.href}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.05 }}
+                  className="block bg-gray-50 rounded-xl p-6 border border-gray-200 hover:border-[#007AFF] hover:shadow-lg transition-all group"
+                >
+                  <h3 className="text-lg text-gray-900 mb-2 font-medium group-hover:text-[#007AFF] transition-colors">
+                    {resource.title}
+                  </h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    {resource.description}
+                  </p>
+                  <div className="mt-4 text-[#007AFF] text-sm font-medium flex items-center gap-2">
+                    Read article <ArrowRight className="h-4 w-4" />
+                  </div>
+                </motion.a>
+              ))}
+            </div>
+          </Container>
+        </section>
+
         {/* Final CTA */}
         <section className="relative py-32 bg-white overflow-hidden">
           <Container>

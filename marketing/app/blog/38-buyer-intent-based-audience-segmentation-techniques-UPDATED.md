@@ -36,11 +36,11 @@ Sometimes people are just browsing, and that's fine. But high-intent behavior st
 
 You get a better sense of where someone stands based on how involved they are and what they focus on.
 
-**Cursive tracks 450B+ monthly intent signals across 30,000+ categories**, helping you identify when prospects are actively researching solutions like yours.
+**[Cursive's intent audiences](/intent-audiences) track 450B+ monthly intent signals across 30,000+ categories**, helping you identify when prospects are actively researching solutions like yours. Explore our guide on [understanding buyer intent impact](/blog/29-understanding-the-impact-of-buyer-intent-on-campaigns).
 
 ## Ways to Group Audiences Using Intent
 
-Segmentation based on behavior gives you an edge. Rather than tossing everyone into one big group, you can sort them into clearer categories.
+Segmentation based on behavior gives you an edge. [Building targeted audiences](/audience-builder) means going beyond basic filters. Rather than tossing everyone into one big group, you can sort them into clearer categories.
 
 These don't need to be complicated, but they should align with actions.
 
@@ -67,7 +67,7 @@ Intent data helps you identify the right moment to reach out:
 
 **When you reach out while someone is actively researching, your message feels helpful instead of interruptive.**
 
-Cursive's automation tools trigger campaigns based on real-time intent signals—whether it's a return visit, content download, or pricing page view—so you never miss a high-intent moment.
+Cursive's automation tools trigger campaigns based on real-time intent signals—whether it's a return visit, content download, or pricing page view—so you never miss a high-intent moment. For additional strategies, see our posts on [data-driven retargeting practices](/blog/05-understanding-data-driven-retargeting-practices) and [real-time data usage](/blog/26-leveraging-real-time-data-for-efficient-campaigns-UPDATED).
 
 ## Avoid Common Intent Segmentation Mistakes
 

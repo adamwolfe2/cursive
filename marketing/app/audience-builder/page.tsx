@@ -642,6 +642,84 @@ export default function AudienceBuilderPage() {
           </Container>
         </section>
 
+        {/* Related Resources */}
+        <section className="py-20 bg-white">
+          <Container>
+            <div className="text-center mb-16">
+              <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
+                Learn More About Audience Building
+              </h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                Expert guides for building and activating high-performing audience segments
+              </p>
+            </div>
+            <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+              {[
+                {
+                  title: "Steps to Build an Effective Audience Building Platform",
+                  description: "A complete guide to building audience segments that actually convert.",
+                  href: "/blog/02-steps-to-build-an-effective-audience-building-platform-UPDATED"
+                },
+                {
+                  title: "Guide to Building an Effective Audience Targeting Platform",
+                  description: "Learn how to target the right prospects with precision and scale.",
+                  href: "/blog/16-guide-to-building-an-effective-audience-targeting-platform-UPDATED"
+                },
+                {
+                  title: "Why Audience Segmentation Platforms Are Key to Marketing",
+                  description: "Discover how segmentation transforms campaign performance.",
+                  href: "/blog/11-why-audience-segmentation-platforms-are-key-to-marketing-UPDATED"
+                },
+                {
+                  title: "Creating Behavioral Audience Segments Easily",
+                  description: "Segment audiences based on actions, not just demographics.",
+                  href: "/blog/32-creating-behavioral-audience-segments-easily"
+                },
+                {
+                  title: "Buyer Intent-Based Audience Segmentation Techniques",
+                  description: "Target ready-to-buy prospects using intent signals.",
+                  href: "/blog/38-buyer-intent-based-audience-segmentation-techniques-UPDATED"
+                },
+                {
+                  title: "Multifactor Audience Segmentation for Campaign Success",
+                  description: "Combine multiple signals for hyper-targeted audience builds.",
+                  href: "/blog/34-multifactor-audience-segmentation-for-campaign-success"
+                },
+                {
+                  title: "B2B Audience Targeting Explained for Everyday Brands",
+                  description: "Make B2B targeting simple and effective for your team.",
+                  href: "/blog/48-b2b-audience-targeting-explained-for-everyday-brands-UPDATED"
+                },
+                {
+                  title: "Audience Targeting Software Anyone Can Understand",
+                  description: "Demystify audience targeting tools and get started faster.",
+                  href: "/blog/52-audience-targeting-software-anyone-can-understand-UPDATED"
+                }
+              ].map((resource, i) => (
+                <motion.a
+                  key={i}
+                  href={resource.href}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.05 }}
+                  className="block bg-gray-50 rounded-xl p-6 border border-gray-200 hover:border-[#007AFF] hover:shadow-lg transition-all group"
+                >
+                  <h3 className="text-lg text-gray-900 mb-2 font-medium group-hover:text-[#007AFF] transition-colors">
+                    {resource.title}
+                  </h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    {resource.description}
+                  </p>
+                  <div className="mt-4 text-[#007AFF] text-sm font-medium flex items-center gap-2">
+                    Read article <ArrowRight className="h-4 w-4" />
+                  </div>
+                </motion.a>
+              ))}
+            </div>
+          </Container>
+        </section>
+
         {/* Final CTA */}
         <section className="relative py-32 bg-white overflow-hidden">
           <Container>

@@ -18,7 +18,7 @@ Instead of waiting for form fills or hoping for luck, use real visits to guide w
 
 ## What Website Visitor Tracking Actually Does
 
-Tracking tools don't rely on form submissions to be useful. Once set up, they pay attention to real behaviors: which pages someone views, how long they stay, and where they click.
+[Website visitor tracking](/visitor-identification) doesn't rely on form submissions to be useful. Once set up, these tools pay attention to real behaviors: which pages someone views, how long they stay, and where they click.
 
 This creates a pattern that helps show what people care about.
 
@@ -52,7 +52,7 @@ Even basic tracking changes this. You don't have to guess. The data helps you fo
 
 **With a reliable tracking system, you bridge the gap when visitors don't disclose interest directly.** You notice subtle signals like returning to the same service section, which gives you the opportunity to personalize follow-up efforts.
 
-**Cursive's visitor identification reveals up to 70% of your anonymous website traffic**, showing which companies are visiting, what pages they view, and how often they return—even without form fills.
+**[Cursive's visitor identification](/visitor-identification) reveals up to 70% of your anonymous website traffic**, showing which companies are visiting, what pages they view, and how often they return—even without form fills. Learn more about [converting anonymous visitors into leads](/blog/25-boosting-sales-through-anonymous-visitor-conversion-UPDATED).
 
 ## Turn Visitor Data Into Real Leads
 
@@ -68,7 +68,7 @@ When you connect these actions with smart follow-ups across different tools, eve
 
 The outreach matches what they've already seen, so it doesn't feel random. This timing makes it easier for people to say yes when they're ready.
 
-**Cursive seamlessly links online behaviors to CRM data**, enabling automated workflow triggers and integrated messaging across platforms for consistent lead nurturing.
+**[Cursive's platform integrations](/integrations) seamlessly link online behaviors to CRM data**, enabling automated workflow triggers and integrated messaging across platforms for consistent lead nurturing. For more strategies, see our guide on [using audience data efficiently](/blog/01-tips-for-using-marketing-audience-data-efficiently-UPDATED).
 
 Following up on real behavior increases the relevance of your communication. Those touchpoints become more meaningful and encourage engagement.
 
