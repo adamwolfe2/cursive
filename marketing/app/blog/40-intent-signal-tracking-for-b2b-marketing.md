@@ -34,7 +34,7 @@ Intent signals are behaviors that indicate someone is actively researching a pur
 
 When someone views your pricing page once, they might be casually browsing. When they return to pricing three times, download a case study, and research your integration options—that's intent. They're not just learning. They're evaluating.
 
-**Cursive tracks 450 billion+ monthly intent signals across 30,000+ categories**, combining first-party website behavior with third-party research patterns. This reveals which accounts are actively shopping, what they're comparing, and how urgently they need a solution.
+**[Cursive tracks 450 billion+ monthly intent signals](/intent-audiences) across 30,000+ categories**, combining first-party website behavior with third-party research patterns. This reveals which accounts are actively shopping, what they're comparing, and how urgently they need a solution. Learn about [understanding the impact of buyer intent on campaigns](/blog/29-understanding-the-impact-of-buyer-intent-on-campaigns).
 
 ## How to Identify First-Party Intent on Your Website
 
@@ -69,7 +69,7 @@ Track:
 
 When someone exchanges their email for a resource, they're signaling interest. But not all downloads are equal. A top-of-funnel awareness guide shows early-stage research. A product comparison checklist or implementation guide indicates active evaluation.
 
-**With Cursive's visitor identification**, you can identify up to 70% of anonymous website traffic—even before they fill out a form. This means you see buying signals from prospects who are researching quietly, giving you the opportunity to reach out proactively instead of waiting for them to contact you.
+**With [Cursive's visitor identification](/visitor-identification)**, you can identify up to 70% of anonymous website traffic—even before they fill out a form. This means you see buying signals from prospects who are researching quietly, giving you the opportunity to reach out proactively instead of waiting for them to contact you.
 
 ## Combining First-Party and Third-Party Intent Data
 
@@ -83,7 +83,7 @@ When you combine both data sources, you get a complete view of buyer journey:
 
 Third-party signals also reveal competitive threats. If a prospect visits your site and then spends time researching two competitors, you know they're comparing options. That insight shapes your messaging—you can address competitive differentiators directly instead of sending generic pitches.
 
-**Cursive's intent data engine processes 450 billion+ signals monthly**, tracking research behavior across 30,000+ intent categories. You see which prospects are researching "visitor identification tools," "B2B data enrichment," or "CRM integration platforms"—then prioritize outreach to accounts showing the strongest buying signals.
+**Cursive's intent data engine processes 450 billion+ signals monthly**, tracking research behavior across 30,000+ intent categories. You see which prospects are researching "visitor identification tools," "B2B data enrichment," or "CRM integration platforms"—then prioritize outreach to accounts showing the strongest buying signals. Discover [intent-based marketing tactics for B2B](/blog/41-intent-based-marketing-tactics-for-b2b).
 
 ## How to Score and Prioritize Intent Signals
 
@@ -136,7 +136,7 @@ When an account crosses your intent threshold, trigger personalized sequences:
 
 Generic outreach wastes high-intent opportunities. When you know someone researched your integrations page, mention how your platform connects with the tools they already use. When they viewed case studies from their industry, lead with similar customer success stories.
 
-Cursive's audience builder lets you segment by intent signals and create dynamic campaigns that respond to real-time behavior. When someone shows buying interest, they automatically enter the right sequence—no manual list building required.
+[Cursive's audience builder](/audience-builder) lets you segment by intent signals and create dynamic campaigns that respond to real-time behavior. When someone shows buying interest, they automatically enter the right sequence—no manual list building required. See [creating behavioral audience segments easily](/blog/32-creating-behavioral-audience-segments-easily).
 
 ## Common Intent Tracking Mistakes to Avoid
 
@@ -160,7 +160,7 @@ Start simple. You don't need 15 variables to identify hot leads. Focus on 3-5 ke
 
 ### Not Sharing Intent Data Across Teams
 
-Marketing sees website behavior. Sales sees email engagement. When these teams don't share data, opportunities slip through. Integrate intent signals into your CRM so everyone works from the same information.
+Marketing sees website behavior. Sales sees email engagement. When these teams don't share data, opportunities slip through. Integrate intent signals into your CRM so everyone works from the same information. With [200+ integrations](/integrations), ensure your intent data flows everywhere. Learn about [improving CRM integration workflows](/blog/30-tips-for-improving-crm-integration-workflows).
 
 ## Measuring Intent Tracking Success
 
@@ -184,7 +184,7 @@ What percentage of your pipeline originates from intent signals? As your trackin
 
 ## Turn Intent Signals Into Qualified Pipeline
 
-Knowing which prospects are in-market right now changes everything. You stop wasting time on cold outreach and start having conversations with people who are already researching solutions like yours.
+Knowing which prospects are in-market right now changes everything. You stop wasting time on cold outreach and start having conversations with people who are already researching solutions like yours. Combine intent signals with [multifactor audience segmentation for campaign success](/blog/34-multifactor-audience-segmentation-for-campaign-success).
 
 Intent signal tracking isn't about collecting more data. It's about knowing who to talk to, when to reach out, and what to say when you do.
 

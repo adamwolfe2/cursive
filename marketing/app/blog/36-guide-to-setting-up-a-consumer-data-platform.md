@@ -89,11 +89,11 @@ Not all CDPs are created equal. Some focus on enterprise-scale data warehousing.
 
 **Visitor identification:** Can it reveal who's browsing your site anonymously? What's the identification rate?
 
-**Cursive identifies up to 70% of website visitors**, providing contact details and firmographic/demographic profiles even when prospects don't fill out forms.
+**[Cursive identifies up to 70% of website visitors](/visitor-identification)**, providing contact details and firmographic/demographic profiles even when prospects don't fill out forms.
 
 **Native integrations:** Does it connect directly to your existing tools without middleware? How many platforms does it support?
 
-**Cursive offers 200+ native integrations** with CRM, email, advertising, and ecommerce platforms—ensuring data syncs bidirectionally without Zapier or custom development.
+**[Cursive offers 200+ native integrations](/integrations)** with CRM, email, advertising, and ecommerce platforms—ensuring data syncs bidirectionally without Zapier or custom development. Learn about [improving CRM integration workflows](/blog/30-tips-for-improving-crm-integration-workflows).
 
 **Data enrichment:** Can it automatically append missing information (job titles, company details, social profiles)?
 
@@ -101,7 +101,7 @@ Not all CDPs are created equal. Some focus on enterprise-scale data warehousing.
 
 **Intent tracking:** Does it reveal external research behavior showing buying signals?
 
-**Cursive tracks 450 billion+ monthly intent signals across 30,000+ categories**, combining first-party website behavior with third-party research patterns.
+**[Cursive tracks 450 billion+ monthly intent signals](/intent-audiences) across 30,000+ categories**, combining first-party website behavior with third-party research patterns. Learn about [tracking intent signals for B2B marketing](/blog/40-intent-signal-tracking-for-b2b-marketing).
 
 **Ease of use:** Can your marketing team build segments and activate campaigns without technical resources?
 
@@ -243,7 +243,7 @@ With data flowing, create segments for your initial use cases.
 - Opened 2+ emails in past 30 days
 - No pricing page visits yet
 
-**Cursive's audience builder** provides visual, drag-and-drop segment creation with filters for firmographics, behavior, and intent—no SQL required.
+**[Cursive's audience builder](/audience-builder)** provides visual, drag-and-drop segment creation with filters for firmographics, behavior, and intent—no SQL required. Explore [creating behavioral audience segments easily](/blog/32-creating-behavioral-audience-segments-easily).
 
 ### Set Up Dynamic Segmentation
 
@@ -276,7 +276,7 @@ Build custom audiences for precision targeting:
 - **Blog readers:** Promote related resources and product education
 - **Competitors' customers:** Target lookalike audiences based on your best customers
 
-Cursive syncs unified profiles into Google Ads, Meta, LinkedIn, and other platforms automatically—no manual CSV exports.
+Cursive syncs unified profiles into Google Ads, Meta, LinkedIn, and other platforms automatically—no manual CSV exports. See [why CRM integration is crucial for smooth operations](/blog/33-why-crm-integration-is-crucial-for-smooth-operations).
 
 ### Sales Alerts and Outreach
 
@@ -347,7 +347,7 @@ New tools require new workflows. Train your team, document processes, and celebr
 
 ## Start Simple, Prove Value, Expand
 
-Setting up a consumer data platform doesn't require a 12-month enterprise implementation. With modern platforms like Cursive, you can start identifying visitors and activating unified data within weeks—not quarters.
+Setting up a consumer data platform doesn't require a 12-month enterprise implementation. With modern platforms like Cursive, you can start identifying visitors and activating unified data within weeks—not quarters. Explore [multifactor audience segmentation for campaign success](/blog/34-multifactor-audience-segmentation-for-campaign-success) to maximize your CDP investment.
 
 The key is starting with clear goals, connecting your core systems, building high-impact segments, and launching campaigns that prove ROI. Once you've demonstrated value, expanding to additional use cases becomes easy.
 

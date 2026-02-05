@@ -54,7 +54,7 @@ Not all high-intent accounts are equal. Someone showing strong buying signals bu
 - **High firmographic fit**: Right industry, company size, and location
 - **High behavioral intent**: Active research, repeat visits, engagement with bottom-funnel content
 
-**Cursive automatically scores and prioritizes accounts using 450 billion+ monthly intent signals**, surfacing prospects who match your ICP and are actively evaluating solutions. Your sales team gets a clean list of warm leads, not a data dump.
+**[Cursive automatically scores and prioritizes accounts using 450 billion+ monthly intent signals](/intent-audiences)**, surfacing prospects who match your ICP and are actively evaluating solutions. Your sales team gets a clean list of warm leads, not a data dump. Learn about [tracking intent signals for B2B marketing](/blog/40-intent-signal-tracking-for-b2b-marketing).
 
 ### Personalize Outreach Based on Behavior
 
@@ -64,7 +64,7 @@ When you know what content someone engaged with, your outreach becomes relevant:
 - They researched your Salesforce integration? Mention how seamlessly you sync with their existing CRM.
 - They downloaded a competitor comparison? Address key differentiators directly.
 
-This level of personalization only works when you have visibility into prospect behavior. With Cursive's visitor identification, you can identify up to 70% of anonymous website traffic and see exactly which pages they viewed—even before they fill out a form.
+This level of personalization only works when you have visibility into prospect behavior. With [Cursive's visitor identification](/visitor-identification), you can identify up to 70% of anonymous website traffic and see exactly which pages they viewed—even before they fill out a form.
 
 ## Tactic 2: Build Segmented Nurture Campaigns by Intent Stage
 
@@ -102,7 +102,7 @@ Create segmented nurture tracks based on intent stage:
 
 **Goal**: Remove final objections and accelerate decision-making
 
-Cursive's [audience builder](https://meetcursive.com/audience-builder) lets you segment prospects by intent stage automatically, triggering the right campaigns based on real-time behavior. When someone moves from early research to active evaluation, they automatically enter the appropriate sequence—no manual list management required.
+Cursive's [audience builder](/audience-builder) lets you segment prospects by intent stage automatically, triggering the right campaigns based on real-time behavior. When someone moves from early research to active evaluation, they automatically enter the appropriate sequence—no manual list management required. Discover [creating behavioral audience segments easily](/blog/32-creating-behavioral-audience-segments-easily).
 
 ## Tactic 3: Deploy Retargeting Ads Based on Specific Intent Signals
 
@@ -142,7 +142,7 @@ Intent-based retargeting shows different messaging to different audiences based 
 
 **Goal**: Position your solution as the superior choice
 
-With Cursive's [200+ integrations](https://meetcursive.com/integrations), intent signals automatically sync with your ad platforms (Google, Meta, LinkedIn), creating dynamic retargeting audiences that update in real time as prospect behavior changes.
+With [Cursive's 200+ integrations](/integrations), intent signals automatically sync with your ad platforms (Google, Meta, LinkedIn), creating dynamic retargeting audiences that update in real time as prospect behavior changes. Learn about [improving CRM integration workflows](/blog/30-tips-for-improving-crm-integration-workflows).
 
 ## Tactic 4: Trigger Multi-Channel Sequences Based on Intent Patterns
 
@@ -218,7 +218,7 @@ Example handoff criteria:
 - Visited pricing page 2+ times in 7 days
 - Downloaded bottom-funnel content
 
-**Cursive syncs intent data directly into your CRM via 200+ native integrations**, ensuring sales reps see complete activity timelines without switching tools. Marketing and sales work from the same data, eliminating handoff friction.
+**Cursive syncs intent data directly into your CRM via 200+ native integrations**, ensuring sales reps see complete activity timelines without switching tools. Marketing and sales work from the same data, eliminating handoff friction. See [why CRM integration is crucial for smooth operations](/blog/33-why-crm-integration-is-crucial-for-smooth-operations).
 
 ## Tactic 6: Use Intent Data to Optimize Campaign Targeting
 
@@ -278,7 +278,7 @@ When dormant leads return, acknowledge their renewed interest:
 
 A lead who went cold six months ago but just visited your pricing page three times this week is hotter than a brand new contact who read one blog post. Score and prioritize accordingly.
 
-Cursive tracks visitor behavior across time, flagging when previously known contacts return and exhibit renewed buying signals. These re-engagement opportunities often produce the fastest ROI because trust is already established.
+Cursive tracks visitor behavior across time, flagging when previously known contacts return and exhibit renewed buying signals. These re-engagement opportunities often produce the fastest ROI because trust is already established. Combine this with [multifactor audience segmentation for campaign success](/blog/34-multifactor-audience-segmentation-for-campaign-success).
 
 ## Measuring Intent-Based Marketing Success
 
