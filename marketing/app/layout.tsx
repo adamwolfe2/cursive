@@ -24,9 +24,17 @@ export const metadata: Metadata = {
     canonical: 'https://meetcursive.com',
   }),
   icons: {
-    icon: '/cursive-logo.png',
+    icon: [
+      { url: '/cursive-logo.png', sizes: '512x442', type: 'image/png' },
+      { url: '/cursive-logo.png', sizes: '32x32', type: 'image/png' },
+      { url: '/cursive-logo.png', sizes: '16x16', type: 'image/png' },
+    ],
     shortcut: '/cursive-logo.png',
     apple: '/cursive-logo.png',
+    other: {
+      rel: 'icon',
+      url: '/cursive-logo.png',
+    },
   },
 };
 
