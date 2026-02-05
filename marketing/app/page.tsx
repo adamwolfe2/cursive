@@ -7,6 +7,7 @@ import { InteractiveFeaturesShowcase } from "@/components/demos/interactive-feat
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateOrganizationSchema } from "@/lib/seo/structured-data"
 import { DashboardPreview } from "@/components/dashboard-preview"
+import { IntegrationsShowcase } from "@/components/integrations-showcase"
 import Link from "next/link"
 
 export default function HomePage() {
@@ -222,8 +223,18 @@ export default function HomePage() {
         </Container>
       </section>
 
+      {/* Integrations Showcase */}
+      <section className="py-20 bg-[#F7F9FB]">
+        <Container>
+          <IntegrationsShowcase
+            title="Integrates With Everything You Use"
+            subtitle="Connect your favorite tools and automate your workflow with 200+ integrations"
+          />
+        </Container>
+      </section>
+
       {/* Final CTA */}
-      <section className="relative py-32 bg-[#F7F9FB] overflow-hidden">
+      <section className="relative py-32 bg-white overflow-hidden">
         <Container>
           <motion.div
             initial={{ opacity: 0, y: 30 }}
