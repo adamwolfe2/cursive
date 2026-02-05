@@ -41,7 +41,7 @@ When you can spot these patterns in real-time, you know when to act. The account
 
 Intent data helps you match your outreach to the exact moment prospects want it. Not too early (feels pushy), not too late (they've already chosen).
 
-Cursive tracks website behavior, content engagement, and external intent signals to show you which accounts are warming up and which need more time. You can [build intent-based audience segments](/audience-builder) that automatically update as behavior changes.
+Cursive tracks website behavior, content engagement, and external intent signals to show you which accounts are warming up and which need more time. You can [build intent-based audience segments](/audience-builder) that automatically update as behavior changes. Learn more about [creating behavioral audience segments easily](/blog/32-creating-behavioral-audience-segments-easily) to improve targeting precision.
 
 ## Segmenting by Actions, Not Just Attributes
 
@@ -84,7 +84,7 @@ For example, when an account views pricing after downloading a case study, they 
 - Multiple stakeholders from same company visit site → Alert SDR about buying committee forming
 - Return visitor hits pricing repeatedly → Notify account executive to reach out with custom quote
 
-With [200+ integrations](/integrations), Cursive syncs intent signals to your CRM, email platform, and ad tools. Your sales team sees the same behavioral data that triggered the marketing campaign, so everyone stays aligned.
+With [200+ integrations](/integrations), Cursive syncs intent signals to your CRM, email platform, and ad tools. Your sales team sees the same behavioral data that triggered the marketing campaign, so everyone stays aligned. See our guide on [improving CRM integration workflows](/blog/30-tips-for-improving-crm-integration-workflows) for best practices.
 
 ## Building Reliable Workflows with Better Insight
 
@@ -102,9 +102,9 @@ Intent data only works when your systems talk to each other. When website behavi
 - Email bounces → Contact removed from active segments automatically
 - Demo scheduled → Retargeting ads pause to avoid waste
 
-When your systems share one source of truth, teams collaborate better. Marketing sees which campaigns drive sales conversations. Sales understands what content sparked interest. Everyone works from the same intent signals.
+When your systems share one source of truth, teams collaborate better. Marketing sees which campaigns drive sales conversations. Sales understands what content sparked interest. Everyone works from the same intent signals. Discover [why CRM integration is crucial for smooth operations](/blog/33-why-crm-integration-is-crucial-for-smooth-operations).
 
-Cursive's [unified platform](/audience-builder) combines visitor identification, intent tracking, and multi-channel activation. When someone shows interest, that signal flows to every tool in your stack instantly.
+Cursive's [unified platform](/audience-builder) combines [visitor identification](/visitor-identification), intent tracking, and multi-channel activation. When someone shows interest, that signal flows to every tool in your stack instantly.
 
 ## Making Every Marketing Step Count with Buyer Insights
 
@@ -118,7 +118,7 @@ When campaigns respond to what people are actually doing, messages feel helpful 
 
 Intent data doesn't just make marketing more efficient. It makes it more effective. You spend less time guessing and more time converting accounts that are actually in-market.
 
-By keeping your systems connected, your timing thoughtful, and your segments clean, campaigns stay agile. When buying behavior shifts, your outreach adapts automatically.
+By keeping your systems connected, your timing thoughtful, and your segments clean, campaigns stay agile. When buying behavior shifts, your outreach adapts automatically. Explore [multifactor audience segmentation for campaign success](/blog/34-multifactor-audience-segmentation-for-campaign-success) to layer intent with other targeting criteria.
 
 Ready to see which accounts are researching solutions like yours right now? [Cursive's intent audiences](/intent-audiences) track 450B+ monthly signals across 30,000+ categories, showing you exactly who's in-market and what they're researching.
 

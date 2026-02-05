@@ -95,11 +95,11 @@ External research signals showing buying readiness:
 **Cursive unifies all four data types automatically:**
 
 - Firmographic enrichment from 140M+ business profiles
-- Visitor identification revealing individual prospects
+- [Visitor identification](/visitor-identification) revealing individual prospects
 - Behavioral tracking across website and email engagement
-- Intent signals from 450 billion+ monthly data points across 30,000+ categories
+- [Intent signals](/intent-audiences) from 450 billion+ monthly data points across 30,000+ categories
 
-This creates complete audience profiles without manual data gathering.
+This creates complete audience profiles without manual data gathering. Learn about [creating behavioral audience segments easily](/blog/32-creating-behavioral-audience-segments-easily).
 
 ## How to Build Multifactor Segments That Drive Results
 
@@ -176,7 +176,7 @@ Automate segment transitions based on intent:
 
 As prospects research more actively (visiting pricing pages, downloading comparisons, engaging with multiple pieces of content), their score increases and they automatically enter higher-priority segments.
 
-**Cursive's audience builder** automatically calculates intent scores and moves prospects between segments in real time, ensuring campaigns always reflect current behavior—no manual list management required.
+**[Cursive's audience builder](/audience-builder)** automatically calculates intent scores and moves prospects between segments in real time, ensuring campaigns always reflect current behavior—no manual list management required. See [understanding the impact of buyer intent on campaigns](/blog/29-understanding-the-impact-of-buyer-intent-on-campaigns).
 
 ## Personalizing Messaging for Each Multifactor Segment
 
@@ -268,7 +268,7 @@ It's possible to layer so many criteria that each segment contains 10 people. Th
 
 Multifactor segmentation requires accurate data. If firmographics are outdated or behavioral tracking is incomplete, your segments will be poorly targeted.
 
-**Solution:** Use platforms that automatically enrich data and validate accuracy. Cursive enriches profiles with verified information from 140M+ business records and 220M+ consumer profiles.
+**Solution:** Use platforms that automatically enrich data and validate accuracy. Cursive enriches profiles with verified information from 140M+ business records and 220M+ consumer profiles. Ensure [CRM integration is crucial for smooth operations](/blog/33-why-crm-integration-is-crucial-for-smooth-operations) and data quality.
 
 ### Building Static Segments That Never Update
 
@@ -310,7 +310,7 @@ Multifactor audience segmentation isn't just a marketing tactic—it's a fundame
 
 When you stop broadcasting generic messages to broad audiences and start delivering precisely targeted campaigns to prospects showing the right combination of fit, behavior, and intent, everything improves: engagement rates, conversion velocity, win rates, and ROI.
 
-The difference between campaigns that struggle and campaigns that scale profitably often comes down to segment precision.
+The difference between campaigns that struggle and campaigns that scale profitably often comes down to segment precision. With [200+ integrations](/integrations), your segmentation strategy works across every platform. Learn about [improving CRM integration workflows](/blog/30-tips-for-improving-crm-integration-workflows).
 
 **Ready to build multifactor segments that actually convert?** [Book a demo](https://cal.com/adamwolfe/cursive-ai-audit) to see how Cursive combines firmographic data, behavioral tracking, and 450B+ intent signals into unified audience segments that drive measurable growth.
 

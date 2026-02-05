@@ -52,7 +52,7 @@ You don't have to manually review every action and update lists. Smart segmentat
 
 **Cart and form triggers**. Started but didn't complete a form? Follow up with simpler ask. Added item to cart but didn't purchase? Send targeted offer. Viewed demo request page but bounced? Reduce friction.
 
-Cursive lets you [create real-time behavioral segments](/audience-builder) that update automatically. When someone's actions signal changing interest, they move to the right segment without manual list management.
+Cursive lets you [create real-time behavioral segments](/audience-builder) that update automatically. When someone's actions signal changing interest, they move to the right segment without manual list management. Explore [multifactor audience segmentation for campaign success](/blog/34-multifactor-audience-segmentation-for-campaign-success) to layer behavioral data with other targeting criteria.
 
 ## Keeping Segments Clean and Current
 
@@ -98,7 +98,7 @@ Behavioral segments shouldn't live in isolation. When your marketing platform an
 
 **Segment inheritance**. CRM fields can trigger segment membership. Mark someone as "Decision Maker" in CRM → Automatically added to executive-focused campaigns → Messaging adjusts to match their role.
 
-With [200+ integrations](/integrations), Cursive keeps behavioral segments synced across your entire tech stack. When someone's behavior changes, that update flows everywhere instantly.
+With [200+ integrations](/integrations), Cursive keeps behavioral segments synced across your entire tech stack. When someone's behavior changes, that update flows everywhere instantly. Learn about [improving CRM integration workflows](/blog/30-tips-for-improving-crm-integration-workflows) to maximize data synchronization.
 
 ## Building Segments for Different Campaign Goals
 
@@ -143,9 +143,9 @@ When audience segmentation is based on real behavior, campaigns perform better a
 
 The more you use behavior to guide segmentation, the less energy you waste on cold outreach. Your marketing feels lighter because you've eliminated guesswork.
 
-Simple workflows, cleaner lists, and the right technology create campaigns that stay on track. What starts small with a few triggers can become the backbone of a faster-moving marketing operation.
+Simple workflows, cleaner lists, and the right technology create campaigns that stay on track. What starts small with a few triggers can become the backbone of a faster-moving marketing operation. Discover how [visitor identification](/visitor-identification) reveals anonymous website traffic for more complete behavioral profiles.
 
-Ready to build behavioral segments that automatically update based on real-time actions? [Cursive's Audience Builder](/audience-builder) gives you access to 220M+ consumer and 140M+ business profiles, with behavioral and intent filters that keep segments accurate as interests change.
+Ready to build behavioral segments that automatically update based on real-time actions? [Cursive's Audience Builder](/audience-builder) gives you access to 220M+ consumer and 140M+ business profiles, with behavioral and [intent filters](/intent-audiences) that keep segments accurate as interests change. See [understanding the impact of buyer intent on campaigns](/blog/29-understanding-the-impact-of-buyer-intent-on-campaigns).
 
 [Book a demo](https://cal.com/adamwolfe/cursive-ai-audit) and we'll show you which behaviors your best customers have in common—so you can find more like them.
 

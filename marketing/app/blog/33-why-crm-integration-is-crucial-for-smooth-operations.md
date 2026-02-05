@@ -25,7 +25,7 @@ The obvious inefficiency—spending 30 minutes manually updating contact records
 
 **Delayed Response Times Kill Hot Leads**
 
-A prospect visits your pricing page three times in one day—a clear buying signal. But because your [visitor identification platform](https://meetcursive.com/visitor-identification) doesn't connect to your CRM, sales never receives an alert. By the time they manually check analytics reports the next morning, the prospect has already chosen a competitor who responded faster.
+A prospect visits your pricing page three times in one day—a clear buying signal. But because your [visitor identification platform](/visitor-identification) doesn't connect to your CRM, sales never receives an alert. By the time they manually check analytics reports the next morning, the prospect has already chosen a competitor who responded faster. Learn about [understanding the impact of buyer intent on campaigns](/blog/29-understanding-the-impact-of-buyer-intent-on-campaigns).
 
 **Research shows 50% of B2B buyers choose the vendor who responds first.** When your systems don't integrate, you're always responding late.
 
@@ -100,7 +100,7 @@ CRM integration means every team member—regardless of department—sees the sa
 
 No more asking, "What's the status of this account?" The answer is always available, always current, always in one place.
 
-**Cursive integrates with 200+ platforms**—CRMs, marketing automation, email services, ad networks, support systems—ensuring every interaction, from first website visit to renewal negotiation, appears in your unified customer timeline.
+**[Cursive integrates with 200+ platforms](/integrations)**—CRMs, marketing automation, email services, ad networks, support systems—ensuring every interaction, from first website visit to renewal negotiation, appears in your unified customer timeline. Discover [tips for improving CRM integration workflows](/blog/30-tips-for-improving-crm-integration-workflows).
 
 ### Seamless Handoffs Between Departments
 
@@ -150,7 +150,7 @@ Instead of manually reviewing hundreds of leads, reps get automated alerts when 
 - **CRM task created**: "Call John Smith at Acme - watching integration documentation"
 - **Email sequence adjusted**: Pause generic nurture, start product-specific education
 
-This happens automatically, within seconds, because [Cursive's visitor identification](https://meetcursive.com/visitor-identification) syncs behavioral data to your CRM in real time.
+This happens automatically, within seconds, because [Cursive's visitor identification](/visitor-identification) syncs behavioral data to your CRM in real time. See how [creating behavioral audience segments easily](/blog/32-creating-behavioral-audience-segments-easily) improves targeting precision.
 
 **Campaign Optimization:**
 
@@ -189,7 +189,7 @@ With CRM integration, segments reflect actual sales intelligence:
 - **High-value prospects** = match ICP *AND* budget confirmed by sales *AND* decision-maker identified
 - **Ready to buy** = demo completed *AND* moved to "Proposal" stage *AND* timeline set for this quarter
 
-[Cursive's audience builder](https://meetcursive.com/audience-builder) lets you create segments using both marketing data (website behavior, email engagement) and CRM data (deal stage, rep notes, close dates)—ensuring campaigns target the right people at the right time.
+[Cursive's audience builder](/audience-builder) lets you create segments using both marketing data (website behavior, email engagement) and CRM data (deal stage, rep notes, close dates)—ensuring campaigns target the right people at the right time. Explore [multifactor audience segmentation for campaign success](/blog/34-multifactor-audience-segmentation-for-campaign-success) to combine multiple data dimensions.
 
 ### Personalization Based on Pipeline Position
 
@@ -333,7 +333,7 @@ When something breaks, you receive instant Slack/email alerts with clear resolut
 
 The most powerful CRM integration isn't just syncing contact fields—it's enriching records with behavioral intelligence that guides sales strategy.
 
-**Cursive tracks 450 billion+ monthly intent signals** across 30,000+ categories, identifying prospects actively researching solutions like yours—even before they visit your website.
+**Cursive tracks 450 billion+ monthly [intent signals](/intent-audiences)** across 30,000+ categories, identifying prospects actively researching solutions like yours—even before they visit your website.
 
 This intent data flows directly into your CRM:
 
@@ -382,7 +382,7 @@ Cursive offers: (1) 200+ native integrations requiring zero custom development, 
 
 Disconnected systems create the friction that prevents your team from achieving their potential.
 
-When [Cursive's visitor identification](https://meetcursive.com/visitor-identification), [audience builder](https://meetcursive.com/audience-builder), and [intent data](https://meetcursive.com/intent-audiences) connect seamlessly with your CRM and every other business tool, operations transform:
+When [Cursive's visitor identification](/visitor-identification), [audience builder](/audience-builder), and [intent data](/intent-audiences) connect seamlessly with your CRM and every other business tool, operations transform:
 
 - Sales responds to hot leads in minutes, not hours
 - Marketing campaigns target the right prospects with relevant messaging

@@ -48,7 +48,7 @@ With proper two-way integration:
 
 Every tool in this chain stays synchronized. No manual data entry. No guessing about what happened last. Just accurate, real-time information flowing where it needs to go.
 
-**Cursive's 200+ native integrations** ensure bidirectional sync between your CRM and every marketing tool in your stack—visitor identification, audience building, email platforms, ad networks, and direct mail systems.
+**[Cursive's 200+ native integrations](/integrations)** ensure bidirectional sync between your CRM and every marketing tool in your stack—[visitor identification](/visitor-identification), [audience building](/audience-builder), email platforms, ad networks, and [direct mail](/direct-mail) systems.
 
 ### How to Implement Bidirectional Sync
 
@@ -214,7 +214,7 @@ Real-time integration means updates flow within seconds:
 
 This speed transforms your team's ability to capitalize on intent signals.
 
-**Cursive processes visitor identification and intent data in real time**, syncing updates to your CRM within seconds—not hours. When someone matches your ideal customer profile and shows buying intent, your sales team knows immediately.
+**Cursive processes [visitor identification](/visitor-identification) and [intent data](/intent-audiences) in real time**, syncing updates to your CRM within seconds—not hours. When someone matches your ideal customer profile and shows buying intent, your sales team knows immediately. Learn about [understanding the impact of buyer intent on campaigns](/blog/29-understanding-the-impact-of-buyer-intent-on-campaigns).
 
 ### How to Verify Real-Time Sync
 
@@ -309,9 +309,9 @@ Now map CRM integration triggers to this journey:
 
 These workflows ensure the right actions happen automatically as prospects move through your funnel—without requiring manual intervention.
 
-### [Cursive's Audience Builder](https://meetcursive.com/audience-builder) Enables Stage-Based Segmentation
+### [Cursive's Audience Builder](/audience-builder) Enables Stage-Based Segmentation
 
-Cursive syncs CRM pipeline stages in real time, enabling you to build audiences based on exactly where prospects are in your sales process:
+Cursive syncs CRM pipeline stages in real time, enabling you to build audiences based on exactly where prospects are in your sales process. Discover how [creating behavioral audience segments easily](/blog/32-creating-behavioral-audience-segments-easily) enhances your targeting:
 
 - **Awareness audiences**: Target similar companies with top-funnel content
 - **Consideration audiences**: Retarget engaged leads with product comparisons and ROI calculators
@@ -415,7 +415,7 @@ Integrating intent signals with your CRM transforms static contact records into 
 - Technology evaluation patterns
 - Buying stage signals
 
-[Cursive tracks 450 billion+ monthly intent signals](https://meetcursive.com/intent-audiences) across 30,000+ categories, identifying prospects actively researching solutions like yours—even before they visit your website.
+[Cursive tracks 450 billion+ monthly intent signals](/intent-audiences) across 30,000+ categories, identifying prospects actively researching solutions like yours—even before they visit your website. See [why CRM integration is crucial for smooth operations](/blog/33-why-crm-integration-is-crucial-for-smooth-operations).
 
 ### How to Use Intent Data in CRM Workflows
 
@@ -510,7 +510,7 @@ Real-time dashboard showing sync health, authentication status, error rates, and
 **No Developer Required:**
 Non-technical marketers can configure integrations through intuitive UI—no coding, no API key management, no debugging.
 
-When you build your marketing stack on Cursive, [integration becomes a competitive advantage](https://meetcursive.com/integrations)—not a technical burden.
+When you build your marketing stack on Cursive, [integration becomes a competitive advantage](/integrations)—not a technical burden. Explore [multifactor audience segmentation for campaign success](/blog/34-multifactor-audience-segmentation-for-campaign-success) to maximize your integrated data.
 
 ## Frequently Asked Questions
 
@@ -548,7 +548,7 @@ CRM integration must comply with GDPR by: (1) Syncing opt-out preferences across
 
 ## Build CRM Workflows That Accelerate Revenue
 
-Effective CRM integration transforms scattered tools into a unified revenue engine. When data flows seamlessly between [Cursive's visitor identification](https://meetcursive.com/visitor-identification), your CRM, and your entire marketing stack, you eliminate the manual work, data errors, and missed opportunities that cost deals.
+Effective CRM integration transforms scattered tools into a unified revenue engine. When data flows seamlessly between [Cursive's visitor identification](/visitor-identification), your CRM, and your entire marketing stack, you eliminate the manual work, data errors, and missed opportunities that cost deals.
 
 **Cursive's 200+ native integrations** make sophisticated CRM workflows achievable without developers, middleware, or constant troubleshooting—giving your team the real-time data visibility they need to convert more leads, close deals faster, and prove marketing ROI.
 
