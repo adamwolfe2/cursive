@@ -34,7 +34,7 @@ const processSteps: ProcessStep[] = [
       "Records device fingerprint and IP address",
       "Works across all pages without forms"
     ],
-    color: "#3B82F6" // blue
+    color: "#007AFF" // blue
   },
   {
     number: 2,
@@ -47,7 +47,7 @@ const processSteps: ProcessStep[] = [
       "Identity graph matches across 220M+ profiles",
       "Appends verified email and phone data"
     ],
-    color: "#8B5CF6" // purple
+    color: "#007AFF" // blue
   },
   {
     number: 3,
@@ -60,7 +60,7 @@ const processSteps: ProcessStep[] = [
       "Behavioral signals (pages viewed, time spent)",
       "Historical visit patterns and frequency"
     ],
-    color: "#EC4899" // pink
+    color: "#007AFF" // blue
   },
   {
     number: 4,
@@ -73,7 +73,7 @@ const processSteps: ProcessStep[] = [
       "Buying stage detection (research, evaluation, decision)",
       "Prioritization by likelihood to convert"
     ],
-    color: "#F59E0B" // amber
+    color: "#007AFF" // blue
   },
   {
     number: 5,
@@ -86,7 +86,7 @@ const processSteps: ProcessStep[] = [
       "Trigger automated email and SMS campaigns",
       "Direct mail postcards for high-intent visitors"
     ],
-    color: "#10B981" // green
+    color: "#007AFF" // blue
   },
   {
     number: 6,
@@ -99,7 +99,7 @@ const processSteps: ProcessStep[] = [
       "Calculate ROI per channel and campaign",
       "Optimize based on what actually drives revenue"
     ],
-    color: "#06B6D4" // cyan
+    color: "#007AFF" // blue
   }
 ]
 

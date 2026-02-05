@@ -4,6 +4,7 @@ import { Calendar, Clock, ArrowLeft, ArrowRight, Check, X } from "lucide-react"
 import { generateMetadata } from "@/lib/seo/metadata"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateFAQSchema } from "@/lib/seo/faq-schema"
+import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
 
 export const metadata = generateMetadata({
   title: "Clearbit Alternatives: 10 Tools Compared (2026)",
@@ -114,8 +115,8 @@ export default function BlogPost() {
 
             <p>
               The good news? The B2B data landscape has exploded. Whether you need better pricing, more accurate data,
-              or specialized features like <a href="/solutions/visitor-identification">visitor identification</a> or
-              intent signals, there's likely a better fit for your needs.
+              or specialized features like <a href="/visitor-identification">visitor identification</a> or
+              <a href="/intent-audiences">intent data</a>, there's likely a better fit for your needs.
             </p>
 
             <h2>10 Best Clearbit Alternatives (Detailed Comparison)</h2>
@@ -132,8 +133,8 @@ export default function BlogPost() {
 
               <p className="text-gray-700 mb-4">
                 <strong>What makes it different:</strong> While Clearbit focuses on enriching known contacts, Cursive
-                specializes in identifying anonymous website visitors and automating personalized outreach based on their
-                behavior and intent signals.
+                specializes in <a href="/visitor-identification" className="text-blue-600 hover:underline">identifying anonymous website visitors</a> and automating personalized outreach based on their
+                behavior and <a href="/intent-audiences" className="text-blue-600 hover:underline">intent signals</a>.
               </p>
 
               <div className="grid md:grid-cols-2 gap-6 mb-4">
@@ -180,7 +181,7 @@ export default function BlogPost() {
                 </div>
                 <p className="text-sm text-gray-600">
                   <strong>Best for:</strong> B2B SaaS companies that want to convert website traffic into pipeline through
-                  automated, intent-based outreach. Ideal replacement if you're using Clearbit Reveal + manual follow-up.
+                  automated, intent-based outreach. Ideal replacement if you're using Clearbit Reveal + manual follow-up. See our <a href="/pricing" className="text-blue-600 hover:underline">pricing</a> for details.
                 </p>
               </div>
             </div>
@@ -857,8 +858,8 @@ export default function BlogPost() {
 
             <h3>If You Need Visitor Identification and Intent:</h3>
             <p>
-              Choose <strong><a href="/">Cursive</a></strong> for real-time visitor identification with automated outreach,
-              or <strong>6sense</strong> if you have an enterprise budget and want a full ABM platform.
+              Choose <strong><a href="/" className="text-blue-600 hover:underline">Cursive</a></strong> for real-time <a href="/visitor-identification" className="text-blue-600 hover:underline">visitor identification</a> with automated outreach,
+              or <strong>6sense</strong> if you have an enterprise budget and want a full ABM platform. Our <a href="/audience-builder" className="text-blue-600 hover:underline">audience builder</a> makes it easy to segment and target your ideal customers.
             </p>
 
             <h3>If You Need the Largest Database:</h3>
@@ -881,8 +882,8 @@ export default function BlogPost() {
 
             <h3>If You Need Intent Data:</h3>
             <p>
-              Choose <strong>Cursive</strong> for website-level intent, <strong>Bombora</strong> for
-              topic-based intent across the web, or <strong>6sense</strong> for predictive intent scoring.
+              Choose <strong><a href="/" className="text-blue-600 hover:underline">Cursive</a></strong> for website-level <a href="/intent-audiences" className="text-blue-600 hover:underline">intent data</a>, <strong>Bombora</strong> for
+              topic-based intent across the web, or <strong>6sense</strong> for predictive intent scoring. Combine intent data with our <a href="/direct-mail" className="text-blue-600 hover:underline">direct mail</a> campaigns for maximum impact.
             </p>
 
             <h2>Frequently Asked Questions</h2>
@@ -900,15 +901,15 @@ export default function BlogPost() {
 
             <p>
               Clearbit is no longer the only game in town. Whether you're looking for better pricing, more features,
-              or specialized capabilities like <a href="/solutions/visitor-identification">visitor identification</a> or
-              <a href="/solutions/lead-generation">automated lead generation</a>, there's likely an alternative that's a
-              better fit for your needs.
+              or specialized capabilities like <a href="/visitor-identification" className="text-blue-600 hover:underline">visitor identification</a> or
+              automated lead generation, there's likely an alternative that's a
+              better fit for your needs. Check out our <a href="/integrations" className="text-blue-600 hover:underline">integrations</a> to see how easily you can connect these tools to your existing stack.
             </p>
 
             <p>
-              For teams focused on converting website traffic into pipeline, we built Cursive to solve the gaps we saw
-              in the market: real-time visitor identification, intent signals, and automated personalized outreach—all
-              at a transparent price point.
+              For teams focused on converting website traffic into pipeline, we built <a href="/" className="text-blue-600 hover:underline">Cursive</a> to solve the gaps we saw
+              in the market: real-time <a href="/visitor-identification" className="text-blue-600 hover:underline">visitor identification</a>, <a href="/intent-audiences" className="text-blue-600 hover:underline">intent signals</a>, and automated personalized outreach—all
+              at a <a href="/pricing" className="text-blue-600 hover:underline">transparent price point</a>.
             </p>
 
             <div className="not-prose bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl p-8 my-12 text-white text-center">
@@ -937,13 +938,6 @@ export default function BlogPost() {
               </div>
             </div>
 
-            <h2>Related Reading</h2>
-            <ul>
-              <li><a href="/solutions/visitor-identification">How Visitor Identification Works</a></li>
-              <li><a href="/solutions/lead-generation">Automated Lead Generation Guide</a></li>
-              <li><a href="/blog/icp-targeting-guide">Perfect ICP Targeting Framework</a></li>
-              <li><a href="/solutions/audience-targeting">Advanced Audience Targeting Strategies</a></li>
-            </ul>
 
             <h2>About the Author</h2>
             <p>
@@ -958,20 +952,24 @@ export default function BlogPost() {
       {/* Related Posts */}
       <section className="py-16 bg-gradient-to-br from-gray-50 to-blue-50">
         <Container>
-          <h2 className="text-3xl font-bold mb-8 text-center">Read Next</h2>
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <a href="/blog/visitor-tracking" className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow">
-              <h3 className="font-bold mb-2">Website Visitor Tracking</h3>
-              <p className="text-sm text-gray-600">Complete guide to identifying and converting anonymous visitors</p>
-            </a>
-            <a href="/blog/lead-generation" className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow">
-              <h3 className="font-bold mb-2">Lead Generation Strategies</h3>
-              <p className="text-sm text-gray-600">Modern tactics for generating qualified B2B leads in 2026</p>
-            </a>
-            <a href="/blog/icp-targeting-guide" className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow">
-              <h3 className="font-bold mb-2">Perfect ICP Targeting</h3>
-              <p className="text-sm text-gray-600">5-step framework for better lead quality</p>
-            </a>
+          <div className="max-w-5xl mx-auto">
+            <SimpleRelatedPosts posts={[
+              {
+                title: "Warmly vs Cursive Comparison",
+                description: "Compare these two intent-based platforms side-by-side",
+                href: "/blog/warmly-vs-cursive-comparison"
+              },
+              {
+                title: "How to Identify Website Visitors",
+                description: "Technical guide to visitor identification methods",
+                href: "/blog/how-to-identify-website-visitors-technical-guide"
+              },
+              {
+                title: "Perfect ICP Targeting",
+                description: "5-step framework for better lead quality",
+                href: "/blog/icp-targeting-guide"
+              }
+            ]} />
           </div>
         </Container>
       </section>

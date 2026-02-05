@@ -8,7 +8,7 @@ export function Footer() {
   return (
     <footer className="bg-white border-t border-gray-200 py-12">
       <Container>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
           {/* Brand */}
           <div className="col-span-2">
             <div className="flex items-center mb-4">
@@ -129,6 +129,38 @@ export function Footer() {
               <li>
                 <Link href="/services" className="hover:text-[#007AFF] transition-colors">
                   Services
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Comparisons */}
+          <div>
+            <h3 className="text-gray-900 mb-4">Compare</h3>
+            <ul className="space-y-2 text-sm text-gray-600">
+              <li>
+                <Link href="/compare/zoominfo" className="hover:text-[#007AFF] transition-colors">
+                  vs ZoomInfo
+                </Link>
+              </li>
+              <li>
+                <Link href="/compare/6sense" className="hover:text-[#007AFF] transition-colors">
+                  vs 6sense
+                </Link>
+              </li>
+              <li>
+                <Link href="/compare/clearbit" className="hover:text-[#007AFF] transition-colors">
+                  vs Clearbit
+                </Link>
+              </li>
+              <li>
+                <Link href="/compare/apollo" className="hover:text-[#007AFF] transition-colors">
+                  vs Apollo
+                </Link>
+              </li>
+              <li>
+                <Link href="/compare/leadiq" className="hover:text-[#007AFF] transition-colors">
+                  vs LeadIQ
                 </Link>
               </li>
             </ul>

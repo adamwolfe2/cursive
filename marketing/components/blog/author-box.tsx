@@ -22,7 +22,7 @@ export function AuthorBox({ author }: AuthorBoxProps) {
       <div className="flex items-start gap-4">
         <Image
           src={author.avatar}
-          alt={author.name}
+          alt={`${author.name} profile picture`}
           width={80}
           height={80}
           className="rounded-full"

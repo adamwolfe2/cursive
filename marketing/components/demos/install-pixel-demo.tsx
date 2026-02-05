@@ -91,17 +91,17 @@ export default function InstallPixelDemo() {
   };
 
   return (
-    <div ref={ref} className="w-full max-w-[1200px] mx-auto px-6 py-24">
+    <div ref={ref} className="w-full">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className="mb-12 text-center"
+        className="mb-8"
       >
-        <h2 className="text-5xl font-semibold text-white mb-4">
+        <h3 className="text-2xl font-semibold text-gray-900 mb-2">
           Install Tracking Pixel
-        </h2>
-        <p className="text-xl text-gray-400">
+        </h3>
+        <p className="text-base text-gray-600">
           Add one line of code to start identifying your website visitors
         </p>
       </motion.div>
@@ -111,20 +111,20 @@ export default function InstallPixelDemo() {
         initial={{ opacity: 0, y: 30 }}
         animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
         transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-        className="w-full max-w-[800px] mx-auto mb-16"
+        className="w-full mb-8"
       >
-        <div className="relative bg-[#2D2D2D] rounded-lg overflow-hidden">
+        <div className="relative bg-gray-50 rounded-lg overflow-hidden border border-gray-200">
           {/* Editor Header */}
-          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-700">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-300 bg-white">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-[#FF5F56]" />
               <div className="w-3 h-3 rounded-full bg-[#FFBD2E]" />
               <div className="w-3 h-3 rounded-full bg-[#27C93F]" />
             </div>
-            <span className="text-sm text-gray-400 font-mono">index.html</span>
+            <span className="text-sm text-gray-600 font-mono">index.html</span>
             <button
               onClick={handleCopy}
-              className="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-300 hover:text-white hover:bg-gray-700 rounded transition-all"
+              className="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded transition-all"
               aria-label="Copy code"
             >
               {isCopied ? (
@@ -143,69 +143,69 @@ export default function InstallPixelDemo() {
 
           {/* Code Content */}
           <div className="p-6 font-mono text-sm leading-relaxed overflow-x-auto">
-            <pre className="text-gray-300">
+            <pre className="text-gray-800">
               <code>
                 <span className="text-gray-500">&lt;!-- Cursive Tracking Pixel --&gt;</span>
                 {'\n'}
-                <span className="text-[#FF79C6]">&lt;script&gt;</span>
+                <span className="text-[#E36209]">&lt;script&gt;</span>
                 {'\n'}
                 {'  '}
-                <span className="text-[#F1FA8C]">(function</span>
-                <span className="text-gray-300]">()</span>
+                <span className="text-[#CF222E]">(function</span>
+                <span className="text-gray-800">()</span>
                 {' '}
-                <span className="text-[#FF79C6]">{'{'}</span>
+                <span className="text-[#E36209]">{'{'}</span>
                 {'\n'}
                 {'    '}
-                <span className="text-[#8BE9FD]">var</span>
+                <span className="text-[#0550AE]">var</span>
                 {' '}
-                <span className="text-gray-300">script</span>
+                <span className="text-gray-800">script</span>
                 {' = '}
-                <span className="text-gray-300">document</span>
-                <span className="text-[#FF79C6]">.</span>
-                <span className="text-[#50FA7B]">createElement</span>
-                <span className="text-gray-300">(</span>
-                <span className="text-[#F1FA8C]">'script'</span>
-                <span className="text-gray-300">);</span>
+                <span className="text-gray-800">document</span>
+                <span className="text-[#E36209]">.</span>
+                <span className="text-[#8250DF]">createElement</span>
+                <span className="text-gray-800">(</span>
+                <span className="text-[#0A3069]">'script'</span>
+                <span className="text-gray-800">);</span>
                 {'\n'}
                 {'    '}
-                <span className="text-gray-300">script</span>
-                <span className="text-[#FF79C6]">.</span>
-                <span className="text-gray-300">src</span>
+                <span className="text-gray-800">script</span>
+                <span className="text-[#E36209]">.</span>
+                <span className="text-gray-800">src</span>
                 {' = '}
-                <span className="text-[#F1FA8C]">'https://cdn.cursive.io/pixel.js'</span>
-                <span className="text-gray-300">;</span>
+                <span className="text-[#0A3069]">'https://cdn.cursive.io/pixel.js'</span>
+                <span className="text-gray-800">;</span>
                 {'\n'}
                 {'    '}
-                <span className="text-gray-300">script</span>
-                <span className="text-[#FF79C6]">.</span>
-                <span className="text-gray-300">async</span>
+                <span className="text-gray-800">script</span>
+                <span className="text-[#E36209]">.</span>
+                <span className="text-gray-800">async</span>
                 {' = '}
-                <span className="text-[#BD93F9]">true</span>
-                <span className="text-gray-300">;</span>
+                <span className="text-[#0550AE]">true</span>
+                <span className="text-gray-800">;</span>
                 {'\n'}
                 {'    '}
-                <span className="text-gray-300">script</span>
-                <span className="text-[#FF79C6]">.</span>
-                <span className="text-gray-300">dataset</span>
-                <span className="text-[#FF79C6]">.</span>
-                <span className="text-gray-300">projectId</span>
+                <span className="text-gray-800">script</span>
+                <span className="text-[#E36209]">.</span>
+                <span className="text-gray-800">dataset</span>
+                <span className="text-[#E36209]">.</span>
+                <span className="text-gray-800">projectId</span>
                 {' = '}
-                <span className="text-[#F1FA8C]">'proj_abc123xyz'</span>
-                <span className="text-gray-300">;</span>
+                <span className="text-[#0A3069]">'proj_abc123xyz'</span>
+                <span className="text-gray-800">;</span>
                 {'\n'}
                 {'    '}
-                <span className="text-gray-300">document</span>
-                <span className="text-[#FF79C6]">.</span>
-                <span className="text-gray-300">head</span>
-                <span className="text-[#FF79C6]">.</span>
-                <span className="text-[#50FA7B]">appendChild</span>
-                <span className="text-gray-300">(script);</span>
+                <span className="text-gray-800">document</span>
+                <span className="text-[#E36209]">.</span>
+                <span className="text-gray-800">head</span>
+                <span className="text-[#E36209]">.</span>
+                <span className="text-[#8250DF]">appendChild</span>
+                <span className="text-gray-800">(script);</span>
                 {'\n'}
                 {'  '}
-                <span className="text-[#FF79C6]">{'}'}</span>
-                <span className="text-gray-300">)();</span>
+                <span className="text-[#E36209]">{'}'}</span>
+                <span className="text-gray-800">)();</span>
                 {'\n'}
-                <span className="text-[#FF79C6]">&lt;/script&gt;</span>
+                <span className="text-[#E36209]">&lt;/script&gt;</span>
               </code>
             </pre>
             <motion.div
@@ -224,11 +224,11 @@ export default function InstallPixelDemo() {
             y: visitorCount > 0 ? 0 : 10
           }}
           transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-          className="flex items-center justify-center gap-3 mt-6 text-gray-300"
+          className="flex items-center justify-center gap-3 mt-6 text-gray-700"
         >
-          <div className="flex items-center gap-2 px-4 py-2 bg-green-500/10 border border-green-500/20 rounded-full">
-            <Check className="w-4 h-4 text-green-500" />
-            <span className="text-sm font-medium text-green-400">Installed!</span>
+          <div className="flex items-center gap-2 px-4 py-2 bg-green-50 border border-green-200 rounded-full">
+            <Check className="w-4 h-4 text-green-600" />
+            <span className="text-sm font-medium text-green-700">Installed!</span>
           </div>
           <span className="text-sm">
             Tracking{' '}
@@ -236,7 +236,7 @@ export default function InstallPixelDemo() {
               key={visitorCount}
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="font-semibold text-white"
+              className="font-semibold text-gray-900"
             >
               {visitorCount}
             </motion.span>
@@ -251,7 +251,7 @@ export default function InstallPixelDemo() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6 }}
-          className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-[800px] mx-auto"
+          className="grid grid-cols-1 md:grid-cols-2 gap-4"
         >
           {VISITORS.map((visitor, index) => (
             <motion.div
@@ -267,17 +267,17 @@ export default function InstallPixelDemo() {
                 y: -4,
                 transition: { duration: 0.2 }
               }}
-              className="group relative bg-white/5 backdrop-blur-sm p-6 rounded-lg border border-white/10 hover:border-white/20 transition-all cursor-pointer"
+              className="group relative bg-white p-5 rounded-lg border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all cursor-pointer"
             >
               <div className="flex items-start gap-4">
                 <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-semibold">
                   {visitor.firstName[0]}{visitor.lastName[0]}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-lg font-semibold text-white mb-1">
+                  <h3 className="text-base font-semibold text-gray-900 mb-1">
                     {visitor.firstName} {visitor.lastName}
                   </h3>
-                  <p className="text-sm text-gray-400 mb-2 truncate">
+                  <p className="text-sm text-gray-600 mb-2 truncate">
                     {visitor.email}
                   </p>
                   <p className="text-sm text-gray-500">
@@ -285,9 +285,6 @@ export default function InstallPixelDemo() {
                   </p>
                 </div>
               </div>
-
-              {/* Hover Glow Effect */}
-              <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-blue-500/0 via-blue-500/5 to-purple-500/0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
             </motion.div>
           ))}
         </motion.div>

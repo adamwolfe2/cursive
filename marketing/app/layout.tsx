@@ -6,6 +6,7 @@ import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { generateMetadata } from "@/lib/seo/metadata";
 import { ClientLayout } from "@/components/client-layout";
+import { ExitIntentPopup } from "@/components/exit-intent-popup";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -56,6 +57,7 @@ export default function RootLayout({
           <Header />
           <main className="pt-16">{children}</main>
           <Footer />
+          <ExitIntentPopup />
         </ClientLayout>
       </body>
     </html>

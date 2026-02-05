@@ -5,6 +5,7 @@ import { Calendar, Clock, ArrowLeft, ArrowRight, Check, X } from "lucide-react"
 import { generateMetadata } from '@/lib/seo/metadata'
 import { StructuredData } from '@/components/seo/structured-data'
 import { generateFAQSchema } from '@/lib/seo/faq-schema'
+import { SimpleRelatedPosts } from '@/components/blog/simple-related-posts'
 
 export const metadata: Metadata = generateMetadata({
   title: 'Warmly vs Cursive Comparison: Which Intent Platform is Right for You?',
@@ -104,11 +105,11 @@ export default function WarmlyVsCursiveComparison() {
           <article className="max-w-3xl mx-auto prose prose-lg prose-blue">
             <h2>The Quick Take</h2>
             <p>
-              Both Warmly and Cursive help B2B companies identify and engage with potential buyers showing
-              intent. But they take fundamentally different approaches:
+              Both <strong>Warmly</strong> and <strong><a href="/" className="text-blue-600 hover:underline">Cursive</a></strong> help B2B companies identify and engage with potential buyers showing
+              <a href="/intent-audiences" className="text-blue-600 hover:underline">intent data</a>. But they take fundamentally different approaches:
             </p>
             <ul>
-              <li><strong>Warmly</strong> focuses on real-time engagement with visitors actively on your website</li>
+              <li><strong>Warmly</strong> focuses on real-time engagement with <a href="/visitor-identification" className="text-blue-600 hover:underline">visitors</a> actively on your website</li>
               <li><strong>Cursive</strong> identifies companies researching your space across the web (not just your site) and automates outreach</li>
             </ul>
             <p>
@@ -121,7 +122,7 @@ export default function WarmlyVsCursiveComparison() {
 
             <h3>What is Warmly?</h3>
             <p>
-              Warmly is a website visitor identification and engagement platform. It shows you which
+              Warmly is a <a href="/visitor-identification" className="text-blue-600 hover:underline">website visitor identification</a> and engagement platform. It shows you which
               companies are visiting your website in real-time and provides tools to engage them through
               live chat, automated email sequences, and personalized outreach.
             </p>
@@ -132,13 +133,13 @@ export default function WarmlyVsCursiveComparison() {
 
             <h3>What is Cursive?</h3>
             <p>
-              Cursive is a B2B intent intelligence platform that identifies companies actively researching
-              specific topics across the web. It goes beyond website tracking to find prospects showing
+              <a href="/" className="text-blue-600 hover:underline">Cursive</a> is a B2B <a href="/intent-audiences" className="text-blue-600 hover:underline">intent intelligence</a> platform that identifies companies actively researching
+              specific topics across the web. It goes beyond <a href="/visitor-identification" className="text-blue-600 hover:underline">website tracking</a> to find prospects showing
               buying intent anywhere online, then automates personalized outreach via AI SDR agents.
             </p>
             <p>
               <strong>Best for:</strong> Companies looking to scale outbound prospecting without hiring
-              large SDR teams. Learn more about our <a href="/">AI-powered intent system</a>.
+              large SDR teams. Learn more about our <a href="/" className="text-blue-600 hover:underline">AI-powered intent system</a> and explore our <a href="/integrations" className="text-blue-600 hover:underline">integrations</a>.
             </p>
 
             <h2>Feature Comparison</h2>
@@ -289,8 +290,8 @@ export default function WarmlyVsCursiveComparison() {
               <div className="mt-6 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
                 <p className="text-sm text-gray-700">
                   <strong>Cost Consideration:</strong> Warmly's pricing scales with website traffic,
-                  which can become expensive for high-traffic sites. Cursive offers flat-rate pricing
-                  with unlimited leads, making costs more predictable. Check out our <a href="/pricing" className="text-primary hover:underline">pricing page</a> for details.
+                  which can become expensive for high-traffic sites. <a href="/" className="text-blue-600 hover:underline">Cursive</a> offers flat-rate <a href="/pricing" className="text-blue-600 hover:underline">pricing</a>
+                  with unlimited leads, making costs more predictable.
                 </p>
               </div>
             </div>
@@ -312,7 +313,7 @@ export default function WarmlyVsCursiveComparison() {
 
             <h3>When to Choose Cursive</h3>
             <p>
-              Cursive is best when you need to proactively find and engage buyers before they find you.
+              <a href="/" className="text-blue-600 hover:underline">Cursive</a> is best when you need to proactively find and engage buyers before they find you.
               Choose Cursive if:
             </p>
             <ul>
@@ -320,11 +321,10 @@ export default function WarmlyVsCursiveComparison() {
               <li>Your prospects don't consistently visit your website</li>
               <li>You want to identify companies researching your category (not just your brand)</li>
               <li>You need automated, personalized outreach at scale</li>
-              <li>You want predictable, flat-rate pricing</li>
+              <li>You want predictable, flat-rate <a href="/pricing" className="text-blue-600 hover:underline">pricing</a></li>
             </ul>
             <p>
-              Explore our <a href="/solutions/ai-sdr">AI SDR solution</a> to see how Cursive automates
-              prospecting at scale.
+              Use our <a href="/audience-builder" className="text-blue-600 hover:underline">audience builder</a> to create targeted segments and launch campaigns at scale.
             </p>
 
             <h2>Data & Intent Signals</h2>
@@ -347,7 +347,7 @@ export default function WarmlyVsCursiveComparison() {
 
             <h3>Cursive's Approach</h3>
             <p>
-              Cursive monitors intent signals across the entire web, including:
+              <a href="/" className="text-blue-600 hover:underline">Cursive</a> monitors <a href="/intent-audiences" className="text-blue-600 hover:underline">intent signals</a> across the entire web, including:
             </p>
             <ul>
               <li>Companies researching specific topics on review sites</li>
@@ -358,7 +358,7 @@ export default function WarmlyVsCursiveComparison() {
             </ul>
             <p>
               This broader approach finds prospects early in their buying journey, often before they've
-              heard of your solution. Learn more about our <a href="/solutions/intent-data">intent data capabilities</a>.
+              heard of your solution. Combine this with <a href="/direct-mail" className="text-blue-600 hover:underline">direct mail</a> for a truly omnichannel approach.
             </p>
 
             <h2>Integration & Workflow</h2>
@@ -380,7 +380,7 @@ export default function WarmlyVsCursiveComparison() {
 
             <h3>Cursive Integrations</h3>
             <p>
-              Cursive offers similar integrations plus deeper automation:
+              <a href="/" className="text-blue-600 hover:underline">Cursive</a> offers similar <a href="/integrations" className="text-blue-600 hover:underline">integrations</a> plus deeper automation:
             </p>
             <ul>
               <li>CRMs: Salesforce, HubSpot, Pipedrive with bi-directional sync</li>
@@ -389,9 +389,8 @@ export default function WarmlyVsCursiveComparison() {
               <li>Calendaring: Automated meeting booking</li>
             </ul>
             <p>
-              The workflow is proactive: you define your ICP and intent topics, and Cursive's AI SDR
-              automatically finds and reaches out to matching prospects. See our <a href="/integrations">integrations page</a> for
-              the full list.
+              The workflow is proactive: you define your ICP and <a href="/intent-audiences" className="text-blue-600 hover:underline">intent topics</a>, and Cursive's AI SDR
+              automatically finds and reaches out to matching prospects. Use our <a href="/audience-builder" className="text-blue-600 hover:underline">audience builder</a> to get started.
             </p>
 
             <h2>ROI & Performance Metrics</h2>
@@ -689,20 +688,24 @@ export default function WarmlyVsCursiveComparison() {
       {/* Related Posts */}
       <section className="py-16 bg-gradient-to-br from-gray-50 to-blue-50">
         <Container>
-          <h2 className="text-3xl font-bold mb-8 text-center">Related Articles</h2>
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <a href="/blog/ai-sdr-vs-human-bdr" className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow">
-              <h3 className="font-bold mb-2">AI SDR vs. Human BDR</h3>
-              <p className="text-sm text-gray-600">Which drives more pipeline in 2026?</p>
-            </a>
-            <a href="/blog/scaling-outbound" className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow">
-              <h3 className="font-bold mb-2">Scaling Outbound</h3>
-              <p className="text-sm text-gray-600">10 to 200+ emails without killing quality</p>
-            </a>
-            <a href="/blog/visitor-tracking" className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow">
-              <h3 className="font-bold mb-2">Website Visitor Tracking Guide</h3>
-              <p className="text-sm text-gray-600">How to identify and engage anonymous visitors</p>
-            </a>
+          <div className="max-w-5xl mx-auto">
+            <SimpleRelatedPosts posts={[
+              {
+                title: "Clearbit Alternatives Comparison",
+                description: "10 tools compared for B2B data enrichment and visitor identification",
+                href: "/blog/clearbit-alternatives-comparison"
+              },
+              {
+                title: "How to Identify Website Visitors",
+                description: "Technical guide to visitor identification methods",
+                href: "/blog/how-to-identify-website-visitors-technical-guide"
+              },
+              {
+                title: "AI SDR vs Human BDR",
+                description: "Which drives more pipeline in 2026?",
+                href: "/blog/ai-sdr-vs-human-bdr"
+              }
+            ]} />
           </div>
         </Container>
       </section>

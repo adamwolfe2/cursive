@@ -1,8 +1,118 @@
+import { Metadata } from "next"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateOrganizationSchema } from "@/lib/seo/structured-data"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
 import { HumanHomePage } from "@/components/human-home-page"
 import { FAQSection } from "@/components/homepage/faq-section"
+
+export const metadata: Metadata = {
+  title: "AI Intent Systems That Never Sleep | Cursive",
+  description: "Identify and track website visitors, build targeted lists, launch direct mail campaigns, and maximize ad performance—all from one platform that unites verified B2C and B2B data.",
+  keywords: "B2B lead generation, visitor identification, intent data, direct mail marketing, audience targeting, AI SDR, outbound automation",
+  openGraph: {
+    title: "AI Intent Systems That Never Sleep | Cursive",
+    description: "Identify and track website visitors, build targeted lists, launch direct mail campaigns, and maximize ad performance—all from one platform that unites verified B2C and B2B data.",
+    url: "https://www.meetcursive.com",
+    siteName: "Cursive",
+    images: [{
+      url: "https://www.meetcursive.com/cursive-social-preview.png",
+      width: 1200,
+      height: 630,
+    }],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "AI Intent Systems That Never Sleep | Cursive",
+    description: "Identify and track website visitors, build targeted lists, launch direct mail campaigns, and maximize ad performance—all from one platform that unites verified B2C and B2B data.",
+    images: ["https://www.meetcursive.com/cursive-social-preview.png"],
+    creator: "@meetcursive",
+  },
+  alternates: {
+    canonical: "https://www.meetcursive.com",
+  },
+  other: {
+    // FAQ Schema
+    'script:ld+json:faq': JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: [
+        {
+          '@type': 'Question',
+          name: 'How does visitor identification work?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Cursive uses advanced IP intelligence, device fingerprinting, and behavioral analysis to identify up to 70% of your anonymous website visitors in real-time. When someone visits your site, we instantly match their digital footprint against our database of 220M+ consumer and 140M+ business profiles.'
+          }
+        },
+        {
+          '@type': 'Question',
+          name: 'How accurate is the data?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Cursive maintains a 70% identification rate for B2B traffic with 95%+ accuracy on matched records. Our data is verified and updated in real-time from multiple authoritative sources.'
+          }
+        },
+        {
+          '@type': 'Question',
+          name: 'What pricing plans are available?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Cursive pricing typically ranges from $2,000-5,000/month for most B2B SaaS companies, depending on your website traffic volume and feature requirements. All plans include visitor identification, AI-powered outreach, and CRM integrations.'
+          }
+        },
+        {
+          '@type': 'Question',
+          name: 'What integrations does Cursive support?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Cursive natively integrates with 200+ tools including all major CRMs (Salesforce, HubSpot, Pipedrive), marketing automation platforms (Marketo, Pardot, ActiveCampaign), and ad platforms (Google Ads, Facebook, LinkedIn).'
+          }
+        },
+        {
+          '@type': 'Question',
+          name: 'How is Cursive different from competitors?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Unlike traditional visitor ID tools that just deliver data, Cursive combines identification with AI-powered activation. We include 450B+ intent signals, real-time identification, and multi-channel campaigns out of the box.'
+          }
+        }
+      ]
+    }),
+    // Software Application Schema
+    'script:ld+json:software': JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      name: 'Cursive',
+      applicationCategory: 'BusinessApplication',
+      operatingSystem: 'Web',
+      offers: {
+        '@type': 'Offer',
+        price: '2000',
+        priceCurrency: 'USD',
+        priceSpecification: {
+          '@type': 'UnitPriceSpecification',
+          price: '2000.00',
+          priceCurrency: 'USD',
+          referenceQuantity: {
+            '@type': 'QuantitativeValue',
+            value: '1',
+            unitCode: 'MON'
+          }
+        }
+      },
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: '4.8',
+        ratingCount: '127',
+        bestRating: '5',
+        worstRating: '1'
+      },
+      description: 'AI-powered B2B lead generation platform that identifies anonymous website visitors and automates multi-channel outreach'
+    })
+  }
+}
 
 export default function HomePage() {
   return (

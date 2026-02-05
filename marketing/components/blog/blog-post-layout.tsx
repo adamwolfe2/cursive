@@ -104,7 +104,7 @@ export function BlogPostLayout({ post, relatedPosts = [] }: BlogPostLayoutProps)
               <div className="flex items-center gap-2">
                 <Image
                   src={post.author.avatar}
-                  alt={post.author.name}
+                  alt={`${post.author.name} profile picture`}
                   width={40}
                   height={40}
                   className="rounded-full"

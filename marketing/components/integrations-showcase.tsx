@@ -3,7 +3,7 @@
 import { motion } from "framer-motion"
 
 const integrations = [
-  { name: "Slack", logo: "/integrations/slack.svg" },
+  { name: "Slack", logo: "/integrations/slack-svgrepo-com.svg" },
   { name: "Gmail", logo: "/integrations/gmail.svg" },
   { name: "HubSpot", logo: "/integrations/hubspot-svgrepo-com.svg" },
   { name: "Salesforce", logo: "/integrations/salesforce.svg" },
@@ -86,7 +86,7 @@ export function IntegrationsShowcase({
           >
             <img
               src={integration.logo}
-              alt={integration.name}
+              alt={`${integration.name} integration logo`}
               className="w-12 h-12 object-contain"
               loading="lazy"
             />

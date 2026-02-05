@@ -124,23 +124,23 @@ export default function LaunchCampaignsDemo() {
   };
 
   return (
-    <div ref={ref} className="w-full max-w-[1200px] mx-auto px-6 py-24">
+    <div ref={ref} className="w-full">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className="mb-12 text-center"
+        className="mb-8"
       >
-        <h2 className="text-5xl font-semibold text-white mb-4">
+        <h3 className="text-2xl font-semibold text-gray-900 mb-2">
           Launch Campaigns
-        </h2>
-        <p className="text-xl text-gray-400">
+        </h3>
+        <p className="text-base text-gray-600">
           Orchestrate personalized outreach across every channel
         </p>
       </motion.div>
 
       {/* Network Visualization */}
-      <div className="relative w-full h-[700px] flex items-center justify-center">
+      <div className="relative w-full h-[500px] flex items-center justify-center">
         {/* Center Node - Cursive Logo */}
         <motion.div
           initial={{ opacity: 0, scale: 0 }}
@@ -192,7 +192,7 @@ export default function LaunchCampaignsDemo() {
                   y1="300"
                   x2={300 + position.x}
                   y2={300 + position.y}
-                  stroke={channel.isActive ? '#007AFF' : 'rgba(255,255,255,0.1)'}
+                  stroke={channel.isActive ? '#007AFF' : 'rgba(0,0,0,0.1)'}
                   strokeWidth={channel.isActive ? '2' : '1'}
                   initial={{ pathLength: 0, opacity: 0 }}
                   animate={{
@@ -234,15 +234,15 @@ export default function LaunchCampaignsDemo() {
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
                   className={`
-                    relative w-[80px] h-[80px] rounded-full flex items-center justify-center cursor-pointer
+                    relative w-[70px] h-[70px] rounded-full flex items-center justify-center cursor-pointer
                     transition-all duration-300
                     ${channel.isActive
-                      ? 'bg-white text-black border-2 border-blue-500'
-                      : 'bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/20'
+                      ? 'bg-white text-gray-900 border-2 border-blue-500 shadow-lg'
+                      : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-300 hover:shadow-md'
                     }
                   `}
                   style={{
-                    boxShadow: channel.isActive ? '0 0 20px rgba(0, 122, 255, 0.5)' : 'none',
+                    boxShadow: channel.isActive ? '0 0 20px rgba(0, 122, 255, 0.3)' : undefined,
                   }}
                 >
                   {channel.icon}
@@ -277,14 +277,14 @@ export default function LaunchCampaignsDemo() {
 
                 {/* Channel Name */}
                 <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 text-center whitespace-nowrap">
-                  <div className="text-sm font-medium text-white mb-1">
+                  <div className="text-sm font-medium text-gray-900 mb-1">
                     {channel.name}
                   </div>
                   {hoveredChannel === channel.id && (
                     <motion.div
                       initial={{ opacity: 0, y: -5 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="text-xs text-gray-400"
+                      className="text-xs text-gray-600"
                     >
                       {channel.metric}
                     </motion.div>
@@ -339,9 +339,9 @@ export default function LaunchCampaignsDemo() {
         initial={{ opacity: 0, y: 20 }}
         animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
         transition={{ duration: 0.6, delay: 1, ease: [0.22, 1, 0.36, 1] }}
-        className="text-center mt-8"
+        className="text-center mt-6"
       >
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-gray-600">
           Click channels to toggle • Hover to view metrics
         </p>
       </motion.div>
@@ -351,11 +351,11 @@ export default function LaunchCampaignsDemo() {
         initial={{ opacity: 0, y: 20 }}
         animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
         transition={{ duration: 0.6, delay: 1.2, ease: [0.22, 1, 0.36, 1] }}
-        className="flex items-center justify-center gap-3 mt-12"
+        className="flex items-center justify-center gap-3 mt-6"
       >
-        <div className="flex items-center gap-2 px-6 py-3 bg-blue-500/10 border border-blue-500/20 rounded-full">
+        <div className="flex items-center gap-2 px-6 py-3 bg-blue-50 border border-blue-200 rounded-full">
           <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-          <span className="text-sm font-medium text-blue-400">
+          <span className="text-sm font-medium text-blue-700">
             {channels.filter(ch => ch.isActive).length} of {channels.length} channels active
           </span>
         </div>

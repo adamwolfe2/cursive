@@ -162,17 +162,17 @@ export default function BuildAudienceDemo() {
   };
 
   return (
-    <div ref={ref} className="w-full max-w-[1200px] mx-auto px-6 py-24">
+    <div ref={ref} className="w-full">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className="mb-12 text-center"
+        className="mb-8"
       >
-        <h2 className="text-5xl font-semibold text-white mb-4">
+        <h3 className="text-2xl font-semibold text-gray-900 mb-2">
           Build Your Audience
-        </h2>
-        <p className="text-xl text-gray-400">
+        </h3>
+        <p className="text-base text-gray-600">
           Create targeted segments that grow automatically
         </p>
       </motion.div>
@@ -182,11 +182,11 @@ export default function BuildAudienceDemo() {
         initial={{ opacity: 0, y: 30 }}
         animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
         transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-        className="w-full max-w-[1000px] mx-auto"
+        className="w-full"
       >
         <div
           ref={chartRef}
-          className="relative w-full aspect-[5/2] bg-transparent"
+          className="relative w-full aspect-[5/2] bg-white rounded-lg border border-gray-200 p-6"
           onMouseMove={handleMouseMove}
           onMouseLeave={() => setHoveredSegment(null)}
         >
@@ -205,13 +205,13 @@ export default function BuildAudienceDemo() {
                     y1={y}
                     x2={960}
                     y2={y}
-                    stroke="rgba(255,255,255,0.05)"
+                    stroke="rgba(0,0,0,0.08)"
                     strokeWidth="1"
                   />
                   <text
                     x={20}
                     y={y + 5}
-                    fill="rgba(255,255,255,0.3)"
+                    fill="rgba(0,0,0,0.5)"
                     fontSize="12"
                     textAnchor="end"
                   >
@@ -225,7 +225,7 @@ export default function BuildAudienceDemo() {
             <text
               x={40}
               y={380}
-              fill="rgba(255,255,255,0.3)"
+              fill="rgba(0,0,0,0.5)"
               fontSize="12"
               textAnchor="start"
             >
@@ -234,7 +234,7 @@ export default function BuildAudienceDemo() {
             <text
               x={960}
               y={380}
-              fill="rgba(255,255,255,0.3)"
+              fill="rgba(0,0,0,0.5)"
               fontSize="12"
               textAnchor="end"
             >
@@ -334,7 +334,7 @@ export default function BuildAudienceDemo() {
               }}
               className="pointer-events-none z-50"
             >
-              <div className="bg-black/90 backdrop-blur-sm border border-white/20 px-4 py-2 rounded-lg whitespace-nowrap">
+              <div className="bg-gray-900 px-4 py-2 rounded-lg whitespace-nowrap shadow-lg">
                 <div className="text-sm font-medium text-white mb-1">
                   {SEGMENTS.find(s => s.id === hoveredSegment)?.name}
                 </div>
@@ -351,7 +351,7 @@ export default function BuildAudienceDemo() {
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.6, delay: 1, ease: [0.22, 1, 0.36, 1] }}
-          className="flex justify-center gap-8 mt-12"
+          className="flex justify-center gap-8 mt-8"
         >
           {SEGMENTS.map((segment, index) => (
             <motion.div
@@ -375,13 +375,13 @@ export default function BuildAudienceDemo() {
                 }}
               />
               <div>
-                <div className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors">
+                <div className="text-sm text-gray-600 group-hover:text-gray-700 transition-colors">
                   {segment.name}
                 </div>
                 <div
-                  className="text-lg font-semibold transition-all"
+                  className="text-base font-semibold transition-all"
                   style={{
-                    color: hoveredSegment === segment.id ? segment.color : '#ffffff',
+                    color: hoveredSegment === segment.id ? segment.color : '#111827',
                   }}
                 >
                   {segment.finalValue}%

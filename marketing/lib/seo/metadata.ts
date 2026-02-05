@@ -35,9 +35,9 @@ export function generateMetadata({
       images: [
         {
           url: fullOgImage,
-          width: 1200,
-          height: 630,
-          alt: 'Cursive - AI Intent Systems That Never Sleep',
+          width: 1314,
+          height: 1129,
+          alt: 'Cursive - AI Intent Systems That Never Sleep - Dashboard showing visitor identification and lead generation',
         }
       ],
       locale: 'en_US',

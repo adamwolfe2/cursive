@@ -126,10 +126,11 @@ export function Header() {
             <Link href="/" className="flex items-center">
               <Image
                 src="/cursive-logo.png"
-                alt="Cursive"
+                alt="Cursive logo"
                 width={32}
                 height={32}
                 className="w-8 h-8"
+                priority
               />
             </Link>
 
