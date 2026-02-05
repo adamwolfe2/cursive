@@ -55,11 +55,11 @@ The platform should track:
 - Comparison shopping patterns
 - Return visit timing and seasonality
 
-**Cursive tracks 450 billion+ monthly intent signals**, revealing which shoppers are actively researching products, comparing options, and ready to buy. These signals help retailers prioritize outreach and personalize recommendations.
+**Cursive tracks 450 billion+ monthly intent signals**, revealing which shoppers are actively researching products, comparing options, and ready to buy. These signals help retailers prioritize outreach and personalize recommendations. Learn more about [tracking intent audiences](/intent-audiences) for better targeting.
 
 ## Integration With Your Marketing Stack Matters More Than Features
 
-A data platform with impressive capabilities means nothing if it doesn't connect to the tools you actually use every day.
+A data platform with impressive capabilities means nothing if it doesn't connect to the tools you actually use every day. Understanding [how to use a customer data platform successfully](/blog/08-steps-to-use-a-customer-data-platform-successfully-UPDATED) starts with seamless integration.
 
 ### Native Email Platform Integration
 
@@ -72,7 +72,7 @@ This enables:
 - Back-in-stock notifications for previously viewed products
 - Post-purchase cross-sell and upsell sequences
 
-**Cursive integrates natively with 200+ email, CRM, and advertising platforms**, ensuring behavioral data flows automatically into your campaigns without manual exports or middleware.
+**Cursive integrates natively with [200+ email, CRM, and advertising platforms](/integrations)**, ensuring behavioral data flows automatically into your campaigns without manual exports or middleware.
 
 ### Ad Platform Connectivity
 
@@ -151,7 +151,7 @@ Retailers handle sensitive customer information. Your data platform must comply 
 
 ## Usability Determines Actual ROI
 
-The most powerful platform in the world delivers zero value if your team doesn't use it. Prioritize tools that feel intuitive from day one.
+The most powerful platform in the world delivers zero value if your team doesn't use it. Prioritize tools that feel intuitive from day one. Discover the key [benefits of a consumer data platform](/blog/12-discover-the-benefits-of-a-consumer-data-platform) for your retail business.
 
 ### Evaluate These Usability Factors
 
@@ -159,7 +159,7 @@ The most powerful platform in the world delivers zero value if your team doesn't
 
 **Dashboard clarity**: Can you answer key questions (Who are my highest-intent visitors? Which products drive the most engagement?) in under 30 seconds, or do you need to navigate through multiple menus?
 
-**Audience building simplicity**: Creating customer segments should take minutes, not hours. Look for visual builders with filters for behavior, demographics, and purchase history.
+**Audience building simplicity**: Creating customer segments should take minutes, not hours. Look for visual builders with filters for behavior, demographics, and purchase history. Our [audience builder](/audience-builder) makes segmentation intuitive.
 
 **Pre-built templates**: Quality platforms include ready-made segments (cart abandoners, repeat purchasers, high-value customers, at-risk churners) so you can launch campaigns immediately.
 

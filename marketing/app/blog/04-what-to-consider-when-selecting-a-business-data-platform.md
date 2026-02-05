@@ -34,15 +34,15 @@ A powerful platform that nobody uses is worthless. Look for interfaces that make
 
 The best B2B data platforms don't just tell you who visited your site. They tell you who's ready to buy.
 
-**Intent signals separate browsers from buyers**. Repeated visits to high-value pages, time spent on case studies, downloads of product collateral—these behaviors signal real interest. Platforms tracking [450B+ monthly intent signals](/intent-audiences) across 30,000+ categories help you prioritize accounts showing active buying behavior.
+**Intent signals separate browsers from buyers**. Repeated visits to high-value pages, time spent on case studies, downloads of product collateral—these behaviors signal real interest. Platforms tracking [450B+ monthly intent signals](/intent-audiences) across 30,000+ categories help you prioritize accounts showing active buying behavior. Learn more about [understanding buyer intent's impact on campaigns](/blog/29-understanding-the-impact-of-buyer-intent-on-campaigns).
 
-**Engagement scoring automates prioritization**. Instead of manually reviewing every lead, the platform should score accounts based on firmographic fit and behavioral signals. Your sales team gets a clean list of warm prospects, not a dump of cold contacts.
+**Engagement scoring automates prioritization**. Instead of manually reviewing every lead, the platform should score accounts based on firmographic fit and behavioral signals. Your sales team gets a clean list of warm prospects, not a dump of cold contacts. [Behavioral audience segmentation](/blog/38-buyer-intent-based-audience-segmentation-techniques-UPDATED) helps you create high-converting segments.
 
-**Buying stage visibility guides outreach**. Someone researching "what is visitor identification" needs different messaging than someone comparing vendor pricing. The platform should help you tailor follow-up based on where accounts are in their journey.
+**Buying stage visibility guides outreach**. Someone researching "what is visitor identification" needs different messaging than someone comparing vendor pricing. The platform should help you tailor follow-up based on where accounts are in their journey. See how [marketing data solutions improve campaign performance](/blog/07-how-marketing-data-solutions-can-improve-campaigns).
 
 ## How Well Does It Organize Your Data?
 
-Scattered data kills productivity. When prospect information lives in five different tools, you miss connections and waste time hunting for context.
+Scattered data kills productivity. When prospect information lives in five different tools, you miss connections and waste time hunting for context. [Business intelligence data](/blog/15-understanding-business-intelligence-data-for-marketing-success) helps transform raw information into actionable insights.
 
 **Unified profiles save time**. Every touchpoint—website visits, email opens, form fills, ad clicks—should feed into a single customer timeline. When a sales rep looks up an account, they should see the complete story in seconds.
 

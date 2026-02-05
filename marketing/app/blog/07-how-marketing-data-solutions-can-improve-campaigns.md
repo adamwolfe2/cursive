@@ -44,7 +44,7 @@ Marketing data solutions enable precision targeting that improves results across
 
 ### Identify Your Best Prospects Before Competitors Do
 
-Most companies lose 95-98% of website traffic to anonymity. Visitors browse products, read content, and leave without ever identifying themselves. Without follow-up, these potential customers never convert.
+Most companies lose 95-98% of website traffic to anonymity. Visitors browse products, read content, and leave without ever identifying themselves. Without follow-up, these potential customers never convert. Learn more about [using website visitor tracking for lead generation](/blog/22-using-website-visitor-tracking-for-lead-generation-UPDATED).
 
 **Visitor identification changes this.**
 
@@ -55,7 +55,7 @@ Marketing data platforms reveal:
 - Which pages they viewed and how long they stayed
 - Whether they're showing buying intent or casual interest
 
-**Cursive identifies up to 70% of website visitors**, providing contact details and firmographic/demographic profiles even when prospects don't fill out forms. This means your addressable audience grows 35-50x compared to form-fills alone.
+**[Cursive identifies up to 70% of website visitors](/visitor-identification)**, providing contact details and firmographic/demographic profiles even when prospects don't fill out forms. This means your addressable audience grows 35-50x compared to form-fills alone.
 
 ### Build Behavioral Segments That Actually Convert
 
@@ -68,13 +68,13 @@ Instead of targeting "all marketing directors at SaaS companies," target:
 - And downloaded your competitor comparison guide
 - While researching "visitor identification tools" externally
 
-This multifactor segmentation combines fit (right person, right company) with intent (showing buying signals) to create audiences that convert 3-5x better than demographic targeting alone.
+This multifactor segmentation combines fit (right person, right company) with intent (showing buying signals) to create audiences that convert 3-5x better than demographic targeting alone. See how [audience segmentation platforms are key to marketing success](/blog/11-why-audience-segmentation-platforms-are-key-to-marketing-UPDATED).
 
-**Cursive's audience builder** lets you layer firmographics, behavioral data, and intent signals with visual, drag-and-drop filters—no SQL or technical resources required.
+**[Cursive's audience builder](/audience-builder)** lets you layer firmographics, behavioral data, and intent signals with visual, drag-and-drop filters—no SQL or technical resources required.
 
 ### Prioritize High-Intent Accounts for Immediate Outreach
 
-Not everyone showing interest is equally likely to buy. Some prospects are just starting research. Others are actively evaluating vendors and ready to make decisions.
+Not everyone showing interest is equally likely to buy. Some prospects are just starting research. Others are actively evaluating vendors and ready to make decisions. Explore [buyer intent-based audience segmentation techniques](/blog/38-buyer-intent-based-audience-segmentation-techniques-UPDATED) for better targeting.
 
 Marketing data solutions score accounts based on:
 
@@ -87,7 +87,7 @@ Accounts scoring high across all dimensions get immediate sales outreach. Medium
 
 This automated prioritization ensures your team focuses on prospects most likely to convert right now—not cold leads that will never respond.
 
-**Cursive tracks 450 billion+ monthly intent signals across 30,000+ categories**, automatically scoring accounts and surfacing high-priority prospects for your sales team.
+**Cursive tracks [450 billion+ monthly intent signals across 30,000+ categories](/intent-audiences)**, automatically scoring accounts and surfacing high-priority prospects for your sales team.
 
 ## How Data Solutions Improve Campaign Personalization
 
@@ -114,9 +114,9 @@ When you know what prospects have already viewed, you can tailor messaging accor
 - They read healthcare case studies? Lead with healthcare success stories
 - They compared you against Competitor X? Address key differentiators directly
 
-This level of personalization only works when behavioral data syncs into your campaign tools automatically.
+This level of personalization only works when behavioral data syncs into your campaign tools automatically. Learn how [business intelligence data transforms marketing](/blog/15-understanding-business-intelligence-data-for-marketing-success).
 
-**Cursive's 200+ native integrations** ensure website behavior, intent signals, and unified profiles flow into your email platform, advertising accounts, and CRM—powering personalization without manual data exports.
+**[Cursive's 200+ native integrations](/integrations)** ensure website behavior, intent signals, and unified profiles flow into your email platform, advertising accounts, and CRM—powering personalization without manual data exports.
 
 ### Deliver Dynamic Retargeting Across Channels
 
