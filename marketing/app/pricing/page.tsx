@@ -39,10 +39,7 @@ export default function PricingPage() {
             </div>
 
             <h1 className="text-5xl lg:text-6xl font-light text-gray-900 mb-6">
-              Pricing That Scales
-              <span className="block font-cursive text-6xl lg:text-7xl text-gray-900 mt-2">
-                With Your Growth
-              </span>
+              Pricing That Scales With Your Growth
             </h1>
             <p className="text-xl text-gray-600 mb-4">
               Turn anonymous visitors into qualified leads for 96% less than traditional methods.
@@ -55,7 +52,7 @@ export default function PricingPage() {
       </section>
 
       {/* ROI Calculator Section */}
-      <section className="py-16 bg-gradient-to-br from-[#007AFF]/5 to-purple-50">
+      <section className="py-16 bg-gradient-to-br from-[#007AFF]/5 to-blue-50">
         <Container>
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-10">
@@ -64,10 +61,7 @@ export default function PricingPage() {
                 <span className="text-sm font-medium text-gray-900">ROI Calculator</span>
               </div>
               <h2 className="text-3xl lg:text-4xl font-light text-gray-900 mb-3">
-                See Your Potential
-                <span className="block font-cursive text-4xl lg:text-5xl text-gray-900 mt-1">
-                  Monthly Savings
-                </span>
+                See Your Potential Monthly Savings
               </h2>
             </div>
 
@@ -171,9 +165,9 @@ export default function PricingPage() {
               className="bg-white rounded-2xl p-8 border border-gray-200 hover:border-[#007AFF] transition-all duration-300 hover:shadow-lg"
             >
               <div className="mb-6">
-                <div className="text-xs font-medium text-purple-600 mb-2">ENTERPRISE</div>
+                <div className="text-xs font-medium text-gray-500 mb-2">ENTERPRISE</div>
                 <h3 className="text-2xl font-light text-gray-900 mb-2">
-                  <span className="font-cursive text-3xl text-gray-900">Cursive</span> Pipeline
+                  Cursive Pipeline
                 </h3>
                 <p className="text-gray-600">Full-stack AI SDR solution</p>
               </div>
@@ -255,15 +249,15 @@ export default function PricingPage() {
               className="bg-[#007AFF] rounded-2xl p-8 border-2 border-[#007AFF] shadow-xl relative transform lg:scale-105 z-10"
             >
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                <div className="bg-gradient-to-r from-yellow-400 to-orange-400 text-gray-900 px-4 py-1 rounded-full text-sm font-medium shadow-lg">
-                  Most Popular - Best Value
+                <div className="bg-[#007AFF] text-white px-4 py-1 rounded-full text-sm font-medium shadow-lg">
+                  Most Popular
                 </div>
               </div>
 
               <div className="mb-6 text-white">
                 <div className="text-xs font-medium mb-2 opacity-90">RECOMMENDED</div>
                 <h3 className="text-2xl font-light mb-2">
-                  <span className="font-cursive text-3xl">Cursive</span> Outbound
+                  Cursive Outbound
                 </h3>
                 <p className="opacity-90">Done-for-you email campaigns</p>
               </div>
@@ -347,7 +341,7 @@ export default function PricingPage() {
               <div className="mb-6">
                 <div className="text-xs font-medium text-gray-500 mb-2">STARTER</div>
                 <h3 className="text-2xl font-light text-gray-900 mb-2">
-                  <span className="font-cursive text-3xl text-gray-900">Cursive</span> Data
+                  Cursive Data
                 </h3>
                 <p className="text-gray-600">Verified leads for your team</p>
               </div>
@@ -424,7 +418,7 @@ export default function PricingPage() {
 
           {/* Upgrade Path Clarity */}
           <div className="mt-16 max-w-4xl mx-auto text-center">
-            <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-8 border border-blue-100">
+            <div className="bg-blue-50 rounded-2xl p-8 border border-blue-100">
               <TrendingUp className="w-12 h-12 text-[#007AFF] mx-auto mb-4" />
               <h3 className="text-2xl font-light text-gray-900 mb-3">
                 Easy Upgrade Path
@@ -497,10 +491,7 @@ export default function PricingPage() {
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12">
               <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
-                Compare Plans
-                <span className="block font-cursive text-5xl lg:text-6xl text-gray-500 mt-2">
-                  Feature by Feature
-                </span>
+                Compare Plans Feature by Feature
               </h2>
               <p className="text-xl text-gray-600">
                 Every plan includes our core data quality guarantee and dedicated support.
@@ -600,10 +591,7 @@ export default function PricingPage() {
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12">
               <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
-                What Customers
-                <span className="block font-cursive text-5xl lg:text-6xl text-gray-500 mt-2">
-                  Are Saying
-                </span>
+                What Customers Are Saying
               </h2>
             </div>
 
@@ -637,7 +625,7 @@ export default function PricingPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.1 }}
-                className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 border-2 border-[#007AFF]"
+                className="bg-white rounded-xl p-6 border-2 border-[#007AFF]"
               >
                 <div className="text-xs font-medium text-[#007AFF] mb-3">CURSIVE OUTBOUND</div>
                 <p className="text-gray-700 mb-4 italic">
@@ -663,7 +651,7 @@ export default function PricingPage() {
                 transition={{ delay: 0.2 }}
                 className="bg-white rounded-xl p-6 border border-gray-200"
               >
-                <div className="text-xs font-medium text-purple-600 mb-3">CURSIVE PIPELINE</div>
+                <div className="text-xs font-medium text-gray-500 mb-3">CURSIVE PIPELINE</div>
                 <p className="text-gray-700 mb-4 italic">
                   "The AI SDR agents work 24/7 across email, LinkedIn, and SMS. We've 3x'd our pipeline
                   in 4 months without hiring a single SDR. Game-changer for enterprise."
@@ -689,10 +677,7 @@ export default function PricingPage() {
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-12">
               <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
-                Common Questions
-                <span className="block font-cursive text-5xl lg:text-6xl text-gray-500 mt-2">
-                  Answered
-                </span>
+                Common Questions Answered
               </h2>
               <p className="text-lg text-gray-600 mt-4">
                 Everything you need to know about pricing, plans, and guarantees.
@@ -790,10 +775,7 @@ export default function PricingPage() {
                 <span className="text-sm font-medium">Pricing Transparency</span>
               </div>
               <h2 className="text-3xl lg:text-4xl font-light text-gray-900 mb-6">
-                What's Included
-                <span className="block font-cursive text-4xl lg:text-5xl text-gray-900 mt-2">
-                  In Every Plan
-                </span>
+                What's Included In Every Plan
               </h2>
             </div>
 
