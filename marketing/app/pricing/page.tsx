@@ -323,7 +323,7 @@ export default function PricingPage() {
                 </li>
               </ul>
 
-              <Button className="w-full bg-white text-[#007AFF] hover:bg-gray-100" href="https://buy.stripe.com/your-outbound-link" target="_blank">
+              <Button className="w-full bg-white text-[#007AFF] hover:bg-gray-100" href="https://buy.stripe.com/8x27sLaTPcNL7p38Hp8g002" target="_blank">
                 Start Outbound
                 <ArrowRight className="w-4 h-4" />
               </Button>
@@ -407,7 +407,7 @@ export default function PricingPage() {
                 </li>
               </ul>
 
-              <Button className="w-full" href="https://buy.stripe.com/your-data-link" target="_blank">
+              <Button className="w-full" href="https://buy.stripe.com/6oU9AT3rnfZX6kZg9R8g003" target="_blank">
                 Get Data Access
                 <ArrowRight className="w-4 h-4" />
               </Button>

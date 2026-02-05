@@ -91,7 +91,7 @@ export default function ServicesPage() {
                   </div>
                 </div>
 
-                <Button size="lg" href="https://buy.stripe.com/your-data-link" target="_blank">
+                <Button size="lg" href="https://buy.stripe.com/6oU9AT3rnfZX6kZg9R8g003" target="_blank">
                   Get Started with Data
                   <ArrowRight className="w-5 h-5" />
                 </Button>
@@ -199,7 +199,7 @@ export default function ServicesPage() {
                   <p className="text-gray-600">Based on volume and team size</p>
                 </div>
 
-                <Button size="lg" href="https://buy.stripe.com/your-outbound-link" target="_blank">
+                <Button size="lg" href="https://buy.stripe.com/8x27sLaTPcNL7p38Hp8g002" target="_blank">
                   Get Started with Outbound
                   <ArrowRight className="w-5 h-5" />
                 </Button>
@@ -247,7 +247,7 @@ export default function ServicesPage() {
                   <p className="text-gray-600">Based on team size & volume</p>
                 </div>
 
-                <Button size="lg" href="https://buy.stripe.com/your-pipeline-link" target="_blank">
+                <Button size="lg" href="https://buy.stripe.com/bJe7sLge9bJHgZD2j18g001" target="_blank">
                   Get Started with Pipeline
                   <ArrowRight className="w-5 h-5" />
                 </Button>
