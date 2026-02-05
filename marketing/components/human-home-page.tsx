@@ -7,6 +7,7 @@ import { InteractiveFeaturesShowcase } from "@/components/demos/interactive-feat
 import { DashboardPreview } from "@/components/dashboard-preview"
 import { IntegrationsShowcase } from "@/components/integrations-showcase"
 import Link from "next/link"
+import { Eye, Target, Bot, TrendingUp, type LucideIcon } from "lucide-react"
 
 export function HumanHomePage() {
   return (
@@ -134,20 +135,25 @@ export function HumanHomePage() {
 
           {/* OPTIMIZED: Benefits as outcomes, not features */}
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {benefitPillars.map((pillar, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow"
-              >
-                <div className="text-3xl mb-3">{pillar.icon}</div>
-                <h3 className="text-xl text-gray-900 mb-3">{pillar.title}</h3>
-                <p className="text-gray-600 text-sm">{pillar.description}</p>
-              </motion.div>
-            ))}
+            {benefitPillars.map((pillar, i) => {
+              const Icon = pillar.icon
+              return (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                  className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow"
+                >
+                  <div className="w-12 h-12 mb-4 flex items-center justify-center bg-gray-100 rounded-lg">
+                    <Icon className="w-6 h-6 text-gray-700" />
+                  </div>
+                  <h3 className="text-xl text-gray-900 mb-3">{pillar.title}</h3>
+                  <p className="text-gray-600 text-sm">{pillar.description}</p>
+                </motion.div>
+              )
+            })}
           </div>
         </Container>
       </section>
@@ -315,24 +321,28 @@ export function HumanHomePage() {
 }
 
 // OPTIMIZED: Benefit-focused pillars (outcomes, not features)
-const benefitPillars = [
+const benefitPillars: Array<{
+  icon: LucideIcon
+  title: string
+  description: string
+}> = [
   {
-    icon: '👁️',
+    icon: Eye,
     title: "Know Who's Interested",
     description: 'Identify up to 70% of anonymous visitors—see which companies viewed your pricing page this week.',
   },
   {
-    icon: '🎯',
+    icon: Target,
     title: 'Reach In-Market Buyers',
     description: 'Access 220M+ verified contacts actively showing purchase intent across 30,000+ categories.',
   },
   {
-    icon: '🤖',
+    icon: Bot,
     title: 'Automate Follow-Up',
     description: 'AI agents work 24/7 to qualify leads, send personalized outreach, and book meetings while you sleep.',
   },
   {
-    icon: '📈',
+    icon: TrendingUp,
     title: 'Convert More Traffic',
     description: 'Stop wasting ad spend. Turn existing visitors into qualified leads without increasing your budget.',
   },
