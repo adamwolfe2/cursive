@@ -36,9 +36,9 @@ export function LoadingButton({
   }
 
   const sizeStyles = {
-    sm: 'h-8 px-3 text-[12px]',
-    md: 'h-9 px-4 text-[13px]',
-    lg: 'h-10 px-5 text-[14px]',
+    sm: 'h-11 sm:h-8 px-3 text-sm sm:text-[12px]',
+    md: 'h-11 sm:h-9 px-4 text-sm sm:text-[13px]',
+    lg: 'h-11 sm:h-10 px-5 text-sm sm:text-[14px]',
   }
 
   return (
@@ -46,7 +46,7 @@ export function LoadingButton({
       type="button"
       disabled={loading || disabled}
       className={cn(
-        'inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-colors',
+        'inline-flex items-center justify-center gap-2 sm:gap-2 rounded-lg font-medium transition-colors',
         'disabled:opacity-50 disabled:cursor-not-allowed',
         'focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:ring-offset-2',
         variantStyles[variant],

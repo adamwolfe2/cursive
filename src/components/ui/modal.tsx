@@ -91,7 +91,7 @@ export function Modal({
       <div
         ref={modalRef}
         className={cn(
-          'relative z-10 w-full max-w-[calc(100vw-2rem)] sm:max-w-lg rounded-xl border border-border bg-background p-4 sm:p-6 shadow-enterprise-xl animate-scale-in max-h-[calc(100vh-2rem)] overflow-y-auto',
+          'relative z-10 w-full max-w-[calc(100vw-2rem)] sm:max-w-lg rounded-xl border border-border bg-background p-3 sm:p-4 md:p-6 shadow-enterprise-xl animate-scale-in max-h-[calc(100vh-2rem)] overflow-y-auto',
           className
         )}
         role="dialog"

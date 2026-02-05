@@ -21,6 +21,7 @@ export function DashboardPreview() {
               src="/cursive-logo.png"
               alt="Cursive"
               className="w-6 h-6"
+              loading="lazy"
             />
           </div>
           <span className="font-semibold text-gray-900">Cursive</span>

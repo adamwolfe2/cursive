@@ -13,6 +13,7 @@ export function Footer() {
                 src="/cursive-logo.png"
                 alt="Cursive"
                 className="w-8 h-8"
+                loading="lazy"
               />
             </div>
             <p className="text-xl text-gray-900 mb-2 leading-tight">

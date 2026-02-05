@@ -147,12 +147,12 @@ export function UserMenu() {
       {/* Dropdown Menu */}
       {isOpen && (
         <div
-          className="absolute right-0 mt-2 w-72 bg-card border border-border rounded-lg shadow-lg py-2 z-50"
+          className="absolute right-0 mt-2 w-72 max-w-[calc(100vw-2rem)] bg-card border border-border rounded-lg shadow-lg py-2 z-50"
           role="menu"
           aria-orientation="vertical"
         >
           {/* User Info Header */}
-          <div className="px-4 py-3 border-b border-border">
+          <div className="px-3 sm:px-4 py-3 border-b border-border">
             <div className="flex items-start gap-3">
               <div className="h-10 w-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-medium">
                 {initials}
@@ -201,7 +201,7 @@ export function UserMenu() {
                   key={item.href}
                   href={item.href}
                   onClick={() => setIsOpen(false)}
-                  className="flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors focus:outline-none focus:bg-accent"
+                  className="flex items-center gap-3 px-3 sm:px-4 py-3 sm:py-2 text-sm text-foreground hover:bg-accent transition-colors focus:outline-none focus:bg-accent"
                   role="menuitem"
                 >
                   <Icon className="h-4 w-4 text-muted-foreground" />
@@ -218,7 +218,7 @@ export function UserMenu() {
                 setIsOpen(false)
                 logout()
               }}
-              className="w-full flex items-center gap-3 px-4 py-2 text-sm text-destructive hover:bg-destructive/10 transition-colors focus:outline-none focus:bg-destructive/10"
+              className="w-full flex items-center gap-3 px-3 sm:px-4 py-3 sm:py-2 text-sm text-destructive hover:bg-destructive/10 transition-colors focus:outline-none focus:bg-destructive/10"
               role="menuitem"
             >
               <LogOut className="h-4 w-4" />

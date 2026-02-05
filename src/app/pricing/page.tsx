@@ -79,12 +79,12 @@ export default async function PricingPage() {
         <PricingCards plans={plansWithPopular} currentPlan={currentPlan} />
 
         {/* FAQ Section */}
-        <div className="mt-24 max-w-3xl mx-auto">
+        <div className="mt-24 max-w-none sm:max-w-3xl mx-auto">
           <h2 className="text-3xl font-bold text-zinc-900 text-center mb-12">
             Frequently asked questions
           </h2>
           <div className="space-y-6">
-            <div className="bg-white border border-zinc-200 rounded-lg p-6 hover:border-zinc-300 transition-colors">
+            <div className="bg-white border border-zinc-200 rounded-lg p-4 sm:p-6 hover:border-zinc-300 transition-colors">
               <h3 className="font-semibold text-zinc-900 mb-2 text-lg">
                 What counts as a lead?
               </h3>
@@ -93,7 +93,7 @@ export default async function PricingPage() {
               </p>
             </div>
 
-            <div className="bg-white border border-zinc-200 rounded-lg p-6 hover:border-zinc-300 transition-colors">
+            <div className="bg-white border border-zinc-200 rounded-lg p-4 sm:p-6 hover:border-zinc-300 transition-colors">
               <h3 className="font-semibold text-zinc-900 mb-2 text-lg">
                 Can I cancel anytime?
               </h3>
@@ -102,7 +102,7 @@ export default async function PricingPage() {
               </p>
             </div>
 
-            <div className="bg-white border border-zinc-200 rounded-lg p-6 hover:border-zinc-300 transition-colors">
+            <div className="bg-white border border-zinc-200 rounded-lg p-4 sm:p-6 hover:border-zinc-300 transition-colors">
               <h3 className="font-semibold text-zinc-900 mb-2 text-lg">
                 Do unused leads roll over?
               </h3>
@@ -111,7 +111,7 @@ export default async function PricingPage() {
               </p>
             </div>
 
-            <div className="bg-white border border-zinc-200 rounded-lg p-6 hover:border-zinc-300 transition-colors">
+            <div className="bg-white border border-zinc-200 rounded-lg p-4 sm:p-6 hover:border-zinc-300 transition-colors">
               <h3 className="font-semibold text-zinc-900 mb-2 text-lg">
                 What payment methods do you accept?
               </h3>
@@ -120,7 +120,7 @@ export default async function PricingPage() {
               </p>
             </div>
 
-            <div className="bg-white border border-zinc-200 rounded-lg p-6 hover:border-zinc-300 transition-colors">
+            <div className="bg-white border border-zinc-200 rounded-lg p-4 sm:p-6 hover:border-zinc-300 transition-colors">
               <h3 className="font-semibold text-zinc-900 mb-2 text-lg">
                 Can I upgrade or downgrade my plan?
               </h3>
@@ -129,7 +129,7 @@ export default async function PricingPage() {
               </p>
             </div>
 
-            <div className="bg-white border border-zinc-200 rounded-lg p-6 hover:border-zinc-300 transition-colors">
+            <div className="bg-white border border-zinc-200 rounded-lg p-4 sm:p-6 hover:border-zinc-300 transition-colors">
               <h3 className="font-semibold text-zinc-900 mb-2 text-lg">
                 Is there a free trial?
               </h3>
@@ -149,10 +149,10 @@ export default async function PricingPage() {
             <p className="text-zinc-300 text-lg mb-8 max-w-2xl mx-auto">
               Join hundreds of businesses using Cursive to find and convert their ideal customers with AI-powered lead intelligence.
             </p>
-            <div className="flex gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 justify-center">
               <a
                 href="/signup"
-                className="px-8 py-4 bg-white text-zinc-900 font-semibold rounded-lg hover:bg-zinc-100 transition-colors"
+                className="px-8 py-4 bg-white text-zinc-900 font-semibold rounded-lg hover:bg-zinc-100 transition-colors text-center"
               >
                 Start Free
               </a>
@@ -160,7 +160,7 @@ export default async function PricingPage() {
                 href="https://cal.com/adamwolfe/cursive-ai-audit"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-8 py-4 border-2 border-white text-white font-semibold rounded-lg hover:bg-white/10 transition-colors"
+                className="px-8 py-4 border-2 border-white text-white font-semibold rounded-lg hover:bg-white/10 transition-colors text-center"
               >
                 Schedule Demo
               </a>

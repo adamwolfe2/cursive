@@ -92,7 +92,7 @@ export function PricingCards({ plans, currentPlan }: PricingCardsProps) {
         <div className="bg-zinc-100 p-1 rounded-lg inline-flex">
           <button
             onClick={() => setBillingCycle('monthly')}
-            className={`px-6 py-2 rounded-md font-medium transition-all ${
+            className={`px-3 sm:px-6 py-2 rounded-md font-medium transition-all ${
               billingCycle === 'monthly'
                 ? 'bg-white text-zinc-900 shadow-sm'
                 : 'text-zinc-600 hover:text-zinc-900'
@@ -102,7 +102,7 @@ export function PricingCards({ plans, currentPlan }: PricingCardsProps) {
           </button>
           <button
             onClick={() => setBillingCycle('yearly')}
-            className={`px-6 py-2 rounded-md font-medium transition-all ${
+            className={`px-3 sm:px-6 py-2 rounded-md font-medium transition-all ${
               billingCycle === 'yearly'
                 ? 'bg-white text-zinc-900 shadow-sm'
                 : 'text-zinc-600 hover:text-zinc-900'
@@ -133,7 +133,7 @@ export function PricingCards({ plans, currentPlan }: PricingCardsProps) {
               className={`
                 relative bg-white rounded-2xl p-8 border-2 transition-all
                 ${plan.is_popular
-                  ? 'border-blue-500 shadow-lg scale-105'
+                  ? 'border-blue-500 shadow-lg sm:scale-105'
                   : 'border-zinc-200 hover:border-zinc-300'
                 }
                 ${isCurrentPlan ? 'ring-2 ring-emerald-500' : ''}
@@ -178,7 +178,7 @@ export function PricingCards({ plans, currentPlan }: PricingCardsProps) {
                 )}
               </div>
 
-              <ul className="space-y-3 mb-8 min-h-[240px]">
+              <ul className="space-y-2 sm:space-y-3 mb-8 min-h-[240px]">
                 {plan.features.map((feature, idx) => (
                   <li key={idx} className="flex items-start gap-3 text-sm">
                     <svg
@@ -203,7 +203,7 @@ export function PricingCards({ plans, currentPlan }: PricingCardsProps) {
                 onClick={() => handleCheckout(plan)}
                 disabled={isCurrentPlan || isLoading}
                 className={`
-                  w-full py-6 text-base font-semibold rounded-lg transition-all
+                  w-full py-6 text-sm sm:text-base font-semibold rounded-lg transition-all
                   ${plan.is_popular
                     ? 'bg-blue-600 hover:bg-blue-700 text-white'
                     : isCurrentPlan
