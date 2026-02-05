@@ -1,19 +1,36 @@
 'use client';
 
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Mail, Linkedin, MessageSquare, Send } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, useInView } from 'framer-motion';
+import { Mail, Linkedin, MessageSquare, Phone, RefreshCw, Database } from 'lucide-react';
 
 export default function LaunchCampaignsDemo() {
+  const [activeChannels, setActiveChannels] = useState<number[]>([]);
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, amount: 0.3 });
+
   const channels = [
-    { name: 'Email', icon: Mail, active: true },
-    { name: 'LinkedIn', icon: Linkedin, active: true },
-    { name: 'Direct Mail', icon: MessageSquare, active: true },
-    { name: 'SMS', icon: Send, active: false },
+    { name: 'Email', icon: Mail },
+    { name: 'LinkedIn', icon: Linkedin },
+    { name: 'Direct Mail', icon: MessageSquare },
+    { name: 'Phone', icon: Phone },
+    { name: 'SMS', icon: MessageSquare },
+    { name: 'Database Reactivation', icon: RefreshCw },
   ];
 
+  useEffect(() => {
+    if (isInView && activeChannels.length === 0) {
+      // Light up channels one by one
+      channels.forEach((_, index) => {
+        setTimeout(() => {
+          setActiveChannels(prev => [...prev, index]);
+        }, 800 + (index * 300));
+      });
+    }
+  }, [isInView, activeChannels.length]);
+
   return (
-    <div className="w-full">
+    <div ref={ref} className="w-full">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -30,32 +47,62 @@ export default function LaunchCampaignsDemo() {
       </motion.div>
 
       {/* Channel Cards */}
-      <div className="grid md:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
         {channels.map((channel, index) => {
           const Icon = channel.icon;
+          const isActive = activeChannels.includes(index);
+
           return (
             <motion.div
               key={channel.name}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              className={`bg-white rounded-xl p-6 border-2 text-center ${
-                channel.active ? 'border-[#007AFF]' : 'border-gray-200'
-              }`}
+              initial={{ opacity: 0.4, scale: 0.95 }}
+              animate={{
+                opacity: isActive ? 1 : 0.4,
+                scale: isActive ? 1 : 0.95,
+                borderColor: isActive ? '#007AFF' : '#E5E7EB',
+              }}
+              transition={{ duration: 0.4 }}
+              className="bg-white rounded-xl p-6 border-2 text-center"
             >
-              <div
-                className={`w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-3 ${
-                  channel.active ? 'bg-blue-50' : 'bg-gray-50'
-                }`}
+              <motion.div
+                animate={{
+                  backgroundColor: isActive ? '#EFF6FF' : '#F9FAFB',
+                }}
+                transition={{ duration: 0.4 }}
+                className="w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-3"
               >
-                <Icon className={`w-6 h-6 ${channel.active ? 'text-[#007AFF]' : 'text-gray-400'}`} />
-              </div>
-              <div className={`text-sm font-medium ${channel.active ? 'text-gray-900' : 'text-gray-400'}`}>
+                <motion.div
+                  animate={{
+                    color: isActive ? '#007AFF' : '#9CA3AF',
+                  }}
+                  transition={{ duration: 0.4 }}
+                >
+                  <Icon className="w-6 h-6" />
+                </motion.div>
+              </motion.div>
+              <motion.div
+                animate={{
+                  color: isActive ? '#111827' : '#9CA3AF',
+                }}
+                transition={{ duration: 0.4 }}
+                className="text-sm font-medium"
+              >
                 {channel.name}
-              </div>
-              {channel.active && (
-                <div className="text-xs text-[#007AFF] mt-2">Active</div>
+              </motion.div>
+              {isActive && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.2, type: "spring" }}
+                  className="text-xs text-[#007AFF] mt-2 flex items-center justify-center gap-1"
+                >
+                  <motion.div
+                    animate={{ scale: [1, 1.3, 1] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                    className="w-1.5 h-1.5 bg-[#007AFF] rounded-full"
+                  />
+                  Active
+                </motion.div>
               )}
             </motion.div>
           );

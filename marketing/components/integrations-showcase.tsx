@@ -14,7 +14,6 @@ const integrations = [
   { name: "Google Calendar", logo: "/integrations/google-calendar.svg" },
   { name: "Google Docs", logo: "/integrations/google-docs-svgrepo-com.svg" },
   { name: "Google Drive", logo: "/integrations/google-drive-svgrepo-com.svg" },
-  { name: "Google Sheets", logo: "/integrations/gsheet-document-svgrepo-com.svg" },
   { name: "Meta", logo: "/integrations/meta-color.svg" },
   { name: "LinkedIn", logo: "/integrations/linkedin.svg" },
   { name: "Instagram", logo: "/integrations/icons8-instagram.svg" },
@@ -35,7 +34,6 @@ const integrations = [
   { name: "Instantly", logo: "/integrations/instantly.webp" },
   { name: "Klaviyo", logo: "/integrations/klaviyo.svg" },
   { name: "OpenAI", logo: "/integrations/openai-svgrepo-com.svg" },
-  { name: "Search Console", logo: "/integrations/search-console-icon-2025-1.svg" },
   { name: "Sentry", logo: "/integrations/Sentry_idovIhtf_y_0.svg" },
   { name: "Telegram", logo: "/integrations/telegram-communication-chat-interaction-network-connection-svgrepo-com.svg" },
   { name: "Typeform", logo: "/integrations/typeform.svg" },
@@ -69,7 +67,7 @@ export function IntegrationsShowcase({
         )}
       </div>
 
-      <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-6">
+      <div className="grid grid-cols-6 md:grid-cols-9 lg:grid-cols-12 gap-3 max-w-6xl mx-auto">
         {integrations.map((integration, i) => (
           <motion.div
             key={integration.name}
@@ -77,17 +75,17 @@ export function IntegrationsShowcase({
             whileInView={{ opacity: 1, scale: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
             transition={{
-              duration: 0.5,
-              delay: i * 0.03,
+              duration: 0.4,
+              delay: i * 0.015,
               ease: [0.25, 0.4, 0.25, 1],
             }}
-            whileHover={{ scale: 1.1, y: -5 }}
-            className="bg-white rounded-xl p-4 border border-gray-200 hover:border-[#007AFF] hover:shadow-lg transition-all cursor-pointer flex items-center justify-center aspect-square"
+            whileHover={{ scale: 1.15, y: -4 }}
+            className="bg-white rounded-lg p-2.5 border border-gray-200 hover:border-[#007AFF] hover:shadow-md transition-all cursor-pointer flex items-center justify-center aspect-square"
           >
             <img
               src={integration.logo}
-              alt={`${integration.name} integration logo`}
-              className="w-12 h-12 object-contain"
+              alt={`${integration.name} integration`}
+              className="w-7 h-7 object-contain"
               loading="lazy"
             />
           </motion.div>
