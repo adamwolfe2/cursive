@@ -1,7 +1,6 @@
 "use client"
 
 import { motion } from "framer-motion"
-import Image from "next/image"
 
 const integrations = [
   { name: "Slack", logo: "/integrations/slack.svg" },
@@ -59,12 +58,12 @@ export function IntegrationsShowcase({
     <section className={className}>
       <div className="text-center mb-12">
         {title && (
-          <h2 className="text-3xl lg:text-4xl font-light text-gray-900 mb-4">
+          <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
             {title}
           </h2>
         )}
         {subtitle && (
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             {subtitle}
           </p>
         )}
@@ -85,12 +84,11 @@ export function IntegrationsShowcase({
             whileHover={{ scale: 1.1, y: -5 }}
             className="bg-white rounded-xl p-4 border border-gray-200 hover:border-[#007AFF] hover:shadow-lg transition-all cursor-pointer flex items-center justify-center aspect-square"
           >
-            <Image
+            <img
               src={integration.logo}
               alt={integration.name}
-              width={64}
-              height={64}
               className="w-12 h-12 object-contain"
+              loading="lazy"
             />
           </motion.div>
         ))}
