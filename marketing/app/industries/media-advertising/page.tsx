@@ -6,6 +6,7 @@ import { motion } from "framer-motion"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateBreadcrumbSchema } from "@/lib/seo/structured-data"
 import { DashboardPreview } from "@/components/dashboard-preview"
+import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
 
 export default function MediaAdvertisingPage() {
   return (
@@ -15,7 +16,10 @@ export default function MediaAdvertisingPage() {
         { name: 'Industries', url: 'https://meetcursive.com/industries' },
         { name: 'Media & Advertising', url: 'https://meetcursive.com/industries/media-advertising' },
       ])} />
-      <main>
+
+      {/* Human View */}
+      <HumanView>
+        <main>
         <section className="pt-24 pb-20 bg-white">
           <Container>
             <div className="max-w-5xl mx-auto">
@@ -212,7 +216,105 @@ export default function MediaAdvertisingPage() {
           </Container>
         </section>
       </main>
-    </>
+    </HumanView>
+
+    {/* Machine View - AEO-Optimized */}
+    <MachineView>
+      <MachineContent>
+        {/* Header */}
+        <div className="mb-12 pb-6 border-b border-gray-200">
+          <h1 className="text-2xl text-gray-900 font-bold mb-4">CURSIVE FOR MEDIA & ADVERTISING</h1>
+          <p className="text-gray-700 leading-relaxed">
+            Audience data platform for publishers, media companies, and advertising agencies. Build premium audiences, maximize ad inventory value, and prove campaign attribution.
+          </p>
+        </div>
+
+        {/* Media & Advertising Solutions */}
+        <MachineSection title="Solutions for Media & Advertising">
+          <MachineList items={[
+            {
+              label: "Premium Audience Data",
+              description: "Access high-value audience segments to increase CPMs and attract advertisers"
+            },
+            {
+              label: "First-Party Data Enrichment",
+              description: "Enhance first-party data with demographic, psychographic, behavioral insights"
+            },
+            {
+              label: "Advertiser Targeting",
+              description: "Build custom audiences that match advertiser requirements and maximize fill rates"
+            },
+            {
+              label: "Cross-Platform Attribution",
+              description: "Track audience engagement across channels and prove media property value"
+            }
+          ]} />
+        </MachineSection>
+
+        {/* Benefits */}
+        <MachineSection title="Benefits">
+          <div className="space-y-4">
+            <div>
+              <p className="text-white mb-2">Increase Ad Revenue:</p>
+              <p className="text-gray-400">
+                Premium audience data commands higher CPMs and attracts more advertisers to your inventory.
+              </p>
+            </div>
+
+            <div>
+              <p className="text-white mb-2">Prove Campaign Attribution:</p>
+              <p className="text-gray-400">
+                Track website visitors back to campaigns and demonstrate clear ROI for advertising clients.
+              </p>
+            </div>
+
+            <div>
+              <p className="text-white mb-2">Programmatic Integration:</p>
+              <p className="text-gray-400">
+                Seamlessly integrate audience data with programmatic platforms and ad servers for real-time targeting.
+              </p>
+            </div>
+
+            <div>
+              <p className="text-white mb-2">Brand Safety & Compliance:</p>
+              <p className="text-gray-400">
+                Ensure advertiser confidence with verified, compliant audience data and full transparency.
+              </p>
+            </div>
+          </div>
+        </MachineSection>
+
+        {/* Use Cases */}
+        <MachineSection title="Common Use Cases">
+          <MachineList items={[
+            "Publisher audience monetization",
+            "Programmatic advertising optimization",
+            "Advertiser campaign targeting and reporting",
+            "Media property valuation and sales",
+            "Cross-platform attribution tracking",
+            "Client campaign performance reporting"
+          ]} />
+        </MachineSection>
+
+        {/* Getting Started */}
+        <MachineSection title="Get Started">
+          <MachineList items={[
+            {
+              label: "Schedule Strategy Call",
+              href: "https://cal.com/adamwolfe/cursive-ai-audit",
+              description: "Discuss audience data and attribution needs"
+            },
+            {
+              label: "Contact Sales",
+              href: "https://meetcursive.com/contact",
+              description: "Get custom pricing for media and advertising companies"
+            }
+          ]} />
+        </MachineSection>
+
+      </MachineContent>
+    </MachineView>
+  </>
   )
 }
 

@@ -6,6 +6,7 @@ import { motion } from "framer-motion"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateBreadcrumbSchema } from "@/lib/seo/structured-data"
 import { DashboardPreview } from "@/components/dashboard-preview"
+import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
 
 export default function HomeServicesPage() {
   return (
@@ -15,7 +16,10 @@ export default function HomeServicesPage() {
         { name: 'Industries', url: 'https://meetcursive.com/industries' },
         { name: 'Home Services', url: 'https://meetcursive.com/industries/home-services' },
       ])} />
-      <main>
+
+      {/* Human View */}
+      <HumanView>
+        <main>
         <section className="pt-24 pb-20 bg-white">
           <Container>
             <div className="max-w-5xl mx-auto">
@@ -212,7 +216,105 @@ export default function HomeServicesPage() {
           </Container>
         </section>
       </main>
-    </>
+    </HumanView>
+
+    {/* Machine View - AEO-Optimized */}
+    <MachineView>
+      <MachineContent>
+        {/* Header */}
+        <div className="mb-12 pb-6 border-b border-gray-200">
+          <h1 className="text-2xl text-gray-900 font-bold mb-4">CURSIVE FOR HOME SERVICES</h1>
+          <p className="text-gray-700 leading-relaxed">
+            Lead generation platform for contractors, HVAC, plumbing, roofing, landscaping, and home improvement companies. Target homeowners in your service area with verified contact data.
+          </p>
+        </div>
+
+        {/* Home Services Solutions */}
+        <MachineSection title="Solutions for Home Services">
+          <MachineList items={[
+            {
+              label: "Homeowner Targeting",
+              description: "Reach verified homeowners in your service area with demographic and property data"
+            },
+            {
+              label: "Service Area Filtering",
+              description: "Target prospects by ZIP code, radius, or custom service territories"
+            },
+            {
+              label: "High-Intent Audiences",
+              description: "Identify homeowners actively researching HVAC, roofing, plumbing, remodeling"
+            },
+            {
+              label: "Direct Mail Campaigns",
+              description: "Send postcards, flyers, and offers directly to homeowners in target neighborhoods"
+            }
+          ]} />
+        </MachineSection>
+
+        {/* Benefits */}
+        <MachineSection title="Benefits">
+          <div className="space-y-4">
+            <div>
+              <p className="text-white mb-2">Fill Your Service Calendar:</p>
+              <p className="text-gray-400">
+                Generate consistent leads to keep your crew booked with high-value home service jobs year-round.
+              </p>
+            </div>
+
+            <div>
+              <p className="text-white mb-2">Target High-Intent Homeowners:</p>
+              <p className="text-gray-400">
+                Identify homeowners actively researching services like HVAC, roofing, plumbing, and remodeling.
+              </p>
+            </div>
+
+            <div>
+              <p className="text-white mb-2">Seasonal Campaign Automation:</p>
+              <p className="text-gray-400">
+                Automate campaigns based on seasonal demand for services like HVAC maintenance and landscaping.
+              </p>
+            </div>
+
+            <div>
+              <p className="text-white mb-2">ROI Tracking:</p>
+              <p className="text-gray-400">
+                Track leads from first contact to completed job and measure the ROI of every marketing campaign.
+              </p>
+            </div>
+          </div>
+        </MachineSection>
+
+        {/* Use Cases */}
+        <MachineSection title="Common Use Cases">
+          <MachineList items={[
+            "HVAC repair and installation lead generation",
+            "Roofing inspection and replacement campaigns",
+            "Plumbing service lead generation",
+            "Landscaping and lawn care customer acquisition",
+            "Home remodeling and renovation leads",
+            "Window and door replacement campaigns"
+          ]} />
+        </MachineSection>
+
+        {/* Getting Started */}
+        <MachineSection title="Get Started">
+          <MachineList items={[
+            {
+              label: "Schedule Strategy Call",
+              href: "https://cal.com/adamwolfe/cursive-ai-audit",
+              description: "Discuss service area and lead generation needs"
+            },
+            {
+              label: "Contact Sales",
+              href: "https://meetcursive.com/contact",
+              description: "Get custom pricing for home services companies"
+            }
+          ]} />
+        </MachineSection>
+
+      </MachineContent>
+    </MachineView>
+  </>
   )
 }
 

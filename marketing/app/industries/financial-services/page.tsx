@@ -6,6 +6,7 @@ import { motion } from "framer-motion"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateBreadcrumbSchema } from "@/lib/seo/structured-data"
 import { DashboardPreview } from "@/components/dashboard-preview"
+import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
 
 export default function FinancialServicesPage() {
   return (
@@ -15,7 +16,10 @@ export default function FinancialServicesPage() {
         { name: 'Industries', url: 'https://meetcursive.com/industries' },
         { name: 'Financial Services', url: 'https://meetcursive.com/industries/financial-services' },
       ])} />
-      <main>
+
+      {/* Human View */}
+      <HumanView>
+        <main>
         <section className="pt-24 pb-20 bg-white">
           <Container>
             <div className="max-w-5xl mx-auto">
@@ -212,7 +216,105 @@ export default function FinancialServicesPage() {
           </Container>
         </section>
       </main>
-    </>
+    </HumanView>
+
+    {/* Machine View - AEO-Optimized */}
+    <MachineView>
+      <MachineContent>
+        {/* Header */}
+        <div className="mb-12 pb-6 border-b border-gray-200">
+          <h1 className="text-2xl text-gray-900 font-bold mb-4">CURSIVE FOR FINANCIAL SERVICES</h1>
+          <p className="text-gray-700 leading-relaxed">
+            Marketing platform for banks, credit unions, wealth management firms, insurance companies, and fintech. Acquire high-net-worth clients and businesses with compliant, verified data.
+          </p>
+        </div>
+
+        {/* Financial Services Solutions */}
+        <MachineSection title="Solutions for Financial Services">
+          <MachineList items={[
+            {
+              label: "Compliance-First Data",
+              description: "GDPR, CCPA, and financial services regulations built into every dataset"
+            },
+            {
+              label: "High-Net-Worth Targeting",
+              description: "Reach qualified investors, borrowers, and HNW individuals with precision"
+            },
+            {
+              label: "Account-Based Marketing",
+              description: "Target businesses and decision-makers at financial institutions"
+            },
+            {
+              label: "Intent Data",
+              description: "Identify prospects researching loans, investments, insurance, and banking products"
+            }
+          ]} />
+        </MachineSection>
+
+        {/* Benefits */}
+        <MachineSection title="Benefits">
+          <div className="space-y-4">
+            <div>
+              <p className="text-white mb-2">Reduce Customer Acquisition Cost:</p>
+              <p className="text-gray-400">
+                Replace expensive lead gen services with direct outreach to qualified prospects at a fraction of the cost.
+              </p>
+            </div>
+
+            <div>
+              <p className="text-white mb-2">Compliant Marketing:</p>
+              <p className="text-gray-400">
+                All data sourced and managed in compliance with GDPR, CCPA, and financial services regulations.
+              </p>
+            </div>
+
+            <div>
+              <p className="text-white mb-2">Secure Data Handling:</p>
+              <p className="text-gray-400">
+                Bank-grade security and encryption for all data transfers, storage, and campaign execution.
+              </p>
+            </div>
+
+            <div>
+              <p className="text-white mb-2">Omnichannel Campaigns:</p>
+              <p className="text-gray-400">
+                Reach prospects across email, direct mail, and digital advertising with consistent messaging.
+              </p>
+            </div>
+          </div>
+        </MachineSection>
+
+        {/* Use Cases */}
+        <MachineSection title="Common Use Cases">
+          <MachineList items={[
+            "Wealth management client acquisition",
+            "Commercial lending prospect targeting",
+            "Insurance policy lead generation",
+            "Credit card and banking product campaigns",
+            "Mortgage and refinance targeting",
+            "B2B banking and treasury services"
+          ]} />
+        </MachineSection>
+
+        {/* Getting Started */}
+        <MachineSection title="Get Started">
+          <MachineList items={[
+            {
+              label: "Schedule Strategy Call",
+              href: "https://cal.com/adamwolfe/cursive-ai-audit",
+              description: "Discuss compliant marketing strategies and pricing"
+            },
+            {
+              label: "Contact Sales",
+              href: "https://meetcursive.com/contact",
+              description: "Get custom pricing for financial institutions"
+            }
+          ]} />
+        </MachineSection>
+
+      </MachineContent>
+    </MachineView>
+  </>
   )
 }
 

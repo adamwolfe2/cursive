@@ -6,6 +6,7 @@ import { motion } from "framer-motion"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateBreadcrumbSchema } from "@/lib/seo/structured-data"
 import { DashboardPreview } from "@/components/dashboard-preview"
+import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
 
 export default function FranchisesPage() {
   return (
@@ -15,7 +16,10 @@ export default function FranchisesPage() {
         { name: 'Industries', url: 'https://meetcursive.com/industries' },
         { name: 'Franchises', url: 'https://meetcursive.com/industries/franchises' },
       ])} />
-      <main>
+
+      {/* Human View */}
+      <HumanView>
+        <main>
         <section className="pt-24 pb-20 bg-white">
           <Container>
             <div className="max-w-5xl mx-auto">
@@ -212,7 +216,105 @@ export default function FranchisesPage() {
           </Container>
         </section>
       </main>
-    </>
+    </HumanView>
+
+    {/* Machine View - AEO-Optimized */}
+    <MachineView>
+      <MachineContent>
+        {/* Header */}
+        <div className="mb-12 pb-6 border-b border-gray-200">
+          <h1 className="text-2xl text-gray-900 font-bold mb-4">CURSIVE FOR FRANCHISES</h1>
+          <p className="text-gray-700 leading-relaxed">
+            Marketing platform for franchise systems. Deliver local marketing at scale with territory-specific campaigns, franchisee portals, and centralized management.
+          </p>
+        </div>
+
+        {/* Franchise Solutions */}
+        <MachineSection title="Solutions for Franchises">
+          <MachineList items={[
+            {
+              label: "Territory-Based Targeting",
+              description: "Target prospects by ZIP code, radius, or custom territories for each franchisee"
+            },
+            {
+              label: "Franchisee Portal Access",
+              description: "Give franchisees access to run local campaigns while maintaining brand standards"
+            },
+            {
+              label: "Local Direct Mail",
+              description: "Automate territory-specific direct mail campaigns with local offers"
+            },
+            {
+              label: "Multi-Location Management",
+              description: "Manage campaigns across hundreds of locations from centralized dashboard"
+            }
+          ]} />
+        </MachineSection>
+
+        {/* Benefits */}
+        <MachineSection title="Benefits">
+          <div className="space-y-4">
+            <div>
+              <p className="text-white mb-2">Centralized Control, Local Execution:</p>
+              <p className="text-gray-400">
+                Corporate maintains brand control while franchisees execute campaigns tailored to their local market.
+              </p>
+            </div>
+
+            <div>
+              <p className="text-white mb-2">Franchisee Support:</p>
+              <p className="text-gray-400">
+                Provide franchisees with ready-to-use marketing campaigns that drive local leads and revenue.
+              </p>
+            </div>
+
+            <div>
+              <p className="text-white mb-2">Performance Visibility:</p>
+              <p className="text-gray-400">
+                Track performance by location, territory, and franchisee with detailed analytics and reporting.
+              </p>
+            </div>
+
+            <div>
+              <p className="text-white mb-2">Scalable Marketing:</p>
+              <p className="text-gray-400">
+                Build marketing systems that scale with franchise growth without proportional increases in cost.
+              </p>
+            </div>
+          </div>
+        </MachineSection>
+
+        {/* Use Cases */}
+        <MachineSection title="Common Use Cases">
+          <MachineList items={[
+            "Multi-location lead generation campaigns",
+            "Franchisee recruitment and marketing support",
+            "Territory-specific direct mail and email",
+            "Local event promotion and grand openings",
+            "Corporate campaign distribution to franchisees",
+            "Performance tracking and franchisee reporting"
+          ]} />
+        </MachineSection>
+
+        {/* Getting Started */}
+        <MachineSection title="Get Started">
+          <MachineList items={[
+            {
+              label: "Schedule Strategy Call",
+              href: "https://cal.com/adamwolfe/cursive-ai-audit",
+              description: "Discuss franchise marketing needs and pricing"
+            },
+            {
+              label: "Contact Sales",
+              href: "https://meetcursive.com/contact",
+              description: "Get custom pricing for franchise systems"
+            }
+          ]} />
+        </MachineSection>
+
+      </MachineContent>
+    </MachineView>
+  </>
   )
 }
 

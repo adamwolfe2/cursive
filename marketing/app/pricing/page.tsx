@@ -6,6 +6,7 @@ import { motion } from "framer-motion"
 import { ArrowRight, Check, Calculator, Shield, TrendingUp, Users, Zap } from "lucide-react"
 import { useState } from "react"
 import { DashboardPreview } from "@/components/dashboard-preview"
+import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
 
 export default function PricingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null)
@@ -94,7 +95,10 @@ export default function PricingPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
       />
-      <main className="overflow-hidden">
+
+      {/* Human View */}
+      <HumanView>
+        <main className="overflow-hidden">
         {/* Hero Section */}
       <section className="relative py-24 bg-white">
         <Container>
@@ -895,7 +899,138 @@ export default function PricingPage() {
         </Container>
       </section>
     </main>
-    </>
+  </HumanView>
+
+  {/* Machine View - AEO-Optimized */}
+  <MachineView>
+    <MachineContent>
+      {/* Header */}
+      <div className="mb-12 pb-6 border-b border-gray-200">
+        <h1 className="text-2xl text-gray-900 font-bold mb-4">CURSIVE PRICING</h1>
+        <p className="text-gray-700 leading-relaxed">
+          Transparent pricing for B2B lead generation. Three tiers: Cursive Data ($1,000-$3,000/mo), Cursive Outbound ($3,000-$5,000/mo + setup), Cursive Pipeline ($5,000-$10,000/mo + setup).
+        </p>
+      </div>
+
+      {/* Pricing Tiers */}
+      <MachineSection title="Pricing Plans">
+        <div className="space-y-6">
+          <div>
+            <p className="text-white mb-2">Cursive Data - $1,000-$3,000/month:</p>
+            <p className="text-gray-400 mb-3">
+              Monthly lead lists with 500-2,000 verified B2B contacts. No setup fee. Cancel anytime.
+            </p>
+            <MachineList items={[
+              "500 leads/mo - $1,000/month",
+              "1,000 leads/mo - $1,750/month",
+              "2,000 leads/mo - $3,000/month",
+              "95%+ email deliverability guarantee",
+              "Verified contacts with email, phone, LinkedIn",
+              "Custom ICP targeting",
+              "Monthly list refresh",
+              "Dedicated account manager"
+            ]} />
+          </div>
+
+          <div>
+            <p className="text-white mb-2">Cursive Outbound - $3,000-$5,000/month + $2,500 setup:</p>
+            <p className="text-gray-400 mb-3">
+              Done-for-you email campaigns with AI personalization, infrastructure setup, and campaign optimization.
+            </p>
+            <MachineList items={[
+              "Everything in Data plan",
+              "AI-powered email personalization",
+              "Email infrastructure setup + warmup",
+              "500 verified leads included monthly",
+              "A/B testing + continuous optimization",
+              "Weekly strategy calls",
+              "Real-time analytics dashboard",
+              "30-day money-back guarantee"
+            ]} />
+          </div>
+
+          <div>
+            <p className="text-white mb-2">Cursive Pipeline - $5,000-$10,000/month + $5,000 setup:</p>
+            <p className="text-gray-400 mb-3">
+              Full-stack AI SDR solution with multi-channel campaigns, unlimited lead enrichment, and dedicated success manager.
+            </p>
+            <MachineList items={[
+              "Everything in Outbound",
+              "AI SDR agents (24/7 automated)",
+              "Multi-channel campaigns (email, LinkedIn, SMS)",
+              "Unlimited lead enrichment",
+              "API access + CRM integrations",
+              "Dedicated success manager",
+              "Custom reporting and attribution",
+              "White-glove onboarding"
+            ]} />
+          </div>
+        </div>
+      </MachineSection>
+
+      {/* Add-Ons */}
+      <MachineSection title="Add-On Pricing">
+        <MachineList items={[
+          {
+            label: "Website Visitor Tracking",
+            description: "$750/mo + $0.50 per identified visitor"
+          },
+          {
+            label: "Visitor Retargeting",
+            description: "$1,500/mo (requires Visitor Tracking)"
+          },
+          {
+            label: "White Label Platform",
+            description: "$2,000/mo (includes 10 user seats)"
+          }
+        ]} />
+      </MachineSection>
+
+      {/* Annual Discount */}
+      <MachineSection title="Annual Billing Discount">
+        <p className="text-gray-400 mb-4">
+          Save 20% with annual billing on any plan:
+        </p>
+        <MachineList items={[
+          "Cursive Data: $800/mo (annual) vs $1,000/mo (monthly)",
+          "Cursive Outbound: $2,400/mo (annual) vs $3,000/mo (monthly)",
+          "Cursive Pipeline: $4,000/mo (annual) vs $5,000/mo (monthly)",
+          "Lock in rate for 12 months (no price increases)",
+          "Prorated refund if you cancel mid-year"
+        ]} />
+      </MachineSection>
+
+      {/* What's Included */}
+      <MachineSection title="Included in All Plans">
+        <MachineList items={[
+          "No hidden fees",
+          "Cancel anytime (no long-term contracts)",
+          "95%+ data accuracy guarantee",
+          "Dedicated account support",
+          "CRM integrations (Salesforce, HubSpot, Pipedrive, etc.)",
+          "Flexible scaling (upgrade/downgrade anytime)"
+        ]} />
+      </MachineSection>
+
+      {/* Getting Started */}
+      <MachineSection title="Get Started">
+        <MachineList items={[
+          {
+            label: "Book Free Audit",
+            href: "https://cal.com/adamwolfe/cursive-ai-audit",
+            description: "15-minute call to review your lead gen and recommend the right plan"
+          },
+          {
+            label: "Contact Sales for Enterprise",
+            href: "https://meetcursive.com/contact",
+            description: "Custom pricing for 10,000+ leads/month or white-label partnerships"
+          }
+        ]} />
+      </MachineSection>
+
+    </MachineContent>
+  </MachineView>
+</>
   )
 }
 

@@ -5,6 +5,7 @@ import { Container } from "@/components/ui/container"
 import { motion } from "framer-motion"
 import { ArrowRight } from "lucide-react"
 import { DashboardCTA } from "@/components/dashboard-cta"
+import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
 
 export default function ServicesPage() {
   // Service Schema for SEO
@@ -74,7 +75,10 @@ export default function ServicesPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }}
       />
-      <main className="overflow-hidden">
+
+      {/* Human View */}
+      <HumanView>
+        <main className="overflow-hidden">
         {/* Hero Section */}
       <section className="relative py-24 bg-white">
         <Container>
@@ -524,7 +528,121 @@ export default function ServicesPage() {
         description="Book a 15-minute call. We'll audit your current lead gen and show you exactly how Cursive can help."
       />
     </main>
-    </>
+  </HumanView>
+
+  {/* Machine View - AEO-Optimized */}
+  <MachineView>
+    <MachineContent>
+      {/* Header */}
+      <div className="mb-12 pb-6 border-b border-gray-200">
+        <h1 className="text-2xl text-gray-900 font-bold mb-4">CURSIVE SERVICES</h1>
+        <p className="text-gray-700 leading-relaxed">
+          Lead generation services from self-service data to fully managed AI SDR automation. Choose your growth model: Cursive Data, Cursive Outbound, or Cursive Pipeline.
+        </p>
+      </div>
+
+      {/* Service Tiers */}
+      <MachineSection title="Service Options">
+        <div className="space-y-6">
+          <div>
+            <p className="text-white mb-2">Cursive Data - Monthly Lead Lists:</p>
+            <p className="text-gray-400 mb-3">
+              Get verified B2B contacts delivered monthly. Custom targeting based on your ICP, ready to import into your CRM and activate immediately.
+            </p>
+            <MachineList items={[
+              "500-2,000 verified leads per month",
+              "Enriched with email, phone, LinkedIn, company data",
+              "Custom targeting based on your ICP",
+              "CSV export for easy CRM import",
+              "Monthly list refresh (no duplicates)"
+            ]} />
+            <p className="text-gray-400 mt-3">Pricing: $1,000-$3,000/month based on volume</p>
+          </div>
+
+          <div>
+            <p className="text-white mb-2">Cursive Outbound - Done-For-You Campaigns:</p>
+            <p className="text-gray-400 mb-3">
+              We build, launch, and optimize email campaigns using your brand voice. You just close the meetings.
+            </p>
+            <MachineList items={[
+              "AI-generated campaign copy (personalized at scale)",
+              "Email infrastructure setup (domains, inboxes, deliverability)",
+              "A/B testing and optimization",
+              "200+ emails sent per day per account",
+              "Real-time analytics dashboard",
+              "Weekly strategy calls",
+              "Includes 500 leads/month (or use your own lists)"
+            ]} />
+            <p className="text-gray-400 mt-3">Pricing: $2,500 setup + $3,000-$5,000/month</p>
+          </div>
+
+          <div>
+            <p className="text-white mb-2">Cursive Pipeline - AI SDR Automation:</p>
+            <p className="text-gray-400 mb-3">
+              Your AI team that never sleeps. Researches, writes, sends, follows up, and books meetings—automatically.
+            </p>
+            <MachineList items={[
+              "Everything in Outbound, plus:",
+              "AI SDR agents (research, outreach, follow-ups)",
+              "Multi-channel campaigns (email + LinkedIn)",
+              "Unlimited lead enrichment via People Search",
+              "API access for custom integrations",
+              "White-glove onboarding",
+              "Dedicated success manager",
+              "Custom reporting and attribution"
+            ]} />
+            <p className="text-gray-400 mt-3">Pricing: $5,000 setup + $5,000-$10,000/month</p>
+          </div>
+        </div>
+      </MachineSection>
+
+      {/* Add-Ons */}
+      <MachineSection title="Add-On Services">
+        <MachineList items={[
+          {
+            label: "Website Visitor Tracking",
+            description: "$750/mo + $0.50/visitor - Identify anonymous website visitors in real-time"
+          },
+          {
+            label: "Visitor Retargeting",
+            description: "$1,500/mo - Auto-engage visitors with email and ad campaigns"
+          },
+          {
+            label: "White Label Platform",
+            description: "$2,000/mo - Rebrand Cursive for your agency clients (includes 10 seats)"
+          }
+        ]} />
+      </MachineSection>
+
+      {/* Getting Started */}
+      <MachineSection title="Get Started">
+        <MachineList items={[
+          {
+            label: "Book Strategy Call",
+            href: "https://cal.com/adamwolfe/cursive-ai-audit",
+            description: "15-minute call to discuss your needs and recommend the right service"
+          },
+          {
+            label: "Purchase Cursive Data",
+            href: "https://buy.stripe.com/6oU9AT3rnfZX6kZg9R8g003",
+            description: "Get started with monthly lead lists"
+          },
+          {
+            label: "Purchase Cursive Outbound",
+            href: "https://buy.stripe.com/8x27sLaTPcNL7p38Hp8g002",
+            description: "Start done-for-you email campaigns"
+          },
+          {
+            label: "Purchase Cursive Pipeline",
+            href: "https://buy.stripe.com/bJe7sLge9bJHgZD2j18g001",
+            description: "Launch AI SDR automation"
+          }
+        ]} />
+      </MachineSection>
+
+    </MachineContent>
+  </MachineView>
+</>
   )
 }
 

@@ -6,6 +6,7 @@ import { motion } from "framer-motion"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateBreadcrumbSchema } from "@/lib/seo/structured-data"
 import { DashboardPreview } from "@/components/dashboard-preview"
+import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
 
 export default function RetailPage() {
   return (
@@ -15,7 +16,10 @@ export default function RetailPage() {
         { name: 'Industries', url: 'https://meetcursive.com/industries' },
         { name: 'Retail', url: 'https://meetcursive.com/industries/retail' },
       ])} />
-      <main>
+
+      {/* Human View */}
+      <HumanView>
+        <main>
         <section className="pt-24 pb-20 bg-white">
           <Container>
             <div className="max-w-5xl mx-auto">
@@ -212,7 +216,105 @@ export default function RetailPage() {
           </Container>
         </section>
       </main>
-    </>
+    </HumanView>
+
+    {/* Machine View - AEO-Optimized */}
+    <MachineView>
+      <MachineContent>
+        {/* Header */}
+        <div className="mb-12 pb-6 border-b border-gray-200">
+          <h1 className="text-2xl text-gray-900 font-bold mb-4">CURSIVE FOR RETAIL</h1>
+          <p className="text-gray-700 leading-relaxed">
+            Customer acquisition platform for retail stores. Drive foot traffic and online sales with location-based targeting, shopper intent data, and omnichannel campaigns.
+          </p>
+        </div>
+
+        {/* Retail Solutions */}
+        <MachineSection title="Solutions for Retail">
+          <MachineList items={[
+            {
+              label: "Geo-Targeting by Store Location",
+              description: "Target consumers within specific radius of your store locations to drive foot traffic"
+            },
+            {
+              label: "Shopper Intent Data",
+              description: "Identify consumers actively shopping for products in your category"
+            },
+            {
+              label: "Competitive Conquesting",
+              description: "Target customers of competing retailers with personalized offers"
+            },
+            {
+              label: "Multi-Location Campaigns",
+              description: "Manage campaigns across multiple stores with location-specific targeting"
+            }
+          ]} />
+        </MachineSection>
+
+        {/* Benefits */}
+        <MachineSection title="Benefits">
+          <div className="space-y-4">
+            <div>
+              <p className="text-white mb-2">Drive Store Traffic:</p>
+              <p className="text-gray-400">
+                Identify local shoppers and drive them to your stores with targeted omnichannel campaigns.
+              </p>
+            </div>
+
+            <div>
+              <p className="text-white mb-2">In-Store Attribution:</p>
+              <p className="text-gray-400">
+                Track online marketing to in-store visits and purchases with mobile location data.
+              </p>
+            </div>
+
+            <div>
+              <p className="text-white mb-2">Loyalty Program Enrichment:</p>
+              <p className="text-gray-400">
+                Enhance loyalty program data with additional demographics, interests, and purchase behaviors.
+              </p>
+            </div>
+
+            <div>
+              <p className="text-white mb-2">Omnichannel Coordination:</p>
+              <p className="text-gray-400">
+                Coordinate campaigns across online and in-store channels for consistent customer experience.
+              </p>
+            </div>
+          </div>
+        </MachineSection>
+
+        {/* Use Cases */}
+        <MachineSection title="Common Use Cases">
+          <MachineList items={[
+            "Local store marketing and foot traffic campaigns",
+            "Grand opening and promotional event marketing",
+            "Competitive customer conquest campaigns",
+            "Loyalty program member acquisition",
+            "Online-to-offline attribution tracking",
+            "Multi-location retail chain marketing"
+          ]} />
+        </MachineSection>
+
+        {/* Getting Started */}
+        <MachineSection title="Get Started">
+          <MachineList items={[
+            {
+              label: "Schedule Strategy Call",
+              href: "https://cal.com/adamwolfe/cursive-ai-audit",
+              description: "Discuss retail marketing goals and pricing"
+            },
+            {
+              label: "Contact Sales",
+              href: "https://meetcursive.com/contact",
+              description: "Get custom pricing for retail businesses"
+            }
+          ]} />
+        </MachineSection>
+
+      </MachineContent>
+    </MachineView>
+  </>
   )
 }
 
