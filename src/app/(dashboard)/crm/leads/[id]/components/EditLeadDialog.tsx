@@ -24,7 +24,7 @@ import {
   SelectValue,
 } from '@/components/ui/select-radix'
 import { useToast } from '@/lib/hooks/use-toast'
-import type { Lead } from '@/types/lead.types'
+import type { LeadTableRow } from '@/types/crm.types'
 
 const statusOptions = ['new', 'contacted', 'qualified', 'lost', 'converted'] as const
 
@@ -47,7 +47,7 @@ type EditLeadFormData = z.infer<typeof editLeadSchema>
 interface EditLeadDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  lead: Lead
+  lead: LeadTableRow
   onSuccess?: () => void
 }
 
@@ -74,7 +74,7 @@ export function EditLeadDialog({ open, onOpenChange, lead, onSuccess }: EditLead
         email: lead.email || '',
         phone: lead.phone || '',
         company_name: lead.company_name || '',
-        job_title: lead.job_title || '',
+        job_title: lead.job_title || lead.title || '',
         city: lead.city || '',
         state: lead.state || '',
         country: lead.country || '',

@@ -119,8 +119,8 @@ export function LeadDetailClient({ initialLead }: LeadDetailClientProps) {
               />
               <div>
                 <h1 className="text-xl font-semibold text-gray-900">{fullName}</h1>
-                {lead.job_title && (
-                  <p className="text-sm text-gray-500">{lead.job_title}</p>
+                {(lead.job_title || lead.title) && (
+                  <p className="text-sm text-gray-500">{lead.job_title || lead.title}</p>
                 )}
               </div>
             </div>
@@ -174,7 +174,7 @@ export function LeadDetailClient({ initialLead }: LeadDetailClientProps) {
                     <CompanyFavicon
                       domain={lead.company_domain}
                       companyName={lead.company_name}
-                      size="lg"
+                      size="md"
                     />
                     <div>
                       <h2 className="text-lg font-semibold text-gray-900">

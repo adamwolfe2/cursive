@@ -45,7 +45,7 @@ export function LeadMobileCard({ lead, selected, onSelect, onView }: LeadMobileC
           <div className="pt-1">
             <Checkbox
               checked={selected}
-              onCheckedChange={onSelect}
+              onChange={(e) => onSelect?.(e.target.checked)}
               aria-label={`Select ${fullName}`}
             />
           </div>
@@ -55,7 +55,7 @@ export function LeadMobileCard({ lead, selected, onSelect, onView }: LeadMobileC
         <div className="flex-1 min-w-0">
           <MobileCardHeader
             title={fullName}
-            subtitle={lead.job_title || 'No title'}
+            subtitle={lead.job_title || lead.title || 'No title'}
             badge={
               <Badge className={getStatusColor(lead.status)}>
                 {lead.status}

@@ -15,6 +15,10 @@ const statusBadgeVariants = cva(
           'bg-yellow-50/80 text-yellow-700 ring-yellow-200/50 dark:bg-yellow-950 dark:text-yellow-300',
         qualified:
           'bg-emerald-50/80 text-emerald-700 ring-emerald-200/50 dark:bg-emerald-950 dark:text-emerald-300',
+        proposal:
+          'bg-purple-50/80 text-purple-700 ring-purple-200/50 dark:bg-purple-950 dark:text-purple-300',
+        negotiation:
+          'bg-orange-50/80 text-orange-700 ring-orange-200/50 dark:bg-orange-950 dark:text-orange-300',
         won: 'bg-green-50/80 text-green-700 ring-green-200/50 dark:bg-green-950 dark:text-green-300',
         lost: 'bg-zinc-50/80 text-zinc-600 ring-zinc-200/50 dark:bg-zinc-800 dark:text-zinc-300',
       },
@@ -40,6 +44,16 @@ const statusBadgeVariants = cva(
         className: 'border-blue-200 text-blue-700 dark:border-blue-800',
       },
       {
+        status: 'proposal',
+        variant: 'outline',
+        className: 'border-purple-200 text-purple-700 dark:border-purple-800',
+      },
+      {
+        status: 'negotiation',
+        variant: 'outline',
+        className: 'border-orange-200 text-orange-700 dark:border-orange-800',
+      },
+      {
         status: 'won',
         variant: 'outline',
         className: 'border-green-200 text-green-700 dark:border-green-800',
@@ -63,6 +77,8 @@ const statusDotVariants = cva('h-1.5 w-1.5 rounded-full shadow-sm', {
       new: 'bg-blue-500 shadow-blue-500/50',
       contacted: 'bg-yellow-500 shadow-yellow-500/50',
       qualified: 'bg-emerald-500 shadow-emerald-500/50',
+      proposal: 'bg-purple-500 shadow-purple-500/50',
+      negotiation: 'bg-orange-500 shadow-orange-500/50',
       won: 'bg-green-500 shadow-green-500/50',
       lost: 'bg-zinc-400 shadow-zinc-400/30',
     },
@@ -76,6 +92,8 @@ const STATUS_LABELS: Record<LeadStatus, string> = {
   new: 'New',
   contacted: 'Contacted',
   qualified: 'Qualified',
+  proposal: 'Proposal',
+  negotiation: 'Negotiation',
   won: 'Won',
   lost: 'Lost',
 }

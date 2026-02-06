@@ -61,7 +61,7 @@ export function LeadsDataTable({
   const columnVisibility: VisibilityState = useMemo(() => {
     const visibility: VisibilityState = {}
     Object.entries(storedColumnVisibility).forEach(([key, value]) => {
-      visibility[key] = value
+      visibility[key] = value as boolean
     })
     return visibility
   }, [storedColumnVisibility])

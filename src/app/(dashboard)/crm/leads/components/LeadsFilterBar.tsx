@@ -267,7 +267,7 @@ export const LeadsFilterBar = forwardRef<LeadsFilterBarRef>((props, ref) => {
                 {option?.label}
                 <X
                   className="h-3 w-3 cursor-pointer"
-                  onClick={() => toggleStatus(status)}
+                  onClick={() => toggleStatus(status as LeadStatus)}
                 />
               </Badge>
             )

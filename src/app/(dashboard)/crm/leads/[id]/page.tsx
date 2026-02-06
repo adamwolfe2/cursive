@@ -6,6 +6,7 @@ import { getCurrentUser } from '@/lib/auth/helpers'
 import { LeadRepository } from '@/lib/repositories/lead.repository'
 import { QueryProvider } from '@/components/providers/query-provider'
 import { LeadDetailClient } from './components/LeadDetailClient'
+import type { LeadTableRow } from '@/types/crm.types'
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -36,9 +37,33 @@ export default async function LeadDetailPage({ params }: PageProps) {
     notFound()
   }
 
+  // Map LeadWithRelations to LeadTableRow for the client component
+  const leadTableRow: LeadTableRow = {
+    id: lead.id,
+    workspace_id: lead.workspace_id,
+    first_name: lead.first_name ?? undefined,
+    last_name: lead.last_name ?? undefined,
+    email: lead.email ?? undefined,
+    phone: lead.phone ?? undefined,
+    company_name: lead.company_name ?? undefined,
+    company_industry: lead.company_industry ?? undefined,
+    title: lead.contact_title ?? undefined,
+    job_title: lead.job_title ?? undefined,
+    city: lead.city ?? undefined,
+    state: lead.state ?? undefined,
+    country: lead.country ?? undefined,
+    company_size: lead.company_size ?? undefined,
+    company_domain: lead.company_domain ?? undefined,
+    source: lead.source,
+    status: lead.status,
+    linkedin_url: lead.linkedin_url ?? undefined,
+    created_at: lead.created_at,
+    updated_at: lead.created_at, // LeadWithRelations lacks updated_at; fall back to created_at
+  }
+
   return (
     <QueryProvider>
-      <LeadDetailClient initialLead={lead} />
+      <LeadDetailClient initialLead={leadTableRow} />
     </QueryProvider>
   )
 }

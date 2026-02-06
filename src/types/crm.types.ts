@@ -206,9 +206,12 @@ export interface LeadTableRow {
   company_industry?: string
   business_type?: string
   title?: string
+  job_title?: string
   city?: string
   state?: string
+  country?: string
   company_size?: string
+  company_domain?: string
   source?: string
   status: LeadStatus
   assigned_user_id?: string
@@ -221,6 +224,7 @@ export interface LeadTableRow {
   intent_score_calculated?: number
   freshness_score?: number
   verification_status?: string
+  marketplace_price?: number
   created_at: string
   updated_at: string
   last_contacted_at?: string
@@ -228,6 +232,12 @@ export interface LeadTableRow {
   notes?: string
   linkedin_url?: string
 }
+
+// Column visibility settings for the leads table
+export type ColumnVisibility = Record<string, boolean>
+
+// Table display density
+export type TableDensity = 'compact' | 'comfortable'
 
 export interface LeadFilters extends PaginationParams {
   status?: string[]
