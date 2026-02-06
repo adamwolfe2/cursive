@@ -10,6 +10,7 @@ import { COMMISSION_CONFIG, calculateCommission } from '@/lib/services/commissio
 import { sendPurchaseConfirmationEmail } from '@/lib/email/service'
 import { withRateLimit } from '@/lib/middleware/rate-limiter'
 import { getStripeClient } from '@/lib/stripe/client'
+import { TIMEOUTS, getDaysFromNow } from '@/lib/constants/timeouts'
 
 const purchaseSchema = z.object({
   leadIds: z.array(z.string().uuid()).min(1).max(100),
@@ -272,26 +273,28 @@ export async function POST(request: NextRequest) {
       // Get full lead details for the buyer
       const purchasedLeads = await repo.getPurchasedLeads(purchase.id, userData.workspace_id)
 
-      // Send purchase confirmation email
+      // Queue purchase confirmation email via Inngest (with automatic retries)
       try {
+        const { inngest } = await import('@/inngest/client')
         const downloadUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/marketplace/download/${purchase.id}`
-        const downloadExpiresAt = new Date()
-        downloadExpiresAt.setDate(downloadExpiresAt.getDate() + 90) // 90 days from now
+        const downloadExpiresAt = getDaysFromNow(TIMEOUTS.DOWNLOAD_EXPIRY_DAYS)
 
-        await sendPurchaseConfirmationEmail(
-          userData.email || user.email!,
-          userData.full_name || 'Valued Customer',
-          {
+        await inngest.send({
+          name: 'purchase/email.send',
+          data: {
+            purchaseId: purchase.id,
+            userEmail: userData.email || user.email!,
+            userName: userData.full_name || 'Valued Customer',
+            downloadUrl,
             totalLeads: leads.length,
             totalPrice,
-            purchaseId: purchase.id,
-            downloadUrl,
-            downloadExpiresAt,
-          }
-        )
+            expiresAt: downloadExpiresAt.toISOString(),
+          },
+        })
       } catch (emailError) {
-        console.error('[Purchase] Failed to send confirmation email:', emailError)
-        // Don't fail the purchase if email fails
+        console.error('[Purchase] Failed to queue confirmation email:', emailError)
+        // Don't fail the purchase if email queueing fails
+        // Inngest will retry automatically
       }
 
       const response = {

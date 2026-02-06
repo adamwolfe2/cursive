@@ -135,7 +135,8 @@ export async function handleSubscriptionCreated(subscription: Stripe.Subscriptio
       // Don't throw - email failures shouldn't block webhook processing
     }
 
-    // TODO: Create initial delivery if applicable
+    // FUTURE: Create initial delivery if applicable
+    // This will be implemented when we add automated delivery scheduling
     // await scheduleInitialDelivery(workspaceId, serviceTierId)
 
   } catch (error: any) {
@@ -297,7 +298,8 @@ export async function handleSubscriptionDeleted(subscription: Stripe.Subscriptio
       console.error('[Webhook] Failed to send cancellation email:', emailError)
     }
 
-    // TODO: Schedule data retention/deletion if applicable
+    // FUTURE: Schedule data retention/deletion if applicable
+    // This will be implemented when we add automated data cleanup policies
 
   } catch (error: any) {
     console.error('[Webhook] Error handling subscription.deleted:', error)
@@ -431,7 +433,8 @@ export async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice): Pr
       }
     }
 
-    // TODO: Schedule next delivery if applicable
+    // FUTURE: Schedule next delivery if applicable
+    // This will be implemented when we add recurring delivery scheduling
 
   } catch (error: any) {
     console.error('[Webhook] Error handling invoice.payment_succeeded:', error)

@@ -351,6 +351,41 @@ export type Events = {
       bounced_at: string
     }
   }
+
+  // Purchase Email Events
+  'purchase/email.send': {
+    data: {
+      purchaseId: string
+      userEmail: string
+      userName: string
+      downloadUrl: string
+      totalLeads: number
+      totalPrice: number
+      expiresAt: string
+    }
+  }
+  'purchase/credit-email.send': {
+    data: {
+      creditPurchaseId: string
+      userEmail: string
+      userName: string
+      creditsAmount: number
+      totalPrice: number
+      packageName: string
+      newBalance: number
+    }
+  }
+
+  // Stripe Webhook Events
+  'stripe/webhook.received': {
+    data: {
+      eventType: string
+      eventId: string
+      sessionId?: string
+      metadata?: Record<string, any>
+      amountTotal?: number
+    }
+  }
 }
 
 // Lazy-load Inngest client to avoid build-time initialization

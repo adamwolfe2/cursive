@@ -135,3 +135,12 @@ export {
 
 // Demo nurture sequence
 export { demoNurtureSequence } from './demo-nurture-sequence'
+
+// Purchase email sending with retries
+export { sendPurchaseEmail, sendCreditPurchaseEmail } from './send-purchase-email'
+
+// Stripe webhook processing with retries
+export { processStripeWebhook, handleWebhookFailure } from './process-stripe-webhook'
+
+// Operations health monitoring
+export { monitorOperationsHealth } from './monitor-operations-health'

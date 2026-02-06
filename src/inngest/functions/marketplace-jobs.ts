@@ -204,7 +204,8 @@ async function calculatePartnerScore(partnerId: string): Promise<{
   components.freshness = freshnessScore
 
   // 5. Buyer satisfaction (15%) - placeholder (neutral 70)
-  // TODO: Implement when we have buyer feedback/ratings
+  // FUTURE: Implement buyer feedback/ratings system
+  // Once implemented, query average rating from buyer_feedback table
   const satisfactionScore = 70
   components.satisfaction = satisfactionScore
 

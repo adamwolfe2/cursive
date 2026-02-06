@@ -12,9 +12,10 @@ function logErrorToService(error: Error, context?: any) {
   }
 
   // In production, send to error tracking service
-  // Example: Sentry.captureException(error, { extra: context })
-
-  // TODO: Integrate with error tracking service
+  // Sentry integration is available via src/lib/monitoring/sentry.ts
+  // Uncomment and import if needed for this global handler:
+  // import { captureError } from '@/lib/monitoring/sentry'
+  // captureError(error, context)
 }
 
 // Handle unhandled promise rejections

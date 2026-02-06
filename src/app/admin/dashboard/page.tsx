@@ -213,7 +213,7 @@ export default function AdminDashboard() {
           <div className="bg-white border border-zinc-200 rounded-lg shadow-sm mb-6">
             <div className="px-5 py-4 border-b border-zinc-100 flex items-center justify-between">
               <h2 className="text-[15px] font-medium text-zinc-900">Routing Rules</h2>
-              {/* TODO: Implement routing rule creation form */}
+              {/* FUTURE: Implement routing rule creation form UI */}
               <p className="text-[13px] text-zinc-500">Use Supabase SQL Editor to add rules</p>
             </div>
             <div className="overflow-x-auto">

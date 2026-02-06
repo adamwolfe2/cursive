@@ -8,22 +8,24 @@ import {
   sendPurchaseConfirmationEmail,
 } from '@/lib/email/service'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
+import { STRIPE_CONFIG } from '@/lib/stripe/config'
+import { TIMEOUTS, getDaysFromNow } from '@/lib/constants/timeouts'
 
 // Lazy-load Stripe to avoid build-time initialization
 let stripeClient: Stripe | null = null
 function getStripe(): Stripe {
   if (!stripeClient) {
-    if (!process.env.STRIPE_SECRET_KEY) {
+    if (!STRIPE_CONFIG.secretKey) {
       throw new Error('STRIPE_SECRET_KEY is not configured')
     }
-    stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: '2024-12-18.acacia',
+    stripeClient = new Stripe(STRIPE_CONFIG.secretKey, {
+      apiVersion: STRIPE_CONFIG.apiVersion,
     })
   }
   return stripeClient
 }
 
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!
+const webhookSecret = STRIPE_CONFIG.webhookSecret
 
 // ============================================================================
 // CHECKOUT SESSION HANDLERS
@@ -197,8 +199,7 @@ async function handleLeadPurchaseCompleted(session: Stripe.Checkout.Session): Pr
       .single()
 
     if (userData?.email) {
-      const downloadExpiresAt = new Date()
-      downloadExpiresAt.setDate(downloadExpiresAt.getDate() + 90)
+      const downloadExpiresAt = getDaysFromNow(TIMEOUTS.DOWNLOAD_EXPIRY_DAYS)
 
       await sendPurchaseConfirmationEmail(
         userData.email,
@@ -266,8 +267,22 @@ export async function POST(request: NextRequest) {
     }
 
     // Handle checkout session completed (credit purchases and lead purchases)
+    // Queue in Inngest for automatic retries instead of processing directly
     if (event.type === 'checkout.session.completed') {
-      await handleCheckoutSessionCompleted(event)
+      const { inngest } = await import('@/inngest/client')
+      const session = event.data.object as any
+
+      await inngest.send({
+        name: 'stripe/webhook.received',
+        data: {
+          eventType: event.type,
+          eventId: event.id,
+          sessionId: session.id,
+          metadata: session.metadata,
+          amountTotal: session.amount_total,
+        },
+      })
+
       return NextResponse.json({ received: true })
     }
 

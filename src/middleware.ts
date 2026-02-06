@@ -4,10 +4,13 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/middleware'
 import { validateRequiredEnvVars } from '@/lib/env-validation'
+import { logger } from '@/lib/monitoring/logger'
 
 export async function middleware(req: NextRequest) {
   // Validate critical environment variables on first request
   validateRequiredEnvVars()
+
+  const startTime = Date.now()
 
   try {
     const { pathname } = req.nextUrl
@@ -215,6 +218,18 @@ export async function middleware(req: NextRequest) {
     // Add custom headers for subdomain information
     if (subdomain) {
       client.response.headers.set('x-subdomain', subdomain)
+    }
+
+    // Log request completion
+    const duration = Date.now() - startTime
+    if (duration > 1000) {
+      // Only log slow requests
+      logger.info('Slow middleware request', {
+        method: req.method,
+        pathname,
+        duration,
+        ip: req.ip || req.headers.get('x-forwarded-for') || 'unknown',
+      })
     }
 
     return client.response

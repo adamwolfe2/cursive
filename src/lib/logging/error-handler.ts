@@ -142,8 +142,10 @@ export function asyncHandler<T extends any[]>(
 export function reportError(error: Error, context?: Record<string, any>) {
   // In production, send to error tracking service
   if (process.env.NODE_ENV === 'production' && process.env.SENTRY_DSN) {
-    // TODO: Integrate with Sentry
-    // Sentry.captureException(error, { extra: context })
+    // Sentry integration is available via src/lib/monitoring/sentry.ts
+    // Uncomment and import if needed:
+    // import { captureError } from '@/lib/monitoring/sentry'
+    // captureError(error, context)
   }
 
   // Log locally

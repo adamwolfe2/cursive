@@ -210,7 +210,8 @@ export const leadRoutingHealthCheck = inngest.createFunction(
           health,
           alerts,
         })
-        // TODO: Send alerts to monitoring system (Datadog, Sentry, etc.)
+        // FUTURE: Send alerts to Slack or monitoring system
+        // Use existing Slack alerting system from src/lib/monitoring/slack.ts
       })
     }
 

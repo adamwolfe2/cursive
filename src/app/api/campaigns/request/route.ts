@@ -88,8 +88,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // 4. TODO: Send notification to EmailBison team (future enhancement)
-    // Could use Inngest or email notification here
+    // 4. FUTURE: Send notification to EmailBison team
+    // Implementation: Use Inngest event or Slack webhook notification
+    // await inngest.send({ name: 'emailbison/campaign-request', data: { ...campaignRequest } })
 
     return NextResponse.json({
       success: true,

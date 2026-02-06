@@ -92,9 +92,36 @@ class Logger {
   }
 
   private sendToMonitoring(entry: LogEntry): void {
-    // TODO: Integrate with monitoring service (Sentry, Datadog, etc.)
-    // For now, just ensure it's logged
-    console.error('MONITORING:', JSON.stringify(entry))
+    // Send to Sentry for error tracking
+    try {
+      // Dynamically import Sentry to avoid issues if not configured
+      import('./sentry').then(({ captureError, captureMessage }) => {
+        if (entry.error) {
+          const error = new Error(entry.error.message)
+          error.name = entry.error.name
+          error.stack = entry.error.stack
+
+          captureError(error, {
+            tags: {
+              level: entry.level,
+              ...entry.context,
+            },
+            extra: entry.context,
+          })
+        } else {
+          captureMessage(entry.message, entry.level === 'critical' ? 'error' : entry.level, {
+            tags: entry.context as Record<string, string>,
+            extra: entry.context,
+          })
+        }
+      }).catch(() => {
+        // Sentry not available, just log
+        console.error('MONITORING:', JSON.stringify(entry))
+      })
+    } catch (error) {
+      // Fallback to console
+      console.error('MONITORING:', JSON.stringify(entry))
+    }
   }
 
   debug(message: string, context?: LogContext): void {

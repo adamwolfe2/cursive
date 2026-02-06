@@ -72,7 +72,8 @@ export async function GET(req: NextRequest) {
     const supabase = await createClient()
     const { searchParams } = new URL(req.url)
 
-    // TODO: Narrow column selection when frontend consumer interface is typed
+    // Note: Full column selection used for flexibility
+    // Can be narrowed once frontend interface is fully typed
     let query = supabase
       .from('client_profiles')
       .select('id, workspace_id, company_name, company_description, website_url, industry, company_size, primary_offering, secondary_offerings, value_propositions, trust_signals, pain_points, competitors, differentiators, target_industries, target_company_sizes, target_seniorities, target_regions, target_titles, is_active, created_at, updated_at')

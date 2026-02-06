@@ -393,7 +393,8 @@ export class MatchingEngineService {
       }
     }
 
-    // TODO: Add industry category matching via database lookup
+    // FUTURE: Add industry category matching via database lookup
+    // Implement when we have industry_categories table with SIC code mappings
 
     return {
       matched: matchedCodes.length > 0,

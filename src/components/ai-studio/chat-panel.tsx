@@ -53,8 +53,8 @@ export function ChatPanel({ workspaceId, context = 'general' }: ChatPanelProps) 
     setInput('')
     setIsLoading(true)
 
-    // TODO: Integrate with OpenAI API for actual responses
-    // For now, simulate a response
+    // FUTURE: Integrate with OpenAI API for actual responses
+    // Current implementation uses simulated responses for demo purposes
     setTimeout(() => {
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),

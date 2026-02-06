@@ -13,6 +13,7 @@ import {
 } from '@/lib/services/deduplication.service'
 import { calculateIntentScore, calculateFreshnessScore, calculateMarketplacePrice } from '@/lib/services/lead-scoring.service'
 import { withRateLimit } from '@/lib/middleware/rate-limiter'
+import { UPLOAD_LIMITS } from '@/lib/constants/timeouts'
 
 // Input validation for lead data
 const leadSchema = z.object({
@@ -145,12 +146,12 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // Validation: File size limit (10 MB)
-    const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10 MB in bytes
+    // Validation: File size limit
+    const MAX_FILE_SIZE = UPLOAD_LIMITS.MAX_FILE_SIZE_MB * 1024 * 1024
     if (file.size > MAX_FILE_SIZE) {
       return NextResponse.json({
         success: false,
-        error: `File size exceeds 10 MB limit. Your file is ${(file.size / (1024 * 1024)).toFixed(2)} MB.`,
+        error: `File size exceeds ${UPLOAD_LIMITS.MAX_FILE_SIZE_MB} MB limit. Your file is ${(file.size / (1024 * 1024)).toFixed(2)} MB.`,
       }, { status: 400 })
     }
 
@@ -180,12 +181,11 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // Validation: Row limit (10,000 rows)
-    const MAX_ROWS = 10000
-    if (records.length > MAX_ROWS) {
+    // Validation: Row limit
+    if (records.length > UPLOAD_LIMITS.MAX_CSV_ROWS) {
       return NextResponse.json({
         success: false,
-        error: `File contains ${records.length.toLocaleString()} rows, which exceeds the 10,000 row limit. Please split your file into smaller batches.`,
+        error: `File contains ${records.length.toLocaleString()} rows, which exceeds the ${UPLOAD_LIMITS.MAX_CSV_ROWS.toLocaleString()} row limit. Please split your file into smaller batches.`,
       }, { status: 400 })
     }
 

@@ -358,3 +358,34 @@ export function createRouteContext(params: Record<string, string>) {
     params: Promise.resolve(params),
   }
 }
+
+/**
+ * Create a mock Supabase response
+ */
+export interface MockSupabaseResponse<T = any> {
+  data: T | null
+  error: any | null
+  count?: number | null
+  status?: number
+  statusText?: string
+}
+
+/**
+ * Create a success response
+ */
+export function mockSupabaseSuccess<T>(data: T): MockSupabaseResponse<T> {
+  return {
+    data,
+    error: null,
+  }
+}
+
+/**
+ * Create an error response
+ */
+export function mockSupabaseError(error: { message: string; code?: string }): MockSupabaseResponse {
+  return {
+    data: null,
+    error,
+  }
+}

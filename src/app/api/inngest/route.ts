@@ -109,5 +109,16 @@ export const { GET, POST, PUT } = serve({
 
     // Demo Nurture Sequence
     functions.demoNurtureSequence,
+
+    // Purchase Email Sending with Retries
+    functions.sendPurchaseEmail,
+    functions.sendCreditPurchaseEmail,
+
+    // Stripe Webhook Processing with Retries
+    functions.processStripeWebhook,
+    functions.handleWebhookFailure,
+
+    // Operations Health Monitoring
+    functions.monitorOperationsHealth,
   ],
 })

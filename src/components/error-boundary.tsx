@@ -32,8 +32,10 @@ export class ErrorBoundary extends Component<Props, State> {
     // Call optional error handler
     this.props.onError?.(error, errorInfo)
 
-    // TODO: In production, send to error tracking service (e.g., Sentry)
-    // logErrorToService(error, errorInfo)
+    // Sentry integration available via src/lib/monitoring/sentry.ts
+    // Uncomment to enable error tracking:
+    // import { captureError } from '@/lib/monitoring/sentry'
+    // captureError(error, { errorInfo })
   }
 
   handleReset = () => {

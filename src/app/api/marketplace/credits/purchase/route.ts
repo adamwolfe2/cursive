@@ -40,10 +40,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No workspace found' }, { status: 404 })
     }
 
-    // RATE LIMITING: Check purchase rate limit (10 per minute per user)
+    // RATE LIMITING: Check credit purchase rate limit (5 per minute per user)
     const rateLimitResult = await withRateLimit(
       request,
-      'marketplace-purchase',
+      'credit-purchase',
       `user:${user.id}`
     )
     if (rateLimitResult) {

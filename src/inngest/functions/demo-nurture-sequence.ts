@@ -151,7 +151,7 @@ export const demoNurtureSequence = inngest.createFunction(
       const tokens = await buildEmailTokens(leadId, demoDate, demoTime, timezone, {
         demoOwner,
         demoOwnerEmail,
-        demoOwnerPhone: '(555) 123-4567', // TODO: Pull from workspace settings
+        demoOwnerPhone: '(555) 123-4567', // FUTURE: Pull from workspace settings table
       })
 
       await sendSequenceEmail({
@@ -194,7 +194,7 @@ export const demoNurtureSequence = inngest.createFunction(
         demoOwner,
         demoOwnerEmail,
         demoOwnerPhone: '(555) 123-4567',
-        meetingLink: 'https://meet.google.com/demo-link', // TODO: Pull from demo booking
+        meetingLink: 'https://meet.google.com/demo-link', // FUTURE: Pull from calendar integration
       })
 
       await sendSequenceEmail({

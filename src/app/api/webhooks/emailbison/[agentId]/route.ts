@@ -256,7 +256,8 @@ async function handleReplyReceived(
     throw new Error('Failed to create email message')
   }
 
-  // TODO: Trigger AI classification and response generation via Inngest
+  // FUTURE: Trigger AI classification and response generation via Inngest
+  // When AI email processing is implemented, uncomment:
   // await inngest.send({
   //   name: 'email/reply-received',
   //   data: { thread_id: threadId, agent_id: agent.id }
