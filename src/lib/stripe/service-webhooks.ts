@@ -14,9 +14,19 @@ import {
   sendCancellationEmail,
 } from '@/lib/email/service-emails'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-12-18.acacia',
-})
+// Lazy-load Stripe to avoid build-time initialization
+let stripeClient: Stripe | null = null
+function getStripe(): Stripe {
+  if (!stripeClient) {
+    if (!process.env.STRIPE_SECRET_KEY) {
+      throw new Error('STRIPE_SECRET_KEY is not configured')
+    }
+    stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: '2024-12-18.acacia',
+    })
+  }
+  return stripeClient
+}
 
 /**
  * Helper to get workspace and user info for email sending

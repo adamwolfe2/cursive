@@ -9,9 +9,19 @@ import {
 } from '@/lib/email/service'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-12-18.acacia'
-})
+// Lazy-load Stripe to avoid build-time initialization
+let stripeClient: Stripe | null = null
+function getStripe(): Stripe {
+  if (!stripeClient) {
+    if (!process.env.STRIPE_SECRET_KEY) {
+      throw new Error('STRIPE_SECRET_KEY is not configured')
+    }
+    stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: '2024-12-18.acacia',
+    })
+  }
+  return stripeClient
+}
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!
 
@@ -27,7 +37,7 @@ async function handleCheckoutSessionCompleted(event: Stripe.Event): Promise<void
   const sessionFromEvent = event.data.object as Stripe.Checkout.Session
 
   // Retrieve the full session to ensure we have all metadata
-  const session = await stripe.checkout.sessions.retrieve(sessionFromEvent.id)
+  const session = await getStripe().checkout.sessions.retrieve(sessionFromEvent.id)
 
   const metadataType = session.metadata?.type
 
@@ -223,7 +233,7 @@ export async function POST(request: NextRequest) {
     let event: Stripe.Event
 
     try {
-      event = stripe.webhooks.constructEvent(body, signature, webhookSecret)
+      event = getStripe().webhooks.constructEvent(body, signature, webhookSecret)
     } catch (err) {
       console.error('[Stripe Webhook] Signature verification failed:', err)
       return NextResponse.json(
