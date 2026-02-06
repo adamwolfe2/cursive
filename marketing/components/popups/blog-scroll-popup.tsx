@@ -58,6 +58,23 @@ export function BlogScrollPopup({
     },
   })
 
+  // Callback handlers (declared before effects that use them)
+  const handleClose = useCallback((method: 'close-button' | 'escape-key') => {
+    setIsOpen(false)
+    markPopupDismissed(POPUP_ID)
+    analytics.trackDismiss(method)
+  }, [analytics])
+
+  const handleMinimize = useCallback(() => {
+    setIsMinimized(true)
+    analytics.trackDismiss('escape-key')
+  }, [analytics])
+
+  const handleExpand = useCallback(() => {
+    setIsMinimized(false)
+    analytics.trackInteraction()
+  }, [analytics])
+
   // Focus email input when opened (if not minimized)
   useEffect(() => {
     if (isOpen && !isMinimized && emailInputRef.current) {
@@ -83,22 +100,6 @@ export function BlogScrollPopup({
       document.removeEventListener('keydown', handleEscape)
     }
   }, [isOpen, isMinimized, handleMinimize])
-
-  const handleClose = useCallback((method: 'close-button' | 'escape-key') => {
-    setIsOpen(false)
-    markPopupDismissed(POPUP_ID)
-    analytics.trackDismiss(method)
-  }, [analytics])
-
-  const handleMinimize = useCallback(() => {
-    setIsMinimized(true)
-    analytics.trackDismiss('escape-key')
-  }, [analytics])
-
-  const handleExpand = useCallback(() => {
-    setIsMinimized(false)
-    analytics.trackInteraction()
-  }, [analytics])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
