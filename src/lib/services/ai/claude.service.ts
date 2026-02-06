@@ -131,27 +131,45 @@ Provide a JSON response with the following structure:
 
 Respond ONLY with valid JSON, no additional text.`
 
-  const response = await client.messages.create({
-    model: 'claude-sonnet-4-20250514',
-    max_tokens: 1024,
-    messages: [{ role: 'user', content: prompt }],
-  })
-
-  if (!response.content || response.content.length === 0) {
-    throw new Error('Empty response from Claude API')
-  }
-
-  const content = response.content[0]
-  if (content.type !== 'text') {
-    throw new Error('Unexpected response type from Claude')
-  }
-
   try {
-    return JSON.parse(content.text) as CompanyAnalysis
-  } catch {
-    // If parsing fails, return a structured default
+    const response = await client.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1024,
+      messages: [{ role: 'user', content: prompt }],
+    })
+
+    if (!response.content || response.content.length === 0) {
+      throw new Error('Empty response from Claude API')
+    }
+
+    const content = response.content[0]
+    if (content.type !== 'text') {
+      throw new Error('Unexpected response type from Claude')
+    }
+
+    try {
+      return JSON.parse(content.text) as CompanyAnalysis
+    } catch {
+      // If parsing fails, return a structured default
+      return {
+        summary: content.text.slice(0, 200),
+        industry: companyData.industry || 'Unknown',
+        businessModel: 'Unknown',
+        targetMarket: 'Unknown',
+        companySize: 'medium',
+        keywords: [],
+        painPoints: [],
+        buyingSignals: [],
+        competitors: [],
+        idealOutreachTiming: 'During business hours',
+        recommendedApproach: 'Professional email outreach',
+        confidenceScore: 0.3,
+      }
+    }
+  } catch (error) {
+    console.error('[Claude] Company analysis failed:', error)
     return {
-      summary: content.text.slice(0, 200),
+      summary: `Unable to analyze ${companyData.name}`,
       industry: companyData.industry || 'Unknown',
       businessModel: 'Unknown',
       targetMarket: 'Unknown',
@@ -162,7 +180,7 @@ Respond ONLY with valid JSON, no additional text.`
       competitors: [],
       idealOutreachTiming: 'During business hours',
       recommendedApproach: 'Professional email outreach',
-      confidenceScore: 0.3,
+      confidenceScore: 0.1,
     }
   }
 }
@@ -236,28 +254,42 @@ Provide a JSON response:
 
 Respond ONLY with valid JSON.`
 
-  const response = await client.messages.create({
-    model: 'claude-sonnet-4-20250514',
-    max_tokens: 1024,
-    messages: [{ role: 'user', content: prompt }],
-  })
-
-  if (!response.content || response.content.length === 0) {
-    throw new Error('Empty response from Claude API')
-  }
-
-  const content = response.content[0]
-  if (content.type !== 'text') {
-    throw new Error('Unexpected response type from Claude')
-  }
-
   try {
-    return JSON.parse(content.text) as LeadQualificationResult
-  } catch {
+    const response = await client.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1024,
+      messages: [{ role: 'user', content: prompt }],
+    })
+
+    if (!response.content || response.content.length === 0) {
+      throw new Error('Empty response from Claude API')
+    }
+
+    const content = response.content[0]
+    if (content.type !== 'text') {
+      throw new Error('Unexpected response type from Claude')
+    }
+
+    try {
+      return JSON.parse(content.text) as LeadQualificationResult
+    } catch {
+      return {
+        score: 50,
+        tier: 'cold',
+        reasons: ['Unable to fully analyze lead'],
+        missingData: ['Full company data'],
+        nextBestAction: 'Gather more information before outreach',
+        idealContactMethod: 'email',
+        personalizedOpener: `Hi ${leadData.contactName || 'there'}, I came across ${leadData.companyName} and wanted to connect.`,
+        objectionHandlers: {},
+      }
+    }
+  } catch (error) {
+    console.error('[Claude] Lead qualification failed:', error)
     return {
       score: 50,
       tier: 'cold',
-      reasons: ['Unable to fully analyze lead'],
+      reasons: ['AI qualification service unavailable'],
       missingData: ['Full company data'],
       nextBestAction: 'Gather more information before outreach',
       idealContactMethod: 'email',
@@ -327,24 +359,35 @@ Respond with JSON:
 
 Respond ONLY with valid JSON.`
 
-  const response = await client.messages.create({
-    model: 'claude-sonnet-4-20250514',
-    max_tokens: 1024,
-    messages: [{ role: 'user', content: prompt }],
-  })
-
-  if (!response.content || response.content.length === 0) {
-    throw new Error('Empty response from Claude API')
-  }
-
-  const content = response.content[0]
-  if (content.type !== 'text') {
-    throw new Error('Unexpected response type from Claude')
-  }
-
   try {
-    return JSON.parse(content.text) as EmailDraft
-  } catch {
+    const response = await client.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1024,
+      messages: [{ role: 'user', content: prompt }],
+    })
+
+    if (!response.content || response.content.length === 0) {
+      throw new Error('Empty response from Claude API')
+    }
+
+    const content = response.content[0]
+    if (content.type !== 'text') {
+      throw new Error('Unexpected response type from Claude')
+    }
+
+    try {
+      return JSON.parse(content.text) as EmailDraft
+    } catch {
+      return {
+        subject: `Quick question about ${context.recipientCompany}`,
+        body: `Hi ${context.recipientName},\n\nI noticed ${context.recipientCompany} and wanted to reach out about ${context.valueProposition}.\n\n${context.callToAction}\n\nBest,\n${context.senderName}`,
+        callToAction: context.callToAction,
+        followUpTiming: '3 business days',
+        alternativeSubjects: [],
+      }
+    }
+  } catch (error) {
+    console.error('[Claude] Sales email generation failed:', error)
     return {
       subject: `Quick question about ${context.recipientCompany}`,
       body: `Hi ${context.recipientName},\n\nI noticed ${context.recipientCompany} and wanted to reach out about ${context.valueProposition}.\n\n${context.callToAction}\n\nBest,\n${context.senderName}`,
@@ -403,24 +446,44 @@ Extract and infer as much information as possible. Provide a JSON response:
 
 For fields you cannot determine, use null or empty arrays. Respond ONLY with valid JSON.`
 
-  const response = await client.messages.create({
-    model: 'claude-sonnet-4-20250514',
-    max_tokens: 1500,
-    messages: [{ role: 'user', content: prompt }],
-  })
-
-  if (!response.content || response.content.length === 0) {
-    throw new Error('Empty response from Claude API')
-  }
-
-  const content = response.content[0]
-  if (content.type !== 'text') {
-    throw new Error('Unexpected response type from Claude')
-  }
-
   try {
-    return JSON.parse(content.text) as CompanyResearchResult
-  } catch {
+    const response = await client.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1500,
+      messages: [{ role: 'user', content: prompt }],
+    })
+
+    if (!response.content || response.content.length === 0) {
+      throw new Error('Empty response from Claude API')
+    }
+
+    const content = response.content[0]
+    if (content.type !== 'text') {
+      throw new Error('Unexpected response type from Claude')
+    }
+
+    try {
+      return JSON.parse(content.text) as CompanyResearchResult
+    } catch {
+      return {
+        companyName: domain.split('.')[0],
+        description: 'Unable to analyze company',
+        industry: 'Unknown',
+        products: [],
+        services: [],
+        targetCustomers: 'Unknown',
+        companySize: 'Unknown',
+        foundedYear: null,
+        headquarters: null,
+        keyPeople: [],
+        recentNews: [],
+        techStack: [],
+        socialProfiles: {},
+        confidenceScore: 0.1,
+      }
+    }
+  } catch (error) {
+    console.error('[Claude] Company research failed:', error)
     return {
       companyName: domain.split('.')[0],
       description: 'Unable to analyze company',
@@ -500,28 +563,40 @@ Score Guidelines:
 
 Respond ONLY with valid JSON.`
 
-  const response = await client.messages.create({
-    model: 'claude-sonnet-4-20250514',
-    max_tokens: 512,
-    messages: [{ role: 'user', content: prompt }],
-  })
-
-  if (!response.content || response.content.length === 0) {
-    throw new Error('Empty response from Claude API')
-  }
-
-  const content = response.content[0]
-  if (content.type !== 'text') {
-    throw new Error('Unexpected response type from Claude')
-  }
-
   try {
-    return JSON.parse(content.text)
-  } catch {
+    const response = await client.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 512,
+      messages: [{ role: 'user', content: prompt }],
+    })
+
+    if (!response.content || response.content.length === 0) {
+      throw new Error('Empty response from Claude API')
+    }
+
+    const content = response.content[0]
+    if (content.type !== 'text') {
+      throw new Error('Unexpected response type from Claude')
+    }
+
+    try {
+      return JSON.parse(content.text)
+    } catch {
+      return {
+        intentScore: 30,
+        category: 'low_intent',
+        analysis: 'Unable to fully analyze intent signals',
+        keySignals: [],
+        recommendedAction: 'Gather more signals before outreach',
+        urgency: 'low',
+      }
+    }
+  } catch (error) {
+    console.error('[Claude] Intent signal analysis failed:', error)
     return {
       intentScore: 30,
       category: 'low_intent',
-      analysis: 'Unable to fully analyze intent signals',
+      analysis: 'AI intent analysis service unavailable',
       keySignals: [],
       recommendedAction: 'Gather more signals before outreach',
       urgency: 'low',
@@ -584,24 +659,37 @@ Provide insights as JSON:
 
 Respond ONLY with valid JSON.`
 
-  const response = await client.messages.create({
-    model: 'claude-sonnet-4-20250514',
-    max_tokens: 1024,
-    messages: [{ role: 'user', content: prompt }],
-  })
-
-  if (!response.content || response.content.length === 0) {
-    throw new Error('Empty response from Claude API')
-  }
-
-  const content = response.content[0]
-  if (content.type !== 'text') {
-    throw new Error('Unexpected response type from Claude')
-  }
-
   try {
-    return JSON.parse(content.text)
-  } catch {
+    const response = await client.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1024,
+      messages: [{ role: 'user', content: prompt }],
+    })
+
+    if (!response.content || response.content.length === 0) {
+      throw new Error('Empty response from Claude API')
+    }
+
+    const content = response.content[0]
+    if (content.type !== 'text') {
+      throw new Error('Unexpected response type from Claude')
+    }
+
+    try {
+      return JSON.parse(content.text)
+    } catch {
+      return {
+        sentiment: 'neutral',
+        engagement: 'medium',
+        objections: [],
+        interests: [],
+        nextSteps: 'Continue engagement',
+        suggestedResponse: 'Follow up with additional value',
+        dealHealth: 50,
+      }
+    }
+  } catch (error) {
+    console.error('[Claude] Conversation analysis failed:', error)
     return {
       sentiment: 'neutral',
       engagement: 'medium',

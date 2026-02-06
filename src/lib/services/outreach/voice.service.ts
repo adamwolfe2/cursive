@@ -75,6 +75,9 @@ export async function makeAiVoiceCall(
   }
 
   try {
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 30000) // 30s timeout
+
     const response = await fetch(`${BLAND_API_URL}/calls`, {
       method: 'POST',
       headers: {
@@ -97,7 +100,10 @@ export async function makeAiVoiceCall(
           ...request.metadata,
         },
       }),
+      signal: controller.signal,
     })
+
+    clearTimeout(timeoutId)
 
     if (!response.ok) {
       const error = await response.json()
@@ -150,11 +156,17 @@ export async function getCallStatus(callId: string): Promise<{
     throw new Error('Bland.ai API key not configured')
   }
 
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), 15000) // 15s timeout
+
   const response = await fetch(`${BLAND_API_URL}/calls/${callId}`, {
     headers: {
       'Authorization': apiKey,
     },
+    signal: controller.signal,
   })
+
+  clearTimeout(timeoutId)
 
   if (!response.ok) {
     throw new Error(`Failed to get call status: ${response.status}`)
@@ -215,13 +227,19 @@ export async function sendRinglessVoicemail(
       formData.append('c_callerid', request.fromPhone)
     }
 
+    const vmController = new AbortController()
+    const vmTimeoutId = setTimeout(() => vmController.abort(), 30000) // 30s timeout
+
     const response = await fetch('https://www.mobile-sphere.com/gateway/vmb.php', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: formData.toString(),
+      signal: vmController.signal,
     })
+
+    clearTimeout(vmTimeoutId)
 
     const text = await response.text()
 

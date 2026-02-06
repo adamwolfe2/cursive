@@ -209,6 +209,9 @@ async function sendWithGmail(
       .replace(/=+$/, '')
 
     // Send via Gmail API
+    const gmailController = new AbortController()
+    const gmailTimeoutId = setTimeout(() => gmailController.abort(), 30000) // 30s timeout
+
     const response = await fetch(
       'https://gmail.googleapis.com/gmail/v1/users/me/messages/send',
       {
@@ -218,8 +221,11 @@ async function sendWithGmail(
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ raw: encodedMessage }),
+        signal: gmailController.signal,
       }
     )
+
+    clearTimeout(gmailTimeoutId)
 
     if (!response.ok) {
       const error = await response.json()
@@ -313,6 +319,9 @@ async function sendWithOutlook(
       saveToSentItems: true,
     }
 
+    const outlookController = new AbortController()
+    const outlookTimeoutId = setTimeout(() => outlookController.abort(), 30000) // 30s timeout
+
     const response = await fetch(
       'https://graph.microsoft.com/v1.0/me/sendMail',
       {
@@ -322,8 +331,11 @@ async function sendWithOutlook(
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(message),
+        signal: outlookController.signal,
       }
     )
+
+    clearTimeout(outlookTimeoutId)
 
     if (!response.ok) {
       const error = await response.json()
@@ -526,6 +538,9 @@ async function refreshGmailToken(
       return null
     }
 
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 15000) // 15s timeout
+
     const response = await fetch('https://oauth2.googleapis.com/token', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -535,7 +550,10 @@ async function refreshGmailToken(
         refresh_token: refreshToken,
         grant_type: 'refresh_token',
       }),
+      signal: controller.signal,
     })
+
+    clearTimeout(timeoutId)
 
     if (!response.ok) return null
 
@@ -575,6 +593,9 @@ async function refreshOutlookToken(
       return null
     }
 
+    const msController = new AbortController()
+    const msTimeoutId = setTimeout(() => msController.abort(), 15000) // 15s timeout
+
     const response = await fetch(
       'https://login.microsoftonline.com/common/oauth2/v2.0/token',
       {
@@ -587,8 +608,11 @@ async function refreshOutlookToken(
           grant_type: 'refresh_token',
           scope: 'https://graph.microsoft.com/Mail.Send offline_access',
         }),
+        signal: msController.signal,
       }
     )
+
+    clearTimeout(msTimeoutId)
 
     if (!response.ok) return null
 

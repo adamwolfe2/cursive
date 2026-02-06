@@ -76,6 +76,9 @@ export class HubSpotService {
    */
   private async refreshToken(refreshToken: string): Promise<boolean> {
     try {
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 15000) // 15s timeout
+
       const response = await fetch('https://api.hubapi.com/oauth/v1/token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -85,7 +88,10 @@ export class HubSpotService {
           client_secret: process.env.HUBSPOT_CLIENT_SECRET || '',
           refresh_token: refreshToken,
         }),
+        signal: controller.signal,
       })
+
+      clearTimeout(timeoutId)
 
       if (!response.ok) {
         console.error('[HubSpotService] Token refresh failed')
@@ -126,6 +132,9 @@ export class HubSpotService {
       throw new Error('HubSpot not initialized')
     }
 
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 30000) // 30s timeout
+
     const response = await fetch(`${HUBSPOT_API_BASE}${endpoint}`, {
       method,
       headers: {
@@ -133,7 +142,10 @@ export class HubSpotService {
         'Content-Type': 'application/json',
       },
       body: body ? JSON.stringify(body) : undefined,
+      signal: controller.signal,
     })
+
+    clearTimeout(timeoutId)
 
     if (!response.ok) {
       const error = await response.json().catch(() => ({}))

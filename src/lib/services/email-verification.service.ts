@@ -65,7 +65,12 @@ export async function verifyEmail(email: string): Promise<VerificationResult> {
 
   try {
     const url = `${VERIFICATION_CONFIG.API_BASE_URL}/?api=${apiKey}&email=${encodeURIComponent(email)}`
-    const response = await fetch(url)
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 15000) // 15s timeout
+
+    const response = await fetch(url, { signal: controller.signal })
+
+    clearTimeout(timeoutId)
 
     if (!response.ok) {
       throw new Error(`Verification API error: ${response.status}`)

@@ -131,9 +131,15 @@ export class VerificationService {
     const apiKey = process.env.NEVERBOUNCE_API_KEY
     if (!apiKey) throw new Error('NeverBounce API key not configured')
 
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 15000) // 15s timeout
+
     const response = await fetch(
-      `https://api.neverbounce.com/v4/single/check?key=${apiKey}&email=${encodeURIComponent(email)}`
+      `https://api.neverbounce.com/v4/single/check?key=${apiKey}&email=${encodeURIComponent(email)}`,
+      { signal: controller.signal }
     )
+
+    clearTimeout(timeoutId)
 
     if (!response.ok) throw new Error('NeverBounce API error')
 
@@ -169,9 +175,15 @@ export class VerificationService {
     const apiKey = process.env.ZEROBOUNCE_API_KEY
     if (!apiKey) throw new Error('ZeroBounce API key not configured')
 
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 15000) // 15s timeout
+
     const response = await fetch(
-      `https://api.zerobounce.net/v2/validate?api_key=${apiKey}&email=${encodeURIComponent(email)}`
+      `https://api.zerobounce.net/v2/validate?api_key=${apiKey}&email=${encodeURIComponent(email)}`,
+      { signal: controller.signal }
     )
+
+    clearTimeout(timeoutId)
 
     if (!response.ok) throw new Error('ZeroBounce API error')
 

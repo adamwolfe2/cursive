@@ -59,6 +59,9 @@ export class EmailBisonClient {
   ): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`
 
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 30000) // 30s timeout
+
     const response = await fetch(url, {
       ...options,
       headers: {
@@ -66,7 +69,10 @@ export class EmailBisonClient {
         'Content-Type': 'application/json',
         ...options.headers,
       },
+      signal: controller.signal,
     })
+
+    clearTimeout(timeoutId)
 
     if (!response.ok) {
       const errorBody = await response.text()

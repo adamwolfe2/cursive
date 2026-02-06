@@ -31,6 +31,9 @@ export class FirecrawlService {
     }
 
     try {
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 30000) // 30s timeout
+
       const response = await fetch(`${this.baseUrl}/scrape`, {
         method: 'POST',
         headers: {
@@ -43,7 +46,10 @@ export class FirecrawlService {
           onlyMainContent: false,
           includeTags: ['meta', 'link', 'title', 'img', 'h1', 'p'],
         }),
+        signal: controller.signal,
       })
+
+      clearTimeout(timeoutId)
 
       if (!response.ok) {
         const error = await response.text()

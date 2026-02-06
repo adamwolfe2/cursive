@@ -71,6 +71,9 @@ export async function enrichLeadWithClay(
   try {
     // Clay uses a table-based enrichment model
     // We'll use their people enrichment endpoint
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 30000) // 30s timeout
+
     const response = await fetch(`${CLAY_API_URL}/enrich/person`, {
       method: 'POST',
       headers: {
@@ -85,7 +88,10 @@ export async function enrichLeadWithClay(
         domain: request.company_domain,
         linkedin_url: request.linkedin_url,
       }),
+      signal: controller.signal,
     })
+
+    clearTimeout(timeoutId)
 
     if (!response.ok) {
       const error = await response.text()
@@ -148,6 +154,9 @@ export async function enrichCompanyWithClay(
   }
 
   try {
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 30000) // 30s timeout
+
     const response = await fetch(`${CLAY_API_URL}/enrich/company`, {
       method: 'POST',
       headers: {
@@ -155,7 +164,10 @@ export async function enrichCompanyWithClay(
         'Authorization': `Bearer ${apiKey}`,
       },
       body: JSON.stringify({ domain }),
+      signal: controller.signal,
     })
+
+    clearTimeout(timeoutId)
 
     if (!response.ok) {
       const error = await response.text()

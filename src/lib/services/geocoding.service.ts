@@ -445,7 +445,13 @@ export class GeocodingService {
       url.searchParams.set('address', address)
       url.searchParams.set('key', this.config.google.apiKey)
 
-      const response = await fetch(url.toString())
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 15000) // 15s timeout
+
+      const response = await fetch(url.toString(), { signal: controller.signal })
+
+      clearTimeout(timeoutId)
+
       const data = await response.json()
 
       if (data.status !== 'OK' || !data.results?.[0]) return null
@@ -481,7 +487,13 @@ export class GeocodingService {
       url.searchParams.set('country', input.country === 'United States' ? 'US' : input.country || 'US')
       url.searchParams.set('limit', '1')
 
-      const response = await fetch(url.toString())
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 15000) // 15s timeout
+
+      const response = await fetch(url.toString(), { signal: controller.signal })
+
+      clearTimeout(timeoutId)
+
       const data = await response.json()
 
       if (!data.features?.[0]) return null
@@ -512,7 +524,13 @@ export class GeocodingService {
       url.searchParams.set('benchmark', 'Public_AR_Current')
       url.searchParams.set('format', 'json')
 
-      const response = await fetch(url.toString())
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 15000) // 15s timeout
+
+      const response = await fetch(url.toString(), { signal: controller.signal })
+
+      clearTimeout(timeoutId)
+
       const data = await response.json()
 
       if (!data.result?.addressMatches?.[0]) return null

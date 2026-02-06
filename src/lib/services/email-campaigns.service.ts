@@ -96,6 +96,9 @@ export async function sendEmailWithEmailBison(
   }
 
   try {
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 30000) // 30s timeout
+
     const response = await fetch('https://api.emailbison.com/v1/send', {
       method: 'POST',
       headers: {
@@ -115,7 +118,10 @@ export async function sendEmailWithEmailBison(
         track_clicks: true,
         metadata: request.metadata,
       }),
+      signal: controller.signal,
     })
+
+    clearTimeout(timeoutId)
 
     if (!response.ok) {
       const error = await response.json()

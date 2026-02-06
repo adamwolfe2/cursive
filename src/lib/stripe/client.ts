@@ -40,58 +40,73 @@ export async function createCheckoutSession(params: {
   successUrl: string
   cancelUrl: string
 }) {
-  const stripe = getStripeClient()
+  try {
+    const stripe = getStripeClient()
 
-  const session = await stripe.checkout.sessions.create({
-    mode: 'subscription',
-    customer_email: params.userEmail,
-    line_items: [
-      {
-        price: params.priceId,
-        quantity: 1,
-      },
-    ],
-    metadata: {
-      user_id: params.userId,
-      workspace_id: params.workspaceId,
-    },
-    subscription_data: {
+    const session = await stripe.checkout.sessions.create({
+      mode: 'subscription',
+      customer_email: params.userEmail,
+      line_items: [
+        {
+          price: params.priceId,
+          quantity: 1,
+        },
+      ],
       metadata: {
         user_id: params.userId,
         workspace_id: params.workspaceId,
       },
-    },
-    success_url: params.successUrl,
-    cancel_url: params.cancelUrl,
-  })
+      subscription_data: {
+        metadata: {
+          user_id: params.userId,
+          workspace_id: params.workspaceId,
+        },
+      },
+      success_url: params.successUrl,
+      cancel_url: params.cancelUrl,
+    })
 
-  return session
+    return session
+  } catch (error) {
+    console.error('[Stripe] Failed to create checkout session:', error)
+    throw new Error(`Stripe checkout failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
+  }
 }
 
 /**
  * Cancel a Stripe subscription at the end of the billing period
  */
 export async function cancelSubscription(subscriptionId: string) {
-  const stripe = getStripeClient()
+  try {
+    const stripe = getStripeClient()
 
-  const subscription = await stripe.subscriptions.update(subscriptionId, {
-    cancel_at_period_end: true,
-  })
+    const subscription = await stripe.subscriptions.update(subscriptionId, {
+      cancel_at_period_end: true,
+    })
 
-  return subscription
+    return subscription
+  } catch (error) {
+    console.error('[Stripe] Failed to cancel subscription:', error)
+    throw new Error(`Stripe cancellation failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
+  }
 }
 
 /**
  * Resume a canceled Stripe subscription (undo cancel_at_period_end)
  */
 export async function resumeSubscription(subscriptionId: string) {
-  const stripe = getStripeClient()
+  try {
+    const stripe = getStripeClient()
 
-  const subscription = await stripe.subscriptions.update(subscriptionId, {
-    cancel_at_period_end: false,
-  })
+    const subscription = await stripe.subscriptions.update(subscriptionId, {
+      cancel_at_period_end: false,
+    })
 
-  return subscription
+    return subscription
+  } catch (error) {
+    console.error('[Stripe] Failed to resume subscription:', error)
+    throw new Error(`Stripe resume failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
+  }
 }
 
 /**
@@ -101,12 +116,17 @@ export async function createPortalSession(params: {
   customerId: string
   returnUrl: string
 }) {
-  const stripe = getStripeClient()
+  try {
+    const stripe = getStripeClient()
 
-  const session = await stripe.billingPortal.sessions.create({
-    customer: params.customerId,
-    return_url: params.returnUrl,
-  })
+    const session = await stripe.billingPortal.sessions.create({
+      customer: params.customerId,
+      return_url: params.returnUrl,
+    })
 
-  return session
+    return session
+  } catch (error) {
+    console.error('[Stripe] Failed to create portal session:', error)
+    throw new Error(`Stripe portal session failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
+  }
 }

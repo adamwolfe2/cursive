@@ -40,6 +40,9 @@ export class AnthropicClient {
   }
 
   async chatCompletion(options: ChatCompletionOptions): Promise<ChatCompletionResponse> {
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 30000) // 30s timeout
+
     const response = await fetch(`${this.baseUrl}/messages`, {
       method: 'POST',
       headers: {
@@ -54,7 +57,10 @@ export class AnthropicClient {
         messages: options.messages,
         temperature: options.temperature ?? 0.7,
       }),
+      signal: controller.signal,
     })
+
+    clearTimeout(timeoutId)
 
     if (!response.ok) {
       const errorBody = await response.text()

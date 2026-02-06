@@ -229,24 +229,29 @@ Return ONLY a JSON object with this structure:
 
 Generate the improved email now. Return ONLY the JSON object, no other text.`
 
-  const client = getAnthropicClient()
-  const response = await client.messages.create({
-    model: MODEL,
-    max_tokens: 1500,
-    temperature: 0.8, // More creative for regeneration
-    messages: [{ role: 'user', content: prompt }],
-  })
+  try {
+    const client = getAnthropicClient()
+    const response = await client.messages.create({
+      model: MODEL,
+      max_tokens: 1500,
+      temperature: 0.8, // More creative for regeneration
+      messages: [{ role: 'user', content: prompt }],
+    })
 
-  const content = response.content[0]
-  if (content.type !== 'text') {
-    throw new Error('Unexpected response type from Claude')
+    const content = response.content[0]
+    if (content.type !== 'text') {
+      throw new Error('Unexpected response type from Claude')
+    }
+
+    // Extract JSON from response
+    const jsonMatch = content.text.match(/\{[\s\S]*\}/)
+    if (!jsonMatch) {
+      throw new Error('No JSON object found in response')
+    }
+
+    return JSON.parse(jsonMatch[0]) as GeneratedEmail
+  } catch (error) {
+    console.error('[AI Generator] Failed to regenerate email:', error)
+    throw new Error(`Failed to regenerate email: ${error instanceof Error ? error.message : 'Unknown error'}`)
   }
-
-  // Extract JSON from response
-  const jsonMatch = content.text.match(/\{[\s\S]*\}/)
-  if (!jsonMatch) {
-    throw new Error('No JSON object found in response')
-  }
-
-  return JSON.parse(jsonMatch[0]) as GeneratedEmail
 }

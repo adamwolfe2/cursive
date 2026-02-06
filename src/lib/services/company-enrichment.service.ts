@@ -159,14 +159,20 @@ async function fetchClearbitCompany(domain: string): Promise<ClearbitCompany | n
   }
 
   try {
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 15000) // 15s timeout
+
     const response = await fetch(
       `https://company.clearbit.com/v2/companies/find?domain=${encodeURIComponent(domain)}`,
       {
         headers: {
           Authorization: `Bearer ${CLEARBIT_API_KEY}`,
         },
+        signal: controller.signal,
       }
     )
+
+    clearTimeout(timeoutId)
 
     if (!response.ok) {
       if (response.status === 404) {

@@ -30,6 +30,9 @@ export class TavilyService {
     }
 
     try {
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 30000) // 30s timeout
+
       const response = await fetch(`${this.baseUrl}/search`, {
         method: 'POST',
         headers: {
@@ -43,7 +46,10 @@ export class TavilyService {
           include_answer: true,
           max_results: 5,
         }),
+        signal: controller.signal,
       })
+
+      clearTimeout(timeoutId)
 
       if (!response.ok) {
         const error = await response.text()
