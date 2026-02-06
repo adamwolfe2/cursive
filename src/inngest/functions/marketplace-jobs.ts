@@ -109,22 +109,25 @@ export const dailyPartnerScoreCalculation = inngest.createFunction(
   },
   { cron: '0 2 * * *' }, // 2 AM daily
   async ({ step, logger }) => {
-    const supabase = createAdminClient()
-
     // Get all active partners
-    const { data: partners, error } = await supabase
-      .from('partners')
-      .select('id')
-      .eq('is_active', true)
+    const partners = await step.run('fetch-active-partners', async () => {
+      const supabase = createAdminClient()
+      const { data, error } = await supabase
+        .from('partners')
+        .select('id')
+        .eq('is_active', true)
 
-    if (error || !partners) {
-      throw new Error(`Failed to fetch partners: ${error?.message}`)
-    }
+      if (error || !data) {
+        throw new Error(`Failed to fetch partners: ${error?.message}`)
+      }
+      return data
+    })
 
     let updated = 0
 
     for (const partner of partners) {
       await step.run(`score-partner-${partner.id}`, async () => {
+        const supabase = createAdminClient()
         const score = await calculatePartnerScore(partner.id)
 
         // Update partner score
@@ -234,23 +237,26 @@ export const monthlyVolumeBonusUpdate = inngest.createFunction(
   },
   { cron: '0 3 1 * *' }, // 3 AM on 1st of each month
   async ({ step, logger }) => {
-    const supabase = createAdminClient()
-
     // Get all active partners
-    const { data: partners, error } = await supabase
-      .from('partners')
-      .select('id')
-      .eq('is_active', true)
+    const partners = await step.run('fetch-active-partners', async () => {
+      const supabase = createAdminClient()
+      const { data, error } = await supabase
+        .from('partners')
+        .select('id')
+        .eq('is_active', true)
 
-    if (error || !partners) {
-      throw new Error(`Failed to fetch partners: ${error?.message}`)
-    }
+      if (error || !data) {
+        throw new Error(`Failed to fetch partners: ${error?.message}`)
+      }
+      return data
+    })
 
     let eligible = 0
     let notEligible = 0
 
     for (const partner of partners) {
       const result = await step.run(`volume-bonus-${partner.id}`, async () => {
+        const supabase = createAdminClient()
         const bonus = await calculateVolumeBonus(partner.id)
 
         // Update partner bonus commission rate
@@ -291,16 +297,22 @@ export const processReferralMilestones = inngest.createFunction(
   },
   { cron: '0 4 * * *' }, // 4 AM daily
   async ({ step, logger }) => {
-    const supabase = createAdminClient()
-
     // Get pending partner referrals
-    const { data: referrals, error } = await supabase
-      .from('referrals')
-      .select('id')
-      .eq('referral_type', 'partner_to_partner')
-      .neq('status', 'rewarded')
+    const referrals = await step.run('fetch-pending-referrals', async () => {
+      const supabase = createAdminClient()
+      const { data, error } = await supabase
+        .from('referrals')
+        .select('id')
+        .eq('referral_type', 'partner_to_partner')
+        .neq('status', 'rewarded')
 
-    if (error || !referrals) {
+      if (error || !data) {
+        return []
+      }
+      return data
+    })
+
+    if (referrals.length === 0) {
       return { checked: 0, rewarded: 0 }
     }
 
@@ -337,15 +349,21 @@ export const updatePartnerDataCompleteness = inngest.createFunction(
   },
   { cron: '0 5 * * *' }, // 5 AM daily
   async ({ step, logger }) => {
-    const supabase = createAdminClient()
-
     // Get all active partners
-    const { data: partners, error } = await supabase
-      .from('partners')
-      .select('id')
-      .eq('is_active', true)
+    const partners = await step.run('fetch-active-partners', async () => {
+      const supabase = createAdminClient()
+      const { data, error } = await supabase
+        .from('partners')
+        .select('id')
+        .eq('is_active', true)
 
-    if (error || !partners) {
+      if (error || !data) {
+        return []
+      }
+      return data
+    })
+
+    if (partners.length === 0) {
       return { updated: 0 }
     }
 
@@ -353,6 +371,7 @@ export const updatePartnerDataCompleteness = inngest.createFunction(
 
     for (const partner of partners) {
       await step.run(`completeness-${partner.id}`, async () => {
+        const supabase = createAdminClient()
         // Get sample of partner's leads
         const { data: leads } = await supabase
           .from('leads')

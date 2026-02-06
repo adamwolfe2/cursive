@@ -184,6 +184,7 @@ export const leadEnrichmentFailure = inngest.createFunction(
   {
     id: 'lead-enrichment-failure',
     name: 'Lead Enrichment Failure Handler',
+    retries: 2,
     timeout: 300000, // 5 minutes
   },
   { event: 'lead/enrich' },

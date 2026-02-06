@@ -144,3 +144,15 @@ export { processStripeWebhook, handleWebhookFailure } from './process-stripe-web
 
 // Operations health monitoring
 export { monitorOperationsHealth } from './monitor-operations-health'
+
+// Alert monitoring
+// NOTE: checkAlerts from ../monitoring/check-alerts.ts is NOT registered because
+// it imports checkAlertRules from @/lib/monitoring/alerts which does not exist.
+// The function needs to be implemented before it can be registered.
+
+// Bulk upload processing
+export {
+  processBulkUpload,
+  enrichLeadFromDataShopper,
+  importLeadFromAudienceLabs,
+} from '@/lib/inngest/functions/bulk-upload-processor'

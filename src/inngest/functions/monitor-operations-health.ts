@@ -16,6 +16,8 @@ export const monitorOperationsHealth = inngest.createFunction(
   {
     id: 'monitor-operations-health',
     name: 'Monitor Operations Health',
+    retries: 2,
+    timeout: 300000, // 5 minutes
   },
   { cron: '0 * * * *' }, // Every hour
   async ({ step }) => {

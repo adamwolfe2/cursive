@@ -120,5 +120,10 @@ export const { GET, POST, PUT } = serve({
 
     // Operations Health Monitoring
     functions.monitorOperationsHealth,
+
+    // Bulk Upload Processing
+    functions.processBulkUpload,
+    functions.enrichLeadFromDataShopper,
+    functions.importLeadFromAudienceLabs,
   ],
 })

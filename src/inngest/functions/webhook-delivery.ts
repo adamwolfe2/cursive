@@ -6,7 +6,7 @@
  */
 
 import { inngest } from '../client'
-import { createClient } from '@supabase/supabase-js'
+import { createAdminClient } from '@/lib/supabase/admin'
 import {
   deliverWebhook,
   formatLeadPayload,
@@ -14,10 +14,7 @@ import {
 } from '@/lib/services/webhook.service'
 
 function getSupabaseAdmin() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
+  return createAdminClient()
 }
 
 /**
@@ -152,6 +149,7 @@ export const deliverLeadWebhook = inngest.createFunction(
 export const retryWebhookDeliveries = inngest.createFunction(
   {
     id: 'retry-webhook-deliveries',
+    retries: 2,
     timeout: 300000, // 5 minutes
   },
   { cron: '*/5 * * * *' }, // Every 5 minutes
@@ -184,94 +182,98 @@ export const retryWebhookDeliveries = inngest.createFunction(
       exhausted: 0,
     }
 
-    const supabase = getSupabaseAdmin()
-
     for (const delivery of deliveries) {
-      const workspace = delivery.workspace as any
+      const deliveryResult = await step.run(`retry-delivery-${delivery.id}`, async () => {
+        const supabase = getSupabaseAdmin()
+        const workspace = delivery.workspace as any
 
-      if (!workspace?.webhook_enabled || !workspace?.webhook_url) {
-        // Mark as failed if webhooks disabled
-        await supabase
-          .from('webhook_deliveries')
-          .update({
-            status: 'failed',
-            error_message: 'Webhooks disabled',
-            completed_at: new Date().toISOString(),
-          })
-          .eq('id', delivery.id)
-
-        results.failed++
-        continue
-      }
-
-      // Attempt delivery
-      const result = await deliverWebhook(
-        workspace.webhook_url,
-        delivery.payload,
-        workspace.webhook_secret
-      )
-
-      const newAttempts = delivery.attempts + 1
-      results.processed++
-
-      if (result.success) {
-        await supabase
-          .from('webhook_deliveries')
-          .update({
-            status: 'success',
-            attempts: newAttempts,
-            last_attempt_at: new Date().toISOString(),
-            response_status: result.statusCode,
-            response_body: result.responseBody?.substring(0, 1000),
-            completed_at: new Date().toISOString(),
-          })
-          .eq('id', delivery.id)
-
-        // Mark lead as delivered
-        if (delivery.lead_id) {
+        if (!workspace?.webhook_enabled || !workspace?.webhook_url) {
+          // Mark as failed if webhooks disabled
           await supabase
-            .from('leads')
+            .from('webhook_deliveries')
             .update({
-              delivery_status: 'delivered',
-              delivered_at: new Date().toISOString(),
-              delivery_method: 'webhook',
+              status: 'failed',
+              error_message: 'Webhooks disabled',
+              completed_at: new Date().toISOString(),
             })
-            .eq('id', delivery.lead_id)
+            .eq('id', delivery.id)
+
+          return { status: 'failed' as const }
         }
 
-        results.succeeded++
-      } else if (newAttempts >= 5) {
-        // Max retries exhausted
-        await supabase
-          .from('webhook_deliveries')
-          .update({
-            status: 'failed',
-            attempts: newAttempts,
-            last_attempt_at: new Date().toISOString(),
-            response_status: result.statusCode,
-            error_message: `Max retries exhausted: ${result.error}`,
-            completed_at: new Date().toISOString(),
-          })
-          .eq('id', delivery.id)
+        // Attempt delivery
+        const result = await deliverWebhook(
+          workspace.webhook_url,
+          delivery.payload,
+          workspace.webhook_secret
+        )
 
-        results.exhausted++
-      } else {
-        // Schedule next retry
-        const nextRetry = calculateNextRetry(newAttempts)
+        const newAttempts = delivery.attempts + 1
 
-        await supabase
-          .from('webhook_deliveries')
-          .update({
-            attempts: newAttempts,
-            last_attempt_at: new Date().toISOString(),
-            next_retry_at: nextRetry.toISOString(),
-            response_status: result.statusCode,
-            error_message: result.error,
-          })
-          .eq('id', delivery.id)
+        if (result.success) {
+          await supabase
+            .from('webhook_deliveries')
+            .update({
+              status: 'success',
+              attempts: newAttempts,
+              last_attempt_at: new Date().toISOString(),
+              response_status: result.statusCode,
+              response_body: result.responseBody?.substring(0, 1000),
+              completed_at: new Date().toISOString(),
+            })
+            .eq('id', delivery.id)
 
-        results.failed++
-      }
+          // Mark lead as delivered
+          if (delivery.lead_id) {
+            await supabase
+              .from('leads')
+              .update({
+                delivery_status: 'delivered',
+                delivered_at: new Date().toISOString(),
+                delivery_method: 'webhook',
+              })
+              .eq('id', delivery.lead_id)
+          }
+
+          return { status: 'succeeded' as const }
+        } else if (newAttempts >= 5) {
+          // Max retries exhausted
+          await supabase
+            .from('webhook_deliveries')
+            .update({
+              status: 'failed',
+              attempts: newAttempts,
+              last_attempt_at: new Date().toISOString(),
+              response_status: result.statusCode,
+              error_message: `Max retries exhausted: ${result.error}`,
+              completed_at: new Date().toISOString(),
+            })
+            .eq('id', delivery.id)
+
+          return { status: 'exhausted' as const }
+        } else {
+          // Schedule next retry
+          const nextRetry = calculateNextRetry(newAttempts)
+
+          await supabase
+            .from('webhook_deliveries')
+            .update({
+              attempts: newAttempts,
+              last_attempt_at: new Date().toISOString(),
+              next_retry_at: nextRetry.toISOString(),
+              response_status: result.statusCode,
+              error_message: result.error,
+            })
+            .eq('id', delivery.id)
+
+          return { status: 'failed' as const }
+        }
+      })
+
+      results.processed++
+      if (deliveryResult.status === 'succeeded') results.succeeded++
+      else if (deliveryResult.status === 'exhausted') results.exhausted++
+      else results.failed++
     }
 
     return results

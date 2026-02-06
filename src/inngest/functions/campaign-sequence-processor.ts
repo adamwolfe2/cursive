@@ -162,6 +162,7 @@ export const handleAutoSendEmail = inngest.createFunction(
   {
     id: 'handle-auto-send-email',
     name: 'Handle Auto-Send Email',
+    retries: 3,
     timeout: 300000, // 5 minutes
   },
   { event: 'campaign/email-composed' },
@@ -218,6 +219,7 @@ export const checkSequenceCompletion = inngest.createFunction(
   {
     id: 'check-sequence-completion',
     name: 'Check Sequence Completion',
+    retries: 3,
     timeout: 300000, // 5 minutes
   },
   { event: 'campaign/email-sent' },

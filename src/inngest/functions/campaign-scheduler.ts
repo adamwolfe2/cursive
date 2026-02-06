@@ -144,6 +144,7 @@ export const onCampaignStatusChange = inngest.createFunction(
   {
     id: 'campaign-status-change-handler',
     name: 'Campaign Status Change Handler',
+    retries: 3,
     timeout: 300000, // 5 minutes
   },
   { event: 'campaign/status-changed' },

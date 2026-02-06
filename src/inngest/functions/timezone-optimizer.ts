@@ -212,6 +212,7 @@ export const updateLeadTimezoneFromEnrichment = inngest.createFunction(
   {
     id: 'update-lead-timezone-from-enrichment',
     name: 'Update Lead Timezone from Enrichment',
+    retries: 2,
     timeout: 300000, // 5 minutes
   },
   { event: 'lead/enrichment-complete' },

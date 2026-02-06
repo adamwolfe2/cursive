@@ -16,7 +16,9 @@ import crypto from 'crypto'
 export const processBulkUpload = inngest.createFunction(
   {
     id: 'bulk-upload-process',
-    name: 'Process Bulk Upload Job'
+    name: 'Process Bulk Upload Job',
+    retries: 2,
+    timeout: 600000, // 10 minutes - bulk uploads can be large
   },
   { event: 'bulk-upload/process' },
   async ({ event, step }) => {
@@ -187,7 +189,9 @@ export const processBulkUpload = inngest.createFunction(
 export const enrichLeadFromDataShopper = inngest.createFunction(
   {
     id: 'lead-enrich-from-datashopper',
-    name: 'Enrich Lead from DataShopper'
+    name: 'Enrich Lead from DataShopper',
+    retries: 3,
+    timeout: 300000, // 5 minutes
   },
   { event: 'lead/enrich-from-datashopper' },
   async ({ event, step }) => {
@@ -203,7 +207,7 @@ export const enrichLeadFromDataShopper = inngest.createFunction(
           companyDomain: lead.company_domain
         })
       } catch (error) {
-        console.error('Clay enrichment failed:', error)
+        // Clay enrichment failed - return null to continue with unenriched data
         return null
       }
     })
@@ -262,7 +266,7 @@ export const enrichLeadFromDataShopper = inngest.createFunction(
     })
 
     if (existing) {
-      console.log(`Duplicate lead: ${fingerprint}`)
+      // Duplicate lead found - skip
       return { skipped: true, reason: 'duplicate' }
     }
 
@@ -294,7 +298,7 @@ export const enrichLeadFromDataShopper = inngest.createFunction(
     })
 
     if (!routingResult.success) {
-      console.error('[Bulk Upload] Lead routing failed:', routingResult.error)
+      // Lead routing failed - lead is queued for retry
       // Lead is queued for retry - continue processing
     }
 
@@ -312,7 +316,9 @@ export const enrichLeadFromDataShopper = inngest.createFunction(
 export const importLeadFromAudienceLabs = inngest.createFunction(
   {
     id: 'lead-import-from-audience-labs',
-    name: 'Import Lead from Audience Labs'
+    name: 'Import Lead from Audience Labs',
+    retries: 3,
+    timeout: 300000, // 5 minutes
   },
   { event: 'lead/import-from-audience-labs' },
   async ({ event, step }) => {
@@ -376,7 +382,7 @@ export const importLeadFromAudienceLabs = inngest.createFunction(
     })
 
     if (existing) {
-      console.log(`Duplicate lead: ${fingerprint}`)
+      // Duplicate lead found - skip
       return { skipped: true, reason: 'duplicate' }
     }
 

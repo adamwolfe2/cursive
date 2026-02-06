@@ -8,6 +8,7 @@ export const weeklyTrends = inngest.createFunction(
   {
     id: 'weekly-trends',
     name: 'Weekly Trends Update',
+    retries: 2,
     timeout: 300000, // 5 minutes
   },
   { cron: '0 3 * * 0' }, // Every Sunday at 3 AM

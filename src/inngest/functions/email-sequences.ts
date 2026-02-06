@@ -621,6 +621,7 @@ export const processScheduledSteps = inngest.createFunction(
   {
     id: 'sequence-scheduled-processor',
     name: 'Process Scheduled Sequence Steps',
+    retries: 2,
     timeout: 300000, // 5 minutes
   },
   { cron: '*/5 * * * *' }, // Every 5 minutes

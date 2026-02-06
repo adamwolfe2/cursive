@@ -3,7 +3,7 @@
  * Runs every 5 minutes to check if any alert thresholds have been exceeded
  */
 
-import { inngest } from '@/lib/inngest/client'
+import { inngest } from '@/inngest/client'
 import { checkAlertRules } from '@/lib/monitoring/alerts'
 import { logger } from '@/lib/monitoring/logger'
 

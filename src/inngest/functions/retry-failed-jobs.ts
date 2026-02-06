@@ -157,7 +157,7 @@ async function executeRetry(job: any): Promise<boolean> {
 
     default:
       // Unknown job type - can't retry automatically
-      console.warn(`Unknown job type for retry: ${job.jobType}`)
+      // Unknown job type - can't retry automatically
       return false
   }
 
@@ -193,6 +193,7 @@ export const onJobRetryRequested = inngest.createFunction(
   {
     id: 'on-job-retry-requested',
     name: 'Handle Job Retry Request',
+    retries: 2,
     timeout: 300000, // 5 minutes
   },
   { event: 'job/retry-requested' },

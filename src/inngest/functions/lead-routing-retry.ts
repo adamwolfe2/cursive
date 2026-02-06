@@ -9,6 +9,7 @@
  */
 
 import { inngest } from '../client'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { LeadRoutingService } from '@/lib/services/lead-routing.service'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 
@@ -167,48 +168,71 @@ export const leadRoutingHealthCheck = inngest.createFunction(
     timeout: 300000, // 5 minutes
   },
   { cron: '0 * * * *' }, // Every hour
-  async ({ event, step, logger }) => {
-    const { workspaceId } = event.data || {}
+  async ({ step, logger }) => {
+    // Get all active workspaces to check health across
+    const workspaces = await step.run('get-active-workspaces', async () => {
+      const supabase = createAdminClient()
+      const { data, error } = await supabase
+        .from('workspaces')
+        .select('id')
+        .eq('is_active', true)
+        .limit(100)
 
-    if (!workspaceId) {
-      logger.warn('No workspaceId provided for health check')
-      return { skipped: true }
-    }
-
-    const health = await step.run('check-routing-health', async () => {
-      return await LeadRoutingService.getRoutingHealth(workspaceId)
+      if (error) {
+        throw new Error(`Failed to fetch workspaces: ${error.message}`)
+      }
+      return data || []
     })
 
-    // Alert on critical issues
-    const alerts = []
-
-    if (health.staleLockCount > 10) {
-      alerts.push({
-        severity: 'critical',
-        message: `High number of stale routing locks: ${health.staleLockCount}`,
-      })
+    if (workspaces.length === 0) {
+      logger.warn('No active workspaces found for health check')
+      return { checked: 0, alerts: [] }
     }
 
-    if (health.failedCount > 100) {
-      alerts.push({
-        severity: 'warning',
-        message: `High number of failed routing attempts: ${health.failedCount}`,
+    const allAlerts: Array<{ workspaceId: string; severity: string; message: string }> = []
+
+    for (const workspace of workspaces) {
+      const result = await step.run(`check-health-${workspace.id}`, async () => {
+        const health = await LeadRoutingService.getRoutingHealth(workspace.id)
+
+        const alerts: Array<{ severity: string; message: string }> = []
+
+        if (health.staleLockCount > 10) {
+          alerts.push({
+            severity: 'critical',
+            message: `High number of stale routing locks: ${health.staleLockCount}`,
+          })
+        }
+
+        if (health.failedCount > 100) {
+          alerts.push({
+            severity: 'warning',
+            message: `High number of failed routing attempts: ${health.failedCount}`,
+          })
+        }
+
+        if (health.retryQueueCount > 500) {
+          alerts.push({
+            severity: 'warning',
+            message: `Large retry queue backlog: ${health.retryQueueCount}`,
+          })
+        }
+
+        return { health, alerts }
       })
+
+      if (result.alerts.length > 0) {
+        for (const alert of result.alerts) {
+          allAlerts.push({ workspaceId: workspace.id, ...alert })
+        }
+      }
     }
 
-    if (health.retryQueueCount > 500) {
-      alerts.push({
-        severity: 'warning',
-        message: `Large retry queue backlog: ${health.retryQueueCount}`,
-      })
-    }
-
-    if (alerts.length > 0) {
-      await step.run('send-alerts', async () => {
+    if (allAlerts.length > 0) {
+      await step.run('log-alerts', async () => {
         logger.error('Lead routing health issues detected', {
-          workspace_id: workspaceId,
-          health,
-          alerts,
+          alertCount: allAlerts.length,
+          alerts: allAlerts,
         })
         // FUTURE: Send alerts to Slack or monitoring system
         // Use existing Slack alerting system from src/lib/monitoring/slack.ts
@@ -216,9 +240,8 @@ export const leadRoutingHealthCheck = inngest.createFunction(
     }
 
     return {
-      workspaceId,
-      health,
-      alerts,
+      checked: workspaces.length,
+      alerts: allAlerts,
     }
   }
 )
