@@ -174,7 +174,8 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
       .eq('workspace_id', user.workspace_id)
 
     if (updateError) {
-      return badRequest(updateError.message)
+      console.error('[Campaign Schedule] Update error:', updateError.message)
+      return badRequest('Failed to update campaign schedule')
     }
 
     // Handle respect_recipient_timezone in sequence_settings

@@ -58,8 +58,6 @@ async function getWorkspaceEmailInfo(workspaceId: string) {
  * Called when a new subscription is created via Checkout
  */
 export async function handleSubscriptionCreated(subscription: Stripe.Subscription): Promise<void> {
-  console.log('[Webhook] subscription.created:', subscription.id)
-
   const supabase = await createClient()
 
   try {
@@ -118,8 +116,6 @@ export async function handleSubscriptionCreated(subscription: Stripe.Subscriptio
       throw new Error(`Failed to create subscription record: ${upsertError.message}`)
     }
 
-    console.log('[Webhook] Created service subscription for workspace:', workspaceId)
-
     // Send welcome email
     try {
       const emailInfo = await getWorkspaceEmailInfo(workspaceId)
@@ -129,7 +125,6 @@ export async function handleSubscriptionCreated(subscription: Stripe.Subscriptio
         tierName: tier.name,
         monthlyPrice: monthlyPrice,
       })
-      console.log('[Webhook] Welcome email sent to:', emailInfo.customerEmail)
     } catch (emailError: any) {
       console.error('[Webhook] Failed to send welcome email:', emailError)
       // Don't throw - email failures shouldn't block webhook processing
@@ -150,8 +145,6 @@ export async function handleSubscriptionCreated(subscription: Stripe.Subscriptio
  * Called when subscription is modified (status change, upgrade, etc.)
  */
 export async function handleSubscriptionUpdated(subscription: Stripe.Subscription): Promise<void> {
-  console.log('[Webhook] subscription.updated:', subscription.id)
-
   const supabase = await createClient()
 
   try {
@@ -163,7 +156,6 @@ export async function handleSubscriptionUpdated(subscription: Stripe.Subscriptio
       .single()
 
     if (findError || !existingSubscription) {
-      console.warn('[Webhook] Subscription not found in DB, creating new record')
       return await handleSubscriptionCreated(subscription)
     }
 
@@ -206,8 +198,6 @@ export async function handleSubscriptionUpdated(subscription: Stripe.Subscriptio
       throw new Error(`Failed to update subscription: ${updateError.message}`)
     }
 
-    console.log('[Webhook] Updated subscription status to:', status)
-
     // Send notification based on status change
     if (status === 'active' && existingSubscription.status !== 'active') {
       // Send activation email (payment success)
@@ -221,7 +211,6 @@ export async function handleSubscriptionUpdated(subscription: Stripe.Subscriptio
           amount: existingSubscription.monthly_price,
           periodEnd: existingSubscription.current_period_end,
         })
-        console.log('[Webhook] Activation email sent to:', emailInfo.customerEmail)
       } catch (emailError: any) {
         console.error('[Webhook] Failed to send activation email:', emailError)
         // Don't throw - email failures shouldn't block webhook processing
@@ -237,7 +226,6 @@ export async function handleSubscriptionUpdated(subscription: Stripe.Subscriptio
           tierName: tier?.name || 'Cursive Service',
           amount: existingSubscription.monthly_price,
         })
-        console.log('[Webhook] Payment failed email sent to:', emailInfo.customerEmail)
       } catch (emailError: any) {
         console.error('[Webhook] Failed to send payment failed email:', emailError)
         // Don't throw - email failures shouldn't block webhook processing
@@ -255,8 +243,6 @@ export async function handleSubscriptionUpdated(subscription: Stripe.Subscriptio
  * Called when subscription is canceled
  */
 export async function handleSubscriptionDeleted(subscription: Stripe.Subscription): Promise<void> {
-  console.log('[Webhook] subscription.deleted:', subscription.id)
-
   const supabase = await createClient()
 
   try {
@@ -272,8 +258,6 @@ export async function handleSubscriptionDeleted(subscription: Stripe.Subscriptio
     if (updateError) {
       throw new Error(`Failed to cancel subscription: ${updateError.message}`)
     }
-
-    console.log('[Webhook] Cancelled subscription:', subscription.id)
 
     // Send cancellation confirmation email
     try {
@@ -292,7 +276,6 @@ export async function handleSubscriptionDeleted(subscription: Stripe.Subscriptio
           tierName: tier?.name || 'Cursive Service',
           accessUntil: serviceSubscription.current_period_end || new Date().toISOString(),
         })
-        console.log('[Webhook] Cancellation email sent to:', emailInfo.customerEmail)
       }
     } catch (emailError: any) {
       console.error('[Webhook] Failed to send cancellation email:', emailError)
@@ -312,13 +295,10 @@ export async function handleSubscriptionDeleted(subscription: Stripe.Subscriptio
  * Called when a payment attempt fails
  */
 export async function handleInvoicePaymentFailed(invoice: Stripe.Invoice): Promise<void> {
-  console.log('[Webhook] invoice.payment_failed:', invoice.id)
-
   const supabase = await createClient()
 
   try {
     if (!invoice.subscription) {
-      console.warn('[Webhook] Invoice has no subscription, skipping')
       return
     }
 
@@ -334,8 +314,6 @@ export async function handleInvoicePaymentFailed(invoice: Stripe.Invoice): Promi
     if (updateError) {
       throw new Error(`Failed to update subscription status: ${updateError.message}`)
     }
-
-    console.log('[Webhook] Updated subscription to pending_payment due to failed payment')
 
     // Send payment failed notification email
     try {
@@ -354,7 +332,6 @@ export async function handleInvoicePaymentFailed(invoice: Stripe.Invoice): Promi
           tierName: tier?.name || 'Cursive Service',
           amount: (invoice.amount_due || 0) / 100,
         })
-        console.log('[Webhook] Payment failed email sent to:', emailInfo.customerEmail)
       }
     } catch (emailError: any) {
       console.error('[Webhook] Failed to send payment failed email:', emailError)
@@ -371,8 +348,6 @@ export async function handleInvoicePaymentFailed(invoice: Stripe.Invoice): Promi
  * Called when a payment is successful
  */
 export async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice): Promise<void> {
-  console.log('[Webhook] invoice.payment_succeeded:', invoice.id)
-
   const supabase = await createClient()
 
   try {
@@ -389,7 +364,6 @@ export async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice): Pr
       .single()
 
     if (!subscription) {
-      console.warn('[Webhook] Subscription not found in DB')
       return
     }
 
@@ -413,8 +387,6 @@ export async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice): Pr
       throw new Error(`Failed to update subscription: ${updateError.message}`)
     }
 
-    console.log('[Webhook] Payment succeeded, updated status to:', newStatus)
-
     // Send payment success email (only for recurring payments, not initial)
     if (invoice.billing_reason === 'subscription_cycle') {
       try {
@@ -427,7 +399,6 @@ export async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice): Pr
           amount: (invoice.amount_paid || 0) / 100,
           periodEnd: new Date(invoice.period_end! * 1000).toISOString(),
         })
-        console.log('[Webhook] Payment success email sent to:', emailInfo.customerEmail)
       } catch (emailError: any) {
         console.error('[Webhook] Failed to send payment success email:', emailError)
       }
@@ -446,8 +417,6 @@ export async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice): Pr
  * Main webhook event router
  */
 export async function handleServiceWebhookEvent(event: Stripe.Event): Promise<void> {
-  console.log('[Webhook] Processing event:', event.type, event.id)
-
   try {
     switch (event.type) {
       case 'customer.subscription.created':
@@ -471,10 +440,8 @@ export async function handleServiceWebhookEvent(event: Stripe.Event): Promise<vo
         break
 
       default:
-        console.log('[Webhook] Unhandled event type:', event.type)
+        break
     }
-
-    console.log('[Webhook] Successfully processed event:', event.id)
   } catch (error: any) {
     console.error('[Webhook] Error processing event:', event.type, error)
     throw error

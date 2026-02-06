@@ -351,11 +351,6 @@ export async function batchCheckDuplicates(
             const isSamePartner = matchedLead.partner_id === currentPartnerId
             const isPlatformOwned = !matchedLead.partner_id
 
-            console.log(
-              `[Deduplication] Fuzzy match found: ${lead.email} matches ${match.matched_email} ` +
-              `(${Math.round(match.similarity_score * 100)}% similar on ${match.match_field})`
-            )
-
             results.set(lead.email, {
               isDuplicate: true,
               isSamePartner,

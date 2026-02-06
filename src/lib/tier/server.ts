@@ -109,8 +109,6 @@ export async function getWorkspaceTier(workspaceId: string): Promise<WorkspaceTi
 
   // If service tier exists, use it (takes precedence)
   if (serviceTier && serviceTier.platform_features) {
-    console.log(`[TierCheck] Workspace ${workspaceId} using SERVICE TIER: ${serviceTier.slug}`)
-
     const platformFeatures = serviceTier.platform_features
     const features: ProductTierFeatures = {
       ...DEFAULT_FEATURES,
@@ -166,8 +164,6 @@ export async function getWorkspaceTier(workspaceId: string): Promise<WorkspaceTi
   } | null
 
   if (productTier) {
-    console.log(`[TierCheck] Workspace ${workspaceId} using PRODUCT TIER: ${productTier.slug}`)
-
     // Merge features with overrides
     const features: ProductTierFeatures = {
       ...DEFAULT_FEATURES,
@@ -189,8 +185,6 @@ export async function getWorkspaceTier(workspaceId: string): Promise<WorkspaceTi
   // ============================================================================
   // STEP 3: Default to free tier
   // ============================================================================
-
-  console.log(`[TierCheck] Workspace ${workspaceId} using FREE TIER (no subscription found)`)
 
   return {
     tierSlug: 'free',
@@ -303,7 +297,6 @@ export async function requireFeature(
     )
   }
 
-  console.log(`[TierCheck] Feature '${String(feature)}' granted for workspace ${workspaceId}`)
 }
 
 /**
@@ -328,7 +321,6 @@ export async function requireWithinLimit(
     )
   }
 
-  console.log(`[TierCheck] Limit check passed for workspace ${workspaceId}: ${resource} (used: ${used}, limit: ${limit})`)
 }
 
 // ============================================================================

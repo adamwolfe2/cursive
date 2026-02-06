@@ -87,12 +87,6 @@ export function useWaitlistFlow() {
         timestamp: new Date(),
       }
 
-      console.log('='.repeat(60))
-      console.log('WAITLIST SUBMISSION (BUSINESS)')
-      console.log('='.repeat(60))
-      console.log(JSON.stringify(waitlistData, null, 2))
-      console.log('='.repeat(60))
-
       goToScreen('business-success')
     },
     [vslAnswers, goToScreen]
@@ -107,12 +101,6 @@ export function useWaitlistFlow() {
         formData,
         timestamp: new Date(),
       }
-
-      console.log('='.repeat(60))
-      console.log('WAITLIST SUBMISSION (PARTNER)')
-      console.log('='.repeat(60))
-      console.log(JSON.stringify(waitlistData, null, 2))
-      console.log('='.repeat(60))
 
       goToScreen('partner-success')
     },

@@ -240,7 +240,6 @@ export async function handleIncomingSms(
     .single()
 
   if (!lead) {
-    console.log(`Incoming SMS from unknown number: ${from}`)
     return
   }
 

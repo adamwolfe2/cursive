@@ -138,7 +138,7 @@ export async function POST(request: NextRequest) {
     } catch (error: any) {
       console.error('Failed to validate and lock leads:', error)
       return NextResponse.json(
-        { error: 'Failed to validate lead availability', details: error.message },
+        { error: 'Failed to validate lead availability' },
         { status: 500 }
       )
     }
@@ -251,7 +251,7 @@ export async function POST(request: NextRequest) {
       if (completionError || !completionResult || completionResult.length === 0) {
         console.error('Failed to complete purchase:', completionError)
         return NextResponse.json(
-          { error: 'Failed to complete purchase', details: completionError?.message },
+          { error: 'Failed to complete purchase' },
           { status: 500 }
         )
       }

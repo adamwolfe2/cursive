@@ -38,7 +38,6 @@ export function UpgradeButton({
       if (!response.ok) {
         // Fallback to Stripe Payment Link if checkout session fails
         // (e.g., Stripe Price IDs not configured in database)
-        console.warn('Checkout API failed, falling back to payment link:', data.error)
         const cycle = billingPeriod === 'yearly' ? 'annual' : 'monthly'
         const paymentUrl = getSubscriptionLink(plan, cycle)
         window.location.href = paymentUrl

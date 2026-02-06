@@ -263,7 +263,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
           .from('ab_experiments')
           .update({ status: 'paused' })
           .eq('id', experimentId)
-        result = { success: !pauseError, error: pauseError?.message }
+        result = { success: !pauseError, error: pauseError ? 'Failed to pause experiment' : undefined }
         break
 
       case 'end':

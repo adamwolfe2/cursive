@@ -72,7 +72,6 @@ export function initSentry() {
 
       // Don't send events from development unless explicitly enabled
       if (!isProduction && !process.env.SENTRY_DEV_ENABLED) {
-        console.log('[Sentry] Event blocked (dev mode):', event)
         return null
       }
 

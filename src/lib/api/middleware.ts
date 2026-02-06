@@ -340,10 +340,6 @@ export function withLogging<T extends NextResponse>(
       const response = await handler(request, context)
       const duration = Date.now() - start
 
-      console.log(
-        `[API] ${method} ${url} - ${response.status} (${duration}ms)`
-      )
-
       return response
     } catch (error) {
       const duration = Date.now() - start

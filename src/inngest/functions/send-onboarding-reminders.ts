@@ -52,8 +52,6 @@ export const sendOnboardingReminders = inngest.createFunction(
       return subscriptions || []
     })
 
-    console.log(`[Inngest] Found ${results.length} subscriptions needing onboarding reminder`)
-
     // Send reminder emails
     const emailResults = await step.run('send-reminder-emails', async () => {
       const sent = []
@@ -66,7 +64,6 @@ export const sendOnboardingReminders = inngest.createFunction(
 
           // Skip if tier doesn't require onboarding
           if (!tier?.onboarding_required) {
-            console.log(`[Inngest] Skipping ${subscription.id} - onboarding not required`)
             continue
           }
 
@@ -77,7 +74,6 @@ export const sendOnboardingReminders = inngest.createFunction(
           })
 
           sent.push(subscription.id)
-          console.log(`[Inngest] Sent onboarding reminder to ${user.email}`)
         } catch (error: any) {
           console.error(`[Inngest] Failed to send reminder for ${subscription.id}:`, error)
           failed.push({ id: subscription.id, error: error.message })

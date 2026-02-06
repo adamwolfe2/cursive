@@ -13,13 +13,11 @@ import {
 function isVerificationEnabled(): boolean {
   const killSwitch = process.env.EMAIL_VERIFICATION_KILL_SWITCH
   if (killSwitch === 'true' || killSwitch === '1') {
-    console.log('[Email Verification] Kill switch is ON - verification disabled')
     return false
   }
 
   const apiKey = process.env.MILLIONVERIFIER_API_KEY
   if (!apiKey) {
-    console.log('[Email Verification] No API key configured - verification disabled')
     return false
   }
 

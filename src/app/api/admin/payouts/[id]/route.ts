@@ -189,7 +189,7 @@ export async function PATCH(
             .eq('id', payoutId)
 
           return NextResponse.json(
-            { error: `Stripe transfer failed: ${stripeError.message}` },
+            { error: 'Stripe transfer failed' },
             { status: 500 }
           )
         }

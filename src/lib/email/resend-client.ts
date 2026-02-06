@@ -62,7 +62,6 @@ export async function sendEmail({
       text,
     })
 
-    console.log('[Email] Sent successfully:', subject, 'to:', to)
     return { success: true, data: result }
   } catch (error) {
     console.error('[Email] Failed to send:', subject, error)

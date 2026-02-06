@@ -55,8 +55,6 @@ export async function generateKnowledgeBase(
 ): Promise<KnowledgeBase> {
   try {
     const openai = getOpenAIClient()
-    console.log('[Knowledge] Generating knowledge base with GPT-4...')
-
     const systemPrompt = `You are an expert brand strategist and marketing intelligence analyst. Your job is to create a comprehensive brand knowledge base that can be used to generate perfectly on-brand advertising creatives, marketing copy, and messaging.
 
 Analyze the website content deeply and extract actionable marketing intelligence.
@@ -174,8 +172,6 @@ Analyze this content deeply and generate a comprehensive, actionable knowledge b
 
     const knowledgeBase = JSON.parse(content) as KnowledgeBase
 
-    console.log('[Knowledge] Knowledge base generated successfully')
-
     return knowledgeBase
   } catch (error: any) {
     console.error('[Knowledge] Error generating knowledge base:', error)
@@ -191,8 +187,6 @@ export async function generateCustomerProfiles(
 ): Promise<CustomerProfile[]> {
   try {
     const openai = getOpenAIClient()
-    console.log('[Knowledge] Generating customer profiles...')
-
     const systemPrompt = `You are an expert in buyer persona development. Create 3-5 detailed, realistic buyer personas based on the company information provided.
 
 Output Format (strict JSON):
@@ -256,8 +250,6 @@ Generate 3-5 detailed buyer personas in the exact JSON format specified.`
     }
 
     const result = JSON.parse(content)
-
-    console.log('[Knowledge] Customer profiles generated successfully')
 
     return result.personas || []
   } catch (error: any) {

@@ -43,7 +43,6 @@ export function DataTableWithErrorHandling() {
         maxRetries: 3,
         initialDelay: 1000,
         onRetry: (attempt, error) => {
-          console.log(`Retrying... Attempt ${attempt}`, error)
         },
       },
     }),

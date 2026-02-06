@@ -97,7 +97,6 @@ export default function CreditsPage() {
         // Fallback to payment link if checkout session fails
         const creditTier = PACKAGE_TO_CREDIT_TIER[pkg.id]
         if (creditTier) {
-          console.warn('Checkout API failed, falling back to payment link')
           window.open(getCreditLink(creditTier), '_blank', 'noopener,noreferrer')
         } else {
           const error = await response.json()

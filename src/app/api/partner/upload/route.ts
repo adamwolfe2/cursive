@@ -439,7 +439,7 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json({
           success: false,
-          error: `Failed to insert leads: ${insertError.message}`,
+          error: 'Failed to insert leads',
         }, { status: 500 })
       }
     }

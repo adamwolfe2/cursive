@@ -109,25 +109,19 @@ export default function AIStudioPage() {
     let timeoutId: NodeJS.Timeout | null = null
 
     try {
-      console.log('[AI Studio] Starting extraction for:', url.trim())
-
       const response = await fetch('/api/ai-studio/brand/extract', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url: url.trim() }),
       })
 
-      console.log('[AI Studio] Response status:', response.status)
-
       const data = await response.json()
-      console.log('[AI Studio] Response data:', data)
 
       if (!response.ok) {
         throw new Error(data.error || 'Failed to extract brand DNA')
       }
 
       const workspaceId = data.workspaceId
-      console.log('[AI Studio] Got workspace ID:', workspaceId)
 
       let currentStep = 0
       let consecutiveErrors = 0
@@ -145,11 +139,8 @@ export default function AIStudioPage() {
           const workspace = progressData.workspaces?.find((w: any) => w.id === workspaceId)
 
           if (!workspace) {
-            console.log('[AI Studio] Workspace not found in polling, waiting...')
             return
           }
-
-          console.log('[AI Studio] Workspace status:', workspace.extraction_status)
 
           consecutiveErrors = 0
 
@@ -194,7 +185,6 @@ export default function AIStudioPage() {
       }, 2000)
 
       timeoutId = setTimeout(() => {
-        console.log('[AI Studio] Timeout reached, stopping extraction')
         if (pollInterval) clearInterval(pollInterval)
         setIsExtracting(false)
         setExtractionError('Extraction timed out. The API may be overloaded. Please try again.')

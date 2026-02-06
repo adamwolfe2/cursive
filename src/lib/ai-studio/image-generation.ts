@@ -56,8 +56,6 @@ export async function generateAdCreative({
 }: GenerateCreativeInput): Promise<GenerateCreativeOutput> {
   try {
     configureFal()
-    console.log('[ImageGen] Generating ad creative with quality:', quality)
-
     // Build enhanced prompt with full brand intelligence
     const enhancedPrompt = buildPrompt({
       userPrompt: prompt,
@@ -68,15 +66,11 @@ export async function generateAdCreative({
       stylePreset,
     })
 
-    console.log('[ImageGen] Enhanced prompt:', enhancedPrompt.slice(0, 200) + '...')
-
     // Image dimensions based on format
     const dimensions = getImageDimensions(format)
 
     // Select model and settings based on quality
     const { model, steps } = getQualitySettings(quality)
-
-    console.log('[ImageGen] Using model:', model, 'with', steps, 'steps')
 
     // Generate with Flux (Pro for quality, Dev for balanced, Schnell for fast)
     const result = await fal.subscribe(model, {
@@ -95,8 +89,6 @@ export async function generateAdCreative({
     }
 
     const imageUrl = result.images[0].url
-
-    console.log('[ImageGen] Image generated successfully:', imageUrl)
 
     return {
       imageUrl,

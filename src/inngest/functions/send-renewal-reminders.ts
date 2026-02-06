@@ -56,8 +56,6 @@ export const sendRenewalReminders = inngest.createFunction(
       return subscriptions || []
     })
 
-    console.log(`[Inngest] Found ${results.length} subscriptions renewing in 7 days`)
-
     // Send renewal reminder emails
     const emailResults = await step.run('send-renewal-emails', async () => {
       const sent = []
@@ -77,7 +75,6 @@ export const sendRenewalReminders = inngest.createFunction(
           })
 
           sent.push(subscription.id)
-          console.log(`[Inngest] Sent renewal reminder to ${user.email}`)
         } catch (error: any) {
           console.error(`[Inngest] Failed to send renewal reminder for ${subscription.id}:`, error)
           failed.push({ id: subscription.id, error: error.message })

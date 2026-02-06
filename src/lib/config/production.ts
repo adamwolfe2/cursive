@@ -252,8 +252,6 @@ export function onShutdown(handler: ShutdownHandler): void {
  * Execute all shutdown handlers
  */
 export async function gracefulShutdown(): Promise<void> {
-  console.log('[SHUTDOWN] Starting graceful shutdown...')
-
   for (const handler of shutdownHandlers) {
     try {
       await handler()
@@ -262,7 +260,6 @@ export async function gracefulShutdown(): Promise<void> {
     }
   }
 
-  console.log('[SHUTDOWN] Graceful shutdown complete')
 }
 
 // Setup process signal handlers (Node.js only)
@@ -273,7 +270,6 @@ if (typeof process !== 'undefined' && process.on) {
     if (isShuttingDown) return
     isShuttingDown = true
 
-    console.log(`[SHUTDOWN] Received ${signal}`)
     await gracefulShutdown()
     process.exit(0)
   }

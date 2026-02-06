@@ -113,7 +113,6 @@ async function processWebhookEvent(event: Stripe.Event, supabase: any) {
         .single()
 
       if (existingPurchase?.status === 'completed') {
-        console.log(`Lead purchase ${purchaseId} already completed, skipping`)
         return
       }
 
@@ -169,7 +168,6 @@ async function processWebhookEvent(event: Stripe.Event, supabase: any) {
         }
       }
 
-      console.log(`✅ Lead purchase completed: ${purchaseId} for workspace ${workspaceId}`)
       return
     }
 
@@ -219,7 +217,6 @@ async function processWebhookEvent(event: Stripe.Event, supabase: any) {
         })
       }
 
-      console.log(`✅ Credit purchase completed: ${credits} credits for workspace ${workspaceId}`)
       return
     }
   }
@@ -269,7 +266,6 @@ async function processWebhookEvent(event: Stripe.Event, supabase: any) {
           .eq('workspace_id', creditPurchase.workspace_id)
       }
 
-      console.log(`✅ Credit refund processed: ${creditPurchase.credits} credits for workspace ${creditPurchase.workspace_id}`)
       return
     }
 
@@ -356,7 +352,6 @@ async function processWebhookEvent(event: Stripe.Event, supabase: any) {
         }
       }
 
-      console.log(`✅ Marketplace purchase refund processed: ${marketplacePurchase.total_leads} leads for workspace ${marketplacePurchase.buyer_workspace_id}`)
       return
     }
   }

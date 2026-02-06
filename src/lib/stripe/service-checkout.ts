@@ -150,7 +150,7 @@ export async function handleServiceSubscriptionWebhook(
       break
 
     default:
-      console.log(`[Stripe] Unhandled event type: ${event.type}`)
+      break
   }
 }
 
@@ -167,8 +167,6 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session): Promis
     console.error('[Stripe] Missing metadata in checkout session:', session.id)
     return
   }
-
-  console.log('[Stripe] Checkout completed for workspace:', workspaceId, 'tier:', serviceTierId)
 
   // Create service subscription record
   await serviceTierRepository.createSubscription({
@@ -194,8 +192,6 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription): Pro
     return
   }
 
-  console.log('[Stripe] Subscription created:', subscription.id)
-
   // Update subscription status to active
   const existingSubscription = await serviceTierRepository.getSubscriptionByStripeId(subscription.id)
 
@@ -213,8 +209,6 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription): Pro
  * Handle subscription updates
  */
 async function handleSubscriptionUpdated(subscription: Stripe.Subscription): Promise<void> {
-  console.log('[Stripe] Subscription updated:', subscription.id)
-
   const existingSubscription = await serviceTierRepository.getSubscriptionByStripeId(subscription.id)
 
   if (!existingSubscription) {
@@ -244,8 +238,6 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription): Pro
  * Handle subscription deletion/cancellation
  */
 async function handleSubscriptionDeleted(subscription: Stripe.Subscription): Promise<void> {
-  console.log('[Stripe] Subscription deleted:', subscription.id)
-
   const existingSubscription = await serviceTierRepository.getSubscriptionByStripeId(subscription.id)
 
   if (!existingSubscription) {
@@ -262,8 +254,6 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription): Pro
  * Handle successful invoice payment
  */
 async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice): Promise<void> {
-  console.log('[Stripe] Invoice payment succeeded:', invoice.id)
-
   if (!invoice.subscription) {
     return
   }
@@ -286,8 +276,6 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice): Promise<v
  * Handle failed invoice payment
  */
 async function handleInvoicePaymentFailed(invoice: Stripe.Invoice): Promise<void> {
-  console.log('[Stripe] Invoice payment failed:', invoice.id)
-
   if (!invoice.subscription) {
     return
   }

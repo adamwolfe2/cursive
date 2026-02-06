@@ -127,8 +127,8 @@ export async function POST(request: NextRequest) {
         }
       } catch (syncError: any) {
         results.failed++
-        const errorMsg = syncError.message || 'Unexpected sync error'
-        results.errors.push(`Lead ${lead.email || lead.id}: ${errorMsg}`)
+        console.error('[Salesforce Export] Sync error for lead:', lead.id, syncError)
+        results.errors.push(`Lead ${lead.email || lead.id}: Sync failed`)
       }
     }
 

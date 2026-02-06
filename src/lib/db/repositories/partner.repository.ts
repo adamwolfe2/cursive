@@ -209,7 +209,6 @@ export class PartnerRepository {
       throw new Error('Failed to credit partner for sale')
     }
 
-    console.log(`✅ Credited partner ${partnerId} with $${commissionAmount} for purchase ${leadPurchaseId}`)
   }
 
   /**
