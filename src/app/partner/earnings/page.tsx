@@ -16,7 +16,7 @@ async function getEarningsData() {
   const user = await getCurrentUser()
 
   if (!user || !user.linked_partner_id) {
-    redirect('/auth/signin')
+    redirect('/login')
   }
 
   const repo = new PartnerRepository()

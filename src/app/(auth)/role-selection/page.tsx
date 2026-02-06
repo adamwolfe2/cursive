@@ -22,7 +22,7 @@ export default function RoleSelectionPage() {
       const { data: { session } } = await supabase.auth.getSession()
 
       if (!session) {
-        router.push('/auth/signin')
+        router.push('/login')
         return
       }
 

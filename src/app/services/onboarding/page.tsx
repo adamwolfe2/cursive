@@ -10,7 +10,7 @@ export default async function OnboardingPage() {
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect('/sign-in?redirect=/services/onboarding')
+    redirect('/login?redirect=/services/onboarding')
   }
 
   // Get user's workspace
@@ -21,7 +21,7 @@ export default async function OnboardingPage() {
     .single()
 
   if (!userData?.workspace_id) {
-    redirect('/onboarding')
+    redirect('/welcome')
   }
 
   // Get active subscription

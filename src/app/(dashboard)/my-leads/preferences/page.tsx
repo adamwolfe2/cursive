@@ -115,7 +115,7 @@ export default async function TargetingPreferencesPage() {
     .single()
 
   if (userError || !userData) {
-    redirect('/onboarding')
+    redirect('/welcome')
   }
 
   const user = userData as Pick<User, 'id' | 'workspace_id' | 'full_name' | 'email'>

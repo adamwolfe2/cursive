@@ -7,7 +7,7 @@ export default async function CreateDeliveryPage() {
 
   // Check admin access
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/sign-in')
+  if (!user) redirect('/login')
 
   const { data: userData } = await supabase
     .from('users')

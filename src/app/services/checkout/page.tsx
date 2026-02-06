@@ -38,7 +38,7 @@ export default async function CheckoutPage({ searchParams }: CheckoutPageProps) 
 
   // If not logged in, redirect to sign up first
   if (!user) {
-    redirect(`/signup?redirect=/services/checkout?tier=${tierSlug}`)
+    redirect(`/signup?redirect=${encodeURIComponent(`/services/checkout?tier=${tierSlug}`)}`)
   }
 
   // Get user's workspace
@@ -49,7 +49,7 @@ export default async function CheckoutPage({ searchParams }: CheckoutPageProps) 
     .single()
 
   if (!userData?.workspace_id) {
-    redirect('/onboarding')
+    redirect('/welcome')
   }
 
   // Check if user already has this subscription

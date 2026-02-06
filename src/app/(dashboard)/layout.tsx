@@ -103,7 +103,7 @@ export default async function DashboardLayout({
   } | null
 
   if (!user) {
-    redirect('/onboarding')
+    redirect('/welcome')
   }
 
   // Check if user is an admin (for showing impersonation banner)

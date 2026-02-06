@@ -44,7 +44,7 @@ export async function requireBusinessAccess(): Promise<AccessControlUser> {
   const user = await getCurrentUserWithAccess()
 
   if (!user) {
-    redirect('/auth/signin')
+    redirect('/login')
   }
 
   // Business users are: owner, admin, member (not partner)
@@ -69,7 +69,7 @@ export async function requirePartnerAccess(): Promise<AccessControlUser> {
   const user = await getCurrentUserWithAccess()
 
   if (!user) {
-    redirect('/auth/signin')
+    redirect('/login')
   }
 
   if (user.role !== 'partner') {

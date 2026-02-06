@@ -18,7 +18,7 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect('/sign-in')
+    redirect('/login')
   }
 
   // Get user's workspace
@@ -29,7 +29,7 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
     .single()
 
   if (!userData?.workspace_id) {
-    redirect('/onboarding')
+    redirect('/welcome')
   }
 
   // Get active subscription

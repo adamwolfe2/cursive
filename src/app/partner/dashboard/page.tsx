@@ -20,7 +20,7 @@ export default async function PartnerDashboard() {
   const {
     data: { user: authUser },
   } = await supabase.auth.getUser()
-  if (!authUser) redirect('/auth/signin')
+  if (!authUser) redirect('/login')
 
   // Get user profile
   const { data: user } = await supabase
@@ -29,12 +29,12 @@ export default async function PartnerDashboard() {
     .eq('auth_user_id', authUser.id)
     .single()
 
-  if (!user) redirect('/auth/signin')
+  if (!user) redirect('/login')
   if (user.role !== 'partner') redirect('/dashboard')
 
   // Partners are auto-approved, but check just in case
   if (!user.partner_approved) {
-    redirect('/auth/signin?error=Partner account not approved')
+    redirect('/login?error=Partner account not approved')
   }
 
   // Fetch partner data using repository

@@ -11,7 +11,7 @@ export default async function ManageSubscriptionPage() {
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect('/sign-in?redirect=/services/manage')
+    redirect('/login?redirect=/services/manage')
   }
 
   // Get user's workspace
@@ -22,7 +22,7 @@ export default async function ManageSubscriptionPage() {
     .single()
 
   if (!userData?.workspace_id) {
-    redirect('/onboarding')
+    redirect('/welcome')
   }
 
   // Get active subscription

@@ -8,7 +8,7 @@ import type { Database } from '@/types/database.types'
 // Use edge runtime for instant response
 export const runtime = 'edge'
 
-export async function POST(request: NextRequest) {
+async function handleSignOut(request: NextRequest) {
   const cookieStore: { name: string; value: string; options?: any }[] = []
 
   const supabase = createServerClient<Database>(
@@ -38,4 +38,13 @@ export async function POST(request: NextRequest) {
   })
 
   return response
+}
+
+export async function POST(request: NextRequest) {
+  return handleSignOut(request)
+}
+
+// Support GET for <Link> and router.push navigation
+export async function GET(request: NextRequest) {
+  return handleSignOut(request)
 }

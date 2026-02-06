@@ -42,7 +42,7 @@ export default async function DashboardPage() {
 
   // If no user profile exists, redirect to onboarding
   if (userError || !user || !user.workspace_id) {
-    redirect('/onboarding')
+    redirect('/welcome')
   }
 
   // Get leads count (safe query)
