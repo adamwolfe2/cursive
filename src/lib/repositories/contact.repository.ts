@@ -29,7 +29,7 @@ export class ContactRepository {
 
     let query = supabase
       .from('contacts')
-      .select('*, companies(name)', { count: 'exact' })
+      .select('*, companies(name)', { count: 'estimated' })
       .eq('workspace_id', workspaceId)
 
     // Apply filters
@@ -124,7 +124,7 @@ export class ContactRepository {
 
     const { data, error, count } = await supabase
       .from('contacts')
-      .select('*', { count: 'exact' })
+      .select('*', { count: 'estimated' })
       .eq('workspace_id', workspaceId)
       .eq('company_id', companyId)
       .order('created_at', { ascending: false })
@@ -231,7 +231,7 @@ export class ContactRepository {
 
     let query = supabase
       .from('contacts')
-      .select('*', { count: 'exact', head: true })
+      .select('*', { count: 'estimated', head: true })
       .eq('workspace_id', workspaceId)
 
     if (filters?.status && filters.status.length > 0) {

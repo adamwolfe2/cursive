@@ -762,35 +762,35 @@ export class LeadRoutingService {
       // Pending leads
       supabase
         .from('leads')
-        .select('id', { count: 'exact', head: true })
+        .select('id', { count: 'estimated', head: true })
         .eq('workspace_id', workspaceId)
         .eq('routing_status', 'pending'),
 
       // Currently routing
       supabase
         .from('leads')
-        .select('id', { count: 'exact', head: true })
+        .select('id', { count: 'estimated', head: true })
         .eq('workspace_id', workspaceId)
         .eq('routing_status', 'routing'),
 
       // Failed routing
       supabase
         .from('leads')
-        .select('id', { count: 'exact', head: true })
+        .select('id', { count: 'estimated', head: true })
         .eq('workspace_id', workspaceId)
         .eq('routing_status', 'failed'),
 
       // Retry queue
       supabase
         .from('lead_routing_queue')
-        .select('id', { count: 'exact', head: true })
+        .select('id', { count: 'estimated', head: true })
         .eq('workspace_id', workspaceId)
         .is('processed_at', null),
 
       // Stale locks (routing for > 5 minutes)
       supabase
         .from('leads')
-        .select('id', { count: 'exact', head: true })
+        .select('id', { count: 'estimated', head: true })
         .eq('workspace_id', workspaceId)
         .eq('routing_status', 'routing')
         .lt('routing_locked_at', new Date(Date.now() - 5 * 60 * 1000).toISOString()),

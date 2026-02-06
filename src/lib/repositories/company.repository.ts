@@ -29,7 +29,7 @@ export class CompanyRepository {
 
     let query = supabase
       .from('companies')
-      .select('*', { count: 'exact' })
+      .select('*', { count: 'estimated' })
       .eq('workspace_id', workspaceId)
 
     // Apply filters
@@ -188,7 +188,7 @@ export class CompanyRepository {
 
     let query = supabase
       .from('companies')
-      .select('*', { count: 'exact', head: true })
+      .select('*', { count: 'estimated', head: true })
       .eq('workspace_id', workspaceId)
 
     if (filters?.status && filters.status.length > 0) {

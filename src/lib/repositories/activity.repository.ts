@@ -32,7 +32,7 @@ export class ActivityRepository {
 
     let query = supabase
       .from('activities')
-      .select('*', { count: 'exact' })
+      .select('*', { count: 'estimated' })
       .eq('workspace_id', workspaceId)
 
     // Apply filters
@@ -137,7 +137,7 @@ export class ActivityRepository {
 
     const { data, error, count } = await supabase
       .from('activities')
-      .select('*', { count: 'exact' })
+      .select('*', { count: 'estimated' })
       .eq('workspace_id', workspaceId)
       .eq('company_id', companyId)
       .order('created_at', { ascending: false })
@@ -174,7 +174,7 @@ export class ActivityRepository {
 
     const { data, error, count } = await supabase
       .from('activities')
-      .select('*', { count: 'exact' })
+      .select('*', { count: 'estimated' })
       .eq('workspace_id', workspaceId)
       .eq('contact_id', contactId)
       .order('created_at', { ascending: false })
@@ -211,7 +211,7 @@ export class ActivityRepository {
 
     const { data, error, count } = await supabase
       .from('activities')
-      .select('*', { count: 'exact' })
+      .select('*', { count: 'estimated' })
       .eq('workspace_id', workspaceId)
       .eq('deal_id', dealId)
       .order('created_at', { ascending: false })
@@ -247,7 +247,7 @@ export class ActivityRepository {
 
     const { data, error, count } = await supabase
       .from('activities')
-      .select('*', { count: 'exact' })
+      .select('*', { count: 'estimated' })
       .eq('workspace_id', workspaceId)
       .is('completed_at', null)
       .not('due_date', 'is', null)
@@ -285,7 +285,7 @@ export class ActivityRepository {
 
     const { data, error, count } = await supabase
       .from('activities')
-      .select('*', { count: 'exact' })
+      .select('*', { count: 'estimated' })
       .eq('workspace_id', workspaceId)
       .is('completed_at', null)
       .lt('due_date', now)
@@ -383,7 +383,7 @@ export class ActivityRepository {
 
     let query = supabase
       .from('activities')
-      .select('*', { count: 'exact', head: true })
+      .select('*', { count: 'estimated', head: true })
       .eq('workspace_id', workspaceId)
 
     if (filters?.activity_type && filters.activity_type.length > 0) {

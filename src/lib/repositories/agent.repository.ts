@@ -128,7 +128,7 @@ export class AgentRepository {
 
     const { count, error } = await supabase
       .from('agents')
-      .select('*', { count: 'exact', head: true })
+      .select('*', { count: 'estimated', head: true })
       .eq('workspace_id', workspaceId)
 
     if (error) {
@@ -192,7 +192,7 @@ export class AgentRepository {
     // Get thread count
     const { count: threadCount, error: threadError } = await supabase
       .from('email_threads')
-      .select('*', { count: 'exact', head: true })
+      .select('*', { count: 'estimated', head: true })
       .eq('agent_id', id)
 
     if (threadError) {
@@ -202,7 +202,7 @@ export class AgentRepository {
     // Get pending task count
     const { count: taskCount, error: taskError } = await supabase
       .from('email_tasks')
-      .select('*', { count: 'exact', head: true })
+      .select('*', { count: 'estimated', head: true })
       .eq('agent_id', id)
       .eq('status', 'ready')
 
@@ -497,7 +497,7 @@ export class AgentRepository {
     for (const status of statuses) {
       const { count, error } = await supabase
         .from('email_tasks')
-        .select('*', { count: 'exact', head: true })
+        .select('*', { count: 'estimated', head: true })
         .eq('agent_id', agentId)
         .eq('status', status)
 

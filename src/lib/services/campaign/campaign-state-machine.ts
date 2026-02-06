@@ -270,7 +270,7 @@ export async function validateCampaignForActivation(
   // Check for leads
   const { count: leadCount } = await supabase
     .from('campaign_leads')
-    .select('*', { count: 'exact', head: true })
+    .select('*', { count: 'estimated', head: true })
     .eq('campaign_id', campaignId)
 
   if (!leadCount || leadCount === 0) {
@@ -339,7 +339,7 @@ export async function autoCompleteCampaigns(): Promise<string[]> {
     // Check if all leads have completed the sequence
     const { count: pendingCount } = await supabase
       .from('campaign_leads')
-      .select('*', { count: 'exact', head: true })
+      .select('*', { count: 'estimated', head: true })
       .eq('campaign_id', campaign.id)
       .in('status', ['pending', 'enriching', 'ready', 'awaiting_approval', 'in_sequence'])
 

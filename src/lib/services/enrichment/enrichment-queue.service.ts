@@ -496,7 +496,7 @@ export async function checkRateLimit(
   const oneMinuteAgo = new Date(Date.now() - 60000).toISOString()
   const { count: minuteCount } = await supabase
     .from('enrichment_jobs')
-    .select('id', { count: 'exact', head: true })
+    .select('id', { count: 'estimated', head: true })
     .eq('workspace_id', workspaceId)
     .eq('provider', provider)
     .gte('started_at', oneMinuteAgo)
@@ -509,7 +509,7 @@ export async function checkRateLimit(
   const oneDayAgo = new Date(Date.now() - 86400000).toISOString()
   const { count: dayCount } = await supabase
     .from('enrichment_jobs')
-    .select('id', { count: 'exact', head: true })
+    .select('id', { count: 'estimated', head: true })
     .eq('workspace_id', workspaceId)
     .eq('provider', provider)
     .gte('started_at', oneDayAgo)

@@ -66,7 +66,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
           subject,
           body_text
         )
-      `, { count: 'exact' })
+      `, { count: 'estimated' })
       .eq('campaign_id', campaignId)
       .order('received_at', { ascending: false })
       .range(params.offset, params.offset + params.limit - 1)

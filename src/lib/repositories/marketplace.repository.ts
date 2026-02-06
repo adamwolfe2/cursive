@@ -379,9 +379,10 @@ export class MarketplaceRepository {
   ): Promise<{ purchases: MarketplacePurchase[]; total: number }> {
     const supabase = await createClient()
 
+    // PERFORMANCE: Use estimated count for faster pagination
     let query = supabase
       .from('marketplace_purchases')
-      .select('*', { count: 'exact' })
+      .select('*', { count: 'estimated' })
       .eq('buyer_workspace_id', workspaceId)
       .order('created_at', { ascending: false })
 
@@ -651,10 +652,10 @@ export class MarketplaceRepository {
   }> {
     const adminClient = createAdminClient()
 
-    // Total leads count
+    // Total leads count - PERFORMANCE: Use estimated for analytics
     const { count: totalLeads } = await adminClient
       .from('leads')
-      .select('*', { count: 'exact', head: true })
+      .select('*', { count: 'estimated', head: true })
       .eq('is_marketplace_listed', true)
 
     // By industry (simplified - would need more complex query for full breakdown)
@@ -689,9 +690,10 @@ export class MarketplaceRepository {
     const thirtyDaysAgo = new Date()
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
+    // PERFORMANCE: Use estimated count for analytics dashboard
     const { count: totalSoldLast30Days } = await adminClient
       .from('marketplace_purchase_items')
-      .select('*', { count: 'exact', head: true })
+      .select('*', { count: 'estimated', head: true })
       .gte('created_at', thirtyDaysAgo.toISOString())
 
     return {

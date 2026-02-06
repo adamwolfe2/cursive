@@ -151,7 +151,7 @@ export async function getNotifications(
 
   let query = supabase
     .from('notifications')
-    .select('*', { count: 'exact' })
+    .select('*', { count: 'estimated' })
     .eq('workspace_id', workspaceId)
     .or(`user_id.is.null,user_id.eq.${userId}`)
     .order('created_at', { ascending: false })
@@ -289,7 +289,7 @@ export async function getUnreadCount(workspaceId: string, userId: string): Promi
     // Fallback to direct count
     const { count } = await supabase
       .from('notifications')
-      .select('*', { count: 'exact', head: true })
+      .select('*', { count: 'estimated', head: true })
       .eq('workspace_id', workspaceId)
       .or(`user_id.is.null,user_id.eq.${userId}`)
       .eq('is_read', false)

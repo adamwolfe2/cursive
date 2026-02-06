@@ -171,7 +171,7 @@ export class ClientProfileRepository {
 
     const { count, error } = await supabase
       .from('client_profiles')
-      .select('*', { count: 'exact', head: true })
+      .select('*', { count: 'estimated', head: true })
       .eq('workspace_id', workspaceId)
       .eq('is_active', true)
 

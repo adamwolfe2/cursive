@@ -78,7 +78,7 @@ export class CampaignBuilderRepository {
 
     let query = supabase
       .from('campaign_drafts')
-      .select('*', { count: 'exact' })
+      .select('*', { count: 'estimated' })
       .eq('workspace_id', workspaceId)
       .order('created_at', { ascending: false })
 

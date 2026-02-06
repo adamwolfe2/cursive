@@ -83,7 +83,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
     // Count leads pending optimal time calculation
     const { count: pendingCount } = await supabase
       .from('campaign_leads')
-      .select('*', { count: 'exact', head: true })
+      .select('*', { count: 'estimated', head: true })
       .eq('campaign_id', campaignId)
       .is('optimal_send_time', null)
       .in('status', ['pending', 'ready', 'in_sequence'])

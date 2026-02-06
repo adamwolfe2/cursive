@@ -116,7 +116,7 @@ export async function getConversations(
       lead:leads(id, email, first_name, last_name, full_name, company_name, title),
       campaign:email_campaigns(id, name)
     `,
-      { count: 'exact' }
+      { count: 'estimated' }
     )
     .eq('workspace_id', workspaceId)
 

@@ -106,9 +106,10 @@ export class CampaignRepository {
 
     // Get leads count
     // Note: campaign is already workspace-filtered above; RLS provides secondary defense
+    // PERFORMANCE: Use estimated count for campaign stats
     const { count: leadsCount, error: leadsError } = await supabase
       .from('campaign_leads')
-      .select('*', { count: 'exact', head: true })
+      .select('*', { count: 'estimated', head: true })
       .eq('campaign_id', id)
 
     if (leadsError) {

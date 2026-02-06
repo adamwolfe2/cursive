@@ -29,7 +29,7 @@ export class DealRepository {
 
     let query = supabase
       .from('deals')
-      .select('*', { count: 'exact' })
+      .select('*', { count: 'estimated' })
       .eq('workspace_id', workspaceId)
 
     // Apply filters
@@ -138,7 +138,7 @@ export class DealRepository {
 
     const { data, error, count } = await supabase
       .from('deals')
-      .select('*', { count: 'exact' })
+      .select('*', { count: 'estimated' })
       .eq('workspace_id', workspaceId)
       .eq('company_id', companyId)
       .order('created_at', { ascending: false })
@@ -175,7 +175,7 @@ export class DealRepository {
 
     const { data, error, count } = await supabase
       .from('deals')
-      .select('*', { count: 'exact' })
+      .select('*', { count: 'estimated' })
       .eq('workspace_id', workspaceId)
       .eq('contact_id', contactId)
       .order('created_at', { ascending: false })
@@ -212,7 +212,7 @@ export class DealRepository {
 
     const { data, error, count } = await supabase
       .from('deals')
-      .select('*', { count: 'exact' })
+      .select('*', { count: 'estimated' })
       .eq('workspace_id', workspaceId)
       .eq('stage', stage)
       .order('value', { ascending: false })
@@ -360,7 +360,7 @@ export class DealRepository {
 
     let query = supabase
       .from('deals')
-      .select('*', { count: 'exact', head: true })
+      .select('*', { count: 'estimated', head: true })
       .eq('workspace_id', workspaceId)
 
     if (filters?.stage && filters.stage.length > 0) {

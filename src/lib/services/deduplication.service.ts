@@ -390,7 +390,7 @@ export async function getPartnerDuplicateStats(partnerId: string): Promise<{
   // Get total leads uploaded by partner
   const { count: totalLeads } = await supabase
     .from('leads')
-    .select('*', { count: 'exact', head: true })
+    .select('*', { count: 'estimated', head: true })
     .eq('partner_id', partnerId)
 
   // Get upload batches with duplicate counts

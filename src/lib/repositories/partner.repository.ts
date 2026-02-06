@@ -88,7 +88,8 @@ export class PartnerRepository {
     orderDirection?: 'asc' | 'desc'
   }): Promise<{ partners: Partner[]; total: number }> {
     const adminClient = createAdminClient()
-    let query = adminClient.from('partners').select('*', { count: 'exact' })
+    // PERFORMANCE: Select specific columns + use estimated count
+    let query = adminClient.from('partners').select('id, name, email, company_name, status, partner_tier, is_active, total_leads_uploaded, total_earnings, partner_score, verification_pass_rate, created_at, updated_at', { count: 'estimated' })
 
     if (options.status) {
       query = query.eq('status', options.status)
@@ -294,9 +295,10 @@ export class PartnerRepository {
     } = {}
   ): Promise<{ batches: PartnerUploadBatch[]; total: number }> {
     const adminClient = createAdminClient()
+    // PERFORMANCE: Use estimated count for faster pagination
     let query = adminClient
       .from('partner_upload_batches')
-      .select('*', { count: 'exact' })
+      .select('*', { count: 'estimated' })
       .eq('partner_id', partnerId)
 
     if (options.status) {
@@ -438,9 +440,10 @@ export class PartnerRepository {
     total: number
   }> {
     const adminClient = createAdminClient()
+    // PERFORMANCE: Use estimated count for faster pagination
     let query = adminClient
       .from('partner_earnings')
-      .select('*', { count: 'exact' })
+      .select('*', { count: 'estimated' })
       .eq('partner_id', partnerId)
       .order('created_at', { ascending: false })
 
@@ -487,9 +490,10 @@ export class PartnerRepository {
     total: number
   }> {
     const adminClient = createAdminClient()
+    // PERFORMANCE: Use estimated count for faster pagination
     let query = adminClient
       .from('payout_requests')
-      .select('*', { count: 'exact' })
+      .select('*', { count: 'estimated' })
       .eq('partner_id', partnerId)
       .order('created_at', { ascending: false })
 

@@ -35,7 +35,7 @@ export async function GET() {
     // Get available leads count (leads not purchased by this workspace)
     const { count: availableCount, error: availableError } = await supabase
       .from('leads')
-      .select('*', { count: 'exact', head: true })
+      .select('*', { count: 'estimated', head: true })
       .neq('workspace_id', workspaceId)
       .eq('status', 'available')
 
@@ -55,7 +55,7 @@ export async function GET() {
     // Get purchase history count
     const { count: purchaseCount, error: purchaseError } = await supabase
       .from('lead_purchases')
-      .select('*', { count: 'exact', head: true })
+      .select('*', { count: 'estimated', head: true })
       .eq('buyer_workspace_id', workspaceId)
 
     if (purchaseError) {

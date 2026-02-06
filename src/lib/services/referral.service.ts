@@ -718,7 +718,7 @@ export async function hasBuyerMadeFirstPurchase(workspaceId: string): Promise<bo
 
   const { count } = await supabase
     .from('marketplace_purchases')
-    .select('*', { count: 'exact', head: true })
+    .select('*', { count: 'estimated', head: true })
     .eq('buyer_workspace_id', workspaceId)
     .eq('status', 'completed')
 
@@ -733,7 +733,7 @@ export async function hasPartnerMadeFirstSale(partnerId: string): Promise<boolea
 
   const { count } = await supabase
     .from('leads')
-    .select('*', { count: 'exact', head: true })
+    .select('*', { count: 'estimated', head: true })
     .eq('partner_id', partnerId)
     .gt('sold_count', 0)
 

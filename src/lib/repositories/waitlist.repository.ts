@@ -95,7 +95,7 @@ export class WaitlistRepository {
 
     const { count, error } = await supabase
       .from('waitlist_signups')
-      .select('*', { count: 'exact', head: true })
+      .select('*', { count: 'estimated', head: true })
       .eq('email', email.toLowerCase())
 
     if (error) {
@@ -117,7 +117,7 @@ export class WaitlistRepository {
 
     const { data, error, count } = await supabase
       .from('waitlist_signups')
-      .select('*', { count: 'exact' })
+      .select('*', { count: 'estimated' })
       .order('created_at', { ascending: false })
       .range(from, to)
 
@@ -142,7 +142,7 @@ export class WaitlistRepository {
 
     const { count, error } = await supabase
       .from('waitlist_signups')
-      .select('*', { count: 'exact', head: true })
+      .select('*', { count: 'estimated', head: true })
 
     if (error) {
       console.error('[WaitlistRepository] Count error:', error)

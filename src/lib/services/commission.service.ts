@@ -308,7 +308,7 @@ export async function calculateVolumeBonus(partnerId: string): Promise<{
 
   const { count, error } = await supabase
     .from('leads')
-    .select('*', { count: 'exact', head: true })
+    .select('*', { count: 'estimated', head: true })
     .eq('partner_id', partnerId)
     .gte('created_at', startOfMonth.toISOString())
 

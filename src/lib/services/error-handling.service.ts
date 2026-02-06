@@ -143,7 +143,7 @@ export async function getFailedJobs(
   const limit = Math.min(pagination.limit || 20, 100)
   const offset = (page - 1) * limit
 
-  let query = supabase.from('failed_jobs').select('*', { count: 'exact' })
+  let query = supabase.from('failed_jobs').select('*', { count: 'estimated' })
 
   if (workspaceId) {
     query = query.eq('workspace_id', workspaceId)

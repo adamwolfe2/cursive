@@ -24,7 +24,7 @@ export class CRMLeadRepository {
           email
         )
       `,
-        { count: 'exact' }
+        { count: 'estimated' }
       )
       .eq('workspace_id', workspaceId)
 

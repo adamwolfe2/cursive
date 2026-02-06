@@ -167,7 +167,7 @@ export async function getSuppressionList(
 
   let query = supabase
     .from('suppressed_emails')
-    .select('id, email, reason, suppressed_at, metadata', { count: 'exact' })
+    .select('id, email, reason, suppressed_at, metadata', { count: 'estimated' })
     .eq('workspace_id', workspaceId)
     .order('suppressed_at', { ascending: false })
 

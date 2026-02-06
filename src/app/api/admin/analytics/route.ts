@@ -62,15 +62,15 @@ export async function GET(request: NextRequest) {
       { count: converted },
     ] = await Promise.all([
       // Overview counts
-      supabase.from('leads').select('*', { count: 'exact', head: true })
+      supabase.from('leads').select('*', { count: 'estimated', head: true })
         .gte('created_at', startDate.toISOString()),
-      supabase.from('leads').select('*', { count: 'exact', head: true })
+      supabase.from('leads').select('*', { count: 'estimated', head: true })
         .gte('created_at', previousStartDate.toISOString())
         .lt('created_at', startDate.toISOString()),
-      supabase.from('workspaces').select('*', { count: 'exact', head: true }),
-      supabase.from('workspaces').select('*', { count: 'exact', head: true })
+      supabase.from('workspaces').select('*', { count: 'estimated', head: true }),
+      supabase.from('workspaces').select('*', { count: 'estimated', head: true })
         .eq('is_active', true),
-      supabase.from('partners').select('*', { count: 'exact', head: true })
+      supabase.from('partners').select('*', { count: 'estimated', head: true })
         .eq('is_active', true),
       // Leads data for charts (single query with all needed fields)
       supabase.from('leads').select('created_at, company_industry, company_location')
@@ -86,19 +86,19 @@ export async function GET(request: NextRequest) {
         .order('total_leads_uploaded', { ascending: false })
         .limit(10),
       // Conversion funnel
-      supabase.from('leads').select('*', { count: 'exact', head: true })
+      supabase.from('leads').select('*', { count: 'estimated', head: true })
         .eq('delivery_status', 'delivered')
         .gte('created_at', startDate.toISOString()),
-      supabase.from('email_sends').select('*', { count: 'exact', head: true })
+      supabase.from('email_sends').select('*', { count: 'estimated', head: true })
         .not('opened_at', 'is', null)
         .gte('created_at', startDate.toISOString()),
-      supabase.from('email_sends').select('*', { count: 'exact', head: true })
+      supabase.from('email_sends').select('*', { count: 'estimated', head: true })
         .not('clicked_at', 'is', null)
         .gte('created_at', startDate.toISOString()),
-      supabase.from('email_sends').select('*', { count: 'exact', head: true })
+      supabase.from('email_sends').select('*', { count: 'estimated', head: true })
         .not('replied_at', 'is', null)
         .gte('created_at', startDate.toISOString()),
-      supabase.from('leads').select('*', { count: 'exact', head: true })
+      supabase.from('leads').select('*', { count: 'estimated', head: true })
         .not('converted_at', 'is', null)
         .gte('created_at', startDate.toISOString()),
     ])

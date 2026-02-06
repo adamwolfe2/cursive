@@ -179,7 +179,7 @@ export async function getAuditLogs(
 
   let query = supabase
     .from('audit_logs')
-    .select('*', { count: 'exact' })
+    .select('*', { count: 'estimated' })
     .eq('workspace_id', workspaceId)
     .order('created_at', { ascending: false })
 
@@ -351,7 +351,7 @@ export async function getSecurityEvents(
 
   let query = supabase
     .from('security_events')
-    .select('*', { count: 'exact' })
+    .select('*', { count: 'estimated' })
     .eq('workspace_id', workspaceId)
     .order('created_at', { ascending: false })
 

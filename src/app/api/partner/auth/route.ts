@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
 
     const { count: thisMonthLeads } = await supabase
       .from('leads')
-      .select('*', { count: 'exact', head: true })
+      .select('*', { count: 'estimated', head: true })
       .eq('partner_id', partner.id)
       .gte('created_at', thisMonthStart.toISOString())
 
