@@ -1,4 +1,34 @@
+import { Metadata } from "next"
 import { Container } from "@/components/ui/container"
+
+export const metadata: Metadata = {
+  title: "Privacy Policy | Cursive",
+  description: "Learn how Cursive collects, uses, and protects your personal information. Our privacy policy covers data collection, cookies, your rights under GDPR and CCPA, and how to contact us.",
+  keywords: "privacy policy, data protection, GDPR, CCPA, data privacy, personal information, cookies policy",
+  openGraph: {
+    title: "Privacy Policy | Cursive",
+    description: "Learn how Cursive collects, uses, and protects your personal information. Our privacy policy covers data collection, cookies, your rights under GDPR and CCPA, and how to contact us.",
+    url: "https://www.meetcursive.com/privacy",
+    siteName: "Cursive",
+    images: [{
+      url: "https://www.meetcursive.com/cursive-social-preview.png",
+      width: 1200,
+      height: 630,
+    }],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Privacy Policy | Cursive",
+    description: "Learn how Cursive collects, uses, and protects your personal information. Our privacy policy covers data collection, cookies, your rights under GDPR and CCPA, and how to contact us.",
+    images: ["https://www.meetcursive.com/cursive-social-preview.png"],
+    creator: "@meetcursive",
+  },
+  alternates: {
+    canonical: "https://www.meetcursive.com/privacy",
+  },
+}
 
 export default function PrivacyPage() {
   return (

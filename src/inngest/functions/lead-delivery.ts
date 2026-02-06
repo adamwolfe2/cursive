@@ -4,6 +4,7 @@
 import { inngest } from '../client'
 import { createClient } from '@/lib/supabase/server'
 import { Resend } from 'resend'
+import type { LeadCompanyData, LeadContactData, LeadIntentData, IntegrationConfig } from '@/types'
 
 // Helper to get Resend client - only initializes when called
 function getResendClient() {
@@ -66,10 +67,10 @@ export const leadDelivery = inngest.createFunction(
 
     logger.info(`Delivering lead ${lead_id} via: ${delivery_channels.join(', ')}`)
 
-    const companyData = lead.company_data as any
-    const contactData = lead.contact_data as any
-    const intentData = lead.intent_data as any
-    const query = (lead as any).queries
+    const companyData = lead.company_data as LeadCompanyData | null
+    const contactData = lead.contact_data as LeadContactData | null
+    const intentData = lead.intent_data as LeadIntentData | null
+    const query = (lead as Record<string, unknown>).queries as { name?: string; global_topics?: { topic: string; category: string } } | null
 
     // Step 2: Email delivery
     if (delivery_channels.includes('email')) {
@@ -114,7 +115,7 @@ export const leadDelivery = inngest.createFunction(
             .single()
 
           if (slackIntegration) {
-            const webhookUrl = (slackIntegration.config as any)?.webhook_url
+            const webhookUrl = (slackIntegration.config as IntegrationConfig)?.webhook_url
 
             if (webhookUrl) {
               await fetch(webhookUrl, {
@@ -164,7 +165,7 @@ export const leadDelivery = inngest.createFunction(
                         {
                           type: 'button',
                           text: { type: 'plain_text', text: 'View in Dashboard' },
-                          url: `https://${(workspace as any).subdomain}.meetcursive.com/data?lead_id=${lead_id}`,
+                          url: `https://${(workspace as Record<string, unknown>).subdomain as string}.meetcursive.com/data?lead_id=${lead_id}`,
                         },
                       ],
                     },
@@ -196,7 +197,7 @@ export const leadDelivery = inngest.createFunction(
             .single()
 
           if (webhookIntegration) {
-            const webhookUrl = (webhookIntegration.config as any)?.url
+            const webhookUrl = (webhookIntegration.config as IntegrationConfig)?.url
 
             if (webhookUrl) {
               await fetch(webhookUrl, {

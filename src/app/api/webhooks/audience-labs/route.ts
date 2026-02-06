@@ -136,7 +136,6 @@ export async function POST(req: NextRequest) {
       .single()
 
     if (existingEvent) {
-      console.log(`[Audience Labs Webhook] Event ${eventId} already processed at ${existingEvent.processed_at}`)
       return NextResponse.json({
         success: true,
         message: 'Event already processed (idempotent)',
@@ -241,7 +240,6 @@ export async function POST(req: NextRequest) {
         }
 
         if (duplicateId) {
-          console.log(`[Audience Labs Webhook] Skipping duplicate lead: ${leadData.company_name} (matches ${duplicateId})`)
           results.duplicates_skipped++
           continue
         }
@@ -348,7 +346,6 @@ export async function POST(req: NextRequest) {
               viewLeadsUrl: `${process.env.NEXT_PUBLIC_APP_URL}/leads`,
             }
           )
-          console.log(`✅ Lead import notification sent to ${user.email}`)
         }
       }
     } catch (emailError) {

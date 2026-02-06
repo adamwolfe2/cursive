@@ -95,9 +95,9 @@ export default function B2BSoftwarePage() {
             <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
               {[
                 {
-                  title: "B2B Audience Targeting Explained for Everyday Brands",
+                  title: "B2B Audience Targeting Explained",
                   description: "Master B2B targeting strategies to reach decision-makers and buyers.",
-                  href: "/blog/48-b2b-audience-targeting-explained-for-everyday-brands-UPDATED"
+                  href: "/blog/audience-targeting"
                 },
                 {
                   title: "How to Identify Website Visitors: Technical Guide",
@@ -117,12 +117,12 @@ export default function B2BSoftwarePage() {
                 {
                   title: "Tips for Improving CRM Integration Workflows",
                   description: "Optimize your CRM integrations for better data flow and automation.",
-                  href: "/blog/30-tips-for-improving-crm-integration-workflows"
+                  href: "/blog/crm-integration"
                 },
                 {
-                  title: "How Marketing Data Solutions Can Improve Campaigns",
+                  title: "How Marketing Data Solutions Improve Campaigns",
                   description: "Leverage data platforms to boost B2B campaign performance.",
-                  href: "/blog/07-how-marketing-data-solutions-can-improve-campaigns"
+                  href: "/blog/analytics"
                 }
               ].map((resource, i) => (
                 <motion.a

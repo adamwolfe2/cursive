@@ -96,34 +96,34 @@ export default function AgenciesPage() {
             <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
               {[
                 {
-                  title: "Why Scalable Workflows Benefit Agencies",
+                  title: "How to Scale Outbound Without Killing Quality",
                   description: "Build automated workflows that scale with your client base.",
-                  href: "/blog/28-why-scalable-workflows-benefit-agencies"
+                  href: "/blog/scaling-outbound"
                 },
                 {
-                  title: "Guide to Direct Mail Marketing Automation for Agencies",
+                  title: "Guide to Direct Mail Marketing Automation",
                   description: "Deliver automated direct mail services to drive better client results.",
-                  href: "/blog/10-guide-to-direct-mail-marketing-automation-for-agencies"
+                  href: "/blog/direct-mail"
                 },
                 {
-                  title: "How Omni-Channel Orchestration Aligns Marketing Efforts",
+                  title: "Omni-Channel Retargeting Strategies",
                   description: "Coordinate campaigns across multiple channels for consistent messaging.",
-                  href: "/blog/35-how-omni-channel-orchestration-aligns-marketing-efforts"
+                  href: "/blog/retargeting"
                 },
                 {
-                  title: "B2B Audience Targeting Explained for Everyday Brands",
+                  title: "B2B Audience Targeting Explained",
                   description: "Make B2B targeting simple for your agency clients.",
-                  href: "/blog/48-b2b-audience-targeting-explained-for-everyday-brands-UPDATED"
+                  href: "/blog/audience-targeting"
                 },
                 {
                   title: "Tips for Improving CRM Integration Workflows",
                   description: "Optimize CRM integrations for multiple client accounts.",
-                  href: "/blog/30-tips-for-improving-crm-integration-workflows"
+                  href: "/blog/crm-integration"
                 },
                 {
-                  title: "How Marketing Data Solutions Can Improve Campaigns",
+                  title: "How Marketing Data Solutions Improve Campaigns",
                   description: "Leverage data platforms to boost campaign ROI for clients.",
-                  href: "/blog/07-how-marketing-data-solutions-can-improve-campaigns"
+                  href: "/blog/analytics"
                 }
               ].map((resource, i) => (
                 <motion.a

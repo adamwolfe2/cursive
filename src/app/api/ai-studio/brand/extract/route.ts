@@ -17,8 +17,6 @@ const extractSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    console.log('[Brand Extract] Request received')
-
     // Check if API keys are set
     if (!process.env.FIRECRAWL_API_KEY) {
       console.error('[Brand Extract] FIRECRAWL_API_KEY not set')
@@ -39,20 +37,15 @@ export async function POST(request: NextRequest) {
     // 1. Authentication
     const user = await getCurrentUser()
     if (!user) {
-      console.log('[Brand Extract] User not authenticated')
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       )
     }
 
-    console.log(`[Brand Extract] User authenticated: ${user.id}`)
-
     // 2. Validate input
     const body = await request.json()
     const { url } = extractSchema.parse(body)
-
-    console.log(`[Brand Extract] URL to extract: ${url}`)
 
     if (!isValidUrl(url)) {
       return NextResponse.json(
@@ -146,8 +139,6 @@ async function processBrandExtraction(
   supabase: any
 ) {
   try {
-    console.log(`[Brand Extract] Starting extraction for workspace ${workspaceId}`)
-
     // Step 1: Extract brand DNA with Firecrawl
     const firecrawlResult = await extractBrandDNA(url)
 
@@ -185,8 +176,6 @@ async function processBrandExtraction(
       })
       .eq('id', workspaceId)
 
-    console.log(`[Brand Extract] Extraction completed for workspace ${workspaceId}`)
-
     // Step 4: Generate customer profiles
     const profiles = await generateCustomerProfiles(knowledgeBase)
 
@@ -206,8 +195,6 @@ async function processBrandExtraction(
       .from('customer_profiles')
       .insert(profilesData)
 
-    console.log(`[Brand Extract] ${profiles.length} customer profiles created`)
-
     // Step 6: Extract and create offers
     const offersData = knowledgeBase.products_services.map(product => ({
       brand_workspace_id: workspaceId,
@@ -221,8 +208,6 @@ async function processBrandExtraction(
       await supabase
         .from('offers')
         .insert(offersData)
-
-      console.log(`[Brand Extract] ${offersData.length} offers created`)
     }
 
   } catch (error: any) {

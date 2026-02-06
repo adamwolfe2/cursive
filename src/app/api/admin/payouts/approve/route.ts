@@ -124,8 +124,6 @@ export async function POST(req: NextRequest) {
         })
         .eq('id', payout.partner.id)
 
-      console.log(`✅ Payout approved and completed: ${payout_id}, Stripe transfer: ${transfer.id}`)
-
       return NextResponse.json({
         success: true,
         payout_id,

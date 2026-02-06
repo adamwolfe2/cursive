@@ -79,8 +79,6 @@ export async function POST(request: NextRequest) {
       throw new Error('Workspace not found')
     }
 
-    console.log('[Creatives] Generating with full brand intelligence')
-
     // 2. Get selected ICP and offer
     const icp = icpId
       ? workspace.customer_profiles?.find((p: any) => p.id === icpId)

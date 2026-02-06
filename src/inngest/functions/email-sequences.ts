@@ -13,6 +13,7 @@ import { inngest } from '../client'
 import { createClient } from '@/lib/supabase/server'
 import { sendEmail, logSentEmail } from '@/lib/services/outreach/email-sender.service'
 import { generateSalesEmail } from '@/lib/services/ai/claude.service'
+import type { LeadContactData, LeadCompanyData } from '@/types'
 
 // ============================================================================
 // TYPES
@@ -319,8 +320,8 @@ async function executeEmailStep(
   workspaceId: string,
   enrollmentId: string
 ): Promise<{ success: boolean; error?: string; bounced?: boolean }> {
-  const contactData = lead.contact_data as any
-  const companyData = lead.company_data as any
+  const contactData = lead.contact_data as LeadContactData | null
+  const companyData = lead.company_data as LeadCompanyData | null
 
   // Get recipient email
   const recipientEmail = contactData?.contacts?.[0]?.email || contactData?.primary_contact?.email

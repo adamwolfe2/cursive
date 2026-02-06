@@ -1,4 +1,34 @@
+import { Metadata } from "next"
 import { Container } from "@/components/ui/container"
+
+export const metadata: Metadata = {
+  title: "Terms of Service | Cursive",
+  description: "Read the Cursive Terms of Service. Understand the terms and conditions for using our visitor identification, audience building, and lead generation platform.",
+  keywords: "terms of service, terms and conditions, user agreement, platform terms, service agreement",
+  openGraph: {
+    title: "Terms of Service | Cursive",
+    description: "Read the Cursive Terms of Service. Understand the terms and conditions for using our visitor identification, audience building, and lead generation platform.",
+    url: "https://www.meetcursive.com/terms",
+    siteName: "Cursive",
+    images: [{
+      url: "https://www.meetcursive.com/cursive-social-preview.png",
+      width: 1200,
+      height: 630,
+    }],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Terms of Service | Cursive",
+    description: "Read the Cursive Terms of Service. Understand the terms and conditions for using our visitor identification, audience building, and lead generation platform.",
+    images: ["https://www.meetcursive.com/cursive-social-preview.png"],
+    creator: "@meetcursive",
+  },
+  alternates: {
+    canonical: "https://www.meetcursive.com/terms",
+  },
+}
 
 export default function TermsPage() {
   return (

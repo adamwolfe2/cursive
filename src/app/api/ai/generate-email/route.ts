@@ -8,6 +8,22 @@ import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { generateSalesEmail } from '@/lib/services/ai/claude.service'
 
+/** Structure of the ai_analysis JSONB column on leads */
+interface LeadAiAnalysis {
+  company?: {
+    painPoints?: string[]
+    buyingSignals?: string[]
+    competitors?: string[]
+    opportunities?: string[]
+  }
+  contact?: {
+    interests?: string[]
+    communicationStyle?: string
+  }
+  score?: number
+  summary?: string
+}
+
 const generateEmailSchema = z.object({
   lead_id: z.string().uuid().optional(),
   recipient_name: z.string().min(1),
@@ -70,7 +86,7 @@ export async function POST(req: NextRequest) {
         .single()
 
       if (lead?.ai_analysis) {
-        const analysis = lead.ai_analysis as any
+        const analysis = lead.ai_analysis as LeadAiAnalysis
         if (analysis.company?.painPoints) {
           additionalContext.push(`Pain points: ${analysis.company.painPoints.join(', ')}`)
         }

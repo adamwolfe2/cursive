@@ -53,8 +53,6 @@ export async function POST(request: NextRequest, context: RouteContext) {
     const payload = JSON.parse(rawBody)
     const event = parseWebhookEvent(payload)
 
-    console.log(`[EmailBison Webhook] Received ${event.event.type} for agent ${agentId}`)
-
     // Get supabase admin client
     const supabase = createAdminClient()
 
@@ -103,13 +101,11 @@ export async function POST(request: NextRequest, context: RouteContext) {
     if (existingKey) {
       // Request already processed successfully - return cached response
       if (existingKey.status === 'completed' && existingKey.response_data) {
-        console.log(`[EmailBison Webhook] Idempotent request detected`)
         return NextResponse.json(existingKey.response_data)
       }
 
       // Request currently processing - return conflict
       if (existingKey.status === 'processing') {
-        console.log(`[EmailBison Webhook] Duplicate processing attempt`)
         return NextResponse.json(
           { error: 'Webhook already being processed. Please retry later.' },
           { status: 409 }
@@ -260,8 +256,6 @@ async function handleReplyReceived(
     throw new Error('Failed to create email message')
   }
 
-  console.log(`[EmailBison Webhook] Created message for thread ${threadId}`)
-
   // TODO: Trigger AI classification and response generation via Inngest
   // await inngest.send({
   //   name: 'email/reply-received',
@@ -290,7 +284,6 @@ async function handleUnsubscribe(
     .eq('agent_id', agent.id)
     .eq('sender_email', data.email)
 
-  console.log(`[EmailBison Webhook] Marked threads as ignored for ${data.email}`)
 }
 
 /**
@@ -314,5 +307,4 @@ async function handleBounce(
     .eq('agent_id', agent.id)
     .eq('sender_email', data.email)
 
-  console.log(`[EmailBison Webhook] Handled bounce for ${data.email}: ${data.bounce_reason}`)
 }

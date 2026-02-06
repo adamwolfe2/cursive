@@ -81,7 +81,7 @@ async function ghlFetch(
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({}))
-    throw new Error((error as any).message || `GHL API error: ${response.status}`)
+    throw new Error((error as Record<string, unknown>).message as string || `GHL API error: ${response.status}`)
   }
 
   return response.json()

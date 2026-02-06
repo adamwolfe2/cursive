@@ -4,6 +4,7 @@
 import { inngest } from '../client'
 import { createClient } from '@/lib/supabase/server'
 import { ClayClient } from '@/lib/integrations/clay'
+import type { LeadCompanyData } from '@/types'
 
 export const leadEnrichment = inngest.createFunction(
   {
@@ -35,13 +36,13 @@ export const leadEnrichment = inngest.createFunction(
       return data
     })
 
-    logger.info(`Enriching lead: ${lead_id} for company ${(lead.company_data as any)?.name}`)
+    logger.info(`Enriching lead: ${lead_id} for company ${(lead.company_data as LeadCompanyData | null)?.name}`)
 
     // Step 2: Enrich with Clay
     const enrichmentResult = await step.run('enrich-with-clay', async () => {
       try {
         const clayClient = new ClayClient()
-        const companyData = lead.company_data as any
+        const companyData = lead.company_data as LeadCompanyData | null
 
         if (!companyData?.domain) {
           throw new Error('Company domain not found')
@@ -109,7 +110,7 @@ export const leadEnrichment = inngest.createFunction(
 
       // Update company info if available
       if (enrichmentResult.company_info) {
-        const existingCompanyData = lead.company_data as any
+        const existingCompanyData = lead.company_data as LeadCompanyData | null
         updateData.company_data = {
           ...existingCompanyData,
           ...enrichmentResult.company_info,

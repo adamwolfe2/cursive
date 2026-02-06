@@ -138,7 +138,7 @@ export class DataShopperClient {
       if (!response.ok) {
         const error = await response.json().catch(() => ({}))
         throw new Error(
-          `DataShopper API error: ${(error as any).message || response.statusText}`
+          `DataShopper API error: ${(error as Record<string, unknown>).message || response.statusText}`
         )
       }
 
@@ -172,7 +172,7 @@ export class DataShopperClient {
       if (!response.ok) {
         const error = await response.json().catch(() => ({}))
         throw new Error(
-          `DataShopper API error: ${(error as any).message || response.statusText}`
+          `DataShopper API error: ${(error as Record<string, unknown>).message || response.statusText}`
         )
       }
 

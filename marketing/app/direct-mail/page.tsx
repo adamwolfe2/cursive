@@ -558,8 +558,8 @@ export default function DirectMailPage() {
                 { name: "HubSpot", logo: "/integrations/hubspot-svgrepo-com.svg" },
                 { name: "Klaviyo", logo: "/integrations/klaviyo.svg" },
                 { name: "Shopify", logo: "/integrations/shopify.svg" },
-                { name: "Stripe", logo: "/integrations/public/integrations/stripe.svg" },
-                { name: "Zapier", logo: "/integrations/public/integrations/zapier.svg" }
+                { name: "Stripe", logo: "/integrations/stripe.svg" },
+                { name: "Zapier", logo: "/integrations/zapier.svg" }
               ].map((integration, i) => (
                 <motion.div
                   key={i}

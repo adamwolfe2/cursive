@@ -41,12 +41,12 @@ import {
   ChevronRight,
 } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
-import type { Contact } from '@/types/crm.types'
+import type { Contact, ContactWithCompany } from '@/types/crm.types'
 import { cn } from '@/lib/utils'
 
 interface EnhancedContactsTableProps {
-  data: Contact[]
-  onRowClick?: (contact: Contact) => void
+  data: ContactWithCompany[]
+  onRowClick?: (contact: ContactWithCompany) => void
   onCreateClick?: () => void
   isLoading?: boolean
 }
@@ -77,7 +77,7 @@ export function EnhancedContactsTable({
         fullName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         contact.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         contact.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (contact as any).companies?.name?.toLowerCase().includes(searchQuery.toLowerCase())
+        contact.companies?.name?.toLowerCase().includes(searchQuery.toLowerCase())
 
       const matchesStatus = statusFilter === 'all' || contact.status === statusFilter
       const matchesSeniority = seniorityFilter === 'all' || contact.seniority_level === seniorityFilter
@@ -110,7 +110,7 @@ export function EnhancedContactsTable({
   }
 
   // Get contact initials for avatar
-  const getInitials = (contact: Contact) => {
+  const getInitials = (contact: ContactWithCompany) => {
     const fullName = contact.full_name ||
       [contact.first_name, contact.last_name].filter(Boolean).join(' ')
 
@@ -422,7 +422,7 @@ export function EnhancedContactsTable({
                 const fullName = contact.full_name ||
                   [contact.first_name, contact.last_name].filter(Boolean).join(' ') ||
                   'Unnamed Contact'
-                const companyName = (contact as any).companies?.name
+                const companyName = contact.companies?.name
 
                 return (
                   <TableRow

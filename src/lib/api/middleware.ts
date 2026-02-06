@@ -10,6 +10,23 @@ import { cookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
 import { UnauthorizedError, ForbiddenError, RateLimitError } from './errors'
 
+/** User row with joined workspace data from Supabase relation query */
+interface UserWithWorkspace {
+  id: string
+  auth_user_id: string
+  workspace_id: string
+  email: string
+  full_name: string | null
+  role: string
+  plan: string
+  daily_credit_limit: number
+  daily_credits_used: number
+  workspaces: {
+    plan?: string
+    daily_credit_limit?: number
+  } | null
+}
+
 /**
  * Get the current authenticated user from Supabase session
  */
@@ -57,17 +74,18 @@ async function getCurrentUser(): Promise<AuthenticatedUser | null> {
       return null
     }
 
-    const workspace = (user as any).workspaces
+    const typedUser = user as unknown as UserWithWorkspace
+    const workspace = typedUser.workspaces
 
     return {
-      id: user.id,
-      auth_user_id: user.auth_user_id,
+      id: typedUser.id,
+      auth_user_id: typedUser.auth_user_id,
       email: session.user.email || '',
-      full_name: user.full_name || '',
-      workspace_id: user.workspace_id,
+      full_name: typedUser.full_name || '',
+      workspace_id: typedUser.workspace_id,
       plan: workspace?.plan || 'free',
-      role: (user as any).role || 'member',
-      daily_credits_used: user.daily_credits_used || 0,
+      role: typedUser.role || 'member',
+      daily_credits_used: typedUser.daily_credits_used || 0,
       daily_credit_limit: workspace?.daily_credit_limit || 10,
     }
   } catch (error) {

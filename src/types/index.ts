@@ -637,3 +637,128 @@ export const SUBSCRIPTION_STATUSES = [
   { value: 'past_due', label: 'Past Due', color: 'red' },
   { value: 'canceled', label: 'Canceled', color: 'gray' },
 ] as const
+
+// ============================================================================
+// SERVICE TIER TYPES (for JSONB columns)
+// ============================================================================
+
+/**
+ * Platform features from service_tiers.platform_features JSONB column
+ */
+export interface ServiceTierPlatformFeatures {
+  lead_downloads?: boolean
+  campaigns?: boolean
+  ai_agents?: boolean
+  api_access?: boolean
+  team_seats?: number
+  daily_lead_limit?: number
+  white_label?: boolean
+  custom_integrations?: boolean
+}
+
+// ============================================================================
+// AI ANALYSIS TYPES (for JSONB columns)
+// ============================================================================
+
+/**
+ * Structure of the ai_analysis JSONB column on leads
+ */
+export interface LeadAiAnalysis {
+  company?: {
+    painPoints?: string[]
+    buyingSignals?: string[]
+    competitors?: string[]
+    opportunities?: string[]
+  }
+  contact?: {
+    interests?: string[]
+    communicationStyle?: string
+  }
+  score?: number
+  summary?: string
+}
+
+/**
+ * Partner data from the payout_requests -> partners join
+ */
+export interface PayoutPartner {
+  id: string
+  name: string
+  email: string
+  stripe_account_id: string | null
+  available_balance: number
+}
+
+/**
+ * Lead contact_data JSONB column structure
+ * Supports both flat contact data and nested contacts array format
+ */
+export interface LeadContactData {
+  full_name?: string
+  first_name?: string
+  last_name?: string
+  email?: string
+  phone?: string
+  title?: string
+  linkedin_url?: string
+  department?: string
+  seniority?: string
+  /** Nested contacts array format (used in some enrichment flows) */
+  contacts?: Array<{
+    full_name?: string
+    first_name?: string
+    last_name?: string
+    title?: string
+    email?: string
+    phone?: string
+    linkedin_url?: string
+  }>
+  /** Primary contact shorthand (used in some delivery flows) */
+  primary_contact?: {
+    full_name?: string
+    title?: string
+    email?: string
+    phone?: string
+  }
+  total_contacts?: number
+  enrichment_date?: string | null
+}
+
+/**
+ * Lead company_data JSONB column structure
+ */
+export interface LeadCompanyData {
+  name?: string
+  domain?: string
+  industry?: string
+  size?: string
+  employee_count?: number
+  revenue?: string
+  description?: string
+  website?: string
+  location?: {
+    city?: string
+    state?: string
+    country?: string
+  }
+  technologies?: string[]
+  intent_signals?: Array<{
+    signal_type: string
+    detected_at?: string
+    strength?: string
+    confidence?: number
+  }>
+}
+
+/**
+ * Lead intent_data JSONB column structure
+ */
+export interface LeadIntentData {
+  topic?: string
+  score?: number
+  signals?: Array<{
+    signal_type: string
+    detected_at: string
+    strength: string
+  }>
+}

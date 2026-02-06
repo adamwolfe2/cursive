@@ -96,19 +96,19 @@ export default function FranchisesPage() {
             <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
               {[
                 {
-                  title: "Why Scalable Workflows Benefit Agencies",
+                  title: "How to Scale Outbound Without Killing Quality",
                   description: "Build scalable marketing systems across multiple franchise locations.",
-                  href: "/blog/28-why-scalable-workflows-benefit-agencies"
+                  href: "/blog/scaling-outbound"
                 },
                 {
-                  title: "Guide to Direct Mail Marketing Automation for Agencies",
+                  title: "Guide to Direct Mail Marketing Automation",
                   description: "Automate territory-specific direct mail for all franchisees.",
-                  href: "/blog/10-guide-to-direct-mail-marketing-automation-for-agencies"
+                  href: "/blog/direct-mail"
                 },
                 {
-                  title: "How Omni-Channel Orchestration Aligns Marketing Efforts",
+                  title: "Omni-Channel Retargeting Strategies",
                   description: "Coordinate campaigns across all locations with consistent messaging.",
-                  href: "/blog/35-how-omni-channel-orchestration-aligns-marketing-efforts"
+                  href: "/blog/retargeting"
                 },
                 {
                   title: "How to Identify Website Visitors: Technical Guide",
@@ -118,12 +118,12 @@ export default function FranchisesPage() {
                 {
                   title: "Tips for Improving CRM Integration Workflows",
                   description: "Manage multi-location CRM workflows and franchisee access.",
-                  href: "/blog/30-tips-for-improving-crm-integration-workflows"
+                  href: "/blog/crm-integration"
                 },
                 {
-                  title: "How Marketing Data Solutions Can Improve Campaigns",
+                  title: "How Marketing Data Solutions Improve Campaigns",
                   description: "Leverage data to improve performance across all franchise locations.",
-                  href: "/blog/07-how-marketing-data-solutions-can-improve-campaigns"
+                  href: "/blog/analytics"
                 }
               ].map((resource, i) => (
                 <motion.a

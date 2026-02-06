@@ -16,6 +16,7 @@ import {
   analyzeIntentSignals,
 } from '@/lib/services/ai/claude.service'
 import { enrichLeadWithClay, enrichCompanyWithClay } from '@/lib/services/clay.service'
+import type { LeadContactData, LeadCompanyData } from '@/types'
 
 // ============================================================================
 // TYPES
@@ -215,8 +216,8 @@ async function enrichEmailValidation(lead: LeadData): Promise<{
   error?: string
   creditsUsed?: number
 }> {
-  const contactData = lead.contact_data as any
-  const companyData = lead.company_data as any
+  const contactData = lead.contact_data as LeadContactData | null
+  const companyData = lead.company_data as LeadCompanyData | null
 
   // Get primary email
   const primaryEmail = contactData?.contacts?.[0]?.email || contactData?.primary_contact?.email
@@ -296,8 +297,8 @@ async function enrichWithAI(
   error?: string
   creditsUsed?: number
 }> {
-  const companyData = lead.company_data as any
-  const contactData = lead.contact_data as any
+  const companyData = lead.company_data as LeadCompanyData | null
+  const contactData = lead.contact_data as LeadContactData | null
 
   if (!companyData?.name && !companyData?.domain) {
     return {
@@ -383,8 +384,8 @@ async function enrichWithClay(lead: LeadData): Promise<{
   error?: string
   creditsUsed?: number
 }> {
-  const companyData = lead.company_data as any
-  const contactData = lead.contact_data as any
+  const companyData = lead.company_data as LeadCompanyData | null
+  const contactData = lead.contact_data as LeadContactData | null
 
   if (!companyData?.domain) {
     return {
@@ -481,7 +482,7 @@ async function enrichWithWebScrape(lead: LeadData): Promise<{
   error?: string
   creditsUsed?: number
 }> {
-  const companyData = lead.company_data as any
+  const companyData = lead.company_data as LeadCompanyData | null
 
   if (!companyData?.domain) {
     return {

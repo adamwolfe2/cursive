@@ -74,7 +74,6 @@ export async function POST(request: NextRequest) {
       if (existingKey) {
         // Request already processed - return cached response
         if (existingKey.status === 'completed' && existingKey.response_data) {
-          console.log(`Idempotent request detected: ${validated.idempotencyKey}`)
           return NextResponse.json(existingKey.response_data)
         }
 

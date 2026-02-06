@@ -118,7 +118,10 @@ export async function POST(request: NextRequest) {
 
       if (insertError) {
         console.error('Failed to save leads:', insertError)
-        // Don't fail the entire request, just log the error
+        return NextResponse.json(
+          { error: 'Failed to save leads to workspace', details: insertError.message },
+          { status: 500 }
+        )
       }
     }
 

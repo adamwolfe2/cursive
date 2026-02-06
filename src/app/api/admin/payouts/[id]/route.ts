@@ -3,6 +3,15 @@ import { createClient } from '@/lib/supabase/server'
 import { requireAdmin, getCurrentAdminId } from '@/lib/auth/admin'
 import { getStripeClient } from '@/lib/stripe/client'
 
+/** Partner data from the payout_requests -> partners join */
+interface PayoutPartner {
+  id: string
+  name: string
+  email: string
+  stripe_account_id: string | null
+  available_balance: number
+}
+
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -96,7 +105,7 @@ export async function PATCH(
           .eq('id', payoutId)
 
         // Refund the amount back to partner's available balance
-        const partner = payout.partner as any
+        const partner = payout.partner as PayoutPartner
         await supabase
           .from('partners')
           .update({
@@ -116,7 +125,7 @@ export async function PATCH(
           )
         }
 
-        const partner = payout.partner as any
+        const partner = payout.partner as PayoutPartner
 
         if (!partner.stripe_account_id) {
           return NextResponse.json(

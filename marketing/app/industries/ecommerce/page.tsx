@@ -100,29 +100,29 @@ export default function EcommercePage() {
                   href: "/blog/how-to-identify-website-visitors-technical-guide"
                 },
                 {
-                  title: "Guide to Direct Mail Marketing Automation for Agencies",
+                  title: "Guide to Direct Mail Marketing Automation",
                   description: "Combine digital and direct mail for higher conversion rates.",
-                  href: "/blog/10-guide-to-direct-mail-marketing-automation-for-agencies"
+                  href: "/blog/direct-mail"
                 },
                 {
-                  title: "How Omni-Channel Orchestration Aligns Marketing Efforts",
+                  title: "Omni-Channel Retargeting Strategies",
                   description: "Coordinate campaigns across email, ads, and direct mail for better results.",
-                  href: "/blog/35-how-omni-channel-orchestration-aligns-marketing-efforts"
+                  href: "/blog/retargeting"
                 },
                 {
                   title: "Tips for Improving CRM Integration Workflows",
                   description: "Sync customer data and automate your eCommerce marketing stack.",
-                  href: "/blog/30-tips-for-improving-crm-integration-workflows"
+                  href: "/blog/crm-integration"
                 },
                 {
-                  title: "How Marketing Data Solutions Can Improve Campaigns",
+                  title: "How Marketing Data Solutions Improve Campaigns",
                   description: "Leverage customer data to drive more conversions and revenue.",
-                  href: "/blog/07-how-marketing-data-solutions-can-improve-campaigns"
+                  href: "/blog/analytics"
                 },
                 {
-                  title: "B2B Audience Targeting Explained for Everyday Brands",
+                  title: "B2B Audience Targeting Explained",
                   description: "Target B2B buyers for wholesale and enterprise sales.",
-                  href: "/blog/48-b2b-audience-targeting-explained-for-everyday-brands-UPDATED"
+                  href: "/blog/audience-targeting"
                 }
               ].map((resource, i) => (
                 <motion.a

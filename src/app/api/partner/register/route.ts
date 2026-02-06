@@ -59,8 +59,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.log(`✅ Partner registered: ${partner.email} (${partner.id})`)
-
     return NextResponse.json({
       success: true,
       partnerId: partner.id,

@@ -11,12 +11,12 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
-import type { Contact } from '@/types/crm.types'
+import type { Contact, ContactWithCompany } from '@/types/crm.types'
 import { formatDistanceToNow } from 'date-fns'
 
 interface ContactsTableProps {
-  data: Contact[]
-  onRowClick?: (contact: Contact) => void
+  data: ContactWithCompany[]
+  onRowClick?: (contact: ContactWithCompany) => void
   onCreateClick?: () => void
 }
 
@@ -269,7 +269,7 @@ export function ContactsTable({ data, onRowClick, onCreateClick }: ContactsTable
                     {/* Company */}
                     <td className="px-3 py-2.5">
                       <span className="text-sm text-gray-600">
-                        {(contact as any).companies?.name || '-'}
+                        {contact.companies?.name || '-'}
                       </span>
                     </td>
 

@@ -142,15 +142,13 @@ export async function POST(request: NextRequest) {
             downloadUrl: urlData.signedUrl,
           })
 
-          console.log('[Admin] Delivery notification sent to:', user.email)
+          // Delivery notification sent successfully
         }
       } catch (emailError: any) {
         console.error('[Admin] Failed to send delivery email:', emailError)
         // Don't fail the request if email fails
       }
     }
-
-    console.log('[Admin] Delivery created:', delivery.id)
 
     return NextResponse.json({
       success: true,

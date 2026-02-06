@@ -14,6 +14,7 @@ import type {
   DemoSequenceEmailType,
   DemoSequenceEnrollmentData,
 } from '@/lib/types/demo-sequence.types'
+import type { LeadContactData, LeadCompanyData } from '@/types'
 
 // ============================================================================
 // MAIN SEQUENCE FUNCTION
@@ -393,8 +394,8 @@ async function buildEmailTokens(
 
   if (!lead) throw new Error('Lead not found')
 
-  const contactData = lead.contact_data as any
-  const companyData = lead.company_data as any
+  const contactData = lead.contact_data as LeadContactData | null
+  const companyData = lead.company_data as LeadCompanyData | null
 
   const firstName = contactData?.contacts?.[0]?.first_name || 'there'
   const companyName = companyData?.name || 'your company'
@@ -476,7 +477,7 @@ async function sendSequenceEmail({
     .eq('id', leadId)
     .single()
 
-  const contactData = lead?.contact_data as any
+  const contactData = lead?.contact_data as LeadContactData | null
   const recipientEmail = contactData?.contacts?.[0]?.email || contactData?.email
   const recipientName = contactData?.contacts?.[0]?.full_name || tokens.firstName
 

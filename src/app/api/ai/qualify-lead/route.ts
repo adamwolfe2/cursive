@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { qualifyLead, analyzeCompany } from '@/lib/services/ai/claude.service'
+import type { LeadContactData, LeadCompanyData } from '@/types'
 
 const qualifyLeadSchema = z.object({
   lead_id: z.string().uuid(),
@@ -54,8 +55,8 @@ export async function POST(req: NextRequest) {
       .eq('id', user.workspace_id)
       .single()
 
-    const companyData = lead.company_data as any
-    const contactData = lead.contact_data as any
+    const companyData = lead.company_data as LeadCompanyData | null
+    const contactData = lead.contact_data as LeadContactData | null
 
     // Run AI qualification
     const [qualificationResult, companyAnalysis] = await Promise.all([

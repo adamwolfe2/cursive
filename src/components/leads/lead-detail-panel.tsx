@@ -129,7 +129,7 @@ export function LeadDetailPanel({
   onRefresh,
 }: LeadDetailPanelProps) {
   const queryClient = useQueryClient()
-  const [currentStatus, setCurrentStatus] = useState<LeadStatus>((lead as any).status || 'new')
+  const [currentStatus, setCurrentStatus] = useState<LeadStatus>((lead.status as LeadStatus) || 'new')
 
   // Get display values from lead data
   const personName = lead.full_name || `${lead.first_name || ''} ${lead.last_name || ''}`.trim() || 'Unknown'

@@ -63,7 +63,6 @@ export async function POST(request: NextRequest) {
         })
         .eq('id', partner.id)
 
-      console.log(`✅ Stripe Connect account created: ${accountId} for partner ${partner.id}`)
     }
 
     // Create Account Link for onboarding
@@ -74,8 +73,6 @@ export async function POST(request: NextRequest) {
       return_url: `${baseUrl}/partner/connect/success?partner_id=${partner.id}`,
       type: 'account_onboarding',
     })
-
-    console.log(`🔗 Account link created for partner ${partner.id}`)
 
     return NextResponse.json({
       success: true,

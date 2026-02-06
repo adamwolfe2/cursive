@@ -101,29 +101,29 @@ export default function HomeServicesPage() {
                   href: "/blog/how-to-identify-website-visitors-technical-guide"
                 },
                 {
-                  title: "Guide to Direct Mail Marketing Automation for Agencies",
+                  title: "Guide to Direct Mail Marketing Automation",
                   description: "Send automated direct mail to homeowners in your service area.",
-                  href: "/blog/10-guide-to-direct-mail-marketing-automation-for-agencies"
+                  href: "/blog/direct-mail"
                 },
                 {
-                  title: "How Omni-Channel Orchestration Aligns Marketing Efforts",
+                  title: "Omni-Channel Retargeting Strategies",
                   description: "Coordinate campaigns across email, direct mail, and digital ads.",
-                  href: "/blog/35-how-omni-channel-orchestration-aligns-marketing-efforts"
+                  href: "/blog/retargeting"
                 },
                 {
-                  title: "Why Scalable Workflows Benefit Agencies",
+                  title: "How to Scale Outbound Without Killing Quality",
                   description: "Build scalable marketing systems for seasonal home services.",
-                  href: "/blog/28-why-scalable-workflows-benefit-agencies"
+                  href: "/blog/scaling-outbound"
                 },
                 {
                   title: "Tips for Improving CRM Integration Workflows",
                   description: "Integrate leads directly into your service scheduling CRM.",
-                  href: "/blog/30-tips-for-improving-crm-integration-workflows"
+                  href: "/blog/crm-integration"
                 },
                 {
-                  title: "How Marketing Data Solutions Can Improve Campaigns",
+                  title: "How Marketing Data Solutions Improve Campaigns",
                   description: "Target high-intent homeowners with data-driven campaigns.",
-                  href: "/blog/07-how-marketing-data-solutions-can-improve-campaigns"
+                  href: "/blog/analytics"
                 }
               ].map((resource, i) => (
                 <motion.a

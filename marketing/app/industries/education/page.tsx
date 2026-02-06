@@ -96,19 +96,19 @@ export default function EducationPage() {
             <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
               {[
                 {
-                  title: "How Omni-Channel Orchestration Aligns Marketing Efforts",
+                  title: "Omni-Channel Retargeting Strategies",
                   description: "Coordinate student recruitment campaigns across multiple touchpoints.",
-                  href: "/blog/35-how-omni-channel-orchestration-aligns-marketing-efforts"
+                  href: "/blog/retargeting"
                 },
                 {
-                  title: "Guide to Direct Mail Marketing Automation for Agencies",
+                  title: "Guide to Direct Mail Marketing Automation",
                   description: "Automate personalized direct mail to prospective students and parents.",
-                  href: "/blog/10-guide-to-direct-mail-marketing-automation-for-agencies"
+                  href: "/blog/direct-mail"
                 },
                 {
-                  title: "B2B Audience Targeting Explained for Everyday Brands",
+                  title: "B2B Audience Targeting Explained",
                   description: "Target decision-makers for corporate training and B2B education programs.",
-                  href: "/blog/48-b2b-audience-targeting-explained-for-everyday-brands-UPDATED"
+                  href: "/blog/audience-targeting"
                 },
                 {
                   title: "How to Identify Website Visitors: Technical Guide",
@@ -118,12 +118,12 @@ export default function EducationPage() {
                 {
                   title: "Tips for Improving CRM Integration Workflows",
                   description: "Optimize your student CRM and marketing automation workflows.",
-                  href: "/blog/30-tips-for-improving-crm-integration-workflows"
+                  href: "/blog/crm-integration"
                 },
                 {
-                  title: "How Marketing Data Solutions Can Improve Campaigns",
+                  title: "How Marketing Data Solutions Improve Campaigns",
                   description: "Leverage data to improve student recruitment campaign performance.",
-                  href: "/blog/07-how-marketing-data-solutions-can-improve-campaigns"
+                  href: "/blog/analytics"
                 }
               ].map((resource, i) => (
                 <motion.a

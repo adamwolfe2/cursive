@@ -101,29 +101,29 @@ export default function RetailPage() {
                   href: "/blog/how-to-identify-website-visitors-technical-guide"
                 },
                 {
-                  title: "Guide to Direct Mail Marketing Automation for Agencies",
+                  title: "Guide to Direct Mail Marketing Automation",
                   description: "Send automated direct mail to drive local foot traffic to stores.",
-                  href: "/blog/10-guide-to-direct-mail-marketing-automation-for-agencies"
+                  href: "/blog/direct-mail"
                 },
                 {
-                  title: "How Omni-Channel Orchestration Aligns Marketing Efforts",
+                  title: "Omni-Channel Retargeting Strategies",
                   description: "Coordinate campaigns across online and in-store channels.",
-                  href: "/blog/35-how-omni-channel-orchestration-aligns-marketing-efforts"
+                  href: "/blog/retargeting"
                 },
                 {
-                  title: "B2B Audience Targeting Explained for Everyday Brands",
+                  title: "B2B Audience Targeting Explained",
                   description: "Target B2B buyers for wholesale and bulk retail orders.",
-                  href: "/blog/48-b2b-audience-targeting-explained-for-everyday-brands-UPDATED"
+                  href: "/blog/audience-targeting"
                 },
                 {
                   title: "Tips for Improving CRM Integration Workflows",
                   description: "Integrate online and in-store customer data for better insights.",
-                  href: "/blog/30-tips-for-improving-crm-integration-workflows"
+                  href: "/blog/crm-integration"
                 },
                 {
-                  title: "How Marketing Data Solutions Can Improve Campaigns",
+                  title: "How Marketing Data Solutions Improve Campaigns",
                   description: "Leverage customer data to drive more in-store and online sales.",
-                  href: "/blog/07-how-marketing-data-solutions-can-improve-campaigns"
+                  href: "/blog/analytics"
                 }
               ].map((resource, i) => (
                 <motion.a

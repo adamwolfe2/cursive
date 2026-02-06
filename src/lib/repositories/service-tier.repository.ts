@@ -160,7 +160,7 @@ export class ServiceTierRepository {
       throw new Error(`Failed to fetch subscription: ${error.message}`)
     }
 
-    return data as any
+    return data as unknown as (ServiceSubscription & { service_tier: ServiceTier })
   }
 
   /**

@@ -83,8 +83,6 @@ export async function POST(request: NextRequest) {
       throw new Error(`Failed to save onboarding: ${updateError.message}`)
     }
 
-    console.log('[Onboarding] Completed for subscription:', validated.subscription_id)
-
     return NextResponse.json({
       success: true,
       message: 'Onboarding completed successfully'

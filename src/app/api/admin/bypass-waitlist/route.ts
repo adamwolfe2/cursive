@@ -11,9 +11,8 @@ import { z } from 'zod'
 // Use edge runtime for instant response
 export const runtime = 'edge'
 
-// Store in environment variable for security
-// Default passcode: Cursive2026!
-const ADMIN_BYPASS_PASSWORD = process.env.ADMIN_BYPASS_PASSWORD || 'Cursive2026!'
+// Store in environment variable for security - no fallback allowed
+const ADMIN_BYPASS_PASSWORD = process.env.ADMIN_BYPASS_PASSWORD
 
 // Note: In-memory rate limiting not available in edge runtime
 // For production, use Vercel KV or Upstash Redis for rate limiting
@@ -30,6 +29,15 @@ const bypassSchema = z.object({
  */
 export async function POST(req: NextRequest) {
   try {
+    // Ensure admin password is configured via environment variable
+    if (!ADMIN_BYPASS_PASSWORD) {
+      console.error('[Admin Bypass] ADMIN_BYPASS_PASSWORD environment variable is not set')
+      return NextResponse.json(
+        { error: 'Server configuration error' },
+        { status: 500 }
+      )
+    }
+
     const body = await req.json()
     const validated = bypassSchema.parse(body)
 
@@ -49,9 +57,6 @@ export async function POST(req: NextRequest) {
       maxAge: 60 * 60 * 24 * 7, // 7 days
       path: '/',
     })
-
-    // Audit log
-    console.log('[Admin Bypass] Successful bypass at', new Date().toISOString())
 
     return response
   } catch (error) {

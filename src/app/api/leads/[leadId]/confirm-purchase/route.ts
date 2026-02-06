@@ -57,9 +57,6 @@ export async function POST(
       .single()
 
     if (existingPurchase) {
-      console.log(
-        `✅ Purchase already recorded for payment intent ${paymentIntentId}`
-      )
       return NextResponse.json({ success: true, alreadyRecorded: true })
     }
 
@@ -113,14 +110,6 @@ export async function POST(
     if (updateError) {
       console.error('[Confirm Purchase] Failed to update lead:', updateError)
       throw new Error('Failed to assign purchased lead to buyer')
-    }
-
-    console.log(
-      `✅ Lead purchase confirmed: ${leadId} | Payment: ${paymentIntentId} | Purchase ID: ${purchase.id}`
-    )
-
-    if (partnerId && partnerId !== 'none') {
-      console.log(`✅ Partner ${partnerId} credited $14.00 commission`)
     }
 
     return NextResponse.json({ success: true, purchaseId: purchase.id })

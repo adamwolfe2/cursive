@@ -194,15 +194,7 @@ export async function DELETE(request: NextRequest) {
       return validationError('Email confirmation does not match your account email')
     }
 
-    // 3. Audit log before deletion (for security tracking)
-    console.log('[Account Deletion] User requesting deletion:', {
-      user_id: user.id,
-      email: user.email,
-      workspace_id: user.workspace_id,
-      timestamp: new Date().toISOString(),
-    })
-
-    // 4. Delete user account
+    // 3. Delete user account
     // Note: This should cascade delete related data based on FK constraints
     const supabase = await createClient()
 

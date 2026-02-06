@@ -163,13 +163,11 @@ export async function POST(req: NextRequest) {
       if (existingKey) {
         // Request already processed successfully - return cached response
         if (existingKey.status === 'completed' && existingKey.response_data) {
-          console.log(`[Clay Webhook] Idempotent request detected: ${clay_record_id}`)
           return NextResponse.json(existingKey.response_data)
         }
 
         // Request currently processing - return conflict
         if (existingKey.status === 'processing') {
-          console.log(`[Clay Webhook] Duplicate processing attempt: ${clay_record_id}`)
           return NextResponse.json(
             { error: 'Webhook already being processed. Please retry later.' },
             { status: 409 }

@@ -101,29 +101,29 @@ export default function MediaAdvertisingPage() {
                   href: "/blog/how-to-identify-website-visitors-technical-guide"
                 },
                 {
-                  title: "Why Scalable Workflows Benefit Agencies",
+                  title: "How to Scale Outbound Without Killing Quality",
                   description: "Build scalable campaign workflows for multiple advertising clients.",
-                  href: "/blog/28-why-scalable-workflows-benefit-agencies"
+                  href: "/blog/scaling-outbound"
                 },
                 {
-                  title: "How Omni-Channel Orchestration Aligns Marketing Efforts",
+                  title: "Omni-Channel Retargeting Strategies",
                   description: "Coordinate campaigns across channels for consistent client results.",
-                  href: "/blog/35-how-omni-channel-orchestration-aligns-marketing-efforts"
+                  href: "/blog/retargeting"
                 },
                 {
-                  title: "B2B Audience Targeting Explained for Everyday Brands",
+                  title: "B2B Audience Targeting Explained",
                   description: "Build premium B2B audience segments for advertising clients.",
-                  href: "/blog/48-b2b-audience-targeting-explained-for-everyday-brands-UPDATED"
+                  href: "/blog/audience-targeting"
                 },
                 {
                   title: "Tips for Improving CRM Integration Workflows",
                   description: "Integrate campaign data with client CRMs for better reporting.",
-                  href: "/blog/30-tips-for-improving-crm-integration-workflows"
+                  href: "/blog/crm-integration"
                 },
                 {
-                  title: "How Marketing Data Solutions Can Improve Campaigns",
+                  title: "How Marketing Data Solutions Improve Campaigns",
                   description: "Leverage audience data to maximize campaign performance.",
-                  href: "/blog/07-how-marketing-data-solutions-can-improve-campaigns"
+                  href: "/blog/analytics"
                 }
               ].map((resource, i) => (
                 <motion.a

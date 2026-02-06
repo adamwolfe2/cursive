@@ -104,7 +104,7 @@ export class ClayClient {
 
       if (!response.ok) {
         const error = await response.json().catch(() => ({}))
-        throw new Error(`Clay API error: ${(error as any).message || response.statusText}`)
+        throw new Error(`Clay API error: ${(error as Record<string, unknown>).message || response.statusText}`)
       }
 
       return await response.json()
@@ -156,7 +156,7 @@ export class ClayClient {
 
       if (!response.ok) {
         const error = await response.json().catch(() => ({}))
-        throw new Error(`Clay API error: ${(error as any).message || response.statusText}`)
+        throw new Error(`Clay API error: ${(error as Record<string, unknown>).message || response.statusText}`)
       }
 
       return await response.json()
@@ -197,7 +197,7 @@ export class ClayClient {
 
       if (!response.ok) {
         const error = await response.json().catch(() => ({}))
-        throw new Error(`Clay API error: ${(error as any).message || response.statusText}`)
+        throw new Error(`Clay API error: ${(error as Record<string, unknown>).message || response.statusText}`)
       }
 
       return await response.json()
@@ -232,7 +232,7 @@ export class ClayClient {
 
       if (!response.ok) {
         const error = await response.json().catch(() => ({}))
-        throw new Error(`Clay API error: ${(error as any).message || response.statusText}`)
+        throw new Error(`Clay API error: ${(error as Record<string, unknown>).message || response.statusText}`)
       }
 
       return await response.json()

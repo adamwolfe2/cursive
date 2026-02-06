@@ -38,8 +38,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.log('[Stripe Webhook] Received event:', event.type, event.id)
-
     // Handle service subscription events
     const serviceSubscriptionEvents = [
       'customer.subscription.created',
@@ -56,7 +54,7 @@ export async function POST(request: NextRequest) {
 
     // TODO: Handle other webhook events (checkout, credits, marketplace, etc.)
 
-    console.log('[Stripe Webhook] Unhandled event type:', event.type)
+    console.warn('[Stripe Webhook] Unhandled event type:', event.type)
     return NextResponse.json({ received: true, unhandled: true })
   } catch (error) {
     console.error('[Stripe Webhook] Error processing webhook:', error)

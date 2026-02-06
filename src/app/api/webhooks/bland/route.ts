@@ -199,13 +199,11 @@ export async function POST(req: NextRequest) {
       if (existingKey) {
         // Request already processed successfully - return cached response
         if (existingKey.status === 'completed' && existingKey.response_data) {
-          console.log(`[Bland Webhook] Idempotent request detected: ${call_id}`)
           return NextResponse.json(existingKey.response_data)
         }
 
         // Request currently processing - return conflict
         if (existingKey.status === 'processing') {
-          console.log(`[Bland Webhook] Duplicate processing attempt: ${call_id}`)
           return NextResponse.json(
             { error: 'Webhook already being processed. Please retry later.' },
             { status: 409 }

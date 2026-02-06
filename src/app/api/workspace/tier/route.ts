@@ -9,6 +9,18 @@ import { createClient } from '@/lib/supabase/server'
 import { serviceTierRepository } from '@/lib/repositories/service-tier.repository'
 import type { ProductTierFeatures } from '@/types'
 
+/** Type for service tier platform_features JSONB column */
+interface ServiceTierPlatformFeatures {
+  lead_downloads?: boolean
+  campaigns?: boolean
+  ai_agents?: boolean
+  api_access?: boolean
+  team_seats?: number
+  daily_lead_limit?: number
+  white_label?: boolean
+  custom_integrations?: boolean
+}
+
 // Default free tier features
 const DEFAULT_FEATURES: ProductTierFeatures = {
   campaigns: false,
@@ -127,7 +139,7 @@ export async function GET(request: NextRequest) {
 
     // If service tier exists, map its platform_features to ProductTierFeatures
     if (serviceTierData && serviceTierData.platform_features) {
-      const platformFeatures = serviceTierData.platform_features as any
+      const platformFeatures = serviceTierData.platform_features as ServiceTierPlatformFeatures
       features = {
         ...features,
         campaigns: platformFeatures.campaigns || false,
@@ -150,7 +162,7 @@ export async function GET(request: NextRequest) {
 
     // Service tier limits override product tier limits
     if (serviceTierData && serviceTierData.platform_features) {
-      const platformFeatures = serviceTierData.platform_features as any
+      const platformFeatures = serviceTierData.platform_features as ServiceTierPlatformFeatures
       if (platformFeatures.daily_lead_limit !== undefined) {
         dailyLimit = platformFeatures.daily_lead_limit === -1 ? 999999 : platformFeatures.daily_lead_limit
       }

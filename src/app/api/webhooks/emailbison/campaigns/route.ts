@@ -55,8 +55,6 @@ export async function POST(request: NextRequest) {
     const payload = JSON.parse(rawBody)
     const event = parseWebhookEvent(payload)
 
-    console.log(`[Campaign Webhook] Received ${event.event.type}`)
-
     // Get supabase admin client
     const supabase = createAdminClient()
 
@@ -89,13 +87,11 @@ export async function POST(request: NextRequest) {
     if (existingKey) {
       // Request already processed successfully - return cached response
       if (existingKey.status === 'completed' && existingKey.response_data) {
-        console.log(`[Campaign Webhook] Idempotent request detected`)
         return NextResponse.json(existingKey.response_data)
       }
 
       // Request currently processing - return conflict
       if (existingKey.status === 'processing') {
-        console.log(`[Campaign Webhook] Duplicate processing attempt`)
         return NextResponse.json(
           { error: 'Webhook already being processed. Please retry later.' },
           { status: 409 }
@@ -127,7 +123,7 @@ export async function POST(request: NextRequest) {
     } else if (isBounceReceivedEvent(event)) {
       await handleBounce(supabase, event)
     } else {
-      console.log(`[Campaign Webhook] Unhandled event type: ${event.event.type}`)
+      console.warn(`[Campaign Webhook] Unhandled event type: ${event.event.type}`)
     }
 
     // Prepare successful response
@@ -206,8 +202,6 @@ async function handleEmailSent(
 
     if (error) {
       console.error('[Campaign Webhook] Failed to update email send:', error)
-    } else {
-      console.log(`[Campaign Webhook] Confirmed send for email ${data.tracking_id}`)
     }
   }
 }
@@ -239,7 +233,7 @@ async function handleReplyReceived(
     .single()
 
   if (!emailSend) {
-    console.log(`[Campaign Webhook] No matching sent email found for ${data.from_email}`)
+    console.warn(`[Campaign Webhook] No matching sent email found for ${data.from_email}`)
     return
   }
 
@@ -264,8 +258,6 @@ async function handleReplyReceived(
 
   if (replyError) {
     console.error('[Campaign Webhook] Failed to create reply record:', replyError)
-  } else {
-    console.log(`[Campaign Webhook] Created reply record ${reply?.id}`)
   }
 
   // Update campaign_lead status
@@ -278,8 +270,6 @@ async function handleReplyReceived(
         replied_at: data.received_at,
       })
       .eq('id', campaignLeadId)
-
-    console.log(`[Campaign Webhook] Updated campaign lead ${campaignLeadId} to replied`)
   }
 
   // Trigger reply handling flow via Inngest
@@ -336,7 +326,6 @@ async function handleUnsubscribe(
       })
       .in('lead_id', leadIds)
 
-    console.log(`[Campaign Webhook] Marked ${data.email} as unsubscribed`)
   }
 }
 
@@ -378,7 +367,6 @@ async function handleBounce(
       })
       .in('lead_id', leadIds)
 
-    console.log(`[Campaign Webhook] Handled ${data.bounce_type} bounce for ${data.email}`)
   }
 
   // Trigger bounce handling via Inngest
@@ -414,7 +402,7 @@ async function handleEmailOpened(
     .single()
 
   if (findError || !emailSend) {
-    console.log(`[Campaign Webhook] No sent email found for open event: ${data.to_email}`)
+    console.warn(`[Campaign Webhook] No sent email found for open event: ${data.to_email}`)
     return
   }
 
@@ -458,7 +446,6 @@ async function handleEmailOpened(
       .eq('lead_id', emailSend.lead_id)
   }
 
-  console.log(`[Campaign Webhook] Recorded open for email ${emailSend.id} (first: ${isFirstOpen})`)
 }
 
 /**
@@ -482,7 +469,7 @@ async function handleEmailClicked(
     .single()
 
   if (findError || !emailSend) {
-    console.log(`[Campaign Webhook] No email found for click event: ${data.to_email}`)
+    console.warn(`[Campaign Webhook] No email found for click event: ${data.to_email}`)
     return
   }
 
@@ -534,5 +521,4 @@ async function handleEmailClicked(
       .eq('lead_id', emailSend.lead_id)
   }
 
-  console.log(`[Campaign Webhook] Recorded click for email ${emailSend.id} on ${data.url}`)
 }

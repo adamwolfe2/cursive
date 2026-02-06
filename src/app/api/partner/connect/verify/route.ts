@@ -59,7 +59,6 @@ export async function GET(request: NextRequest) {
         })
         .eq('id', partner.id)
 
-      console.log(`✅ Partner ${partner.id} onboarding completed`)
     }
 
     return NextResponse.json({

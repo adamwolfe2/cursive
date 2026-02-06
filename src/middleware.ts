@@ -3,8 +3,12 @@
 
 import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/middleware'
+import { validateRequiredEnvVars } from '@/lib/env-validation'
 
 export async function middleware(req: NextRequest) {
+  // Validate critical environment variables on first request
+  validateRequiredEnvVars()
+
   try {
     const { pathname } = req.nextUrl
 
@@ -41,12 +45,18 @@ export async function middleware(req: NextRequest) {
           setTimeout(() => reject(new Error('Auth session timeout')), 5000)
         )
 
-        const result = await Promise.race([sessionPromise, timeoutPromise]) as any
+        const result = await Promise.race([sessionPromise, timeoutPromise]) as
+          | { data: { session: { user: { id: string; email?: string } } | null } }
+          | undefined
         session = result?.data?.session || null
       } catch (e) {
         console.error('[Middleware] Failed to check session:', e)
-        // Continue without session - don't block the request
-        session = null
+        // SECURITY: Do NOT fail open. Redirect to login when auth check fails.
+        // This prevents unauthenticated access when the session check times out.
+        const loginUrl = new URL('/login', req.url)
+        loginUrl.searchParams.set('redirect', pathname)
+        loginUrl.searchParams.set('reason', 'auth_error')
+        return NextResponse.redirect(loginUrl)
       }
     }
 
@@ -161,11 +171,53 @@ export async function middleware(req: NextRequest) {
       )
     }
 
-    // DISABLED FOR NOW - Admin can access everything without workspace checks
-    // If authenticated, verify workspace access (skip for admin and partner routes)
-    // if (user && !isPublicRoute && !pathname.startsWith('/onboarding') && !isPartnerRoute) {
-    //   ... workspace validation code removed for admin ...
-    // }
+    // Workspace isolation: verify authenticated users have a valid workspace
+    // Admins (in platform_admins table) bypass workspace checks
+    if (user && !isPublicRoute && !isAdminRoute && !isPartnerRoute && !pathname.startsWith('/onboarding') && !pathname.startsWith('/welcome')) {
+      // Look up the user's workspace_id from the users table
+      const { data: userRecord } = await supabase
+        .from('users')
+        .select('workspace_id')
+        .eq('auth_user_id', user.id)
+        .single()
+
+      if (!userRecord?.workspace_id) {
+        // Check if user is a platform admin (admins may not have a workspace)
+        const { data: adminRecord } = await supabase
+          .from('platform_admins')
+          .select('id')
+          .eq('email', user.email)
+          .eq('is_active', true)
+          .single()
+
+        if (!adminRecord) {
+          // Not an admin and no workspace -- redirect to onboarding
+          const onboardingUrl = new URL('/welcome', req.url)
+          return redirectWithCookies(onboardingUrl)
+        }
+        // Admin without workspace -- allow through
+      } else {
+        // Verify the workspace exists and is not suspended
+        const { data: workspace } = await supabase
+          .from('workspaces')
+          .select('id, is_suspended')
+          .eq('id', userRecord.workspace_id)
+          .single()
+
+        if (!workspace) {
+          // Workspace not found -- redirect to onboarding
+          const onboardingUrl = new URL('/welcome', req.url)
+          return redirectWithCookies(onboardingUrl)
+        }
+
+        if (workspace.is_suspended) {
+          // Workspace is suspended -- redirect to a suspended page or login
+          const suspendedUrl = new URL('/login', req.url)
+          suspendedUrl.searchParams.set('reason', 'workspace_suspended')
+          return redirectWithCookies(suspendedUrl)
+        }
+      }
+    }
 
     // Add custom headers for subdomain information
     if (subdomain) {
@@ -190,8 +242,10 @@ export async function middleware(req: NextRequest) {
       )
     }
 
-    // For non-API routes, allow the request to continue (fail open for better UX)
-    return NextResponse.next()
+    // SECURITY: Do NOT fail open. Redirect to login when middleware encounters an error.
+    const loginUrl = new URL('/login', req.url)
+    loginUrl.searchParams.set('reason', 'middleware_error')
+    return NextResponse.redirect(loginUrl)
   }
 }
 

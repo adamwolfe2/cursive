@@ -86,10 +86,6 @@ export async function POST(
       description: `Lead purchase: ${lead.business_name || 'Unknown'} (${lead.industry || 'N/A'})`,
     })
 
-    console.log(
-      `✅ Payment intent created for lead ${params.leadId}: ${paymentIntent.id}`
-    )
-
     return NextResponse.json({
       clientSecret: paymentIntent.client_secret,
       paymentIntentId: paymentIntent.id,

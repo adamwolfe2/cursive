@@ -58,6 +58,13 @@ export interface Contact {
   updated_by_user_id?: string
 }
 
+/** Contact with joined company data from Supabase relation query */
+export interface ContactWithCompany extends Contact {
+  companies?: {
+    name: string
+  } | null
+}
+
 export interface Deal {
   id: string
   workspace_id: string

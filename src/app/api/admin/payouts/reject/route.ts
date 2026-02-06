@@ -66,8 +66,6 @@ export async function POST(req: NextRequest) {
       })
       .eq('id', payout_id)
 
-    console.log(`✅ Payout rejected: ${payout_id}, Reason: ${reason || 'No reason provided'}`)
-
     return NextResponse.json({
       success: true,
       payout_id,
