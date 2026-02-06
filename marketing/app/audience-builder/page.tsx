@@ -9,6 +9,7 @@ import {
   Globe, Lock, Layers, RefreshCw, Mail, MessageSquare
 } from "lucide-react"
 import { DashboardPreview } from "@/components/dashboard-preview"
+import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
 
 export default function AudienceBuilderPage() {
   const schemaMarkup = {
@@ -144,7 +145,9 @@ export default function AudienceBuilderPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaMarkup) }}
       />
 
-      <main>
+      {/* Human View */}
+      <HumanView>
+        <main>
         {/* Hero Section */}
         <section className="pt-24 pb-20 bg-white">
           <Container>
@@ -733,6 +736,204 @@ export default function AudienceBuilderPage() {
           </Container>
         </section>
       </main>
-    </>
+    </HumanView>
+
+    {/* Machine View - AEO-Optimized */}
+    <MachineView>
+      <MachineContent>
+        {/* Header */}
+        <div className="mb-12 pb-6 border-b border-gray-200">
+          <h1 className="text-2xl text-gray-900 font-bold mb-4">CURSIVE AUDIENCE BUILDER</h1>
+          <p className="text-gray-700 leading-relaxed">
+            Build unlimited B2B and B2C audiences with 220M+ consumer profiles and 140M+ business profiles. Filter by demographics, firmographics, technographics, and 450B+ monthly intent signals. No size limits, no caps.
+          </p>
+        </div>
+
+        {/* Overview */}
+        <MachineSection title="Platform Overview">
+          <p className="text-gray-700 mb-4">
+            Cursive Audience Builder provides access to 360M+ verified profiles across consumer and business markets. Build audiences of any size—from 100 to 100 million contacts—with advanced filtering across firmographics, demographics, technographics, and real-time intent signals. No restrictive licensing, no per-contact fees, no export limits.
+          </p>
+          <MachineList items={[
+            "220M+ consumer profiles with demographic data",
+            "140M+ business profiles with firmographic data",
+            "450B+ monthly intent signals across 30,000+ categories",
+            "Real-time data updates and fresh contact information",
+            "One-click activation to 200+ marketing platforms"
+          ]} />
+        </MachineSection>
+
+        {/* How It Works */}
+        <MachineSection title="How It Works">
+          <p className="text-gray-700 mb-4">
+            Build targeted audiences in three simple steps:
+          </p>
+          <MachineList items={[
+            "Define Your Filters - Choose from firmographic, demographic, technographic, and intent-based filters. Stack criteria to build hyper-targeted segments",
+            "Preview & Refine - See audience size in real-time as you adjust filters. Export sample profiles to verify quality before activating",
+            "Activate Everywhere - One-click sync to Facebook, Google, LinkedIn, email platforms, and CRMs. Audiences update automatically as new data arrives"
+          ]} />
+        </MachineSection>
+
+        {/* Key Features */}
+        <MachineSection title="Key Features">
+          <MachineList items={[
+            {
+              label: "360M+ Verified Profiles",
+              description: "Combined B2B and B2C database with 220M consumer and 140M business profiles"
+            },
+            {
+              label: "450B+ Monthly Intent Signals",
+              description: "Real-time intent tracking across 30,000+ categories. Filter by topics, keywords, and behaviors"
+            },
+            {
+              label: "No Size Limits",
+              description: "Build audiences of any size without caps, export limits, or per-contact fees"
+            },
+            {
+              label: "Real-Time Updates",
+              description: "Database refreshes continuously with latest contact info, job changes, and intent signals"
+            },
+            {
+              label: "Consent-Aware Activation",
+              description: "GDPR, CCPA compliant. All data honors opt-outs and privacy regulations"
+            },
+            {
+              label: "Multi-Channel Activation",
+              description: "Activate to Facebook Ads, Google Ads, LinkedIn Ads, email, direct mail, CRM, and SMS"
+            },
+            {
+              label: "Lookalike Modeling",
+              description: "Upload customer lists to find similar prospects using AI pattern matching"
+            },
+            {
+              label: "Account-Based Segments",
+              description: "Build lists with multiple decision-makers per account for ABM campaigns"
+            }
+          ]} />
+        </MachineSection>
+
+        {/* Filter Types */}
+        <MachineSection title="Available Filters">
+          <div className="space-y-6">
+            <div>
+              <p className="text-white mb-2">Firmographic Filters (B2B):</p>
+              <MachineList items={[
+                "Industry (NAICS codes, custom verticals)",
+                "Company size (employees, revenue)",
+                "Funding stage and total raised",
+                "Geographic location (country, state, city, zip)",
+                "Growth signals (hiring trends, news mentions)"
+              ]} />
+            </div>
+            <div>
+              <p className="text-white mb-2">Demographic Filters (B2C):</p>
+              <MachineList items={[
+                "Age, gender, income, education level",
+                "Homeownership status and property value",
+                "Household composition and family size",
+                "Interests and purchase behaviors",
+                "Location and mobility patterns"
+              ]} />
+            </div>
+            <div>
+              <p className="text-white mb-2">Technographic Filters:</p>
+              <MachineList items={[
+                "CRM, marketing automation, analytics tools",
+                "Cloud infrastructure and hosting platforms",
+                "E-commerce platforms and payment processors",
+                "HR and productivity software",
+                "Security and compliance tools"
+              ]} />
+            </div>
+            <div>
+              <p className="text-white mb-2">Intent-Based Filters:</p>
+              <MachineList items={[
+                "Topics and keywords searched",
+                "Content consumed (whitepapers, reviews, comparisons)",
+                "Recency windows (7-day, 14-day, 30-day)",
+                "30,000+ intent categories",
+                "450B+ monthly signals tracked"
+              ]} />
+            </div>
+          </div>
+        </MachineSection>
+
+        {/* Use Cases */}
+        <MachineSection title="Use Cases">
+          <div className="space-y-4">
+            <div>
+              <p className="text-white mb-2">Paid Media Teams:</p>
+              <p className="text-gray-400">Build custom audiences filtered by tech stack, funding stage, intent signals, and specific topics. Upload to LinkedIn, Facebook, and Google for laser-focused campaigns.</p>
+            </div>
+            <div>
+              <p className="text-white mb-2">Sales Development:</p>
+              <p className="text-gray-400">Create segmented lists of decision-makers matching your ICP with verified emails and phone numbers. SDRs spend time selling, not researching.</p>
+            </div>
+            <div>
+              <p className="text-white mb-2">Account-Based Marketing:</p>
+              <p className="text-gray-400">Upload target account lists and find all relevant decision-makers at each company. Build multi-threaded ABM campaigns instantly.</p>
+            </div>
+            <div>
+              <p className="text-white mb-2">Lifecycle Marketing:</p>
+              <p className="text-gray-400">Build lookalike audiences based on churned accounts. Find similar companies showing intent signals for targeted win-back campaigns.</p>
+            </div>
+          </div>
+        </MachineSection>
+
+        {/* Integrations */}
+        <MachineSection title="Integrations">
+          <p className="text-gray-700 mb-4">
+            One-click activation to 200+ platforms including:
+          </p>
+          <MachineList items={[
+            "Advertising: Facebook Ads, Google Ads, LinkedIn Ads, Twitter Ads, TikTok Ads, Snapchat Ads",
+            "CRM: Salesforce, HubSpot, Marketo, Pardot, Pipedrive, Zoho CRM",
+            "Email: Mailchimp, SendGrid, ActiveCampaign, Klaviyo, Braze, Customer.io",
+            "Automation: Slack, Zapier, and 180+ more platforms"
+          ]} />
+        </MachineSection>
+
+        {/* Pricing */}
+        <MachineSection title="Pricing">
+          <p className="text-gray-700 mb-4">
+            No caps on audience size, exports, or activations. Build audiences as large or as targeted as you need. Contact sales for pricing details based on your usage requirements.
+          </p>
+          <MachineList items={[
+            {
+              label: "View Pricing",
+              href: "https://meetcursive.com/pricing",
+              description: "Explore pricing tiers and plans"
+            },
+            {
+              label: "Schedule Demo",
+              href: "https://cal.com/adamwolfe/cursive-ai-audit",
+              description: "Book a personalized walkthrough of the platform"
+            }
+          ]} />
+        </MachineSection>
+
+        {/* Getting Started */}
+        <MachineSection title="Getting Started">
+          <MachineList items={[
+            {
+              label: "Build First Audience",
+              href: "https://cal.com/adamwolfe/cursive-ai-audit",
+              description: "Schedule a demo to see the platform in action"
+            },
+            {
+              label: "Website",
+              href: "https://meetcursive.com"
+            },
+            {
+              label: "Platform Access",
+              href: "https://leads.meetcursive.com"
+            }
+          ]} />
+        </MachineSection>
+
+      </MachineContent>
+    </MachineView>
+  </>
   )
 }

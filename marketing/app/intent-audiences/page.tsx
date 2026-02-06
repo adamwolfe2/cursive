@@ -10,6 +10,7 @@ import {
   Flame, Rocket
 } from "lucide-react"
 import { DashboardPreview } from "@/components/dashboard-preview"
+import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
 
 export default function IntentAudiencesPage() {
   const schemaMarkup = {
@@ -144,7 +145,9 @@ export default function IntentAudiencesPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaMarkup) }}
       />
 
-      <main>
+      {/* Human View */}
+      <HumanView>
+        <main>
         {/* Hero Section */}
         <section className="pt-24 pb-20 bg-white">
           <Container>
@@ -806,6 +809,182 @@ export default function IntentAudiencesPage() {
           </Container>
         </section>
       </main>
-    </>
+    </HumanView>
+
+    {/* Machine View - AEO-Optimized */}
+    <MachineView>
+      <MachineContent>
+        {/* Header */}
+        <div className="mb-12 pb-6 border-b border-gray-200">
+          <h1 className="text-2xl text-gray-900 font-bold mb-4">CURSIVE INTENT AUDIENCES</h1>
+          <p className="text-gray-700 leading-relaxed">
+            Pre-built audience segments across 8 high-value verticals. Access 280M+ US profiles with 450B+ monthly intent signals. Updated every 7 days with fresh, in-market prospects.
+          </p>
+        </div>
+
+        {/* Overview */}
+        <MachineSection title="Product Overview">
+          <p className="text-gray-700 mb-4">
+            Intent audiences are pre-built segments of people actively researching specific products or services. We track 450B+ monthly intent signals to identify prospects showing purchase intent across 8 high-value verticals. Skip manual list building and launch campaigns in minutes with ready-to-convert prospects.
+          </p>
+          <MachineList items={[
+            "8 high-value verticals with 46+ specific segments",
+            "280M+ US profiles tracked with real-time intent signals",
+            "Updated every 7 days with fresh in-market buyers",
+            "Three intent levels: Hot (7D), Warm (14D), Scale (30D)",
+            "One-click activation to 200+ platforms"
+          ]} />
+        </MachineSection>
+
+        {/* How It Works */}
+        <MachineSection title="How It Works">
+          <MachineList items={[
+            "Choose Your Vertical - Select from 8 high-value verticals like MedSpa, Home Services, Legal Services, or GLP-1. Each includes 5-8 specific segments",
+            "Select Intent Level - Hot (7D) for highest intent, Warm (14D) for expanded reach, or Scale (30D) for full-funnel coverage. Preview audience sizes",
+            "Activate to Platforms - One-click sync to Facebook, Google, LinkedIn, email, or CRM. Audiences update automatically every 7 days with fresh prospects"
+          ]} />
+        </MachineSection>
+
+        {/* Intent Levels */}
+        <MachineSection title="Intent Levels">
+          <div className="space-y-4">
+            <div>
+              <p className="text-white mb-2">Hot (7D):</p>
+              <p className="text-gray-400">Highest intent prospects actively searching in the last 7 days. Smallest audience, highest conversion. Best for high-ticket offers, immediate conversions, limited ad budgets.</p>
+            </div>
+            <div>
+              <p className="text-white mb-2">Warm (14D):</p>
+              <p className="text-gray-400">Expanded reach with users showing interest in the last 14 days. Balance of intent and scale. Best for standard campaigns, lead generation, nurture sequences.</p>
+            </div>
+            <div>
+              <p className="text-white mb-2">Scale (30D):</p>
+              <p className="text-gray-400">Full-funnel coverage with intent signals from the last 30 days. Maximum reach and impressions. Best for brand awareness, retargeting, top-of-funnel prospecting.</p>
+            </div>
+          </div>
+        </MachineSection>
+
+        {/* Available Verticals */}
+        <MachineSection title="Available Verticals">
+          <div className="space-y-4">
+            <div>
+              <p className="text-white mb-2">MedSpa & Aesthetics:</p>
+              <p className="text-gray-400">Botox Seekers, Laser Hair Removal, Facial Treatments, Body Contouring, Anti-Aging</p>
+            </div>
+            <div>
+              <p className="text-white mb-2">GLP-1 & Weight Loss:</p>
+              <p className="text-gray-400">GLP-1 Medications, Medical Weight Loss, Bariatric Surgery, Diet Programs, Supplements</p>
+            </div>
+            <div>
+              <p className="text-white mb-2">Home Services:</p>
+              <p className="text-gray-400">HVAC Replacement, Roof Repair, Kitchen Remodel, Landscaping, Solar Installation</p>
+            </div>
+            <div>
+              <p className="text-white mb-2">Legal Services:</p>
+              <p className="text-gray-400">Personal Injury, Divorce Attorneys, Estate Planning, Business Formation, Immigration</p>
+            </div>
+            <div>
+              <p className="text-white mb-2">Luxury Goods:</p>
+              <p className="text-gray-400">Luxury Watches, Fine Jewelry, Designer Handbags, Exotic Cars, Private Aviation</p>
+            </div>
+            <div>
+              <p className="text-white mb-2">Men's Health:</p>
+              <p className="text-gray-400">TRT Clinics, ED Treatments, Hair Restoration, Fitness Coaching, Hormone Optimization</p>
+            </div>
+            <div>
+              <p className="text-white mb-2">High-Ticket Recreation:</p>
+              <p className="text-gray-400">Boat Buyers, RV Shoppers, Golf Members, Motorcycle Buyers, Luxury Travel</p>
+            </div>
+            <div>
+              <p className="text-white mb-2">Pickleball:</p>
+              <p className="text-gray-400">Equipment Buyers, Lesson Seekers, Court Memberships, Tournament Players, Apparel</p>
+            </div>
+          </div>
+        </MachineSection>
+
+        {/* Key Benefits */}
+        <MachineSection title="Key Benefits">
+          <MachineList items={[
+            "Higher Conversion Rates - Intent-based audiences convert 2-4x better than demographic targeting",
+            "Launch Instantly - No manual list building. Select a segment and launch in minutes",
+            "Always Fresh Data - Audiences update every 7 days with new in-market prospects",
+            "Precise Behavioral Targeting - Based on actual search and content consumption, not guessed interests",
+            "Lower CAC - Targeting in-market buyers reduces wasted ad spend",
+            "Privacy-Compliant - All intent data honors opt-outs and complies with GDPR/CCPA",
+            "Combine with Filters - Layer on geography, demographics, or firmographics for hyper-targeting",
+            "Multi-Channel Activation - Use same intent audience across all marketing channels"
+          ]} />
+        </MachineSection>
+
+        {/* Use Cases */}
+        <MachineSection title="Use Cases">
+          <div className="space-y-4">
+            <div>
+              <p className="text-white mb-2">MedSpa Owners:</p>
+              <p className="text-gray-400">Target only people actively searching for Botox, fillers, or laser treatments in the last 7 days. CPL drops 60% by targeting in-market buyers, not browsers.</p>
+            </div>
+            <div>
+              <p className="text-white mb-2">Home Service Companies:</p>
+              <p className="text-gray-400">Reach homeowners actively Googling 'AC replacement cost' during peak season. Convert prospects before competitors reach them.</p>
+            </div>
+            <div>
+              <p className="text-white mb-2">Weight Loss Clinics:</p>
+              <p className="text-gray-400">Target patients already educated on GLP-1 medications. Skip the awareness phase and close faster with consultation offers.</p>
+            </div>
+            <div>
+              <p className="text-white mb-2">Luxury Brands:</p>
+              <p className="text-gray-400">Reach consumers researching high-end watches or jewelry while they're in buying mode. Target with exclusive offers and VIP experiences.</p>
+            </div>
+          </div>
+        </MachineSection>
+
+        {/* Integrations */}
+        <MachineSection title="Integrations">
+          <p className="text-gray-700 mb-4">
+            One-click activation to 200+ platforms:
+          </p>
+          <MachineList items={[
+            "Advertising: Facebook Ads, Google Ads, LinkedIn Ads, TikTok Ads, Snapchat Ads, Twitter Ads",
+            "CRM: Salesforce, HubSpot, Marketo, Pardot, Pipedrive, Zoho CRM",
+            "Email: Mailchimp, SendGrid, ActiveCampaign, Klaviyo, Braze, Customer.io"
+          ]} />
+        </MachineSection>
+
+        {/* Pricing */}
+        <MachineSection title="Pricing">
+          <p className="text-gray-700 mb-4">
+            Contact sales for pricing based on vertical, intent level, and activation volume.
+          </p>
+          <MachineList items={[
+            {
+              label: "See Pricing",
+              href: "https://meetcursive.com/pricing",
+              description: "View pricing tiers"
+            },
+            {
+              label: "Explore Intent Audiences",
+              href: "https://cal.com/adamwolfe/cursive-ai-audit",
+              description: "Schedule a demo"
+            }
+          ]} />
+        </MachineSection>
+
+        {/* Getting Started */}
+        <MachineSection title="Getting Started">
+          <MachineList items={[
+            {
+              label: "Schedule Demo",
+              href: "https://cal.com/adamwolfe/cursive-ai-audit",
+              description: "See how intent audiences work"
+            },
+            {
+              label: "Website",
+              href: "https://meetcursive.com"
+            }
+          ]} />
+        </MachineSection>
+
+      </MachineContent>
+    </MachineView>
+  </>
   )
 }

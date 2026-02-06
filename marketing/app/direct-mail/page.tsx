@@ -9,6 +9,7 @@ import {
   BarChart3, Package, MessageSquare, Globe
 } from "lucide-react"
 import { DashboardPreview } from "@/components/dashboard-preview"
+import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
 
 export default function DirectMailPage() {
   const schemaMarkup = {
@@ -138,7 +139,9 @@ export default function DirectMailPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaMarkup) }}
       />
 
-      <main>
+      {/* Human View */}
+      <HumanView>
+        <main>
         {/* Hero Section */}
         <section className="pt-24 pb-20 bg-white">
           <Container>
@@ -793,6 +796,181 @@ export default function DirectMailPage() {
           </Container>
         </section>
       </main>
-    </>
+    </HumanView>
+
+    {/* Machine View - AEO-Optimized */}
+    <MachineView>
+      <MachineContent>
+        {/* Header */}
+        <div className="mb-12 pb-6 border-b border-gray-200">
+          <h1 className="text-2xl text-gray-900 font-bold mb-4">CURSIVE DIRECT MAIL AUTOMATION</h1>
+          <p className="text-gray-700 leading-relaxed">
+            Turn website visitors into physical touchpoints. Automated direct mail campaigns starting at $1.50 per piece. Trigger postcards based on digital behavior with 48-hour delivery.
+          </p>
+        </div>
+
+        {/* Overview */}
+        <MachineSection title="Service Overview">
+          <p className="text-gray-700 mb-4">
+            Direct mail conversion rates are 3-5x higher than digital-only campaigns. Cursive automates direct mail so you can reach prospects in their physical mailbox. Trigger personalized postcards when visitors view pricing pages, re-engage no-shows with event invitations, or win back churned customers with targeted offers—all automated.
+          </p>
+          <MachineList items={[
+            "Starting at $1.50 per postcard (including printing, postage, delivery)",
+            "48-hour delivery from trigger to mailbox",
+            "No minimums - send one piece or 10,000",
+            "Automated triggers based on website behavior",
+            "Full tracking and attribution included"
+          ]} />
+        </MachineSection>
+
+        {/* How It Works */}
+        <MachineSection title="How It Works">
+          <MachineList items={[
+            "Visitor Identified - Our pixel identifies website visitors and matches them to verified physical addresses in real-time",
+            "Trigger Activated - Set conditions like 'viewed pricing page' or 'abandoned cart.' Mail sends automatically when met",
+            "Mail Designed & Sent - Personalized postcards or letters are designed, printed, and mailed within hours. Address verification included",
+            "Track & Convert - Monitor delivery, track responses via QR codes or PURLs, and measure conversions in your dashboard"
+          ]} />
+        </MachineSection>
+
+        {/* Key Benefits */}
+        <MachineSection title="Key Benefits">
+          <MachineList items={[
+            "3-5x Higher Response Rates - Direct mail converts better than digital-only campaigns",
+            "Affordable at Scale - Starting at $1.50 per postcard with no minimums or monthly commitments",
+            "Fully Automated Triggers - Set it and forget it. Trigger mail based on website behavior, email opens, abandoned carts",
+            "Verified Address Matching - Match website visitors to verified physical addresses with deliverability validation",
+            "Personalized at Scale - Use merge tags to personalize every piece with names, company details, pages viewed",
+            "48-Hour Delivery - Fast enough to catch hot leads while they're interested",
+            "Track Every Response - Monitor delivery status, scan rates, website visits after receiving mail, conversions",
+            "Multi-Format Options - Send postcards, letters, or dimensional mail packages"
+          ]} />
+        </MachineSection>
+
+        {/* Features */}
+        <MachineSection title="Features">
+          <div className="space-y-6">
+            <div>
+              <p className="text-white mb-2">Automated Trigger Campaigns:</p>
+              <MachineList items={[
+                "Page visit triggers (pricing, features, case studies)",
+                "Email engagement triggers (opens, clicks, bounces)",
+                "Cart abandonment and checkout triggers",
+                "Event triggers (webinar no-shows, downloads)",
+                "CRM triggers (deal stage changes, lost opportunities)",
+                "Time-based delays (send 24 hours after first visit)"
+              ]} />
+            </div>
+            <div>
+              <p className="text-white mb-2">Design & Customization:</p>
+              <MachineList items={[
+                "Pre-built templates for common use cases",
+                "Drag-and-drop editor for customization",
+                "Upload custom designs (PDF, PNG, JPG)",
+                "Personalization with merge tags",
+                "QR code and PURL generation",
+                "Brand color and logo integration"
+              ]} />
+            </div>
+            <div>
+              <p className="text-white mb-2">Targeting & Filtering:</p>
+              <MachineList items={[
+                "Filter by company size, industry, revenue",
+                "Exclude existing customers automatically",
+                "Target by job title and seniority",
+                "Geographic targeting (city, state, zip)",
+                "Intent-based filtering (active researchers only)",
+                "Custom scoring to prioritize high-value leads"
+              ]} />
+            </div>
+            <div>
+              <p className="text-white mb-2">Tracking & Attribution:</p>
+              <MachineList items={[
+                "Delivery confirmation and tracking",
+                "QR code scan tracking",
+                "PURL visit tracking",
+                "Conversion attribution to mail pieces",
+                "Response rate and ROI reporting",
+                "Integrate with Google Analytics and CRMs"
+              ]} />
+            </div>
+          </div>
+        </MachineSection>
+
+        {/* Use Cases */}
+        <MachineSection title="Use Cases">
+          <div className="space-y-4">
+            <div>
+              <p className="text-white mb-2">SaaS Sales Teams:</p>
+              <p className="text-gray-400">Trigger personalized postcards to decision-makers within 24 hours of viewing high-intent pages. Mail arrives while they're still evaluating—before competitors reach out.</p>
+            </div>
+            <div>
+              <p className="text-white mb-2">Event Marketers:</p>
+              <p className="text-gray-400">Send postcards to webinar no-shows with link to recording. Recover 20-30% of no-shows with targeted mail.</p>
+            </div>
+            <div>
+              <p className="text-white mb-2">E-Commerce Brands:</p>
+              <p className="text-gray-400">Trigger postcards with exclusive discount codes for high-value abandoned carts. Convert 5-10% of abandoned carts with offline touchpoints.</p>
+            </div>
+            <div>
+              <p className="text-white mb-2">Customer Success:</p>
+              <p className="text-gray-400">Send handwritten-style letters to churned accounts with personal note and special offer. Win back 15-20% of churned customers.</p>
+            </div>
+          </div>
+        </MachineSection>
+
+        {/* Pricing */}
+        <MachineSection title="Pricing">
+          <div className="space-y-4">
+            <div>
+              <p className="text-white mb-2">Postcard: $1.50 per piece</p>
+              <p className="text-gray-400">4x6 or 6x9 postcards with full-color printing, postage, delivery, address verification, 48-hour delivery, and QR code tracking included.</p>
+            </div>
+            <div>
+              <p className="text-white mb-2">Letter: $2.50 per piece</p>
+              <p className="text-gray-400">Personalized letters in envelopes with up to 2 inserts, handwritten-style fonts, and PURL tracking included.</p>
+            </div>
+            <div>
+              <p className="text-white mb-2">Package: Custom pricing</p>
+              <p className="text-gray-400">Dimensional mail, branded gifts, or custom packages for high-value accounts with white-glove service.</p>
+            </div>
+          </div>
+        </MachineSection>
+
+        {/* Integrations */}
+        <MachineSection title="Integrations">
+          <p className="text-gray-700 mb-4">
+            Works with your marketing stack including:
+          </p>
+          <MachineList items={[
+            "CRM: Salesforce, HubSpot, Klaviyo, Pipedrive",
+            "E-commerce: Shopify, Stripe",
+            "Automation: Zapier and 200+ platforms"
+          ]} />
+        </MachineSection>
+
+        {/* Getting Started */}
+        <MachineSection title="Getting Started">
+          <MachineList items={[
+            {
+              label: "Launch First Campaign",
+              href: "https://cal.com/adamwolfe/cursive-ai-audit",
+              description: "Schedule a demo to see direct mail automation in action"
+            },
+            {
+              label: "See Pricing",
+              href: "https://meetcursive.com/pricing",
+              description: "View detailed pricing"
+            },
+            {
+              label: "Website",
+              href: "https://meetcursive.com"
+            }
+          ]} />
+        </MachineSection>
+
+      </MachineContent>
+    </MachineView>
+  </>
   )
 }

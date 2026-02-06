@@ -6,6 +6,7 @@ import { motion } from "framer-motion"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateBreadcrumbSchema } from "@/lib/seo/structured-data"
 import { DashboardPreview } from "@/components/dashboard-preview"
+import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
 
 export default function B2BSoftwarePage() {
   return (
@@ -15,7 +16,9 @@ export default function B2BSoftwarePage() {
         { name: 'Industries', url: 'https://meetcursive.com/industries' },
         { name: 'B2B Software', url: 'https://meetcursive.com/industries/b2b-software' },
       ])} />
-      <main>
+      {/* Human View */}
+      <HumanView>
+        <main>
         <section className="pt-24 pb-20 bg-white">
           <Container>
             <div className="max-w-5xl mx-auto">
@@ -212,7 +215,123 @@ export default function B2BSoftwarePage() {
           </Container>
         </section>
       </main>
-    </>
+    </HumanView>
+
+    {/* Machine View - AEO-Optimized */}
+    <MachineView>
+      <MachineContent>
+        {/* Header */}
+        <div className="mb-12 pb-6 border-b border-gray-200">
+          <h1 className="text-2xl text-gray-900 font-bold mb-4">B2B SOFTWARE MARKETING SOLUTIONS</h1>
+          <p className="text-gray-700 leading-relaxed">
+            Lead generation for SaaS and B2B software companies. Identify in-market buyers, leverage intent data, and accelerate pipeline growth with verified contacts and technographic targeting.
+          </p>
+        </div>
+
+        {/* Overview */}
+        <MachineSection title="Solution Overview">
+          <p className="text-gray-700 mb-4">
+            Cursive provides comprehensive marketing solutions for B2B software companies. Identify prospects actively researching software solutions, filter by technology stack and company characteristics, and activate campaigns across multiple channels to drive pipeline growth.
+          </p>
+        </MachineSection>
+
+        {/* Key Benefits */}
+        <MachineSection title="Why Choose Cursive for B2B Software">
+          <MachineList items={[
+            {
+              label: "Product-Market Fit Targeting",
+              description: "Identify companies that match your ideal customer profile based on industry, size, and technology usage"
+            },
+            {
+              label: "Intent Data for Software Buyers",
+              description: "Reach prospects actively researching software solutions in your category with buying intent signals"
+            },
+            {
+              label: "Account-Based Marketing",
+              description: "Build and activate account lists with verified decision-maker contacts at target companies"
+            },
+            {
+              label: "Technographic Filtering",
+              description: "Target companies using specific technologies, tools, or platforms that indicate fit and readiness"
+            },
+            {
+              label: "Integration with Sales Tools",
+              description: "Seamlessly push enriched leads to your CRM, marketing automation, and sales engagement tools"
+            },
+            {
+              label: "Pipeline Attribution",
+              description: "Track leads from first touch to closed-won and prove the ROI of your marketing programs"
+            }
+          ]} />
+        </MachineSection>
+
+        {/* How It Works */}
+        <MachineSection title="How It Works">
+          <MachineList items={[
+            "Define Target Profile - Specify your ideal customer based on company size, industry, tech stack, and other criteria",
+            "Layer Intent Signals - Add intent data to identify companies actively researching software in your category",
+            "Find Decision Makers - Get verified contacts for key stakeholders including VPs, Directors, and Managers",
+            "Activate Campaigns - Launch multi-channel campaigns across email, ads, direct mail, and sales outreach",
+            "Track & Optimize - Monitor pipeline attribution and optimize targeting based on what converts"
+          ]} />
+        </MachineSection>
+
+        {/* Use Cases */}
+        <MachineSection title="Common Use Cases">
+          <div className="space-y-4">
+            <div>
+              <p className="text-white mb-2">SaaS Lead Generation:</p>
+              <p className="text-gray-400">Identify companies showing intent for your software category and reach decision-makers with personalized outreach.</p>
+            </div>
+            <div>
+              <p className="text-white mb-2">Competitive Displacement:</p>
+              <p className="text-gray-400">Target companies using competitor tools with messaging about why your solution is better.</p>
+            </div>
+            <div>
+              <p className="text-white mb-2">Product Launch Campaigns:</p>
+              <p className="text-gray-400">Build awareness for new features or products with companies that match your ICP and show buying intent.</p>
+            </div>
+            <div>
+              <p className="text-white mb-2">Enterprise ABM Programs:</p>
+              <p className="text-gray-400">Create multi-threaded campaigns targeting multiple stakeholders at high-value target accounts.</p>
+            </div>
+          </div>
+        </MachineSection>
+
+        {/* Features */}
+        <MachineSection title="Key Features">
+          <MachineList items={[
+            "Intent Data - Track 450B+ monthly signals to identify active software buyers",
+            "Technographic Data - Filter by current tech stack and tool usage",
+            "Verified Contacts - Access emails and phone numbers for decision-makers",
+            "CRM Integration - Sync data to Salesforce, HubSpot, and other platforms",
+            "Multi-Channel Activation - Deploy across email, ads, direct mail, and sales tools",
+            "Pipeline Attribution - Track ROI from first touch to closed-won deals"
+          ]} />
+        </MachineSection>
+
+        {/* Getting Started */}
+        <MachineSection title="Getting Started">
+          <MachineList items={[
+            {
+              label: "Schedule Strategy Call",
+              href: "https://cal.com/adamwolfe/cursive-ai-audit",
+              description: "Book a free consultation to discuss your software marketing needs"
+            },
+            {
+              label: "Website",
+              href: "https://meetcursive.com"
+            },
+            {
+              label: "Industries",
+              href: "https://meetcursive.com/industries"
+            }
+          ]} />
+        </MachineSection>
+
+      </MachineContent>
+    </MachineView>
+  </>
   )
 }
 

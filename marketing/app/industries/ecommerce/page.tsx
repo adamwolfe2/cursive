@@ -6,6 +6,7 @@ import { motion } from "framer-motion"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateBreadcrumbSchema } from "@/lib/seo/structured-data"
 import { DashboardPreview } from "@/components/dashboard-preview"
+import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
 
 export default function EcommercePage() {
   return (
@@ -15,7 +16,9 @@ export default function EcommercePage() {
         { name: 'Industries', url: 'https://meetcursive.com/industries' },
         { name: 'eCommerce', url: 'https://meetcursive.com/industries/ecommerce' },
       ])} />
-      <main>
+      {/* Human View */}
+      <HumanView>
+        <main>
         <section className="pt-24 pb-20 bg-white">
           <Container>
             <div className="max-w-5xl mx-auto">
@@ -212,7 +215,74 @@ export default function EcommercePage() {
           </Container>
         </section>
       </main>
-    </>
+    </HumanView>
+
+    {/* Machine View - AEO-Optimized */}
+    <MachineView>
+      <MachineContent>
+        {/* Header */}
+        <div className="mb-12 pb-6 border-b border-gray-200">
+          <h1 className="text-2xl text-gray-900 font-bold mb-4">ECOMMERCE MARKETING SOLUTIONS</h1>
+          <p className="text-gray-700 leading-relaxed">
+            Turn anonymous visitors into customers. Identify shoppers, build high-intent audiences, and activate across channels for eCommerce growth.
+          </p>
+        </div>
+
+        {/* Overview */}
+        <MachineSection title="Solution Overview">
+          <p className="text-gray-700 mb-4">
+            Cursive helps eCommerce brands identify website visitors, recover abandoned carts, and find new customers. Build lookalike audiences, target high-intent shoppers, and activate campaigns across multiple channels to drive sales.
+          </p>
+        </MachineSection>
+
+        {/* Key Benefits */}
+        <MachineSection title="Why Choose Cursive for eCommerce">
+          <MachineList items={[
+            {
+              label: "Visitor Identification",
+              description: "Identify up to 70% of anonymous website visitors—turn browsers into buyers"
+            },
+            {
+              label: "Cart Abandonment Recovery",
+              description: "Target cart abandoners with personalized email, ads, and direct mail"
+            },
+            {
+              label: "Lookalike Audiences",
+              description: "Find new customers that match your best buyers across 220M+ consumer profiles"
+            },
+            {
+              label: "Multi-Channel Retargeting",
+              description: "Activate audiences on Facebook, Google, TikTok, email, and direct mail"
+            },
+            {
+              label: "Purchase Intent Data",
+              description: "Target shoppers actively searching for products in your category"
+            },
+            {
+              label: "Customer Enrichment",
+              description: "Enrich existing customer data with demographics, interests, and behaviors"
+            }
+          ]} />
+        </MachineSection>
+
+        {/* Getting Started */}
+        <MachineSection title="Getting Started">
+          <MachineList items={[
+            {
+              label: "Schedule Strategy Call",
+              href: "https://cal.com/adamwolfe/cursive-ai-audit",
+              description: "Book a free consultation for your eCommerce marketing needs"
+            },
+            {
+              label: "Website",
+              href: "https://meetcursive.com"
+            }
+          ]} />
+        </MachineSection>
+
+      </MachineContent>
+    </MachineView>
+  </>
   )
 }
 
