@@ -325,12 +325,27 @@ export class MarketplaceRepository {
 
   /**
    * Mark leads as sold
+   * RACE CONDITION FIX: Uses bulk atomic operation instead of loop
+   * This prevents partial failures where some leads are marked but others fail
    */
   async markLeadsSold(leadIds: string[]): Promise<void> {
     const adminClient = createAdminClient()
-    // Update each lead's sold count
-    for (const leadId of leadIds) {
-      await adminClient.rpc('mark_lead_sold', { p_lead_id: leadId })
+
+    // Use bulk marking function to update all leads in single atomic operation
+    const { data, error } = await adminClient.rpc('mark_leads_sold_bulk', {
+      p_lead_ids: leadIds,
+    })
+
+    if (error) {
+      throw new Error(`Failed to mark leads as sold: ${error.message}`)
+    }
+
+    // Verify all leads were marked
+    const markedCount = data?.[0]?.leads_marked || 0
+    if (markedCount !== leadIds.length) {
+      throw new Error(
+        `Not all leads were marked as sold. Expected: ${leadIds.length}, Actual: ${markedCount}`
+      )
     }
   }
 

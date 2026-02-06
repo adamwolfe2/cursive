@@ -98,52 +98,47 @@ export async function POST(request: NextRequest) {
     }
 
     const repo = new MarketplaceRepository()
-
-    // SECURITY: Get leads and validate they are available for marketplace purchase
-    // This prevents users from purchasing:
-    // 1. Leads that are not in the marketplace
-    // 2. Leads that have already been sold
-    // 3. Leads from other workspaces (via marketplace_status check)
     const adminClient = createAdminClient()
-    const { data: leads, error: leadsError } = await adminClient
-      .from('leads')
-      .select('id, marketplace_price, partner_id, created_at, intent_score_calculated, freshness_score')
-      .in('id', validated.leadIds)
-      .eq('marketplace_status', 'available') // Only available leads
-      .is('sold_at', null) // Not already sold
-      .not('marketplace_price', 'is', null) // Has marketplace price
 
-    if (leadsError) {
-      console.error('Failed to fetch leads:', leadsError)
-      return NextResponse.json(
-        { error: 'Failed to fetch leads' },
-        { status: 500 }
-      )
-    }
-
-    if (!leads || leads.length !== validated.leadIds.length) {
-      return NextResponse.json(
-        { error: 'Some leads are no longer available for purchase' },
-        { status: 400 }
-      )
-    }
-
-    // Additional check: Prevent duplicate purchases by this workspace
-    const { data: existingPurchases } = await adminClient
-      .from('marketplace_purchase_items')
-      .select('lead_id, marketplace_purchases!inner(buyer_workspace_id, status)')
-      .in('lead_id', validated.leadIds)
-      .eq('marketplace_purchases.buyer_workspace_id', userData.workspace_id)
-      .in('marketplace_purchases.status', ['completed', 'pending'])
-
-    if (existingPurchases && existingPurchases.length > 0) {
-      const alreadyPurchasedIds = existingPurchases.map(p => p.lead_id)
-      return NextResponse.json(
+    // RACE CONDITION FIX: Use atomic validation with row-level locks
+    // This prevents two users from purchasing the same lead simultaneously
+    // The database function uses SELECT FOR UPDATE to lock rows during validation
+    let leads: any[]
+    try {
+      const { data: lockedLeads, error: lockError } = await adminClient.rpc(
+        'validate_and_lock_leads_for_purchase',
         {
-          error: 'You have already purchased some of these leads',
-          alreadyPurchasedLeadIds: alreadyPurchasedIds,
-        },
-        { status: 400 }
+          p_lead_ids: validated.leadIds,
+          p_buyer_workspace_id: userData.workspace_id,
+        }
+      )
+
+      if (lockError) {
+        // Check for specific lock timeout or availability error
+        if (lockError.message.includes('no longer available') || lockError.code === '55P03') {
+          return NextResponse.json(
+            { error: 'Some leads are no longer available for purchase. They may have just been purchased by another user.' },
+            { status: 409 } // 409 Conflict
+          )
+        }
+        throw lockError
+      }
+
+      if (!lockedLeads || lockedLeads.length !== validated.leadIds.length) {
+        return NextResponse.json(
+          { error: 'Some leads are no longer available for purchase' },
+          { status: 400 }
+        )
+      }
+
+      leads = lockedLeads
+      // At this point, the leads are locked for this transaction
+      // No other transaction can purchase them until we commit or rollback
+    } catch (error: any) {
+      console.error('Failed to validate and lock leads:', error)
+      return NextResponse.json(
+        { error: 'Failed to validate lead availability', details: error.message },
+        { status: 500 }
       )
     }
 
@@ -240,14 +235,39 @@ export async function POST(request: NextRequest) {
 
       await repo.addPurchaseItems(purchase.id, purchaseItems)
 
-      // Deduct credits
-      await repo.deductCredits(userData.workspace_id, totalPrice)
+      // RACE CONDITION FIX: Use atomic function for credit deduction + lead marking + completion
+      // This prevents partial failures where credits are deducted but leads aren't marked sold
+      // All operations happen in a single database transaction (all-or-nothing)
+      const { data: completionResult, error: completionError } = await adminClient.rpc(
+        'complete_credit_lead_purchase',
+        {
+          p_purchase_id: purchase.id,
+          p_workspace_id: userData.workspace_id,
+          p_credit_amount: totalPrice,
+        }
+      )
 
-      // Mark leads as sold
-      await repo.markLeadsSold(validated.leadIds)
+      if (completionError || !completionResult || completionResult.length === 0) {
+        console.error('Failed to complete purchase:', completionError)
+        return NextResponse.json(
+          { error: 'Failed to complete purchase', details: completionError?.message },
+          { status: 500 }
+        )
+      }
 
-      // Complete the purchase
-      const completedPurchase = await repo.completePurchase(purchase.id)
+      const result = completionResult[0]
+      if (!result.success) {
+        return NextResponse.json(
+          { error: result.error_message || 'Failed to complete purchase' },
+          { status: 400 }
+        )
+      }
+
+      // Get the completed purchase for response
+      const completedPurchase = await repo.getPurchase(purchase.id, userData.workspace_id)
+      if (!completedPurchase) {
+        throw new Error('Failed to retrieve completed purchase')
+      }
 
       // Get full lead details for the buyer
       const purchasedLeads = await repo.getPurchasedLeads(purchase.id, userData.workspace_id)
@@ -279,7 +299,7 @@ export async function POST(request: NextRequest) {
         purchase: completedPurchase,
         leads: purchasedLeads,
         totalPrice,
-        creditsRemaining: balance - totalPrice,
+        creditsRemaining: result.new_credit_balance, // From atomic function
       }
 
       // Update idempotency key with successful response

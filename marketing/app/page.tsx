@@ -6,12 +6,12 @@ import { HumanHomePage } from "@/components/human-home-page"
 import { FAQSection } from "@/components/homepage/faq-section"
 
 export const metadata: Metadata = {
-  title: "AI Intent Systems That Never Sleep | Cursive",
-  description: "Identify and track website visitors, build targeted lists, launch direct mail campaigns, and maximize ad performance—all from one platform that unites verified B2C and B2B data.",
+  title: "Identify Website Visitors & Automate Outreach | Cursive",
+  description: "Turn anonymous visitors into qualified leads. Cursive identifies website visitors, enriches contact data, and automates AI-powered outreach.",
   keywords: "B2B lead generation, visitor identification, intent data, direct mail marketing, audience targeting, AI SDR, outbound automation",
   openGraph: {
-    title: "AI Intent Systems That Never Sleep | Cursive",
-    description: "Identify and track website visitors, build targeted lists, launch direct mail campaigns, and maximize ad performance—all from one platform that unites verified B2C and B2B data.",
+    title: "Identify Website Visitors & Automate Outreach | Cursive",
+    description: "Turn anonymous visitors into qualified leads. Cursive identifies website visitors, enriches contact data, and automates AI-powered outreach.",
     url: "https://www.meetcursive.com",
     siteName: "Cursive",
     images: [{
@@ -24,8 +24,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "AI Intent Systems That Never Sleep | Cursive",
-    description: "Identify and track website visitors, build targeted lists, launch direct mail campaigns, and maximize ad performance—all from one platform that unites verified B2C and B2B data.",
+    title: "Identify Website Visitors & Automate Outreach | Cursive",
+    description: "Turn anonymous visitors into qualified leads. Cursive identifies website visitors, enriches contact data, and automates AI-powered outreach.",
     images: ["https://www.meetcursive.com/cursive-social-preview.png"],
     creator: "@meetcursive",
   },
@@ -131,7 +131,7 @@ export default function HomePage() {
           <div className="mb-12 pb-6 border-b border-gray-200">
             <h1 className="text-2xl text-gray-900 font-bold mb-4">CURSIVE</h1>
             <p className="text-gray-700 leading-relaxed">
-              AI-powered B2B lead generation platform that identifies anonymous website visitors and automates multi-channel outreach. Build AI intent systems that never sleep.
+              Cursive identifies anonymous website visitors, enriches them with verified contact data, and automates personalized outreach to book more meetings.
             </p>
           </div>
 

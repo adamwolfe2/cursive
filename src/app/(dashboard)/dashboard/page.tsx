@@ -87,6 +87,61 @@ export default async function DashboardPage() {
         </div>
       </GradientCard>
 
+      {/* Getting Started Guide for New Users */}
+      {leadsCount === 0 && (
+        <GradientCard variant="primary" className="mb-8">
+          <div className="text-center py-8 px-4">
+            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
+              Let's Get Your First Leads
+            </h2>
+            <p className="text-white/90 mb-8 max-w-2xl mx-auto">
+              Choose how you want to use Cursive:
+            </p>
+
+            <div className="grid sm:grid-cols-3 gap-4 max-w-4xl mx-auto">
+              {/* Option 1: Browse Marketplace */}
+              <Link
+                href="/marketplace"
+                className="bg-white/10 hover:bg-white/20 border-2 border-white/30 rounded-xl p-6 transition-all text-left"
+              >
+                <div className="text-3xl mb-3">📦</div>
+                <h3 className="text-lg font-bold text-white mb-2">Browse Marketplace</h3>
+                <p className="text-sm text-white/80 mb-4">
+                  Buy pre-verified leads from our partners
+                </p>
+                <span className="text-xs text-white/70">Best for: Testing quickly</span>
+              </Link>
+
+              {/* Option 2: Install Tracking */}
+              <Link
+                href="/integrations"
+                className="bg-white/10 hover:bg-white/20 border-2 border-white/30 rounded-xl p-6 transition-all text-left"
+              >
+                <div className="text-3xl mb-3">👀</div>
+                <h3 className="text-lg font-bold text-white mb-2">Install Tracking</h3>
+                <p className="text-sm text-white/80 mb-4">
+                  Identify your website visitors automatically
+                </p>
+                <span className="text-xs text-white/70">Best for: Ongoing pipeline</span>
+              </Link>
+
+              {/* Option 3: Done-for-you */}
+              <Link
+                href="/services"
+                className="bg-white hover:bg-white/90 border-2 border-white rounded-xl p-6 transition-all text-left"
+              >
+                <div className="text-3xl mb-3">✨</div>
+                <h3 className="text-lg font-bold text-blue-600 mb-2">Get Done-For-You</h3>
+                <p className="text-sm text-blue-600 mb-4">
+                  We build + manage campaigns for you
+                </p>
+                <span className="text-xs text-blue-600/70">Best for: Hands-off approach</span>
+              </Link>
+            </div>
+          </div>
+        </GradientCard>
+      )}
+
       {/* Onboarding Checklist */}
       <div className="mb-8">
         <OnboardingChecklist />
@@ -139,7 +194,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* Service Tier Upsell Banner */}
-      {!activeSubscription && user.plan === 'free' && (
+      {!activeSubscription && user.plan === 'free' && leadsCount > 0 && (
         <GradientCard variant="primary" className="mb-8">
           <div className="flex flex-col sm:flex-row items-start gap-4">
             <div className="p-3 rounded-lg bg-white/20">
@@ -147,25 +202,27 @@ export default async function DashboardPage() {
             </div>
             <div className="flex-1">
               <h3 className="text-xl font-bold text-white mb-2">
-                Unlock Custom Lead Lists
+                Want More Leads?
               </h3>
               <p className="text-white/90 mb-4">
-                Get 500+ fresh, high-intent leads every month with Cursive Data. Starting at just $1k/mo.
+                Get 500+ fresh, verified leads delivered every month with Cursive Data. Starting at $1k/mo.
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
                 <Link
-                  href="/services/cursive-data"
+                  href="/services"
                   className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white hover:bg-zinc-50 text-blue-600 font-medium rounded-lg transition-colors"
                 >
-                  Explore Data Plans
+                  View Services
                   <ArrowRight className="h-4 w-4" />
                 </Link>
-                <Link
-                  href="/services"
+                <a
+                  href="https://cal.com/adamwolfe/cursive-ai-audit"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-2 px-6 py-3 border-2 border-white hover:bg-white/10 text-white font-medium rounded-lg transition-colors"
                 >
-                  Compare All Services
-                </Link>
+                  Book Call
+                </a>
               </div>
             </div>
           </div>

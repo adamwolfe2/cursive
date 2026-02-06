@@ -131,6 +131,7 @@ async function handleCreditPurchaseCompleted(session: Stripe.Checkout.Session): 
 /**
  * Handle completed lead purchases
  * Marks leads as sold, completes purchase, sends confirmation email
+ * IDEMPOTENT: Handles duplicate webhook deliveries gracefully
  */
 async function handleLeadPurchaseCompleted(session: Stripe.Checkout.Session): Promise<void> {
   const { purchase_id, workspace_id, user_id, lead_count } = session.metadata || {}
@@ -147,37 +148,45 @@ async function handleLeadPurchaseCompleted(session: Stripe.Checkout.Session): Pr
 
   safeLog(`[Stripe Webhook] Processing lead purchase: ${purchase_id}`)
 
-  const repo = new MarketplaceRepository()
   const adminClient = createAdminClient()
 
-  // Get purchase items to find lead IDs (use admin client since webhook has no user auth)
-  const { data: purchaseItems, error: itemsError } = await adminClient
-    .from('marketplace_purchase_items')
-    .select('lead_id')
-    .eq('purchase_id', purchase_id)
-
-  if (itemsError) {
-    safeError('[Stripe Webhook] Failed to get purchase items', { error: itemsError.message })
-    throw new Error(`Failed to get purchase items: ${itemsError.message}`)
-  }
-
-  const leadIds = (purchaseItems || []).map((item) => item.lead_id).filter(Boolean) as string[]
-
-  if (leadIds.length === 0) {
-    safeError('[Stripe Webhook] No lead IDs found for purchase', { purchase_id })
-    throw new Error(`No lead IDs found for purchase: ${purchase_id}`)
-  }
-
-  // Mark leads as sold
-  await repo.markLeadsSold(leadIds)
-
-  // Generate download URL
+  // RACE CONDITION FIX: Use atomic idempotent completion function
+  // This handles duplicate webhook deliveries by checking purchase status first
+  // If already completed, returns early without re-processing
   const downloadUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/marketplace/download/${purchase_id}`
 
-  // Complete the purchase with download URL
-  const completedPurchase = await repo.completePurchase(purchase_id, downloadUrl)
+  const { data: completionResult, error: completionError } = await adminClient.rpc(
+    'complete_stripe_lead_purchase',
+    {
+      p_purchase_id: purchase_id,
+      p_download_url: downloadUrl,
+    }
+  )
 
-  safeLog(`[Stripe Webhook] Lead purchase completed: ${purchase_id}, leads sold: ${leadIds.length}`)
+  if (completionError) {
+    safeError('[Stripe Webhook] Failed to complete purchase', { error: completionError.message })
+    throw new Error(`Failed to complete purchase: ${completionError.message}`)
+  }
+
+  if (!completionResult || completionResult.length === 0) {
+    safeError('[Stripe Webhook] No result from completion function', { purchase_id })
+    throw new Error('No result from completion function')
+  }
+
+  const result = completionResult[0]
+
+  // Check if this was a duplicate webhook delivery
+  if (result.already_completed) {
+    safeLog(`[Stripe Webhook] Purchase already completed (idempotent): ${purchase_id}`)
+    return // Early return - idempotent handling
+  }
+
+  if (!result.success) {
+    safeError('[Stripe Webhook] Purchase completion returned failure', { purchase_id })
+    throw new Error('Purchase completion failed')
+  }
+
+  safeLog(`[Stripe Webhook] Lead purchase completed: ${purchase_id}, leads sold: ${result.lead_ids_marked.length}`)
 
   // Send confirmation email (don't fail purchase for email errors)
   try {

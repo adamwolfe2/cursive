@@ -14,34 +14,22 @@ interface ChecklistItem {
 
 const CHECKLIST_ITEMS: Omit<ChecklistItem, 'completed'>[] = [
   {
-    id: 'profile',
-    title: 'Complete your profile',
-    description: 'Add your company details and contact information',
-    href: '/settings/client-profile',
+    id: 'path',
+    title: 'Choose your path',
+    description: 'Marketplace, visitor tracking, or done-for-you service',
+    href: '/dashboard',
   },
   {
-    id: 'team',
-    title: 'Invite team members',
-    description: 'Add collaborators to your workspace',
-    href: '/settings/team',
+    id: 'payment',
+    title: 'Set up payment method',
+    description: 'Add a payment method to get started',
+    href: '/settings/billing',
   },
   {
-    id: 'credits',
-    title: 'Purchase marketplace credits',
-    description: 'Buy credits to unlock lead purchases',
-    href: '/marketplace/credits',
-  },
-  {
-    id: 'leads',
-    title: 'Browse marketplace leads',
-    description: 'Find and purchase high-quality leads',
+    id: 'action',
+    title: 'Take your first action',
+    description: 'Create a campaign, install tracking, or browse leads',
     href: '/marketplace',
-  },
-  {
-    id: 'routing',
-    title: 'Set up lead preferences',
-    description: 'Configure your lead targeting and preferences',
-    href: '/my-leads/preferences',
   },
 ]
 

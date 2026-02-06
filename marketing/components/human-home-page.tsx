@@ -27,14 +27,14 @@ export function HumanHomePage() {
             className="text-center max-w-5xl mx-auto mb-12"
           >
             <h1 className="text-5xl lg:text-7xl font-light text-gray-900 mb-6 leading-tight">
-              AI Intent Systems
+              See Who's Visiting Your Site.
               <span className="block text-gray-500 mt-2">
-                That Never Sleep.
+                Reach Out Before They Leave.
               </span>
             </h1>
 
             <p className="text-xl text-gray-600 mb-8 leading-relaxed max-w-3xl mx-auto">
-              <span className="font-cursive text-gray-900 text-2xl">Cursive</span> identifies real people actively searching for your service, enriches them with verified contact data, and activates them through automated outbound.
+              <span className="font-cursive text-gray-900 text-2xl">Cursive</span> reveals anonymous website visitors, enriches them with verified contact data, and automates personalized outreach—so you never miss a warm lead.
             </p>
 
             {/* OPTIMIZED: Stats ABOVE fold for credibility */}
@@ -111,7 +111,7 @@ export function HumanHomePage() {
           </div>
 
           {/* OPTIMIZED: Benefits as outcomes, not features */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             {benefitPillars.map((pillar, i) => {
               const Icon = pillar.icon
               return (
@@ -226,22 +226,17 @@ const benefitPillars: Array<{
   {
     icon: Eye,
     title: "Know Who's Interested",
-    description: 'Identify up to 70% of anonymous visitors—see which companies viewed your pricing page this week.',
-  },
-  {
-    icon: Target,
-    title: 'Reach In-Market Buyers',
-    description: 'Access 220M+ verified contacts actively showing purchase intent across 30,000+ categories.',
+    description: '70% of your anonymous visitors identified with name, company, and email—before they fill out a form.',
   },
   {
     icon: Bot,
-    title: 'Automate Follow-Up',
-    description: 'AI agents work 24/7 to qualify leads, send personalized outreach, and book meetings while you sleep.',
+    title: 'Reach Them Fast',
+    description: 'AI agents send personalized outreach across email, LinkedIn, and SMS within hours of their visit.',
   },
   {
     icon: TrendingUp,
-    title: 'Convert More Traffic',
-    description: 'Stop wasting ad spend. Turn existing visitors into qualified leads without increasing your budget.',
+    title: 'Book More Meetings',
+    description: 'Autonomous follow-ups and meeting scheduling that runs 24/7. No manual work required.',
   },
 ]
 

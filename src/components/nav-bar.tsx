@@ -34,7 +34,7 @@ export function NavBar() {
       roles: ['owner', 'admin', 'member'],
     },
     {
-      name: 'Queries',
+      name: 'Lead Search',
       href: '/queries',
       roles: ['owner', 'admin', 'member'],
     },
