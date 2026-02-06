@@ -20,12 +20,15 @@ export default function InstallPixelDemo() {
   const [showInstalled, setShowInstalled] = useState(false);
   const [showEyes, setShowEyes] = useState(false);
   const [eyePositions, setEyePositions] = useState<Array<{ x: number; y: number; delay: number }>>([]);
+  const [hasAnimated, setHasAnimated] = useState(false);
 
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, amount: 0.3 });
+  const isInView = useInView(ref, { amount: 0.3 });
 
   useEffect(() => {
-    if (isInView && displayedCode === '') {
+    // Start animation when component comes into view (and hasn't animated yet)
+    if (isInView && !hasAnimated) {
+      setHasAnimated(true);
       let currentIndex = 0;
       const typingInterval = setInterval(() => {
         if (currentIndex < FULL_CODE.length) {
@@ -46,11 +49,11 @@ export default function InstallPixelDemo() {
             setShowEyes(true);
           }, 300);
         }
-      }, 30); // Type at 30ms per character for smooth effect
+      }, 40); // Type at 40ms per character for smooth effect
 
       return () => clearInterval(typingInterval);
     }
-  }, [isInView, displayedCode]);
+  }, [isInView, hasAnimated]);
 
   return (
     <div ref={ref} className="w-full relative">

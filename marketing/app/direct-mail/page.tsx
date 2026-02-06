@@ -549,26 +549,35 @@ export default function DirectMailPage() {
                 Integrate with CRMs, email platforms, and marketing automation tools
               </p>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 max-w-5xl mx-auto mb-8">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 max-w-4xl mx-auto mb-8">
               {[
-                "Salesforce", "HubSpot", "Marketo", "Pardot", "Pipedrive", "Zoho CRM",
-                "Mailchimp", "SendGrid", "ActiveCampaign", "Klaviyo", "Braze", "Customer.io",
-                "Shopify", "WooCommerce", "BigCommerce", "Magento", "Stripe", "Zapier"
+                { name: "Salesforce", logo: "/integrations/salesforce.svg" },
+                { name: "HubSpot", logo: "/integrations/hubspot-svgrepo-com.svg" },
+                { name: "Klaviyo", logo: "/integrations/klaviyo.svg" },
+                { name: "Shopify", logo: "/integrations/shopify.svg" },
+                { name: "Stripe", logo: "/integrations/public/integrations/stripe.svg" },
+                { name: "Zapier", logo: "/integrations/public/integrations/zapier.svg" }
               ].map((integration, i) => (
                 <motion.div
                   key={i}
                   initial={{ opacity: 0, scale: 0.9 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
-                  transition={{ delay: i * 0.02 }}
-                  className="bg-gray-50 rounded-lg p-4 border border-gray-200 flex items-center justify-center text-center h-20"
+                  transition={{ delay: i * 0.05 }}
+                  whileHover={{ scale: 1.05, transition: { duration: 0.15 } }}
+                  className="bg-white rounded-lg p-6 border border-gray-200 hover:border-[#007AFF] hover:shadow-lg transition-all duration-150 cursor-pointer flex items-center justify-center aspect-square"
                 >
-                  <span className="text-sm font-medium text-gray-700">{integration}</span>
+                  <img
+                    src={integration.logo}
+                    alt={`${integration.name} integration`}
+                    className="w-12 h-12 object-contain"
+                    loading="lazy"
+                  />
                 </motion.div>
               ))}
             </div>
             <div className="text-center">
-              <p className="text-gray-600 mb-4">And 180+ more integrations</p>
+              <p className="text-gray-600 mb-4">And 200+ more integrations</p>
               <Button variant="outline" href="/integrations">
                 View All Integrations
                 <ArrowRight className="ml-2 h-4 w-4" />
@@ -577,60 +586,6 @@ export default function DirectMailPage() {
           </Container>
         </section>
 
-        {/* Social Proof */}
-        <section className="py-20 bg-[#F7F9FB]">
-          <Container>
-            <div className="max-w-4xl mx-auto">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="bg-gradient-to-br from-blue-50 to-white rounded-2xl p-12 border border-blue-100"
-              >
-                <div className="flex items-start gap-4 mb-6">
-                  <div className="flex gap-1">
-                    {[...Array(5)].map((_, i) => (
-                      <svg key={i} className="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 20 20">
-                        <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
-                      </svg>
-                    ))}
-                  </div>
-                </div>
-                <blockquote className="text-2xl text-gray-900 mb-6 leading-relaxed">
-                  "We added direct mail to our webinar no-show sequence and recovered 25% of registrants who didn't attend. The physical postcard stands out when emails don't. ROI was positive from day one."
-                </blockquote>
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-medium">
-                    LT
-                  </div>
-                  <div>
-                    <div className="font-medium text-gray-900">Lisa Thompson</div>
-                    <div className="text-sm text-gray-600">VP of Marketing, Event Platform</div>
-                  </div>
-                </div>
-              </motion.div>
-              <div className="grid md:grid-cols-3 gap-8 mt-12">
-                {[
-                  { metric: "3-5x", label: "Higher response vs digital-only" },
-                  { metric: "$1.50", label: "Starting price per postcard" },
-                  { metric: "48hrs", label: "Average delivery time" }
-                ].map((stat, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.1 }}
-                    className="text-center"
-                  >
-                    <div className="text-4xl text-[#007AFF] font-light mb-2">{stat.metric}</div>
-                    <div className="text-sm text-gray-600">{stat.label}</div>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          </Container>
-        </section>
 
         {/* FAQ */}
         <section className="py-20 bg-white">

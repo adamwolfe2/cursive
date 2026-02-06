@@ -4,10 +4,15 @@ import { Button } from "@/components/ui/button"
 import { Container } from "@/components/ui/container"
 import { motion } from "framer-motion"
 import { ArrowRight, Sparkles, Search, ShoppingCart, Mail, Target, BarChart3, Zap } from "lucide-react"
+import { DashboardCTA } from "@/components/dashboard-cta"
+import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
 
 export default function PlatformPage() {
   return (
-    <main className="overflow-hidden">
+    <>
+      {/* Human View */}
+      <HumanView>
+        <main className="overflow-hidden">
       {/* Hero Section */}
       <section className="relative py-24 bg-white">
         <Container>
@@ -583,39 +588,150 @@ export default function PlatformPage() {
         </Container>
       </section>
 
-      {/* Final CTA */}
-      <section className="py-24 bg-[#F7F9FB]">
-        <Container>
-          <div className="bg-[#007AFF] rounded-3xl p-12 text-center text-white shadow-lg max-w-4xl mx-auto">
-            <h2 className="text-4xl lg:text-5xl font-light mb-4">
-              Ready to See It in Action?
-            </h2>
-            <p className="text-xl mb-8 opacity-90">
-              Book a personalized demo and we'll show you exactly how <span className="font-cursive text-2xl">Cursive</span> can transform your pipeline.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Button
-                size="lg"
-                className="bg-white text-primary hover:bg-gray-100"
-                href="https://cal.com/adamwolfe/cursive-ai-audit"
-                target="_blank"
-              >
-                Book a Demo
-                <ArrowRight className="w-5 h-5" />
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-white text-white hover:bg-white/10"
-                href="https://leads.meetcursive.com"
-                target="_blank"
-              >
-                Try the Platform
-              </Button>
-            </div>
-          </div>
-        </Container>
-      </section>
+      {/* Dashboard CTA */}
+      <DashboardCTA
+        headline="Ready to See It"
+        subheadline="In Action?"
+        description="Book a personalized demo and we'll show you exactly how Cursive can transform your pipeline."
+      />
     </main>
+  </HumanView>
+
+  {/* Machine View - AEO-Optimized */}
+  <MachineView>
+    <MachineContent>
+      {/* Header */}
+      <div className="mb-12 pb-6 border-b border-gray-200">
+        <h1 className="text-2xl text-gray-900 font-bold mb-4">CURSIVE PLATFORM</h1>
+        <p className="text-gray-700 leading-relaxed">
+          Complete B2B lead generation platform featuring AI Studio, People Search, Lead Marketplace, Campaign Manager, and Visitor Intelligence. Built for self-service and managed services.
+        </p>
+      </div>
+
+      {/* Platform Features */}
+      <MachineSection title="Platform Features">
+        <MachineList items={[
+          {
+            label: "AI Studio",
+            href: "https://leads.meetcursive.com/ai-studio",
+            description: "Train AI on your brand voice to generate on-brand email sequences, landing pages, and campaign copy"
+          },
+          {
+            label: "People Search",
+            href: "https://leads.meetcursive.com/people-search",
+            description: "Search 500M+ verified B2B contacts with real-time email verification and LinkedIn enrichment"
+          },
+          {
+            label: "Lead Marketplace",
+            href: "https://leads.meetcursive.com/marketplace",
+            description: "Buy pre-verified lead lists on demand with instant CSV download. Pay-per-lead pricing with credit system"
+          },
+          {
+            label: "Campaign Manager",
+            description: "Multi-channel outbound campaigns with AI-powered personalization, A/B testing, and deliverability optimization (requires Outbound/Pipeline tier)"
+          },
+          {
+            label: "Visitor Intelligence",
+            description: "Identify anonymous website visitors, export decision-maker contacts, and trigger behavior-based campaigns ($750/mo + $0.50/visitor)"
+          }
+        ]} />
+      </MachineSection>
+
+      {/* AI Studio Details */}
+      <MachineSection title="AI Studio - Brand Voice Training">
+        <p className="text-gray-700 mb-4">
+          Upload brand assets (logos, colors, voice guidelines, example copy) and AI learns your tone, style, and messaging patterns to generate on-brand content.
+        </p>
+        <MachineList items={[
+          "Upload Brand Assets - Logos, colors, voice guidelines, example copy",
+          "AI Learns Your Voice - Analyzes tone, style, and messaging patterns",
+          "Generate On-Brand Content - Email sequences, landing pages, social copy"
+        ]} />
+      </MachineSection>
+
+      {/* People Search Details */}
+      <MachineSection title="People Search - 500M+ Contacts">
+        <p className="text-gray-700 mb-4">
+          Search verified B2B contacts by name, company, title, location, industry, and more with real-time validation.
+        </p>
+        <MachineList items={[
+          "Real-time Email Verification - Every email validated before export",
+          "LinkedIn Profile Enrichment - Direct links to profiles and activity",
+          "Company Firmographics - Revenue, employee count, tech stack, funding"
+        ]} />
+      </MachineSection>
+
+      {/* Lead Marketplace Details */}
+      <MachineSection title="Lead Marketplace - On-Demand Lists">
+        <p className="text-gray-700 mb-4">
+          Browse pre-verified B2B contact lists with instant download. No subscriptions required.
+        </p>
+        <MachineList items={[
+          "Instant CSV Download - Purchase and download immediately",
+          "Filter by Industry & Title - Find exactly who you're looking for",
+          "Credit-Based System - Buy credits, use anytime"
+        ]} />
+        <div className="mt-4 bg-gray-100 rounded-lg p-4">
+          <p className="text-gray-900 mb-2">Sample Pricing:</p>
+          <MachineList items={[
+            "VP Sales - SaaS Companies: $2.50/lead (1,247 contacts)",
+            "Marketing Directors - E-commerce: $2.00/lead (892 contacts)",
+            "CEOs - FinTech Startups: $3.50/lead (445 contacts)"
+          ]} />
+        </div>
+      </MachineSection>
+
+      {/* Campaign Manager Details */}
+      <MachineSection title="Campaign Manager - Multi-Channel Outbound">
+        <p className="text-gray-700 mb-4">
+          Build, schedule, and track email campaigns with AI-powered personalization. Requires Outbound or Pipeline tier.
+        </p>
+        <MachineList items={[
+          "AI-Written Sequences - Personalized at scale",
+          "A/B Testing Built-in - Test subject lines, copy, timing",
+          "Deliverability Optimization - Domain warming, sender reputation monitoring"
+        ]} />
+      </MachineSection>
+
+      {/* Visitor Intelligence Details */}
+      <MachineSection title="Visitor Intelligence - Website Tracking">
+        <p className="text-gray-700 mb-4">
+          Install tracking pixel to identify anonymous website visitors in real-time.
+        </p>
+        <MachineList items={[
+          "Company Identification - See which companies visit your site",
+          "Decision-Maker Contact Export - Get emails for key stakeholders",
+          "Behavior-Based Retargeting - Campaigns based on pages visited"
+        ]} />
+        <div className="mt-4 bg-gray-100 rounded-lg p-4">
+          <p className="text-gray-900 mb-2">Pricing:</p>
+          <p className="text-gray-700">$750/mo + $0.50 per identified visitor (includes pixel installation and setup)</p>
+        </div>
+      </MachineSection>
+
+      {/* Getting Started */}
+      <MachineSection title="Getting Started">
+        <MachineList items={[
+          {
+            label: "Try the Platform",
+            href: "https://leads.meetcursive.com",
+            description: "Start using AI Studio, People Search, and Lead Marketplace"
+          },
+          {
+            label: "Book a Demo",
+            href: "https://cal.com/adamwolfe/cursive-ai-audit",
+            description: "See personalized walkthrough of Campaign Manager and Visitor Intelligence"
+          },
+          {
+            label: "View Pricing",
+            href: "https://meetcursive.com/pricing",
+            description: "Explore pricing tiers and add-on features"
+          }
+        ]} />
+      </MachineSection>
+
+    </MachineContent>
+  </MachineView>
+</>
   )
 }

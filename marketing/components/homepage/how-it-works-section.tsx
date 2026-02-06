@@ -4,22 +4,14 @@ import { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Container } from "@/components/ui/container"
 import {
-  MousePointerClick,
-  Database,
-  UserPlus,
-  Zap,
-  Rocket,
-  TrendingUp,
   ChevronLeft,
-  ChevronRight,
-  type LucideIcon
+  ChevronRight
 } from "lucide-react"
 
 interface ProcessStep {
   number: number
   title: string
   description: string
-  icon: LucideIcon
   details: string[]
   color: string
 }
@@ -29,7 +21,6 @@ const processSteps: ProcessStep[] = [
     number: 1,
     title: "Visitor Lands on Website",
     description: "Pixel fires, collects data",
-    icon: MousePointerClick,
     details: [
       "Tracking pixel loads instantly",
       "Captures page views, time on site, and behavior",
@@ -42,7 +33,6 @@ const processSteps: ProcessStep[] = [
     number: 2,
     title: "Data Enrichment",
     description: "IP resolution, device fingerprinting, identity graph matching",
-    icon: Database,
     details: [
       "IP address resolved to company location",
       "Device fingerprinting for cross-session tracking",
@@ -55,7 +45,6 @@ const processSteps: ProcessStep[] = [
     number: 3,
     title: "Profile Building",
     description: "Append firmographic, demographic, behavioral data",
-    icon: UserPlus,
     details: [
       "Company details (size, industry, revenue)",
       "Individual contacts (title, department, seniority)",
@@ -68,7 +57,6 @@ const processSteps: ProcessStep[] = [
     number: 4,
     title: "Real-time Scoring",
     description: "Intent signals, fit analysis, buying stage",
-    icon: Zap,
     details: [
       "Intent signals from 450B+ monthly data points",
       "ICP fit score based on your criteria",
@@ -81,7 +69,6 @@ const processSteps: ProcessStep[] = [
     number: 5,
     title: "Audience Activation",
     description: "Sync to CRM, ad platforms, email tools",
-    icon: Rocket,
     details: [
       "Real-time sync to Salesforce, HubSpot, Pipedrive",
       "Push to ad platforms (Google, Facebook, LinkedIn)",
@@ -94,7 +81,6 @@ const processSteps: ProcessStep[] = [
     number: 6,
     title: "Conversion Tracking",
     description: "Close the loop, prove ROI",
-    icon: TrendingUp,
     details: [
       "Track conversions back to original visit",
       "Attribution across multiple touchpoints",
@@ -141,7 +127,6 @@ export function HowItWorksSection() {
   }
 
   const currentStep = processSteps[currentIndex]
-  const Icon = currentStep.icon
 
   return (
     <section className="py-20 bg-white">
@@ -178,23 +163,13 @@ export function HowItWorksSection() {
               >
                 {/* Step Card */}
                 <div className="bg-white rounded-2xl border border-gray-200 p-8 lg:p-10 shadow-lg hover:shadow-xl transition-shadow">
-                  {/* Icon and Number */}
-                  <div className="flex items-start justify-between mb-6">
-                    <div className="flex items-center gap-4">
-                      <div
-                        className="w-20 h-20 rounded-2xl flex items-center justify-center shadow-lg flex-shrink-0"
-                        style={{ backgroundColor: currentStep.color }}
-                      >
-                        <Icon className="w-10 h-10 text-white" />
-                      </div>
-                      <div>
-                        <div className="text-5xl font-light text-gray-200 leading-none">
-                          {currentStep.number}
-                        </div>
-                        <div className="text-xs text-gray-500 uppercase tracking-wider mt-1">
-                          Step {currentStep.number}
-                        </div>
-                      </div>
+                  {/* Step Number */}
+                  <div className="mb-6">
+                    <div className="text-5xl font-light text-gray-200 leading-none">
+                      {currentStep.number}
+                    </div>
+                    <div className="text-xs text-gray-500 uppercase tracking-wider mt-1">
+                      Step {currentStep.number}
                     </div>
                   </div>
 

@@ -6,6 +6,7 @@ import { motion } from "framer-motion"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateBreadcrumbSchema } from "@/lib/seo/structured-data"
 import { DashboardPreview } from "@/components/dashboard-preview"
+import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
 
 export default function AgenciesPage() {
   return (
@@ -15,7 +16,10 @@ export default function AgenciesPage() {
         { name: 'Industries', url: 'https://meetcursive.com/industries' },
         { name: 'Marketing Agencies', url: 'https://meetcursive.com/industries/agencies' },
       ])} />
-      <main>
+
+      {/* Human View */}
+      <HumanView>
+        <main>
         <section className="pt-24 pb-20 bg-white">
           <Container>
             <div className="max-w-5xl mx-auto">
@@ -212,7 +216,106 @@ export default function AgenciesPage() {
           </Container>
         </section>
       </main>
-    </>
+    </HumanView>
+
+    {/* Machine View - AEO-Optimized */}
+    <MachineView>
+      <MachineContent>
+        {/* Header */}
+        <div className="mb-12 pb-6 border-b border-gray-200">
+          <h1 className="text-2xl text-gray-900 font-bold mb-4">CURSIVE FOR MARKETING AGENCIES</h1>
+          <p className="text-gray-700 leading-relaxed">
+            White-label lead generation platform for marketing agencies. Deliver visitor identification, intent audiences, and direct mail campaigns to clients under your own brand.
+          </p>
+        </div>
+
+        {/* Agency Solutions */}
+        <MachineSection title="Solutions for Agencies">
+          <MachineList items={[
+            {
+              label: "White-Label Platform",
+              description: "Rebrand Cursive platform with your agency logo, colors, and domain"
+            },
+            {
+              label: "Client Data Isolation",
+              description: "Separate workspaces for each client with full data security"
+            },
+            {
+              label: "Revenue Share Program",
+              description: "Earn recurring commission on client usage"
+            },
+            {
+              label: "Agency Dashboard",
+              description: "Manage all clients from single admin panel"
+            }
+          ]} />
+        </MachineSection>
+
+        {/* Benefits */}
+        <MachineSection title="Benefits">
+          <div className="space-y-4">
+            <div>
+              <p className="text-white mb-2">Expand Service Offerings:</p>
+              <p className="text-gray-400">
+                Add visitor identification, intent audiences, and direct mail to your service menu without building technology in-house.
+              </p>
+            </div>
+
+            <div>
+              <p className="text-white mb-2">Increase Client Retention:</p>
+              <p className="text-gray-400">
+                Provide measurable results with lead generation and campaign automation that clients can't get elsewhere.
+              </p>
+            </div>
+
+            <div>
+              <p className="text-white mb-2">Generate Recurring Revenue:</p>
+              <p className="text-gray-400">
+                Monthly platform fees create predictable, scalable revenue streams alongside your service work.
+              </p>
+            </div>
+
+            <div>
+              <p className="text-white mb-2">Custom Reporting:</p>
+              <p className="text-gray-400">
+                White-label reports and dashboards that showcase results and prove ROI to your clients.
+              </p>
+            </div>
+          </div>
+        </MachineSection>
+
+        {/* Pricing */}
+        <MachineSection title="Agency Pricing">
+          <p className="text-gray-700 mb-4">
+            Custom pricing for agencies based on number of clients and usage volume. Typical agency partnerships include:
+          </p>
+          <MachineList items={[
+            "White-label platform access",
+            "Revenue share on client usage",
+            "Dedicated agency support",
+            "Co-marketing opportunities"
+          ]} />
+        </MachineSection>
+
+        {/* Getting Started */}
+        <MachineSection title="Partner with Cursive">
+          <MachineList items={[
+            {
+              label: "Schedule Partnership Call",
+              href: "https://cal.com/adamwolfe/cursive-ai-audit",
+              description: "Discuss white-label options and pricing"
+            },
+            {
+              label: "Contact Sales",
+              href: "https://meetcursive.com/contact",
+              description: "Get custom agency pricing"
+            }
+          ]} />
+        </MachineSection>
+
+      </MachineContent>
+    </MachineView>
+  </>
   )
 }
 

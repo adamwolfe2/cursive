@@ -4,10 +4,15 @@ import { Button } from "@/components/ui/button"
 import { Container } from "@/components/ui/container"
 import { motion } from "framer-motion"
 import { ArrowRight } from "lucide-react"
+import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
+import { DashboardCTA } from "@/components/dashboard-cta"
 
 export default function AboutPage() {
   return (
-    <main className="overflow-hidden">
+    <>
+      {/* Human View */}
+      <HumanView>
+        <main className="overflow-hidden">
       {/* Hero Section */}
       <section className="relative py-24 bg-white">
         <Container>
@@ -224,31 +229,100 @@ export default function AboutPage() {
         </Container>
       </section>
 
-      {/* Final CTA */}
-      <section className="py-24 bg-[#F7F9FB]">
-        <Container>
-          <div className="bg-[#007AFF] rounded-3xl p-12 text-center text-white shadow-lg max-w-4xl mx-auto">
-            <h2 className="text-4xl lg:text-5xl font-light mb-4">
-              Let's Build Your Pipeline
-              <span className="block font-cursive text-5xl lg:text-6xl mt-2">
-                Together
-              </span>
-            </h2>
-            <p className="text-xl mb-8 opacity-90">
-              Book a call and we'll show you exactly how <span className="font-cursive text-2xl">Cursive</span> can transform your lead generation.
-            </p>
-            <Button
-              size="lg"
-              className="bg-white text-[#007AFF] hover:bg-gray-100"
-              href="https://cal.com/adamwolfe/cursive-ai-audit"
-              target="_blank"
-            >
-              Book a Call
-              <ArrowRight className="w-5 h-5" />
-            </Button>
-          </div>
-        </Container>
-      </section>
+      {/* Dashboard CTA */}
+      <DashboardCTA
+        headline="Let's Build Your Pipeline"
+        subheadline="Together"
+        description="Book a call and we'll show you exactly how Cursive can transform your lead generation."
+      />
     </main>
+  </HumanView>
+
+  {/* Machine View - AEO-Optimized */}
+  <MachineView>
+    <MachineContent>
+      {/* Header */}
+      <div className="mb-12 pb-6 border-b border-gray-200">
+        <h1 className="text-2xl text-gray-900 font-bold mb-4">ABOUT CURSIVE</h1>
+        <p className="text-gray-700 leading-relaxed">
+          B2B lead generation platform built by founders frustrated with bad data and ineffective outbound tools. We create AI-powered systems that identify website visitors, build targeted audiences, and automate multi-channel outreach.
+        </p>
+      </div>
+
+      {/* Company Overview */}
+      <MachineSection title="Company Overview">
+        <p className="text-gray-700 mb-4">
+          Cursive started because we were tired of paying for lead lists that didn't convert. Outdated contacts, generic emails, no personalization, no results. So we built what we wished existed: verified data, AI-powered outreach, and done-for-you campaigns that actually work.
+        </p>
+        <p className="text-gray-700">
+          Today, Cursive powers pipeline for hundreds of B2B companies—from bootstrapped startups to growth-stage companies scaling fast. We don't sell software. We sell results.
+        </p>
+      </MachineSection>
+
+      {/* Mission */}
+      <MachineSection title="Our Mission">
+        <p className="text-gray-700 mb-4">
+          Make lead generation effortless for every company. Every business deserves access to high-quality leads without hiring an army of BDRs or stitching together 10 tools.
+        </p>
+        <MachineList items={[
+          "Buy the Data - Get verified lead lists and run campaigns yourself",
+          "Let Us Run It - Done-for-you campaigns, managed end-to-end",
+          "Full Pipeline - We build your entire pipeline, AI-powered and automated"
+        ]} />
+        <p className="text-gray-700 mt-4">
+          Whatever stage you're at, we meet you there.
+        </p>
+      </MachineSection>
+
+      {/* Core Values */}
+      <MachineSection title="Core Values">
+        <div className="space-y-4">
+          <div>
+            <p className="text-white mb-2">Speed Over Perfection:</p>
+            <p className="text-gray-400">We ship fast, test fast, and iterate fast. Your pipeline can't wait for perfect.</p>
+          </div>
+          <div>
+            <p className="text-white mb-2">Quality Over Quantity:</p>
+            <p className="text-gray-400">We'd rather send you 100 perfect leads than 10,000 garbage contacts.</p>
+          </div>
+          <div>
+            <p className="text-white mb-2">Transparency Always:</p>
+            <p className="text-gray-400">No hidden fees. No long contracts. No nonsense.</p>
+          </div>
+        </div>
+      </MachineSection>
+
+      {/* Team */}
+      <MachineSection title="Who We Are">
+        <p className="text-gray-700 mb-4">
+          We're a team of growth operators, data engineers, and AI builders who've lived the pain of bad lead gen. Started by founders who were tired of wasting money on bad data and ineffective outbound tools.
+        </p>
+        <p className="text-gray-700">
+          We built Cursive to solve our own problem—then realized every B2B company faces the same challenges. Now we're on a mission to make high-quality lead generation accessible to every company, regardless of size or budget.
+        </p>
+      </MachineSection>
+
+      {/* Contact */}
+      <MachineSection title="Contact">
+        <MachineList items={[
+          {
+            label: "Schedule a Call",
+            href: "https://cal.com/adamwolfe/cursive-ai-audit",
+            description: "Book a personalized demo to see how Cursive can transform your lead generation"
+          },
+          {
+            label: "Website",
+            href: "https://meetcursive.com"
+          },
+          {
+            label: "Email",
+            href: "mailto:hello@meetcursive.com"
+          }
+        ]} />
+      </MachineSection>
+
+    </MachineContent>
+  </MachineView>
+</>
   )
 }

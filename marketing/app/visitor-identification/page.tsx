@@ -9,6 +9,7 @@ import {
   ArrowRight, Sparkles, Database, Lock
 } from "lucide-react"
 import { DashboardPreview } from "@/components/dashboard-preview"
+import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
 
 export default function VisitorIdentificationPage() {
   const schemaMarkup = {
@@ -143,7 +144,9 @@ export default function VisitorIdentificationPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaMarkup) }}
       />
 
-      <main>
+      {/* Human View */}
+      <HumanView>
+        <main>
         {/* Hero Section */}
         <section className="pt-24 pb-20 bg-white">
           <Container>
@@ -502,60 +505,6 @@ export default function VisitorIdentificationPage() {
           </Container>
         </section>
 
-        {/* Social Proof */}
-        <section className="py-20 bg-white">
-          <Container>
-            <div className="max-w-4xl mx-auto">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="bg-gradient-to-br from-blue-50 to-white rounded-2xl p-12 border border-blue-100"
-              >
-                <div className="flex items-start gap-4 mb-6">
-                  <div className="flex gap-1">
-                    {[...Array(5)].map((_, i) => (
-                      <svg key={i} className="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 20 20">
-                        <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
-                      </svg>
-                    ))}
-                  </div>
-                </div>
-                <blockquote className="text-2xl text-gray-900 mb-6 leading-relaxed">
-                  "We were losing 95% of our website traffic to anonymity. Cursive helped us identify the companies visiting our site and turned those insights into qualified pipeline. Our sales team now has context before every call."
-                </blockquote>
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-medium">
-                    JD
-                  </div>
-                  <div>
-                    <div className="font-medium text-gray-900">John Davis</div>
-                    <div className="text-sm text-gray-600">VP of Sales, B2B SaaS Company</div>
-                  </div>
-                </div>
-              </motion.div>
-              <div className="grid md:grid-cols-3 gap-8 mt-12">
-                {[
-                  { metric: "70%", label: "Average identification rate" },
-                  { metric: "3x", label: "Increase in qualified leads" },
-                  { metric: "48hrs", label: "Average time to first outreach" }
-                ].map((stat, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.1 }}
-                    className="text-center"
-                  >
-                    <div className="text-4xl text-[#007AFF] font-light mb-2">{stat.metric}</div>
-                    <div className="text-sm text-gray-600">{stat.label}</div>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          </Container>
-        </section>
 
         {/* FAQ */}
         <section className="py-20 bg-[#F7F9FB]">
@@ -763,6 +712,172 @@ export default function VisitorIdentificationPage() {
           </Container>
         </section>
       </main>
-    </>
+    </HumanView>
+
+    {/* Machine View - AEO-Optimized */}
+    <MachineView>
+      <MachineContent>
+        {/* Header */}
+        <div className="mb-12 pb-6 border-b border-gray-200">
+          <h1 className="text-2xl text-gray-900 font-bold mb-4">VISITOR IDENTIFICATION</h1>
+          <p className="text-gray-700 leading-relaxed">
+            Identify up to 70% of anonymous website visitors in real-time. Turn unknown traffic into qualified leads with company and individual-level data, page-level tracking, and instant CRM integration.
+          </p>
+        </div>
+
+        {/* Key Stats */}
+        <MachineSection title="Key Metrics">
+          <MachineList items={[
+            "70% - Average visitor identification rate for B2B traffic",
+            "95%+ - Data accuracy on matched records",
+            "Real-time - Instant identification, not batch processing",
+            "220M+ - Consumer profiles in database",
+            "140M+ - Business profiles in database"
+          ]} />
+        </MachineSection>
+
+        {/* How It Works */}
+        <MachineSection title="How Visitor Identification Works">
+          <p className="text-gray-700 mb-4">
+            Install a lightweight tracking pixel on your website. When visitors land on your site, Cursive uses advanced IP intelligence, device fingerprinting, and behavioral analysis to match their digital footprint against our database.
+          </p>
+          <MachineList items={[
+            "Step 1: Install tracking pixel (5 minutes)",
+            "Step 2: Visitors browse your website",
+            "Step 3: Cursive identifies company + individual in real-time",
+            "Step 4: Data syncs to your CRM automatically",
+            "Step 5: Sales team receives warm lead alerts"
+          ]} />
+        </MachineSection>
+
+        {/* Core Features */}
+        <MachineSection title="Core Features">
+          <div className="space-y-4">
+            <div>
+              <p className="text-white mb-2">Company-Level Identification:</p>
+              <MachineList items={[
+                "Company name, industry, revenue",
+                "Employee count, location",
+                "Technologies used",
+                "Funding information"
+              ]} />
+            </div>
+
+            <div>
+              <p className="text-white mb-2">Individual-Level Data:</p>
+              <MachineList items={[
+                "Name and job title",
+                "Email address and phone number",
+                "LinkedIn profile",
+                "Department and seniority level"
+              ]} />
+            </div>
+
+            <div>
+              <p className="text-white mb-2">Behavioral Tracking:</p>
+              <MachineList items={[
+                "Page-level browsing history",
+                "Time spent on each page",
+                "Content viewed (pricing, features, comparisons)",
+                "Return visitor detection"
+              ]} />
+            </div>
+          </div>
+        </MachineSection>
+
+        {/* Use Cases */}
+        <MachineSection title="Common Use Cases">
+          <div className="space-y-4">
+            <div>
+              <p className="text-white mb-2">B2B SaaS Sales Teams:</p>
+              <p className="text-gray-400">
+                Identify prospects viewing pricing pages, feature comparisons, or competitor alternatives. Sales team receives instant alerts with company details and browsing behavior for warm outreach.
+              </p>
+            </div>
+
+            <div>
+              <p className="text-white mb-2">Account-Based Marketing:</p>
+              <p className="text-gray-400">
+                Track when target accounts visit your website. Know which stakeholders are researching your product and what pages they're viewing to time outreach perfectly.
+              </p>
+            </div>
+
+            <div>
+              <p className="text-white mb-2">Content Marketing Attribution:</p>
+              <p className="text-gray-400">
+                See which blog posts, whitepapers, or case studies drive the most qualified traffic. Prove content ROI by connecting anonymous visitors to closed deals.
+              </p>
+            </div>
+          </div>
+        </MachineSection>
+
+        {/* Pricing */}
+        <MachineSection title="Pricing">
+          <p className="text-gray-700 mb-4">
+            Visitor Identification starts at $750/month + $0.50 per identified visitor. Includes pixel installation, CRM integration setup, and ongoing support.
+          </p>
+          <MachineList items={[
+            {
+              label: "View Detailed Pricing",
+              href: "https://meetcursive.com/pricing",
+              description: "See all plans and volume discounts"
+            }
+          ]} />
+        </MachineSection>
+
+        {/* Integrations */}
+        <MachineSection title="CRM Integrations">
+          <p className="text-gray-700 mb-4">
+            Visitor data syncs automatically to your CRM with two-way updates. Supported platforms:
+          </p>
+          <MachineList items={[
+            "Salesforce - Real-time lead creation and updates",
+            "HubSpot - Contact enrichment and activity tracking",
+            "Pipedrive - Deal stage automation based on visits",
+            "Custom API - Build your own integrations"
+          ]} />
+        </MachineSection>
+
+        {/* Getting Started */}
+        <MachineSection title="Getting Started">
+          <MachineList items={[
+            {
+              label: "Book a Demo",
+              href: "https://cal.com/adamwolfe/cursive-ai-audit",
+              description: "See visitor identification in action with a personalized walkthrough"
+            },
+            {
+              label: "View Platform",
+              href: "https://meetcursive.com/platform",
+              description: "Explore all platform features"
+            },
+            {
+              label: "Contact Sales",
+              href: "https://meetcursive.com/contact",
+              description: "Get custom pricing for high-volume needs"
+            }
+          ]} />
+        </MachineSection>
+
+        {/* Privacy & Compliance */}
+        <MachineSection title="Privacy & Compliance">
+          <p className="text-gray-700 mb-4">
+            Cursive is fully compliant with GDPR, CCPA, and other privacy regulations. We provide opt-out mechanisms, respect Do Not Track signals, and maintain strict data handling policies.
+          </p>
+          <MachineList items={[
+            {
+              label: "Privacy Policy",
+              href: "https://meetcursive.com/privacy"
+            },
+            {
+              label: "Terms of Service",
+              href: "https://meetcursive.com/terms"
+            }
+          ]} />
+        </MachineSection>
+
+      </MachineContent>
+    </MachineView>
+  </>
   )
 }

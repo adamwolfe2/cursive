@@ -24,7 +24,8 @@ declare global {
 export function ViewToggle() {
   const { view, setView } = useView()
 
-  const handleViewChange = (newView: 'human' | 'machine') => {
+  const handleViewChange = (e: React.MouseEvent<HTMLButtonElement>, newView: 'human' | 'machine') => {
+    e.preventDefault()
     setView(newView)
     trackViewChange(newView)
   }
@@ -32,12 +33,13 @@ export function ViewToggle() {
   return (
     <div className="inline-flex items-center bg-gray-100 rounded-full p-1 gap-1 border border-gray-200">
       <button
-        onClick={() => handleViewChange('human')}
+        onClick={(e) => handleViewChange(e, 'human')}
         className={`relative px-4 py-1.5 text-sm font-medium rounded-full transition-colors ${
           view === 'human'
             ? 'text-white'
             : 'text-gray-600 hover:text-gray-900'
         }`}
+        type="button"
       >
         {view === 'human' && (
           <motion.div
@@ -49,12 +51,13 @@ export function ViewToggle() {
         <span className="relative z-10">HUMAN</span>
       </button>
       <button
-        onClick={() => handleViewChange('machine')}
+        onClick={(e) => handleViewChange(e, 'machine')}
         className={`relative px-4 py-1.5 text-sm font-medium rounded-full transition-colors ${
           view === 'machine'
             ? 'text-white'
             : 'text-gray-600 hover:text-gray-900'
         }`}
+        type="button"
       >
         {view === 'machine' && (
           <motion.div

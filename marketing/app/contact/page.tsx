@@ -5,6 +5,8 @@ import { Container } from "@/components/ui/container"
 import { motion } from "framer-motion"
 import { Mail, Phone, MapPin, Clock, MessageCircle, Calendar } from "lucide-react"
 import { useState } from "react"
+import { DashboardCTA } from "@/components/dashboard-cta"
+import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -60,7 +62,10 @@ export default function ContactPage() {
   }
 
   return (
-    <main className="overflow-hidden">
+    <>
+      {/* Human View */}
+      <HumanView>
+        <main className="overflow-hidden">
       {/* Hero Section */}
       <section className="relative py-24 bg-white">
         <Container>
@@ -356,27 +361,113 @@ export default function ContactPage() {
         </Container>
       </section>
 
-      {/* Final CTA */}
-      <section className="py-24 bg-white">
-        <Container>
-          <div className="bg-[#007AFF] rounded-3xl p-12 text-center text-white shadow-lg max-w-4xl mx-auto">
-            <h2 className="text-4xl lg:text-5xl font-light mb-4">
-              Prefer to Talk Live?
-            </h2>
-            <p className="text-xl mb-8 opacity-90">
-              Book a 15-minute call and we'll answer all your questions.
-            </p>
-            <Button
-              size="lg"
-              className="bg-white text-[#007AFF] hover:bg-gray-100"
-              href="https://cal.com/adamwolfe/cursive-ai-audit"
-              target="_blank"
-            >
-              Book a Call Now
-            </Button>
-          </div>
-        </Container>
-      </section>
+      {/* Dashboard CTA */}
+      <DashboardCTA
+        headline="Prefer to"
+        subheadline="Talk Live?"
+        description="Book a 15-minute call and we'll answer all your questions about Cursive."
+      />
     </main>
+  </HumanView>
+
+  {/* Machine View - AEO-Optimized */}
+  <MachineView>
+    <MachineContent>
+      {/* Header */}
+      <div className="mb-12 pb-6 border-b border-gray-200">
+        <h1 className="text-2xl text-gray-900 font-bold mb-4">CONTACT CURSIVE</h1>
+        <p className="text-gray-700 leading-relaxed">
+          Get in touch with our team for sales inquiries, technical support, or partnership opportunities. Multiple contact methods available with fast response times.
+        </p>
+      </div>
+
+      {/* Contact Methods */}
+      <MachineSection title="Contact Methods">
+        <MachineList items={[
+          {
+            label: "Book a Call",
+            href: "https://cal.com/adamwolfe/cursive-ai-audit",
+            description: "Schedule a 15-minute intro call. We'll answer questions and show you a demo."
+          },
+          {
+            label: "Email",
+            href: "mailto:hello@meetcursive.com",
+            description: "Send us an email at hello@meetcursive.com. We respond within 24 hours."
+          },
+          {
+            label: "Live Chat",
+            description: "Available Monday-Friday, 9am-6pm EST on our website"
+          }
+        ]} />
+      </MachineSection>
+
+      {/* Response Times */}
+      <MachineSection title="Response Times">
+        <MachineList items={[
+          "Support inquiries: Within 24 hours",
+          "Sales inquiries: Within 4 hours",
+          "Emergency support: Same day"
+        ]} />
+      </MachineSection>
+
+      {/* Company Information */}
+      <MachineSection title="Company Information">
+        <p className="text-gray-700 mb-4">
+          Cursive is headquartered in San Francisco, CA, United States. We're a remote-first company with team members across the US.
+        </p>
+        <MachineList items={[
+          {
+            label: "Website",
+            href: "https://meetcursive.com"
+          },
+          {
+            label: "Platform Login",
+            href: "https://leads.meetcursive.com"
+          }
+        ]} />
+      </MachineSection>
+
+      {/* Common Questions */}
+      <MachineSection title="Quick Answers">
+        <div className="space-y-4">
+          <div>
+            <p className="text-white mb-2">How fast can we start?</p>
+            <p className="text-gray-400">Cursive Data: 5-7 days. Outbound: 1-2 weeks. Pipeline: 2-3 weeks.</p>
+          </div>
+          <div>
+            <p className="text-white mb-2">Can I cancel anytime?</p>
+            <p className="text-gray-400">Yes. All plans are month-to-month with 30 days notice.</p>
+          </div>
+          <div>
+            <p className="text-white mb-2">Do you offer custom plans?</p>
+            <p className="text-gray-400">Absolutely. We build custom solutions for enterprise needs.</p>
+          </div>
+        </div>
+      </MachineSection>
+
+      {/* Additional Resources */}
+      <MachineSection title="Additional Resources">
+        <MachineList items={[
+          {
+            label: "FAQ Page",
+            href: "https://meetcursive.com/faq",
+            description: "Comprehensive answers to common questions"
+          },
+          {
+            label: "Pricing",
+            href: "https://meetcursive.com/pricing",
+            description: "View pricing tiers and plans"
+          },
+          {
+            label: "Platform Overview",
+            href: "https://meetcursive.com/platform",
+            description: "Explore platform features and capabilities"
+          }
+        ]} />
+      </MachineSection>
+
+    </MachineContent>
+  </MachineView>
+</>
   )
 }

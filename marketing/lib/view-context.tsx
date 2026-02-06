@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState, useRef } from 'react'
 import { useSearchParams, usePathname, useRouter } from 'next/navigation'
 
 type ViewMode = 'human' | 'machine'
@@ -19,8 +19,14 @@ export function ViewProvider({ children }: { children: React.ReactNode }) {
 
   // Initialize from URL param or localStorage
   const [view, setViewState] = useState<ViewMode>('human')
+  const scrollPositionRef = useRef<number>(0)
 
   const setView = (newView: ViewMode) => {
+    // Save current scroll position before state change
+    if (typeof window !== 'undefined') {
+      scrollPositionRef.current = window.scrollY
+    }
+
     setViewState(newView)
 
     // Update localStorage
@@ -28,10 +34,17 @@ export function ViewProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem('cursive-view-mode', newView)
     }
 
-    // Update URL parameter
+    // Update URL parameter without scroll
     const params = new URLSearchParams(searchParams.toString())
     params.set('view', newView)
     router.replace(`${pathname}?${params.toString()}`, { scroll: false })
+
+    // Restore scroll position after a brief delay to ensure DOM has updated
+    if (typeof window !== 'undefined') {
+      requestAnimationFrame(() => {
+        window.scrollTo(0, scrollPositionRef.current)
+      })
+    }
   }
 
   // Initialize from URL and localStorage on mount

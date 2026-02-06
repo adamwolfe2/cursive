@@ -516,60 +516,6 @@ export default function AudienceBuilderPage() {
           </Container>
         </section>
 
-        {/* Social Proof */}
-        <section className="py-20 bg-white">
-          <Container>
-            <div className="max-w-4xl mx-auto">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="bg-gradient-to-br from-blue-50 to-white rounded-2xl p-12 border border-blue-100"
-              >
-                <div className="flex items-start gap-4 mb-6">
-                  <div className="flex gap-1">
-                    {[...Array(5)].map((_, i) => (
-                      <svg key={i} className="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 20 20">
-                        <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
-                      </svg>
-                    ))}
-                  </div>
-                </div>
-                <blockquote className="text-2xl text-gray-900 mb-6 leading-relaxed">
-                  "We switched from ZoomInfo to Cursive and cut our data costs by 60%. The unlimited audience builder means we can test new segments without worrying about hitting export caps. Game changer for our ABM strategy."
-                </blockquote>
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-medium">
-                    SM
-                  </div>
-                  <div>
-                    <div className="font-medium text-gray-900">Sarah Mitchell</div>
-                    <div className="text-sm text-gray-600">Head of Demand Gen, Enterprise SaaS</div>
-                  </div>
-                </div>
-              </motion.div>
-              <div className="grid md:grid-cols-3 gap-8 mt-12">
-                {[
-                  { metric: "360M+", label: "Total profiles available" },
-                  { metric: "30K+", label: "Intent categories tracked" },
-                  { metric: "∞", label: "Audience size limits" }
-                ].map((stat, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.1 }}
-                    className="text-center"
-                  >
-                    <div className="text-4xl text-[#007AFF] font-light mb-2">{stat.metric}</div>
-                    <div className="text-sm text-gray-600">{stat.label}</div>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          </Container>
-        </section>
 
         {/* FAQ */}
         <section className="py-20 bg-[#F7F9FB]">

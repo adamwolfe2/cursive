@@ -5,6 +5,7 @@ import { Container } from "@/components/ui/container"
 import { motion } from "framer-motion"
 import { ArrowRight, HelpCircle, Search } from "lucide-react"
 import { useState } from "react"
+import { DashboardCTA } from "@/components/dashboard-cta"
 
 export default function FAQPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null)
@@ -120,38 +121,12 @@ export default function FAQPage() {
         </Container>
       </section>
 
-      {/* Still Have Questions CTA */}
-      <section className="py-24 bg-[#F7F9FB]">
-        <Container>
-          <div className="bg-[#007AFF] rounded-3xl p-12 text-center text-white shadow-lg max-w-4xl mx-auto">
-            <h2 className="text-4xl lg:text-5xl font-light mb-4">
-              Still Have Questions?
-            </h2>
-            <p className="text-xl mb-8 opacity-90">
-              We're here to help. Book a call or send us a message.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Button
-                size="lg"
-                className="bg-white text-[#007AFF] hover:bg-gray-100"
-                href="https://cal.com/adamwolfe/cursive-ai-audit"
-                target="_blank"
-              >
-                Book a Call
-                <ArrowRight className="w-5 h-5" />
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-white text-white hover:bg-white/10"
-                href="/contact"
-              >
-                Contact Us
-              </Button>
-            </div>
-          </div>
-        </Container>
-      </section>
+      {/* Dashboard CTA */}
+      <DashboardCTA
+        headline="Still Have"
+        subheadline="Questions?"
+        description="We're here to help. Book a call or send us a message and we'll answer everything."
+      />
     </main>
   )
 }

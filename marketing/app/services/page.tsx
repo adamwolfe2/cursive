@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Container } from "@/components/ui/container"
 import { motion } from "framer-motion"
 import { ArrowRight } from "lucide-react"
+import { DashboardCTA } from "@/components/dashboard-cta"
 
 export default function ServicesPage() {
   // Service Schema for SEO
@@ -516,28 +517,12 @@ export default function ServicesPage() {
         </Container>
       </section>
 
-      {/* Final CTA */}
-      <section className="py-24 bg-white">
-        <Container>
-          <div className="bg-[#007AFF] rounded-3xl p-12 text-center text-white shadow-lg max-w-4xl mx-auto">
-            <h2 className="text-4xl lg:text-5xl font-light mb-4">
-              Ready to 3x Your Pipeline?
-            </h2>
-            <p className="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
-              Book a 15-minute call. We'll audit your current lead gen and show you exactly how <span className="font-cursive text-2xl">Cursive</span> can help.
-            </p>
-            <Button
-              size="lg"
-              className="bg-white text-[#007AFF] hover:bg-gray-100"
-              href="https://cal.com/adamwolfe/cursive-ai-audit"
-              target="_blank"
-            >
-              Book Your Free Audit
-              <ArrowRight className="w-5 h-5" />
-            </Button>
-          </div>
-        </Container>
-      </section>
+      {/* Dashboard CTA */}
+      <DashboardCTA
+        headline="Ready to 3x"
+        subheadline="Your Pipeline?"
+        description="Book a 15-minute call. We'll audit your current lead gen and show you exactly how Cursive can help."
+      />
     </main>
     </>
   )
