@@ -94,7 +94,7 @@ export default function MonitoringPage() {
         .from('users')
         .select('role')
         .eq('auth_user_id', user.id)
-        .single()
+        .single() as { data: { role: string } | null }
       if (!userData || (userData.role !== 'admin' && userData.role !== 'super_admin')) {
         window.location.href = '/dashboard'
         return

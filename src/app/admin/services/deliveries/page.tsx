@@ -60,7 +60,7 @@ export default function AdminServiceDeliveriesPage() {
         .from('users')
         .select('role')
         .eq('auth_user_id', user.id)
-        .single()
+        .single() as { data: { role: string } | null }
       if (!userData || (userData.role !== 'admin' && userData.role !== 'super_admin')) {
         window.location.href = '/dashboard'
         return
@@ -120,8 +120,8 @@ export default function AdminServiceDeliveriesPage() {
         updates.delivered_at = new Date().toISOString()
       }
 
-      const { error } = await supabase
-        .from('service_deliveries')
+      const { error } = await (supabase
+        .from('service_deliveries') as any)
         .update(updates)
         .eq('id', deliveryId)
 

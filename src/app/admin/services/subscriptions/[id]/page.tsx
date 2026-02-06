@@ -90,7 +90,7 @@ export default function AdminSubscriptionDetailPage() {
         .from('users')
         .select('role')
         .eq('auth_user_id', user.id)
-        .single()
+        .single() as { data: { role: string } | null }
       if (!userData || (userData.role !== 'admin' && userData.role !== 'super_admin')) {
         window.location.href = '/dashboard'
         return
@@ -147,8 +147,8 @@ export default function AdminSubscriptionDetailPage() {
   async function updateStatus(newStatus: string) {
     setUpdating(true)
     try {
-      const { error } = await supabase
-        .from('service_subscriptions')
+      const { error } = await (supabase
+        .from('service_subscriptions') as any)
         .update({ status: newStatus, updated_at: new Date().toISOString() })
         .eq('id', subscriptionId)
 
@@ -165,8 +165,8 @@ export default function AdminSubscriptionDetailPage() {
   async function toggleOnboarding() {
     setUpdating(true)
     try {
-      const { error } = await supabase
-        .from('service_subscriptions')
+      const { error } = await (supabase
+        .from('service_subscriptions') as any)
         .update({
           onboarding_completed: !subscription?.onboarding_completed,
           updated_at: new Date().toISOString()
@@ -516,7 +516,7 @@ export default function AdminSubscriptionDetailPage() {
                       <XCircle className="h-4 w-4 text-zinc-300" />
                     )
                   ) : (
-                    <span className="font-medium text-zinc-900">{enabled}</span>
+                    <span className="font-medium text-zinc-900">{String(enabled)}</span>
                   )}
                 </div>
               ))}

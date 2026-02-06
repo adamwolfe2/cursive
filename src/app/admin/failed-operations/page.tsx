@@ -72,7 +72,7 @@ export default function FailedOperationsPage() {
         .from('users')
         .select('role')
         .eq('auth_user_id', user.id)
-        .single()
+        .single() as { data: { role: string } | null }
       if (!userData || (userData.role !== 'admin' && userData.role !== 'super_admin')) {
         window.location.href = '/dashboard'
         return
@@ -249,7 +249,7 @@ export default function FailedOperationsPage() {
 
       {/* Filters */}
       <div className="flex items-center gap-4">
-        <Tabs value={filter} onValueChange={(v) => setFilter(v as any)}>
+        <Tabs defaultValue="all" value={filter} onValueChange={(v) => setFilter(v as any)}>
           <TabsList>
             <TabsTrigger value="all">All</TabsTrigger>
             <TabsTrigger value="email">Emails</TabsTrigger>

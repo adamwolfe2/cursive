@@ -62,7 +62,7 @@ export default function AdminDashboard() {
         .from('users')
         .select('role')
         .eq('auth_user_id', user.id)
-        .single()
+        .single() as { data: { role: string } | null }
       if (!userData || (userData.role !== 'admin' && userData.role !== 'super_admin')) {
         window.location.href = '/dashboard'
         return
@@ -102,11 +102,11 @@ export default function AdminDashboard() {
         .from('leads')
         .select('*')
         .order('created_at', { ascending: false })
-        .limit(20)
+        .limit(20) as { data: any[] | null }
       if (data) setLeads(data)
 
       const stats: Record<string, number> = {}
-      data?.forEach((lead) => {
+      data?.forEach((lead: any) => {
         stats[lead.workspace_id] = (stats[lead.workspace_id] || 0) + 1
       })
       setLeadsStats(stats)

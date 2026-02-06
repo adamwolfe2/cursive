@@ -54,7 +54,7 @@ export default function AdminAccountsPage() {
         .from('users')
         .select('role')
         .eq('auth_user_id', user.id)
-        .single()
+        .single() as { data: { role: string } | null }
       if (!userData || (userData.role !== 'admin' && userData.role !== 'super_admin')) {
         window.location.href = '/dashboard'
         return
@@ -144,8 +144,8 @@ export default function AdminAccountsPage() {
   const toggleSuspend = async (workspace: Workspace) => {
     if (workspace.is_suspended) {
       // Unsuspend
-      await supabase
-        .from('workspaces')
+      await (supabase
+        .from('workspaces') as any)
         .update({
           is_suspended: false,
           suspended_reason: null,
@@ -154,8 +154,8 @@ export default function AdminAccountsPage() {
         .eq('id', workspace.id)
     } else {
       // Suspend - could add a modal for reason
-      await supabase
-        .from('workspaces')
+      await (supabase
+        .from('workspaces') as any)
         .update({
           is_suspended: true,
           suspended_reason: 'Suspended by admin',
