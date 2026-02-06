@@ -162,7 +162,7 @@ export default function ServicesPage() {
                   </div>
                 </div>
 
-                <Button size="lg" href="https://buy.stripe.com/6oU9AT3rnfZX6kZg9R8g003" target="_blank">
+                <Button size="lg" href="https://pay.meetcursive.com/b/6oU9AT3rnfZX6kZg9R8g003" target="_blank">
                   Get Started with Data
                   <ArrowRight className="w-5 h-5" />
                 </Button>
@@ -270,7 +270,7 @@ export default function ServicesPage() {
                   <p className="text-gray-600">Based on volume and team size</p>
                 </div>
 
-                <Button size="lg" href="https://buy.stripe.com/8x27sLaTPcNL7p38Hp8g002" target="_blank">
+                <Button size="lg" href="https://pay.meetcursive.com/b/8x27sLaTPcNL7p38Hp8g002" target="_blank">
                   Get Started with Outbound
                   <ArrowRight className="w-5 h-5" />
                 </Button>
@@ -318,7 +318,7 @@ export default function ServicesPage() {
                   <p className="text-gray-600">Based on team size & volume</p>
                 </div>
 
-                <Button size="lg" href="https://buy.stripe.com/bJe7sLge9bJHgZD2j18g001" target="_blank">
+                <Button size="lg" href="https://pay.meetcursive.com/b/bJe7sLge9bJHgZD2j18g001" target="_blank">
                   Get Started with Pipeline
                   <ArrowRight className="w-5 h-5" />
                 </Button>
@@ -624,17 +624,17 @@ export default function ServicesPage() {
           },
           {
             label: "Purchase Cursive Data",
-            href: "https://buy.stripe.com/6oU9AT3rnfZX6kZg9R8g003",
+            href: "https://pay.meetcursive.com/b/6oU9AT3rnfZX6kZg9R8g003",
             description: "Get started with monthly lead lists"
           },
           {
             label: "Purchase Cursive Outbound",
-            href: "https://buy.stripe.com/8x27sLaTPcNL7p38Hp8g002",
+            href: "https://pay.meetcursive.com/b/8x27sLaTPcNL7p38Hp8g002",
             description: "Start done-for-you email campaigns"
           },
           {
             label: "Purchase Cursive Pipeline",
-            href: "https://buy.stripe.com/bJe7sLge9bJHgZD2j18g001",
+            href: "https://pay.meetcursive.com/b/bJe7sLge9bJHgZD2j18g001",
             description: "Launch AI SDR automation"
           }
         ]} />
