@@ -37,7 +37,7 @@ export function generateMetadata({
           url: fullOgImage,
           width: 1314,
           height: 1129,
-          alt: 'Cursive - AI Intent Systems That Never Sleep - Dashboard showing visitor identification and lead generation',
+          alt: 'Cursive - Turn Website Visitors Into Booked Meetings - Full-stack lead generation platform',
         }
       ],
       locale: 'en_US',

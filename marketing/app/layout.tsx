@@ -21,9 +21,9 @@ const dancingScript = Dancing_Script({
 
 export const metadata: Metadata = {
   ...generateMetadata({
-    title: "AI Intent Systems That Never Sleep",
-    description: "Identify and track website visitors, build targeted lists, launch direct mail campaigns, and maximize ad performance—all from one platform that unites verified B2C and B2B data.",
-    keywords: ['B2B lead generation', 'visitor identification', 'intent data', 'direct mail marketing', 'audience targeting', 'AI SDR', 'outbound automation'],
+    title: "Turn Website Visitors Into Booked Meetings",
+    description: "Cursive identifies your anonymous website visitors, enriches them with verified contact data, and automates personalized outreach across email, LinkedIn, and SMS—so you book more meetings on autopilot.",
+    keywords: ['website visitor identification', 'B2B lead generation', 'anonymous visitor tracking', 'automated outbound', 'AI SDR', 'lead enrichment', 'outbound automation', 'intent data', 'visitor deanonymization'],
     canonical: 'https://meetcursive.com',
   }),
   icons: {

@@ -43,7 +43,7 @@ export const metadata: Metadata = {
       ],
       foundingDate: '2023',
       areaServed: ['US', 'CA', 'UK', 'AU'],
-      slogan: 'AI Intent Systems That Never Sleep',
+      slogan: 'Turn Website Visitors Into Booked Meetings',
       contactPoint: {
         '@type': 'ContactPoint',
         telephone: '+1-844-CURSIVE',
