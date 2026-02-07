@@ -17,7 +17,7 @@ const trackViewChange = (newView: 'human' | 'machine') => {
 // Declare gtag for TypeScript
 declare global {
   interface Window {
-    gtag?: (...args: any[]) => void
+    gtag?: (...args: unknown[]) => void
   }
 }
 

@@ -32,11 +32,11 @@ export function Footer() {
           <ViewToggle />
         </div>
 
-        {/* Main Links - 5-column layout */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
+        {/* Main Links - 6-column layout */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
           {/* Product */}
           <div>
-            <h3 className="text-gray-900 mb-4">Product</h3>
+            <h3 className="text-gray-900 font-medium mb-4">Product</h3>
             <ul className="space-y-2 text-sm text-gray-600">
               <li>
                 <Link href="/platform" className="hover:text-[#007AFF] transition-colors">
@@ -44,8 +44,23 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/marketplace" className="hover:text-[#007AFF] transition-colors">
+                  Lead Marketplace
+                </Link>
+              </li>
+              <li>
+                <Link href="/pixel" className="hover:text-[#007AFF] transition-colors">
+                  Visitor Pixel
+                </Link>
+              </li>
+              <li>
                 <Link href="/visitor-identification" className="hover:text-[#007AFF] transition-colors">
                   Visitor Identification
+                </Link>
+              </li>
+              <li>
+                <Link href="/custom-audiences" className="hover:text-[#007AFF] transition-colors">
+                  Custom Audiences
                 </Link>
               </li>
               <li>
@@ -78,9 +93,36 @@ export function Footer() {
                   Pricing
                 </Link>
               </li>
+            </ul>
+          </div>
+
+          {/* Services */}
+          <div>
+            <h3 className="text-gray-900 font-medium mb-4">Services</h3>
+            <ul className="space-y-2 text-sm text-gray-600">
               <li>
-                <Link href="/marketplace" className="hover:text-[#007AFF] transition-colors">
-                  Lead Marketplace
+                <Link href="/services#data" className="hover:text-[#007AFF] transition-colors">
+                  Cursive Data
+                </Link>
+              </li>
+              <li>
+                <Link href="/services#outbound" className="hover:text-[#007AFF] transition-colors">
+                  Cursive Outbound
+                </Link>
+              </li>
+              <li>
+                <Link href="/services#pipeline" className="hover:text-[#007AFF] transition-colors">
+                  Cursive Pipeline
+                </Link>
+              </li>
+              <li>
+                <Link href="/venture-studio" className="hover:text-[#007AFF] transition-colors">
+                  Venture Studio
+                </Link>
+              </li>
+              <li>
+                <Link href="/free-audit" className="hover:text-[#007AFF] transition-colors">
+                  Free AI Audit
                 </Link>
               </li>
             </ul>
@@ -88,7 +130,7 @@ export function Footer() {
 
           {/* Industries */}
           <div>
-            <h3 className="text-gray-900 mb-4">Industries</h3>
+            <h3 className="text-gray-900 font-medium mb-4">Industries</h3>
             <ul className="space-y-2 text-sm text-gray-600">
               <li>
                 <Link href="/industries/b2b-software" className="hover:text-[#007AFF] transition-colors">
@@ -140,7 +182,7 @@ export function Footer() {
 
           {/* Resources */}
           <div>
-            <h3 className="text-gray-900 mb-4">Resources</h3>
+            <h3 className="text-gray-900 font-medium mb-4">Resources</h3>
             <ul className="space-y-2 text-sm text-gray-600">
               <li>
                 <Link href="/blog" className="hover:text-[#007AFF] transition-colors">
@@ -153,18 +195,28 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/free-audit" className="hover:text-[#007AFF] transition-colors">
-                  Free AI Audit
+                <Link href="/resources" className="hover:text-[#007AFF] transition-colors">
+                  Resource Hub
                 </Link>
               </li>
               <li>
-                <Link href="/custom-audiences" className="hover:text-[#007AFF] transition-colors">
-                  Custom Audiences
+                <Link href="/faq" className="hover:text-[#007AFF] transition-colors">
+                  FAQ
                 </Link>
               </li>
               <li>
-                <Link href="/pixel" className="hover:text-[#007AFF] transition-colors">
-                  Pixel Service
+                <Link href="/what-is-website-visitor-identification" className="hover:text-[#007AFF] transition-colors">
+                  What Is Visitor ID?
+                </Link>
+              </li>
+              <li>
+                <Link href="/what-is-b2b-intent-data" className="hover:text-[#007AFF] transition-colors">
+                  What Is Intent Data?
+                </Link>
+              </li>
+              <li>
+                <Link href="/what-is-ai-sdr" className="hover:text-[#007AFF] transition-colors">
+                  What Is an AI SDR?
                 </Link>
               </li>
             </ul>
@@ -172,7 +224,7 @@ export function Footer() {
 
           {/* Comparisons */}
           <div>
-            <h3 className="text-gray-900 mb-4">Comparisons</h3>
+            <h3 className="text-gray-900 font-medium mb-4">Comparisons</h3>
             <ul className="space-y-2 text-sm text-gray-600">
               <li>
                 <Link href="/blog/clearbit-alternatives-comparison" className="hover:text-[#007AFF] transition-colors">
@@ -180,8 +232,23 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/blog/warmly-vs-cursive-comparison" className="hover:text-[#007AFF] transition-colors">
-                  Warmly vs Cursive
+                <Link href="/blog/apollo-alternatives-comparison" className="hover:text-[#007AFF] transition-colors">
+                  Apollo Alternatives
+                </Link>
+              </li>
+              <li>
+                <Link href="/blog/zoominfo-alternatives-comparison" className="hover:text-[#007AFF] transition-colors">
+                  ZoomInfo Alternatives
+                </Link>
+              </li>
+              <li>
+                <Link href="/blog/6sense-alternatives-comparison" className="hover:text-[#007AFF] transition-colors">
+                  6sense Alternatives
+                </Link>
+              </li>
+              <li>
+                <Link href="/blog/warmly-alternatives-comparison" className="hover:text-[#007AFF] transition-colors">
+                  Warmly Alternatives
                 </Link>
               </li>
               <li>
@@ -199,12 +266,17 @@ export function Footer() {
                   6sense vs Cursive
                 </Link>
               </li>
+              <li>
+                <Link href="/blog/warmly-vs-cursive-comparison" className="hover:text-[#007AFF] transition-colors">
+                  Warmly vs Cursive
+                </Link>
+              </li>
             </ul>
           </div>
 
           {/* Company */}
           <div>
-            <h3 className="text-gray-900 mb-4">Company</h3>
+            <h3 className="text-gray-900 font-medium mb-4">Company</h3>
             <ul className="space-y-2 text-sm text-gray-600">
               <li>
                 <Link href="/about" className="hover:text-[#007AFF] transition-colors">
@@ -217,19 +289,33 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/venture-studio" className="hover:text-[#007AFF] transition-colors">
-                  Venture Studio
+                <Link href="/services" className="hover:text-[#007AFF] transition-colors">
+                  Services
                 </Link>
               </li>
               <li>
                 <Link href="/privacy" className="hover:text-[#007AFF] transition-colors">
-                  Privacy
+                  Privacy Policy
                 </Link>
               </li>
               <li>
                 <Link href="/terms" className="hover:text-[#007AFF] transition-colors">
-                  Terms
+                  Terms of Service
                 </Link>
+              </li>
+            </ul>
+
+            <h3 className="text-gray-900 font-medium mb-4 mt-8">Get Started</h3>
+            <ul className="space-y-2 text-sm text-gray-600">
+              <li>
+                <a href="https://leads.meetcursive.com/signup" className="hover:text-[#007AFF] transition-colors">
+                  Sign Up Free
+                </a>
+              </li>
+              <li>
+                <a href="https://cal.com/adamwolfe/cursive-ai-audit" target="_blank" rel="noopener noreferrer" className="hover:text-[#007AFF] transition-colors">
+                  Book a Demo
+                </a>
               </li>
             </ul>
           </div>

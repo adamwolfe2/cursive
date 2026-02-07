@@ -16,7 +16,7 @@ export interface TestVariant {
   id: string;
   name: string;
   weight: number; // 0-100 percentage of traffic
-  metadata?: Record<string, any>;
+  metadata?: Record<string, string | number | boolean>;
 }
 
 /**

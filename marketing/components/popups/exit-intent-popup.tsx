@@ -100,9 +100,6 @@ export function ExitIntentPopup({ enabled = true, onSubmit }: ExitIntentPopupPro
       // Call the onSubmit handler (could be API call)
       if (onSubmit) {
         await onSubmit({ email, company })
-      } else {
-        // Default: just log to console
-        console.log('Popup submission:', { email, company })
       }
 
       // Show success state

@@ -34,10 +34,10 @@ export async function handlePopupSubmission(
 
     const result = await response.json()
 
-    // Optional: Track conversion in analytics
-    if (typeof window !== 'undefined' && (window as any).gtag) {
-      ;(window as any).gtag('event', 'conversion', {
-        send_to: 'AW-CONVERSION-ID/CONVERSION-LABEL', // Replace with your conversion ID
+    // Track conversion in analytics
+    if (typeof window !== 'undefined' && window.gtag && process.env.NEXT_PUBLIC_GOOGLE_ADS_CONVERSION_ID) {
+      window.gtag('event', 'conversion', {
+        send_to: process.env.NEXT_PUBLIC_GOOGLE_ADS_CONVERSION_ID,
         value: 1.0,
         currency: 'USD',
       })

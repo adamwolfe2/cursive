@@ -6,7 +6,7 @@ import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
 import { useState } from "react"
-import { Menu, X, ChevronDown, Eye, Users, Mail, Target, Database, Shield, Building2, ShoppingCart, Code, Briefcase, Home, Store } from "lucide-react"
+import { Menu, X, ChevronDown, Eye, Users, Mail, Target, Database, Shield, Building2, ShoppingCart, Code, Briefcase, Home, Store, BookOpen, BarChart3, FileText } from "lucide-react"
 
 interface DropdownItem {
   href: string
@@ -81,7 +81,35 @@ const navLinks: NavLink[] = [
     ],
   },
   { href: "/pricing", label: "Pricing" },
-  { href: "/resources", label: "Resources" },
+  {
+    label: "Resources",
+    dropdown: [
+      {
+        href: "/case-studies",
+        label: "Case Studies",
+        description: "Real results from Cursive customers",
+        icon: BarChart3,
+      },
+      {
+        href: "/blog",
+        label: "Blog",
+        description: "Guides, strategies, and industry insights",
+        icon: FileText,
+      },
+      {
+        href: "/integrations",
+        label: "Integrations",
+        description: "Connect with your existing tools",
+        icon: Code,
+      },
+      {
+        href: "/about",
+        label: "About Cursive",
+        description: "Our mission and team",
+        icon: BookOpen,
+      },
+    ],
+  },
 ]
 
 export function Header() {

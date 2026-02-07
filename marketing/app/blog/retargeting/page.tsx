@@ -283,6 +283,14 @@ export default function RetargetingPage() {
               segments. Use video ads for educational content in nurture segments. Rotate creative every 14-21 days
               to prevent fatigue. Budget $20-50/day per segment minimum.
             </p>
+            <p>
+              <strong>Creative strategy by segment:</strong> For high-intent visitors (pricing page, demo page),
+              lead with ROI-focused creative such as customer logos, metric callouts (&quot;3x pipeline in 90
+              days&quot;), and direct demo offers. For evaluating visitors (solution pages, comparisons), use
+              case study content and differentiation messaging. For early-stage visitors (blog, resource pages),
+              run thought leadership content and industry benchmark data. This staged creative approach matches
+              the buyer&apos;s mindset at each intent level.
+            </p>
 
             <h3>Google Display &amp; YouTube Retargeting</h3>
             <p>
@@ -291,6 +299,14 @@ export default function RetargetingPage() {
               network. For B2B, Customer Match (using enriched email addresses) typically outperforms pixel-based
               audiences. YouTube pre-roll ads are especially effective for late-stage retargeting with customer
               testimonial videos.
+            </p>
+            <p>
+              <strong>Budget allocation tip:</strong> Google Display should typically receive 15-25% of your
+              total retargeting budget. It serves as the &quot;surround sound&quot; channel&mdash;keeping your
+              brand visible across the web while higher-quality channels like LinkedIn and email drive direct
+              conversions. For YouTube, invest in 30-60 second customer testimonial videos. A real customer
+              explaining their results is far more effective than a polished brand video for bottom-funnel
+              retargeting.
             </p>
 
             <h3>Email Retargeting</h3>
@@ -302,6 +318,14 @@ export default function RetargetingPage() {
               likely challenges. Read our{" "}
               <Link href="/blog/cold-email-2026">cold email guide</Link> for current best practices.
             </p>
+            <p>
+              <strong>Email retargeting sequence example:</strong> Day 1: A personalized email referencing the
+              specific pages the visitor viewed (&quot;I noticed your team was exploring our integration
+              capabilities&quot;). Day 3: A case study relevant to their industry. Day 7: A direct meeting
+              request with a specific agenda tied to their browsing behavior. This three-touch sequence
+              typically generates 15-25% reply rates when triggered by visitor identification data, compared
+              to 1-3% for cold outreach.
+            </p>
 
             <h3>Meta &amp; Programmatic Display</h3>
             <p>
@@ -310,6 +334,14 @@ export default function RetargetingPage() {
               contact data. Use this channel for brand awareness and social proof content (customer logos,
               testimonial quotes) rather than direct conversion asks. Programmatic display extends this reach
               across thousands of publisher sites.
+            </p>
+            <p>
+              <strong>Pro tip:</strong> Meta retargeting works best for B2B when you use it as a passive brand
+              reinforcement channel. Decision-makers scrolling Instagram in the evening will see your brand
+              alongside their personal content. The goal is not an immediate click&mdash;it is recognition.
+              When they return to work and see your email or LinkedIn ad, the brand is already familiar,
+              which increases engagement across all channels. Allocate 10-15% of retargeting budget to
+              Meta for this compounding effect.
             </p>
 
             <div className="not-prose overflow-x-auto my-8">
@@ -361,6 +393,37 @@ export default function RetargetingPage() {
                   </tr>
                 </tbody>
               </table>
+            </div>
+
+            <h3>Budget Allocation Framework</h3>
+            <p>
+              How you distribute your retargeting budget across channels depends on your average deal size
+              and sales cycle length. Here is a framework based on what we have seen work best across
+              hundreds of B2B campaigns.
+            </p>
+
+            <div className="not-prose bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 my-8 border border-blue-200">
+              <h3 className="font-bold text-lg mb-4">Recommended Budget Split by Deal Size</h3>
+              <div className="space-y-4">
+                <div className="bg-white rounded-lg p-4 border border-blue-100">
+                  <h4 className="font-bold mb-2">Small Deals ($5k-$25k ACV)</h4>
+                  <p className="text-sm text-gray-700">Total budget: $2,000-$5,000/month</p>
+                  <p className="text-sm text-gray-600 mt-1">Email: 40% | LinkedIn: 30% | Google Display: 20% | Direct Mail: 10%</p>
+                  <p className="text-xs text-gray-500 mt-1">Focus on automated, scalable channels. Reserve direct mail for top 50 accounts.</p>
+                </div>
+                <div className="bg-white rounded-lg p-4 border border-blue-100">
+                  <h4 className="font-bold mb-2">Mid-Market Deals ($25k-$100k ACV)</h4>
+                  <p className="text-sm text-gray-700">Total budget: $5,000-$15,000/month</p>
+                  <p className="text-sm text-gray-600 mt-1">LinkedIn: 35% | Email: 25% | Direct Mail: 20% | Google Display: 15% | Meta: 5%</p>
+                  <p className="text-xs text-gray-500 mt-1">Invest more in LinkedIn for buying committee reach. Scale up direct mail for high-intent accounts.</p>
+                </div>
+                <div className="bg-white rounded-lg p-4 border border-blue-100">
+                  <h4 className="font-bold mb-2">Enterprise Deals ($100k+ ACV)</h4>
+                  <p className="text-sm text-gray-700">Total budget: $15,000-$50,000/month</p>
+                  <p className="text-sm text-gray-600 mt-1">Direct Mail: 30% | LinkedIn: 30% | Email: 20% | Google/YouTube: 15% | Meta: 5%</p>
+                  <p className="text-xs text-gray-500 mt-1">Heavy investment in high-touch channels. Premium direct mail pieces ($15-50/piece) justified by deal size.</p>
+                </div>
+              </div>
             </div>
 
             {/* Section 5 */}
@@ -456,6 +519,14 @@ export default function RetargetingPage() {
               Week 4: Direct CTA (demo offer, free trial). This approach respects the buyer&apos;s pace while
               systematically building the case for your solution.
             </p>
+            <p>
+              The key to sequential retargeting is ensuring each step builds on the previous one. If a prospect
+              engages with your awareness content (clicks, watches video, or returns to your site), accelerate
+              them to the next stage immediately rather than waiting for the timer. Conversely, if they do not
+              engage with solution content after two weeks, cycle them back to awareness messaging with fresh
+              creative rather than pushing harder on conversion. This dynamic sequencing based on engagement
+              signals dramatically outperforms static time-based sequences.
+            </p>
 
             <h3>Strategy 2: Buying Committee Expansion</h3>
             <p>
@@ -463,6 +534,16 @@ export default function RetargetingPage() {
               the entire buying committee. Use your visitor identification data to find additional stakeholders at the
               same company (CFO, CTO, VP of Ops) and serve them role-specific messaging. This multi-threaded
               approach mirrors how enterprise deals actually get made: by consensus across multiple decision-makers.
+            </p>
+            <p>
+              Here is how this works in practice. Cursive identifies that a product manager from a target
+              account visited your solution page. You then build a LinkedIn Matched Audience that includes
+              the VP of Product, CTO, and CFO at that same company. The product manager sees use-case
+              messaging. The VP of Product sees team productivity metrics. The CTO sees integration and
+              security content. The CFO sees ROI and cost savings data. Each stakeholder receives messaging
+              tailored to their specific concerns, creating internal momentum that a single-threaded approach
+              cannot achieve. Companies using buying committee expansion report 2-3x higher conversion rates
+              compared to targeting only the original visitor.
             </p>
 
             <h3>Strategy 3: Competitive Displacement</h3>
@@ -473,6 +554,15 @@ export default function RetargetingPage() {
               analysis. See how Cursive compares in our{" "}
               <Link href="/blog/clearbit-alternatives-comparison">Clearbit alternatives comparison</Link>.
             </p>
+            <p>
+              Competitive displacement retargeting should be aggressive and specific. Instead of generic &quot;we
+              are better than X&quot; messaging, reference the specific comparison page they viewed and address
+              the evaluation criteria that page covered. If they visited your &quot;Cursive vs Competitor&quot;
+              page, they are in active evaluation mode. Your retargeting ads should present a concrete
+              differentiator with proof (e.g., &quot;2x faster implementation than [competitor]&mdash;see
+              the case study&quot;). Direct mail with a physical comparison chart is especially effective
+              here because it stays on the prospect&apos;s desk as a reference during vendor evaluation.
+            </p>
 
             <h3>Strategy 4: Event-Triggered Surges</h3>
             <p>
@@ -481,6 +571,19 @@ export default function RetargetingPage() {
               typically in active buying mode. Layer event-related messaging onto your retargeting to ride the
               wave of heightened interest. Combine with{" "}
               <Link href="/blog/scaling-outbound">scaled outbound</Link> for maximum impact.
+            </p>
+
+            <h3>Strategy 5: Win-Back Campaigns</h3>
+            <p>
+              Re-engage accounts that went cold during the sales process. When a prospect who was in your
+              pipeline but went dark suddenly returns to your website, this is a powerful buying signal.
+              They may have been evaluating alternatives, waiting for budget approval, or dealing with
+              internal priorities. Their return indicates renewed interest. Trigger an immediate multi-channel
+              campaign: a personalized email acknowledging the gap (&quot;It has been a few months since we
+              connected&mdash;I see your team has been exploring our latest features&quot;), a LinkedIn ad
+              featuring a new case study or product update, and if the deal size warrants it, a direct mail
+              piece with an exclusive offer. Win-back campaigns targeting returning visitors convert at 2-4x
+              the rate of first-time visitor campaigns because there is already an established relationship.
             </p>
 
             {/* FAQ Section */}

@@ -2,7 +2,7 @@
 
 declare global {
   interface Window {
-    gtag?: (...args: any[]) => void
+    gtag?: (...args: unknown[]) => void
   }
 }
 
@@ -11,13 +11,13 @@ export interface ConversionEventParams {
   event_category: string
   event_label: string
   value?: number
-  [key: string]: any
+  [key: string]: string | number | boolean | undefined
 }
 
 export interface EngagementEventParams {
   event_category: string
   event_label: string
-  [key: string]: any
+  [key: string]: string | number | boolean | undefined
 }
 
 // Safe wrapper for gtag calls

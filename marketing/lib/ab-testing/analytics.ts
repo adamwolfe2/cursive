@@ -5,14 +5,32 @@
  * analytics platforms (Google Analytics, PostHog, etc.)
  */
 
+interface PostHogInstance {
+  capture: (eventName: string, properties?: Record<string, string | number | boolean>) => void;
+  init: (apiKey: string, options?: PostHogOptions) => void;
+}
+
+interface PostHogOptions {
+  api_host?: string;
+  [key: string]: string | number | boolean | undefined;
+}
+
+declare global {
+  interface Window {
+    gtag?: (...args: unknown[]) => void;
+    posthog?: PostHogInstance;
+    dataLayer?: unknown[];
+  }
+}
+
 /**
  * Track when a user is exposed to a test variant
  * This is separate from conversion tracking
  */
 export function trackABTestView(testId: string, variantId: string): void {
   // Google Analytics 4
-  if (typeof window !== 'undefined' && (window as any).gtag) {
-    (window as any).gtag('event', 'ab_test_view', {
+  if (typeof window !== 'undefined' && window.gtag) {
+    window.gtag('event', 'ab_test_view', {
       test_id: testId,
       variant_id: variantId,
       timestamp: new Date().toISOString(),
@@ -20,8 +38,8 @@ export function trackABTestView(testId: string, variantId: string): void {
   }
 
   // PostHog
-  if (typeof window !== 'undefined' && (window as any).posthog) {
-    (window as any).posthog.capture('ab_test_view', {
+  if (typeof window !== 'undefined' && window.posthog) {
+    window.posthog.capture('ab_test_view', {
       test_id: testId,
       variant_id: variantId,
       timestamp: new Date().toISOString(),
@@ -42,10 +60,6 @@ export function trackABTestView(testId: string, variantId: string): void {
     }).catch(err => console.error('Analytics tracking error:', err));
   }
 
-  // Console log in development
-  if (process.env.NODE_ENV === 'development') {
-    console.log('[A/B Test View]', { testId, variantId });
-  }
 }
 
 /**
@@ -64,13 +78,13 @@ export function trackABTestConversion(
   };
 
   // Google Analytics 4
-  if (typeof window !== 'undefined' && (window as any).gtag) {
-    (window as any).gtag('event', 'ab_test_conversion', eventData);
+  if (typeof window !== 'undefined' && window.gtag) {
+    window.gtag('event', 'ab_test_conversion', eventData);
   }
 
   // PostHog
-  if (typeof window !== 'undefined' && (window as any).posthog) {
-    (window as any).posthog.capture('ab_test_conversion', eventData);
+  if (typeof window !== 'undefined' && window.posthog) {
+    window.posthog.capture('ab_test_conversion', eventData);
   }
 
   // Custom analytics endpoint
@@ -85,10 +99,6 @@ export function trackABTestConversion(
     }).catch(err => console.error('Analytics tracking error:', err));
   }
 
-  // Console log in development
-  if (process.env.NODE_ENV === 'development') {
-    console.log('[A/B Test Conversion]', eventData);
-  }
 }
 
 /**
@@ -109,19 +119,15 @@ export function trackABTestMetric(
   };
 
   // Google Analytics 4
-  if (typeof window !== 'undefined' && (window as any).gtag) {
-    (window as any).gtag('event', 'ab_test_metric', eventData);
+  if (typeof window !== 'undefined' && window.gtag) {
+    window.gtag('event', 'ab_test_metric', eventData);
   }
 
   // PostHog
-  if (typeof window !== 'undefined' && (window as any).posthog) {
-    (window as any).posthog.capture('ab_test_metric', eventData);
+  if (typeof window !== 'undefined' && window.posthog) {
+    window.posthog.capture('ab_test_metric', eventData);
   }
 
-  // Console log in development
-  if (process.env.NODE_ENV === 'development') {
-    console.log('[A/B Test Metric]', eventData);
-  }
 }
 
 /**
@@ -134,7 +140,7 @@ export function trackABTestEngagement(
     timeOnPage?: number;
     scrollDepth?: number;
     clicks?: number;
-    [key: string]: any;
+    [key: string]: string | number | boolean | undefined;
   }
 ): void {
   const eventData = {
@@ -145,13 +151,13 @@ export function trackABTestEngagement(
   };
 
   // Google Analytics 4
-  if (typeof window !== 'undefined' && (window as any).gtag) {
-    (window as any).gtag('event', 'ab_test_engagement', eventData);
+  if (typeof window !== 'undefined' && window.gtag) {
+    window.gtag('event', 'ab_test_engagement', eventData);
   }
 
   // PostHog
-  if (typeof window !== 'undefined' && (window as any).posthog) {
-    (window as any).posthog.capture('ab_test_engagement', eventData);
+  if (typeof window !== 'undefined' && window.posthog) {
+    window.posthog.capture('ab_test_engagement', eventData);
   }
 }
 
@@ -224,11 +230,11 @@ export function initializeGoogleAnalytics(measurementId: string): void {
   document.head.appendChild(script);
 
   // Initialize gtag
-  (window as any).dataLayer = (window as any).dataLayer || [];
-  function gtag(...args: any[]) {
-    (window as any).dataLayer.push(args);
+  window.dataLayer = window.dataLayer || [];
+  function gtag(...args: unknown[]) {
+    window.dataLayer!.push(args);
   }
-  (window as any).gtag = gtag;
+  window.gtag = gtag;
 
   gtag('js', new Date());
   gtag('config', measurementId);
@@ -237,7 +243,7 @@ export function initializeGoogleAnalytics(measurementId: string): void {
 /**
  * Helper to initialize PostHog for A/B testing
  */
-export function initializePostHog(apiKey: string, options?: any): void {
+export function initializePostHog(apiKey: string, options?: PostHogOptions): void {
   if (typeof window === 'undefined') return;
 
   // Load PostHog

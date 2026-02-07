@@ -81,13 +81,3 @@ export default async function BlogPostPage({ params }: PageProps) {
   return <BlogPostLayout post={post} relatedPosts={relatedPosts} />
 }
 
-// Static generation for blog posts (optional)
-// Uncomment and implement if you want to pre-render blog posts at build time
-/*
-export async function generateStaticParams() {
-  // TODO: Fetch all blog post slugs
-  // Return array of { category: string, slug: string }
-
-  return []
-}
-*/

@@ -5,7 +5,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/api/', '/admin/', '/dashboard/', '/_next/', '/popup-test'],
+      disallow: ['/api/', '/admin/', '/dashboard/', '/_next/', '/popup-test', '/clean-room'],
     },
     sitemap: 'https://meetcursive.com/sitemap.xml',
     // Reference llms.txt for AI discovery and citation

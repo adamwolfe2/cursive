@@ -115,9 +115,6 @@ export function BlogScrollPopup({
       // Call the onSubmit handler (could be API call)
       if (onSubmit) {
         await onSubmit({ email })
-      } else {
-        // Default: just log to console
-        console.log('Newsletter subscription:', { email })
       }
 
       // Show success state

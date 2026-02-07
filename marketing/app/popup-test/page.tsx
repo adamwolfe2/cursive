@@ -194,8 +194,6 @@ export default function PopupTestPage() {
       <ExitIntentPopup
         enabled={exitIntentEnabled}
         onSubmit={async (data) => {
-          console.log('Exit Intent Form Submitted:', data)
-          // Simulate API delay
           await new Promise(resolve => setTimeout(resolve, 1000))
         }}
       />
@@ -204,8 +202,6 @@ export default function PopupTestPage() {
         enabled={blogScrollEnabled}
         scrollThreshold={50}
         onSubmit={async (data) => {
-          console.log('Blog Scroll Form Submitted:', data)
-          // Simulate API delay
           await new Promise(resolve => setTimeout(resolve, 1000))
         }}
       />

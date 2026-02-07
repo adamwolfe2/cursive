@@ -13,24 +13,16 @@ interface PopupAnalyticsOptions {
 
 export function usePopupAnalytics({ popupId, variant }: PopupAnalyticsOptions) {
   const trackEvent = useCallback(
-    (eventName: string, properties?: Record<string, any>) => {
+    (eventName: string, properties?: Record<string, string | number | boolean>) => {
       // Send to analytics (Google Analytics, PostHog, etc.)
-      if (typeof window !== 'undefined' && (window as any).gtag) {
-        ;(window as any).gtag('event', eventName, {
+      if (typeof window !== 'undefined' && window.gtag) {
+        window.gtag('event', eventName, {
           popup_id: popupId,
           popup_variant: variant,
           ...properties,
         })
       }
 
-      // Also log to console in development
-      if (process.env.NODE_ENV === 'development') {
-        console.log('[Popup Analytics]', eventName, {
-          popupId,
-          variant,
-          ...properties,
-        })
-      }
     },
     [popupId, variant]
   )

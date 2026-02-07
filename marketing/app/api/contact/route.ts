@@ -24,7 +24,7 @@ interface ContactFormError {
 /**
  * Validate contact form data
  */
-function validateContactForm(data: any): { valid: boolean; errors: ContactFormError[] } {
+function validateContactForm(data: Record<string, unknown>): { valid: boolean; errors: ContactFormError[] } {
   const errors: ContactFormError[] = []
 
   // Validate name
@@ -219,14 +219,6 @@ export async function POST(request: NextRequest) {
 
     // Send emails
     await sendContactEmail(formData)
-
-    // Log successful submission (for monitoring)
-    console.log('Contact form submitted successfully:', {
-      name: formData.name,
-      email: formData.email,
-      company: formData.company,
-      timestamp: new Date().toISOString(),
-    })
 
     return NextResponse.json(
       {
