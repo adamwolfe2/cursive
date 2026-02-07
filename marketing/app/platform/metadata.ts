@@ -1,32 +1,24 @@
 import { Metadata } from "next"
+import { generateMetadata } from "@/lib/seo/metadata"
+
+const baseMetadata = generateMetadata({
+  title: "AI-Powered B2B Lead Generation Platform",
+  description: "Explore Cursive's AI-powered platform: visitor identification, audience builder, intent data, direct mail automation, and 200+ integrations for B2B lead generation.",
+  keywords: [
+    "AI lead generation platform",
+    "B2B visitor identification",
+    "intent data",
+    "audience builder",
+    "direct mail automation",
+    "lead generation integrations",
+    "AI outbound platform",
+    "B2B sales platform",
+  ],
+  canonical: "https://meetcursive.com/platform",
+})
 
 export const metadata: Metadata = {
-  title: "Platform Features | Cursive - Lead Generation & AI Outreach",
-  description: "Explore Cursive's powerful platform: visitor identification, AI Studio for brand voice, people search (500M+ contacts), lead marketplace, campaign manager, and visitor intelligence.",
-  keywords: "lead generation platform, visitor identification, AI outreach, people search, email campaigns, intent data, B2B marketing, sales automation",
-  openGraph: {
-    title: "Platform Features | Cursive - Lead Generation & AI Outreach",
-    description: "Explore Cursive's powerful platform: visitor identification, AI Studio for brand voice, people search (500M+ contacts), lead marketplace, campaign manager, and visitor intelligence.",
-    url: "https://meetcursive.com/platform",
-    siteName: "Cursive",
-    images: [{
-      url: "https://meetcursive.com/cursive-social-preview.png",
-      width: 1200,
-      height: 630,
-    }],
-    locale: "en_US",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Platform Features | Cursive - Lead Generation & AI Outreach",
-    description: "Explore Cursive's powerful platform: visitor identification, AI Studio for brand voice, people search (500M+ contacts), lead marketplace, campaign manager, and visitor intelligence.",
-    images: ["https://meetcursive.com/cursive-social-preview.png"],
-    creator: "@meetcursive",
-  },
-  alternates: {
-    canonical: "https://meetcursive.com/platform",
-  },
+  ...baseMetadata,
   other: {
     // Product Schema - Main Platform
     'script:ld+json:product': JSON.stringify({

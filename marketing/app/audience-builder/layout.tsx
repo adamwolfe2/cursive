@@ -2,9 +2,18 @@ import { generateMetadata } from '@/lib/seo/metadata'
 import { Metadata } from 'next'
 
 const baseMetadata = generateMetadata({
-  title: 'Audience Builder | Build Unlimited B2B & B2C Audiences | No Caps',
-  description: 'Build unlimited audiences with 220M+ consumer and 140M+ business profiles. Filter by demographics, firmographics, and 450B+ monthly intent signals. No size limits, no export caps.',
-  keywords: ['audience builder', 'B2B audience builder', 'B2C audience targeting', 'intent-based targeting', 'audience segmentation', 'lookalike audiences', 'custom audience builder'],
+  title: 'B2B Audience Builder - 220M+ Profiles & Intent Signals',
+  description: 'Build custom B2B audiences from 220M+ consumer profiles, 140M+ business profiles, and 450B+ monthly intent signals. Filter by firmographic, demographic, and behavioral criteria.',
+  keywords: [
+    'B2B audience builder',
+    'intent data audiences',
+    'custom audience targeting',
+    'lead list builder',
+    'B2B prospecting tool',
+    'firmographic filtering',
+    'intent signal targeting',
+    'audience segmentation',
+  ],
   canonical: 'https://meetcursive.com/audience-builder',
 })
 

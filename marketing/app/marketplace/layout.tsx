@@ -1,9 +1,18 @@
 import { generateMetadata } from '@/lib/seo/metadata'
 
 export const metadata = generateMetadata({
-  title: 'Lead Marketplace - Browse & Buy Verified B2B Leads Instantly',
-  description: 'Self-serve marketplace for verified B2B leads. Browse 50k+ leads, filter by industry, seniority, and intent. Buy with credits starting at $99. Get 100 free credits on signup.',
-  keywords: ['B2B lead marketplace', 'buy leads online', 'verified leads', 'lead credits', 'self-serve leads', 'B2B contact data'],
+  title: 'B2B Lead Marketplace - Buy Verified Leads On Demand',
+  description: 'Self-serve B2B lead marketplace with verified contacts. Buy credits from $0.60/lead, filter by industry, seniority, and intent signals. Start free with 100 credits.',
+  keywords: [
+    'B2B lead marketplace',
+    'buy leads online',
+    'verified B2B contacts',
+    'lead credits',
+    'on-demand lead generation',
+    'self-serve lead platform',
+    'B2B contact database',
+    'lead list marketplace',
+  ],
   canonical: 'https://meetcursive.com/marketplace',
 })
 

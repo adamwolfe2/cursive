@@ -2,9 +2,18 @@ import { generateMetadata } from '@/lib/seo/metadata'
 import { Metadata } from 'next'
 
 const baseMetadata = generateMetadata({
-  title: 'Visitor Identification Software | Identify 70% of Anonymous Traffic',
-  description: 'Stop losing 98% of your website visitors. Cursive identifies up to 70% of anonymous traffic with company + individual data. Real-time enrichment, 200+ integrations, GDPR compliant.',
-  keywords: ['visitor identification', 'website visitor tracking', 'anonymous visitor identification', 'identify website visitors', 'B2B visitor identification', 'visitor tracking software', 'website analytics'],
+  title: 'Website Visitor Identification - Identify Anonymous B2B Traffic',
+  description: 'Identify up to 70% of anonymous website visitors at the company and individual level. Get decision-maker contacts, pages viewed, and intent scores in real-time.',
+  keywords: [
+    'website visitor identification',
+    'anonymous visitor tracking',
+    'B2B visitor ID',
+    'visitor deanonymization',
+    'website visitor tracking',
+    'identify website visitors',
+    'reverse IP lookup',
+    'B2B website intelligence',
+  ],
   canonical: 'https://meetcursive.com/visitor-identification',
 })
 

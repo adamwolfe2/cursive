@@ -1,9 +1,18 @@
 import { generateMetadata } from '@/lib/seo/metadata'
 
 export const metadata = generateMetadata({
-  title: 'Automated Direct Mail Marketing | From $1.50 per Piece | 48hr Delivery',
-  description: 'Turn website visitors into mailbox conversions. Automated direct mail triggered by digital behavior. 3-5x higher response rates than digital-only. Starting at $1.50 per postcard, no minimums.',
-  keywords: ['direct mail marketing', 'automated direct mail', 'direct mail retargeting', 'postcard marketing', 'direct mail automation', 'triggered direct mail', 'website to mailbox'],
+  title: 'Direct Mail Automation - Trigger Physical Mail from Digital Behavior',
+  description: 'Automate B2B direct mail campaigns triggered by website visits and digital behavior. Send personalized postcards starting at $1.50/piece with 3-5x higher conversion than digital alone.',
+  keywords: [
+    'direct mail automation',
+    'B2B direct mail',
+    'automated postcards',
+    'programmatic direct mail',
+    'triggered direct mail',
+    'physical mail marketing',
+    'direct mail retargeting',
+    'website to mailbox',
+  ],
   canonical: 'https://meetcursive.com/direct-mail',
 })
 

@@ -1,9 +1,18 @@
 import { generateMetadata } from '@/lib/seo/metadata'
 
 export const metadata = generateMetadata({
-  title: 'Pricing - Transparent Plans for Every Growth Stage',
-  description: 'Explore Cursive pricing plans for visitor identification, AI outreach, audience building, and direct mail. Transparent pricing starting at $1,000/month with no hidden fees. Compare plans and find your fit.',
-  keywords: ['Cursive pricing', 'visitor identification pricing', 'lead generation pricing', 'B2B data pricing', 'intent data pricing', 'AI outreach pricing', 'marketing platform pricing'],
+  title: 'Pricing - Self-Serve Credits & Done-For-You Services',
+  description: 'Flexible B2B lead generation pricing. Self-serve marketplace credits from $0.60/lead or done-for-you services starting at $1,000/month. Start free with 100 credits.',
+  keywords: [
+    'B2B lead generation pricing',
+    'lead marketplace credits',
+    'done-for-you lead gen',
+    'outbound pricing',
+    'AI SDR pricing',
+    'lead generation cost',
+    'B2B data pricing',
+    'self-serve lead credits',
+  ],
   canonical: 'https://meetcursive.com/pricing',
 })
 

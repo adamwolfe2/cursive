@@ -1,9 +1,18 @@
 import { generateMetadata } from '@/lib/seo/metadata'
 
 export const metadata = generateMetadata({
-  title: 'Services - Monthly Lead Lists, AI Outreach & Data Solutions',
-  description: 'Explore Cursive services: monthly verified lead lists, AI-powered outreach campaigns, audience building, direct mail automation, and custom data solutions for B2B and B2C companies.',
-  keywords: ['Cursive services', 'lead generation services', 'AI outreach', 'monthly lead lists', 'data services', 'B2B marketing services', 'direct mail services', 'audience building services'],
+  title: 'Done-For-You Lead Generation Services',
+  description: 'Let Cursive handle your lead generation. Three tiers: Cursive Data ($1k/mo), Cursive Outbound ($2.5k/mo), and Cursive Pipeline ($5k/mo). AI-powered campaigns that book meetings.',
+  keywords: [
+    'done-for-you lead generation',
+    'AI outbound',
+    'managed campaigns',
+    'B2B lead gen services',
+    'AI SDR service',
+    'outsourced lead generation',
+    'managed outbound',
+    'lead generation agency',
+  ],
   canonical: 'https://meetcursive.com/services',
 })
 
