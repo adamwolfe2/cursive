@@ -12,7 +12,7 @@ import { CompetitiveAdvantagesSection } from "@/components/homepage/competitive-
 import { FAQSection } from "@/components/homepage/faq-section"
 import { CustomerLogos } from "@/components/homepage/customer-logos"
 import Link from "next/link"
-import { Eye, Target, Bot, TrendingUp, type LucideIcon } from "lucide-react"
+import { Eye, Target, Bot, TrendingUp, ShoppingCart, Briefcase, type LucideIcon } from "lucide-react"
 
 export function HumanHomePage() {
   return (
@@ -54,14 +54,24 @@ export function HumanHomePage() {
             </div>
 
             {/* OPTIMIZED: Primary CTA - Clear, benefit-driven, stands out */}
-            <Button
-              size="lg"
-              href="https://cal.com/adamwolfe/cursive-ai-audit"
-              target="_blank"
-              className="bg-[#007AFF] text-white hover:bg-[#0066DD] text-lg px-8 py-4 mb-3"
-            >
-              Book Your Free AI Audit
-            </Button>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-3">
+              <Button
+                size="lg"
+                href="https://cal.com/adamwolfe/cursive-ai-audit"
+                target="_blank"
+                className="bg-[#007AFF] text-white hover:bg-[#0066DD] text-lg px-8 py-4"
+              >
+                Book Your Free AI Audit
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                href="https://leads.meetcursive.com/signup?source=homepage"
+                target="_blank"
+              >
+                Try Free Leads
+              </Button>
+            </div>
             <p className="text-sm text-gray-500">See exactly who's visiting your site—no commitment required</p>
           </motion.div>
 
@@ -97,6 +107,88 @@ export function HumanHomePage() {
       {/* Customer Logos - Early Social Proof */}
       <CustomerLogos />
 
+      {/* Two Ways to Get Started */}
+      <section className="py-20 bg-[#F7F9FB]">
+        <Container>
+          <div className="text-center mb-12">
+            <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
+              Two Ways to Get Started
+            </h2>
+            <p className="text-xl text-gray-600">
+              Whether you prefer self-serve or done-for-you, we've got you covered.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {/* Card 1: Browse & Buy */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="bg-white rounded-2xl p-8 border border-gray-200 hover:shadow-lg transition-all"
+            >
+              <div className="w-14 h-14 bg-blue-50 rounded-xl flex items-center justify-center mb-6">
+                <ShoppingCart className="w-7 h-7 text-[#007AFF]" />
+              </div>
+              <h3 className="text-2xl font-light text-gray-900 mb-3">Browse & Buy Leads</h3>
+              <p className="text-gray-600 mb-6">
+                Self-serve marketplace with 50k+ verified B2B leads. Filter, preview, and purchase with credits. Start with 100 free credits.
+              </p>
+              <ul className="space-y-2 mb-8 text-sm text-gray-600">
+                <li className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full" />
+                  Instant access to leads
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full" />
+                  Credits from $0.60/lead
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full" />
+                  No commitment required
+                </li>
+              </ul>
+              <Button href="https://leads.meetcursive.com/signup?source=homepage" target="_blank" className="w-full">
+                Try Free Leads
+              </Button>
+            </motion.div>
+
+            {/* Card 2: Let Us Handle It */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+              className="bg-white rounded-2xl p-8 border border-gray-200 hover:shadow-lg transition-all"
+            >
+              <div className="w-14 h-14 bg-blue-50 rounded-xl flex items-center justify-center mb-6">
+                <Briefcase className="w-7 h-7 text-[#007AFF]" />
+              </div>
+              <h3 className="text-2xl font-light text-gray-900 mb-3">Let Us Handle It</h3>
+              <p className="text-gray-600 mb-6">
+                Done-for-you lead generation and outbound. We deliver verified leads, run campaigns, and book meetings on your behalf.
+              </p>
+              <ul className="space-y-2 mb-8 text-sm text-gray-600">
+                <li className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full" />
+                  Managed by our team
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full" />
+                  Starting at $1k/mo
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full" />
+                  Guaranteed results
+                </li>
+              </ul>
+              <Button href="/services" className="w-full">
+                Explore Services
+              </Button>
+            </motion.div>
+          </div>
+        </Container>
+      </section>
 
       {/* OPTIMIZED: Problem → Solution (Benefit-Led, Not Feature-Led) */}
       <section className="py-20 bg-white">
@@ -205,6 +297,65 @@ export function HumanHomePage() {
 
       {/* FAQ Section */}
       <FAQSection />
+
+      {/* Explore by Industry */}
+      <section className="py-20 bg-white">
+        <Container>
+          <div className="text-center mb-12">
+            <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
+              Built for Your Industry
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Cursive powers lead generation and outbound for companies across every sector. See how teams in your industry use our platform.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-4xl mx-auto mb-12">
+            {[
+              { label: "B2B Software", href: "/industries/b2b-software" },
+              { label: "Agencies", href: "/industries/agencies" },
+              { label: "Ecommerce", href: "/industries/ecommerce" },
+              { label: "Financial Services", href: "/industries/financial-services" },
+              { label: "Home Services", href: "/industries/home-services" },
+              { label: "Education", href: "/industries/education" },
+              { label: "Franchises", href: "/industries/franchises" },
+              { label: "Retail", href: "/industries/retail" },
+              { label: "Media & Advertising", href: "/industries/media-advertising" },
+            ].map((industry) => (
+              <Link
+                key={industry.href}
+                href={industry.href}
+                className="block p-4 bg-[#F7F9FB] rounded-lg border border-gray-200 text-center text-gray-900 hover:border-[#007AFF] hover:text-[#007AFF] transition-all text-sm font-medium"
+              >
+                {industry.label}
+              </Link>
+            ))}
+          </div>
+
+          <div className="text-center">
+            <p className="text-gray-600 mb-4">
+              Want to see how Cursive compares to other platforms?
+            </p>
+            <div className="flex flex-wrap justify-center gap-3">
+              <Link href="/blog/clearbit-alternatives-comparison" className="text-sm text-[#007AFF] hover:underline">
+                Clearbit Alternatives
+              </Link>
+              <span className="text-gray-300">|</span>
+              <Link href="/blog/zoominfo-vs-cursive-comparison" className="text-sm text-[#007AFF] hover:underline">
+                ZoomInfo vs Cursive
+              </Link>
+              <span className="text-gray-300">|</span>
+              <Link href="/blog/apollo-vs-cursive-comparison" className="text-sm text-[#007AFF] hover:underline">
+                Apollo vs Cursive
+              </Link>
+              <span className="text-gray-300">|</span>
+              <Link href="/blog/6sense-vs-cursive-comparison" className="text-sm text-[#007AFF] hover:underline">
+                6sense vs Cursive
+              </Link>
+            </div>
+          </div>
+        </Container>
+      </section>
 
       {/* Dashboard CTA */}
       <DashboardCTA

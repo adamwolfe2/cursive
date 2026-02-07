@@ -289,7 +289,7 @@ export function UpgradeBanner({
   if (!canUpgrade) return null
 
   return (
-    <div className="rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 p-4 text-white">
+    <div className="rounded-lg bg-gradient-to-r from-primary to-indigo-600 p-4 text-white">
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-sm font-semibold">{title}</h3>
@@ -297,7 +297,7 @@ export function UpgradeBanner({
         </div>
         <a
           href={getUpgradeUrlForTier(targetTier)}
-          className="flex-shrink-0 rounded-lg bg-white px-4 py-2 text-sm font-medium text-blue-600 hover:bg-white/90 transition-colors"
+          className="flex-shrink-0 rounded-lg bg-white px-4 py-2 text-sm font-medium text-primary hover:bg-white/90 transition-colors"
         >
           Upgrade to {targetTier}
         </a>

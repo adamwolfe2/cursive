@@ -183,7 +183,7 @@ export function OnboardingForm({ subscriptionId, tierName, initialData = {} }: O
         </div>
         <div className="w-full bg-zinc-200 rounded-full h-2">
           <div
-            className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+            className="bg-primary h-2 rounded-full transition-all duration-300"
             style={{ width: `${(step / totalSteps) * 100}%` }}
           />
         </div>
@@ -213,7 +213,7 @@ export function OnboardingForm({ subscriptionId, tierName, initialData = {} }: O
                       onClick={() => toggleArrayItem('industries', industry)}
                       className={`px-4 py-3 rounded-lg border text-left transition-colors ${
                         formData.industries.includes(industry)
-                          ? 'border-blue-600 bg-blue-50 text-blue-900'
+                          ? 'border-primary bg-primary/5 text-primary'
                           : 'border-zinc-200 hover:border-zinc-300 text-zinc-700'
                       }`}
                     >
@@ -230,7 +230,7 @@ export function OnboardingForm({ subscriptionId, tierName, initialData = {} }: O
                 <select
                   value={formData.companySize}
                   onChange={e => updateField('companySize', e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg border border-zinc-200 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+                  className="w-full px-4 py-3 rounded-lg border border-zinc-200 focus:border-primary focus:ring-1 focus:ring-primary"
                 >
                   <option value="">Select company size</option>
                   {COMPANY_SIZES.map(size => (
@@ -246,7 +246,7 @@ export function OnboardingForm({ subscriptionId, tierName, initialData = {} }: O
                 <select
                   value={formData.revenueRange}
                   onChange={e => updateField('revenueRange', e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg border border-zinc-200 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+                  className="w-full px-4 py-3 rounded-lg border border-zinc-200 focus:border-primary focus:ring-1 focus:ring-primary"
                 >
                   <option value="">Select revenue range</option>
                   {REVENUE_RANGES.map(range => (
@@ -277,7 +277,7 @@ export function OnboardingForm({ subscriptionId, tierName, initialData = {} }: O
                   onChange={e => updateField('targetTitles', e.target.value)}
                   placeholder="CEO&#10;VP of Sales&#10;Head of Growth&#10;Director of Marketing"
                   rows={6}
-                  className="w-full px-4 py-3 rounded-lg border border-zinc-200 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 font-mono text-sm"
+                  className="w-full px-4 py-3 rounded-lg border border-zinc-200 focus:border-primary focus:ring-1 focus:ring-primary font-mono text-sm"
                 />
                 <p className="text-sm text-zinc-500 mt-2">
                   Example: CEO, VP Sales, Head of Growth, etc.
@@ -296,7 +296,7 @@ export function OnboardingForm({ subscriptionId, tierName, initialData = {} }: O
                       onClick={() => toggleArrayItem('targetSeniority', level)}
                       className={`w-full px-4 py-3 rounded-lg border text-left transition-colors ${
                         formData.targetSeniority.includes(level)
-                          ? 'border-blue-600 bg-blue-50 text-blue-900'
+                          ? 'border-primary bg-primary/5 text-primary'
                           : 'border-zinc-200 hover:border-zinc-300 text-zinc-700'
                       }`}
                     >
@@ -331,7 +331,7 @@ export function OnboardingForm({ subscriptionId, tierName, initialData = {} }: O
                       onClick={() => toggleArrayItem('geographicFocus', region)}
                       className={`px-4 py-3 rounded-lg border text-left transition-colors ${
                         formData.geographicFocus.includes(region)
-                          ? 'border-blue-600 bg-blue-50 text-blue-900'
+                          ? 'border-primary bg-primary/5 text-primary'
                           : 'border-zinc-200 hover:border-zinc-300 text-zinc-700'
                       }`}
                     >
@@ -350,7 +350,7 @@ export function OnboardingForm({ subscriptionId, tierName, initialData = {} }: O
                   onChange={e => updateField('techStack', e.target.value)}
                   placeholder="Salesforce, HubSpot, Stripe, etc."
                   rows={3}
-                  className="w-full px-4 py-3 rounded-lg border border-zinc-200 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+                  className="w-full px-4 py-3 rounded-lg border border-zinc-200 focus:border-primary focus:ring-1 focus:ring-primary"
                 />
                 <p className="text-sm text-zinc-500 mt-2">
                   Target companies using specific platforms or tools
@@ -379,7 +379,7 @@ export function OnboardingForm({ subscriptionId, tierName, initialData = {} }: O
                   onChange={e => updateField('useCase', e.target.value)}
                   placeholder="Cold outbound email campaigns, LinkedIn outreach, sales prospecting, etc."
                   rows={3}
-                  className="w-full px-4 py-3 rounded-lg border border-zinc-200 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+                  className="w-full px-4 py-3 rounded-lg border border-zinc-200 focus:border-primary focus:ring-1 focus:ring-primary"
                 />
               </div>
 
@@ -392,7 +392,7 @@ export function OnboardingForm({ subscriptionId, tierName, initialData = {} }: O
                   onChange={e => updateField('idealLeadProfile', e.target.value)}
                   placeholder="B2B SaaS companies, $1M+ ARR, Series A funded, using Salesforce, based in US, 20-100 employees, actively hiring sales reps..."
                   rows={4}
-                  className="w-full px-4 py-3 rounded-lg border border-zinc-200 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+                  className="w-full px-4 py-3 rounded-lg border border-zinc-200 focus:border-primary focus:ring-1 focus:ring-primary"
                 />
               </div>
 
@@ -405,7 +405,7 @@ export function OnboardingForm({ subscriptionId, tierName, initialData = {} }: O
                   onChange={e => updateField('exclusions', e.target.value)}
                   placeholder="No agencies, no consultants, no non-profits, etc."
                   rows={2}
-                  className="w-full px-4 py-3 rounded-lg border border-zinc-200 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+                  className="w-full px-4 py-3 rounded-lg border border-zinc-200 focus:border-primary focus:ring-1 focus:ring-primary"
                 />
               </div>
 
@@ -418,7 +418,7 @@ export function OnboardingForm({ subscriptionId, tierName, initialData = {} }: O
                   onChange={e => updateField('additionalNotes', e.target.value)}
                   placeholder="Companies that raised funding in last 12 months, specific pain points, job postings to look for, etc."
                   rows={3}
-                  className="w-full px-4 py-3 rounded-lg border border-zinc-200 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+                  className="w-full px-4 py-3 rounded-lg border border-zinc-200 focus:border-primary focus:ring-1 focus:ring-primary"
                 />
               </div>
             </div>
@@ -448,7 +448,7 @@ export function OnboardingForm({ subscriptionId, tierName, initialData = {} }: O
           <button
             onClick={handleNext}
             disabled={!canProceed()}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary/90 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Next
             <ArrowRight className="h-5 w-5" />

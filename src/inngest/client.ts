@@ -386,6 +386,47 @@ export type Events = {
       amountTotal?: number
     }
   }
+
+  // Marketplace Upsell Events
+  'marketplace/credit-purchased': {
+    data: {
+      workspace_id: string
+      user_id: string
+      credits: number
+      amount: number
+      lifetime_spend: number
+    }
+  }
+  'marketplace/upsell-check': {
+    data: {
+      workspace_id: string
+      user_id: string
+      lifetime_spend: number
+    }
+  }
+
+  // Marketplace Onboarding Events
+  'marketplace/first-purchase': {
+    data: {
+      workspace_id: string
+      user_id: string
+      user_email: string
+      user_name: string
+      credits: number
+    }
+  }
+
+  // Custom Audience Events
+  'marketplace/custom-audience-requested': {
+    data: {
+      request_id: string
+      workspace_id: string
+      user_id: string
+      user_email: string
+      industry: string
+      volume: string
+    }
+  }
 }
 
 // Lazy-load Inngest client to avoid build-time initialization

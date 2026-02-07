@@ -8,7 +8,7 @@ import { cn } from '@/lib/design-system'
 interface PageContainerProps {
   children: React.ReactNode
   className?: string
-  maxWidth?: 'default' | 'wide' | 'full'
+  maxWidth?: 'narrow' | 'default' | 'wide' | 'full'
   noPadding?: boolean
 }
 
@@ -19,6 +19,7 @@ export function PageContainer({
   noPadding = false,
 }: PageContainerProps) {
   const maxWidthClasses = {
+    narrow: 'max-w-3xl',
     default: 'max-w-7xl',
     wide: 'max-w-[1600px]',
     full: 'max-w-full',

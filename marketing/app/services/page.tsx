@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { Container } from "@/components/ui/container"
 import { motion } from "framer-motion"
-import { ArrowRight } from "lucide-react"
+import { ArrowRight, ShoppingCart } from "lucide-react"
 import { DashboardCTA } from "@/components/dashboard-cta"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
 
@@ -52,7 +52,7 @@ export default function ServicesPage() {
         "@type": "Service",
         "@id": "https://meetcursive.com/services#pipeline",
         "name": "Cursive Pipeline - AI SDR Automation",
-        "description": "Your AI team that never sleeps. Researches, writes, sends, follows up, and books meetings—automatically.",
+        "description": "Your AI team that never sleeps. Researches, writes, sends, follows up, and books meetings -- automatically.",
         "provider": {
           "@type": "Organization",
           "name": "Cursive"
@@ -95,7 +95,7 @@ export default function ServicesPage() {
               </span>
             </h1>
             <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-              From self-service lead lists to fully managed pipelines—<span className="font-cursive text-2xl text-gray-900">Cursive</span> scales with you.
+              From self-service lead lists to fully managed pipelines -- <span className="font-cursive text-2xl text-gray-900">Cursive</span> scales with you.
               Not sure where to start? Book a call and we'll build a custom plan.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -138,6 +138,40 @@ export default function ServicesPage() {
                   ready to import into your CRM and activate immediately.
                 </p>
 
+                {/* Timeline */}
+                <div className="mb-8">
+                  <h4 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-4">How It Works</h4>
+                  <div className="space-y-4">
+                    <div className="flex items-start gap-4">
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#007AFF]/10 flex items-center justify-center">
+                        <span className="text-sm font-medium text-[#007AFF]">1</span>
+                      </div>
+                      <div>
+                        <div className="font-medium text-gray-900">Week 1: ICP Definition & Targeting Criteria</div>
+                        <p className="text-sm text-gray-600">We work with you to define your ideal customer profile and build targeting filters.</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-4">
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#007AFF]/10 flex items-center justify-center">
+                        <span className="text-sm font-medium text-[#007AFF]">2</span>
+                      </div>
+                      <div>
+                        <div className="font-medium text-gray-900">Week 2: First List Delivery</div>
+                        <p className="text-sm text-gray-600">Your first batch of verified, enriched contacts ready for import.</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-4">
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#007AFF]/10 flex items-center justify-center">
+                        <span className="text-sm font-medium text-[#007AFF]">{"\u221E"}</span>
+                      </div>
+                      <div>
+                        <div className="font-medium text-gray-900">Ongoing: Monthly Refresh with New Leads</div>
+                        <p className="text-sm text-gray-600">Fresh leads every month, no duplicates, continuously refined targeting.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="space-y-4 mb-8">
                   {dataFeatures.map((feature, i) => (
                     <div key={i} className="flex items-start gap-3">
@@ -147,23 +181,8 @@ export default function ServicesPage() {
                   ))}
                 </div>
 
-                <div className="grid grid-cols-3 gap-4 mb-8">
-                  <div className="bg-white rounded-xl p-4 text-center border border-gray-200">
-                    <div className="text-2xl font-light text-[#007AFF] mb-1">$1,000</div>
-                    <div className="text-sm text-gray-600">500 leads/mo</div>
-                  </div>
-                  <div className="bg-white rounded-xl p-4 text-center border border-gray-200">
-                    <div className="text-2xl font-light text-[#007AFF] mb-1">$1,750</div>
-                    <div className="text-sm text-gray-600">1,000 leads/mo</div>
-                  </div>
-                  <div className="bg-white rounded-xl p-4 text-center border border-gray-200">
-                    <div className="text-2xl font-light text-[#007AFF] mb-1">$3,000</div>
-                    <div className="text-sm text-gray-600">2,000 leads/mo</div>
-                  </div>
-                </div>
-
-                <Button size="lg" href="https://pay.meetcursive.com/b/6oU9AT3rnfZX6kZg9R8g003" target="_blank">
-                  Get Started with Data
+                <Button size="lg" href="/pricing">
+                  See pricing
                   <ArrowRight className="w-5 h-5" />
                 </Button>
               </div>
@@ -254,6 +273,40 @@ export default function ServicesPage() {
                   You just close the meetings.
                 </p>
 
+                {/* Timeline */}
+                <div className="mb-8">
+                  <h4 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-4">How It Works</h4>
+                  <div className="space-y-4">
+                    <div className="flex items-start gap-4">
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#007AFF]/10 flex items-center justify-center">
+                        <span className="text-sm font-medium text-[#007AFF]">1</span>
+                      </div>
+                      <div>
+                        <div className="font-medium text-gray-900">Week 1-2: Domain Setup, Inbox Warmup, Brand Voice Training</div>
+                        <p className="text-sm text-gray-600">We configure your email infrastructure and train AI on your brand voice.</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-4">
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#007AFF]/10 flex items-center justify-center">
+                        <span className="text-sm font-medium text-[#007AFF]">2</span>
+                      </div>
+                      <div>
+                        <div className="font-medium text-gray-900">Week 3: Campaign Launch</div>
+                        <p className="text-sm text-gray-600">First AI-personalized campaigns go live with A/B testing.</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-4">
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#007AFF]/10 flex items-center justify-center">
+                        <span className="text-sm font-medium text-[#007AFF]">{"\u221E"}</span>
+                      </div>
+                      <div>
+                        <div className="font-medium text-gray-900">Week 4+: Optimization, Meetings Booked</div>
+                        <p className="text-sm text-gray-600">Continuous optimization based on data, with qualified meetings landing on your calendar.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="space-y-4 mb-8">
                   {outboundFeatures.map((feature, i) => (
                     <div key={i} className="flex items-start gap-3">
@@ -263,15 +316,8 @@ export default function ServicesPage() {
                   ))}
                 </div>
 
-                <div className="bg-white rounded-xl p-6 mb-8 border border-gray-200">
-                  <div className="text-3xl font-light text-[#007AFF] mb-2">
-                    $2,500/mo
-                  </div>
-                  <p className="text-gray-600">No setup fees. Cancel anytime.</p>
-                </div>
-
-                <Button size="lg" href="https://pay.meetcursive.com/b/8x27sLaTPcNL7p38Hp8g002" target="_blank">
-                  Get Started with Outbound
+                <Button size="lg" href="/pricing">
+                  See pricing
                   <ArrowRight className="w-5 h-5" />
                 </Button>
               </div>
@@ -299,8 +345,33 @@ export default function ServicesPage() {
                 </h2>
                 <p className="text-xl text-gray-600 mb-8">
                   Your AI team that never sleeps. Researches, writes, sends, follows up,
-                  and books meetings—automatically.
+                  and books meetings -- automatically.
                 </p>
+
+                {/* Timeline */}
+                <div className="mb-8">
+                  <h4 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-4">How It Works</h4>
+                  <div className="space-y-4">
+                    <div className="flex items-start gap-4">
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#007AFF]/10 flex items-center justify-center">
+                        <span className="text-sm font-medium text-[#007AFF]">1</span>
+                      </div>
+                      <div>
+                        <div className="font-medium text-gray-900">Week 1-3: Full Stack Setup, AI SDR Training</div>
+                        <p className="text-sm text-gray-600">Complete infrastructure buildout, AI agent configuration, multi-channel setup, and CRM integration.</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-4">
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#007AFF]/10 flex items-center justify-center">
+                        <span className="text-sm font-medium text-[#007AFF]">{"\u221E"}</span>
+                      </div>
+                      <div>
+                        <div className="font-medium text-gray-900">Week 4+: Autonomous Operation, Continuous Pipeline</div>
+                        <p className="text-sm text-gray-600">AI SDR agents run 24/7 -- researching, outreaching, following up, and booking meetings on autopilot.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
                 <div className="space-y-4 mb-8">
                   {pipelineFeatures.map((feature, i) => (
@@ -311,15 +382,8 @@ export default function ServicesPage() {
                   ))}
                 </div>
 
-                <div className="bg-white rounded-xl p-6 mb-8 border border-gray-200">
-                  <div className="text-3xl font-light text-[#007AFF] mb-2">
-                    $5,000/mo
-                  </div>
-                  <p className="text-gray-600">No setup fees. Cancel anytime.</p>
-                </div>
-
-                <Button size="lg" href="https://pay.meetcursive.com/b/bJe7sLge9bJHgZD2j18g001" target="_blank">
-                  Get Started with Pipeline
+                <Button size="lg" href="/pricing">
+                  See pricing
                   <ArrowRight className="w-5 h-5" />
                 </Button>
               </div>
@@ -353,8 +417,29 @@ export default function ServicesPage() {
         </Container>
       </section>
 
+      {/* Self-Serve Cross-Link */}
+      <section className="py-16 bg-white">
+        <Container>
+          <div className="max-w-3xl mx-auto">
+            <div className="bg-gradient-to-br from-[#007AFF]/5 to-blue-50 rounded-2xl p-10 text-center border border-blue-100">
+              <ShoppingCart className="w-12 h-12 text-[#007AFF] mx-auto mb-4" />
+              <h3 className="text-2xl lg:text-3xl font-light text-gray-900 mb-3">
+                Prefer Self-Serve?
+              </h3>
+              <p className="text-lg text-gray-600 mb-6 max-w-xl mx-auto">
+                Browse the marketplace and find leads on your own terms. Buy credits, search our database, and export contacts instantly.
+              </p>
+              <Button size="lg" href="/marketplace">
+                Browse the Marketplace
+                <ArrowRight className="w-5 h-5" />
+              </Button>
+            </div>
+          </div>
+        </Container>
+      </section>
+
       {/* Add-On Services */}
-      <section className="py-24 bg-white">
+      <section className="py-24 bg-[#F7F9FB]">
         <Container>
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
@@ -398,8 +483,8 @@ export default function ServicesPage() {
               <div className="text-2xl font-light text-[#007AFF] mb-4">
                 $750/mo + $0.50/visitor
               </div>
-              <Button className="w-full" href="https://cal.com/adamwolfe/cursive-ai-audit" target="_blank">
-                Add Visitor Tracking
+              <Button className="w-full" href="/pixel">
+                Learn About Pixel
               </Button>
             </motion.div>
 
@@ -477,7 +562,7 @@ export default function ServicesPage() {
       </section>
 
       {/* Comparison Table */}
-      <section id="comparison" className="py-24 bg-[#F7F9FB]">
+      <section id="comparison" className="py-24 bg-white">
         <Container>
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
@@ -513,10 +598,16 @@ export default function ServicesPage() {
 
           <div className="text-center mt-12">
             <p className="text-gray-600 mb-6">Still unsure? Book a call and we'll recommend the right plan.</p>
-            <Button size="lg" href="https://cal.com/adamwolfe/cursive-ai-audit" target="_blank">
-              Book a Strategy Call
-              <ArrowRight className="w-5 h-5" />
-            </Button>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Button size="lg" href="https://cal.com/adamwolfe/cursive-ai-audit" target="_blank">
+                Book a Strategy Call
+                <ArrowRight className="w-5 h-5" />
+              </Button>
+              <Button size="lg" variant="outline" href="/pricing">
+                View Pricing
+                <ArrowRight className="w-5 h-5" />
+              </Button>
+            </div>
           </div>
         </Container>
       </section>
@@ -537,63 +628,84 @@ export default function ServicesPage() {
       <div className="mb-12 pb-6 border-b border-gray-200">
         <h1 className="text-2xl text-gray-900 font-bold mb-4">CURSIVE SERVICES</h1>
         <p className="text-gray-700 leading-relaxed">
-          Lead generation services from self-service data to fully managed AI SDR automation. Choose your growth model: Cursive Data, Cursive Outbound, or Cursive Pipeline.
+          Done-for-you lead generation services with clear timelines and deliverables. Choose your growth model: Cursive Data (monthly lead lists), Cursive Outbound (managed email campaigns), or Cursive Pipeline (full-stack AI SDR automation). For pricing, visit /pricing.
         </p>
       </div>
 
-      {/* Service Tiers */}
-      <MachineSection title="Service Options">
-        <div className="space-y-6">
-          <div>
-            <p className="text-white mb-2">Cursive Data - Monthly Lead Lists:</p>
-            <p className="text-gray-400 mb-3">
-              Get verified B2B contacts delivered monthly. Custom targeting based on your ICP, ready to import into your CRM and activate immediately.
-            </p>
-            <MachineList items={[
-              "500-2,000 verified leads per month",
-              "Enriched with email, phone, LinkedIn, company data",
-              "Custom targeting based on your ICP",
-              "CSV export for easy CRM import",
-              "Monthly list refresh (no duplicates)"
-            ]} />
-            <p className="text-gray-400 mt-3">Pricing: $1,000-$3,000/month based on volume</p>
-          </div>
+      {/* Service Tiers with Process */}
+      <MachineSection title="Cursive Data - Monthly Lead Lists">
+        <p className="text-gray-400 mb-3">
+          Get verified B2B contacts delivered monthly. Custom targeting based on your ICP, ready to import into your CRM and activate immediately.
+        </p>
+        <p className="text-white mb-2">Timeline:</p>
+        <MachineList items={[
+          "Week 1: ICP definition and targeting criteria setup",
+          "Week 2: First list delivery with verified, enriched contacts",
+          "Ongoing: Monthly refresh with new leads, no duplicates"
+        ]} />
+        <p className="text-white mt-4 mb-2">What You Get:</p>
+        <MachineList items={[
+          "500-2,000 verified leads per month",
+          "Enriched with email, phone, LinkedIn, company data",
+          "Custom targeting based on your ICP",
+          "CSV export for easy CRM import",
+          "Monthly list refresh (no duplicates)",
+          "Dedicated account manager"
+        ]} />
+        <p className="text-gray-400 mt-3">See pricing at /pricing</p>
+      </MachineSection>
 
-          <div>
-            <p className="text-white mb-2">Cursive Outbound - Done-For-You Campaigns:</p>
-            <p className="text-gray-400 mb-3">
-              We build, launch, and optimize email campaigns using your brand voice. You just close the meetings.
-            </p>
-            <MachineList items={[
-              "AI-generated campaign copy (personalized at scale)",
-              "Email infrastructure setup (domains, inboxes, deliverability)",
-              "A/B testing and optimization",
-              "200+ emails sent per day per account",
-              "Real-time analytics dashboard",
-              "Weekly strategy calls",
-              "Includes 500 leads/month (or use your own lists)"
-            ]} />
-            <p className="text-gray-400 mt-3">Pricing: $2,500/month. No setup fees.</p>
-          </div>
+      <MachineSection title="Cursive Outbound - Done-For-You Campaigns">
+        <p className="text-gray-400 mb-3">
+          We build, launch, and optimize email campaigns using your brand voice. You just close the meetings.
+        </p>
+        <p className="text-white mb-2">Timeline:</p>
+        <MachineList items={[
+          "Week 1-2: Domain setup, inbox warmup, brand voice training",
+          "Week 3: Campaign launch with AI-personalized outreach",
+          "Week 4+: Optimization, A/B testing, meetings booked on your calendar"
+        ]} />
+        <p className="text-white mt-4 mb-2">What You Get:</p>
+        <MachineList items={[
+          "AI-generated campaign copy (personalized at scale)",
+          "Email infrastructure setup (domains, inboxes, deliverability)",
+          "A/B testing and optimization",
+          "200+ emails sent per day per account",
+          "Real-time analytics dashboard",
+          "Weekly strategy calls",
+          "Includes 500 leads/month (or use your own lists)"
+        ]} />
+        <p className="text-gray-400 mt-3">See pricing at /pricing</p>
+      </MachineSection>
 
-          <div>
-            <p className="text-white mb-2">Cursive Pipeline - AI SDR Automation:</p>
-            <p className="text-gray-400 mb-3">
-              Your AI team that never sleeps. Researches, writes, sends, follows up, and books meetings—automatically.
-            </p>
-            <MachineList items={[
-              "Everything in Outbound, plus:",
-              "AI SDR agents (research, outreach, follow-ups)",
-              "Multi-channel campaigns (email + LinkedIn)",
-              "Unlimited lead enrichment via People Search",
-              "API access for custom integrations",
-              "White-glove onboarding",
-              "Dedicated success manager",
-              "Custom reporting and attribution"
-            ]} />
-            <p className="text-gray-400 mt-3">Pricing: $5,000/month. No setup fees.</p>
-          </div>
-        </div>
+      <MachineSection title="Cursive Pipeline - AI SDR Automation">
+        <p className="text-gray-400 mb-3">
+          Your AI team that never sleeps. Researches, writes, sends, follows up, and books meetings -- automatically.
+        </p>
+        <p className="text-white mb-2">Timeline:</p>
+        <MachineList items={[
+          "Week 1-3: Full stack setup, AI SDR training, multi-channel configuration",
+          "Week 4+: Autonomous operation, continuous pipeline generation"
+        ]} />
+        <p className="text-white mt-4 mb-2">What You Get:</p>
+        <MachineList items={[
+          "Everything in Outbound, plus:",
+          "AI SDR agents (research, outreach, follow-ups 24/7)",
+          "Multi-channel campaigns (email + LinkedIn)",
+          "Unlimited lead enrichment via People Search",
+          "API access for custom integrations",
+          "White-glove onboarding",
+          "Dedicated success manager",
+          "Custom reporting and attribution"
+        ]} />
+        <p className="text-gray-400 mt-3">See pricing at /pricing</p>
+      </MachineSection>
+
+      {/* Self-Serve Option */}
+      <MachineSection title="Self-Serve Marketplace">
+        <p className="text-gray-400 mb-3">
+          Prefer to find leads yourself? Browse the Cursive marketplace at /marketplace. Buy credits, search our database, and export contacts instantly. No subscription required.
+        </p>
       </MachineSection>
 
       {/* Add-Ons */}
@@ -601,7 +713,7 @@ export default function ServicesPage() {
         <MachineList items={[
           {
             label: "Website Visitor Tracking",
-            description: "$750/mo + $0.50/visitor - Identify anonymous website visitors in real-time"
+            description: "$750/mo + $0.50/visitor - Identify anonymous website visitors in real-time. Learn more at /pixel"
           },
           {
             label: "Visitor Retargeting",
@@ -623,19 +735,14 @@ export default function ServicesPage() {
             description: "15-minute call to discuss your needs and recommend the right service"
           },
           {
-            label: "Purchase Cursive Data",
-            href: "https://pay.meetcursive.com/b/6oU9AT3rnfZX6kZg9R8g003",
-            description: "Get started with monthly lead lists"
+            label: "View Pricing",
+            href: "https://meetcursive.com/pricing",
+            description: "See all pricing options for services and marketplace credits"
           },
           {
-            label: "Purchase Cursive Outbound",
-            href: "https://pay.meetcursive.com/b/8x27sLaTPcNL7p38Hp8g002",
-            description: "Start done-for-you email campaigns"
-          },
-          {
-            label: "Purchase Cursive Pipeline",
-            href: "https://pay.meetcursive.com/b/bJe7sLge9bJHgZD2j18g001",
-            description: "Launch AI SDR automation"
+            label: "Browse Marketplace",
+            href: "https://meetcursive.com/marketplace",
+            description: "Self-serve lead search with no subscription required"
           }
         ]} />
       </MachineSection>
@@ -681,12 +788,11 @@ const pipelineFeatures = [
 const comparisonRows = [
   { feature: "Monthly Leads", data: "500-2,000", outbound: "500 included", pipeline: "Unlimited" },
   { feature: "Campaign Management", data: "DIY", outbound: "Fully managed", pipeline: "Fully managed" },
-  { feature: "AI SDR Agents", data: "—", outbound: "—", pipeline: "Yes" },
-  { feature: "Email Infrastructure", data: "—", outbound: "Yes", pipeline: "Yes" },
-  { feature: "Multi-channel (Email + LinkedIn)", data: "—", outbound: "—", pipeline: "Yes" },
-  { feature: "API Access", data: "—", outbound: "—", pipeline: "Yes" },
-  { feature: "People Search", data: "—", outbound: "—", pipeline: "Unlimited" },
+  { feature: "AI SDR Agents", data: "\u2014", outbound: "\u2014", pipeline: "Yes" },
+  { feature: "Email Infrastructure", data: "\u2014", outbound: "Yes", pipeline: "Yes" },
+  { feature: "Multi-channel (Email + LinkedIn)", data: "\u2014", outbound: "\u2014", pipeline: "Yes" },
+  { feature: "API Access", data: "\u2014", outbound: "\u2014", pipeline: "Yes" },
+  { feature: "People Search", data: "\u2014", outbound: "\u2014", pipeline: "Unlimited" },
   { feature: "Dedicated Manager", data: "Yes", outbound: "Yes", pipeline: "Yes" },
-  { feature: "Setup Fee", data: "—", outbound: "—", pipeline: "—" },
-  { feature: "Monthly Price", data: "$1k-$3k", outbound: "$2,500", pipeline: "$5,000" },
+  { feature: "Onboarding Timeline", data: "1-2 weeks", outbound: "2-3 weeks", pipeline: "3-4 weeks" },
 ]

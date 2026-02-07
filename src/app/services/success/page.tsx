@@ -99,7 +99,7 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/dashboard"
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary/90 text-white font-medium rounded-lg transition-colors"
             >
               Go to Dashboard
               <ArrowRight className="h-5 w-5" />
@@ -115,7 +115,7 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
           {/* Support */}
           <p className="text-sm text-zinc-500 mt-8">
             Questions? Reply to your welcome email or contact{' '}
-            <a href="mailto:adam@meetcursive.com" className="text-blue-600 hover:underline">
+            <a href="mailto:adam@meetcursive.com" className="text-primary hover:underline">
               adam@meetcursive.com
             </a>
           </p>

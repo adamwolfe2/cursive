@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Link from 'next/link'
@@ -11,6 +11,9 @@ import { signupSchema, type SignupFormData } from '@/lib/validation/schemas'
 
 export default function SignupPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const source = searchParams.get('source')
+  const isMarketplace = source === 'marketplace'
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -29,14 +32,17 @@ export default function SignupPage() {
 
     const supabase = createClient()
 
+    const welcomeUrl = isMarketplace ? '/welcome?source=marketplace' : '/welcome'
+
     const { error: signUpError } = await supabase.auth.signUp({
       email: data.email,
       password: data.password,
       options: {
         data: {
           full_name: data.full_name,
+          signup_source: source || 'direct',
         },
-        emailRedirectTo: `${window.location.origin}/auth/callback?next=/welcome`,
+        emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(welcomeUrl)}`,
       },
     })
 
@@ -47,7 +53,7 @@ export default function SignupPage() {
     }
 
     // Redirect to welcome page
-    router.push('/welcome')
+    router.push(welcomeUrl)
     router.refresh()
   }
 
@@ -57,10 +63,12 @@ export default function SignupPage() {
 
     const supabase = createClient()
 
+    const oauthWelcomeUrl = isMarketplace ? '/welcome?source=marketplace' : '/welcome'
+
     const { error: signInError } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=/welcome`,
+        redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(oauthWelcomeUrl)}`,
       },
     })
 
@@ -85,13 +93,18 @@ export default function SignupPage() {
             />
           </div>
           <h2 className="text-center text-3xl font-bold tracking-tight text-gray-900">
-            Create your account
+            {isMarketplace ? 'Create Your Free Marketplace Account' : 'Create your account'}
           </h2>
+          {isMarketplace && (
+            <p className="mt-2 text-center text-sm font-semibold text-primary">
+              100 Free Credits Included
+            </p>
+          )}
           <p className="mt-2 text-center text-sm text-gray-600">
             Already have an account?{' '}
             <Link
               href="/login"
-              className="font-medium text-blue-600 hover:text-blue-500"
+              className="font-medium text-primary hover:text-primary/90"
             >
               Sign in
             </Link>
@@ -124,7 +137,7 @@ export default function SignupPage() {
                 {...register('full_name')}
                 className={`relative block w-full min-h-[44px] rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ${
                   errors.full_name ? 'ring-red-500' : 'ring-gray-300'
-                } placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6`}
+                } placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6`}
                 placeholder="Full name"
                 disabled={loading}
               />
@@ -145,7 +158,7 @@ export default function SignupPage() {
                 {...register('email')}
                 className={`relative block w-full min-h-[44px] rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ${
                   errors.email ? 'ring-red-500' : 'ring-gray-300'
-                } placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6`}
+                } placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6`}
                 placeholder="Email address"
                 disabled={loading}
               />
@@ -165,7 +178,7 @@ export default function SignupPage() {
                 {...register('password')}
                 className={`relative block w-full min-h-[44px] rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ${
                   errors.password ? 'ring-red-500' : 'ring-gray-300'
-                } placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6`}
+                } placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6`}
                 placeholder="Password (min. 8 characters)"
                 disabled={loading}
               />
@@ -185,7 +198,7 @@ export default function SignupPage() {
                 {...register('confirm_password')}
                 className={`relative block w-full min-h-[44px] rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ${
                   errors.confirm_password ? 'ring-red-500' : 'ring-gray-300'
-                } placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6`}
+                } placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6`}
                 placeholder="Confirm password"
                 disabled={loading}
               />
@@ -200,7 +213,7 @@ export default function SignupPage() {
               id="terms"
               type="checkbox"
               {...register('terms')}
-              className={`h-5 w-5 min-h-[20px] min-w-[20px] rounded border-gray-300 text-blue-600 focus:ring-blue-600 ${
+              className={`h-5 w-5 min-h-[20px] min-w-[20px] rounded border-gray-300 text-primary focus:ring-primary ${
                 errors.terms ? 'border-red-500' : ''
               }`}
             />
@@ -208,14 +221,14 @@ export default function SignupPage() {
               I agree to the{' '}
               <Link
                 href="/terms"
-                className="font-medium text-blue-600 hover:text-blue-500"
+                className="font-medium text-primary hover:text-primary/90"
               >
                 Terms of Service
               </Link>{' '}
               and{' '}
               <Link
                 href="/privacy"
-                className="font-medium text-blue-600 hover:text-blue-500"
+                className="font-medium text-primary hover:text-primary/90"
               >
                 Privacy Policy
               </Link>
@@ -229,7 +242,7 @@ export default function SignupPage() {
             <button
               type="submit"
               disabled={loading}
-              className="group relative flex w-full min-h-[44px] justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="group relative flex w-full min-h-[44px] justify-center rounded-md bg-primary px-3 py-2 text-sm font-semibold text-white hover:bg-primary/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Creating account...' : 'Create account'}
             </button>

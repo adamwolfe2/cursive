@@ -12,6 +12,7 @@ import {
 import { DashboardPreview } from "@/components/dashboard-preview"
 import { IntegrationsShowcase } from "@/components/integrations-showcase"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
+import { Breadcrumbs } from "@/components/Breadcrumbs"
 
 export default function IntentAudiencesPage() {
   const schemaMarkup = {
@@ -149,6 +150,12 @@ export default function IntentAudiencesPage() {
       {/* Human View */}
       <HumanView>
         <main>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Breadcrumbs items={[
+            { name: "Home", href: "/" },
+            { name: "Intent Audiences", href: "/intent-audiences" },
+          ]} />
+        </div>
         {/* Hero Section */}
         <section className="pt-24 pb-20 bg-white">
           <Container>

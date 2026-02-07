@@ -134,7 +134,7 @@ export function DeliveryCreateForm({ subscriptions }: DeliveryCreateFormProps) {
             value={selectedSubscription}
             onChange={e => setSelectedSubscription(e.target.value)}
             required
-            className="w-full px-4 py-3 rounded-lg border border-zinc-200 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+            className="w-full px-4 py-3 rounded-lg border border-zinc-200 focus:border-primary focus:ring-1 focus:ring-primary"
           >
             <option value="">Choose a subscription...</option>
             {subscriptions.map(sub => {
@@ -162,9 +162,9 @@ export function DeliveryCreateForm({ subscriptions }: DeliveryCreateFormProps) {
           )}
 
           {selectedSub && selectedSub.onboarding_completed && selectedSub.onboarding_data && (
-            <div className="mt-2 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <p className="text-sm font-medium text-blue-900 mb-2">Customer ICP:</p>
-              <div className="text-sm text-blue-800 space-y-1">
+            <div className="mt-2 p-4 bg-primary/5 border border-primary/20 rounded-lg">
+              <p className="text-sm font-medium text-primary mb-2">Customer ICP:</p>
+              <div className="text-sm text-primary space-y-1">
                 {selectedSub.onboarding_data.industries && (
                   <p><strong>Industries:</strong> {selectedSub.onboarding_data.industries.join(', ')}</p>
                 )}
@@ -191,7 +191,7 @@ export function DeliveryCreateForm({ subscriptions }: DeliveryCreateFormProps) {
             value={deliveryType}
             onChange={e => setDeliveryType(e.target.value)}
             required
-            className="w-full px-4 py-3 rounded-lg border border-zinc-200 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+            className="w-full px-4 py-3 rounded-lg border border-zinc-200 focus:border-primary focus:ring-1 focus:ring-primary"
           >
             {DELIVERY_TYPES.map(type => (
               <option key={type.value} value={type.value}>
@@ -212,7 +212,7 @@ export function DeliveryCreateForm({ subscriptions }: DeliveryCreateFormProps) {
               value={periodStart}
               onChange={e => setPeriodStart(e.target.value)}
               required
-              className="w-full px-4 py-3 rounded-lg border border-zinc-200 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+              className="w-full px-4 py-3 rounded-lg border border-zinc-200 focus:border-primary focus:ring-1 focus:ring-primary"
             />
           </div>
           <div>
@@ -224,7 +224,7 @@ export function DeliveryCreateForm({ subscriptions }: DeliveryCreateFormProps) {
               value={periodEnd}
               onChange={e => setPeriodEnd(e.target.value)}
               required
-              className="w-full px-4 py-3 rounded-lg border border-zinc-200 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+              className="w-full px-4 py-3 rounded-lg border border-zinc-200 focus:border-primary focus:ring-1 focus:ring-primary"
             />
           </div>
         </div>
@@ -234,7 +234,7 @@ export function DeliveryCreateForm({ subscriptions }: DeliveryCreateFormProps) {
           <label className="block text-sm font-medium text-zinc-900 mb-2">
             Upload File (CSV)
           </label>
-          <div className="border-2 border-dashed border-zinc-300 rounded-lg p-6 text-center hover:border-blue-500 transition-colors">
+          <div className="border-2 border-dashed border-zinc-300 rounded-lg p-6 text-center hover:border-primary transition-colors">
             <input
               type="file"
               accept=".csv"
@@ -254,7 +254,7 @@ export function DeliveryCreateForm({ subscriptions }: DeliveryCreateFormProps) {
                   <p className="text-xs text-zinc-500">
                     {(file.size / 1024).toFixed(2)} KB
                   </p>
-                  <p className="text-xs text-blue-600 mt-2">Click to change file</p>
+                  <p className="text-xs text-primary mt-2">Click to change file</p>
                 </>
               ) : (
                 <>
@@ -278,7 +278,7 @@ export function DeliveryCreateForm({ subscriptions }: DeliveryCreateFormProps) {
             id="send-email"
             checked={sendEmail}
             onChange={e => setSendEmail(e.target.checked)}
-            className="w-4 h-4 text-blue-600 border-zinc-300 rounded focus:ring-blue-600"
+            className="w-4 h-4 text-primary border-zinc-300 rounded focus:ring-primary"
           />
           <label htmlFor="send-email" className="text-sm text-zinc-700">
             Send delivery notification email to customer
@@ -305,7 +305,7 @@ export function DeliveryCreateForm({ subscriptions }: DeliveryCreateFormProps) {
           <button
             type="submit"
             disabled={loading || !selectedSubscription || !file}
-            className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary/90 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? (
               <>

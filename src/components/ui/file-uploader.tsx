@@ -184,8 +184,8 @@ export function FileUploader(props: FileUploaderProps) {
         {...getRootProps()}
         className={cn(
           'group relative grid h-52 w-full cursor-pointer place-items-center rounded-lg border-2 border-dashed border-zinc-700 px-5 py-2.5 text-center transition hover:bg-zinc-900/50',
-          'ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2',
-          isDragActive && 'border-blue-500 bg-blue-500/10',
+          'ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
+          isDragActive && 'border-primary bg-primary/10',
           disabled && 'pointer-events-none opacity-60',
           files?.length > 0 && 'border-green-600 bg-green-950/20'
         )}
@@ -193,8 +193,8 @@ export function FileUploader(props: FileUploaderProps) {
         <input {...getInputProps()} />
         {isDragActive ? (
           <div className="flex flex-col items-center justify-center gap-4 sm:px-5">
-            <div className="rounded-full border border-dashed border-blue-400 p-3">
-              <Upload className="h-7 w-7 text-blue-400" aria-hidden="true" />
+            <div className="rounded-full border border-dashed border-primary/80 p-3">
+              <Upload className="h-7 w-7 text-primary/80" aria-hidden="true" />
             </div>
             <div className="space-y-px">
               <p className="text-lg font-medium text-white">Drop the file here</p>

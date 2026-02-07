@@ -50,9 +50,9 @@ export default async function PartnerSettingsPage() {
   const { partner, payouts } = await getPartnerSettings()
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-zinc-50">
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-white to-zinc-50">
       {/* Header */}
-      <div className="border-b border-blue-100/50 bg-white/80 backdrop-blur-sm sticky top-0 z-10">
+      <div className="border-b border-primary/10 bg-white/80 backdrop-blur-sm sticky top-0 z-10">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between py-6">
             <div className="flex items-center gap-4">

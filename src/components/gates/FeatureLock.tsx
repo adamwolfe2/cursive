@@ -107,8 +107,8 @@ export function FeatureLock({
       <div className={`${showBlur ? 'absolute inset-0' : ''} flex items-center justify-center p-8`}>
         <div className="max-w-md w-full bg-white rounded-xl border-2 border-zinc-200 shadow-lg p-8 text-center">
           {/* Lock icon */}
-          <div className="inline-flex items-center justify-center h-16 w-16 bg-blue-100 rounded-full mb-4">
-            <Lock className="h-8 w-8 text-blue-600" />
+          <div className="inline-flex items-center justify-center h-16 w-16 bg-primary/10 rounded-full mb-4">
+            <Lock className="h-8 w-8 text-primary" />
           </div>
 
           {/* Heading */}
@@ -125,7 +125,7 @@ export function FeatureLock({
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <a
               href={getUpgradeUrl(requiredTierSlug)}
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary/90 text-white font-medium rounded-lg transition-colors"
               onClick={() => trackFeatureLock('upgrade_clicked', feature, requiredTier)}
             >
               Upgrade Now
@@ -147,15 +147,15 @@ export function FeatureLock({
             </p>
             <ul className="space-y-2 text-sm text-zinc-600">
               <li className="flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-blue-600 flex-shrink-0" />
+                <Sparkles className="h-4 w-4 text-primary flex-shrink-0" />
                 <span>Full feature access</span>
               </li>
               <li className="flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-blue-600 flex-shrink-0" />
+                <Sparkles className="h-4 w-4 text-primary flex-shrink-0" />
                 <span>Dedicated support</span>
               </li>
               <li className="flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-blue-600 flex-shrink-0" />
+                <Sparkles className="h-4 w-4 text-primary flex-shrink-0" />
                 <span>30-day money-back guarantee</span>
               </li>
             </ul>
@@ -183,11 +183,11 @@ export function InlineFeatureLock({
   if (hasAccess) return null
 
   return (
-    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6 mb-6">
+    <div className="bg-gradient-to-r from-primary/5 to-indigo-50 border border-primary/20 rounded-lg p-6 mb-6">
       <div className="flex items-start gap-4">
         <div className="flex-shrink-0">
-          <div className="h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center">
-            <Lock className="h-5 w-5 text-blue-600" />
+          <div className="h-10 w-10 bg-primary/10 rounded-full flex items-center justify-center">
+            <Lock className="h-5 w-5 text-primary" />
           </div>
         </div>
         <div className="flex-1">
@@ -200,7 +200,7 @@ export function InlineFeatureLock({
           <div className="flex flex-wrap gap-3">
             <a
               href={getUpgradeUrl(requiredTierSlug)}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors text-sm"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-white font-medium rounded-lg transition-colors text-sm"
             >
               Upgrade Now
               <ArrowRight className="h-4 w-4" />

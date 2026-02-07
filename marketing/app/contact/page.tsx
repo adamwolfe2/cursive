@@ -7,6 +7,8 @@ import { Mail, Phone, MapPin, Clock, MessageCircle, Calendar } from "lucide-reac
 import { useState } from "react"
 import { DashboardCTA } from "@/components/dashboard-cta"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
+import Link from "next/link"
+import { Breadcrumbs } from "@/components/Breadcrumbs"
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -61,11 +63,83 @@ export default function ContactPage() {
     }
   }
 
+  const schemaMarkup = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "ContactPage",
+        "@id": "https://meetcursive.com/contact#page",
+        "name": "Contact Cursive",
+        "description": "Get in touch with our team for sales inquiries, technical support, or partnership opportunities. Multiple contact methods available with fast response times.",
+        "url": "https://meetcursive.com/contact"
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://meetcursive.com#organization",
+        "name": "Cursive",
+        "url": "https://meetcursive.com",
+        "logo": "https://meetcursive.com/logo.png",
+        "contactPoint": [
+          {
+            "@type": "ContactPoint",
+            "telephone": "",
+            "contactType": "Sales",
+            "email": "hello@meetcursive.com",
+            "availableLanguage": "en",
+            "areaServed": "US"
+          },
+          {
+            "@type": "ContactPoint",
+            "telephone": "",
+            "contactType": "Customer Support",
+            "email": "hello@meetcursive.com",
+            "availableLanguage": "en",
+            "areaServed": "US"
+          }
+        ],
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "San Francisco",
+          "addressRegion": "CA",
+          "addressCountry": "US"
+        }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://meetcursive.com"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Contact",
+            "item": "https://meetcursive.com/contact"
+          }
+        ]
+      }
+    ]
+  }
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaMarkup) }}
+      />
+
       {/* Human View */}
       <HumanView>
         <main className="overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <Breadcrumbs items={[
+          { name: "Home", href: "/" },
+          { name: "Contact", href: "/contact" },
+        ]} />
+      </div>
       {/* Hero Section */}
       <section className="relative py-24 bg-white">
         <Container>
@@ -319,44 +393,183 @@ export default function ContactPage() {
         </Container>
       </section>
 
-      {/* FAQ Preview */}
+      {/* Who We Help */}
+      <section className="py-24 bg-white">
+        <Container>
+          <div className="text-center mb-12">
+            <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
+              Who We
+              <span className="block font-cursive text-4xl lg:text-5xl text-gray-500 mt-2">
+                Help
+              </span>
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Cursive works with B2B companies across industries who need better lead data, smarter outreach, and more qualified pipeline. Whether you are a startup scaling outbound for the first time or an enterprise team looking to replace outdated tools, we have a solution that fits.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <Link href="/industries/b2b-software" className="bg-[#F7F9FB] rounded-xl p-6 border border-gray-200 hover:border-[#007AFF] hover:shadow-lg transition-all">
+              <h3 className="text-lg text-gray-900 mb-2">B2B Software Companies</h3>
+              <p className="text-gray-600 text-sm">Scale outbound, identify website visitors, and build multi-channel pipeline with AI-powered campaigns.</p>
+            </Link>
+            <Link href="/industries/agencies" className="bg-[#F7F9FB] rounded-xl p-6 border border-gray-200 hover:border-[#007AFF] hover:shadow-lg transition-all">
+              <h3 className="text-lg text-gray-900 mb-2">Digital Agencies</h3>
+              <p className="text-gray-600 text-sm">White-label our platform and offer data-driven lead generation as a service to your clients.</p>
+            </Link>
+            <Link href="/industries/financial-services" className="bg-[#F7F9FB] rounded-xl p-6 border border-gray-200 hover:border-[#007AFF] hover:shadow-lg transition-all">
+              <h3 className="text-lg text-gray-900 mb-2">Financial Services</h3>
+              <p className="text-gray-600 text-sm">Reach decision-makers with compliant, verified data and personalized outreach sequences.</p>
+            </Link>
+            <Link href="/industries/ecommerce" className="bg-[#F7F9FB] rounded-xl p-6 border border-gray-200 hover:border-[#007AFF] hover:shadow-lg transition-all">
+              <h3 className="text-lg text-gray-900 mb-2">eCommerce Brands</h3>
+              <p className="text-gray-600 text-sm">Identify anonymous visitors, retarget high-intent shoppers, and increase conversions with our pixel technology.</p>
+            </Link>
+            <Link href="/industries/home-services" className="bg-[#F7F9FB] rounded-xl p-6 border border-gray-200 hover:border-[#007AFF] hover:shadow-lg transition-all">
+              <h3 className="text-lg text-gray-900 mb-2">Home Services</h3>
+              <p className="text-gray-600 text-sm">Target homeowners by demographics, location, and purchase intent to fill your service calendar.</p>
+            </Link>
+            <Link href="/industries/education" className="bg-[#F7F9FB] rounded-xl p-6 border border-gray-200 hover:border-[#007AFF] hover:shadow-lg transition-all">
+              <h3 className="text-lg text-gray-900 mb-2">Education</h3>
+              <p className="text-gray-600 text-sm">Reach prospective students and corporate training buyers with targeted campaigns and verified contacts.</p>
+            </Link>
+          </div>
+        </Container>
+      </section>
+
+      {/* What to Expect - Free Audit Process */}
       <section className="py-24 bg-[#F7F9FB]">
         <Container>
           <div className="text-center mb-12">
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
-              Quick
+              What to
               <span className="block font-cursive text-4xl lg:text-5xl text-gray-500 mt-2">
-                Answers
+                Expect
               </span>
             </h2>
-            <p className="text-xl text-gray-600">Common questions we get asked</p>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Every engagement starts with a free audit. Here is exactly what happens when you reach out to Cursive.
+            </p>
+          </div>
+
+          <div className="max-w-4xl mx-auto space-y-6">
+            <div className="flex gap-6 items-start bg-white rounded-xl p-6 border border-gray-200">
+              <div className="w-12 h-12 bg-[#007AFF] rounded-full flex items-center justify-center flex-shrink-0 text-white font-light text-xl">1</div>
+              <div>
+                <h3 className="text-lg text-gray-900 mb-2">Submit Your Website URL</h3>
+                <p className="text-gray-600 text-sm">Fill out our <Link href="/free-audit" className="text-[#007AFF] hover:underline">free audit form</Link> or reach out through any of our contact methods. All we need to get started is your website URL and work email address.</p>
+              </div>
+            </div>
+            <div className="flex gap-6 items-start bg-white rounded-xl p-6 border border-gray-200">
+              <div className="w-12 h-12 bg-[#007AFF] rounded-full flex items-center justify-center flex-shrink-0 text-white font-light text-xl">2</div>
+              <div>
+                <h3 className="text-lg text-gray-900 mb-2">We Analyze Your Traffic</h3>
+                <p className="text-gray-600 text-sm">Within 24 to 48 hours, our team runs a comprehensive analysis of your website visitors. We identify companies, contacts, and intent signals from your recent traffic patterns.</p>
+              </div>
+            </div>
+            <div className="flex gap-6 items-start bg-white rounded-xl p-6 border border-gray-200">
+              <div className="w-12 h-12 bg-[#007AFF] rounded-full flex items-center justify-center flex-shrink-0 text-white font-light text-xl">3</div>
+              <div>
+                <h3 className="text-lg text-gray-900 mb-2">Receive Your Custom Report</h3>
+                <p className="text-gray-600 text-sm">Get a detailed report showing your last 100 identified visitors, including company data, contact information, pages viewed, time spent, and AI-generated intent scores.</p>
+              </div>
+            </div>
+            <div className="flex gap-6 items-start bg-white rounded-xl p-6 border border-gray-200">
+              <div className="w-12 h-12 bg-[#007AFF] rounded-full flex items-center justify-center flex-shrink-0 text-white font-light text-xl">4</div>
+              <div>
+                <h3 className="text-lg text-gray-900 mb-2">Strategy Call (30 Minutes)</h3>
+                <p className="text-gray-600 text-sm">Schedule an optional 30-minute strategy call to walk through your results. We will discuss which visitors are most likely to convert, suggest outreach templates, and recommend the right <Link href="/pricing" className="text-[#007AFF] hover:underline">Cursive plan</Link> for your goals.</p>
+              </div>
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-24 bg-white">
+        <Container>
+          <div className="text-center mb-12">
+            <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
+              Frequently Asked
+              <span className="block font-cursive text-4xl lg:text-5xl text-gray-500 mt-2">
+                Questions
+              </span>
+            </h2>
+            <p className="text-xl text-gray-600">Everything you need to know about getting in touch</p>
+          </div>
+
+          <div className="max-w-3xl mx-auto space-y-6">
+            <div className="bg-[#F7F9FB] rounded-xl p-6 border border-gray-200">
+              <h3 className="text-gray-900 mb-2">How quickly will I hear back after contacting Cursive?</h3>
+              <p className="text-gray-600 text-sm">
+                Sales inquiries receive a response within 4 hours during business hours. General support questions are answered within 24 hours. For urgent matters, we offer same-day support. If you book a call through our scheduling link, you can typically get a slot within 1 to 2 business days.
+              </p>
+            </div>
+            <div className="bg-[#F7F9FB] rounded-xl p-6 border border-gray-200">
+              <h3 className="text-gray-900 mb-2">What is included in the free audit?</h3>
+              <p className="text-gray-600 text-sm">
+                The free audit includes identification of your last 100 website visitors with company names, job titles, verified work emails, pages they viewed, time spent on your site, AI-powered intent scores, and personalized outreach templates. It also includes an optional 30-minute strategy call to review the results. There is no credit card required and no obligation to purchase. <Link href="/free-audit" className="text-[#007AFF] hover:underline">Request your free audit here</Link>.
+              </p>
+            </div>
+            <div className="bg-[#F7F9FB] rounded-xl p-6 border border-gray-200">
+              <h3 className="text-gray-900 mb-2">How does the demo process work?</h3>
+              <p className="text-gray-600 text-sm">
+                When you book a demo, you will have a 15-minute intro call with one of our team members. We will ask about your current lead generation process, ideal customer profile, and growth goals. Then we will walk you through the Cursive platform live, showing you real-time data, campaign workflows, and reporting dashboards. After the demo, we will recommend a plan and provide a custom proposal. There is zero pressure to buy.
+              </p>
+            </div>
+            <div className="bg-[#F7F9FB] rounded-xl p-6 border border-gray-200">
+              <h3 className="text-gray-900 mb-2">Do you offer enterprise plans or custom solutions?</h3>
+              <p className="text-gray-600 text-sm">
+                Yes. For companies needing more than 10,000 leads per month, white-label solutions, custom API integrations, or dedicated account teams, we offer tailored enterprise packages. Enterprise pricing is based on volume, channels, and specific requirements. <Link href="/pricing" className="text-[#007AFF] hover:underline">View our standard pricing</Link> or contact us directly to discuss enterprise options.
+              </p>
+            </div>
+            <div className="bg-[#F7F9FB] rounded-xl p-6 border border-gray-200">
+              <h3 className="text-gray-900 mb-2">Can I switch plans or cancel after signing up?</h3>
+              <p className="text-gray-600 text-sm">
+                Absolutely. All Cursive plans are month-to-month with no long-term contracts. You can upgrade, downgrade, or cancel at any time with 30 days notice. Billing is pro-rated when you switch plans, and there are no cancellation penalties. Our Outbound plan also includes a 30-day money-back guarantee. We believe in earning your business every month.
+              </p>
+            </div>
+            <div className="bg-[#F7F9FB] rounded-xl p-6 border border-gray-200">
+              <h3 className="text-gray-900 mb-2">What information should I include when contacting Cursive?</h3>
+              <p className="text-gray-600 text-sm">
+                To help us respond as quickly and accurately as possible, include your company name, website URL, what you are looking for (data, outbound campaigns, full pipeline), your approximate monthly lead volume needs, and any specific questions you have. This allows us to prepare a tailored response and, if applicable, start your free audit right away.
+              </p>
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      {/* Other Ways to Reach Us */}
+      <section className="py-24 bg-[#F7F9FB]">
+        <Container>
+          <div className="text-center mb-12">
+            <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
+              Additional
+              <span className="block font-cursive text-4xl lg:text-5xl text-gray-500 mt-2">
+                Contact Options
+              </span>
+            </h2>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto mb-12">
-            <div className="bg-white rounded-xl p-6 border border-gray-200">
-              <h3 className="text-gray-900 mb-2">How fast can we start?</h3>
-              <p className="text-gray-600 text-sm">
-                <span className="font-cursive text-base text-gray-500">Cursive</span> Data: 5-7 days. Outbound: 1-2 weeks. Pipeline: 2-3 weeks.
-              </p>
+            <div className="bg-white rounded-xl p-6 border border-gray-200 text-center">
+              <Mail className="w-10 h-10 text-[#007AFF] mx-auto mb-4" />
+              <h3 className="text-gray-900 mb-2">General Inquiries</h3>
+              <a href="mailto:hello@meetcursive.com" className="text-[#007AFF] hover:underline text-sm">hello@meetcursive.com</a>
+              <p className="text-gray-600 text-sm mt-2">For questions about products, pricing, or partnerships.</p>
             </div>
-            <div className="bg-white rounded-xl p-6 border border-gray-200">
-              <h3 className="text-gray-900 mb-2">Can I cancel anytime?</h3>
-              <p className="text-gray-600 text-sm">
-                Yes. All plans are month-to-month with 30 days notice.
-              </p>
+            <div className="bg-white rounded-xl p-6 border border-gray-200 text-center">
+              <Calendar className="w-10 h-10 text-[#007AFF] mx-auto mb-4" />
+              <h3 className="text-gray-900 mb-2">Book a Demo</h3>
+              <a href="https://cal.com/adamwolfe/cursive-ai-audit" target="_blank" rel="noopener noreferrer" className="text-[#007AFF] hover:underline text-sm">Schedule on Cal.com</a>
+              <p className="text-gray-600 text-sm mt-2">15-minute intro call with a live platform walkthrough.</p>
             </div>
-            <div className="bg-white rounded-xl p-6 border border-gray-200">
-              <h3 className="text-gray-900 mb-2">Do you offer custom plans?</h3>
-              <p className="text-gray-600 text-sm">
-                Absolutely. We build custom solutions for enterprise needs.
-              </p>
+            <div className="bg-white rounded-xl p-6 border border-gray-200 text-center">
+              <MessageCircle className="w-10 h-10 text-[#007AFF] mx-auto mb-4" />
+              <h3 className="text-gray-900 mb-2">Sales Inquiries</h3>
+              <a href="mailto:hello@meetcursive.com" className="text-[#007AFF] hover:underline text-sm">hello@meetcursive.com</a>
+              <p className="text-gray-600 text-sm mt-2">For enterprise pricing, white-label, and custom solutions. Response within 4 hours.</p>
             </div>
-          </div>
-
-          <div className="text-center">
-            <Button size="lg" href="/faq" variant="outline">
-              View All FAQs
-            </Button>
           </div>
         </Container>
       </section>
@@ -427,22 +640,137 @@ export default function ContactPage() {
         ]} />
       </MachineSection>
 
+      {/* Who We Help */}
+      <MachineSection title="Who We Help">
+        <p className="text-gray-700 mb-4">
+          Cursive works with B2B companies across industries who need better lead data, smarter outreach, and more qualified pipeline. We serve companies ranging from early-stage startups to enterprise organizations.
+        </p>
+        <MachineList items={[
+          {
+            label: "B2B Software Companies",
+            href: "https://meetcursive.com/industries/b2b-software",
+            description: "Scale outbound, identify website visitors, and build multi-channel pipeline"
+          },
+          {
+            label: "Digital Agencies",
+            href: "https://meetcursive.com/industries/agencies",
+            description: "White-label our platform to offer data-driven lead generation as a service"
+          },
+          {
+            label: "Financial Services",
+            href: "https://meetcursive.com/industries/financial-services",
+            description: "Reach decision-makers with compliant, verified data and personalized outreach"
+          },
+          {
+            label: "eCommerce Brands",
+            href: "https://meetcursive.com/industries/ecommerce",
+            description: "Identify anonymous visitors and retarget high-intent shoppers"
+          },
+          {
+            label: "Home Services",
+            href: "https://meetcursive.com/industries/home-services",
+            description: "Target homeowners by demographics, location, and purchase intent"
+          },
+          {
+            label: "Education",
+            href: "https://meetcursive.com/industries/education",
+            description: "Reach prospective students and corporate training buyers with targeted campaigns"
+          }
+        ]} />
+      </MachineSection>
+
+      {/* What to Expect */}
+      <MachineSection title="What to Expect When You Contact Us">
+        <p className="text-gray-700 mb-4">
+          Every engagement starts with a free audit. Here is the process from first contact to results.
+        </p>
+        <div className="space-y-4">
+          <div>
+            <p className="text-gray-900 mb-2">Step 1: Submit Your Website URL</p>
+            <p className="text-gray-600">Fill out the free audit form or reach out through any contact method. All we need is your website URL and work email.</p>
+          </div>
+          <div>
+            <p className="text-gray-900 mb-2">Step 2: We Analyze Your Traffic (24-48 hours)</p>
+            <p className="text-gray-600">Our team runs a comprehensive analysis of your website visitors, identifying companies, contacts, and intent signals.</p>
+          </div>
+          <div>
+            <p className="text-gray-900 mb-2">Step 3: Receive Your Custom Report</p>
+            <p className="text-gray-600">Get a detailed report with your last 100 identified visitors including company data, contact info, pages viewed, time spent, and AI intent scores.</p>
+          </div>
+          <div>
+            <p className="text-gray-900 mb-2">Step 4: Optional 30-Minute Strategy Call</p>
+            <p className="text-gray-600">Walk through your results, discuss which visitors are most likely to convert, and receive outreach templates and plan recommendations.</p>
+          </div>
+        </div>
+      </MachineSection>
+
+      {/* Frequently Asked Questions */}
+      <MachineSection title="Frequently Asked Questions About Contacting Cursive">
+        <div className="space-y-4">
+          <div>
+            <p className="text-gray-900 mb-2">How quickly will I hear back after contacting Cursive?</p>
+            <p className="text-gray-600">Sales inquiries receive a response within 4 hours during business hours. General support questions are answered within 24 hours. Urgent matters receive same-day support.</p>
+          </div>
+          <div>
+            <p className="text-gray-900 mb-2">What is included in the free audit?</p>
+            <p className="text-gray-600">Identification of your last 100 website visitors with company names, job titles, verified work emails, pages viewed, time spent, AI intent scores, and personalized outreach templates. Also includes an optional 30-minute strategy call. No credit card required.</p>
+          </div>
+          <div>
+            <p className="text-gray-900 mb-2">How does the demo process work?</p>
+            <p className="text-gray-600">Book a 15-minute intro call. We ask about your current lead generation process, ICP, and goals. Then we walk through the platform live showing real-time data, campaign workflows, and reporting dashboards. After the demo, we recommend a plan and provide a custom proposal with zero pressure.</p>
+          </div>
+          <div>
+            <p className="text-gray-900 mb-2">Do you offer enterprise plans or custom solutions?</p>
+            <p className="text-gray-600">Yes. For companies needing 10,000+ leads per month, white-label solutions, custom API integrations, or dedicated account teams, we offer tailored enterprise packages based on volume, channels, and specific requirements.</p>
+          </div>
+          <div>
+            <p className="text-gray-900 mb-2">Can I switch plans or cancel after signing up?</p>
+            <p className="text-gray-600">All plans are month-to-month with no long-term contracts. Upgrade, downgrade, or cancel anytime with 30 days notice. Billing is pro-rated with no cancellation penalties. Outbound plan includes a 30-day money-back guarantee.</p>
+          </div>
+          <div>
+            <p className="text-gray-900 mb-2">What information should I include when contacting Cursive?</p>
+            <p className="text-gray-600">Include your company name, website URL, what you are looking for (data, outbound campaigns, full pipeline), approximate monthly lead volume needs, and any specific questions. This helps us prepare a tailored response and start your free audit immediately.</p>
+          </div>
+        </div>
+      </MachineSection>
+
       {/* Common Questions */}
       <MachineSection title="Quick Answers">
         <div className="space-y-4">
           <div>
-            <p className="text-white mb-2">How fast can we start?</p>
-            <p className="text-gray-400">Cursive Data: 5-7 days. Outbound: 1-2 weeks. Pipeline: 2-3 weeks.</p>
+            <p className="text-gray-900 mb-2">How fast can we start?</p>
+            <p className="text-gray-600">Cursive Data: 5-7 days. Outbound: 1-2 weeks. Pipeline: 2-3 weeks.</p>
           </div>
           <div>
-            <p className="text-white mb-2">Can I cancel anytime?</p>
-            <p className="text-gray-400">Yes. All plans are month-to-month with 30 days notice.</p>
+            <p className="text-gray-900 mb-2">Can I cancel anytime?</p>
+            <p className="text-gray-600">Yes. All plans are month-to-month with 30 days notice.</p>
           </div>
           <div>
-            <p className="text-white mb-2">Do you offer custom plans?</p>
-            <p className="text-gray-400">Absolutely. We build custom solutions for enterprise needs.</p>
+            <p className="text-gray-900 mb-2">Do you offer custom plans?</p>
+            <p className="text-gray-600">Absolutely. We build custom solutions for enterprise needs.</p>
           </div>
         </div>
+      </MachineSection>
+
+      {/* Additional Contact Options */}
+      <MachineSection title="Other Ways to Reach Us">
+        <MachineList items={[
+          {
+            label: "General Inquiries",
+            href: "mailto:hello@meetcursive.com",
+            description: "hello@meetcursive.com - For questions about products, pricing, or partnerships"
+          },
+          {
+            label: "Book a Demo",
+            href: "https://cal.com/adamwolfe/cursive-ai-audit",
+            description: "15-minute intro call with a live platform walkthrough"
+          },
+          {
+            label: "Sales Inquiries",
+            href: "mailto:hello@meetcursive.com",
+            description: "hello@meetcursive.com - Enterprise pricing, white-label, and custom solutions. Response within 4 hours."
+          }
+        ]} />
       </MachineSection>
 
       {/* Additional Resources */}
@@ -462,6 +790,16 @@ export default function ContactPage() {
             label: "Platform Overview",
             href: "https://meetcursive.com/platform",
             description: "Explore platform features and capabilities"
+          },
+          {
+            label: "Free Audit",
+            href: "https://meetcursive.com/free-audit",
+            description: "Request a free analysis of your last 100 website visitors"
+          },
+          {
+            label: "Case Studies",
+            href: "https://meetcursive.com/case-studies",
+            description: "See real results from Cursive clients"
           }
         ]} />
       </MachineSection>

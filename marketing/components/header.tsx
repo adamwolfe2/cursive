@@ -22,86 +22,61 @@ interface NavLink {
 }
 
 const navLinks: NavLink[] = [
-  { href: "/services", label: "Services" },
   {
-    label: "Solutions",
+    label: "Products",
     dropdown: [
       {
-        href: "/visitor-identification",
-        label: "Visitor Identification",
-        description: "Turn anonymous website visitors into qualified leads",
+        href: "/marketplace",
+        label: "Lead Marketplace",
+        description: "Browse & buy verified B2B leads with credits",
+        icon: ShoppingCart,
+      },
+      {
+        href: "/pixel",
+        label: "Visitor Pixel",
+        description: "See who's visiting your website ($750/mo)",
         icon: Eye,
       },
       {
-        href: "/audience-builder",
-        label: "Audience Builder",
-        description: "Create unlimited targeted audiences with intent data",
+        href: "/custom-audiences",
+        label: "Custom Audiences",
+        description: "We build targeted lists to your exact spec",
         icon: Users,
       },
       {
-        href: "/direct-mail",
-        label: "Direct Mail",
-        description: "Automated direct mail campaigns that convert",
-        icon: Mail,
-      },
-      {
-        href: "/intent-audiences",
-        label: "Intent Audiences",
-        description: "Pre-built audiences showing active buying intent",
-        icon: Target,
-      },
-      {
-        href: "/clean-room",
-        label: "Data Clean Room",
-        description: "Secure data collaboration without exposing PII",
-        icon: Shield,
-      },
-      {
-        href: "/data-access",
-        label: "Data Access",
-        description: "Direct access to 220M+ consumer & business profiles",
+        href: "/platform",
+        label: "Platform Overview",
+        description: "The complete Cursive platform",
         icon: Database,
       },
     ],
   },
   {
-    label: "Industries",
+    label: "Services",
     dropdown: [
       {
-        href: "/industries/financial-services",
-        label: "Financial Services",
-        description: "Lead generation for banks and financial institutions",
+        href: "/services#data",
+        label: "Cursive Data",
+        description: "Verified leads delivered monthly ($1k/mo)",
+        icon: Database,
+      },
+      {
+        href: "/services#outbound",
+        label: "Cursive Outbound",
+        description: "Done-for-you email campaigns ($2.5k/mo)",
+        icon: Mail,
+      },
+      {
+        href: "/services#pipeline",
+        label: "Cursive Pipeline",
+        description: "Full-stack AI SDR solution ($5k/mo)",
+        icon: Target,
+      },
+      {
+        href: "/venture-studio",
+        label: "Venture Studio",
+        description: "White-glove partnership ($25k+/mo)",
         icon: Building2,
-      },
-      {
-        href: "/industries/ecommerce",
-        label: "eCommerce",
-        description: "Customer acquisition for online retailers",
-        icon: ShoppingCart,
-      },
-      {
-        href: "/industries/b2b-software",
-        label: "B2B Software",
-        description: "Enterprise lead generation and demand gen",
-        icon: Code,
-      },
-      {
-        href: "/industries/agencies",
-        label: "Agencies",
-        description: "White-label solutions for marketing agencies",
-        icon: Briefcase,
-      },
-      {
-        href: "/industries/home-services",
-        label: "Home Services",
-        description: "Local lead generation for contractors and pros",
-        icon: Home,
-      },
-      {
-        href: "/industries/retail",
-        label: "Retail",
-        description: "Foot traffic and customer acquisition for stores",
-        icon: Store,
       },
     ],
   },
@@ -199,13 +174,9 @@ export function Header() {
 
             {/* Desktop CTA Buttons */}
             <div className="hidden md:flex items-center gap-4">
-              <Link
-                href="https://leads.meetcursive.com"
-                target="_blank"
-                className="text-gray-700 hover:text-[#007AFF] transition-colors"
-              >
-                Login
-              </Link>
+              <Button size="sm" variant="outline" href="https://leads.meetcursive.com/signup?source=header" target="_blank">
+                Try Free Leads
+              </Button>
               <Button size="sm" href="https://cal.com/adamwolfe/cursive-ai-audit" target="_blank">
                 Book a Call
               </Button>
@@ -299,14 +270,15 @@ export function Header() {
                 <div className="border-t border-gray-200 my-4" />
 
                 {/* Mobile CTA Buttons */}
-                <Link
-                  href="https://leads.meetcursive.com"
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  href="https://leads.meetcursive.com/signup?source=header"
                   target="_blank"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="px-4 py-3 text-gray-900 hover:bg-[#F7F9FB] hover:text-[#007AFF] rounded-lg transition-colors"
                 >
-                  Login
-                </Link>
+                  Try Free Leads
+                </Button>
                 <Button
                   className="w-full"
                   href="https://cal.com/adamwolfe/cursive-ai-audit"

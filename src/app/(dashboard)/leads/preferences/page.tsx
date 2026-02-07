@@ -194,25 +194,25 @@ export default function LeadPreferencesPage() {
         </div>
         <button
           onClick={() => setShowForm(true)}
-          className="h-10 px-4 text-[13px] font-medium bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700"
+          className="h-10 px-4 text-[13px] font-medium bg-gradient-to-r from-primary to-indigo-600 text-white rounded-lg hover:from-primary/90 hover:to-indigo-700"
         >
           New Preference
         </button>
       </div>
 
       {/* Info Banner */}
-      <div className="rounded-lg bg-blue-50 border border-blue-200 p-4">
+      <div className="rounded-lg bg-primary/5 border border-primary/20 p-4">
         <div className="flex">
           <div className="flex-shrink-0">
-            <svg className="h-5 w-5 text-blue-400" viewBox="0 0 24 24" fill="currentColor">
+            <svg className="h-5 w-5 text-primary/80" viewBox="0 0 24 24" fill="currentColor">
               <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
             </svg>
           </div>
           <div className="ml-3">
-            <h3 className="text-sm font-medium text-blue-800">
+            <h3 className="text-sm font-medium text-primary">
               Smart Lead Matching
             </h3>
-            <p className="mt-2 text-sm text-blue-700">
+            <p className="mt-2 text-sm text-primary/90">
               Set your preferences below to receive leads that match your business criteria.
               Leads are automatically routed based on your industry, service areas, and budget.
             </p>
@@ -225,8 +225,8 @@ export default function LeadPreferencesPage() {
         <div className="space-y-4">
           {preferences?.length === 0 ? (
             <div className="rounded-lg border border-zinc-200 bg-white p-12 text-center">
-              <div className="mx-auto w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                <svg className="h-6 w-6 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <div className="mx-auto w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+                <svg className="h-6 w-6 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
               </div>
@@ -236,7 +236,7 @@ export default function LeadPreferencesPage() {
               </p>
               <button
                 onClick={() => setShowForm(true)}
-                className="h-9 px-4 text-[13px] font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                className="h-9 px-4 text-[13px] font-medium bg-primary text-white rounded-lg hover:bg-primary/90"
               >
                 Create Your First Preference
               </button>
@@ -252,7 +252,7 @@ export default function LeadPreferencesPage() {
                     <div className="flex items-center gap-2">
                       <h3 className="text-[15px] font-medium text-zinc-900">{pref.name}</h3>
                       {pref.is_active && (
-                        <span className="px-2 py-0.5 text-[11px] font-medium bg-blue-100 text-blue-700 rounded-full">
+                        <span className="px-2 py-0.5 text-[11px] font-medium bg-primary/10 text-primary rounded-full">
                           Active
                         </span>
                       )}
@@ -333,7 +333,7 @@ export default function LeadPreferencesPage() {
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="e.g., HVAC Leads in Texas"
-                  className="w-full h-10 px-3 text-[13px] border border-zinc-300 rounded-lg focus:outline-none focus:border-blue-500"
+                  className="w-full h-10 px-3 text-[13px] border border-zinc-300 rounded-lg focus:outline-none focus:border-primary"
                 />
               </div>
               <div>
@@ -345,7 +345,7 @@ export default function LeadPreferencesPage() {
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   placeholder="Optional description"
-                  className="w-full h-10 px-3 text-[13px] border border-zinc-300 rounded-lg focus:outline-none focus:border-blue-500"
+                  className="w-full h-10 px-3 text-[13px] border border-zinc-300 rounded-lg focus:outline-none focus:border-primary"
                 />
               </div>
             </div>
@@ -366,8 +366,8 @@ export default function LeadPreferencesPage() {
                     })}
                     className={`px-3 py-1.5 text-[12px] rounded-full border transition-colors ${
                       formData.target_industries.includes(industry)
-                        ? 'bg-blue-100 border-blue-300 text-blue-700'
-                        : 'border-zinc-300 text-zinc-600 hover:border-blue-300'
+                        ? 'bg-primary/10 border-primary/30 text-primary'
+                        : 'border-zinc-300 text-zinc-600 hover:border-primary/30'
                     }`}
                   >
                     {industry}
@@ -392,8 +392,8 @@ export default function LeadPreferencesPage() {
                     })}
                     className={`px-3 py-1.5 text-[12px] rounded-full border transition-colors ${
                       formData.target_regions.includes(region)
-                        ? 'bg-blue-100 border-blue-300 text-blue-700'
-                        : 'border-zinc-300 text-zinc-600 hover:border-blue-300'
+                        ? 'bg-primary/10 border-primary/30 text-primary'
+                        : 'border-zinc-300 text-zinc-600 hover:border-primary/30'
                     }`}
                   >
                     {region}
@@ -418,8 +418,8 @@ export default function LeadPreferencesPage() {
                     })}
                     className={`px-3 py-1.5 text-[12px] rounded-full border transition-colors ${
                       formData.target_intent_signals.includes(signal)
-                        ? 'bg-blue-100 border-blue-300 text-blue-700'
-                        : 'border-zinc-300 text-zinc-600 hover:border-blue-300'
+                        ? 'bg-primary/10 border-primary/30 text-primary'
+                        : 'border-zinc-300 text-zinc-600 hover:border-primary/30'
                     }`}
                   >
                     {signal}
@@ -440,7 +440,7 @@ export default function LeadPreferencesPage() {
                   onChange={(e) => setFormData({ ...formData, max_leads_per_day: parseInt(e.target.value) || 10 })}
                   min="1"
                   max="100"
-                  className="w-full h-10 px-3 text-[13px] border border-zinc-300 rounded-lg focus:outline-none focus:border-blue-500"
+                  className="w-full h-10 px-3 text-[13px] border border-zinc-300 rounded-lg focus:outline-none focus:border-primary"
                 />
               </div>
               <div>
@@ -454,7 +454,7 @@ export default function LeadPreferencesPage() {
                   min="0"
                   step="0.01"
                   placeholder="Optional"
-                  className="w-full h-10 px-3 text-[13px] border border-zinc-300 rounded-lg focus:outline-none focus:border-blue-500"
+                  className="w-full h-10 px-3 text-[13px] border border-zinc-300 rounded-lg focus:outline-none focus:border-primary"
                 />
               </div>
               <div>
@@ -468,7 +468,7 @@ export default function LeadPreferencesPage() {
                   min="0"
                   step="0.01"
                   placeholder="Optional"
-                  className="w-full h-10 px-3 text-[13px] border border-zinc-300 rounded-lg focus:outline-none focus:border-blue-500"
+                  className="w-full h-10 px-3 text-[13px] border border-zinc-300 rounded-lg focus:outline-none focus:border-primary"
                 />
               </div>
             </div>
@@ -485,7 +485,7 @@ export default function LeadPreferencesPage() {
             <button
               type="submit"
               disabled={saveMutation.isPending}
-              className="h-10 px-4 text-[13px] font-medium bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 disabled:opacity-50"
+              className="h-10 px-4 text-[13px] font-medium bg-gradient-to-r from-primary to-indigo-600 text-white rounded-lg hover:from-primary/90 hover:to-indigo-700 disabled:opacity-50"
             >
               {saveMutation.isPending ? 'Saving...' : editingPreference ? 'Update Preference' : 'Create Preference'}
             </button>

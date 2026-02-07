@@ -10,6 +10,7 @@ import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { CREDIT_PACKAGES, type CreditPackage } from '@/lib/constants/credit-packages'
 import { getCreditLink } from '@/lib/stripe/payment-links'
+import { UpsellBanner } from '@/components/marketplace/UpsellBanner'
 
 // Map credit package IDs to payment link tiers
 const PACKAGE_TO_CREDIT_TIER: Record<string, 'leadPurchase' | 'starter' | 'professional' | 'enterprise'> = {
@@ -24,6 +25,7 @@ export default function CreditsPage() {
   const { toast } = useToast()
   const { user, isLoading: userLoading } = useUser()
   const [currentBalance, setCurrentBalance] = useState(0)
+  const [totalSpend, setTotalSpend] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const [isPurchasing, setIsPurchasing] = useState<string | null>(null)
   const [showSuccess, setShowSuccess] = useState(false)
@@ -51,6 +53,15 @@ export default function CreditsPage() {
       console.error('Failed to fetch credits:', error)
     } finally {
       setIsLoading(false)
+    }
+    try {
+      const statsRes = await fetch('/api/marketplace/stats')
+      if (statsRes.ok) {
+        const statsData = await statsRes.json()
+        setTotalSpend(statsData.totalSpent || 0)
+      }
+    } catch (error) {
+      console.error('Failed to fetch stats:', error)
     }
   }, [router])
 
@@ -181,6 +192,9 @@ export default function CreditsPage() {
               </button>
             </div>
           )}
+
+          {/* Upsell Banner */}
+          <UpsellBanner creditsBalance={currentBalance} totalSpend={totalSpend} />
 
           {/* Header */}
           <div className="flex items-center justify-between mb-8">

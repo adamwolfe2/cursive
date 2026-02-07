@@ -13,13 +13,13 @@ export function FormSuccess({ message, className = '' }: FormSuccessProps) {
 
   return (
     <div
-      className={`rounded-lg bg-blue-50 border border-blue-200 p-4 ${className}`}
+      className={`rounded-lg bg-primary/5 border border-primary/20 p-4 ${className}`}
       role="status"
     >
       <div className="flex">
         <div className="flex-shrink-0">
           <svg
-            className="h-5 w-5 text-blue-600"
+            className="h-5 w-5 text-primary"
             viewBox="0 0 20 20"
             fill="currentColor"
           >
@@ -31,7 +31,7 @@ export function FormSuccess({ message, className = '' }: FormSuccessProps) {
           </svg>
         </div>
         <div className="ml-3">
-          <p className="text-[13px] text-blue-800">{message}</p>
+          <p className="text-[13px] text-primary">{message}</p>
         </div>
       </div>
     </div>

@@ -76,7 +76,7 @@ export function Header({ user, workspace, onMenuClick, className }: HeaderProps)
               />
             </div>
           ) : (
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-100 to-indigo-100 text-blue-600 flex-shrink-0">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary/10 to-indigo-100 text-primary flex-shrink-0">
               <span className="text-xs font-bold">
                 {workspace.name?.charAt(0)?.toUpperCase() || 'B'}
               </span>

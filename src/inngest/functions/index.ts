@@ -156,3 +156,8 @@ export {
   enrichLeadFromDataShopper,
   importLeadFromAudienceLabs,
 } from '@/lib/inngest/functions/bulk-upload-processor'
+
+// Marketplace upsell and onboarding
+export { marketplaceUpsellCheck } from './marketplace-upsell'
+export { marketplaceOnboardingSequence } from './marketplace-onboarding'
+export { handleCustomAudienceRequest } from './custom-audience-request'

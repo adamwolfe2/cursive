@@ -45,7 +45,7 @@ export function ExampleFormWithToast() {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+        className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50"
       >
         {isSubmitting ? 'Saving...' : 'Save'}
       </button>
@@ -167,7 +167,7 @@ export function ExampleAsyncOperation() {
     <button
       onClick={processData}
       disabled={isProcessing}
-      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+      className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50"
     >
       {isProcessing ? 'Processing...' : 'Process Data'}
     </button>
@@ -204,7 +204,7 @@ export function ExampleValidationWarning() {
       />
       <button
         type="submit"
-        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+        className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90"
       >
         Save Email
       </button>

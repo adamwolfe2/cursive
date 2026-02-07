@@ -75,7 +75,7 @@ export default async function MyLeadsPage() {
         </div>
         <Link
           href="/my-leads/preferences"
-          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary/90 transition-colors"
         >
           <svg
             className="w-4 h-4"
@@ -176,7 +176,7 @@ export default async function MyLeadsPage() {
         fallback={
           <div className="rounded-lg border border-zinc-200 bg-white p-12">
             <div className="flex items-center justify-center">
-              <div className="h-6 w-6 animate-spin rounded-full border-2 border-zinc-300 border-t-blue-600" />
+              <div className="h-6 w-6 animate-spin rounded-full border-2 border-zinc-300 border-t-primary" />
             </div>
           </div>
         }

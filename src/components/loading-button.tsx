@@ -31,7 +31,7 @@ export const LoadingButton = forwardRef<HTMLButtonElement, LoadingButtonProps>(
 
     const variantStyles = {
       primary:
-        'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500',
+        'bg-primary text-white hover:bg-primary/90 focus:ring-primary',
       secondary:
         'bg-zinc-100 text-zinc-900 hover:bg-zinc-200 focus:ring-zinc-500 border border-zinc-300',
       danger:

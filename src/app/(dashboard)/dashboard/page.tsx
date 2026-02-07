@@ -131,11 +131,11 @@ export default async function DashboardPage() {
                 className="bg-white hover:bg-white/90 border-2 border-white rounded-xl p-6 transition-all text-left"
               >
                 <div className="text-3xl mb-3">✨</div>
-                <h3 className="text-lg font-bold text-blue-600 mb-2">Get Done-For-You</h3>
-                <p className="text-sm text-blue-600 mb-4">
+                <h3 className="text-lg font-bold text-primary mb-2">Get Done-For-You</h3>
+                <p className="text-sm text-primary mb-4">
                   We build + manage campaigns for you
                 </p>
-                <span className="text-xs text-blue-600/70">Best for: Hands-off approach</span>
+                <span className="text-xs text-primary/70">Best for: Hands-off approach</span>
               </Link>
             </div>
           </div>
@@ -210,7 +210,7 @@ export default async function DashboardPage() {
               <div className="flex flex-col sm:flex-row gap-3">
                 <Link
                   href="/services"
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white hover:bg-zinc-50 text-blue-600 font-medium rounded-lg transition-colors"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white hover:bg-zinc-50 text-primary font-medium rounded-lg transition-colors"
                 >
                   View Services
                   <ArrowRight className="h-4 w-4" />

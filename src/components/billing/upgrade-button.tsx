@@ -69,8 +69,8 @@ export function UpgradeButton({
 
   const variantClasses =
     variant === 'primary'
-      ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800'
-      : 'bg-white text-blue-600 border-2 border-blue-600 hover:bg-blue-50'
+      ? 'bg-gradient-to-r from-primary to-primary/90 text-white hover:from-primary/90 hover:to-primary/80'
+      : 'bg-white text-primary border-2 border-primary hover:bg-primary/5'
 
   return (
     <button

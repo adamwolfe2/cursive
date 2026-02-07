@@ -79,7 +79,7 @@ export default function CampaignSuccessPage() {
     return (
       <div className="flex items-center justify-center min-h-screen bg-[#F8F9FA]">
         <div className="text-center">
-          <Loader2 className="h-12 w-12 animate-spin mx-auto text-blue-600 mb-4" />
+          <Loader2 className="h-12 w-12 animate-spin mx-auto text-primary mb-4" />
           <p className="text-gray-600">Processing your campaign...</p>
         </div>
       </div>
@@ -119,29 +119,29 @@ export default function CampaignSuccessPage() {
           </p>
 
           {/* What Happens Next */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8 text-left">
+          <div className="bg-primary/5 border border-primary/20 rounded-lg p-6 mb-8 text-left">
             <h2 className="font-semibold text-gray-900 mb-4">What happens next:</h2>
             <ul className="space-y-3">
               <li className="flex items-start gap-3">
-                <span className="text-blue-600 mt-1">1.</span>
+                <span className="text-primary mt-1">1.</span>
                 <p className="text-gray-700">
                   Our team will review your creatives and landing page
                 </p>
               </li>
               <li className="flex items-start gap-3">
-                <span className="text-blue-600 mt-1">2.</span>
+                <span className="text-primary mt-1">2.</span>
                 <p className="text-gray-700">
                   We'll set up your Meta Ads campaign with optimized targeting
                 </p>
               </li>
               <li className="flex items-start gap-3">
-                <span className="text-blue-600 mt-1">3.</span>
+                <span className="text-primary mt-1">3.</span>
                 <p className="text-gray-700">
                   Your campaign will launch and start generating leads
                 </p>
               </li>
               <li className="flex items-start gap-3">
-                <span className="text-blue-600 mt-1">4.</span>
+                <span className="text-primary mt-1">4.</span>
                 <p className="text-gray-700">
                   You'll receive daily updates on lead generation progress
                 </p>
@@ -189,7 +189,7 @@ export default function CampaignSuccessPage() {
             </Button>
             <Button
               onClick={() => router.push('/dashboard')}
-              className="bg-blue-600 hover:bg-blue-700"
+              className="bg-primary hover:bg-primary/90"
               size="lg"
             >
               Go to Dashboard
@@ -201,7 +201,7 @@ export default function CampaignSuccessPage() {
           <div className="mt-8 pt-8 border-t border-gray-200">
             <p className="text-sm text-gray-500">
               Questions? Contact us at{' '}
-              <a href="mailto:hello@meetcursive.com" className="text-blue-600 hover:underline">
+              <a href="mailto:hello@meetcursive.com" className="text-primary hover:underline">
                 hello@meetcursive.com
               </a>
             </p>

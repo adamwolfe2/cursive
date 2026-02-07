@@ -25,7 +25,7 @@ export default function ToastDemoPage() {
           <div className="flex flex-wrap gap-3">
             <button
               onClick={() => toast.success('Changes saved successfully!')}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-[13px] font-medium"
+              className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-[13px] font-medium"
             >
               Success Toast
             </button>
@@ -62,7 +62,7 @@ export default function ToastDemoPage() {
                   title: 'Workspace Updated',
                 })
               }
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-[13px] font-medium"
+              className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-[13px] font-medium"
             >
               Success with Title
             </button>
@@ -94,7 +94,7 @@ export default function ToastDemoPage() {
                   },
                 })
               }
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-[13px] font-medium"
+              className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-[13px] font-medium"
             >
               With Undo Action
             </button>
@@ -202,7 +202,7 @@ export default function ToastDemoPage() {
                   duration: 3000,
                 })
               }
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-[13px] font-medium"
+              className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-[13px] font-medium"
             >
               Custom Toast
             </button>
@@ -265,39 +265,39 @@ export default function ToastDemoPage() {
         <h2 className="text-lg font-semibold text-zinc-900 mb-4">Features</h2>
         <ul className="space-y-2 text-[13px] text-zinc-700">
           <li className="flex items-start">
-            <span className="text-blue-600 mr-2">✓</span>
+            <span className="text-primary mr-2">✓</span>
             <span>4 toast types: success, error, warning, info</span>
           </li>
           <li className="flex items-start">
-            <span className="text-blue-600 mr-2">✓</span>
+            <span className="text-primary mr-2">✓</span>
             <span>Auto-dismiss after 5 seconds (configurable)</span>
           </li>
           <li className="flex items-start">
-            <span className="text-blue-600 mr-2">✓</span>
+            <span className="text-primary mr-2">✓</span>
             <span>Pause on hover to read longer messages</span>
           </li>
           <li className="flex items-start">
-            <span className="text-blue-600 mr-2">✓</span>
+            <span className="text-primary mr-2">✓</span>
             <span>Manual dismiss with X button</span>
           </li>
           <li className="flex items-start">
-            <span className="text-blue-600 mr-2">✓</span>
+            <span className="text-primary mr-2">✓</span>
             <span>Stack up to 5 toasts (older ones hidden)</span>
           </li>
           <li className="flex items-start">
-            <span className="text-blue-600 mr-2">✓</span>
+            <span className="text-primary mr-2">✓</span>
             <span>Smooth slide in/out animations</span>
           </li>
           <li className="flex items-start">
-            <span className="text-blue-600 mr-2">✓</span>
+            <span className="text-primary mr-2">✓</span>
             <span>Optional action buttons (e.g., Undo)</span>
           </li>
           <li className="flex items-start">
-            <span className="text-blue-600 mr-2">✓</span>
+            <span className="text-primary mr-2">✓</span>
             <span>Progress bar showing time remaining</span>
           </li>
           <li className="flex items-start">
-            <span className="text-blue-600 mr-2">✓</span>
+            <span className="text-primary mr-2">✓</span>
             <span>Professional zinc/emerald/red/amber design</span>
           </li>
         </ul>

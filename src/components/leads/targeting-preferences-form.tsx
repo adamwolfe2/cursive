@@ -157,8 +157,8 @@ export function TargetingPreferencesForm({
             type="button"
             onClick={() => setIsActive(!isActive)}
             className={cn(
-              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2',
-              isActive ? 'bg-blue-600' : 'bg-zinc-200'
+              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2',
+              isActive ? 'bg-primary' : 'bg-zinc-200'
             )}
           >
             <span
@@ -186,7 +186,7 @@ export function TargetingPreferencesForm({
               className={cn(
                 'px-3 py-2 text-sm font-medium rounded-lg border transition-colors text-left',
                 industries.includes(option.value)
-                  ? 'bg-blue-50 border-blue-200 text-blue-700'
+                  ? 'bg-primary/5 border-primary/20 text-primary'
                   : 'bg-white border-zinc-200 text-zinc-700 hover:bg-zinc-50'
               )}
             >
@@ -222,7 +222,7 @@ export function TargetingPreferencesForm({
                 className={cn(
                   'px-2 py-1 text-xs font-medium rounded border transition-colors',
                   states.includes(option.value)
-                    ? 'bg-blue-50 border-blue-200 text-blue-700'
+                    ? 'bg-primary/5 border-primary/20 text-primary'
                     : 'bg-white border-zinc-200 text-zinc-600 hover:bg-zinc-50'
                 )}
               >
@@ -251,7 +251,7 @@ export function TargetingPreferencesForm({
             value={cities}
             onChange={(e) => setCities(e.target.value)}
             placeholder="e.g., Austin, Dallas, Houston"
-            className="w-full px-3 py-2 border border-zinc-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-zinc-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
           />
           <p className="mt-1 text-xs text-zinc-500">
             Comma-separated list of cities for more specific targeting
@@ -272,7 +272,7 @@ export function TargetingPreferencesForm({
             value={zips}
             onChange={(e) => setZips(e.target.value)}
             placeholder="e.g., 78701, 78702, 78703"
-            className="w-full px-3 py-2 border border-zinc-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-zinc-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
           />
           <p className="mt-1 text-xs text-zinc-500">
             Comma-separated list of ZIP codes for hyperlocal targeting
@@ -301,7 +301,7 @@ export function TargetingPreferencesForm({
               onChange={(e) => setDailyCap(parseInt(e.target.value) || 0)}
               min={0}
               max={100}
-              className="w-full px-3 py-2 border border-zinc-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-zinc-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
             />
           </div>
           <div>
@@ -318,7 +318,7 @@ export function TargetingPreferencesForm({
               onChange={(e) => setWeeklyCap(parseInt(e.target.value) || 0)}
               min={0}
               max={500}
-              className="w-full px-3 py-2 border border-zinc-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-zinc-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
             />
           </div>
           <div>
@@ -335,7 +335,7 @@ export function TargetingPreferencesForm({
               onChange={(e) => setMonthlyCap(parseInt(e.target.value) || 0)}
               min={0}
               max={2000}
-              className="w-full px-3 py-2 border border-zinc-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-zinc-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
             />
           </div>
         </div>
@@ -354,8 +354,8 @@ export function TargetingPreferencesForm({
             type="button"
             onClick={() => setEmailNotifications(!emailNotifications)}
             className={cn(
-              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2',
-              emailNotifications ? 'bg-blue-600' : 'bg-zinc-200'
+              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2',
+              emailNotifications ? 'bg-primary' : 'bg-zinc-200'
             )}
           >
             <span
@@ -395,7 +395,7 @@ export function TargetingPreferencesForm({
         <button
           type="submit"
           disabled={saving}
-          className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {saving ? 'Saving...' : 'Save Preferences'}
         </button>

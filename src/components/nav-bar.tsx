@@ -93,7 +93,7 @@ export function NavBar() {
               href="/"
               className="flex items-center gap-2 flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-primary rounded-lg"
             >
-              <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+              <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-primary/90 flex items-center justify-center">
                 <span className="text-white font-bold text-sm">C</span>
               </div>
               <span className="text-base font-semibold text-foreground hidden sm:inline">

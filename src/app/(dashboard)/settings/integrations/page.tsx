@@ -203,7 +203,7 @@ function CrmSetupModal({
             href={platform.docsUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+            className="text-sm text-primary hover:text-primary/90 font-medium"
           >
             View Documentation
           </a>
@@ -354,11 +354,11 @@ export default function IntegrationsPage() {
   return (
     <div className="space-y-6">
       {/* Info Banner */}
-      <div className="rounded-xl bg-blue-50 border border-blue-200 p-4">
+      <div className="rounded-xl bg-primary/5 border border-primary/20 p-4">
         <div className="flex">
           <div className="flex-shrink-0">
             <svg
-              className="h-5 w-5 text-blue-500"
+              className="h-5 w-5 text-primary"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -372,10 +372,10 @@ export default function IntegrationsPage() {
             </svg>
           </div>
           <div className="ml-3">
-            <h3 className="text-sm font-medium text-blue-800">
+            <h3 className="text-sm font-medium text-primary">
               Multi-Channel Lead Delivery
             </h3>
-            <p className="mt-2 text-sm text-blue-700">
+            <p className="mt-2 text-sm text-primary/90">
               Connect Slack, Zapier, or custom webhooks to receive leads in real-time
               across multiple channels. Pro plan required for integrations.
             </p>
@@ -400,7 +400,7 @@ export default function IntegrationsPage() {
             </p>
           </div>
           {!isPro && (
-            <span className="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-blue-100 text-blue-800 ml-4">
+            <span className="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-primary/10 text-primary ml-4">
               Pro
             </span>
           )}
@@ -414,7 +414,7 @@ export default function IntegrationsPage() {
             <input
               type="url"
               placeholder="https://your-domain.com/webhook"
-              className="block w-full rounded-lg border-zinc-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 disabled:bg-zinc-50 disabled:cursor-not-allowed"
+              className="block w-full rounded-lg border-zinc-300 shadow-sm focus:border-primary focus:ring-primary disabled:bg-zinc-50 disabled:cursor-not-allowed"
               value={customWebhookUrl || user?.custom_webhook_url || ''}
               onChange={(e) => setCustomWebhookUrl(e.target.value)}
               disabled={!isPro}
@@ -427,7 +427,7 @@ export default function IntegrationsPage() {
           <button
             onClick={handleSaveCustomWebhook}
             disabled={!isPro || saveCustomWebhookMutation.isPending}
-            className="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
+            className="rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
           >
             {saveCustomWebhookMutation.isPending ? 'Saving...' : 'Save Webhook'}
           </button>
@@ -436,7 +436,7 @@ export default function IntegrationsPage() {
             <p className="text-sm text-zinc-500 mt-2">
               <Link
                 href="/settings/billing"
-                className="text-blue-600 hover:text-blue-700 font-medium"
+                className="text-primary hover:text-primary/90 font-medium"
               >
                 Upgrade to Pro
               </Link>{' '}
@@ -486,7 +486,7 @@ export default function IntegrationsPage() {
             </p>
           </div>
           {!isPro && (
-            <span className="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-blue-100 text-blue-800 ml-4">
+            <span className="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-primary/10 text-primary ml-4">
               Pro
             </span>
           )}
@@ -538,7 +538,7 @@ export default function IntegrationsPage() {
             <button
               onClick={() => generateApiKeyMutation.mutate()}
               disabled={!isPro || generateApiKeyMutation.isPending}
-              className="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
+              className="rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
             >
               {generateApiKeyMutation.isPending ? 'Generating...' : 'Generate API Key'}
             </button>
@@ -547,7 +547,7 @@ export default function IntegrationsPage() {
               <p className="text-sm text-zinc-500 mt-3">
                 <Link
                   href="/settings/billing"
-                  className="text-blue-600 hover:text-blue-700 font-medium"
+                  className="text-primary hover:text-primary/90 font-medium"
                 >
                   Upgrade to Pro
                 </Link>{' '}
@@ -568,7 +568,7 @@ export default function IntegrationsPage() {
             <p className="text-sm text-zinc-500 mt-3">
               <a
                 href="/docs/api"
-                className="text-blue-600 hover:text-blue-700 font-medium"
+                className="text-primary hover:text-primary/90 font-medium"
               >
                 View API Documentation →
               </a>
@@ -587,7 +587,7 @@ export default function IntegrationsPage() {
             </p>
           </div>
           {!isPro && (
-            <span className="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-blue-100 text-blue-800 ml-4">
+            <span className="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-primary/10 text-primary ml-4">
               Pro
             </span>
           )}
@@ -671,7 +671,7 @@ export default function IntegrationsPage() {
                       </p>
                       <button
                         onClick={() => setSetupModalPlatform(platform)}
-                        className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+                        className="text-xs text-primary hover:text-primary/90 font-medium"
                       >
                         Reconnect
                       </button>
@@ -695,7 +695,7 @@ export default function IntegrationsPage() {
                       <p className="text-xs text-zinc-500">
                         <Link
                           href="/settings/billing"
-                          className="text-blue-600 hover:text-blue-700 font-medium"
+                          className="text-primary hover:text-primary/90 font-medium"
                         >
                           Upgrade to Pro
                         </Link>{' '}
@@ -759,11 +759,11 @@ export default function IntegrationsPage() {
 
       {/* Upgrade CTA */}
       {!isPro && (
-        <div className="rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 p-8 text-white shadow-lg">
+        <div className="rounded-xl bg-gradient-to-r from-primary to-primary/90 p-8 text-white shadow-lg">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div>
               <h2 className="text-2xl font-bold mb-2">Unlock All Integrations</h2>
-              <p className="text-blue-100">
+              <p className="text-white/80">
                 Upgrade to Pro to connect Slack, Zapier, HubSpot, Salesforce, Google Sheets,
                 custom webhooks, and access our API. Automate your entire lead workflow.
               </p>
@@ -771,7 +771,7 @@ export default function IntegrationsPage() {
             <div className="flex-shrink-0">
               <Link
                 href="/settings/billing"
-                className="inline-flex items-center rounded-lg bg-white px-6 py-3 text-sm font-semibold text-blue-600 hover:bg-blue-50 transition-colors shadow-md"
+                className="inline-flex items-center rounded-lg bg-white px-6 py-3 text-sm font-semibold text-primary hover:bg-primary/5 transition-colors shadow-md"
               >
                 Upgrade to Pro →
               </Link>

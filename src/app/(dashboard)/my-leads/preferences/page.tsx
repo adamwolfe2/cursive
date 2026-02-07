@@ -164,10 +164,10 @@ export default async function TargetingPreferencesPage() {
       </div>
 
       {/* Info box */}
-      <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
+      <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
         <div className="flex gap-3">
           <svg
-            className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5"
+            className="h-5 w-5 text-primary flex-shrink-0 mt-0.5"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -179,7 +179,7 @@ export default async function TargetingPreferencesPage() {
               d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
             />
           </svg>
-          <div className="text-sm text-blue-800">
+          <div className="text-sm text-primary">
             <p className="font-medium">How lead matching works</p>
             <p className="mt-1">
               When a new lead comes in, we check if it matches your targeting

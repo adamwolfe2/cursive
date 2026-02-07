@@ -48,7 +48,7 @@ export function ContactWidget() {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 h-14 w-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg flex items-center justify-center transition-all hover:scale-110 z-50"
+          className="fixed bottom-6 right-6 h-14 w-14 bg-primary hover:bg-primary/90 text-white rounded-full shadow-lg flex items-center justify-center transition-all hover:scale-110 z-50"
           aria-label="Contact Support"
         >
           <MessageCircle className="h-6 w-6" />
@@ -59,7 +59,7 @@ export function ContactWidget() {
       {isOpen && (
         <div className="fixed bottom-6 right-6 w-96 bg-white rounded-lg shadow-2xl border border-zinc-200 z-50 overflow-hidden">
           {/* Header */}
-          <div className="bg-blue-600 text-white px-6 py-4 flex items-center justify-between">
+          <div className="bg-primary text-white px-6 py-4 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <MessageCircle className="h-5 w-5" />
               <h3 className="font-semibold">Contact Us</h3>
@@ -84,7 +84,7 @@ export function ContactWidget() {
                 required
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                className="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm"
                 placeholder="Your name"
                 disabled={loading}
               />
@@ -100,7 +100,7 @@ export function ContactWidget() {
                 required
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                className="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm"
                 placeholder="your@email.com"
                 disabled={loading}
               />
@@ -115,7 +115,7 @@ export function ContactWidget() {
                 type="text"
                 value={formData.subject}
                 onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                className="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                className="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm"
                 placeholder="How can we help?"
                 disabled={loading}
               />
@@ -131,7 +131,7 @@ export function ContactWidget() {
                 rows={4}
                 value={formData.message}
                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                className="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm resize-none"
+                className="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm resize-none"
                 placeholder="Tell us what's on your mind..."
                 disabled={loading}
               />
@@ -140,7 +140,7 @@ export function ContactWidget() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full h-10 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full h-10 bg-primary hover:bg-primary/90 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>

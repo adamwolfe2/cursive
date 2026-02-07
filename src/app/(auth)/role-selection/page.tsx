@@ -42,7 +42,7 @@ export default function RoleSelectionPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 flex items-center justify-center px-6 py-12">
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-white to-primary/5 flex items-center justify-center px-6 py-12">
       <div className="w-full max-w-4xl">
         {/* Logo */}
         <div className="flex justify-center mb-8">
@@ -82,14 +82,14 @@ export default function RoleSelectionPage() {
             whileTap={{ scale: 0.98 }}
             onClick={() => selectRole('business')}
             disabled={loading}
-            className="group relative overflow-hidden bg-white rounded-2xl border-2 border-zinc-200/60 p-8 text-left shadow-sm hover:shadow-xl hover:border-blue-300 transition-all duration-300 disabled:opacity-50"
+            className="group relative overflow-hidden bg-white rounded-2xl border-2 border-zinc-200/60 p-8 text-left shadow-sm hover:shadow-xl hover:border-primary/60 transition-all duration-300 disabled:opacity-50"
           >
             {/* Gradient overlay on hover */}
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-50/0 to-blue-100/0 group-hover:from-blue-50/50 group-hover:to-blue-100/30 transition-all duration-300" />
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/0 to-primary/0 group-hover:from-primary/5 group-hover:to-primary/5 transition-all duration-300" />
 
             <div className="relative">
               {/* Icon */}
-              <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg mb-6 group-hover:shadow-blue-200 transition-shadow">
+              <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/90 text-white shadow-lg mb-6 group-hover:shadow-primary/20 transition-shadow">
                 <Building2 className="h-7 w-7" />
               </div>
 
@@ -104,21 +104,21 @@ export default function RoleSelectionPage() {
               {/* Features list */}
               <ul className="space-y-2 mb-6">
                 <li className="flex items-start gap-2 text-sm text-zinc-600">
-                  <span className="text-blue-600 mt-0.5">✓</span>
+                  <span className="text-primary mt-0.5">✓</span>
                   <span>Browse and purchase verified leads</span>
                 </li>
                 <li className="flex items-start gap-2 text-sm text-zinc-600">
-                  <span className="text-blue-600 mt-0.5">✓</span>
+                  <span className="text-primary mt-0.5">✓</span>
                   <span>Full CRM access</span>
                 </li>
                 <li className="flex items-start gap-2 text-sm text-zinc-600">
-                  <span className="text-blue-600 mt-0.5">✓</span>
+                  <span className="text-primary mt-0.5">✓</span>
                   <span>Requires subscription ($29/mo+)</span>
                 </li>
               </ul>
 
               {/* CTA */}
-              <div className="flex items-center gap-2 text-blue-600 font-semibold group-hover:gap-3 transition-all">
+              <div className="flex items-center gap-2 text-primary font-semibold group-hover:gap-3 transition-all">
                 <span>Get started</span>
                 <ArrowRight className="h-5 w-5" />
               </div>
@@ -192,7 +192,7 @@ export default function RoleSelectionPage() {
         {/* Footer */}
         <p className="text-center text-sm text-zinc-500 mt-8">
           Questions?{' '}
-          <a href="mailto:hey@meetcursive.com" className="text-blue-600 hover:underline">
+          <a href="mailto:hey@meetcursive.com" className="text-primary hover:underline">
             hey@meetcursive.com
           </a>
         </p>

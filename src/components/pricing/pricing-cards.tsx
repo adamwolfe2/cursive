@@ -144,7 +144,7 @@ export function PricingCards({ plans, currentPlan }: PricingCardsProps) {
               className={`
                 relative bg-white rounded-2xl p-8 border-2 transition-all
                 ${plan.is_popular
-                  ? 'border-blue-500 shadow-lg sm:scale-105'
+                  ? 'border-primary shadow-lg sm:scale-105'
                   : 'border-zinc-200 hover:border-zinc-300'
                 }
                 ${isCurrentPlan ? 'ring-2 ring-emerald-500' : ''}
@@ -152,7 +152,7 @@ export function PricingCards({ plans, currentPlan }: PricingCardsProps) {
             >
               {/* Popular Badge */}
               {plan.is_popular && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-blue-500 text-white text-sm font-medium rounded-full">
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-primary text-white text-sm font-medium rounded-full">
                   Most Popular
                 </span>
               )}
@@ -216,7 +216,7 @@ export function PricingCards({ plans, currentPlan }: PricingCardsProps) {
                 className={`
                   w-full py-6 text-sm sm:text-base font-semibold rounded-lg transition-all
                   ${plan.is_popular
-                    ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                    ? 'bg-primary hover:bg-primary/90 text-white'
                     : isCurrentPlan
                     ? 'bg-zinc-100 text-zinc-500 cursor-not-allowed'
                     : 'bg-zinc-900 hover:bg-zinc-800 text-white'

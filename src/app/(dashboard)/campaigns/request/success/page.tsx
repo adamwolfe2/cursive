@@ -32,14 +32,14 @@ export default function CampaignRequestSuccessPage() {
             </p>
 
             {/* Next Steps */}
-            <div className="bg-blue-50 rounded-lg p-6 mb-8 text-left">
+            <div className="bg-primary/5 rounded-lg p-6 mb-8 text-left">
               <h2 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                <Calendar className="h-5 w-5 text-blue-600" />
+                <Calendar className="h-5 w-5 text-primary" />
                 What Happens Next
               </h2>
               <ol className="space-y-3 text-sm text-gray-700">
                 <li className="flex items-start gap-3">
-                  <span className="flex-shrink-0 flex items-center justify-center h-6 w-6 rounded-full bg-blue-100 text-blue-600 text-xs font-semibold">
+                  <span className="flex-shrink-0 flex items-center justify-center h-6 w-6 rounded-full bg-primary/10 text-primary text-xs font-semibold">
                     1
                   </span>
                   <span>
@@ -47,7 +47,7 @@ export default function CampaignRequestSuccessPage() {
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="flex-shrink-0 flex items-center justify-center h-6 w-6 rounded-full bg-blue-100 text-blue-600 text-xs font-semibold">
+                  <span className="flex-shrink-0 flex items-center justify-center h-6 w-6 rounded-full bg-primary/10 text-primary text-xs font-semibold">
                     2
                   </span>
                   <span>
@@ -55,7 +55,7 @@ export default function CampaignRequestSuccessPage() {
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="flex-shrink-0 flex items-center justify-center h-6 w-6 rounded-full bg-blue-100 text-blue-600 text-xs font-semibold">
+                  <span className="flex-shrink-0 flex items-center justify-center h-6 w-6 rounded-full bg-primary/10 text-primary text-xs font-semibold">
                     3
                   </span>
                   <span>
@@ -63,7 +63,7 @@ export default function CampaignRequestSuccessPage() {
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="flex-shrink-0 flex items-center justify-center h-6 w-6 rounded-full bg-blue-100 text-blue-600 text-xs font-semibold">
+                  <span className="flex-shrink-0 flex items-center justify-center h-6 w-6 rounded-full bg-primary/10 text-primary text-xs font-semibold">
                     4
                   </span>
                   <span>
@@ -80,7 +80,7 @@ export default function CampaignRequestSuccessPage() {
                 Questions? Email us at{' '}
                 <a
                   href="mailto:campaigns@emailbison.com"
-                  className="text-blue-600 hover:underline font-medium"
+                  className="text-primary hover:underline font-medium"
                 >
                   campaigns@emailbison.com
                 </a>

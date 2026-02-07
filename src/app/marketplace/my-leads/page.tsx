@@ -8,6 +8,7 @@ import { useToast } from '@/lib/hooks/use-toast'
 import { useUser } from '@/hooks/use-user'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { UpsellBanner } from '@/components/marketplace/UpsellBanner'
 
 interface PurchasedLead {
   id: string
@@ -40,6 +41,8 @@ export default function MyLeadsPage() {
   const [leads, setLeads] = useState<PurchasedLead[]>([])
   const [filteredLeads, setFilteredLeads] = useState<PurchasedLead[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [creditsBalance, setCreditsBalance] = useState(0)
+  const [totalSpend, setTotalSpend] = useState(0)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedIndustry, setSelectedIndustry] = useState<string>('all')
   const [selectedState, setSelectedState] = useState<string>('all')
@@ -102,10 +105,30 @@ export default function MyLeadsPage() {
     }
   }, [toast, router])
 
+  const fetchUpsellData = useCallback(async () => {
+    try {
+      const [creditsRes, statsRes] = await Promise.all([
+        fetch('/api/marketplace/credits'),
+        fetch('/api/marketplace/stats'),
+      ])
+      if (creditsRes.ok) {
+        const creditsData = await creditsRes.json()
+        setCreditsBalance(creditsData.balance || 0)
+      }
+      if (statsRes.ok) {
+        const statsData = await statsRes.json()
+        setTotalSpend(statsData.totalSpent || 0)
+      }
+    } catch (error) {
+      console.error('Failed to fetch upsell data:', error)
+    }
+  }, [])
+
   useEffect(() => {
     if (!user) return
     fetchLeads()
-  }, [fetchLeads, user])
+    fetchUpsellData()
+  }, [fetchLeads, fetchUpsellData, user])
 
   // Apply filters
   useEffect(() => {
@@ -244,6 +267,9 @@ export default function MyLeadsPage() {
               </Link>
             </div>
           </div>
+
+          {/* Upsell Banner */}
+          <UpsellBanner creditsBalance={creditsBalance} totalSpend={totalSpend} />
 
           {/* Stats & Actions */}
           <div className="bg-white border border-zinc-200 rounded-lg p-6 mb-6">

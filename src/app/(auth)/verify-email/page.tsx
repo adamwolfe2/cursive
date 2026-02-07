@@ -91,13 +91,13 @@ export default function VerifyEmailPage() {
 
         {/* Success Message */}
         {resendSuccess && (
-          <div className="rounded-lg bg-blue-50 p-4">
+          <div className="rounded-lg bg-primary/5 p-4">
             <div className="flex">
               <div className="ml-3">
-                <h3 className="text-[13px] font-medium text-blue-700">
+                <h3 className="text-[13px] font-medium text-primary">
                   Verification email sent
                 </h3>
-                <p className="mt-2 text-[13px] text-blue-600">
+                <p className="mt-2 text-[13px] text-primary">
                   Please check your email inbox.
                 </p>
               </div>

@@ -108,7 +108,7 @@ function LoginForm() {
             Or{' '}
             <Link
               href="/signup"
-              className="font-medium text-blue-600 hover:text-blue-500"
+              className="font-medium text-primary hover:text-primary/90"
             >
               create a new account
             </Link>
@@ -141,7 +141,7 @@ function LoginForm() {
                 {...register('email')}
                 className={`relative block w-full min-h-[44px] rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ${
                   errors.email ? 'ring-red-500' : 'ring-gray-300'
-                } placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6`}
+                } placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6`}
                 placeholder="Email address"
                 disabled={loading}
               />
@@ -157,7 +157,7 @@ function LoginForm() {
                 {...register('password')}
                 className={`relative block w-full min-h-[44px] rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ${
                   errors.password ? 'ring-red-500' : 'ring-gray-300'
-                } placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6`}
+                } placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6`}
                 placeholder="Password"
                 disabled={loading}
               />
@@ -178,7 +178,7 @@ function LoginForm() {
                 id="remember-me"
                 type="checkbox"
                 {...register('remember')}
-                className="h-5 w-5 min-h-[20px] min-w-[20px] rounded border-gray-300 text-blue-600 focus:ring-blue-600"
+                className="h-5 w-5 min-h-[20px] min-w-[20px] rounded border-gray-300 text-blue-600 focus:ring-primary"
               />
               <label
                 htmlFor="remember-me"
@@ -191,7 +191,7 @@ function LoginForm() {
             <div className="text-sm">
               <Link
                 href="/forgot-password"
-                className="font-medium text-blue-600 hover:text-blue-500"
+                className="font-medium text-primary hover:text-primary/90"
               >
                 Forgot your password?
               </Link>
@@ -202,7 +202,7 @@ function LoginForm() {
             <button
               type="submit"
               disabled={loading}
-              className="group relative flex w-full min-h-[44px] justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="group relative flex w-full min-h-[44px] justify-center rounded-md bg-primary px-3 py-2 text-sm font-semibold text-white hover:bg-primary/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Signing in...' : 'Sign in'}
             </button>

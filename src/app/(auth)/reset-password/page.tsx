@@ -95,7 +95,7 @@ function ResetPasswordForm() {
           <div className="space-y-3">
             <Link
               href="/forgot-password"
-              className="h-9 px-4 w-full text-[13px] font-medium bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-all duration-150 flex items-center justify-center"
+              className="h-9 px-4 w-full text-[13px] font-medium bg-primary text-white hover:bg-primary/90 rounded-lg transition-all duration-150 flex items-center justify-center"
             >
               Request new reset link
             </Link>
@@ -123,13 +123,13 @@ function ResetPasswordForm() {
           </div>
 
           {/* Success Message */}
-          <div className="rounded-lg bg-blue-50 p-4">
+          <div className="rounded-lg bg-primary/5 p-4">
             <div className="flex">
               <div className="ml-3">
-                <h3 className="text-[13px] font-medium text-blue-700">
+                <h3 className="text-[13px] font-medium text-primary">
                   Your password has been updated
                 </h3>
-                <p className="mt-2 text-[13px] text-blue-600">
+                <p className="mt-2 text-[13px] text-primary">
                   Redirecting to login...
                 </p>
               </div>
@@ -207,7 +207,7 @@ function ResetPasswordForm() {
             <button
               type="submit"
               disabled={loading}
-              className="h-9 px-4 w-full text-[13px] font-medium bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="h-9 px-4 w-full text-[13px] font-medium bg-primary text-white hover:bg-primary/90 rounded-lg transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Resetting password...' : 'Reset password'}
             </button>

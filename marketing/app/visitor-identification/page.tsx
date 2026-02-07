@@ -11,143 +11,22 @@ import {
 import { DashboardPreview } from "@/components/dashboard-preview"
 import { IntegrationsShowcase } from "@/components/integrations-showcase"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
+import Link from "next/link"
+import { Breadcrumbs } from "@/components/Breadcrumbs"
 
 export default function VisitorIdentificationPage() {
-  const schemaMarkup = {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "Product",
-        "@id": "https://meetcursive.com/visitor-identification#product",
-        "name": "Cursive Visitor Identification",
-        "description": "Identify up to 70% of anonymous website visitors in real-time. Turn unknown traffic into qualified leads with company and individual-level data.",
-        "brand": {
-          "@type": "Brand",
-          "name": "Cursive"
-        },
-        "offers": {
-          "@type": "Offer",
-          "url": "https://meetcursive.com/visitor-identification",
-          "priceCurrency": "USD",
-          "availability": "https://schema.org/InStock"
-        },
-        "category": "Visitor Identification Software"
-      },
-      {
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-          {
-            "@type": "ListItem",
-            "position": 1,
-            "name": "Home",
-            "item": "https://meetcursive.com"
-          },
-          {
-            "@type": "ListItem",
-            "position": 2,
-            "name": "Visitor Identification",
-            "item": "https://meetcursive.com/visitor-identification"
-          }
-        ]
-      },
-      {
-        "@type": "FAQPage",
-        "mainEntity": [
-          {
-            "@type": "Question",
-            "name": "How accurate is visitor identification?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Cursive identifies up to 70% of B2B website traffic—significantly higher than the industry average of 20-30%. We use multiple data sources and real-time enrichment to maximize accuracy."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "How quickly can you identify visitors?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Visitors are identified in real-time within seconds of landing on your site. Unlike batch processing tools, Cursive enriches data instantly so you can act on hot leads immediately."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Is visitor identification GDPR compliant?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Yes. Cursive is built with privacy compliance at its core. We honor all opt-outs, use hashed identifiers, and comply with GDPR, CCPA, and regional privacy regulations."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "What data do you provide for each visitor?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "For B2B traffic, we provide company name, industry, size, location, revenue, technologies used, and contact information. For individuals, we include job title, seniority, department, and verified email addresses."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "How does visitor identification integrate with my CRM?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Cursive offers native integrations with 200+ platforms including Salesforce, HubSpot, Marketo, and major ad platforms. Identified visitors sync automatically to your existing tools with one-click setup."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Can I filter out existing customers?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Yes. Cursive includes intelligent filtering to exclude existing customers, internal traffic, bots, and other non-prospects. This ensures your sales team focuses only on new opportunities."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "How long does setup take?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Installation takes about 5 minutes. Simply add our JavaScript pixel to your website, and you'll start identifying visitors immediately. No complex configuration required."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "What's the difference between company-level and individual-level identification?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Company-level identification reveals which businesses visited your site. Individual-level identification goes deeper to show specific people, their roles, and contact information. Cursive provides both."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Can I see which pages visitors viewed?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Absolutely. Cursive tracks page-level behavior so you can see exactly which content each visitor engaged with—pricing pages, feature pages, blog posts, and more. This helps prioritize your outreach."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "How much does visitor identification cost?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Pricing varies based on your website traffic volume and activation needs. Book a demo to get a custom quote for your specific use case."
-            }
-          }
-        ]
-      }
-    ]
-  }
-
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaMarkup) }}
-      />
 
       {/* Human View */}
       <HumanView>
         <main>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Breadcrumbs items={[
+            { name: "Home", href: "/" },
+            { name: "Visitor Identification", href: "/visitor-identification" },
+          ]} />
+        </div>
         {/* Hero Section */}
         <section className="pt-24 pb-20 bg-white">
           <Container>
@@ -554,70 +433,119 @@ export default function VisitorIdentificationPage() {
           </Container>
         </section>
 
-        {/* Related Resources */}
+        {/* Related Products & Resources */}
         <section className="py-20 bg-white">
           <Container>
             <div className="text-center mb-16">
               <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
-                Learn More About Visitor Identification
+                Explore Related Solutions
               </h2>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                Deep-dive guides and strategies for maximizing your visitor identification results
+                Visitor identification is just the beginning. Combine it with these tools to build a complete pipeline.
               </p>
             </div>
-            <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto mb-12">
               {[
                 {
-                  title: "How to Use Website Visitor Tracking to Generate More B2B Leads",
-                  description: "Learn how visitor tracking turns anonymous traffic into qualified leads you can actually convert.",
-                  href: "/blog/22-using-website-visitor-tracking-for-lead-generation-UPDATED"
+                  title: "Audience Builder",
+                  description: "Turn identified visitors into segmented audiences for targeted outreach across 220M+ consumer and 140M+ business profiles.",
+                  href: "/audience-builder"
                 },
                 {
-                  title: "How to Convert Anonymous Website Visitors Into Sales-Ready Leads",
-                  description: "Stop losing qualified leads to anonymity and start converting traffic into paying customers.",
-                  href: "/blog/25-boosting-sales-through-anonymous-visitor-conversion-UPDATED"
+                  title: "Intent Data",
+                  description: "Layer intent signals on top of visitor data to prioritize prospects actively researching solutions like yours.",
+                  href: "/intent-audiences"
                 },
                 {
-                  title: "Understanding Data-Driven Decision Making in Marketing",
-                  description: "Turn visitor data into actionable insights that drive better campaign performance.",
-                  href: "/blog/18-understanding-data-driven-decision-making-in-marketing"
+                  title: "Direct Mail",
+                  description: "Trigger personalized postcards to identified visitors who haven't responded to digital outreach. 3-5x higher conversion.",
+                  href: "/direct-mail"
                 },
                 {
-                  title: "Real-Time Analytics Strategies for Better ROI Decisions",
-                  description: "Use real-time visitor data to make faster, smarter marketing decisions.",
-                  href: "/blog/21-real-time-analytics-strategies-for-better-roi-decisions"
-                },
-                {
-                  title: "Leveraging Real-Time Data for Efficient Campaigns",
-                  description: "Respond to visitor behavior in real-time to maximize conversion rates.",
-                  href: "/blog/26-leveraging-real-time-data-for-efficient-campaigns-UPDATED"
-                },
-                {
-                  title: "How to Use Marketing Audience Data to Drive Real Results",
-                  description: "Organize your visitor data to send the right message at the right time.",
-                  href: "/blog/01-tips-for-using-marketing-audience-data-efficiently-UPDATED"
+                  title: "Integrations",
+                  description: "Sync identified visitors directly to Salesforce, HubSpot, and 200+ tools in your existing tech stack.",
+                  href: "/integrations"
                 }
-              ].map((resource, i) => (
-                <motion.a
+              ].map((product, i) => (
+                <Link
                   key={i}
-                  href={resource.href}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.05 }}
-                  className="block bg-gray-50 rounded-xl p-6 border border-gray-200 hover:border-[#007AFF] hover:shadow-lg transition-all group"
+                  href={product.href}
+                  className="block bg-[#F7F9FB] rounded-xl p-6 border border-gray-200 hover:border-[#007AFF] hover:shadow-lg transition-all group"
                 >
                   <h3 className="text-lg text-gray-900 mb-2 font-medium group-hover:text-[#007AFF] transition-colors">
-                    {resource.title}
+                    {product.title}
                   </h3>
                   <p className="text-gray-600 text-sm leading-relaxed">
-                    {resource.description}
+                    {product.description}
                   </p>
                   <div className="mt-4 text-[#007AFF] text-sm font-medium flex items-center gap-2">
-                    Read article <ArrowRight className="h-4 w-4" />
+                    Learn more <ArrowRight className="h-4 w-4" />
                   </div>
-                </motion.a>
+                </Link>
               ))}
+            </div>
+
+            {/* Comparison Guides */}
+            <div className="max-w-5xl mx-auto">
+              <h3 className="text-xl text-gray-900 font-medium mb-6 text-center">How Cursive Compares</h3>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {[
+                  { title: "Clearbit Alternatives", href: "/blog/clearbit-alternatives-comparison", description: "Compare visitor identification providers" },
+                  { title: "Warmly vs Cursive", href: "/blog/warmly-vs-cursive-comparison", description: "Website visitor identification head-to-head" },
+                  { title: "ZoomInfo vs Cursive", href: "/blog/zoominfo-vs-cursive-comparison", description: "Data enrichment and identification compared" },
+                  { title: "Apollo vs Cursive", href: "/blog/apollo-vs-cursive-comparison", description: "Prospecting and outbound tools compared" },
+                  { title: "6sense vs Cursive", href: "/blog/6sense-vs-cursive-comparison", description: "Intent data platforms side-by-side" },
+                  { title: "Visitor Tracking Guide", href: "/blog/visitor-tracking", description: "Technical deep-dive on website visitor tracking" },
+                ].map((comparison, i) => (
+                  <Link
+                    key={i}
+                    href={comparison.href}
+                    className="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-[#007AFF] transition-colors group"
+                  >
+                    <div className="flex-1">
+                      <div className="text-gray-900 text-sm font-medium group-hover:text-[#007AFF] transition-colors">{comparison.title}</div>
+                      <div className="text-gray-500 text-xs">{comparison.description}</div>
+                    </div>
+                    <ArrowRight className="h-4 w-4 text-gray-400 group-hover:text-[#007AFF] flex-shrink-0" />
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </Container>
+        </section>
+
+        {/* How to Get Started */}
+        <section className="py-24 bg-[#F7F9FB]">
+          <Container>
+            <div className="text-center mb-12">
+              <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
+                How to Get Started
+              </h2>
+              <p className="text-xl text-gray-600">
+                Two options to start identifying your website visitors today.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+              <div className="bg-white rounded-2xl p-8 border border-gray-200">
+                <div className="text-sm font-medium text-[#007AFF] mb-2">OPTION 1</div>
+                <h3 className="text-2xl font-light text-gray-900 mb-3">Pixel Setup Service</h3>
+                <p className="text-gray-600 mb-4">We install and configure everything for you. Done in 48 hours.</p>
+                <div className="text-2xl font-light text-[#007AFF] mb-6">$750/mo + $0.50/visitor</div>
+                <Button className="w-full" href="/pixel">
+                  Learn About Pixel Setup
+                </Button>
+              </div>
+
+              <div className="bg-white rounded-2xl p-8 border border-gray-200">
+                <div className="text-sm font-medium text-[#007AFF] mb-2">OPTION 2</div>
+                <h3 className="text-2xl font-light text-gray-900 mb-3">Browse Pre-Identified Leads</h3>
+                <p className="text-gray-600 mb-4">Access our marketplace of already-identified contacts. Buy with credits.</p>
+                <div className="text-2xl font-light text-[#007AFF] mb-6">From $0.60/lead</div>
+                <Button className="w-full" href="/marketplace">
+                  Browse Marketplace
+                </Button>
+              </div>
             </div>
           </Container>
         </section>

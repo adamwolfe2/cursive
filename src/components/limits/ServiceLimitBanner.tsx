@@ -101,7 +101,7 @@ export function ServiceLimitBanner({
             {tierSlug === 'free' ? (
               <a
                 href={getSubscriptionLink('pro', 'monthly')}
-                className="inline-flex items-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
+                className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:text-primary/90 transition-colors"
               >
                 Upgrade to Pro
                 <ArrowRight className="h-4 w-4" />
@@ -109,7 +109,7 @@ export function ServiceLimitBanner({
             ) : (
               <Link
                 href="/settings/billing"
-                className="inline-flex items-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
+                className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:text-primary/90 transition-colors"
               >
                 Manage Plan
                 <ArrowRight className="h-4 w-4" />
@@ -117,7 +117,7 @@ export function ServiceLimitBanner({
             )}
             <Link
               href="/pricing"
-              className="inline-flex items-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
+              className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:text-primary/90 transition-colors"
             >
               View Pricing
               <TrendingUp className="h-4 w-4" />

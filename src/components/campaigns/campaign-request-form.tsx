@@ -148,11 +148,11 @@ export function CampaignRequestForm() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50/50 to-white py-12 px-4">
+    <div className="min-h-screen bg-gradient-to-b from-primary/5 to-white py-12 px-4">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
+          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-4">
             <Sparkles className="h-4 w-4" />
             Powered by EmailBison
           </div>
@@ -170,8 +170,8 @@ export function CampaignRequestForm() {
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center gap-3 mb-2">
-                <div className="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                  <Target className="h-5 w-5 text-blue-600" />
+                <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Target className="h-5 w-5 text-primary" />
                 </div>
                 <h3 className="font-semibold">ICP Targeting</h3>
               </div>
@@ -223,7 +223,7 @@ export function CampaignRequestForm() {
               {/* Contact Information */}
               <div>
                 <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                  <Users className="h-5 w-5 text-blue-600" />
+                  <Users className="h-5 w-5 text-primary" />
                   Contact Information
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -291,7 +291,7 @@ export function CampaignRequestForm() {
               {/* ICP Details */}
               <div>
                 <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                  <Target className="h-5 w-5 text-blue-600" />
+                  <Target className="h-5 w-5 text-primary" />
                   Ideal Customer Profile (ICP)
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -374,7 +374,7 @@ export function CampaignRequestForm() {
               {/* Campaign Goals */}
               <div>
                 <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                  <Mail className="h-5 w-5 text-blue-600" />
+                  <Mail className="h-5 w-5 text-primary" />
                   Campaign Goals & Budget
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -473,7 +473,7 @@ export function CampaignRequestForm() {
               {/* Value Proposition */}
               <div>
                 <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                  <Sparkles className="h-5 w-5 text-blue-600" />
+                  <Sparkles className="h-5 w-5 text-primary" />
                   Your Value Proposition
                 </h3>
                 <div className="space-y-4">

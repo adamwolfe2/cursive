@@ -185,7 +185,7 @@ export function LeadDetailClient({ initialLead }: LeadDetailClientProps) {
                           href={`https://${lead.company_domain}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-sm text-blue-600 hover:underline flex items-center gap-1"
+                          className="text-sm text-primary hover:underline flex items-center gap-1"
                         >
                           {lead.company_domain}
                           <ExternalLink className="h-3 w-3" />
@@ -216,19 +216,19 @@ export function LeadDetailClient({ initialLead }: LeadDetailClientProps) {
                 <TabsList className="w-full justify-start rounded-none border-b bg-transparent p-0">
                   <TabsTrigger
                     value="overview"
-                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-blue-600 data-[state=active]:bg-transparent"
+                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent"
                   >
                     Overview
                   </TabsTrigger>
                   <TabsTrigger
                     value="activity"
-                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-blue-600 data-[state=active]:bg-transparent"
+                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent"
                   >
                     Activity
                   </TabsTrigger>
                   <TabsTrigger
                     value="notes"
-                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-blue-600 data-[state=active]:bg-transparent"
+                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent"
                   >
                     Notes
                   </TabsTrigger>
@@ -245,7 +245,7 @@ export function LeadDetailClient({ initialLead }: LeadDetailClientProps) {
                           <Mail className="h-4 w-4 text-gray-400" />
                           <a
                             href={`mailto:${lead.email}`}
-                            className="text-sm text-blue-600 hover:underline"
+                            className="text-sm text-primary hover:underline"
                           >
                             {lead.email}
                           </a>
@@ -342,8 +342,8 @@ export function LeadDetailClient({ initialLead }: LeadDetailClientProps) {
                 <div className="bg-white rounded-lg border border-gray-200 p-6">
                   <h3 className="text-sm font-medium text-gray-900 mb-4">Assigned To</h3>
                   <div className="flex items-center gap-3">
-                    <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
-                      <User className="h-4 w-4 text-blue-600" />
+                    <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                      <User className="h-4 w-4 text-primary" />
                     </div>
                     <div>
                       <div className="text-sm font-medium text-gray-900">

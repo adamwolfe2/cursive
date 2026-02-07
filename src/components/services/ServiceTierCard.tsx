@@ -44,13 +44,13 @@ export function ServiceTierCard({ tier, featured = false }: ServiceTierCardProps
     <div
       className={`relative bg-white rounded-xl border-2 transition-all hover:shadow-lg ${
         featured
-          ? 'border-blue-500 shadow-lg'
-          : 'border-zinc-200 hover:border-blue-300'
+          ? 'border-primary shadow-lg'
+          : 'border-zinc-200 hover:border-primary/60'
       }`}
     >
       {featured && (
         <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-          <span className="inline-block px-4 py-1 bg-blue-500 text-white text-sm font-semibold rounded-full">
+          <span className="inline-block px-4 py-1 bg-primary text-white text-sm font-semibold rounded-full">
             Most Popular
           </span>
         </div>
@@ -93,7 +93,7 @@ export function ServiceTierCard({ tier, featured = false }: ServiceTierCardProps
           {tier.qualification_required ? (
             <Link
               href="/services/contact"
-              className="block w-full text-center px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
+              className="block w-full text-center px-4 py-3 bg-primary hover:bg-primary/90 text-white font-medium rounded-lg transition-colors"
               onClick={() => trackCTAClick(tier.slug, 'services_hub', 'Contact Sales', {
                 tier_name: tier.name,
                 tier_price: tier.monthly_price_min
@@ -106,7 +106,7 @@ export function ServiceTierCard({ tier, featured = false }: ServiceTierCardProps
               href={`/services/${tier.slug}`}
               className={`block w-full text-center px-4 py-3 font-medium rounded-lg transition-colors ${
                 featured
-                  ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                  ? 'bg-primary hover:bg-primary/90 text-white'
                   : 'bg-zinc-900 hover:bg-zinc-800 text-white'
               }`}
               onClick={() => trackCTAClick(tier.slug, 'services_hub', 'Get Started', {
@@ -136,7 +136,7 @@ export function ServiceTierCard({ tier, featured = false }: ServiceTierCardProps
           {features.length > 6 && (
             <Link
               href={`/services/${tier.slug}`}
-              className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 font-medium mt-4"
+              className="flex items-center gap-1 text-sm text-primary hover:text-primary/90 font-medium mt-4"
             >
               See all features
               <ArrowRight className="h-4 w-4" />

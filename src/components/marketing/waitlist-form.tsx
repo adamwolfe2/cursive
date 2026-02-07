@@ -101,8 +101,8 @@ export function WaitlistForm({ source = 'website', onSuccess }: WaitlistFormProp
   if (submitSuccess) {
     return (
       <div className="text-center py-8">
-        <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 mb-4">
-          <svg className="w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 mb-4">
+          <svg className="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
           </svg>
         </div>
@@ -134,7 +134,7 @@ export function WaitlistForm({ source = 'website', onSuccess }: WaitlistFormProp
             type="text"
             autoComplete="given-name"
             inputMode="text"
-            className={`w-full min-h-[44px] px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+            className={`w-full min-h-[44px] px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent ${
               errors.first_name ? 'border-red-300' : 'border-zinc-300'
             }`}
             {...register('first_name')}
@@ -153,7 +153,7 @@ export function WaitlistForm({ source = 'website', onSuccess }: WaitlistFormProp
             type="text"
             autoComplete="family-name"
             inputMode="text"
-            className={`w-full min-h-[44px] px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+            className={`w-full min-h-[44px] px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent ${
               errors.last_name ? 'border-red-300' : 'border-zinc-300'
             }`}
             {...register('last_name')}
@@ -173,7 +173,7 @@ export function WaitlistForm({ source = 'website', onSuccess }: WaitlistFormProp
           type="email"
           autoComplete="email"
           inputMode="email"
-          className={`w-full min-h-[44px] px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+          className={`w-full min-h-[44px] px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent ${
             errors.email ? 'border-red-300' : 'border-zinc-300'
           }`}
           {...register('email')}
@@ -192,7 +192,7 @@ export function WaitlistForm({ source = 'website', onSuccess }: WaitlistFormProp
           type="text"
           inputMode="text"
           placeholder="e.g., Solar, HVAC, Insurance"
-          className="w-full min-h-[44px] px-3 py-2 text-sm border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-zinc-400"
+          className="w-full min-h-[44px] px-3 py-2 text-sm border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-zinc-400"
           {...register('industry')}
         />
       </div>
@@ -207,7 +207,7 @@ export function WaitlistForm({ source = 'website', onSuccess }: WaitlistFormProp
           inputMode="url"
           autoComplete="url"
           placeholder="https://linkedin.com/in/yourprofile"
-          className={`w-full min-h-[44px] px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-zinc-400 ${
+          className={`w-full min-h-[44px] px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-zinc-400 ${
             errors.linkedin_url ? 'border-red-300' : 'border-zinc-300'
           }`}
           {...register('linkedin_url')}
@@ -220,7 +220,7 @@ export function WaitlistForm({ source = 'website', onSuccess }: WaitlistFormProp
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full min-h-[44px] bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+        className="w-full min-h-[44px] bg-primary hover:bg-primary/90 text-white font-medium py-2.5 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
       >
         {isSubmitting ? 'Joining...' : 'Get Early Access'}
       </button>

@@ -11,6 +11,7 @@ import { Button, buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { MobileFilters } from './components/MobileFilters'
 import { BuyLeadButton } from '@/components/marketplace/BuyLeadButton'
+import { UpsellBanner } from '@/components/marketplace/UpsellBanner'
 import { getServiceLink } from '@/lib/stripe/payment-links'
 
 // Types for marketplace leads
@@ -100,6 +101,7 @@ export default function MarketplacePage() {
   const [totalLeads, setTotalLeads] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const [credits, setCredits] = useState(0)
+  const [totalSpend, setTotalSpend] = useState(0)
   const [selectedLeads, setSelectedLeads] = useState<Set<string>>(new Set())
   const [isPurchasing, setIsPurchasing] = useState(false)
   const [showSuccessMessage, setShowSuccessMessage] = useState(false)
@@ -164,6 +166,15 @@ export default function MarketplacePage() {
       }
     } catch (error) {
       console.error('Failed to fetch credits:', error)
+    }
+    try {
+      const statsRes = await fetch('/api/marketplace/stats')
+      if (statsRes.ok) {
+        const statsData = await statsRes.json()
+        setTotalSpend(statsData.totalSpent || 0)
+      }
+    } catch (error) {
+      console.error('Failed to fetch stats:', error)
     }
   }, [])
 
@@ -301,23 +312,26 @@ export default function MarketplacePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-8 py-8">
           {/* Success Message */}
           {showSuccessMessage && (
-            <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg flex items-start gap-3">
-              <svg className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="mb-6 p-4 bg-primary/5 border border-primary/20 rounded-lg flex items-start gap-3">
+              <svg className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
               <div>
-                <h3 className="text-[13px] font-medium text-blue-900">Purchase Successful!</h3>
-                <p className="text-[13px] text-blue-700 mt-1">
+                <h3 className="text-[13px] font-medium text-primary">Purchase Successful!</h3>
+                <p className="text-[13px] text-primary/90 mt-1">
                   {purchasedLeadCount} lead{purchasedLeadCount !== 1 ? 's' : ''} purchased. View them in your purchase history.
                 </p>
               </div>
-              <button onClick={() => setShowSuccessMessage(false)} className="ml-auto text-blue-600 hover:text-blue-800">
+              <button onClick={() => setShowSuccessMessage(false)} className="ml-auto text-primary hover:text-primary/80">
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
           )}
+
+          {/* Upsell Banner */}
+          <UpsellBanner creditsBalance={credits} totalSpend={totalSpend} />
 
           {/* Header */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
@@ -345,7 +359,7 @@ export default function MarketplacePage() {
               </Link>
               <Link
                 href="/marketplace/credits"
-                className="h-11 sm:h-9 px-4 text-[13px] font-medium bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-all duration-150 inline-flex items-center"
+                className="h-11 sm:h-9 px-4 text-[13px] font-medium bg-primary text-white hover:bg-primary/90 rounded-lg transition-all duration-150 inline-flex items-center"
               >
                 <span className="hidden sm:inline">Buy Credits</span>
                 <span className="sm:hidden">Buy</span>
@@ -371,7 +385,7 @@ export default function MarketplacePage() {
               </Link>
               <Link
                 href="/marketplace/credits"
-                className="h-9 px-4 text-[13px] font-medium bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-all duration-150 inline-flex items-center"
+                className="h-9 px-4 text-[13px] font-medium bg-primary text-white hover:bg-primary/90 rounded-lg transition-all duration-150 inline-flex items-center"
               >
                 Buy Credits
               </Link>
@@ -778,7 +792,7 @@ export default function MarketplacePage() {
 
               {/* Service Tier Upsell Banner */}
               {credits < 50 && (
-                <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg p-6 mb-6 text-white">
+                <div className="bg-gradient-to-r from-primary to-primary/90 rounded-lg p-6 mb-6 text-white">
                   <div className="flex flex-col sm:flex-row items-start gap-4">
                     <div className="flex-1">
                       <h3 className="text-lg font-bold mb-2">
@@ -790,7 +804,7 @@ export default function MarketplacePage() {
                       <div className="flex flex-col sm:flex-row gap-3">
                         <a
                           href={getServiceLink('data')}
-                          className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-white hover:bg-zinc-50 text-blue-600 font-medium rounded-lg transition-colors text-sm"
+                          className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-white hover:bg-zinc-50 text-primary font-medium rounded-lg transition-colors text-sm"
                         >
                           See Data Plans
                           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -908,7 +922,7 @@ export default function MarketplacePage() {
                                   {freshness.label}
                                 </span>
                                 {lead.verification_status === 'valid' && (
-                                  <span className="px-2 py-0.5 text-[11px] font-medium rounded bg-blue-100 text-blue-700">
+                                  <span className="px-2 py-0.5 text-[11px] font-medium rounded bg-primary/10 text-primary">
                                     Verified
                                   </span>
                                 )}

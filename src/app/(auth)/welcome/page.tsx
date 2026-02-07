@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 import { Building2, Upload } from 'lucide-react'
@@ -10,6 +10,9 @@ type UserRole = 'business' | 'partner' | null
 
 export default function WelcomePage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const source = searchParams.get('source')
+  const isMarketplace = source === 'marketplace'
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -183,8 +186,17 @@ export default function WelcomePage() {
         }
       }
 
-      // Success! Redirect to dashboard
-      router.push('/dashboard')
+      // Grant free credits for all new signups
+      try {
+        await fetch('/api/marketplace/credits/grant-free', { method: 'POST' })
+      } catch (creditErr) {
+        // Non-blocking - don't fail onboarding if credit grant fails
+        console.error('Failed to grant free credits:', creditErr)
+      }
+
+      // Redirect based on signup source
+      const redirectTo = isMarketplace ? '/marketplace' : '/dashboard'
+      router.push(redirectTo)
       router.refresh()
 
     } catch (err: any) {
@@ -231,9 +243,9 @@ export default function WelcomePage() {
             <div className="grid gap-4 md:grid-cols-2">
               <button
                 onClick={() => setSelectedRole('business')}
-                className="group relative overflow-hidden bg-white rounded-xl border-2 border-gray-200 p-6 text-left shadow-sm hover:shadow-lg hover:border-blue-400 transition-all"
+                className="group relative overflow-hidden bg-white rounded-xl border-2 border-gray-200 p-6 text-left shadow-sm hover:shadow-lg hover:border-primary/80 transition-all"
               >
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100 text-blue-600 mb-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary mb-4">
                   <Building2 className="h-6 w-6" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
@@ -280,7 +292,7 @@ export default function WelcomePage() {
                         required
                         value={businessName}
                         onChange={(e) => setBusinessName(e.target.value)}
-                        className="w-full rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-blue-600 sm:text-sm"
+                        className="w-full rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-primary sm:text-sm"
                         placeholder="Acme Roofing Co."
                       />
                     </div>
@@ -293,7 +305,7 @@ export default function WelcomePage() {
                         required
                         value={industry}
                         onChange={(e) => setIndustry(e.target.value)}
-                        className="w-full rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-blue-600 sm:text-sm"
+                        className="w-full rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-primary sm:text-sm"
                       >
                         <option value="">Select industry</option>
                         <option value="HVAC">HVAC</option>
@@ -344,7 +356,7 @@ export default function WelcomePage() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="flex-1 rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500 disabled:opacity-50"
+                className="flex-1 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary/90 disabled:opacity-50"
               >
                 {submitting ? 'Creating account...' : 'Get Started'}
               </button>

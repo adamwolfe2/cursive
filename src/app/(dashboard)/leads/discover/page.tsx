@@ -266,7 +266,7 @@ export default function LeadDiscoveryPage() {
             <div
               className={`h-full rounded-full transition-all ${
                 dailyRemaining === 0 ? 'bg-red-500' :
-                dailyRemaining !== null && dailyRemaining <= 5 ? 'bg-amber-500' : 'bg-blue-500'
+                dailyRemaining !== null && dailyRemaining <= 5 ? 'bg-amber-500' : 'bg-primary'
               }`}
               style={{
                 width: `${Math.min(100, ((limitsData?.dailyUsed ?? usage.dailyLeadsUsed ?? 0) / (limitsData?.dailyLimit ?? limits.dailyLeads ?? 3)) * 100)}%`
@@ -294,7 +294,7 @@ export default function LeadDiscoveryPage() {
           {(limitsData?.monthlyLimit ?? limits.monthlyLeads) ? (
             <div className="mt-2 h-1.5 bg-zinc-100 rounded-full overflow-hidden">
               <div
-                className="h-full bg-blue-500 rounded-full transition-all"
+                className="h-full bg-primary rounded-full transition-all"
                 style={{
                   width: `${Math.min(100, ((limitsData?.monthlyUsed ?? usage.monthlyLeadsUsed ?? 0) / (limitsData?.monthlyLimit ?? limits.monthlyLeads ?? 100)) * 100)}%`
                 }}
@@ -313,7 +313,7 @@ export default function LeadDiscoveryPage() {
           {canUpgrade && (
             <Link
               href="/settings/billing"
-              className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-700"
+              className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary hover:text-primary/90"
             >
               Upgrade for more leads
               <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -330,7 +330,7 @@ export default function LeadDiscoveryPage() {
             <span className="ml-1 text-sm text-zinc-500">leads found</span>
           </div>
           {searchMutation.isSuccess && (
-            <div className="mt-2 text-xs text-blue-600">
+            <div className="mt-2 text-xs text-primary">
               {searchMutation.data?.savedCount} saved to your leads
             </div>
           )}
@@ -399,7 +399,7 @@ export default function LeadDiscoveryPage() {
                 value={filters.topic}
                 onChange={(e) => setFilters(prev => ({ ...prev, topic: e.target.value }))}
                 placeholder="e.g., 'CRM software', 'marketing automation', 'hiring sales reps'"
-                className="w-full h-10 px-3 text-sm border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full h-10 px-3 text-sm border border-zinc-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
               />
               <p className="mt-1 text-xs text-zinc-500">
                 Find companies showing intent signals for this topic
@@ -422,7 +422,7 @@ export default function LeadDiscoveryPage() {
                 />
                 <button
                   onClick={addKeyword}
-                  className="px-4 h-10 text-sm font-medium text-blue-600 border border-blue-300 rounded-lg hover:bg-blue-50"
+                  className="px-4 h-10 text-sm font-medium text-primary border border-primary/30 rounded-lg hover:bg-primary/5"
                 >
                   Add
                 </button>
@@ -432,10 +432,10 @@ export default function LeadDiscoveryPage() {
                   {filters.keywords.map(keyword => (
                     <span
                       key={keyword}
-                      className="inline-flex items-center gap-1 px-2 py-1 text-sm bg-blue-100 text-blue-700 rounded-md"
+                      className="inline-flex items-center gap-1 px-2 py-1 text-sm bg-primary/10 text-primary rounded-md"
                     >
                       {keyword}
-                      <button onClick={() => removeKeyword(keyword)} className="hover:text-blue-900">
+                      <button onClick={() => removeKeyword(keyword)} className="hover:text-primary">
                         <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                         </svg>
@@ -458,8 +458,8 @@ export default function LeadDiscoveryPage() {
                     onClick={() => toggleArrayFilter('industries', industry)}
                     className={`px-3 py-1.5 text-sm rounded-full border transition-colors ${
                       filters.industries.includes(industry)
-                        ? 'bg-blue-600 text-white border-blue-600'
-                        : 'bg-white text-zinc-700 border-zinc-300 hover:border-blue-400'
+                        ? 'bg-primary text-white border-primary'
+                        : 'bg-white text-zinc-700 border-zinc-300 hover:border-primary/80'
                     }`}
                   >
                     {industry}
@@ -480,7 +480,7 @@ export default function LeadDiscoveryPage() {
                     onClick={() => toggleArrayFilter('companySizes', size.value)}
                     className={`px-3 py-1.5 text-sm rounded-full border transition-colors ${
                       filters.companySizes.includes(size.value)
-                        ? 'bg-blue-600 text-white border-blue-600'
+                        ? 'bg-primary text-white border-primary'
                         : 'bg-white text-zinc-700 border-zinc-300 hover:border-emerald-400'
                     }`}
                   >
@@ -502,8 +502,8 @@ export default function LeadDiscoveryPage() {
                     onClick={() => toggleArrayFilter('seniorityLevels', level)}
                     className={`px-3 py-1.5 text-sm rounded-full border transition-colors ${
                       filters.seniorityLevels.includes(level)
-                        ? 'bg-blue-600 text-white border-blue-600'
-                        : 'bg-white text-zinc-700 border-zinc-300 hover:border-blue-400'
+                        ? 'bg-primary text-white border-primary'
+                        : 'bg-white text-zinc-700 border-zinc-300 hover:border-primary/80'
                     }`}
                   >
                     {level}
@@ -584,7 +584,7 @@ export default function LeadDiscoveryPage() {
                 !canSearch ||
                 (!filters.topic && filters.keywords.length === 0 && filters.industries.length === 0)
               }
-              className="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {searchMutation.isPending ? (
                 <>
@@ -646,7 +646,7 @@ export default function LeadDiscoveryPage() {
                             href={`https://${lead.companyDomain}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-sm text-blue-600 hover:text-blue-700"
+                            className="text-sm text-primary hover:text-primary/90"
                           >
                             {lead.companyDomain}
                           </a>
@@ -716,7 +716,7 @@ export default function LeadDiscoveryPage() {
                   <div className="mt-2 pl-13">
                     <a
                       href={`mailto:${lead.email}`}
-                      className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700"
+                      className="inline-flex items-center gap-1 text-sm text-primary hover:text-primary/90"
                     >
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />

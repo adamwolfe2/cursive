@@ -74,8 +74,8 @@ export function CheckoutButton({
   const buttonIcon = isCalendarBooking ? Calendar : ArrowRight
 
   const variantStyles = {
-    blue: 'bg-blue-600 hover:bg-blue-700 text-white',
-    white: 'bg-white hover:bg-zinc-50 text-blue-600',
+    blue: 'bg-primary hover:bg-primary/90 text-white',
+    white: 'bg-white hover:bg-zinc-50 text-primary',
     black: 'bg-zinc-900 hover:bg-zinc-800 text-white'
   }
 

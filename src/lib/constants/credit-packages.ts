@@ -47,6 +47,15 @@ export const CREDIT_PACKAGES: CreditPackage[] = [
   },
 ]
 
+export const FREE_TRIAL_CREDITS = {
+  id: 'free_trial',
+  name: 'Free Trial',
+  credits: 100,
+  price: 0,
+  pricePerCredit: 0,
+  savings: 100,
+} as const satisfies Omit<CreditPackage, 'popular'>
+
 /**
  * Validates a credit purchase request against defined packages
  * @returns The matching package or null if invalid

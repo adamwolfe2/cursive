@@ -81,7 +81,7 @@ export default function ContactSalesPage() {
 
           <Link
             href="/dashboard"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary/90 text-white font-medium rounded-lg transition-colors"
           >
             Go to Dashboard
             <ArrowRight className="h-4 w-4" />
@@ -124,7 +124,7 @@ export default function ContactSalesPage() {
                 required
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full px-4 py-3 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                 placeholder="Your full name"
                 disabled={loading}
               />
@@ -141,7 +141,7 @@ export default function ContactSalesPage() {
                 required
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="w-full px-4 py-3 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                 placeholder="you@company.com"
                 disabled={loading}
               />
@@ -158,7 +158,7 @@ export default function ContactSalesPage() {
                 required
                 value={formData.company}
                 onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                className="w-full px-4 py-3 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                 placeholder="Acme Inc"
                 disabled={loading}
               />
@@ -174,7 +174,7 @@ export default function ContactSalesPage() {
                 type="tel"
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                className="w-full px-4 py-3 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                 placeholder="+1 (555) 123-4567"
                 disabled={loading}
               />
@@ -190,7 +190,7 @@ export default function ContactSalesPage() {
                 type="url"
                 value={formData.website}
                 onChange={(e) => setFormData({ ...formData, website: e.target.value })}
-                className="w-full px-4 py-3 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                 placeholder="https://company.com"
                 disabled={loading}
               />
@@ -206,7 +206,7 @@ export default function ContactSalesPage() {
                 required
                 value={formData.tier_slug}
                 onChange={(e) => setFormData({ ...formData, tier_slug: e.target.value })}
-                className="w-full px-4 py-3 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                 disabled={loading}
               >
                 <option value="cursive-data">Cursive Data</option>
@@ -227,7 +227,7 @@ export default function ContactSalesPage() {
                 rows={5}
                 value={formData.message}
                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                className="w-full px-4 py-3 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                className="w-full px-4 py-3 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary resize-none"
                 placeholder="Tell us about your business, target audience, and what you're looking to achieve..."
                 disabled={loading}
               />
@@ -237,7 +237,7 @@ export default function ContactSalesPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full py-4 bg-primary hover:bg-primary/90 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>

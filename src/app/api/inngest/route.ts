@@ -125,5 +125,10 @@ export const { GET, POST, PUT } = serve({
     functions.processBulkUpload,
     functions.enrichLeadFromDataShopper,
     functions.importLeadFromAudienceLabs,
+
+    // Marketplace Upsell & Onboarding
+    functions.marketplaceUpsellCheck,
+    functions.marketplaceOnboardingSequence,
+    functions.handleCustomAudienceRequest,
   ],
 })

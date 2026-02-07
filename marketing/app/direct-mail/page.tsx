@@ -10,6 +10,7 @@ import {
 } from "lucide-react"
 import { DashboardPreview } from "@/components/dashboard-preview"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
+import { Breadcrumbs } from "@/components/Breadcrumbs"
 
 export default function DirectMailPage() {
   const schemaMarkup = {
@@ -142,6 +143,12 @@ export default function DirectMailPage() {
       {/* Human View */}
       <HumanView>
         <main>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Breadcrumbs items={[
+            { name: "Home", href: "/" },
+            { name: "Direct Mail", href: "/direct-mail" },
+          ]} />
+        </div>
         {/* Hero Section */}
         <section className="pt-24 pb-20 bg-white">
           <Container>

@@ -7,6 +7,7 @@ import { StructuredData } from "@/components/seo/structured-data"
 import { generateBreadcrumbSchema } from "@/lib/seo/structured-data"
 import { DashboardPreview } from "@/components/dashboard-preview"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
+import { Breadcrumbs } from "@/components/Breadcrumbs"
 
 export default function EcommercePage() {
   return (
@@ -19,6 +20,13 @@ export default function EcommercePage() {
       {/* Human View */}
       <HumanView>
         <main>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Breadcrumbs items={[
+            { name: "Home", href: "/" },
+            { name: "Industries", href: "/industries" },
+            { name: "eCommerce", href: "/industries/ecommerce" },
+          ]} />
+        </div>
         <section className="pt-24 pb-20 bg-white">
           <Container>
             <div className="max-w-5xl mx-auto">

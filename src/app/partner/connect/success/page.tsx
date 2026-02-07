@@ -46,8 +46,8 @@ function PartnerConnectSuccessContent() {
       <div className="max-w-2xl w-full">
         {status === 'loading' && (
           <div className="text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 mb-6 bg-blue-100 rounded-full">
-              <svg className="animate-spin h-8 w-8 text-blue-600" viewBox="0 0 24 24">
+            <div className="inline-flex items-center justify-center w-16 h-16 mb-6 bg-primary/10 rounded-full">
+              <svg className="animate-spin h-8 w-8 text-primary" viewBox="0 0 24 24">
                 <circle
                   className="opacity-25"
                   cx="12"
@@ -180,8 +180,8 @@ export default function PartnerConnectSuccessPage() {
     <Suspense fallback={
       <div className="min-h-screen bg-gradient-to-b from-white to-zinc-50 flex items-center justify-center py-20 px-6">
         <div className="text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 mb-6 bg-blue-100 rounded-full">
-            <svg className="animate-spin h-8 w-8 text-blue-600" viewBox="0 0 24 24">
+          <div className="inline-flex items-center justify-center w-16 h-16 mb-6 bg-primary/10 rounded-full">
+            <svg className="animate-spin h-8 w-8 text-primary" viewBox="0 0 24 24">
               <circle
                 className="opacity-25"
                 cx="12"

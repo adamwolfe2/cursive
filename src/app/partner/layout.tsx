@@ -97,7 +97,7 @@ export default function PartnerLayout({ children }: PartnerLayoutProps) {
       >
         <div className="flex h-14 items-center border-b border-zinc-800 px-4">
           <Link href="/partner/dashboard" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-gradient-to-br from-blue-500 to-blue-600">
+            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-gradient-to-br from-primary to-primary/90">
               <span className="text-sm font-bold text-white">C</span>
             </div>
             <span className="font-semibold text-white">Partner Portal</span>

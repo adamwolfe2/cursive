@@ -576,8 +576,8 @@ export default function BillingSettingsPage() {
             >
               <Badge variant="default" className="absolute -top-2.5 right-3 text-[10px]">Popular</Badge>
               <div className="flex items-start justify-between mb-3">
-                <div className="p-2 rounded-lg bg-blue-500/10">
-                  <svg className="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div className="p-2 rounded-lg bg-primary/10">
+                  <svg className="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
                 </div>

@@ -68,12 +68,12 @@ export function ChatPanel({ workspaceId, context = 'general' }: ChatPanelProps) 
   }
 
   return (
-    <Card className="h-full flex flex-col bg-white border-blue-100">
+    <Card className="h-full flex flex-col bg-white border-primary/10">
       {/* Header */}
-      <div className="border-b border-blue-100 p-4">
+      <div className="border-b border-primary/10 p-4">
         <div className="flex items-center gap-2">
-          <div className="rounded-full bg-blue-100 p-2">
-            <Sparkles className="h-4 w-4 text-blue-600" />
+          <div className="rounded-full bg-primary/10 p-2">
+            <Sparkles className="h-4 w-4 text-primary" />
           </div>
           <div>
             <h3 className="font-semibold text-gray-900">AI Assistant</h3>
@@ -92,13 +92,13 @@ export function ChatPanel({ workspaceId, context = 'general' }: ChatPanelProps) 
             <div
               className={`max-w-[80%] rounded-lg px-4 py-2 ${
                 message.role === 'user'
-                  ? 'bg-blue-600 text-white'
+                  ? 'bg-primary text-white'
                   : 'bg-gray-100 text-gray-900'
               }`}
             >
               <p className="text-sm">{message.content}</p>
               <p className={`text-xs mt-1 ${
-                message.role === 'user' ? 'text-blue-200' : 'text-gray-500'
+                message.role === 'user' ? 'text-primary/60' : 'text-gray-500'
               }`}>
                 {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </p>
@@ -116,7 +116,7 @@ export function ChatPanel({ workspaceId, context = 'general' }: ChatPanelProps) 
       </div>
 
       {/* Input */}
-      <div className="border-t border-blue-100 p-4">
+      <div className="border-t border-primary/10 p-4">
         <div className="flex gap-2">
           <Input
             value={input}
@@ -134,7 +134,7 @@ export function ChatPanel({ workspaceId, context = 'general' }: ChatPanelProps) 
           <Button
             onClick={handleSend}
             disabled={isLoading || !input.trim()}
-            className="bg-blue-600 hover:bg-blue-700"
+            className="bg-primary hover:bg-primary/90"
             size="icon"
           >
             <Send className="h-4 w-4" />

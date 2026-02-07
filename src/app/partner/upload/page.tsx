@@ -305,7 +305,7 @@ export default function PartnerUploadPage() {
             <div
               className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium ${
                 step === s
-                  ? 'bg-blue-600 text-white'
+                  ? 'bg-primary text-white'
                   : ['upload', 'mapping', 'industry', 'processing', 'complete'].indexOf(step) > i
                   ? 'bg-green-600 text-white'
                   : 'bg-zinc-800 text-zinc-500'
@@ -374,7 +374,7 @@ export default function PartnerUploadPage() {
             </ul>
             <a
               href="/templates/lead-upload-template.csv"
-              className="mt-4 inline-flex items-center gap-2 text-sm text-blue-400 hover:text-blue-300"
+              className="mt-4 inline-flex items-center gap-2 text-sm text-primary/80 hover:text-primary/60"
             >
               <Download className="h-4 w-4" />
               Download template CSV
@@ -414,7 +414,7 @@ export default function PartnerUploadPage() {
                   <select
                     value={mapping.targetField}
                     onChange={(e) => updateMapping(index, e.target.value)}
-                    className="w-48 rounded-md border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-blue-500 focus:outline-none"
+                    className="w-48 rounded-md border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-white focus:border-primary focus:outline-none"
                   >
                     {TARGET_FIELDS.map((field) => (
                       <option key={field.value} value={field.value}>
@@ -474,7 +474,7 @@ export default function PartnerUploadPage() {
             </button>
             <button
               onClick={proceedToIndustry}
-              className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+              className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90"
             >
               Continue
               <ArrowRight className="h-4 w-4" />
@@ -499,7 +499,7 @@ export default function PartnerUploadPage() {
                   onClick={() => setSelectedIndustry(industry.id)}
                   className={`rounded-lg border p-4 text-left transition-colors ${
                     selectedIndustry === industry.id
-                      ? 'border-blue-500 bg-blue-500/10'
+                      ? 'border-primary bg-primary/10'
                       : 'border-zinc-700 hover:border-zinc-600'
                   }`}
                 >
@@ -547,7 +547,7 @@ export default function PartnerUploadPage() {
             <button
               onClick={processUpload}
               disabled={!selectedIndustry || processing}
-              className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {processing ? (
                 <>
@@ -568,7 +568,7 @@ export default function PartnerUploadPage() {
       {/* Step: Processing */}
       {step === 'processing' && (
         <div className="flex flex-col items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900 p-12">
-          <Loader2 className="h-12 w-12 animate-spin text-blue-400" />
+          <Loader2 className="h-12 w-12 animate-spin text-primary/80" />
           <p className="mt-4 text-lg font-medium text-white">Processing your upload...</p>
           <p className="mt-1 text-sm text-zinc-400">
             This may take a few moments depending on file size.
@@ -624,7 +624,7 @@ export default function PartnerUploadPage() {
               <div className="mt-4">
                 <a
                   href={uploadResult.rejectedRowsUrl}
-                  className="flex items-center gap-2 text-sm text-blue-400 hover:text-blue-300"
+                  className="flex items-center gap-2 text-sm text-primary/80 hover:text-primary/60"
                 >
                   <Download className="h-4 w-4" />
                   Download rejected rows
@@ -633,12 +633,12 @@ export default function PartnerUploadPage() {
             )}
           </div>
 
-          <div className="rounded-lg border border-blue-800/50 bg-blue-950/20 p-4">
+          <div className="rounded-lg border border-primary/30 bg-primary/5 p-4">
             <div className="flex items-start gap-3">
-              <AlertTriangle className="mt-0.5 h-5 w-5 text-blue-400" />
+              <AlertTriangle className="mt-0.5 h-5 w-5 text-primary/80" />
               <div>
-                <h4 className="font-medium text-blue-300">Email Verification</h4>
-                <p className="mt-1 text-sm text-blue-200/70">
+                <h4 className="font-medium text-primary/60">Email Verification</h4>
+                <p className="mt-1 text-sm text-primary/50">
                   Valid leads are queued for email verification. This process takes a few hours.
                   Leads will appear in the marketplace once verification completes.
                 </p>
