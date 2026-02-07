@@ -42,23 +42,8 @@ const nextConfig: NextConfig = {
     ]
   },
 
-  // Canonical URL redirects
-  async redirects() {
-    return [
-      // Redirect www to non-www
-      {
-        source: '/:path*',
-        has: [
-          {
-            type: 'host',
-            value: 'www.meetcursive.com',
-          },
-        ],
-        destination: 'https://meetcursive.com/:path*',
-        permanent: true,
-      },
-    ];
-  },
+  // Domain redirects (www → non-www) handled by Vercel domain settings
+  // to avoid conflicts with Vercel's automatic redirect behavior.
 };
 
 export default nextConfig;
