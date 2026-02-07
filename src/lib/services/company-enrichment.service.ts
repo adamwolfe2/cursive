@@ -461,7 +461,7 @@ export class CompanyEnrichmentService {
       if (logoUrl) {
         updateData.branding = {
           logo_url: logoUrl,
-          primary_color: result.data.primaryColor || '#3b82f6',
+          primary_color: result.data.primaryColor || '#007aff',
           secondary_color: '#1e40af',
         }
       }

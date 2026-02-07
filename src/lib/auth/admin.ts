@@ -178,12 +178,13 @@ export async function startImpersonation(
     })
 
     // Set cookie for client-side awareness
+    // SECURITY: Impersonation sessions limited to 1 hour max to reduce risk window
     const cookieStore = await cookies()
     cookieStore.set(IMPERSONATION_COOKIE, session.id, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 60 * 60 * 8, // 8 hours
+      maxAge: 60 * 60 * 1, // 1 hour (reduced from 8 hours for security)
       path: '/',
     })
 

@@ -74,8 +74,11 @@ export async function middleware(req: NextRequest) {
     // Check if waitlist is disabled via environment variable
     const isWaitlistDisabled = process.env.DISABLE_WAITLIST === 'true'
 
-    // Check for admin bypass cookie
-    const hasAdminBypass = req.cookies.get('admin_bypass_waitlist')?.value === 'true'
+    // Check for admin bypass cookie - ONLY in development mode
+    // SECURITY: This bypass must NEVER work in production
+    const hasAdminBypass =
+      process.env.NODE_ENV === 'development' &&
+      req.cookies.get('admin_bypass_waitlist')?.value === 'true'
 
     // Admin-only routes
     const isAdminRoute = pathname.startsWith('/admin')

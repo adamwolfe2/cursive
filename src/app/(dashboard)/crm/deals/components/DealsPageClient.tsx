@@ -38,7 +38,7 @@ export function DealsPageClient({ initialData }: DealsPageClientProps) {
 
     return {
       boardColumns: [
-        { id: 'qualified', title: 'Qualified', color: '#3B82F6', count: qualifiedDeals.length },
+        { id: 'qualified', title: 'Qualified', color: '#007AFF', count: qualifiedDeals.length },
         { id: 'proposal', title: 'Proposal', color: '#8B5CF6', count: proposalDeals.length },
         { id: 'negotiation', title: 'Negotiation', color: '#F59E0B', count: negotiationDeals.length },
         { id: 'closedWon', title: 'Closed Won', color: '#10B981', count: closedWonDeals.length },

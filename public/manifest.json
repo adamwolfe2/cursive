@@ -1,6 +1,6 @@
 {
-  "name": "LeadMe - Lead Generation Platform",
-  "short_name": "LeadMe",
+  "name": "Cursive - Lead Generation Platform",
+  "short_name": "Cursive",
   "description": "AI-powered lead generation and management platform",
   "start_url": "/dashboard",
   "display": "standalone",

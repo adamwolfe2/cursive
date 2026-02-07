@@ -79,6 +79,14 @@ function randomDate(daysAgo: number): string {
 
 export async function POST(request: NextRequest) {
   try {
+    // SECURITY: Seed data endpoint must never run in production
+    if (process.env.NODE_ENV === 'production') {
+      return NextResponse.json(
+        { error: 'Not found' },
+        { status: 404 }
+      )
+    }
+
     // 1. Check admin authorization (throws if not admin)
     await requireAdmin()
 

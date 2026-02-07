@@ -103,7 +103,7 @@ export function useLeadStatusBreakdown() {
 
   // Define status colors matching your existing design
   const statusColors: Record<string, string> = {
-    new: '#3b82f6', // blue-500
+    new: '#007aff', // cursive blue
     contacted: '#8b5cf6', // violet-500
     qualified: '#10b981', // emerald-500
     negotiation: '#f59e0b', // amber-500
@@ -116,7 +116,7 @@ export function useLeadStatusBreakdown() {
     ? Object.entries(data.statusBreakdown).map(([name, value]) => ({
         name: name.charAt(0).toUpperCase() + name.slice(1),
         value: value as number,
-        color: statusColors[name] || '#3b82f6',
+        color: statusColors[name] || '#007aff',
       }))
     : []
 

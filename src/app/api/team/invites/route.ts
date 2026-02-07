@@ -111,13 +111,13 @@ export async function POST(request: NextRequest) {
 
     try {
       await getResend().emails.send({
-        from: 'LeadMe <noreply@leadme.app>',
+        from: 'Cursive <noreply@meetcursive.com>',
         to: email,
-        subject: `You've been invited to join ${workspace?.name || 'a workspace'} on LeadMe`,
+        subject: `You've been invited to join ${workspace?.name || 'a workspace'} on Cursive`,
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #059669;">You've been invited!</h2>
-            <p>${user.full_name || user.email} has invited you to join <strong>${workspace?.name || 'their workspace'}</strong> on LeadMe as a ${role}.</p>
+            <p>${user.full_name || user.email} has invited you to join <strong>${workspace?.name || 'their workspace'}</strong> on Cursive as a ${role}.</p>
             <p style="margin: 30px 0;">
               <a href="${inviteUrl}" style="background-color: #059669; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
                 Accept Invitation
@@ -128,7 +128,7 @@ export async function POST(request: NextRequest) {
             </p>
             <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;" />
             <p style="color: #9ca3af; font-size: 12px;">
-              LeadMe - Lead Generation Platform
+              Cursive - Lead Generation Platform
             </p>
           </div>
         `,

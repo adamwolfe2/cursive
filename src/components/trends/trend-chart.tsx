@@ -100,9 +100,9 @@ export function TrendChart({ data, topicName }: TrendChartProps) {
           <Line
             type="monotone"
             dataKey="volume"
-            stroke="#3b82f6"
+            stroke="#007aff"
             strokeWidth={2}
-            dot={{ fill: '#3b82f6', r: 4 }}
+            dot={{ fill: '#007aff', r: 4 }}
             activeDot={{ r: 6 }}
             name="Search Volume"
           />

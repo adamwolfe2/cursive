@@ -2,7 +2,7 @@
 
 A full-stack B2B lead generation platform that identifies companies actively researching specific topics and delivers enriched contact data with intent scoring. Built with Next.js 14, Supabase, Stripe, and Inngest.
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/adamwolfe2/leadme)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/adamwolfe2/cursive)
 
 ## 🚀 Features
 
@@ -87,8 +87,8 @@ A full-stack B2B lead generation platform that identifies companies actively res
 ### 1. Clone and Install
 
 ```bash
-git clone https://github.com/adamwolfe2/leadme.git
-cd leadme
+git clone https://github.com/adamwolfe2/cursive.git
+cd cursive
 pnpm install
 ```
 
@@ -384,7 +384,7 @@ This project is licensed under the MIT License.
 ## 📧 Support
 
 For issues and questions:
-- GitHub Issues: [Create an issue](https://github.com/adamwolfe2/leadme/issues)
+- GitHub Issues: [Create an issue](https://github.com/adamwolfe2/cursive/issues)
 - Email: support@openinfo.com
 
 ---

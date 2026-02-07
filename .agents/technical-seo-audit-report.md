@@ -549,10 +549,10 @@ export const viewport: Viewport = {
 
 ❌ **Issues:**
 
-1. **Outdated branding:** Name is "LeadMe" not "Cursive"
+1. **Outdated branding:** Name was "LeadMe" not "Cursive" (FIXED)
    ```json
-   "name": "LeadMe - Lead Generation Platform",
-   "short_name": "LeadMe",
+   "name": "Cursive - Lead Generation Platform",
+   "short_name": "Cursive",
    ```
 
 2. **Broken icon references:**
@@ -1208,7 +1208,7 @@ export const metadata = {
    - Include key benefits
 
 2. **Update PWA manifest**
-   - Change "LeadMe" to "Cursive"
+   - Change "LeadMe" to "Cursive" (DONE)
    - Verify all icon files exist
    - Test manifest validity
 

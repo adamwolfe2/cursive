@@ -1,9 +1,9 @@
-// LeadMe Service Worker
+// Cursive Service Worker
 // Handles caching, offline support, and push notifications
 
-const CACHE_NAME = 'leadme-v1'
-const STATIC_CACHE = 'leadme-static-v1'
-const DYNAMIC_CACHE = 'leadme-dynamic-v1'
+const CACHE_NAME = 'cursive-v1'
+const STATIC_CACHE = 'cursive-static-v1'
+const DYNAMIC_CACHE = 'cursive-dynamic-v1'
 
 // Assets to cache on install
 const STATIC_ASSETS = [
@@ -172,7 +172,7 @@ self.addEventListener('sync', (event) => {
 
 // Sync offline changes
 async function syncLeads() {
-  const cache = await caches.open('leadme-offline-actions')
+  const cache = await caches.open('cursive-offline-actions')
   const requests = await cache.keys()
 
   for (const request of requests) {

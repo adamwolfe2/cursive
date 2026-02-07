@@ -250,7 +250,7 @@ export function generateLeadsReport(
   )
 
   const leadsOverTime = formatForLineChart(
-    [{ label: 'Leads', points: filledTimeSeries, color: '#3b82f6' }],
+    [{ label: 'Leads', points: filledTimeSeries, color: '#007aff' }],
     dateRange.start,
     dateRange.end,
     interval

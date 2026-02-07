@@ -26,9 +26,18 @@ const bypassSchema = z.object({
 /**
  * POST /api/admin/bypass-waitlist
  * Validate admin password and set bypass cookie
+ * SECURITY: This endpoint only works in development mode
  */
 export async function POST(req: NextRequest) {
   try {
+    // SECURITY: Block this endpoint entirely in production
+    if (process.env.NODE_ENV !== 'development') {
+      return NextResponse.json(
+        { error: 'Not found' },
+        { status: 404 }
+      )
+    }
+
     // Ensure admin password is configured via environment variable
     if (!ADMIN_BYPASS_PASSWORD) {
       console.error('[Admin Bypass] ADMIN_BYPASS_PASSWORD environment variable is not set')

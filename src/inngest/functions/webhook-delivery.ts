@@ -333,7 +333,7 @@ export const sendLeadEmailNotification = inngest.createFunction(
         subject: `New Lead: ${lead.first_name} ${lead.last_name} - ${lead.company_name || 'Unknown Company'}`,
         html: `
           <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-            <div style="background: linear-gradient(135deg, #3B82F6 0%, #2563eb 100%); padding: 24px; border-radius: 12px 12px 0 0;">
+            <div style="background: linear-gradient(135deg, #007AFF 0%, #0062cc 100%); padding: 24px; border-radius: 12px 12px 0 0;">
               <h1 style="color: white; margin: 0; font-size: 20px;">New Lead Received</h1>
             </div>
 
@@ -358,7 +358,7 @@ export const sendLeadEmailNotification = inngest.createFunction(
 
               <div style="margin-top: 24px;">
                 <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://meetcursive.com'}/leads/${lead.id}"
-                   style="display: inline-block; background: linear-gradient(135deg, #3B82F6 0%, #2563eb 100%); color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 500;">
+                   style="display: inline-block; background: linear-gradient(135deg, #007AFF 0%, #0062cc 100%); color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 500;">
                   View Lead Details
                 </a>
               </div>
@@ -366,7 +366,7 @@ export const sendLeadEmailNotification = inngest.createFunction(
 
             <div style="padding: 16px; text-align: center;">
               <p style="color: #71717a; font-size: 12px; margin: 0;">
-                This email was sent by Cursive. <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://meetcursive.com'}/settings" style="color: #3B82F6;">Manage notifications</a>
+                This email was sent by Cursive. <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://meetcursive.com'}/settings" style="color: #007AFF;">Manage notifications</a>
               </p>
             </div>
           </div>

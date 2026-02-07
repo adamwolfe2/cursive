@@ -196,8 +196,8 @@ export function LeadGrowthChart({
                     x2="0"
                     y2="1"
                   >
-                    <stop offset="0%" stopColor="#3b82f6" />
-                    <stop offset="100%" stopColor="#93c5fd" />
+                    <stop offset="0%" stopColor="#007aff" />
+                    <stop offset="100%" stopColor="#66b0ff" />
                   </linearGradient>
                 </defs>
                 <Bar
@@ -239,20 +239,20 @@ export function LeadGrowthChart({
                     x2="0"
                     y2="1"
                   >
-                    <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.2} />
-                    <stop offset="100%" stopColor="#3b82f6" stopOpacity={0} />
+                    <stop offset="0%" stopColor="#007aff" stopOpacity={0.2} />
+                    <stop offset="100%" stopColor="#007aff" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <Area
                   type={smoothCurve ? 'monotone' : 'linear'}
                   dataKey="value"
-                  stroke="#3b82f6"
+                  stroke="#007aff"
                   strokeWidth={2}
                   fill="url(#leadAreaGradient)"
                   dot={false}
                   activeDot={{
                     r: 6,
-                    fill: '#3b82f6',
+                    fill: '#007aff',
                     stroke: '#fff',
                     strokeWidth: 2,
                   }}
@@ -286,12 +286,12 @@ export function LeadGrowthChart({
                 <Line
                   type={smoothCurve ? 'monotone' : 'linear'}
                   dataKey="value"
-                  stroke="#3b82f6"
+                  stroke="#007aff"
                   strokeWidth={2}
                   dot={false}
                   activeDot={{
                     r: 6,
-                    fill: '#3b82f6',
+                    fill: '#007aff',
                     stroke: '#fff',
                     strokeWidth: 2,
                   }}

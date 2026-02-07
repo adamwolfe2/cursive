@@ -1,5 +1,5 @@
 -- =============================================
--- LeadMe Quick Database Setup
+-- Cursive Quick Database Setup
 -- Run this in Supabase SQL Editor
 -- =============================================
 

@@ -37,7 +37,10 @@ export default function WelcomePage() {
         // Not authenticated - check if on waitlist domain
         const hostname = window.location.hostname
         const isWaitlistDomain = hostname === 'leads.meetcursive.com'
-        const hasAdminBypass = document.cookie.includes('admin_bypass_waitlist=true')
+        // SECURITY: Admin bypass cookie only checked in development mode
+        const hasAdminBypass =
+          process.env.NODE_ENV === 'development' &&
+          document.cookie.includes('admin_bypass_waitlist=true')
 
         if (isWaitlistDomain && !hasAdminBypass) {
           router.push('/waitlist')

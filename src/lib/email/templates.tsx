@@ -247,7 +247,7 @@ interface CalloutProps {
 
 export function Callout({ children, variant = 'info' }: CalloutProps) {
   const variantStyles: Record<string, React.CSSProperties> = {
-    info: { backgroundColor: '#eff6ff', borderColor: '#3b82f6' },
+    info: { backgroundColor: '#e5f2ff', borderColor: '#007aff' },
     success: { backgroundColor: '#f0fdf4', borderColor: '#22c55e' },
     warning: { backgroundColor: '#fffbeb', borderColor: '#f59e0b' },
     error: { backgroundColor: '#fef2f2', borderColor: '#ef4444' },

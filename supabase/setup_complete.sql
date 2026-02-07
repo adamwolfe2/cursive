@@ -1,5 +1,5 @@
 -- ============================================================================
--- LeadMe Platform - Complete Database Setup
+-- Cursive Platform - Complete Database Setup
 -- Run this in Supabase SQL Editor (supabase.com -> Your Project -> SQL Editor)
 -- ============================================================================
 
@@ -688,7 +688,7 @@ ON CONFLICT (topic) DO NOTHING;
 
 -- Seed admin workspace (your master workspace)
 INSERT INTO workspaces (id, slug, name, industry_vertical, allowed_industries, allowed_regions) VALUES
-  ('00000000-0000-0000-0000-000000000001', 'leadme-admin', 'LeadMe Admin', 'Platform Admin',
+  ('00000000-0000-0000-0000-000000000001', 'cursive-admin', 'Cursive Admin', 'Platform Admin',
    ARRAY['HVAC', 'Roofing', 'Plumbing', 'Electrical', 'Solar', 'Real Estate', 'Insurance', 'Home Services', 'Landscaping', 'Pest Control', 'Cleaning Services', 'Auto Services', 'Legal Services', 'Financial Services', 'Healthcare'],
    ARRAY['AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'])
 ON CONFLICT (slug) DO NOTHING;
