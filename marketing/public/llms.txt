@@ -1,266 +1,299 @@
 # Cursive
 
-> AI-powered B2B lead generation platform that identifies anonymous website visitors and automates multi-channel outreach
-
-## Company Overview
-
-Cursive is an AI-powered lead generation and outbound automation platform built for B2B companies. We help businesses identify anonymous website visitors, build intent-based audiences, and activate multi-channel campaigns—all while AI agents handle the heavy lifting 24/7.
-
-**Website**: https://meetcursive.com
-**Founded**: 2025
-**Mission**: Build AI intent systems that never sleep—helping B2B companies identify, engage, and convert prospects at scale.
-
-## What We Do
-
-Cursive transforms anonymous website traffic into qualified leads through five core capabilities:
-
-1. **Visitor Identification** - Reveal up to 70% of anonymous website visitors in real-time
-2. **Audience Building** - Access 220M+ consumer and 140M+ business profiles with intent data
-3. **Intent Audiences** - Pre-built segments across 8 high-value verticals with purchase intent signals
-4. **Direct Mail Automation** - Trigger physical postcards based on digital behavior
-5. **AI Studio** - Train AI agents on your brand voice for automated outreach
-
-## Product Descriptions
-
-### Visitor Identification
-
-**What it does**: Identifies anonymous website visitors at the company and individual level in real-time.
-
-**Key features**:
-- 70% visitor identification rate for B2B traffic
-- Real-time identification (not batch processing)
-- Page-level tracking showing exactly what each visitor viewed
-- Return visitor detection across multiple sessions
-- Engagement scoring and behavioral analytics
-
-**Who it's for**: Sales teams who need to know which companies are researching their product before they fill out a form. Marketers who want to retarget anonymous visitors with relevant ads. Customer success teams looking to identify churning customers revisiting pricing pages.
-
-**How it works**: Install a lightweight pixel on your website. Cursive identifies visitors within seconds and enriches them with company data, contact information, and engagement history.
-
-### Audience Builder
-
-**What it does**: Build unlimited custom audiences using 220M+ consumer profiles, 140M+ business profiles, and 450B+ monthly intent signals.
-
-**Key features**:
-- Access to 220M+ consumer and 140M+ business profiles
-- No size limits or restrictive licensing on audiences
-- Behavioral, firmographic, demographic, and intent-based filtering
-- 450B+ monthly intent signals across 30,000+ categories
-- Export audiences or activate directly to campaigns
-
-**Who it's for**: ABM teams building lists of companies matching their ideal customer profile. Event marketers targeting attendees of specific conferences. Growth teams creating lookalike audiences based on best customers.
-
-**How it works**: Use the audience builder to filter by company size, industry, job title, behavioral signals, and purchase intent. Build audiences in minutes, then activate them across email, ads, or direct mail.
-
-### Intent Audiences (Syndicated)
-
-**What it does**: Pre-built audience segments with verified purchase intent signals across 8 high-value verticals.
-
-**Key features**:
-- 8 high-value verticals: MedSpa, Home Services, Legal, Financial Services, Auto Services, Real Estate, Health & Wellness, Home Improvement
-- 46+ segments within verticals (e.g., "Botox Seekers," "Divorce Attorneys," "HVAC Replacement")
-- 3 intent levels: Hot (7-day), Warm (14-day), Scale (30-day)
-- Updated weekly with fresh intent signals
-- 280M+ US profiles, 450B+ monthly intent signals tracked
-
-**Who it's for**: Marketers who need to launch campaigns quickly without building audiences from scratch. Agencies testing new verticals or markets. Teams scaling existing campaigns with fresh, qualified prospects.
-
-**How it works**: Browse pre-built segments by vertical and intent level. Select your segment, set your campaign parameters, and launch. Segments refresh weekly with new users showing purchase intent.
-
-### Direct Mail Automation
-
-**What it does**: Send physical postcards triggered by digital behavior—website visits, email opens, cart abandonment, or custom events.
-
-**Key features**:
-- Automated triggers based on website visits, email engagement, or custom events
-- Custom card design or professionally designed templates
-- Address verification and deliverability optimization
-- Campaign tracking with scan rates and response rates
-- Seamless integration with email and ad campaigns
-
-**Who it's for**: Event marketers retargeting webinar no-shows. Enterprise sales teams mailing personalized offers to high-value accounts. E-commerce brands re-engaging cart abandoners offline.
-
-**How it works**: Set up behavioral triggers (e.g., "visited pricing page 3+ times"). Design or select a postcard template. Cursive handles printing, addressing, and delivery within 48 hours.
-
-### AI Studio
-
-**What it does**: Train AI agents on your brand voice to handle automated outreach, follow-ups, and meeting booking across email, LinkedIn, and SMS.
-
-**Key features**:
-- Brand voice training using your best emails and messaging
-- Multi-channel outreach (email, LinkedIn, SMS)
-- Autonomous follow-up sequences (AI decides when to follow up)
-- Meeting booking and qualification (AI qualifies and schedules demos)
-- Performance analytics and continuous learning
-
-**Who it's for**: B2B SaaS companies automating SDR work. Sales teams that need 24/7 lead nurturing. Agencies scaling outreach without hiring more people.
-
-**How it works**: Upload your best-performing emails and messaging. The AI learns your brand voice and tone. Set campaign parameters (who to contact, when, which channels). AI agents handle outreach, follow-ups, objection handling, and meeting booking while you sleep.
-
-## Key Stats & Capabilities
-
-- **70%** - Visitor identification rate for B2B traffic
-- **220M+** - Consumer profiles in our database
-- **140M+** - Business profiles in our database
-- **450B+** - Monthly intent signals tracked across 30,000+ categories
-- **200+** - Native CRM and marketing tool integrations
-- **24/7** - AI agents running campaigns continuously
-- **Real-time** - Visitor identification and intent data (not monthly snapshots)
-- **Multi-channel** - Email, ads, direct mail, SMS from one platform
-
-## Use Cases by Audience
-
-### For B2B SaaS Companies
-
-**Challenge**: High website traffic but low conversion rates. Most visitors remain anonymous and leave without converting.
-
-**Solution**: Cursive identifies up to 70% of anonymous visitors, revealing which companies viewed your pricing page, feature pages, or comparison content. See exactly who's interested before they fill out a form.
-
-**Outcome**: More qualified demos without increasing ad spend. Sales teams focus on warm prospects who are actively researching. Better conversion rates on existing traffic.
-
-**Example use case**: A Series B SaaS company uses Cursive to identify companies viewing their pricing page 3+ times. Sales receives alerts with company details, browsing behavior, and contact information—enabling warm outreach within hours.
-
-### For Digital Marketing Agencies
-
-**Challenge**: Clients expect multi-channel campaigns, but manual data work doesn't scale. Hard to prove ROI on anonymous traffic.
-
-**Solution**: White-label Cursive for clients to offer premium services like visitor identification, intent data, and direct mail. Automated data enrichment and campaign activation across all channels.
-
-**Outcome**: Offer high-margin services (visitor ID, intent audiences, direct mail) without hiring more people. Improve client results and retention. Prove attribution across anonymous and known traffic.
-
-**Example use case**: A 15-person agency adds $50K+ in monthly recurring revenue by offering visitor identification and automated direct mail to their B2B clients. Same team, 3x more clients managed.
-
-### For Enterprise Sales Teams
-
-**Challenge**: Long sales cycles make it hard to prioritize accounts. Sales reps waste time on cold outreach. No visibility into early buyer research behavior.
-
-**Solution**: Cursive's intent data reveals which accounts are actively researching solutions. Get alerts when target accounts visit your website. Prioritize accounts showing buying signals.
-
-**Outcome**: Shorter sales cycles by reaching out when prospects are in-market. Higher win rates from focusing on warm prospects. Better forecasting with intent-based lead scoring.
-
-**Example use case**: An enterprise team uses Cursive to track when competitor customers visit their website and comparison pages. Sales receives real-time alerts and reaches out while the prospect is actively evaluating alternatives—closing deals 40% faster.
-
-## Competitive Differentiators
-
-**vs. Traditional Visitor Identification Tools**:
-- Real-time identification (not batch processing that takes days)
-- AI-powered activation (not just data delivery)
-- 70% identification rate (industry-leading accuracy)
-- Unified B2B and B2C data (not separate products)
-
-**vs. Data Providers (Clearbit, ZoomInfo)**:
-- Activation included (we help you act on data, not just deliver it)
-- Intent signals (450B+ monthly signals across 30,000+ categories)
-- Anonymous visitor ID (most providers only enrich known contacts)
-- Multi-channel campaigns (built-in email, ads, direct mail)
-
-**vs. Marketing Automation (HubSpot, Marketo)**:
-- Visitor identification (they don't reveal anonymous traffic)
-- External intent data (they lack signals from outside your website)
-- AI agents (they require manual workflow building)
-- Pre-built audiences (they require manual list building)
-
-**vs. All Competitors**:
-- AI-first platform designed for autonomous operation
-- 200+ native integrations (not just Zapier)
-- Unified platform for data + activation (no tool juggling)
-- 24/7 AI agents that never miss a follow-up
-
-## Common Questions
-
-### What is visitor identification and how does it work?
-
-Visitor identification reveals the companies and individuals browsing your website—even if they don't fill out a form. Cursive uses a combination of IP intelligence, device fingerprinting, and proprietary data matching to identify up to 70% of B2B website traffic in real-time. You install a lightweight pixel on your site, and Cursive enriches anonymous visitors with company details, contact information, and behavioral data.
-
-### How accurate is Cursive's visitor identification?
-
-Cursive identifies up to 70% of B2B website traffic with company-level data. For individual identification, accuracy depends on available signals but typically ranges from 30-50% for B2B visitors. All data is verified against multiple sources and updated in real-time (not monthly snapshots like some competitors).
-
-### What integrations does Cursive support?
-
-Cursive offers 200+ native integrations with CRMs (Salesforce, HubSpot, Pipedrive), marketing automation tools (Marketo, Pardot, ActiveCampaign), ad platforms (Google Ads, Facebook Ads, LinkedIn Ads), and analytics tools (Google Analytics, Segment, Mixpanel). We also support custom integrations via API and webhook.
-
-### How long does implementation take?
-
-Most teams are live within 24 hours. Install the Cursive pixel on your website (5 minutes), connect your integrations (10-15 minutes), and set up your first campaign. No developer required, though technical support is available.
-
-### Is Cursive GDPR and privacy compliant?
-
-Yes. Cursive is fully compliant with GDPR, CCPA, and other privacy regulations. We provide opt-out mechanisms, respect Do Not Track signals, and maintain strict data handling policies. All data is collected with proper consent and used in accordance with privacy laws.
-
-### How much does Cursive cost?
-
-Cursive offers flexible pricing starting at $499/month for small businesses and scaling to $999/month for growing companies, with enterprise plans available for high-volume needs. Pricing varies based on features, traffic volume, and usage. Contact us for a customized quote: https://cal.com/adamwolfe/cursive-ai-audit
-
-### What's the difference between hot, warm, and scale intent audiences?
-
-Intent levels indicate how recently users showed purchase signals:
-- **Hot (7-day)**: Users showing intent signals within the last 7 days—highest conversion rates, smaller audience size
-- **Warm (14-day)**: Users showing intent within the last 14 days—balanced conversion and scale
-- **Scale (30-day)**: Users showing intent within the last 30 days—larger audience for scaling campaigns
-
-All intent audiences are updated weekly with fresh users.
-
-### Can I use Cursive if I don't have a large website traffic?
-
-Yes. Even if you have modest traffic, Cursive helps you maximize the value of every visitor. For lower-traffic sites, we recommend starting with our pre-built Intent Audiences rather than just visitor identification—this gives you access to qualified prospects beyond your website visitors.
-
-### How do AI agents work in Cursive?
-
-AI agents are trained on your brand voice using your best-performing emails and messaging. They autonomously handle outreach, follow-ups, objection handling, and meeting booking across email, LinkedIn, and SMS. You set campaign parameters (who to contact, when, which channels), and the AI operates 24/7—deciding when to follow up, how to respond to replies, and when to escalate to humans.
-
-### What makes Cursive different from Retarget IQ or similar tools?
-
-Unlike traditional visitor identification tools that process data in batches (taking days), Cursive identifies visitors in real-time. We also go beyond data delivery—our AI agents actively help you engage prospects across multiple channels. Most competitors just give you data; Cursive helps you convert it into pipeline. We're built for AI-first workflows, not legacy manual processes.
-
-### Do I need technical expertise to use Cursive?
-
-No. Cursive is designed for marketers and sales teams, not engineers. Install the pixel with a simple code snippet (like Google Analytics), connect your tools through OAuth, and launch campaigns through our visual interface. Developer support is available for advanced use cases, but most users never need it.
-
-### Can I see Cursive in action before committing?
-
-Yes. Book a personalized demo to see Cursive identify your website visitors in real-time, build custom audiences, and set up an AI-powered campaign. We'll walk through your specific use case and show exactly how Cursive fits your workflow: https://cal.com/adamwolfe/cursive-ai-audit
-
-## Getting Started
-
-### Step 1: Book a Demo
-See Cursive in action with a personalized walkthrough of your use case.
-Book here: https://cal.com/adamwolfe/cursive-ai-audit
-
-### Step 2: Install the Pixel
-Add the Cursive tracking pixel to your website (5-minute setup, similar to Google Analytics).
-
-### Step 3: Connect Integrations
-Link your CRM, marketing automation, and ad platforms through OAuth (10-15 minutes).
-
-### Step 4: Launch Your First Campaign
-Choose from visitor identification, audience building, intent audiences, direct mail, or AI Studio. Most teams start with visitor identification to see immediate value.
-
-### Step 5: Scale with AI
-Once you see results, expand to AI-powered outreach, multi-channel campaigns, and advanced intent audiences.
-
-**Support**: Our team provides onboarding, training, and ongoing support. Most customers are live and seeing identified visitors within 24 hours.
-
-## Contact Information
-
-**Website**: https://meetcursive.com
-**Email**: hello@meetcursive.com
-**Demo Booking**: https://cal.com/adamwolfe/cursive-ai-audit
-**LinkedIn**: https://linkedin.com/company/cursive
-**Twitter**: https://twitter.com/meetcursive
-
-**Team**: Available for technical onboarding, strategy calls, and ongoing optimization support.
-
-## Resources
-
-- **Platform Overview**: https://meetcursive.com/platform
-- **Pricing**: https://meetcursive.com/pricing
-- **Blog & Guides**: https://meetcursive.com/blog
-- **Privacy Policy**: https://meetcursive.com/privacy
-- **Terms of Service**: https://meetcursive.com/terms
+> AI-powered B2B lead generation platform that identifies anonymous website visitors, builds intent-based audiences, and automates multi-channel outreach.
+
+Website: https://meetcursive.com
+Founded: 2025
+Domain: meetcursive.com
+Self-Serve Marketplace: https://leads.meetcursive.com
 
 ---
 
-**Last Updated**: 2026-02-04
+## About Cursive
+
+Cursive is an AI-powered lead generation and outbound automation platform built for B2B companies. We help businesses identify anonymous website visitors, enrich contact data with 220M+ consumer and 140M+ business profiles, and activate multi-channel campaigns with AI agents that run 24/7. Cursive was founded because existing lead data providers delivered outdated contacts, generic emails, and no personalization -- so we built verified data, AI-powered outreach, and done-for-you campaigns that actually work.
+
+- **About Page**: https://meetcursive.com/about
+
+---
+
+## Core Pages
+
+- **Homepage**: https://meetcursive.com — Turn anonymous visitors into qualified leads with AI-powered visitor identification and outbound automation.
+- **Platform Overview**: https://meetcursive.com/platform — Explore the tools behind the results: AI Studio, visitor identification, audience builder, direct mail, and 200+ integrations.
+- **Pricing**: https://meetcursive.com/pricing — Flexible pricing for self-serve marketplace credits and done-for-you managed services.
+- **Services**: https://meetcursive.com/services — Done-for-you lead generation services including Data, Outbound, and Pipeline tiers.
+- **Free Audit**: https://meetcursive.com/free-audit — Get a free visitor audit with your last 100 identified visitors, intent scores, and personalized outreach templates delivered in 24 hours.
+- **Contact**: https://meetcursive.com/contact — Get in touch with the Cursive team.
+- **Marketplace**: https://meetcursive.com/marketplace — Self-serve B2B lead marketplace with credit-based pricing starting at $0.60/lead.
+- **Venture Studio**: https://meetcursive.com/venture-studio — Cursive's venture studio offering for startups: dedicated growth team, custom integrations, weekly strategy, and full pipeline management.
+
+---
+
+## Core Features
+
+### Visitor Identification
+https://meetcursive.com/visitor-identification
+Identify up to 70% of anonymous website visitors at the company and individual level in real-time. Get company names, decision-maker contacts, pages viewed, and engagement scores without waiting for form fills.
+
+### Cursive Pixel
+https://meetcursive.com/pixel
+Done-for-you website visitor tracking pixel. Install in minutes, identify anonymous visitors, get company names, decision-maker contacts, pages viewed, and intent scores. Setup in 48 hours.
+
+### Audience Builder
+https://meetcursive.com/audience-builder
+Build unlimited custom audiences using 220M+ consumer profiles, 140M+ business profiles, and 450B+ monthly intent signals. Filter by firmographic, demographic, behavioral, and intent-based criteria.
+
+### Intent Audiences
+https://meetcursive.com/intent-audiences
+Pre-built audience segments with verified purchase intent signals across 8 high-value verticals. Three intent levels (Hot 7-day, Warm 14-day, Scale 30-day) updated weekly.
+
+### Direct Mail Automation
+https://meetcursive.com/direct-mail
+Send physical postcards triggered by digital behavior -- website visits, email opens, cart abandonment, or custom events. Printing, addressing, and delivery within 48 hours.
+
+### Data Access
+https://meetcursive.com/data-access
+Direct access to 220M+ consumer profiles and 140M+ business profiles. Query, filter, and export verified contact data on demand via API, bulk exports, or real-time lookups.
+
+### Custom Audiences
+https://meetcursive.com/custom-audiences
+Request a custom-built audience list tailored to your ICP. Specify industry, company size, seniority, and desired volume, and receive verified contacts.
+
+### Integrations Hub
+https://meetcursive.com/integrations
+200+ native integrations with CRMs, marketing automation tools, ad platforms, analytics tools, and more. Connect your entire stack in minutes.
+
+---
+
+## Self-Serve Marketplace
+
+Access the self-serve B2B lead marketplace at https://leads.meetcursive.com
+
+Credit-based pricing:
+- **Starter**: 100 credits — $99 ($0.99/credit)
+- **Growth**: 500 credits — $399 ($0.80/credit)
+- **Scale**: 1,000 credits — $699 ($0.70/credit)
+- **Enterprise**: 5,000 credits — $2,999 ($0.60/credit)
+
+Filter leads by industry, seniority, intent signals, company size, and more. All contacts are verified with 95%+ email deliverability.
+
+---
+
+## Done-For-You Services
+
+### Cursive Data — $1,000/month
+https://meetcursive.com/services
+Verified B2B contacts delivered monthly. Custom targeting based on your ICP with 95%+ email deliverability, ready to import into your CRM.
+
+### Cursive Outbound — $2,500/month
+https://meetcursive.com/services
+Done-for-you email campaigns with AI-powered personalization. We build, launch, and optimize campaigns using your brand voice. You just close the meetings.
+
+### Cursive Pipeline — $5,000/month
+https://meetcursive.com/services
+Full-stack AI SDR solution. Your AI team that never sleeps -- researches, writes, sends, follows up, and books meetings automatically across email, LinkedIn, and SMS.
+
+---
+
+## Educational Content
+
+These pages explain key concepts in B2B lead generation and marketing automation:
+
+- **What Is Website Visitor Identification?**: https://meetcursive.com/what-is-website-visitor-identification — How visitor identification technology works, its benefits, and how businesses use it to convert anonymous traffic.
+- **What Is B2B Intent Data?**: https://meetcursive.com/what-is-b2b-intent-data — Understanding first-party and third-party intent signals, how they're collected, and how to use them for targeting.
+- **What Is an AI SDR?**: https://meetcursive.com/what-is-ai-sdr — How AI sales development representatives automate outreach, follow-ups, and meeting booking across channels.
+- **What Is Lead Enrichment?**: https://meetcursive.com/what-is-lead-enrichment — The process of appending verified company and contact data to raw leads for better targeting and personalization.
+- **What Is Direct Mail Automation?**: https://meetcursive.com/what-is-direct-mail-automation — How behavior-triggered physical mail campaigns work and their role in multi-channel marketing.
+- **What Is Visitor Deanonymization?**: https://meetcursive.com/what-is-visitor-deanonymization — Technical overview of how anonymous website visitors are matched to known identities and company records.
+- **What Is Account-Based Marketing?**: https://meetcursive.com/what-is-account-based-marketing — ABM strategy explained: targeting high-value accounts with personalized, multi-channel campaigns.
+
+---
+
+## Competitor Comparisons
+
+### Alternative Guides
+- **Clearbit Alternatives Comparison**: https://meetcursive.com/blog/clearbit-alternatives-comparison
+- **RB2B Alternative**: https://meetcursive.com/blog/rb2b-alternative
+- **Leadfeeder Alternative**: https://meetcursive.com/blog/leadfeeder-alternative
+- **Demandbase Alternative**: https://meetcursive.com/blog/demandbase-alternative
+- **Instantly Alternative**: https://meetcursive.com/blog/instantly-alternative
+- **Smartlead Alternative**: https://meetcursive.com/blog/smartlead-alternative
+- **Clay Alternative**: https://meetcursive.com/blog/clay-alternative
+
+### Head-to-Head Comparisons
+- **Cursive vs RB2B**: https://meetcursive.com/blog/cursive-vs-rb2b
+- **Cursive vs Leadfeeder**: https://meetcursive.com/blog/cursive-vs-leadfeeder
+- **Cursive vs Clearbit**: https://meetcursive.com/blog/cursive-vs-clearbit
+- **Cursive vs Instantly**: https://meetcursive.com/blog/cursive-vs-instantly
+- **Cursive vs Demandbase**: https://meetcursive.com/blog/cursive-vs-demandbase
+- **Cursive vs Apollo**: https://meetcursive.com/blog/cursive-vs-apollo
+- **Warmly vs Cursive**: https://meetcursive.com/blog/warmly-vs-cursive-comparison
+- **Apollo vs Cursive**: https://meetcursive.com/blog/apollo-vs-cursive-comparison
+- **6sense vs Cursive**: https://meetcursive.com/blog/6sense-vs-cursive-comparison
+- **ZoomInfo vs Cursive**: https://meetcursive.com/blog/zoominfo-vs-cursive-comparison
+
+---
+
+## Industries
+
+Cursive serves these verticals with industry-specific solutions:
+
+- **B2B Software**: https://meetcursive.com/industries/b2b-software — Visitor identification and intent data for SaaS companies to convert anonymous trial and pricing page visitors.
+- **Agencies**: https://meetcursive.com/industries/agencies — White-label Cursive for clients to offer visitor identification, intent data, and managed outbound services.
+- **eCommerce**: https://meetcursive.com/industries/ecommerce — Identify anonymous shoppers, retarget cart abandoners, and trigger direct mail based on browsing behavior.
+- **Financial Services**: https://meetcursive.com/industries/financial-services — Compliant lead generation and intent audiences for financial advisors, lenders, and insurance providers.
+- **Education**: https://meetcursive.com/industries/education — Identify prospective students and decision-makers researching programs with intent-based targeting.
+- **Home Services**: https://meetcursive.com/industries/home-services — Reach homeowners actively searching for HVAC, plumbing, roofing, and other home improvement services.
+- **Franchises**: https://meetcursive.com/industries/franchises — Multi-location lead generation with centralized campaign management and local targeting.
+- **Retail**: https://meetcursive.com/industries/retail — Identify in-market shoppers and drive foot traffic with intent data and direct mail automation.
+- **Media & Advertising**: https://meetcursive.com/industries/media-advertising — Audience intelligence and intent data for media buyers, publishers, and advertising agencies.
+
+---
+
+## Integrations
+
+Cursive natively integrates with 200+ tools. Full integrations hub: https://meetcursive.com/integrations
+
+### CRM Platforms
+- **Salesforce**: https://meetcursive.com/integrations/salesforce
+- **HubSpot**: https://meetcursive.com/integrations/hubspot
+- **Pipedrive**: https://meetcursive.com/integrations/pipedrive
+- **Zoho CRM**: https://meetcursive.com/integrations/zoho-crm
+- **Close**: https://meetcursive.com/integrations/close
+- **Copper**: https://meetcursive.com/integrations/copper
+- **Freshsales**: https://meetcursive.com/integrations/freshsales
+
+### Marketing Automation
+- **Mailchimp**: https://meetcursive.com/integrations/mailchimp
+- **ActiveCampaign**: https://meetcursive.com/integrations/activecampaign
+- **Marketo**: https://meetcursive.com/integrations/marketo
+- **Klaviyo**: https://meetcursive.com/integrations/klaviyo
+- **Brevo**: https://meetcursive.com/integrations/brevo
+
+### Sales Engagement
+- **Outreach**: https://meetcursive.com/integrations/outreach
+- **Salesloft**: https://meetcursive.com/integrations/salesloft
+- **Apollo**: https://meetcursive.com/integrations/apollo
+- **Reply.io**: https://meetcursive.com/integrations/reply-io
+- **Lemlist**: https://meetcursive.com/integrations/lemlist
+
+### Communication
+- **Slack**: https://meetcursive.com/integrations/slack
+- **Microsoft Teams**: https://meetcursive.com/integrations/microsoft-teams
+- **Discord**: https://meetcursive.com/integrations/discord
+
+### Automation & Workflow
+- **Zapier**: https://meetcursive.com/integrations/zapier
+- **Make**: https://meetcursive.com/integrations/make
+- **n8n**: https://meetcursive.com/integrations/n8n
+- **Tray.io**: https://meetcursive.com/integrations/tray-io
+- **Clay**: https://meetcursive.com/integrations/clay
+
+### Data Enrichment
+- **ZoomInfo**: https://meetcursive.com/integrations/zoominfo
+- **Lusha**: https://meetcursive.com/integrations/lusha
+- **Clearbit**: https://meetcursive.com/integrations/clearbit
+
+### Advertising Platforms
+- **Google Ads**: https://meetcursive.com/integrations/google-ads
+- **Meta Ads**: https://meetcursive.com/integrations/meta-ads
+- **LinkedIn Ads**: https://meetcursive.com/integrations/linkedin-ads
+
+### Analytics
+- **Google Analytics**: https://meetcursive.com/integrations/google-analytics
+- **Segment**: https://meetcursive.com/integrations/segment
+- **Mixpanel**: https://meetcursive.com/integrations/mixpanel
+- **Amplitude**: https://meetcursive.com/integrations/amplitude
+
+### Spreadsheets & Databases
+- **Google Sheets**: https://meetcursive.com/integrations/google-sheets
+- **Airtable**: https://meetcursive.com/integrations/airtable
+- **Excel**: https://meetcursive.com/integrations/excel
+- **Notion**: https://meetcursive.com/integrations/notion
+
+### Data Warehouses
+- **Snowflake**: https://meetcursive.com/integrations/snowflake
+- **BigQuery**: https://meetcursive.com/integrations/bigquery
+- **Redshift**: https://meetcursive.com/integrations/redshift
+
+### Project Management
+- **Asana**: https://meetcursive.com/integrations/asana
+- **Monday**: https://meetcursive.com/integrations/monday
+- **Jira**: https://meetcursive.com/integrations/jira
+- **ClickUp**: https://meetcursive.com/integrations/clickup
+
+### Other Tools
+- **Intercom**: https://meetcursive.com/integrations/intercom
+- **Calendly**: https://meetcursive.com/integrations/calendly
+- **Typeform**: https://meetcursive.com/integrations/typeform
+- **GoHighLevel**: https://meetcursive.com/integrations/gohighlevel
+
+---
+
+## Blog & Guides
+
+### Strategy & Tactics
+- **AI SDR vs Human BDR**: https://meetcursive.com/blog/ai-sdr-vs-human-bdr — Comparing AI-powered sales development reps to traditional human BDRs: cost, speed, personalization, and results.
+- **Cold Email in 2026**: https://meetcursive.com/blog/cold-email-2026 — Updated strategies for cold email outreach that still works in 2026 with deliverability best practices.
+- **Scaling Outbound**: https://meetcursive.com/blog/scaling-outbound — How to scale outbound sales without proportionally scaling headcount using automation and AI.
+- **ICP Targeting Guide**: https://meetcursive.com/blog/icp-targeting-guide — Step-by-step guide to defining and targeting your ideal customer profile for B2B outbound.
+
+### Technical Guides
+- **How to Identify Website Visitors (Technical Guide)**: https://meetcursive.com/blog/how-to-identify-website-visitors-technical-guide — Deep technical overview of visitor identification methods including IP intelligence, device fingerprinting, and data matching.
+
+### Topic Deep Dives
+- **Visitor Tracking**: https://meetcursive.com/blog/visitor-tracking — Best practices for tracking and analyzing website visitor behavior to improve conversion.
+- **Audience Targeting**: https://meetcursive.com/blog/audience-targeting — How to build and activate high-converting audience segments using intent and behavioral data.
+- **Data Platforms**: https://meetcursive.com/blog/data-platforms — Overview of B2B data platforms and how to choose the right one for your needs.
+- **Direct Mail**: https://meetcursive.com/blog/direct-mail — Guide to integrating direct mail into your digital marketing strategy for multi-channel impact.
+- **CRM Integration**: https://meetcursive.com/blog/crm-integration — How to connect visitor identification and intent data directly into your CRM workflow.
+- **Retargeting**: https://meetcursive.com/blog/retargeting — Advanced retargeting strategies using first-party visitor data and intent signals.
+- **Analytics**: https://meetcursive.com/blog/analytics — Measuring and optimizing lead generation performance with visitor identification analytics.
+- **Lead Generation**: https://meetcursive.com/blog/lead-generation — Comprehensive guide to modern B2B lead generation strategies and tools.
+
+---
+
+## Key Statistics
+
+- **70%** visitor identification rate for B2B traffic
+- **220M+** consumer profiles in the database
+- **140M+** business profiles in the database
+- **450B+** monthly intent signals tracked across 30,000+ categories
+- **200+** native CRM and marketing tool integrations
+- **95%+** email deliverability on verified contacts
+- **24/7** AI agents running campaigns continuously
+- **48-hour** direct mail delivery turnaround
+- **24-hour** free audit results delivery
+
+---
+
+## Pricing Summary
+
+### Self-Serve Marketplace (leads.meetcursive.com)
+Credit-based, starting at $99 for 100 leads. Volume discounts down to $0.60/lead at enterprise tier.
+
+### Managed Services
+- **Cursive Data**: $1,000/month — Monthly verified B2B contacts custom-targeted to your ICP.
+- **Cursive Outbound**: $2,500/month — Done-for-you email campaigns with AI personalization and infrastructure setup.
+- **Cursive Pipeline**: $5,000/month — Full-stack AI SDR with multi-channel campaigns, unlimited enrichment, and dedicated success manager.
+
+### Custom / Enterprise
+Contact for custom pricing: https://cal.com/adamwolfe/cursive-ai-audit
+
+---
+
+## Contact Information
+
+- **Website**: https://meetcursive.com
+- **Email**: hello@meetcursive.com
+- **Demo Booking**: https://cal.com/adamwolfe/cursive-ai-audit
+- **Free Audit**: https://meetcursive.com/free-audit
+- **LinkedIn**: https://linkedin.com/company/cursive
+- **Twitter**: https://twitter.com/meetcursive
+
+---
+
+**Last Updated**: 2026-02-06
 **Format**: llms.txt (optimized for AI discovery and citation)
-**Learn more**: https://llmstxt.org
+**Learn more about llms.txt**: https://llmstxt.org
