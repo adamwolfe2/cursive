@@ -5,6 +5,7 @@ import { Calendar, Clock, ArrowLeft, ArrowRight, TrendingUp, Check, X } from "lu
 import { generateMetadata } from "@/lib/seo/metadata"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateFAQSchema } from "@/lib/seo/faq-schema"
+import { generateBlogPostSchema } from "@/lib/seo/structured-data"
 import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
 import Link from "next/link"
 
@@ -53,6 +54,7 @@ export default function LeadGenerationPage() {
   return (
     <main>
       <StructuredData data={generateFAQSchema({ faqs })} />
+      <StructuredData data={generateBlogPostSchema({ title: "B2B Lead Generation: Intent-Based Strategies That Build Pipeline (2026)", description: "Proven B2B lead generation strategies that prioritize intent over volume. Learn how to build predictable pipeline using visitor identification, intent data, and multi-channel outreach.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://meetcursive.com/cursive-logo.png" })} />
 
       {/* Breadcrumb */}
       <section className="py-6 bg-gray-50 border-b border-gray-200">

@@ -5,6 +5,7 @@ import { Calendar, Clock, ArrowLeft, ArrowRight, RotateCcw, Check, X } from "luc
 import { generateMetadata } from "@/lib/seo/metadata"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateFAQSchema } from "@/lib/seo/faq-schema"
+import { generateBlogPostSchema } from "@/lib/seo/structured-data"
 import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
 import Link from "next/link"
 
@@ -53,6 +54,7 @@ export default function RetargetingPage() {
   return (
     <main>
       <StructuredData data={generateFAQSchema({ faqs })} />
+      <StructuredData data={generateBlogPostSchema({ title: "B2B Retargeting: Cross-Platform Strategies Using First-Party Data (2026)", description: "Master cross-platform B2B retargeting using first-party visitor data. Build high-converting audience segments for ads, email, and direct mail without relying on third-party cookies.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://meetcursive.com/cursive-logo.png" })} />
 
       {/* Breadcrumb */}
       <section className="py-6 bg-gray-50 border-b border-gray-200">

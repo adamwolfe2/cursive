@@ -4,6 +4,7 @@ import { Calendar, Clock, ArrowLeft, Check, X } from "lucide-react"
 import { generateMetadata } from "@/lib/seo/metadata"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateFAQSchema } from "@/lib/seo/faq-schema"
+import { generateBlogPostSchema } from "@/lib/seo/structured-data"
 import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
 import Link from "next/link"
 
@@ -52,6 +53,7 @@ export default function BlogPost() {
   return (
     <main>
       <StructuredData data={generateFAQSchema({ faqs })} />
+      <StructuredData data={generateBlogPostSchema({ title: "Apollo vs Cursive: Complete Comparison (2026)", description: "Compare Apollo.io and Cursive for sales intelligence, visitor identification, and outreach automation. Discover which platform delivers better ROI for your B2B sales team.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://meetcursive.com/cursive-logo.png" })} />
 
       {/* Header */}
       <section className="py-12 bg-white">

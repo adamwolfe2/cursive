@@ -5,6 +5,7 @@ import { Calendar, Clock, ArrowLeft, ArrowRight, Workflow, Check, X } from "luci
 import { generateMetadata } from "@/lib/seo/metadata"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateFAQSchema } from "@/lib/seo/faq-schema"
+import { generateBlogPostSchema } from "@/lib/seo/structured-data"
 import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
 import Link from "next/link"
 
@@ -53,6 +54,7 @@ export default function CRMIntegrationPage() {
   return (
     <main>
       <StructuredData data={generateFAQSchema({ faqs })} />
+      <StructuredData data={generateBlogPostSchema({ title: "CRM Integration & Data Enrichment: The Complete B2B Guide (2026)", description: "Learn how to integrate your CRM with visitor identification, automate data enrichment workflows, and sync intent signals to HubSpot, Salesforce, and your entire marketing stack.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://meetcursive.com/cursive-logo.png" })} />
 
       {/* Breadcrumb */}
       <section className="py-6 bg-gray-50 border-b border-gray-200">

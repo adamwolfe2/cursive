@@ -5,6 +5,7 @@ import { Calendar, Clock, ArrowLeft, Check, X } from "lucide-react"
 import { generateMetadata } from "@/lib/seo/metadata"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateFAQSchema } from "@/lib/seo/faq-schema"
+import { generateBlogPostSchema } from "@/lib/seo/structured-data"
 import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
 import Link from "next/link"
 
@@ -65,6 +66,7 @@ export default function BlogPost() {
   return (
     <main>
       <StructuredData data={generateFAQSchema({ faqs })} />
+      <StructuredData data={generateBlogPostSchema({ title: "Demandbase Alternatives: Affordable ABM Platforms for 2026", description: "Compare affordable Demandbase alternatives for account-based marketing. Find ABM platforms with visitor identification, intent data, and AI outreach starting at a fraction of the cost.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://meetcursive.com/cursive-logo.png" })} />
 
       {/* Header */}
       <section className="py-12 bg-white">

@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button"
 import { DashboardCTA } from "@/components/dashboard-cta"
 import { Calendar, Clock, ArrowLeft, ArrowRight, AlertTriangle } from "lucide-react"
 import { Metadata } from "next"
+import { StructuredData } from "@/components/seo/structured-data"
+import { generateBlogPostSchema } from "@/lib/seo/structured-data"
 import Link from "next/link"
 
 export const metadata: Metadata = {
@@ -45,6 +47,8 @@ export const metadata: Metadata = {
 export default function BlogPost() {
   return (
     <main>
+      <StructuredData data={generateBlogPostSchema({ title: "How to Scale Outbound Sales Without Hiring More SDRs", description: "Scale B2B outbound sales with automation, data, and technology. Proven strategies to 3x pipeline without increasing headcount or budget.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://meetcursive.com/cursive-logo.png" })} />
+
       {/* Header */}
       <section className="py-12 bg-white">
         <Container>

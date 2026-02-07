@@ -5,6 +5,7 @@ import { Calendar, Clock, ArrowLeft, Check, X } from "lucide-react"
 import { generateMetadata } from "@/lib/seo/metadata"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateFAQSchema } from "@/lib/seo/faq-schema"
+import { generateBlogPostSchema } from "@/lib/seo/structured-data"
 import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
 import Link from "next/link"
 
@@ -67,6 +68,7 @@ export default function BlogPost() {
   return (
     <main>
       <StructuredData data={generateFAQSchema({ faqs })} />
+      <StructuredData data={generateBlogPostSchema({ title: "Cursive vs Apollo: Visitor ID vs Prospecting Database (2026)", description: "Compare Cursive and Apollo.io for B2B sales. Apollo is a 200M+ contact prospecting database for cold outreach. Cursive identifies YOUR website visitors and automates warm, personalized outreach. Different approaches, complementary tools.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://meetcursive.com/cursive-logo.png" })} />
 
       {/* Header */}
       <section className="py-12 bg-white">

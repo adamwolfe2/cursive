@@ -6,6 +6,7 @@ import { Calendar, Clock, ArrowLeft, ArrowRight, Check, X } from "lucide-react"
 import { generateMetadata } from '@/lib/seo/metadata'
 import { StructuredData } from '@/components/seo/structured-data'
 import { generateFAQSchema } from '@/lib/seo/faq-schema'
+import { generateBlogPostSchema } from "@/lib/seo/structured-data"
 import { SimpleRelatedPosts } from '@/components/blog/simple-related-posts'
 import Link from "next/link"
 
@@ -67,6 +68,7 @@ export default function WarmlyVsCursiveComparison() {
     <main>
       {/* FAQ Schema Markup */}
       <StructuredData data={generateFAQSchema({ faqs })} />
+      <StructuredData data={generateBlogPostSchema({ title: "Warmly vs Cursive Comparison: Which Intent Platform is Right for You?", description: "Compare Warmly and Cursive side-by-side. See how these two intent-based platforms differ in features, pricing, use cases, and ROI. Detailed analysis for B2B teams.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://meetcursive.com/cursive-logo.png" })} />
 
       {/* Header */}
       <section className="py-12 bg-white">

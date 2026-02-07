@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button"
 import { DashboardCTA } from "@/components/dashboard-cta"
 import { Calendar, Clock, ArrowLeft, ArrowRight } from "lucide-react"
 import { Metadata } from "next"
+import { StructuredData } from "@/components/seo/structured-data"
+import { generateBlogPostSchema } from "@/lib/seo/structured-data"
 import Link from "next/link"
 
 export const metadata: Metadata = {
@@ -45,6 +47,8 @@ export const metadata: Metadata = {
 export default function BlogPost() {
   return (
     <main>
+      <StructuredData data={generateBlogPostSchema({ title: "AI SDR vs Human BDR: When to Use Each for B2B Sales", description: "Compare AI SDRs and human BDRs for outbound sales. Learn when to use automation vs human touch, cost analysis, and hybrid strategies for maximum ROI.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://meetcursive.com/cursive-logo.png" })} />
+
       {/* Header */}
       <section className="py-12 bg-white">
         <Container>
