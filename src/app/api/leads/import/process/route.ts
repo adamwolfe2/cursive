@@ -9,6 +9,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { leadDataProcessor, type ProcessedLead } from '@/lib/services/lead-data-processor.service'
 import { geocodingService } from '@/lib/services/geocoding.service'
+import { inngest } from '@/inngest/client'
 import { z } from 'zod'
 
 const importProcessSchema = z.object({
@@ -157,6 +158,25 @@ export async function POST(req: NextRequest) {
     if (options?.geocode && insertedIds.length > 0) {
       // This would typically be done via a background job
       // For now, we'll just note it in the response
+    }
+
+    // Emit lead/created events for all inserted leads (non-blocking)
+    if (insertedIds.length > 0) {
+      try {
+        const events = insertedIds.map((leadId) => ({
+          name: 'lead/created' as const,
+          data: {
+            lead_id: leadId,
+            workspace_id: workspaceId,
+            source: options?.source || 'csv_import',
+          },
+        }))
+        inngest.send(events).catch((err: unknown) => {
+          console.error('[Import Process] Failed to emit lead/created events:', err)
+        })
+      } catch {
+        // Best-effort: don't fail import if event emission fails
+      }
     }
 
     return NextResponse.json({

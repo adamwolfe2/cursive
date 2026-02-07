@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { requireAdmin } from '@/lib/auth/admin'
+import { inngest } from '@/inngest/client'
 import { parse } from 'csv-parse/sync'
 
 // Industry mapping
@@ -119,6 +120,9 @@ export async function POST(request: NextRequest) {
       routing_summary: {} as Record<string, number>,
     }
 
+    // Track created leads for event emission
+    const createdLeads: Array<{ id: string; workspace_id: string }> = []
+
     for (let i = 0; i < records.length; i++) {
       const row = records[i]
       const rowNum = i + 2 // Account for header row
@@ -168,7 +172,7 @@ export async function POST(request: NextRequest) {
         const leadScore = calculateLeadScore(row)
 
         // Insert lead
-        const { error: insertError } = await supabase.from('leads').insert({
+        const { data: insertedLead, error: insertError } = await supabase.from('leads').insert({
           workspace_id: matchingWorkspace.id,
           first_name: row.first_name,
           last_name: row.last_name,
@@ -191,7 +195,7 @@ export async function POST(request: NextRequest) {
           utm_campaign: row.utm_campaign || null,
           enrichment_status: 'pending',
           delivery_status: 'pending',
-        } as any)
+        } as any).select('id').single()
 
         if (insertError) {
           results.errors.push(`Row ${rowNum}: ${insertError.message}`)
@@ -200,6 +204,9 @@ export async function POST(request: NextRequest) {
         }
 
         results.successful++
+        if (insertedLead) {
+          createdLeads.push({ id: insertedLead.id, workspace_id: matchingWorkspace.id })
+        }
 
         // Track routing summary
         const workspaceName = matchingWorkspace.name
@@ -209,6 +216,25 @@ export async function POST(request: NextRequest) {
         console.error('[Bulk Upload] Row error:', e)
         results.errors.push(`Row ${rowNum}: Failed to process`)
         results.failed++
+      }
+    }
+
+    // Emit lead/created events for all uploaded leads (non-blocking)
+    if (createdLeads.length > 0) {
+      try {
+        const events = createdLeads.map((lead) => ({
+          name: 'lead/created' as const,
+          data: {
+            lead_id: lead.id,
+            workspace_id: lead.workspace_id,
+            source: source,
+          },
+        }))
+        inngest.send(events).catch((err: unknown) => {
+          console.error('[Admin Bulk Upload] Failed to emit lead/created events:', err)
+        })
+      } catch {
+        // Best-effort: don't fail upload if event emission fails
       }
     }
 

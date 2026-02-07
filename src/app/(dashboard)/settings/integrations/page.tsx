@@ -7,6 +7,8 @@ import Image from 'next/image'
 import { useToast } from '@/lib/hooks/use-toast'
 import { SlackIntegration } from '@/components/integrations/slack-integration'
 import { ZapierIntegration } from '@/components/integrations/zapier-integration'
+import { SalesforceIntegration } from '@/components/integrations/salesforce-integration'
+import { GoogleSheetsIntegration } from '@/components/integrations/google-sheets-integration'
 
 // CRM connection response type (matches /api/crm/connections)
 interface CrmConnection {
@@ -17,7 +19,7 @@ interface CrmConnection {
   connectedAt: string | null
 }
 
-// CRM platform configuration
+// CRM platform configuration (HubSpot uses setup modal; Salesforce & Google Sheets have dedicated components)
 const CRM_PLATFORMS = [
   {
     name: 'HubSpot',
@@ -33,38 +35,6 @@ const CRM_PLATFORMS = [
       'Once configured, Cursive will automatically sync leads to HubSpot when you export.',
     ],
     docsUrl: 'https://developers.hubspot.com/docs/api/private-apps',
-  },
-  {
-    name: 'Salesforce',
-    key: 'salesforce',
-    providerKey: 'salesforce',
-    description: 'Sync leads directly to Salesforce CRM',
-    color: 'blue',
-    setupSteps: [
-      'Create a Connected App in Salesforce Setup > App Manager > New Connected App.',
-      'Enable OAuth settings with scopes: api, refresh_token, offline_access.',
-      'Set the callback URL to your Cursive deployment URL + /api/crm/auth/salesforce/callback.',
-      'Copy the Consumer Key and Consumer Secret.',
-      'Add SALESFORCE_CLIENT_ID and SALESFORCE_CLIENT_SECRET to your environment variables.',
-      'Store your access and refresh tokens in the crm_connections table via the Supabase dashboard.',
-    ],
-    docsUrl: 'https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/',
-  },
-  {
-    name: 'Google Sheets',
-    key: 'google-sheets',
-    providerKey: 'google_sheets',
-    description: 'Export leads to Google Sheets spreadsheets',
-    color: 'green',
-    setupSteps: [
-      'Create a project in Google Cloud Console and enable the Google Sheets API and Google Drive API.',
-      'Create OAuth 2.0 credentials (Web application type).',
-      'Set the authorized redirect URI to your Cursive deployment URL + /api/crm/auth/google-sheets/callback.',
-      'Copy the Client ID and Client Secret.',
-      'Add GOOGLE_SHEETS_CLIENT_ID and GOOGLE_SHEETS_CLIENT_SECRET to your environment variables.',
-      'Store your access and refresh tokens in the crm_connections table via the Supabase dashboard.',
-    ],
-    docsUrl: 'https://developers.google.com/sheets/api/guides/concepts',
   },
 ] as const
 
@@ -383,10 +353,22 @@ export default function IntegrationsPage() {
         </div>
       </div>
 
-      {/* Primary Integrations */}
-      <div className="grid gap-6 md:grid-cols-2">
-        <SlackIntegration user={user} isPro={isPro} />
-        <ZapierIntegration user={user} isPro={isPro} />
+      {/* Notifications & Automation */}
+      <div>
+        <h2 className="text-lg font-semibold text-zinc-900 mb-4">Notifications & Automation</h2>
+        <div className="grid gap-6 md:grid-cols-2">
+          <SlackIntegration user={user} isPro={isPro} />
+          <ZapierIntegration user={user} isPro={isPro} />
+        </div>
+      </div>
+
+      {/* CRM Integrations - Dedicated Components */}
+      <div>
+        <h2 className="text-lg font-semibold text-zinc-900 mb-4">CRM Integrations</h2>
+        <div className="grid gap-6 md:grid-cols-2">
+          <SalesforceIntegration workspaceId={user?.workspace_id ?? ''} isPro={isPro} />
+          <GoogleSheetsIntegration workspaceId={user?.workspace_id ?? ''} isPro={isPro} />
+        </div>
       </div>
 
       {/* Custom Webhooks */}
@@ -577,13 +559,13 @@ export default function IntegrationsPage() {
         )}
       </div>
 
-      {/* CRM Integrations */}
+      {/* Additional CRM Connections (HubSpot / GHL) */}
       <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
         <div className="flex items-start justify-between mb-6">
           <div>
-            <h2 className="text-lg font-semibold text-zinc-900">CRM Integrations</h2>
+            <h2 className="text-lg font-semibold text-zinc-900">Additional CRM Connections</h2>
             <p className="text-sm text-zinc-500 mt-1">
-              Export and sync your leads with external CRM platforms and spreadsheets.
+              Connect additional CRM platforms using API keys and manual configuration.
             </p>
           </div>
           {!isPro && (

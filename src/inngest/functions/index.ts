@@ -115,6 +115,9 @@ export {
   sendLeadEmailNotification,
 } from './webhook-delivery'
 
+// Lead notifications (Slack & Zapier)
+export { sendLeadNotifications } from './lead-notifications'
+
 // Website scraping
 export { scrapeWebsite } from './website-scraper'
 

@@ -93,6 +93,9 @@ export const { GET, POST, PUT } = serve({
     functions.retryWebhookDeliveries,
     functions.sendLeadEmailNotification,
 
+    // Lead Notifications (Slack & Zapier)
+    functions.sendLeadNotifications,
+
     // Website Scraping
     functions.scrapeWebsite,
 

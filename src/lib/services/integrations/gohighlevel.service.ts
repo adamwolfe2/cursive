@@ -44,6 +44,7 @@ export interface GhlConnection {
   accessToken: string
   refreshToken: string
   tokenExpiresAt: Date
+  metadata?: Record<string, any>
 }
 
 // ============================================================================
@@ -126,11 +127,12 @@ async function refreshGhlToken(
     // Update tokens in database
     const supabase = await createClient()
     await supabase
-      .from('ghl_connections')
+      .from('crm_connections')
       .update({
-        access_token_encrypted: data.access_token,
-        refresh_token_encrypted: data.refresh_token,
+        access_token: data.access_token,
+        refresh_token: data.refresh_token,
         token_expires_at: new Date(Date.now() + data.expires_in * 1000).toISOString(),
+        updated_at: new Date().toISOString(),
       })
       .eq('id', connection.id)
 
@@ -150,21 +152,36 @@ export async function getGhlConnection(workspaceId: string): Promise<GhlConnecti
   const supabase = await createClient()
 
   const { data } = await supabase
-    .from('ghl_connections')
-    .select('*')
+    .from('crm_connections')
+    .select('id, access_token, refresh_token, token_expires_at, metadata')
     .eq('workspace_id', workspaceId)
-    .eq('is_active', true)
+    .eq('provider', 'gohighlevel')
     .single()
 
-  if (!data) return null
+  // Cast: crm_connections table may not be in generated DB types
+  const connection = data as {
+    id: string
+    access_token: string
+    refresh_token: string | null
+    token_expires_at: string | null
+    metadata: Record<string, any> | null
+  } | null
+
+  if (!connection) return null
+
+  // location_id is stored in the metadata JSONB column
+  const locationId = connection.metadata?.location_id || ''
 
   return {
-    id: data.id,
-    workspaceId: data.workspace_id,
-    locationId: data.location_id,
-    accessToken: data.access_token_encrypted,
-    refreshToken: data.refresh_token_encrypted,
-    tokenExpiresAt: new Date(data.token_expires_at),
+    id: connection.id,
+    workspaceId,
+    locationId,
+    accessToken: connection.access_token,
+    refreshToken: connection.refresh_token || '',
+    tokenExpiresAt: connection.token_expires_at
+      ? new Date(connection.token_expires_at)
+      : new Date(0),
+    metadata: connection.metadata || undefined,
   }
 }
 

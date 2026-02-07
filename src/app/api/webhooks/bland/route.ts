@@ -321,12 +321,14 @@ export async function POST(req: NextRequest) {
 
     // Log activity
     if (metadata?.workspace_id && metadata?.lead_id) {
-      await supabase.from('activity_logs').insert({
+      await supabase.from('audit_logs').insert({
         workspace_id: metadata.workspace_id,
-        lead_id: metadata.lead_id,
-        activity_type: 'voice_call',
-        description: `Voice call ${status}: ${outcome}`,
+        action: 'voice_call',
+        resource_type: 'lead',
+        severity: 'info',
         metadata: {
+          lead_id: metadata.lead_id,
+          description: `Voice call ${status}: ${outcome}`,
           call_id,
           duration: payload.duration_seconds,
           sentiment: payload.sentiment,

@@ -5,6 +5,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { CRMLeadRepository } from '@/lib/repositories/crm-lead.repository'
+import { inngest } from '@/inngest/client'
 import { z } from 'zod'
 
 // Use edge runtime
@@ -54,6 +55,22 @@ export async function POST(req: NextRequest) {
       status: validated.status,
       created_at: new Date().toISOString(),
     })
+
+    // Emit lead/created event for notifications (non-blocking)
+    try {
+      inngest.send({
+        name: 'lead/created',
+        data: {
+          lead_id: lead.id,
+          workspace_id: user.workspace_id,
+          source: validated.source,
+        },
+      }).catch((err: unknown) => {
+        console.error('[Create Lead] Failed to emit lead/created event:', err)
+      })
+    } catch {
+      // Best-effort: don't fail lead creation if event emission fails
+    }
 
     return NextResponse.json({ success: true, lead })
   } catch (error) {

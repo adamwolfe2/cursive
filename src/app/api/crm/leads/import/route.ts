@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { CRMLeadRepository } from '@/lib/repositories/crm-lead.repository'
+import { inngest } from '@/inngest/client'
 import { z } from 'zod'
 
 // Use edge runtime for better performance
@@ -91,6 +92,7 @@ export async function POST(req: NextRequest) {
     // Validate and import leads
     const leadRepo = new CRMLeadRepository()
     const results: { success: boolean; row: number; error?: string }[] = []
+    const createdLeadIds: string[] = []
 
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i]
@@ -100,7 +102,7 @@ export async function POST(req: NextRequest) {
         const validatedData = leadSchema.parse(row)
 
         // Create lead with full tracking
-        await leadRepo.create({
+        const lead = await leadRepo.create({
           workspace_id: user.workspace_id,
           uploaded_by_user_id: user.id,
           upload_batch_id: uploadBatchId,
@@ -120,6 +122,7 @@ export async function POST(req: NextRequest) {
           created_at: new Date().toISOString(),
         })
 
+        createdLeadIds.push(lead.id)
         results.push({ success: true, row: i + 2 }) // +2 for header and 0-index
       } catch (error) {
         const errorMsg = error instanceof z.ZodError
@@ -133,6 +136,25 @@ export async function POST(req: NextRequest) {
           row: i + 2,
           error: errorMsg,
         })
+      }
+    }
+
+    // Emit lead/created events for all imported leads (non-blocking)
+    if (createdLeadIds.length > 0) {
+      try {
+        const events = createdLeadIds.map((leadId) => ({
+          name: 'lead/created' as const,
+          data: {
+            lead_id: leadId,
+            workspace_id: user.workspace_id,
+            source: 'import',
+          },
+        }))
+        inngest.send(events).catch((err: unknown) => {
+          console.error('[Lead Import] Failed to emit lead/created events:', err)
+        })
+      } catch {
+        // Best-effort: don't fail import if event emission fails
       }
     }
 
