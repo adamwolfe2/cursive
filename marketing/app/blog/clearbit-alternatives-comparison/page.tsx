@@ -935,25 +935,44 @@ export default function BlogPost() {
         description="Try Cursive for real-time visitor identification and intent-based outreach. Start identifying your website visitors and converting them into qualified leads."
       />
 
-      {/* Related Posts */}
+      {/* Related Comparisons */}
       <section className="py-16 bg-gradient-to-br from-gray-50 to-blue-50">
         <Container>
           <div className="max-w-5xl mx-auto">
             <SimpleRelatedPosts posts={[
               {
-                title: "Warmly vs Cursive Comparison",
-                description: "Compare these two intent-based platforms side-by-side",
-                href: "/blog/warmly-vs-cursive-comparison"
+                title: "Apollo.io Alternatives: 7 Competitors Compared",
+                description: "Find the best Apollo.io alternative for your sales team in 2026",
+                href: "/blog/apollo-alternatives-comparison"
+              },
+              {
+                title: "ZoomInfo Alternatives: 8 Cheaper Options",
+                description: "Affordable alternatives to ZoomInfo for B2B prospecting",
+                href: "/blog/zoominfo-alternatives-comparison"
+              },
+              {
+                title: "6sense Alternatives: 7 Competitors Compared",
+                description: "Intent data and ABM platforms compared for 2026",
+                href: "/blog/6sense-alternatives-comparison"
+              }
+            ]} />
+          </div>
+          <div className="max-w-5xl mx-auto mt-8">
+            <SimpleRelatedPosts posts={[
+              {
+                title: "Warmly Alternatives: 7 Competitors Compared",
+                description: "Visitor identification and intent platforms compared",
+                href: "/blog/warmly-alternatives-comparison"
+              },
+              {
+                title: "Cursive vs Clearbit: Head-to-Head",
+                description: "Detailed side-by-side comparison of Cursive and Clearbit",
+                href: "/blog/cursive-vs-clearbit"
               },
               {
                 title: "How to Identify Website Visitors",
                 description: "Technical guide to visitor identification methods",
                 href: "/blog/how-to-identify-website-visitors-technical-guide"
-              },
-              {
-                title: "Perfect ICP Targeting",
-                description: "5-step framework for better lead quality",
-                href: "/blog/icp-targeting-guide"
               }
             ]} />
           </div>

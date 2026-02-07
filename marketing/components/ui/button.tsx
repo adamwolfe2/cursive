@@ -74,7 +74,7 @@ export function Button({
         target={target}
         rel={isExternal ? "noopener noreferrer" : rel}
         className={cn(buttonVariants({ variant, size, className }))}
-        onClick={handleClick as any}
+        onClick={handleClick as React.MouseEventHandler<HTMLAnchorElement>}
       >
         {children}
       </Link>

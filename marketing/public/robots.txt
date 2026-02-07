@@ -5,8 +5,9 @@
 User-agent: *
 Allow: /
 
-# Block test/admin pages
+# Block test/admin/internal pages
 Disallow: /popup-test
+Disallow: /clean-room
 Disallow: /api/
 Disallow: /admin/
 Disallow: /_next/

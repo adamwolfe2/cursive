@@ -3,18 +3,18 @@ import { integrations } from '@/lib/integrations-data'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://meetcursive.com'
-  const currentDate = new Date()
+  const lastModified = new Date('2026-02-07')
 
-  // Core pages - highest priority, frequent updates
+  // Core pages - highest priority
   const corePages = [
-    { url: '', priority: 1.0, changefreq: 'daily' as const },
+    { url: '', priority: 1.0, changefreq: 'weekly' as const },
     { url: '/platform', priority: 0.9, changefreq: 'weekly' as const },
     { url: '/pricing', priority: 0.9, changefreq: 'weekly' as const },
     { url: '/free-audit', priority: 0.9, changefreq: 'weekly' as const },
     { url: '/marketplace', priority: 0.9, changefreq: 'weekly' as const },
   ]
 
-  // Feature pages - high priority
+  // Feature pages - main feature/product pages
   const featurePages = [
     '/visitor-identification',
     '/audience-builder',
@@ -24,11 +24,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/intent-audiences',
   ].map(url => ({
     url,
-    priority: 0.8,
+    priority: 0.9,
     changefreq: 'weekly' as const,
   }))
 
-  // Service/offer pages - high priority
+  // Service/offer pages - main feature/product pages
   const servicePages = [
     '/services',
     '/pixel',
@@ -36,11 +36,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/venture-studio',
   ].map(url => ({
     url,
-    priority: 0.8,
+    priority: 0.9,
     changefreq: 'weekly' as const,
   }))
 
-  // Industry pages - medium-high priority
+  // Industry pages
   const industryPages = [
     '/industries/b2b-software',
     '/industries/agencies',
@@ -51,13 +51,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/industries/franchises',
     '/industries/retail',
     '/industries/media-advertising',
+    '/industries/real-estate',
+    '/industries/technology',
   ].map(url => ({
     url,
-    priority: 0.7,
+    priority: 0.8,
     changefreq: 'monthly' as const,
   }))
 
-  // Educational pages - medium-high priority
+  // Educational/resource pages
   const educationalPages = [
     '/what-is-website-visitor-identification',
     '/what-is-b2b-intent-data',
@@ -68,11 +70,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/what-is-account-based-marketing',
   ].map(url => ({
     url,
-    priority: 0.7,
+    priority: 0.6,
     changefreq: 'monthly' as const,
   }))
 
-  // Secondary pages - medium priority
+  // Secondary pages
   const secondaryPages = [
     '/about',
     '/contact',
@@ -85,13 +87,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changefreq: 'monthly' as const,
   }))
 
-  // Resource hubs - medium-high priority
+  // Resource hubs
   const resourcePages = [
-    { url: '/resources', priority: 0.7, changefreq: 'weekly' as const },
+    { url: '/resources', priority: 0.6, changefreq: 'monthly' as const },
     { url: '/blog', priority: 0.7, changefreq: 'weekly' as const },
   ]
 
-  // Comparison blog posts - higher priority blog content
+  // Comparison blog posts - all blog posts at 0.7
   const comparisonBlogPosts = [
     '/blog/clearbit-alternatives-comparison',
     '/blog/rb2b-alternative',
@@ -110,13 +112,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/blog/apollo-vs-cursive-comparison',
     '/blog/6sense-vs-cursive-comparison',
     '/blog/zoominfo-vs-cursive-comparison',
+    '/blog/6sense-alternatives-comparison',
+    '/blog/apollo-alternatives-comparison',
+    '/blog/warmly-alternatives-comparison',
+    '/blog/zoominfo-alternatives-comparison',
   ].map(url => ({
     url,
     priority: 0.7,
     changefreq: 'monthly' as const,
   }))
 
-  // Other blog posts - standard priority
+  // Other blog posts
   const blogPosts = [
     '/blog/ai-sdr-vs-human-bdr',
     '/blog/cold-email-2026',
@@ -133,7 +139,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/blog/lead-generation',
   ].map(url => ({
     url,
-    priority: 0.6,
+    priority: 0.7,
     changefreq: 'monthly' as const,
   }))
 
@@ -167,7 +173,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return allPages.map(({ url, priority, changefreq }) => ({
     url: `${baseUrl}${url}`,
-    lastModified: currentDate,
+    lastModified,
     changeFrequency: changefreq,
     priority,
   }))
@@ -182,17 +188,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
  * - /clean-room - Internal page
  *
  * Priority Guidelines:
- * - 1.0: Homepage (most important)
- * - 0.9: Core product pages (platform, pricing, free-audit, marketplace)
- * - 0.8: Feature pages, service/offer pages
- * - 0.7: Industry pages, educational pages, resource hubs, comparison blog posts
- * - 0.6: Secondary pages, other blog posts, integration pages
+ * - 1.0: Homepage
+ * - 0.9: Core product pages (platform, pricing, free-audit, marketplace), feature pages, service pages
+ * - 0.8: Industry pages
+ * - 0.7: Blog posts, blog index
+ * - 0.6: Educational/resource pages, secondary pages, integration pages
  * - 0.3: Legal pages
  *
  * Change Frequency Guidelines:
- * - daily: Homepage (with dynamic content)
- * - weekly: Product pages, feature pages, service pages, resource hubs
- * - monthly: Industry pages, educational pages, blog posts, integration pages, secondary pages
+ * - weekly: Homepage, product pages, feature pages, service pages, blog index
+ * - monthly: Industry pages, educational pages, blog posts, integration pages, secondary pages, resources
  * - yearly: Legal pages
  *
  * Integration pages are dynamically generated from the integrations data module

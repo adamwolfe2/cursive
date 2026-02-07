@@ -7,13 +7,13 @@
  * Testing different CTA copy to increase demo bookings
  */
 
-import { ABTestWrapper, ABTestVariant, trackABTestConversion, useABTest } from '@/lib/ab-testing';
+import { ABTestWrapper, ABTestVariant, trackABTestConversion, useABTest, type TestVariant } from '@/lib/ab-testing';
 import { useRouter } from 'next/navigation';
 
 export default function HomepageHeroExample() {
   const router = useRouter();
 
-  const handleCTAClick = (variant: any) => {
+  const handleCTAClick = (variant: TestVariant) => {
     // Track conversion
     trackABTestConversion('homepage-hero-cta', variant.id, 'cta_clicked');
 
@@ -37,7 +37,7 @@ export default function HomepageHeroExample() {
         <ABTestWrapper
           testId="homepage-hero-cta"
           onVariantAssigned={(variant) => {
-            console.log('User assigned to variant:', variant.id);
+            // Variant assignment tracked via ABTestWrapper
           }}
         >
           {(variant) => (

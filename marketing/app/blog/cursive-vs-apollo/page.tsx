@@ -1018,6 +1018,10 @@ export default function BlogPost() {
                 <h3 className="font-bold mb-1">Cursive vs 6sense</h3>
                 <p className="text-sm text-gray-600">Enterprise ABM vs full-stack lead gen</p>
               </Link>
+              <Link href="/blog/apollo-alternatives-comparison" className="block bg-gray-50 rounded-lg p-5 border border-gray-200 hover:shadow-md hover:border-blue-400 transition-all">
+                <h3 className="font-bold mb-1">Apollo Alternatives: 7 Tools Compared</h3>
+                <p className="text-sm text-gray-600">Full roundup of the best Apollo alternatives</p>
+              </Link>
               <Link href="/blog/clearbit-alternatives-comparison" className="block bg-gray-50 rounded-lg p-5 border border-gray-200 hover:shadow-md hover:border-blue-400 transition-all">
                 <h3 className="font-bold mb-1">Clearbit Alternatives</h3>
                 <p className="text-sm text-gray-600">10 data enrichment tools compared</p>

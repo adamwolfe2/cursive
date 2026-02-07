@@ -100,8 +100,6 @@ export function ExitIntentPopupVariantB({
 
       if (onSubmit) {
         await onSubmit({ email, company })
-      } else {
-        console.log('Popup submission (Variant B):', { email, company })
       }
 
       setIsSuccess(true)

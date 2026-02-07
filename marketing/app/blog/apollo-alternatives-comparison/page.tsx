@@ -899,7 +899,7 @@ export default function BlogPost() {
         description="Cursive identifies your website visitors, enriches them with intent data, and automates personalized outreach across email, LinkedIn, and direct mail. Stop spraying cold emails -- start closing warm leads."
       />
 
-      {/* Related Posts */}
+      {/* Related Comparisons */}
       <section className="py-16 bg-gradient-to-br from-gray-50 to-blue-50">
         <Container>
           <div className="max-w-5xl mx-auto">
@@ -918,6 +918,25 @@ export default function BlogPost() {
                 title: "ZoomInfo Alternatives: 8 Cheaper Options",
                 description: "Find affordable alternatives to ZoomInfo for B2B prospecting",
                 href: "/blog/zoominfo-alternatives-comparison"
+              }
+            ]} />
+          </div>
+          <div className="max-w-5xl mx-auto mt-8">
+            <SimpleRelatedPosts posts={[
+              {
+                title: "6sense Alternatives: 7 Competitors Compared",
+                description: "Intent data and ABM platforms compared for 2026",
+                href: "/blog/6sense-alternatives-comparison"
+              },
+              {
+                title: "Warmly Alternatives: 7 Competitors Compared",
+                description: "Visitor identification and intent platforms compared",
+                href: "/blog/warmly-alternatives-comparison"
+              },
+              {
+                title: "Scaling Outbound: The Complete Guide",
+                description: "How to scale your outbound sales engine effectively",
+                href: "/blog/scaling-outbound"
               }
             ]} />
           </div>

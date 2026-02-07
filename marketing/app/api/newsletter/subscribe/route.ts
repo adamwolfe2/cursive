@@ -232,13 +232,6 @@ export async function POST(request: NextRequest) {
     // Send welcome email via Resend
     await sendWelcomeEmail(email)
 
-    // Log successful subscription (for monitoring)
-    console.log('Newsletter subscription successful:', {
-      email,
-      source: body.source,
-      timestamp: new Date().toISOString(),
-    })
-
     return NextResponse.json({
       success: true,
       message: 'Successfully subscribed to newsletter',

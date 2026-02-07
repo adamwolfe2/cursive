@@ -29,7 +29,7 @@ interface LeadData {
 /**
  * Validate lead capture form data
  */
-function validateLeadData(data: any): { valid: boolean; errors: LeadFormError[] } {
+function validateLeadData(data: Record<string, unknown>): { valid: boolean; errors: LeadFormError[] } {
   const errors: LeadFormError[] = []
 
   // Validate email (required)
@@ -246,14 +246,6 @@ export async function POST(request: NextRequest) {
 
     // Send confirmation email to the lead
     await sendLeadConfirmation(leadData)
-
-    // Log successful capture (for monitoring)
-    console.log('Lead captured successfully:', {
-      email: leadData.email,
-      company: leadData.company,
-      source: leadData.source,
-      timestamp: new Date().toISOString(),
-    })
 
     return NextResponse.json({
       success: true,

@@ -59,7 +59,6 @@ export default function ContactPage() {
     } catch (error) {
       setStatus("error")
       setErrorMessage("An unexpected error occurred. Please try again later.")
-      console.error("Form submission error:", error)
     }
   }
 

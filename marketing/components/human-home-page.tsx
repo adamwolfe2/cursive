@@ -295,6 +295,46 @@ export function HumanHomePage() {
         </Container>
       </section>
 
+      {/* Proven Results */}
+      <section className="py-20 bg-white">
+        <Container>
+          <div className="text-center mb-12">
+            <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
+              Proven Results
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Real outcomes from companies using Cursive to power their pipeline
+            </p>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+            {[
+              { metric: "$11M", label: "Revenue Generated", detail: "AI SaaS company in 30 days" },
+              { metric: "40x", label: "Return on Ad Spend", detail: "Custom audience targeting" },
+              { metric: "$24M", label: "Pipeline Created", detail: "Medical tech in 3 days" },
+              { metric: "5x", label: "CPC Reduction", detail: "Insurtech Facebook campaigns" },
+            ].map((stat, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                className="text-center p-6 bg-[#F7F9FB] rounded-xl border border-gray-200"
+              >
+                <div className="text-3xl lg:text-4xl font-light text-[#007AFF] mb-2">{stat.metric}</div>
+                <div className="text-gray-900 font-medium mb-1">{stat.label}</div>
+                <div className="text-sm text-gray-500">{stat.detail}</div>
+              </motion.div>
+            ))}
+          </div>
+          <div className="text-center">
+            <Button variant="outline" href="/case-studies">
+              View All Case Studies
+            </Button>
+          </div>
+        </Container>
+      </section>
+
       {/* FAQ Section */}
       <FAQSection />
 

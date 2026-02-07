@@ -156,8 +156,8 @@ export function trackTestExposure(
 ): void {
   // Implementation would integrate with analytics system
   // See analytics.ts for full implementation
-  if (typeof window !== 'undefined' && (window as any).gtag) {
-    (window as any).gtag('event', 'ab_test_exposure', {
+  if (typeof window !== 'undefined' && window.gtag) {
+    window.gtag('event', 'ab_test_exposure', {
       test_id: testId,
       variant_id: variantId,
       user_id: userId,

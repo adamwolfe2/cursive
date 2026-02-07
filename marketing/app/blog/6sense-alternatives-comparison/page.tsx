@@ -1060,13 +1060,20 @@ export default function BlogPost() {
         <Container>
           <div className="max-w-3xl mx-auto">
             <h2 className="text-2xl font-bold mb-6">Related Comparisons</h2>
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
               <Link
-                href="/blog/demandbase-alternative"
+                href="/blog/apollo-alternatives-comparison"
                 className="block bg-gray-50 rounded-lg p-6 hover:shadow-md transition-shadow border border-gray-200"
               >
-                <h3 className="font-bold mb-2">Demandbase Alternatives</h3>
-                <p className="text-sm text-gray-600">Affordable ABM platforms compared for 2026</p>
+                <h3 className="font-bold mb-2">Apollo Alternatives</h3>
+                <p className="text-sm text-gray-600">7 best Apollo.io alternatives for B2B prospecting</p>
+              </Link>
+              <Link
+                href="/blog/zoominfo-alternatives-comparison"
+                className="block bg-gray-50 rounded-lg p-6 hover:shadow-md transition-shadow border border-gray-200"
+              >
+                <h3 className="font-bold mb-2">ZoomInfo Alternatives</h3>
+                <p className="text-sm text-gray-600">8 cheaper ZoomInfo alternatives for B2B data</p>
               </Link>
               <Link
                 href="/blog/clearbit-alternatives-comparison"
@@ -1076,18 +1083,25 @@ export default function BlogPost() {
                 <p className="text-sm text-gray-600">10 data enrichment and identification tools compared</p>
               </Link>
               <Link
-                href="/blog/rb2b-alternative"
-                className="block bg-gray-50 rounded-lg p-6 hover:shadow-md transition-shadow border border-gray-200"
-              >
-                <h3 className="font-bold mb-2">RB2B Alternatives</h3>
-                <p className="text-sm text-gray-600">7 visitor identification tools with higher match rates</p>
-              </Link>
-              <Link
                 href="/blog/warmly-alternatives-comparison"
                 className="block bg-gray-50 rounded-lg p-6 hover:shadow-md transition-shadow border border-gray-200"
               >
                 <h3 className="font-bold mb-2">Warmly Alternatives</h3>
                 <p className="text-sm text-gray-600">7 visitor identification and intent platforms compared</p>
+              </Link>
+              <Link
+                href="/blog/demandbase-alternative"
+                className="block bg-gray-50 rounded-lg p-6 hover:shadow-md transition-shadow border border-gray-200"
+              >
+                <h3 className="font-bold mb-2">Demandbase Alternatives</h3>
+                <p className="text-sm text-gray-600">Affordable ABM platforms compared for 2026</p>
+              </Link>
+              <Link
+                href="/blog/rb2b-alternative"
+                className="block bg-gray-50 rounded-lg p-6 hover:shadow-md transition-shadow border border-gray-200"
+              >
+                <h3 className="font-bold mb-2">RB2B Alternatives</h3>
+                <p className="text-sm text-gray-600">7 visitor identification tools with higher match rates</p>
               </Link>
             </div>
           </div>

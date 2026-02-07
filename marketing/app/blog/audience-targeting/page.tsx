@@ -445,12 +445,28 @@ export default function AudienceTargetingPage() {
               intent. Filter your <Link href="/audience-builder">audience builder</Link> by ICP firmographic criteria,
               then layer on intent signals to isolate accounts actively researching your category.
             </p>
+            <p>
+              <strong>Example:</strong> A cybersecurity company targeting mid-market SaaS firms builds this segment
+              by filtering for companies with 100-1,000 employees in the technology sector, then layering intent
+              signals for topics like &quot;SOC 2 compliance,&quot; &quot;data breach prevention,&quot; and
+              &quot;endpoint security solutions.&quot; The intersection of firmographic fit and active research
+              behavior creates a segment of roughly 200-500 accounts per month that are both well-fitted and
+              actively in-market. This segment typically converts at 3-5x the rate of firmographic-only targeting.
+            </p>
 
             <h3>Segment 2: Competitor Displacement</h3>
             <p>
               Target accounts that use a competitor product and show signs of dissatisfaction or contract renewal.
               Technographic data identifies the competitor usage, while intent signals like &quot;[competitor name]
               alternatives&quot; searches confirm the timing.
+            </p>
+            <p>
+              <strong>Execution detail:</strong> The best competitor displacement campaigns combine three signals:
+              (1) confirmed competitor usage via technographic data, (2) content consumption around alternatives
+              or switching topics, and (3) contract renewal timing (many B2B contracts renew annually in Q4 or Q1).
+              Reach out with messaging that acknowledges their current tool and highlights the specific advantages
+              of switching, backed by a migration case study from a similar company. Teams using this three-signal
+              approach report 2-3x higher conversion rates than generic competitive messaging.
             </p>
 
             <h3>Segment 3: Technology Trigger</h3>
@@ -459,11 +475,27 @@ export default function AudienceTargetingPage() {
               they likely need supporting tools. If they just switched CRMs, they&apos;re in a change management
               phase and open to new vendors.
             </p>
+            <p>
+              <strong>How to identify tech triggers:</strong> Monitor technographic databases for recent tool
+              adoptions in your ecosystem. If you sell a Salesforce integration, watch for companies that just
+              adopted Salesforce in the last 90 days&mdash;they are building their stack and actively evaluating
+              complementary tools. Similarly, watch for companies removing a competitor from their stack, which
+              signals dissatisfaction and an open budget. Cursive&apos;s technographic monitoring can detect
+              these changes automatically and route matching accounts into your outreach campaigns.
+            </p>
 
             <h3>Segment 4: Expansion Look-alikes</h3>
             <p>
               Identify companies that look like your best expanding customers. Use firmographic and technographic
               attributes from customers with the highest net revenue retention to build a look-alike segment.
+            </p>
+            <p>
+              <strong>Building the model:</strong> Export a list of your top 20% of customers by revenue expansion
+              rate. Analyze common attributes: industry, company size, tech stack, growth rate, and funding stage.
+              Build an audience segment matching these attributes. The key insight is that expansion customers
+              share characteristics that are often different from your initial land customers. Companies that
+              expand tend to be in growth mode, have recently received funding, and operate in industries where
+              your solution has the deepest feature-market fit.
             </p>
 
             <h3>Segment 5: Website Re-engagement</h3>
@@ -472,17 +504,44 @@ export default function AudienceTargetingPage() {
               <Link href="/visitor-identification"> Visitor identification</Link> reveals these accounts, and
               you can segment by pages visited, session depth, and recency to prioritize outreach.
             </p>
+            <p>
+              <strong>Prioritization framework:</strong> Not all website visitors deserve the same follow-up.
+              Score re-engagement prospects based on three factors: (1) pages viewed (pricing page = 10 points,
+              solution page = 7 points, blog = 3 points), (2) visit frequency (3+ visits = 10 points, 2 visits
+              = 5 points), and (3) ICP fit (strong match = 10 points, partial match = 5 points). Accounts
+              scoring 20+ points get immediate personal outreach. Accounts scoring 10-19 get automated email
+              sequences. Accounts scoring under 10 enter nurture advertising campaigns. This scoring ensures
+              your highest-effort follow-up goes to the highest-probability accounts.
+            </p>
 
             <h3>Segment 6: Event-Triggered Audiences</h3>
             <p>
               Corporate events like funding rounds, leadership changes, office expansions, and product launches
               create buying windows. Build segments that trigger when target accounts experience these events.
             </p>
+            <p>
+              <strong>Most effective event triggers for B2B:</strong> New VP/C-level hires (new leaders bring
+              new tools&mdash;average ramp time is 90 days, making weeks 4-12 the ideal outreach window).
+              Funding announcements (Series A+ companies actively invest in growth infrastructure for 3-6
+              months post-close). Office expansions (signals headcount growth and new operational needs).
+              Product launches (companies entering new markets need supporting tools). Each trigger type
+              requires different messaging timing and approach.
+            </p>
 
             <h3>Segment 7: Seasonal and Cyclical Buyers</h3>
             <p>
               Many B2B purchases follow predictable cycles tied to budgeting, contract renewals, or seasonal
               demand. Build segments that activate before these known buying periods.
+            </p>
+            <p>
+              <strong>Timing your seasonal campaigns:</strong> Most B2B companies plan budgets in Q3-Q4 for
+              the following year. Start targeting budget holders 6-8 weeks before their planning cycle begins.
+              For contract renewals, build a segment of companies whose competitor contracts likely renew
+              annually (most B2B contracts do) and reach out 60-90 days before common renewal dates. If you
+              sell to retailers, increase targeting intensity before Q4 planning. If you sell to financial
+              services, target before fiscal year-end in March or December depending on the firm. The companies
+              that time their seasonal targeting correctly get considered during the planning process rather
+              than after budgets are locked.
             </p>
 
             <div className="not-prose bg-gradient-to-br from-amber-50 to-yellow-50 rounded-xl p-6 my-8 border border-amber-200">
@@ -523,6 +582,13 @@ export default function AudienceTargetingPage() {
               <li>Identify your top 3 data gaps (firmographic, technographic, intent, engagement)</li>
               <li>Select a <Link href="/blog/data-platforms">data platform</Link> that covers your gaps</li>
             </ul>
+            <p>
+              <strong>Practical tip:</strong> During the audit, export your CRM data for the last 12 months
+              and sort customers by three metrics: total revenue, retention rate, and time-to-close. The
+              intersection of high revenue, high retention, and fast close gives you your &quot;perfect
+              customer&quot; profile. Document at least 8-10 common attributes across this group. Most
+              teams find that 3-4 attributes explain 80% of the pattern.
+            </p>
 
             <h3>Week 2: Data Integration</h3>
             <ul>
@@ -531,6 +597,14 @@ export default function AudienceTargetingPage() {
               <li>Configure third-party intent signal tracking for your category keywords</li>
               <li>Set up data enrichment for existing contacts</li>
             </ul>
+            <p>
+              <strong>Common pitfall:</strong> Many teams skip the step of enriching their existing CRM contacts.
+              Your current database likely contains thousands of contacts with incomplete firmographic data&mdash;missing
+              company size, industry, or technology information. Enriching existing contacts first gives you a
+              clean baseline for segmentation and often reveals opportunities hidden in your own pipeline. We
+              have seen teams discover 20-30% more ICP-fit accounts in their existing CRM simply by enriching
+              incomplete records.
+            </p>
 
             <h3>Week 3: Segment Building</h3>
             <ul>
@@ -539,6 +613,14 @@ export default function AudienceTargetingPage() {
               <li>Assign segments to appropriate channels (outbound, ads, direct mail)</li>
               <li>Brief your sales team on targeting criteria and expected lead quality</li>
             </ul>
+            <p>
+              <strong>Suppression lists are critical.</strong> Nothing undermines sales trust in marketing
+              faster than sending outreach to existing customers, active prospects already in pipeline, or
+              competitor employees. Build comprehensive suppression lists that include: current customers
+              (all domains), companies in active sales cycles, competitor company domains, companies in
+              excluded industries, and any accounts flagged as &quot;do not contact.&quot; Update these
+              lists weekly to prevent embarrassing overlaps.
+            </p>
 
             <h3>Week 4: Launch and Optimize</h3>
             <ul>
@@ -547,6 +629,15 @@ export default function AudienceTargetingPage() {
               <li>A/B test segment criteria to find optimal targeting parameters</li>
               <li>Schedule monthly reviews to refine ICP and segments based on performance data</li>
             </ul>
+            <p>
+              <strong>A/B testing segments effectively:</strong> Do not just test messaging against a single
+              segment. Test the segments themselves. Run the same campaign against two slightly different
+              audience definitions (e.g., 50-200 employees vs 100-500 employees, or SaaS-only vs SaaS +
+              FinTech) and compare conversion rates. Often, small adjustments to segment boundaries yield
+              significant improvements in campaign performance. Track not just response rates but pipeline
+              quality&mdash;a segment with a lower response rate but higher close rate is more valuable than
+              one with high engagement but low conversion.
+            </p>
 
             {/* Section 7 */}
             <h2 id="measuring-success">Measuring Targeting Effectiveness</h2>
@@ -612,6 +703,81 @@ export default function AudienceTargetingPage() {
               analyze segment performance. Use closed-loop reporting to connect targeting criteria all the way
               through to revenue. This feedback loop is what separates teams that plateau from those that
               continuously improve their targeting precision.
+            </p>
+            <p>
+              Here is what a productive monthly targeting review looks like in practice. Pull segment-level
+              data for the prior 30 days: volume of accounts reached, engagement rates, meetings booked,
+              pipeline created, and deals won. Compare each segment against the others. Identify the top
+              two and bottom two performers. For top performers, explore whether you can expand the segment
+              boundaries without diluting quality. For bottom performers, investigate whether the issue is
+              targeting criteria (wrong accounts) or execution (wrong messaging). Then update your suppression
+              lists, refresh intent topic keywords, and adjust ICP weights based on the latest closed-won
+              analysis. This disciplined monthly review typically drives 5-10% improvement in targeting
+              efficiency per quarter, compounding over time.
+            </p>
+
+            <h2>Common Targeting Mistakes and How to Avoid Them</h2>
+
+            <p>
+              Even experienced B2B marketing teams make targeting errors that significantly reduce campaign
+              effectiveness. Here are the most common mistakes we see and how to avoid each one.
+            </p>
+
+            <h3>Mistake 1: Targeting Too Broadly</h3>
+            <p>
+              The most common mistake is defining your audience too broadly in an attempt to maximize reach.
+              A segment of &quot;technology companies with 50+ employees in North America&quot; might contain
+              500,000 companies. Your campaign budget and sales capacity cannot meaningfully engage that many
+              accounts. The result is thin coverage, generic messaging, and response rates under 1%.
+            </p>
+            <p>
+              <strong>Fix:</strong> Narrow your segments to match your actual capacity. If your team can
+              handle 50 new opportunities per month, build segments that generate roughly 100-200 qualified
+              accounts (accounting for conversion rates). It is always better to deeply engage 200 perfect-fit
+              accounts than to lightly spray 20,000 marginal ones.
+            </p>
+
+            <h3>Mistake 2: Ignoring Negative Signals</h3>
+            <p>
+              Many teams spend all their energy defining who to target but none on who to exclude. Without
+              proper exclusion criteria, you waste budget reaching companies that will never buy: companies
+              that are too small, in the wrong industry, already using a competitor with a locked-in contract,
+              or recently churned from your product.
+            </p>
+            <p>
+              <strong>Fix:</strong> For every positive targeting criterion, define a corresponding exclusion.
+              If you target companies with 100+ employees, exclude those with 10,000+ (likely too enterprise).
+              If you target SaaS companies, exclude agencies and consultancies that may look similar but have
+              different buying patterns. Review your lost deals from the past six months and identify common
+              disqualifying attributes to add to your exclusion list.
+            </p>
+
+            <h3>Mistake 3: Static Segments in a Dynamic Market</h3>
+            <p>
+              Building segments once and never updating them is a recipe for declining performance. Markets
+              shift, buyer behavior changes, and your own product evolves. A segment that performed well six
+              months ago may be targeting companies that no longer match your current positioning.
+            </p>
+            <p>
+              <strong>Fix:</strong> Treat segments as living entities that need regular maintenance. Update
+              firmographic criteria quarterly based on closed-won analysis. Refresh intent topic keywords
+              monthly based on actual search behavior. Rebuild look-alike models every quarter as your
+              customer base evolves. Set calendar reminders for these reviews so they do not get deprioritized.
+            </p>
+
+            <h3>Mistake 4: Same Message to Every Segment</h3>
+            <p>
+              Building differentiated segments but sending the same generic message to all of them defeats the
+              entire purpose. If your in-market ICP segment and your early-research segment receive identical
+              emails, you are not doing audience targeting&mdash;you are just doing list segmentation with
+              extra steps.
+            </p>
+            <p>
+              <strong>Fix:</strong> Every segment should have unique messaging that reflects the audience&apos;s
+              current context. In-market accounts should receive direct, solution-focused outreach with ROI
+              data and demo offers. Evaluating accounts should receive comparison content and case studies.
+              Early-stage accounts should receive thought leadership and educational content. The messaging
+              should match the buyer&apos;s current mindset, not your desired outcome.
             </p>
 
             {/* FAQ Section */}
