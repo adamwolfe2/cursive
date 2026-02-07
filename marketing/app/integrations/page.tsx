@@ -6,10 +6,71 @@ import { DashboardCTA } from "@/components/dashboard-cta"
 import { motion } from "framer-motion"
 import { IntegrationsShowcase } from "@/components/integrations-showcase"
 import { ArrowRight } from "lucide-react"
+import Link from "next/link"
+import { integrations } from "@/lib/integrations-data"
+import type { Integration } from "@/lib/integrations-data"
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+function connectionBadge(method: Integration["connectionMethod"]) {
+  const styles: Record<
+    Integration["connectionMethod"],
+    { label: string; className: string }
+  > = {
+    native: { label: "Native", className: "bg-green-100 text-green-800" },
+    webhook: { label: "Webhook", className: "bg-blue-100 text-blue-800" },
+    zapier: { label: "Zapier", className: "bg-purple-100 text-purple-800" },
+    csv: { label: "CSV", className: "bg-gray-100 text-gray-800" },
+    "coming-soon": {
+      label: "Coming Soon",
+      className: "bg-yellow-100 text-yellow-800",
+    },
+  }
+
+  const s = styles[method]
+
+  return (
+    <span
+      className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${s.className}`}
+    >
+      {s.label}
+    </span>
+  )
+}
+
+/** Group integrations by category, preserving order of first appearance. */
+function groupByCategory(
+  items: Integration[]
+): { category: string; items: Integration[] }[] {
+  const map = new Map<string, Integration[]>()
+
+  for (const item of items) {
+    const existing = map.get(item.category)
+    if (existing) {
+      existing.push(item)
+    } else {
+      map.set(item.category, [item])
+    }
+  }
+
+  return Array.from(map.entries()).map(([category, items]) => ({
+    category,
+    items,
+  }))
+}
+
+// ---------------------------------------------------------------------------
+// Page component
+// ---------------------------------------------------------------------------
 
 export default function IntegrationsPage() {
+  const grouped = groupByCategory(integrations)
+
   return (
     <main>
+      {/* ---- Hero ---- */}
       <section className="pt-24 pb-20 bg-white">
         <Container>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="text-center max-w-5xl mx-auto">
@@ -19,19 +80,75 @@ export default function IntegrationsPage() {
               <span className="block font-cursive text-6xl lg:text-8xl text-gray-500 mt-2">With Your Stack</span>
             </h1>
             <p className="text-lg text-gray-600 mb-8 max-w-3xl mx-auto">
-              Connect Cursive to 200+ platforms or use our API and webhooks for custom integrations.
+              Connect Cursive to 50+ tools or use our API and webhooks for custom integrations.
             </p>
             <Button size="lg" href="https://cal.com/adamwolfe/cursive-ai-audit">View Integrations</Button>
           </motion.div>
         </Container>
       </section>
 
+      {/* ---- Browse All Integrations ---- */}
+      <section className="py-20 bg-white">
+        <Container>
+          <div className="text-center mb-16">
+            <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
+              Browse All Integrations
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Explore every tool that connects with Cursive. Click on an
+              integration to see data mapping, setup steps, and workflows.
+            </p>
+          </div>
+
+          {grouped.map((group) => (
+            <div key={group.category} className="mb-16 last:mb-0">
+              <h3 className="text-2xl font-light text-gray-900 mb-6 border-b border-gray-200 pb-3">
+                {group.category}
+              </h3>
+
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                {group.items.map((integration, idx) => (
+                  <motion.div
+                    key={integration.slug}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: idx * 0.03 }}
+                  >
+                    <Link
+                      href={`/integrations/${integration.slug}`}
+                      className="block border border-gray-200 rounded-xl p-5 bg-white hover:border-[#007AFF] hover:shadow-lg transition-all group h-full"
+                    >
+                      <div className="flex items-start justify-between mb-3">
+                        <span className="text-3xl">{integration.logo}</span>
+                        {connectionBadge(integration.connectionMethod)}
+                      </div>
+                      <h4 className="text-base font-medium text-gray-900 mb-1 group-hover:text-[#007AFF] transition-colors">
+                        {integration.name}
+                      </h4>
+                      <p className="text-xs text-gray-500 mb-2">
+                        {integration.category}
+                      </p>
+                      <p className="text-sm text-gray-600 line-clamp-2">
+                        {integration.description}
+                      </p>
+                    </Link>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </Container>
+      </section>
+
+      {/* ---- Integrations Showcase ---- */}
       <section className="py-20 bg-[#F7F9FB]">
         <Container>
           <IntegrationsShowcase />
         </Container>
       </section>
 
+      {/* ---- Integration Categories ---- */}
       <section className="py-20 bg-white">
         <Container>
           <h2 className="text-3xl lg:text-4xl font-light text-gray-900 mb-12 text-center">

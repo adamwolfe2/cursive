@@ -1,8 +1,8 @@
 import { generateMetadata } from '@/lib/seo/metadata'
 
 export const metadata = generateMetadata({
-  title: 'Integrations - Connect to 200+ Platforms',
-  description: 'Seamlessly sync Cursive data with your existing marketing stack. 200+ integrations including Salesforce, HubSpot, Google Ads, and more.',
+  title: 'Integrations - Connect to 50+ Tools',
+  description: 'Seamlessly sync Cursive data with your existing marketing stack. 50+ integrations including Salesforce, HubSpot, Google Ads, and more.',
   keywords: ['integrations', 'CRM integration', 'marketing automation', 'API', 'webhooks', 'data sync'],
   canonical: 'https://meetcursive.com/integrations',
 })
