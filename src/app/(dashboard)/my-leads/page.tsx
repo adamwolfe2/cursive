@@ -44,14 +44,14 @@ export default async function MyLeadsPage() {
     redirect('/welcome')
   }
 
-  const user = userData as Pick<User, 'id' | 'workspace_id' | 'full_name' | 'email'>
+  const userProfile = userData as Pick<User, 'id' | 'workspace_id' | 'full_name' | 'email'>
 
   // Check if user has targeting preferences set up
   const { data: targetingData } = await supabase
     .from('user_targeting')
     .select('id, target_industries, target_sic_codes, target_states, target_cities, is_active')
-    .eq('user_id', user.id)
-    .eq('workspace_id', user.workspace_id)
+    .eq('user_id', userProfile.id)
+    .eq('workspace_id', userProfile.workspace_id)
     .single()
 
   const targeting = targetingData as UserTargeting | null
@@ -168,7 +168,7 @@ export default async function MyLeadsPage() {
           </div>
         }
       >
-        <MyLeadsStats userId={user.id} workspaceId={user.workspace_id} />
+        <MyLeadsStats userId={userProfile.id} workspaceId={userProfile.workspace_id} />
       </Suspense>
 
       {/* Table */}
@@ -181,7 +181,7 @@ export default async function MyLeadsPage() {
           </div>
         }
       >
-        <MyLeadsTable userId={user.id} workspaceId={user.workspace_id} />
+        <MyLeadsTable userId={userProfile.id} workspaceId={userProfile.workspace_id} />
       </Suspense>
     </div>
   )

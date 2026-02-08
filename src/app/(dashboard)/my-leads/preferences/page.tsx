@@ -118,14 +118,14 @@ export default async function TargetingPreferencesPage() {
     redirect('/welcome')
   }
 
-  const user = userData as Pick<User, 'id' | 'workspace_id' | 'full_name' | 'email'>
+  const userProfile = userData as Pick<User, 'id' | 'workspace_id' | 'full_name' | 'email'>
 
   // Get existing targeting preferences
   const { data: targetingData } = await supabase
     .from('user_targeting')
     .select('*')
-    .eq('user_id', user.id)
-    .eq('workspace_id', user.workspace_id)
+    .eq('user_id', userProfile.id)
+    .eq('workspace_id', userProfile.workspace_id)
     .single()
 
   const targeting = targetingData as UserTargeting | null
@@ -193,8 +193,8 @@ export default async function TargetingPreferencesPage() {
 
       {/* Form */}
       <TargetingPreferencesForm
-        userId={user.id}
-        workspaceId={user.workspace_id}
+        userId={userProfile.id}
+        workspaceId={userProfile.workspace_id}
         initialData={targeting}
         industryOptions={INDUSTRY_OPTIONS}
         stateOptions={STATE_OPTIONS}

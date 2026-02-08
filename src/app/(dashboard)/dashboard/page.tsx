@@ -25,7 +25,7 @@ export default async function DashboardPage() {
     .single()
 
   // Type the user data
-  const user = userData as {
+  const userProfile = userData as {
     id: string
     auth_user_id: string
     workspace_id: string
@@ -41,7 +41,7 @@ export default async function DashboardPage() {
   } | null
 
   // If no user profile exists, redirect to onboarding
-  if (userError || !user || !user.workspace_id) {
+  if (userError || !userProfile || !userProfile.workspace_id) {
     redirect('/welcome')
   }
 
@@ -49,20 +49,20 @@ export default async function DashboardPage() {
   const { count: leadsCount } = await supabase
     .from('leads')
     .select('*', { count: 'exact', head: true })
-    .eq('workspace_id', user.workspace_id)
+    .eq('workspace_id', userProfile.workspace_id)
 
   // Get recent leads - only select needed columns, NOT contact_email
   const { data: recentLeads } = await supabase
     .from('leads')
     .select('id, company_name, contact_name, industry, status, created_at, intent_score_calculated, source')
-    .eq('workspace_id', user.workspace_id)
+    .eq('workspace_id', userProfile.workspace_id)
     .order('created_at', { ascending: false })
     .limit(5)
 
   // Check for active service subscription
-  const activeSubscription = await serviceTierRepository.getWorkspaceActiveSubscription(user.workspace_id)
+  const activeSubscription = await serviceTierRepository.getWorkspaceActiveSubscription(userProfile.workspace_id)
 
-  const workspace = user.workspaces
+  const workspace = userProfile.workspaces
 
   return (
     <PageContainer maxWidth="wide">
@@ -71,12 +71,12 @@ export default async function DashboardPage() {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl sm:text-3xl font-semibold text-foreground mb-1">
-              Welcome back, {user.full_name?.split(' ')[0] || 'there'}!
+              Welcome back, {userProfile.full_name?.split(' ')[0] || 'there'}!
             </h1>
             <p className="text-sm text-muted-foreground">{workspace?.name || 'Your Workspace'}</p>
           </div>
           <div className="flex items-center gap-3">
-            <span className="hidden sm:inline text-sm text-muted-foreground">{user.email}</span>
+            <span className="hidden sm:inline text-sm text-muted-foreground">{userProfile.email}</span>
             <Link
               href="/auth/signout"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -183,7 +183,7 @@ export default async function DashboardPage() {
             <div>
               <p className="text-sm font-medium text-muted-foreground mb-1">Current Plan</p>
               <p className="text-3xl sm:text-4xl font-bold text-foreground capitalize">
-                {user.plan || 'Free'}
+                {userProfile.plan || 'Free'}
               </p>
             </div>
             <div className="p-3 rounded-lg bg-primary/10">
@@ -194,7 +194,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* Service Tier Upsell Banner */}
-      {!activeSubscription && user.plan === 'free' && (leadsCount ?? 0) > 0 && (
+      {!activeSubscription && userProfile.plan === 'free' && (leadsCount ?? 0) > 0 && (
         <GradientCard variant="primary" className="mb-8">
           <div className="flex flex-col sm:flex-row items-start gap-4">
             <div className="p-3 rounded-lg bg-white/20">

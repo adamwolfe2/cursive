@@ -82,7 +82,7 @@ export default async function DashboardLayout({
     .single()
 
   // Type the user data
-  const user = userData as {
+  const userProfile = userData as {
     id: string
     full_name: string | null
     email: string
@@ -102,14 +102,14 @@ export default async function DashboardLayout({
     } | null
   } | null
 
-  if (!user) {
+  if (!userProfile) {
     redirect('/welcome')
   }
 
   // Check if user is an admin (for showing impersonation banner)
   const userIsAdmin = await isAdmin()
 
-  const workspace = user.workspaces as {
+  const workspace = userProfile.workspaces as {
     name: string
     subdomain?: string
     website_url?: string | null
@@ -127,12 +127,12 @@ export default async function DashboardLayout({
 
       <AppShell
         user={{
-          name: user.full_name || 'User',
-          email: user.email,
-          plan: user.plan || 'free',
-          role: user.role,
-          creditsRemaining: (user.daily_credit_limit || 0) - (user.daily_credits_used || 0),
-          totalCredits: user.daily_credit_limit || 0,
+          name: userProfile.full_name || 'User',
+          email: userProfile.email,
+          plan: userProfile.plan || 'free',
+          role: userProfile.role,
+          creditsRemaining: (userProfile.daily_credit_limit || 0) - (userProfile.daily_credits_used || 0),
+          totalCredits: userProfile.daily_credit_limit || 0,
           avatarUrl: null,
         }}
         workspace={
