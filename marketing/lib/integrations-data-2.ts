@@ -184,7 +184,7 @@ export const integrationsBatch2: Integration[] = [
     slug: 'google-ads',
     name: 'Google Ads',
     category: 'Ad Platforms',
-    logo: '📣',
+    logo: '/integrations/google-ads-svgrepo-com.svg',
     connectionMethod: 'csv',
     description:
       'Google Ads is the world\'s largest digital advertising platform, enabling search, display, video, and shopping campaigns across Google properties. Customer Match lets advertisers target known contacts with tailored ads.',
@@ -240,7 +240,7 @@ export const integrationsBatch2: Integration[] = [
     slug: 'meta-ads',
     name: 'Meta Ads',
     category: 'Ad Platforms',
-    logo: '📘',
+    logo: '/integrations/meta-color.svg',
     connectionMethod: 'csv',
     description:
       'Meta Ads (Facebook and Instagram advertising) reaches billions of users with precise targeting through Custom Audiences, Lookalike Audiences, and Conversions API. It is a cornerstone of most B2B and B2C paid media strategies.',
@@ -297,7 +297,7 @@ export const integrationsBatch2: Integration[] = [
     slug: 'linkedin-ads',
     name: 'LinkedIn Ads',
     category: 'Ad Platforms',
-    logo: '💼',
+    logo: '/integrations/linkedin.svg',
     connectionMethod: 'csv',
     description:
       'LinkedIn Ads is the premier B2B advertising platform, offering Matched Audiences, Company Targeting, and Conversion Tracking to reach professionals by job title, company, industry, and seniority.',
@@ -357,7 +357,7 @@ export const integrationsBatch2: Integration[] = [
     slug: 'google-analytics',
     name: 'Google Analytics',
     category: 'Analytics',
-    logo: '📊',
+    logo: '/integrations/search-console-icon-2025-1.svg',
     connectionMethod: 'webhook',
     description:
       'Google Analytics 4 (GA4) is the industry-standard web analytics platform that tracks user behavior, acquisition channels, and conversion events across websites and apps. It powers data-driven marketing decisions for millions of businesses.',
@@ -587,7 +587,7 @@ export const integrationsBatch2: Integration[] = [
     slug: 'google-sheets',
     name: 'Google Sheets',
     category: 'Spreadsheets',
-    logo: '📗',
+    logo: '/integrations/gsheet-document-svgrepo-com.svg',
     connectionMethod: 'csv',
     description:
       'Google Sheets is a cloud-based spreadsheet application that enables real-time collaboration, data organization, and lightweight analysis. It is widely used by sales and marketing teams for lead tracking, reporting, and team coordination.',
@@ -644,7 +644,7 @@ export const integrationsBatch2: Integration[] = [
     slug: 'airtable',
     name: 'Airtable',
     category: 'Spreadsheets',
-    logo: '🗃️',
+    logo: '/integrations/airtable-svgrepo-com.svg',
     connectionMethod: 'webhook',
     description:
       'Airtable is a flexible database-spreadsheet hybrid that combines the simplicity of a spreadsheet with the power of a relational database. It supports custom views, automations, and integrations for managing structured data.',
@@ -758,7 +758,7 @@ export const integrationsBatch2: Integration[] = [
     slug: 'notion',
     name: 'Notion',
     category: 'Spreadsheets',
-    logo: '📝',
+    logo: '/integrations/notion.svg',
     connectionMethod: 'webhook',
     description:
       'Notion is an all-in-one workspace that combines documents, databases, wikis, and project management. Its flexible database feature lets teams build custom CRMs, trackers, and dashboards without code.',
@@ -994,7 +994,7 @@ export const integrationsBatch2: Integration[] = [
     slug: 'asana',
     name: 'Asana',
     category: 'Project Management',
-    logo: '🎯',
+    logo: '/integrations/asana.svg',
     connectionMethod: 'webhook',
     description:
       'Asana is a work management platform that helps teams organize, track, and manage their projects and tasks. It offers boards, timelines, custom fields, and automation rules for streamlined collaboration.',
@@ -1283,7 +1283,7 @@ export const integrationsBatch2: Integration[] = [
     slug: 'calendly',
     name: 'Calendly',
     category: 'Scheduling',
-    logo: '📅',
+    logo: '/integrations/calendly.svg',
     connectionMethod: 'webhook',
     description:
       'Calendly is a scheduling automation platform that eliminates back-and-forth emails for booking meetings. It offers round-robin scheduling, team pages, routing forms, and calendar integrations used by millions of professionals.',
@@ -1339,7 +1339,7 @@ export const integrationsBatch2: Integration[] = [
     slug: 'typeform',
     name: 'Typeform',
     category: 'Forms & Surveys',
-    logo: '📝',
+    logo: '/integrations/typeform.svg',
     connectionMethod: 'webhook',
     description:
       'Typeform is a form and survey platform known for its conversational, one-question-at-a-time design. It supports hidden fields, logic jumps, and integrations that make it powerful for lead qualification, surveys, and interactive content.',

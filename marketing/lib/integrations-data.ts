@@ -23,7 +23,7 @@ export const integrations: Integration[] = [
     slug: 'salesforce',
     name: 'Salesforce',
     category: 'CRM',
-    logo: '☁️',
+    logo: '/integrations/salesforce.svg',
     connectionMethod: 'webhook',
     description:
       'Salesforce is the world\'s leading CRM platform, used by enterprises and growing businesses to manage sales pipelines, customer relationships, and revenue operations. It offers deep customization through custom objects, flows, and an extensive AppExchange ecosystem.',
@@ -62,7 +62,7 @@ export const integrations: Integration[] = [
     slug: 'hubspot',
     name: 'HubSpot',
     category: 'CRM',
-    logo: '🟠',
+    logo: '/integrations/hubspot-svgrepo-com.svg',
     connectionMethod: 'native',
     description:
       'HubSpot is an all-in-one CRM platform with hubs for marketing, sales, service, and operations. Its free CRM tier and intuitive interface make it popular with startups and mid-market teams looking to unify their go-to-market stack.',
@@ -413,7 +413,7 @@ export const integrations: Integration[] = [
     slug: 'klaviyo',
     name: 'Klaviyo',
     category: 'Marketing Automation',
-    logo: '💚',
+    logo: '/integrations/klaviyo.svg',
     connectionMethod: 'webhook',
     description:
       'Klaviyo is a marketing automation platform built for e-commerce and DTC brands. It excels at email and SMS marketing with deep Shopify, WooCommerce, and BigCommerce integrations, powerful segmentation, and predictive analytics for customer lifetime value.',
@@ -569,7 +569,7 @@ export const integrations: Integration[] = [
     slug: 'apollo',
     name: 'Apollo',
     category: 'Sales Engagement',
-    logo: '🚀',
+    logo: '/integrations/apollo.svg',
     connectionMethod: 'webhook',
     description:
       'Apollo is a sales intelligence and engagement platform with a massive B2B contact database, built-in sequencing, and a Chrome extension for prospecting on LinkedIn. It combines data enrichment with outbound execution in a single platform.',
@@ -685,7 +685,7 @@ export const integrations: Integration[] = [
     slug: 'slack',
     name: 'Slack',
     category: 'Communication',
-    logo: '💬',
+    logo: '/integrations/slack-svgrepo-com.svg',
     connectionMethod: 'webhook',
     description:
       'Slack is the dominant workplace messaging platform, used by millions of teams to communicate in real-time through channels, threads, and direct messages. Its extensive app ecosystem and incoming webhook support make it a natural hub for business notifications.',
@@ -722,7 +722,7 @@ export const integrations: Integration[] = [
     slug: 'microsoft-teams',
     name: 'Microsoft Teams',
     category: 'Communication',
-    logo: '🟦',
+    logo: '/integrations/icons8-microsoft-teams.svg',
     connectionMethod: 'webhook',
     description:
       'Microsoft Teams is the communication and collaboration platform embedded in the Microsoft 365 ecosystem. With channels, chats, video conferencing, and deep Office integration, it\'s the hub for enterprise organizations running on Microsoft\'s stack.',
@@ -798,7 +798,7 @@ export const integrations: Integration[] = [
     slug: 'zapier',
     name: 'Zapier',
     category: 'Automation Platform',
-    logo: '⚡',
+    logo: '/integrations/zapier.svg',
     connectionMethod: 'zapier',
     description:
       'Zapier is the most popular no-code automation platform, connecting over 6,000 apps through simple trigger-action workflows called Zaps. Its intuitive interface makes it possible for anyone to automate data flow between tools without writing code.',
