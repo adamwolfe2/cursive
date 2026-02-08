@@ -5,14 +5,31 @@
  */
 
 import Stripe from 'stripe'
-import { createClient } from '@/lib/supabase/server'
-import { serviceTierRepository } from '@/lib/repositories/service-tier.repository'
+import { createAdminClient } from '@/lib/supabase/admin'
 import {
   sendWelcomeEmail,
   sendPaymentSuccessEmail,
   sendPaymentFailedEmail,
   sendCancellationEmail,
 } from '@/lib/email/service-emails'
+
+/**
+ * Get a service tier by ID using admin client (bypasses RLS).
+ * Webhook handlers have no user auth context, so we can't use the repository
+ * which relies on the SSR cookie-based client.
+ */
+async function getServiceTierById(tierId: string) {
+  const supabase = createAdminClient()
+  const { data, error } = await supabase
+    .from('service_tiers')
+    .select('*')
+    .eq('id', tierId)
+    .single()
+  if (error && error.code !== 'PGRST116') {
+    throw new Error(`Failed to fetch service tier: ${error.message}`)
+  }
+  return data
+}
 
 // Lazy-load Stripe to avoid build-time initialization
 let stripeClient: Stripe | null = null
@@ -32,7 +49,7 @@ function getStripe(): Stripe {
  * Helper to get workspace and user info for email sending
  */
 async function getWorkspaceEmailInfo(workspaceId: string) {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
 
   const { data: workspace } = await supabase
     .from('workspaces')
@@ -58,7 +75,7 @@ async function getWorkspaceEmailInfo(workspaceId: string) {
  * Called when a new subscription is created via Checkout
  */
 export async function handleSubscriptionCreated(subscription: Stripe.Subscription): Promise<void> {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
 
   try {
     // Extract metadata
@@ -70,7 +87,7 @@ export async function handleSubscriptionCreated(subscription: Stripe.Subscriptio
     }
 
     // Get tier info
-    const tier = await serviceTierRepository.getTierById(serviceTierId)
+    const tier = await getServiceTierById(serviceTierId)
     if (!tier) {
       throw new Error(`Service tier not found: ${serviceTierId}`)
     }
@@ -180,7 +197,7 @@ export async function handleSubscriptionCreated(subscription: Stripe.Subscriptio
  * Called when subscription is modified (status change, upgrade, etc.)
  */
 export async function handleSubscriptionUpdated(subscription: Stripe.Subscription): Promise<void> {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
 
   try {
     // Find existing subscription record
@@ -197,7 +214,7 @@ export async function handleSubscriptionUpdated(subscription: Stripe.Subscriptio
     // Map Stripe status to our status
     let status = existingSubscription.status
     if (subscription.status === 'active') {
-      const tier = await serviceTierRepository.getTierById(existingSubscription.service_tier_id)
+      const tier = await getServiceTierById(existingSubscription.service_tier_id)
       if (existingSubscription.onboarding_completed || !tier?.onboarding_required) {
         status = 'active'
       } else {
@@ -238,7 +255,7 @@ export async function handleSubscriptionUpdated(subscription: Stripe.Subscriptio
       // Send activation email (payment success)
       try {
         const emailInfo = await getWorkspaceEmailInfo(existingSubscription.workspace_id)
-        const tier = await serviceTierRepository.getTierById(existingSubscription.service_tier_id)
+        const tier = await getServiceTierById(existingSubscription.service_tier_id)
         await sendPaymentSuccessEmail({
           customerEmail: emailInfo.customerEmail,
           customerName: emailInfo.customerName,
@@ -254,7 +271,7 @@ export async function handleSubscriptionUpdated(subscription: Stripe.Subscriptio
       // Send payment failed email
       try {
         const emailInfo = await getWorkspaceEmailInfo(existingSubscription.workspace_id)
-        const tier = await serviceTierRepository.getTierById(existingSubscription.service_tier_id)
+        const tier = await getServiceTierById(existingSubscription.service_tier_id)
         await sendPaymentFailedEmail({
           customerEmail: emailInfo.customerEmail,
           customerName: emailInfo.customerName,
@@ -278,7 +295,7 @@ export async function handleSubscriptionUpdated(subscription: Stripe.Subscriptio
  * Called when subscription is canceled
  */
 export async function handleSubscriptionDeleted(subscription: Stripe.Subscription): Promise<void> {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
 
   try {
     // Update subscription to cancelled status
@@ -330,7 +347,7 @@ export async function handleSubscriptionDeleted(subscription: Stripe.Subscriptio
  * Called when a payment attempt fails
  */
 export async function handleInvoicePaymentFailed(invoice: Stripe.Invoice): Promise<void> {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
 
   try {
     if (!invoice.subscription) {
@@ -383,7 +400,7 @@ export async function handleInvoicePaymentFailed(invoice: Stripe.Invoice): Promi
  * Called when a payment is successful
  */
 export async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice): Promise<void> {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
 
   try {
     if (!invoice.subscription) {

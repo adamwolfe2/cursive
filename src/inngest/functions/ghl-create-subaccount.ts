@@ -22,9 +22,7 @@ import {
   createLocationUser,
   cleanupSnapshotAssets,
   findCursiveContactByEmail,
-  updateCursiveOpportunityStage,
   addCursiveContactTags,
-  GHL_STAGES,
 } from '@/lib/integrations/ghl-admin'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
