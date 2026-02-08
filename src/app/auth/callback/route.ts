@@ -5,6 +5,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 // Add HTML loading page for better UX during callback
 const LOADING_PAGE = `
@@ -161,7 +162,9 @@ export async function GET(request: NextRequest) {
 
     let redirectUrl = next
     if (authUser) {
-      const { data: user } = await supabase
+      // Use admin client to bypass RLS (anon-key triggers recursive policy on users table)
+      const adminClient = createAdminClient()
+      const { data: user } = await adminClient
         .from('users')
         .select('workspace_id')
         .eq('auth_user_id', authUser.id)

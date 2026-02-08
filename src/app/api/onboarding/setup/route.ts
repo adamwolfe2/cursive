@@ -7,6 +7,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
+import { inngest } from '@/inngest/client'
 import { z } from 'zod'
 
 const businessSchema = z.object({
@@ -130,6 +131,19 @@ export async function POST(request: NextRequest) {
         },
       }).catch(() => {})
 
+      // Non-blocking GHL onboard (creates contact in Cursive's GHL CRM)
+      inngest.send({
+        name: 'ghl-admin/onboard-customer',
+        data: {
+          user_id: authUser.id,
+          user_email: authUser.email!,
+          user_name: authUser.user_metadata.full_name || authUser.user_metadata.name || 'Customer',
+          workspace_id: workspace.id,
+          purchase_type: 'free_signup',
+          amount: 0,
+        },
+      }).catch(() => {})
+
       return NextResponse.json({ workspace_id: workspace.id })
 
     } else {
@@ -188,6 +202,19 @@ export async function POST(request: NextRequest) {
           company: validated.companyName,
           role: 'partner',
           workspace_id: workspace.id,
+        },
+      }).catch(() => {})
+
+      // Non-blocking GHL onboard (creates contact in Cursive's GHL CRM)
+      inngest.send({
+        name: 'ghl-admin/onboard-customer',
+        data: {
+          user_id: authUser.id,
+          user_email: authUser.email!,
+          user_name: authUser.user_metadata.full_name || authUser.user_metadata.name || 'Partner',
+          workspace_id: workspace.id,
+          purchase_type: 'partner_signup',
+          amount: 0,
         },
       }).catch(() => {})
 

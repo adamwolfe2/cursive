@@ -30,50 +30,50 @@ const CURSIVE_LOCATION_TOKEN = process.env.GHL_CURSIVE_LOCATION_TOKEN || ''
 const CURSIVE_AGENCY_TOKEN = process.env.GHL_CURSIVE_AGENCY_TOKEN || ''
 const CURSIVE_COMPANY_ID = process.env.GHL_CURSIVE_COMPANY_ID || '6F2SPVmOKsBJqgzGoKsr'
 
-// Pipeline IDs (from Cursive's GHL account)
+// Pipeline IDs (from Cursive's GHL account — configurable via env vars)
 export const GHL_PIPELINES = {
-  AI_AUDIT: 'FtTWd45LvOSQFwC0KJkb',
-  AGENCY_OS_SALES: 'DDSchN74J4hfiFs5em4H',
+  AI_AUDIT: process.env.GHL_PIPELINE_AI_AUDIT || 'FtTWd45LvOSQFwC0KJkb',
+  AGENCY_OS_SALES: process.env.GHL_PIPELINE_AGENCY_OS_SALES || 'DDSchN74J4hfiFs5em4H',
 } as const
 
-// Pipeline Stage IDs
+// Pipeline Stage IDs (configurable via env vars)
 export const GHL_STAGES = {
   // AI Audit Pipeline
-  AUDIT_SUBMITTED: 'eb220092-5c31-4bc4-ac99-b9aa43b6c32e',
-  AWAITING_BOOKING: 'a2da8bf1-b882-49be-9fae-6d49192fe9a9',
-  BOOKED: '71f0c2f7-7dfa-440a-b289-1a2288601050',
-  COMPLETED_AUDIT: '9c0d81bc-cc50-4395-988d-11ff066fd541',
+  AUDIT_SUBMITTED: process.env.GHL_STAGE_AUDIT_SUBMITTED || 'eb220092-5c31-4bc4-ac99-b9aa43b6c32e',
+  AWAITING_BOOKING: process.env.GHL_STAGE_AWAITING_BOOKING || 'a2da8bf1-b882-49be-9fae-6d49192fe9a9',
+  BOOKED: process.env.GHL_STAGE_BOOKED || '71f0c2f7-7dfa-440a-b289-1a2288601050',
+  COMPLETED_AUDIT: process.env.GHL_STAGE_COMPLETED_AUDIT || '9c0d81bc-cc50-4395-988d-11ff066fd541',
 
   // Agency OS Sales Pipeline
-  NEW_LEAD: '27d01b68-94e3-4c61-82a5-8fecc31367d3',
-  CALL_BOOKED: '4a315dc9-4513-4400-809a-85be59158851',
-  NO_SHOW_RESCHEDULE: '6150a9e0-2e9c-4f70-97bf-9edf159562cc',
-  QUALIFIED_PROPOSAL: '9646e617-6c46-465b-a036-328ce9ed6d98',
-  WON: 'dea9c4f2-2e6f-453b-a0de-9af7d19cf827',
-  LOST: '25177070-8f85-43b9-982d-9ff911ef5529',
+  NEW_LEAD: process.env.GHL_STAGE_NEW_LEAD || '27d01b68-94e3-4c61-82a5-8fecc31367d3',
+  CALL_BOOKED: process.env.GHL_STAGE_CALL_BOOKED || '4a315dc9-4513-4400-809a-85be59158851',
+  NO_SHOW_RESCHEDULE: process.env.GHL_STAGE_NO_SHOW_RESCHEDULE || '6150a9e0-2e9c-4f70-97bf-9edf159562cc',
+  QUALIFIED_PROPOSAL: process.env.GHL_STAGE_QUALIFIED_PROPOSAL || '9646e617-6c46-465b-a036-328ce9ed6d98',
+  WON: process.env.GHL_STAGE_WON || 'dea9c4f2-2e6f-453b-a0de-9af7d19cf827',
+  LOST: process.env.GHL_STAGE_LOST || '25177070-8f85-43b9-982d-9ff911ef5529',
 } as const
 
-// Custom Field IDs (from Cursive's GHL account)
+// Custom Field IDs (from Cursive's GHL account — configurable via env vars)
 export const GHL_CUSTOM_FIELDS = {
-  COMPANY_SIZE: 'RA9nMHgMtJXU4psI6k2i',
-  INDUSTRY: 'f8leCRd1QzhnKrlp9bNg',
-  AI_MATURITY: 'G6s5ctHOHEReMzYsg00k',
-  BUDGET_RANGE: '6ClZZoYLT0E1hyksPbhj',
-  DECISION_MAKER_ROLE: 'LMKXxPCj8mnZSOcA7oyY',
-  AI_USAGE: '9SNjg1gavcexZ9IAGJld',
-  TEAM_SIZE: 'Mb4aEV9RYlPURA0oJTnP',
-  OPEN_TO_PARTNERS: 'QpUKT9VJGa8uDMu4azJZ',
-  BIGGEST_BOTTLENECK: '0YovZhv8Y07ZF2334KZp',
-  AI_BUDGET: 'YEcHdhHs1msK2dtnhnee',
-  USING_AI: 'NoZ71Ye6JeR1a8o92nfq',
-  AUDIT_REASON: 'DDItTkocPlE7J08SWpmZ',
-  IDEAL_OUTCOME: 'Ds0UFWtFPHtRsmSxrPvN',
-  MONTHLY_REVENUE: 'nvupeyaBNnn2TizecaOv',
+  COMPANY_SIZE: process.env.GHL_FIELD_COMPANY_SIZE || 'RA9nMHgMtJXU4psI6k2i',
+  INDUSTRY: process.env.GHL_FIELD_INDUSTRY || 'f8leCRd1QzhnKrlp9bNg',
+  AI_MATURITY: process.env.GHL_FIELD_AI_MATURITY || 'G6s5ctHOHEReMzYsg00k',
+  BUDGET_RANGE: process.env.GHL_FIELD_BUDGET_RANGE || '6ClZZoYLT0E1hyksPbhj',
+  DECISION_MAKER_ROLE: process.env.GHL_FIELD_DECISION_MAKER_ROLE || 'LMKXxPCj8mnZSOcA7oyY',
+  AI_USAGE: process.env.GHL_FIELD_AI_USAGE || '9SNjg1gavcexZ9IAGJld',
+  TEAM_SIZE: process.env.GHL_FIELD_TEAM_SIZE || 'Mb4aEV9RYlPURA0oJTnP',
+  OPEN_TO_PARTNERS: process.env.GHL_FIELD_OPEN_TO_PARTNERS || 'QpUKT9VJGa8uDMu4azJZ',
+  BIGGEST_BOTTLENECK: process.env.GHL_FIELD_BIGGEST_BOTTLENECK || '0YovZhv8Y07ZF2334KZp',
+  AI_BUDGET: process.env.GHL_FIELD_AI_BUDGET || 'YEcHdhHs1msK2dtnhnee',
+  USING_AI: process.env.GHL_FIELD_USING_AI || 'NoZ71Ye6JeR1a8o92nfq',
+  AUDIT_REASON: process.env.GHL_FIELD_AUDIT_REASON || 'DDItTkocPlE7J08SWpmZ',
+  IDEAL_OUTCOME: process.env.GHL_FIELD_IDEAL_OUTCOME || 'Ds0UFWtFPHtRsmSxrPvN',
+  MONTHLY_REVENUE: process.env.GHL_FIELD_MONTHLY_REVENUE || 'nvupeyaBNnn2TizecaOv',
 } as const
 
-// Calendar IDs
+// Calendar IDs (configurable via env vars)
 export const GHL_CALENDARS = {
-  SCORECARD_INTERVIEW: 'BZRDQYjGCzVG9WVIUoAR',
+  SCORECARD_INTERVIEW: process.env.GHL_CALENDAR_SCORECARD || 'BZRDQYjGCzVG9WVIUoAR',
 } as const
 
 // ============================================================================
