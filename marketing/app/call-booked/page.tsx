@@ -61,55 +61,64 @@ export default function CallBookedPage() {
                   Your Call is Booked.
                 </p>
 
-                {/* 3 Action Items */}
-                <div className="max-w-2xl mx-auto space-y-4">
-                  {/* Action 1: Confirm Meeting */}
-                  <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.6 }}
-                    className="flex items-start gap-4 bg-[#F7F9FB] rounded-xl p-5 border border-gray-200 text-left"
-                  >
-                    <div className="w-8 h-8 bg-[#007AFF] rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <Mail className="h-4 w-4 text-white" />
-                    </div>
-                    <div>
-                      <p className="text-gray-900 font-medium mb-1">Check your email and confirm the meeting</p>
-                      <p className="text-sm text-gray-500">Please add it to your calendar to be respectful of both our time. Your time is valuable — and so is ours.</p>
-                    </div>
-                  </motion.div>
+                {/* 3 Action Items - Horizontal */}
+                <div className="max-w-4xl mx-auto">
+                  <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr_auto_1fr] items-start gap-4 md:gap-3">
+                    {/* Step 1 */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.6 }}
+                      className="bg-[#F7F9FB] rounded-xl p-5 border border-gray-200 text-center"
+                    >
+                      <span className="text-4xl font-light text-gray-200 block mb-2">1</span>
+                      <div className="w-10 h-10 bg-[#007AFF] rounded-full flex items-center justify-center mx-auto mb-3">
+                        <Mail className="h-5 w-5 text-white" />
+                      </div>
+                      <p className="text-gray-900 font-medium mb-1">Confirm your meeting</p>
+                      <p className="text-sm text-gray-500">Check your email and add it to your calendar. Your time is valuable — and so is ours.</p>
+                    </motion.div>
 
-                  {/* Action 2: Explore the Platform */}
-                  <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.75 }}
-                    className="flex items-start gap-4 bg-[#F7F9FB] rounded-xl p-5 border border-gray-200 text-left"
-                  >
-                    <div className="w-8 h-8 bg-[#007AFF] rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <Search className="h-4 w-4 text-white" />
+                    {/* Arrow 1 */}
+                    <div className="hidden md:flex items-center justify-center pt-12">
+                      <ChevronRight className="h-5 w-5 text-gray-300" />
                     </div>
-                    <div>
+
+                    {/* Step 2 */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.75 }}
+                      className="bg-[#F7F9FB] rounded-xl p-5 border border-gray-200 text-center"
+                    >
+                      <span className="text-4xl font-light text-gray-200 block mb-2">2</span>
+                      <div className="w-10 h-10 bg-[#007AFF] rounded-full flex items-center justify-center mx-auto mb-3">
+                        <Search className="h-5 w-5 text-white" />
+                      </div>
                       <p className="text-gray-900 font-medium mb-1">Explore Cursive below</p>
-                      <p className="text-sm text-gray-500">Scroll down to see case studies, FAQs, our different services, and everything Cursive can do for your business.</p>
-                    </div>
-                  </motion.div>
+                      <p className="text-sm text-gray-500">See case studies, FAQs, services, and everything Cursive can do for your business.</p>
+                    </motion.div>
 
-                  {/* Action 3: Free Gift */}
-                  <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.9 }}
-                    className="flex items-start gap-4 bg-gradient-to-r from-[#007AFF]/5 to-purple-50 rounded-xl p-5 border border-[#007AFF]/20 text-left"
-                  >
-                    <div className="w-8 h-8 bg-gradient-to-br from-[#007AFF] to-purple-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <Gift className="h-4 w-4 text-white" />
+                    {/* Arrow 2 */}
+                    <div className="hidden md:flex items-center justify-center pt-12">
+                      <ChevronRight className="h-5 w-5 text-gray-300" />
                     </div>
-                    <div>
-                      <p className="text-gray-900 font-medium mb-1">Scroll to the bottom for a free gift</p>
-                      <p className="text-sm text-gray-500">As a thank you for booking, we have something special waiting for you at the end of this page.</p>
-                    </div>
-                  </motion.div>
+
+                    {/* Step 3 */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.9 }}
+                      className="bg-[#F7F9FB] rounded-xl p-5 border border-gray-200 text-center"
+                    >
+                      <span className="text-4xl font-light text-gray-200 block mb-2">3</span>
+                      <div className="w-10 h-10 bg-[#007AFF] rounded-full flex items-center justify-center mx-auto mb-3">
+                        <Gift className="h-5 w-5 text-white" />
+                      </div>
+                      <p className="text-gray-900 font-medium mb-1">Grab your free gift</p>
+                      <p className="text-sm text-gray-500">Scroll to the bottom — we have something special waiting for you.</p>
+                    </motion.div>
+                  </div>
                 </div>
 
                 <motion.div
@@ -216,14 +225,14 @@ export default function CallBookedPage() {
                     </p>
 
                     {/* The Compounding Effect */}
-                    <div className="bg-[#F7F9FB] rounded-xl p-6 border border-gray-200 space-y-3">
-                      <p className="text-sm font-medium text-gray-900 uppercase tracking-wide">The Cycle That Compounds</p>
-                      <div className="space-y-2 text-sm text-gray-600">
-                        <p>Monday&apos;s visitors inform Tuesday&apos;s targeting</p>
-                        <p>This week&apos;s conversions improve next week&apos;s messaging</p>
-                        <p>Last month&apos;s patterns prevent next month&apos;s mistakes</p>
-                        <p>Every interaction makes your lookalike audiences sharper</p>
-                        <p>Every data point lowers your CAC and increases your LTV</p>
+                    <div className="space-y-3 mt-2">
+                      <p className="text-lg font-semibold text-gray-900">The Cycle That Compounds</p>
+                      <div className="space-y-1.5 text-base text-gray-600">
+                        <p>Monday&apos;s visitors inform Tuesday&apos;s targeting.</p>
+                        <p>This week&apos;s conversions improve next week&apos;s messaging.</p>
+                        <p>Last month&apos;s patterns prevent next month&apos;s mistakes.</p>
+                        <p>Every interaction makes your lookalike audiences sharper.</p>
+                        <p>Every data point lowers your CAC and increases your LTV.</p>
                       </div>
                     </div>
                   </motion.div>
@@ -364,14 +373,12 @@ export default function CallBookedPage() {
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  className="max-w-3xl mx-auto"
+                  className="max-w-3xl mx-auto text-center"
                 >
-                  <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl p-8 text-white text-center">
-                    <p className="text-xl font-light leading-relaxed mb-4">
-                      &quot;While your competitors treat every lead like the first lead they&apos;ve ever gotten, Cursive treats every lead like the thousandth. <em>Because it is.</em>&quot;
-                    </p>
-                    <p className="text-sm text-gray-400">The result: your CAC drops, your LTV rises, your growth compounds instead of plateaus.</p>
-                  </div>
+                  <p className="text-xl text-gray-900 font-light leading-relaxed mb-3">
+                    &quot;While your competitors treat every lead like the first lead they&apos;ve ever gotten, Cursive treats every lead like the thousandth. <em>Because it is.</em>&quot;
+                  </p>
+                  <p className="text-base text-gray-500">The result: your CAC drops, your LTV rises, your growth compounds instead of plateaus.</p>
                 </motion.div>
               </div>
             </Container>
@@ -464,13 +471,13 @@ export default function CallBookedPage() {
                     icon: Database,
                     title: "Data Enrichment",
                     description: "Enrich any contact or company record with 100+ data points. Waterfall enrichment checks multiple sources for maximum coverage.",
-                    href: "/data-enrichment",
+                    href: "/integrations",
                   },
                   {
                     icon: BarChart3,
                     title: "Attribution & Analytics",
                     description: "Track every touchpoint from first visit to closed deal. Multi-touch attribution shows exactly what's driving revenue.",
-                    href: "/attribution",
+                    href: "/visitor-identification",
                   },
                 ].map((solution, i) => (
                   <motion.div
@@ -548,12 +555,11 @@ export default function CallBookedPage() {
                     ))}
                   </div>
 
-                  <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
+                  <div className="flex justify-center">
                     <Button href="/marketplace">
                       Start Free — 100 Credits Included
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
-                    <span className="text-sm text-gray-500">No credit card required</span>
                   </div>
                 </div>
               </motion.div>
@@ -784,8 +790,6 @@ export default function CallBookedPage() {
 
               <div className="max-w-6xl mx-auto">
                 <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 relative">
-                  {/* Connecting line (desktop only) */}
-                  <div className="hidden lg:block absolute top-[68px] left-[12.5%] right-[12.5%] h-0.5 bg-gradient-to-r from-[#007AFF]/20 via-[#007AFF]/40 to-[#007AFF]/20" />
 
                   {[
                     {
@@ -1276,7 +1280,7 @@ export default function CallBookedPage() {
                     whileInView={{ scale: 1 }}
                     viewport={{ once: true }}
                     transition={{ type: "spring", stiffness: 200, damping: 15 }}
-                    className="w-20 h-20 bg-gradient-to-br from-[#007AFF]/10 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-6"
+                    className="w-20 h-20 bg-[#007AFF]/10 rounded-full flex items-center justify-center mx-auto mb-6"
                   >
                     <Gift className="h-10 w-10 text-[#007AFF]" />
                   </motion.div>
@@ -1291,7 +1295,7 @@ export default function CallBookedPage() {
                   </p>
                 </div>
 
-                <div className="bg-gradient-to-br from-[#007AFF]/5 to-purple-50 rounded-2xl p-8 lg:p-10 border border-[#007AFF]/20 text-center">
+                <div className="bg-[#F7F9FB] rounded-2xl p-8 lg:p-10 border border-gray-200 text-center">
                   <div className="flex items-center justify-center gap-3 mb-4">
                     <div className="w-10 h-10 bg-[#007AFF] rounded-xl flex items-center justify-center">
                       <ShoppingCart className="h-5 w-5 text-white" />
@@ -1307,9 +1311,9 @@ export default function CallBookedPage() {
                       <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
                     <div className="flex items-center gap-6 text-sm text-gray-500">
-                      <span className="flex items-center gap-1.5"><Check className="h-4 w-4 text-green-600" /> 100 free credits</span>
-                      <span className="flex items-center gap-1.5"><Check className="h-4 w-4 text-green-600" /> No credit card</span>
-                      <span className="flex items-center gap-1.5"><Check className="h-4 w-4 text-green-600" /> Instant access</span>
+                      <span className="flex items-center gap-1.5"><Check className="h-4 w-4 text-[#007AFF]" /> 100 free credits</span>
+                      <span className="flex items-center gap-1.5"><Check className="h-4 w-4 text-[#007AFF]" /> No credit card</span>
+                      <span className="flex items-center gap-1.5"><Check className="h-4 w-4 text-[#007AFF]" /> Instant access</span>
                     </div>
                   </div>
                 </div>
