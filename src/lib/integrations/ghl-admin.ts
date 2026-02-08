@@ -446,6 +446,226 @@ export async function deliverLeadsToSubAccount(
 }
 
 // ============================================================================
+// USER CREATION - Give Clients Login Access to Sub-Accounts
+// ============================================================================
+
+/**
+ * Create a user under a GHL sub-account so the client can log in.
+ * Uses agency token since we're creating users across locations.
+ * GHL auto-sends an invite email for the user to set their password.
+ */
+export async function createLocationUser(
+  locationId: string,
+  user: {
+    firstName: string
+    lastName: string
+    email: string
+    phone?: string
+    role?: 'admin' | 'user'
+  }
+): Promise<{ success: boolean; userId?: string; error?: string }> {
+  try {
+    const result = await ghlAdminFetch('/users/', {
+      method: 'POST',
+      useAgencyToken: true,
+      body: JSON.stringify({
+        companyId: CURSIVE_COMPANY_ID,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        phone: user.phone || '',
+        type: 'account',
+        role: user.role || 'admin',
+        locationIds: [locationId],
+        permissions: {
+          campaignsEnabled: true,
+          campaignsReadOnly: false,
+          contactsEnabled: true,
+          workflowsEnabled: true,
+          triggersEnabled: true,
+          funnelsEnabled: true,
+          websitesEnabled: true,
+          opportunitiesEnabled: true,
+          dashboardStatsEnabled: true,
+          bulkRequestsEnabled: true,
+          appointmentsEnabled: true,
+          reviewsEnabled: true,
+          onlineListingsEnabled: true,
+          phoneCallEnabled: true,
+          conversationsEnabled: true,
+          assignedDataOnly: false,
+          adPublishingEnabled: false,
+          membershipEnabled: false,
+          facebookAdsReportingEnabled: false,
+          attributionsReportingEnabled: false,
+          settingsEnabled: true,
+          tagsEnabled: true,
+          leadValueEnabled: true,
+          marketingEnabled: true,
+          agentReportingEnabled: true,
+          botService: false,
+          socialPlanner: false,
+          bloggingEnabled: false,
+          invoiceEnabled: true,
+          affiliateManagerEnabled: false,
+          contentAiEnabled: true,
+          refundsEnabled: false,
+          recordPaymentEnabled: true,
+          cancelSubscriptionEnabled: false,
+          paymentsEnabled: true,
+          communitiesEnabled: false,
+          exportPaymentsEnabled: false,
+        },
+      }),
+    })
+
+    return { success: true, userId: result?.id || result?.userId }
+  } catch (error: any) {
+    // If user already exists, that's fine
+    if (error.message?.includes('already exists') || error.message?.includes('Duplicate')) {
+      return { success: true, error: 'User already exists (OK)' }
+    }
+    return { success: false, error: error.message }
+  }
+}
+
+// ============================================================================
+// SNAPSHOT CLEANUP - Remove Unwanted Assets from New Sub-Accounts
+// ============================================================================
+
+// Pipeline names from the snapshot that clients should NOT get
+const SNAPSHOT_PIPELINES_TO_REMOVE = [
+  'AI Audit',                       // Cursive's internal sales funnel
+  'Agency OS – Sales Pipeline',     // Cursive's internal sales pipeline
+  'Talent Acquisition Funnel (ROLE)', // Cursive's internal hiring
+]
+
+// Pipeline names clients SHOULD keep
+// - Client Journey Funnel (lifecycle tracking)
+// - Client Onboarding (fulfillment tracking)
+// - Appointment Funnel (lead management)
+
+// Custom field names that are junk/test data to remove
+const SNAPSHOT_JUNK_FIELD_NAMES = [
+  'dasthhh',
+  'tsartsa',
+  'dsstrac',
+]
+
+/**
+ * Get pipelines for a location (uses agency token for sub-accounts)
+ */
+export async function getLocationPipelines(
+  locationId: string
+): Promise<Array<{ id: string; name: string }>> {
+  try {
+    const result = await ghlAdminFetch(
+      `/opportunities/pipelines?locationId=${locationId}`,
+      { useAgencyToken: true }
+    )
+    return (result.pipelines || []).map((p: any) => ({ id: p.id, name: p.name }))
+  } catch {
+    return []
+  }
+}
+
+/**
+ * Delete a pipeline from a location
+ */
+export async function deleteLocationPipeline(
+  pipelineId: string,
+  locationId: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    await ghlAdminFetch(
+      `/opportunities/pipelines/${pipelineId}?locationId=${locationId}`,
+      { method: 'DELETE', useAgencyToken: true }
+    )
+    return { success: true }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}
+
+/**
+ * Get custom fields for a location
+ */
+export async function getLocationCustomFields(
+  locationId: string
+): Promise<Array<{ id: string; name: string }>> {
+  try {
+    const result = await ghlAdminFetch(
+      `/locations/${locationId}/customFields`,
+      { useAgencyToken: true }
+    )
+    return (result.customFields || []).map((f: any) => ({ id: f.id, name: f.name?.trim() }))
+  } catch {
+    return []
+  }
+}
+
+/**
+ * Delete a custom field from a location
+ */
+export async function deleteLocationCustomField(
+  locationId: string,
+  fieldId: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    await ghlAdminFetch(
+      `/locations/${locationId}/customFields/${fieldId}`,
+      { method: 'DELETE', useAgencyToken: true }
+    )
+    return { success: true }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}
+
+/**
+ * Clean up unwanted snapshot assets from a newly created sub-account.
+ * Removes internal pipelines and junk custom fields that clients don't need.
+ */
+export async function cleanupSnapshotAssets(
+  locationId: string
+): Promise<{ pipelinesRemoved: number; fieldsRemoved: number; errors: string[] }> {
+  const errors: string[] = []
+  let pipelinesRemoved = 0
+  let fieldsRemoved = 0
+
+  // Remove unwanted pipelines
+  const pipelines = await getLocationPipelines(locationId)
+  for (const pipeline of pipelines) {
+    if (SNAPSHOT_PIPELINES_TO_REMOVE.includes(pipeline.name)) {
+      const result = await deleteLocationPipeline(pipeline.id, locationId)
+      if (result.success) {
+        pipelinesRemoved++
+      } else {
+        errors.push(`Pipeline "${pipeline.name}": ${result.error}`)
+      }
+      // Rate limit
+      await new Promise((resolve) => setTimeout(resolve, 200))
+    }
+  }
+
+  // Remove junk custom fields
+  const fields = await getLocationCustomFields(locationId)
+  for (const field of fields) {
+    if (SNAPSHOT_JUNK_FIELD_NAMES.includes(field.name)) {
+      const result = await deleteLocationCustomField(locationId, field.id)
+      if (result.success) {
+        fieldsRemoved++
+      } else {
+        errors.push(`Field "${field.name}": ${result.error}`)
+      }
+      await new Promise((resolve) => setTimeout(resolve, 200))
+    }
+  }
+
+  return { pipelinesRemoved, fieldsRemoved, errors }
+}
+
+// ============================================================================
 // CALENDARS - Read Available Slots
 // ============================================================================
 

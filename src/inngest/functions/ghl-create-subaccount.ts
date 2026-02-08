@@ -6,15 +6,21 @@
  *
  * Trigger: ghl-admin/create-subaccount
  * Steps:
- *   1. Create sub-account under Cursive's agency
- *   2. Apply snapshot template
- *   3. Store location ID in workspace settings
- *   4. Update GHL opportunity to "Won"
+ *   1. Create sub-account under Cursive's agency + apply snapshot
+ *   2. Create GHL user so client can log in (GHL auto-sends invite)
+ *   3. Clean up unwanted snapshot assets (internal pipelines, junk fields)
+ *   4. Store location ID in workspace settings
+ *   5. Tag contact in Cursive's GHL
+ *   6. Send branded credentials + onboarding email
+ *   7. Notify admin for pixel setup
+ *   8. Emit pipeline lifecycle event → WON
  */
 
 import { inngest } from '../client'
 import {
   createClientSubAccount,
+  createLocationUser,
+  cleanupSnapshotAssets,
   findCursiveContactByEmail,
   updateCursiveOpportunityStage,
   addCursiveContactTags,
@@ -64,7 +70,47 @@ export const ghlCreateSubaccount = inngest.createFunction(
       return result.locationId
     })
 
-    // Step 2: Store the location ID in workspace settings
+    // Step 2: Create a GHL user so the client can log in
+    // GHL auto-sends an invite email for them to set their password
+    const userCreated = await step.run('create-ghl-user', async () => {
+      const nameParts = user_name.split(' ')
+      const firstName = nameParts[0] || 'User'
+      const lastName = nameParts.slice(1).join(' ') || ''
+
+      const result = await createLocationUser(locationId, {
+        firstName,
+        lastName,
+        email: user_email,
+        phone: phone || undefined,
+        role: 'admin',
+      })
+
+      if (!result.success && !result.error?.includes('already exists')) {
+        safeError(`[GHL Sub-Account] Failed to create user: ${result.error}`)
+        // Don't throw — sub-account is created, user creation is secondary
+        // We'll include manual setup instructions in the email
+      }
+
+      safeLog(`[GHL Sub-Account] User creation result: ${result.success ? 'OK' : result.error}`)
+      return result.success
+    })
+
+    // Step 3: Clean up unwanted snapshot assets (internal pipelines, junk fields)
+    await step.run('cleanup-snapshot-assets', async () => {
+      try {
+        const result = await cleanupSnapshotAssets(locationId)
+        safeLog(
+          `[GHL Sub-Account] Snapshot cleanup: ${result.pipelinesRemoved} pipelines removed, ` +
+          `${result.fieldsRemoved} fields removed` +
+          (result.errors.length > 0 ? `, ${result.errors.length} errors` : '')
+        )
+      } catch (error) {
+        safeError('[GHL Sub-Account] Snapshot cleanup failed (non-blocking)', error)
+        // Non-blocking — cleanup is nice-to-have, not critical
+      }
+    })
+
+    // Step 4: Store the location ID in workspace settings
     await step.run('store-location-id', async () => {
       const supabase = createAdminClient()
 
@@ -98,7 +144,7 @@ export const ghlCreateSubaccount = inngest.createFunction(
       safeLog(`[GHL Sub-Account] Stored location ID in workspace settings`)
     })
 
-    // Step 3: Tag the contact in Cursive's GHL and update opportunity
+    // Step 5: Tag the contact in Cursive's GHL and update opportunity
     await step.run('update-ghl-records', async () => {
       const contactId = await findCursiveContactByEmail(user_email)
       if (contactId) {
@@ -110,7 +156,7 @@ export const ghlCreateSubaccount = inngest.createFunction(
       }
     })
 
-    // Step 4: Send client their GHL credentials + onboarding form link
+    // Step 6: Send client their GHL credentials + onboarding form link
     await step.run('send-credentials-email', async () => {
       const { sendEmail } = await import('@/lib/email/resend-client')
       const { createEmailTemplate } = await import('@/lib/email/resend-client')
@@ -119,28 +165,42 @@ export const ghlCreateSubaccount = inngest.createFunction(
       const GHL_LOGIN_URL = `https://app.gohighlevel.com/`
       const onboardingFormUrl = `${APP_URL}/onboarding/dfy?workspace=${workspace_id}`
 
+      const ghlInviteNote = userCreated
+        ? `<p style="margin: 0 0 8px 0;">You should also receive a separate invite email from GoHighLevel to set your password.</p>`
+        : `<p style="margin: 0 0 8px 0;">If you don't receive a CRM invite within 10 minutes, reply to this email and we'll get you set up manually.</p>`
+
       const html = createEmailTemplate({
         preheader: 'Your CRM is ready — log in and complete setup',
         title: 'Your CRM Account is Ready',
         content: `
           <h1 class="email-title">Welcome to Cursive, ${user_name.split(' ')[0]}!</h1>
-          <p class="email-text">Your dedicated CRM account has been created. Here's everything you need to get started:</p>
+          <p class="email-text">Your dedicated CRM account has been created and configured with your sales pipeline, onboarding tracker, and appointment calendar. Here's how to get started:</p>
 
           <div style="background: #f9fafb; border-radius: 8px; padding: 24px; margin: 24px 0;">
-            <p style="margin: 0 0 12px 0; font-weight: 600;">Your CRM Login</p>
+            <p style="margin: 0 0 12px 0; font-weight: 600;">Step 1: Set Up Your CRM Login</p>
             <p style="margin: 0 0 8px 0;">Email: <strong>${user_email}</strong></p>
-            <p style="margin: 0 0 16px 0;">A password reset link has been sent to your email. Use it to set your password.</p>
+            ${ghlInviteNote}
             <a href="${GHL_LOGIN_URL}" style="display: inline-block; padding: 10px 24px; background: #111827; color: white; border-radius: 6px; text-decoration: none; font-weight: 500;">
               Log In to Your CRM
             </a>
           </div>
 
           <div style="background: #eff6ff; border-radius: 8px; padding: 24px; margin: 24px 0; border-left: 4px solid #2563eb;">
-            <p style="margin: 0 0 8px 0; font-weight: 600; color: #1e40af;">Next Step: Complete Your Onboarding</p>
-            <p style="margin: 0 0 16px 0;">We need a few details about your business to set up your visitor tracking pixel and configure your campaigns.</p>
+            <p style="margin: 0 0 8px 0; font-weight: 600; color: #1e40af;">Step 2: Complete Your Onboarding</p>
+            <p style="margin: 0 0 16px 0;">We need a few details about your business to set up your visitor tracking pixel and configure your outreach campaigns.</p>
             <a href="${onboardingFormUrl}" class="email-button" style="margin: 0;">
               Complete Setup (2 min)
             </a>
+          </div>
+
+          <div style="background: #f0fdf4; border-radius: 8px; padding: 24px; margin: 24px 0; border-left: 4px solid #22c55e;">
+            <p style="margin: 0 0 8px 0; font-weight: 600; color: #15803d;">What's Already Set Up For You</p>
+            <ul style="margin: 0; padding-left: 20px; color: #374151;">
+              <li>Client journey pipeline with lifecycle tracking</li>
+              <li>Onboarding pipeline for your fulfillment flow</li>
+              <li>Appointment funnel for lead management</li>
+              <li>Onboarding calendar (60 min) for your kickoff call</li>
+            </ul>
           </div>
 
           <div class="email-signature">
@@ -158,7 +218,7 @@ export const ghlCreateSubaccount = inngest.createFunction(
       safeLog(`[GHL Sub-Account] Sent credentials email to ${user_email}`)
     })
 
-    // Step 5: Notify admin (Adam) that a new DFY client needs pixel setup
+    // Step 7: Notify admin (Adam) that a new DFY client needs pixel setup
     await step.run('notify-admin', async () => {
       const { sendEmail } = await import('@/lib/email/resend-client')
       const { sendSlackAlert } = await import('@/lib/monitoring/alerts')
@@ -208,7 +268,7 @@ export const ghlCreateSubaccount = inngest.createFunction(
       safeLog(`[GHL Sub-Account] Admin notified about new DFY client: ${company_name}`)
     })
 
-    // Step 6: Emit pipeline lifecycle event → moves opportunity to WON
+    // Step 8: Emit pipeline lifecycle event → moves opportunity to WON
     await step.run('emit-pipeline-update', async () => {
       try {
         await inngest.send({
