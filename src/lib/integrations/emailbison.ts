@@ -23,7 +23,7 @@ import { fetchWithTimeout } from '@/lib/utils/retry'
 // CONFIGURATION
 // ============================================================================
 
-const EMAILBISON_API_URL = process.env.EMAILBISON_API_URL || 'https://send.meetcursive.com'
+const EMAILBISON_API_URL = process.env.EMAILBISON_API_URL || 'https://dedi.emailbison.com'
 const EMAILBISON_API_KEY = process.env.EMAILBISON_API_KEY || ''
 const EMAILBISON_TIMEOUT = 30000
 

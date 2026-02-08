@@ -324,7 +324,7 @@ export async function POST(
       steps_added: result.stepsAdded,
       leads_added: result.leadsAdded,
       message: 'Campaign pushed to EmailBison. It starts paused — review and activate in your EmailBison dashboard.',
-      dashboard_url: `${process.env.EMAILBISON_API_URL || 'https://send.meetcursive.com'}`,
+      dashboard_url: 'https://send.meetcursive.com',
     })
   } catch (error) {
     console.error('[Campaign Builder] EmailBison export error:', error)
