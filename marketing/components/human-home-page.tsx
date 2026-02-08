@@ -2,109 +2,218 @@
 
 import { Button } from "@/components/ui/button"
 import { Container } from "@/components/ui/container"
-import { motion } from "framer-motion"
-import { InteractiveFeaturesShowcase } from "@/components/demos/interactive-features-showcase"
+import { motion, AnimatePresence } from "framer-motion"
 import { DashboardCTA } from "@/components/dashboard-cta"
 import { IntegrationsShowcase } from "@/components/integrations-showcase"
-import { InteractiveDemosTabs } from "@/components/demos/interactive-demos-tabs"
 import { HowItWorksSection } from "@/components/homepage/how-it-works-section"
 import { CompetitiveAdvantagesSection } from "@/components/homepage/competitive-advantages-section"
 import { FAQSection } from "@/components/homepage/faq-section"
 import { CustomerLogos } from "@/components/homepage/customer-logos"
 import Link from "next/link"
-import { Eye, Target, Bot, TrendingUp, ShoppingCart, Briefcase, type LucideIcon } from "lucide-react"
+import { useState } from "react"
+import {
+  Eye, Bot, TrendingUp, ShoppingCart, Briefcase,
+  Zap, Users, Database, Mail, Sparkles, ShieldCheck,
+  BarChart3, GitBranch, Building2, Search, Flame,
+  type LucideIcon,
+} from "lucide-react"
+
+// Demo components
+import { DemoVisitorTracking } from "@/components/demos/demo-visitor-tracking"
+import { DemoPipelineDashboard } from "@/components/demos/demo-pipeline-dashboard"
+import { DemoLeadSequence } from "@/components/demos/demo-lead-sequence"
+import { DemoAIStudio } from "@/components/demos/demo-ai-studio"
+import { DemoPeopleSearch } from "@/components/demos/demo-people-search"
+import { DemoMarketplace } from "@/components/demos/demo-marketplace"
+import { DemoIntentHeatmap } from "@/components/demos/demo-intent-heatmap"
+import { DemoAudienceBuilder } from "@/components/demos/demo-audience-builder"
+import { DemoEnrichmentWaterfall } from "@/components/demos/demo-enrichment-waterfall"
+import { DemoEmailValidator } from "@/components/demos/demo-email-validator"
+import { DemoAttributionFlow } from "@/components/demos/demo-attribution-flow"
+import { DemoAccountIntelligence } from "@/components/demos/demo-account-intelligence"
+
+// Feature definitions with icons for the hero showcase
+const heroFeatures: Array<{
+  id: string
+  label: string
+  shortLabel: string
+  icon: LucideIcon
+  component: React.ReactNode
+}> = [
+  { id: "visitor-tracking", label: "Visitor Tracking", shortLabel: "Visitors", icon: Eye, component: <DemoVisitorTracking /> },
+  { id: "intent-heatmap", label: "Intent Heatmap", shortLabel: "Intent", icon: Flame, component: <DemoIntentHeatmap /> },
+  { id: "audience-builder", label: "Audience Builder", shortLabel: "Audiences", icon: Users, component: <DemoAudienceBuilder /> },
+  { id: "enrichment", label: "Data Enrichment", shortLabel: "Enrichment", icon: Database, component: <DemoEnrichmentWaterfall /> },
+  { id: "sequences", label: "Lead Sequences", shortLabel: "Sequences", icon: Mail, component: <DemoLeadSequence /> },
+  { id: "ai-studio", label: "AI Studio", shortLabel: "AI Studio", icon: Sparkles, component: <DemoAIStudio /> },
+  { id: "email-validator", label: "Email Validator", shortLabel: "Validator", icon: ShieldCheck, component: <DemoEmailValidator /> },
+  { id: "pipeline", label: "Pipeline Dashboard", shortLabel: "Pipeline", icon: BarChart3, component: <DemoPipelineDashboard /> },
+  { id: "attribution", label: "Attribution Flow", shortLabel: "Attribution", icon: GitBranch, component: <DemoAttributionFlow /> },
+  { id: "account-intel", label: "Account Intelligence", shortLabel: "Accounts", icon: Building2, component: <DemoAccountIntelligence /> },
+  { id: "people-search", label: "People Search", shortLabel: "People", icon: Search, component: <DemoPeopleSearch /> },
+  { id: "marketplace", label: "Marketplace", shortLabel: "Marketplace", icon: ShoppingCart, component: <DemoMarketplace /> },
+]
 
 export function HumanHomePage() {
+  const [activeFeature, setActiveFeature] = useState("visitor-tracking")
+  const active = heroFeatures.find(f => f.id === activeFeature)
+
   return (
     <main className="bg-white">
-      {/* Hero Section - OPTIMIZED FOR CLARITY & CONVERSION */}
-      <section className="pt-24 pb-20 bg-white">
+      {/* ===== HERO SECTION ===== */}
+      <section className="pt-20 pb-12 bg-white">
         <Container>
+          {/* Eyebrow Badge */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="text-center max-w-5xl mx-auto mb-12"
+            transition={{ duration: 0.3 }}
+            className="text-center lg:text-left mb-8"
           >
-            <h1 className="text-5xl lg:text-7xl font-light text-gray-900 mb-6 leading-tight">
-              See Who's Visiting Your Site.
-              <span className="block text-gray-500 mt-2">
-                Reach Out Before They Leave.
-              </span>
-            </h1>
-
-            <p className="text-xl text-gray-600 mb-8 leading-relaxed max-w-3xl mx-auto">
-              <span className="font-cursive text-gray-900 text-2xl">Cursive</span> reveals anonymous website visitors, enriches them with verified contact data, and automates personalized outreach—so you never miss a warm lead.
-            </p>
-
-            {/* OPTIMIZED: Stats ABOVE fold for credibility */}
-            <div className="grid grid-cols-3 gap-8 max-w-2xl mx-auto mb-10 py-6 border-y border-gray-200">
-              <div className="text-center">
-                <div className="text-4xl text-gray-900 mb-1 font-light">70%</div>
-                <div className="text-sm text-gray-600">Visitor ID Rate</div>
-              </div>
-              <div className="text-center">
-                <div className="text-4xl text-gray-900 mb-1 font-light">220M+</div>
-                <div className="text-sm text-gray-600">Consumer Profiles</div>
-              </div>
-              <div className="text-center">
-                <div className="text-4xl text-gray-900 mb-1 font-light">140M+</div>
-                <div className="text-sm text-gray-600">Business Profiles</div>
-              </div>
-            </div>
-
-            {/* OPTIMIZED: Primary CTA - Clear, benefit-driven, stands out */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-3">
-              <Button
-                size="lg"
-                href="https://cal.com/cursive/30min"
-                target="_blank"
-                className="bg-[#007AFF] text-white hover:bg-[#0066DD] text-lg px-8 py-4"
-              >
-                Book Your Free AI Audit
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                href="https://leads.meetcursive.com/signup?source=homepage"
-                target="_blank"
-              >
-                Try Free Leads
-              </Button>
-            </div>
-            <p className="text-sm text-gray-500">See exactly who's visiting your site—no commitment required</p>
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-gray-50 border border-gray-200 rounded-full text-sm text-gray-600">
+              <Zap className="w-3.5 h-3.5 text-[#007AFF]" />
+              AI Intent Systems That Never Sleep
+            </span>
           </motion.div>
 
-          {/* Interactive Features Showcase */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <InteractiveFeaturesShowcase />
-          </motion.div>
-
-          {/* View All Demos Link */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            className="text-center mt-8"
-          >
-            <Link
-              href="/demos"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-white text-[#007AFF] border-2 border-[#007AFF] rounded-lg font-medium hover:bg-[#007AFF] hover:text-white transition-all group"
+          {/* Split Layout: Copy Left, Demo Right */}
+          <div className="lg:grid lg:grid-cols-12 lg:gap-10 items-start">
+            {/* Left Column: Copy + Feature Buttons */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              className="lg:col-span-5 text-center lg:text-left mb-10 lg:mb-0"
             >
-              <span>View All 12 Interactive Demos</span>
-              <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-              </svg>
-            </Link>
-          </motion.div>
+              <h1 className="text-4xl sm:text-5xl lg:text-[3.25rem] xl:text-[3.5rem] font-light text-gray-900 mb-6 leading-[1.1]">
+                See Who&apos;s Visiting Your Site.
+                <span className="block text-gray-500 mt-2">
+                  Reach Out Before They Leave.
+                </span>
+              </h1>
+
+              <p className="text-lg text-gray-600 mb-8 leading-relaxed max-w-xl mx-auto lg:mx-0">
+                <span className="font-cursive text-gray-900 text-xl">Cursive</span> reveals anonymous website visitors, enriches them with verified contact data, and automates personalized outreach—so you never miss a warm lead.
+              </p>
+
+              {/* Stats */}
+              <div className="flex justify-center lg:justify-start gap-8 mb-8 py-5 border-y border-gray-100">
+                {[
+                  { value: "70%", label: "Visitor ID Rate" },
+                  { value: "220M+", label: "Consumer Profiles" },
+                  { value: "140M+", label: "Business Profiles" },
+                ].map((stat) => (
+                  <div key={stat.label}>
+                    <div className="text-3xl lg:text-4xl text-gray-900 font-light">{stat.value}</div>
+                    <div className="text-xs text-gray-500 mt-1">{stat.label}</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* CTAs */}
+              <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-4 mb-2">
+                <Button
+                  size="lg"
+                  href="https://cal.com/cursive/30min"
+                  target="_blank"
+                  className="bg-[#007AFF] text-white hover:bg-[#0066DD] text-lg px-8 py-4"
+                >
+                  Book Your Free AI Audit
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  href="https://leads.meetcursive.com/signup?source=homepage"
+                  target="_blank"
+                >
+                  Get 100 Free Leads
+                </Button>
+              </div>
+              <p className="text-sm text-gray-400 mb-10 lg:mb-8">No commitment required</p>
+
+              {/* Desktop Feature Buttons (2-col sidebar) */}
+              <div className="hidden lg:grid grid-cols-2 gap-2">
+                {heroFeatures.map((feature) => {
+                  const Icon = feature.icon
+                  const isActive = activeFeature === feature.id
+                  return (
+                    <button
+                      key={feature.id}
+                      onClick={() => setActiveFeature(feature.id)}
+                      className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm text-left transition-all ${
+                        isActive
+                          ? 'bg-gray-900 text-white font-medium shadow-sm'
+                          : 'text-gray-600 hover:bg-gray-50 border border-gray-200'
+                      }`}
+                    >
+                      <Icon className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-white' : 'text-gray-400'}`} />
+                      {feature.label}
+                    </button>
+                  )
+                })}
+              </div>
+            </motion.div>
+
+            {/* Right Column: Demo */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+              className="lg:col-span-7"
+            >
+              {/* Mobile Feature Grid (ClickUp-style 4x3 icon grid) */}
+              <div className="lg:hidden grid grid-cols-4 gap-px bg-gray-200 rounded-xl overflow-hidden mb-6">
+                {heroFeatures.map((feature) => {
+                  const Icon = feature.icon
+                  const isActive = activeFeature === feature.id
+                  return (
+                    <button
+                      key={feature.id}
+                      onClick={() => setActiveFeature(feature.id)}
+                      className={`flex flex-col items-center justify-center gap-1.5 py-4 px-1 transition-colors ${
+                        isActive ? 'bg-blue-50' : 'bg-white'
+                      }`}
+                    >
+                      <Icon className={`w-5 h-5 ${isActive ? 'text-[#007AFF]' : 'text-gray-400'}`} />
+                      <span className={`text-[11px] leading-tight text-center ${
+                        isActive ? 'text-[#007AFF] font-medium' : 'text-gray-500'
+                      }`}>
+                        {feature.shortLabel}
+                      </span>
+                    </button>
+                  )
+                })}
+              </div>
+
+              {/* Demo with Browser Chrome */}
+              <div className="bg-gradient-to-br from-blue-50/50 to-blue-100/50 rounded-2xl p-3 md:p-4">
+                <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
+                  <div className="bg-gray-100 px-4 py-2.5 flex items-center gap-1.5 border-b border-gray-200">
+                    <div className="w-2.5 h-2.5 rounded-full bg-gray-300" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-gray-300" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-gray-300" />
+                  </div>
+                  <div className="p-4 md:p-6">
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        key={activeFeature}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.15 }}
+                      >
+                        {active?.component}
+                      </motion.div>
+                    </AnimatePresence>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
         </Container>
       </section>
 
-      {/* Customer Logos - Early Social Proof */}
+      {/* Social Proof */}
       <CustomerLogos />
 
       {/* Two Ways to Get Started */}
@@ -115,7 +224,7 @@ export function HumanHomePage() {
               Two Ways to Get Started
             </h2>
             <p className="text-xl text-gray-600">
-              Whether you prefer self-serve or done-for-you, we've got you covered.
+              Whether you prefer self-serve or done-for-you, we&apos;ve got you covered.
             </p>
           </div>
 
@@ -190,7 +299,7 @@ export function HumanHomePage() {
         </Container>
       </section>
 
-      {/* OPTIMIZED: Problem → Solution (Benefit-Led, Not Feature-Led) */}
+      {/* Problem → Solution (Benefit-Led) */}
       <section className="py-20 bg-white">
         <Container>
           <div className="text-center mb-16">
@@ -198,11 +307,10 @@ export function HumanHomePage() {
               Stop Losing Your Best Prospects
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              98% of website visitors leave without filling out a form. Cursive reveals who they are—so you can reach out while they're still interested.
+              98% of website visitors leave without filling out a form. Cursive reveals who they are—so you can reach out while they&apos;re still interested.
             </p>
           </div>
 
-          {/* OPTIMIZED: Benefits as outcomes, not features */}
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             {benefitPillars.map((pillar, i) => {
               const Icon = pillar.icon
@@ -227,13 +335,10 @@ export function HumanHomePage() {
         </Container>
       </section>
 
-      {/* How It Works - Interactive Demos */}
-      <InteractiveDemosTabs />
-
       {/* Competitive Advantages */}
       <CompetitiveAdvantagesSection />
 
-      {/* Core Features Grid - BENEFIT-LED */}
+      {/* Core Features Grid */}
       <section className="py-20 bg-[#F7F9FB]">
         <Container>
           <div className="text-center mb-16">
@@ -282,7 +387,7 @@ export function HumanHomePage() {
         </Container>
       </section>
 
-      {/* How It Works - Technical Process */}
+      {/* How It Works */}
       <HowItWorksSection />
 
       {/* Integrations Showcase */}
@@ -408,7 +513,7 @@ export function HumanHomePage() {
   )
 }
 
-// OPTIMIZED: Benefit-focused pillars (outcomes, not features)
+// Benefit-focused pillars
 const benefitPillars: Array<{
   icon: LucideIcon
   title: string
@@ -431,7 +536,7 @@ const benefitPillars: Array<{
   },
 ]
 
-// Core Features Data - BENEFIT-LED descriptions
+// Core Features Data
 const coreFeatures = [
   {
     title: "Visitor Identification",
@@ -500,4 +605,3 @@ const coreFeatures = [
     ]
   },
 ]
-
