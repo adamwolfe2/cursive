@@ -170,6 +170,17 @@ async function processCreditPurchase({
           amount: (amountTotal || 0) / 100,
         },
       })
+
+      // Emit pipeline lifecycle event
+      await inngest.send({
+        name: 'ghl/pipeline.update',
+        data: {
+          user_email: userData.email,
+          workspace_id,
+          lifecycle_event: 'credit_purchase',
+          metadata: { amount: (amountTotal || 0) / 100, credits: creditsAmount },
+        },
+      })
     }
   })
 
@@ -305,6 +316,17 @@ async function processLeadPurchase({
           workspace_id,
           purchase_type: 'lead_purchase',
           amount: metadata.amount_total ? metadata.amount_total / 100 : 0,
+        },
+      })
+
+      // Emit pipeline lifecycle event
+      await inngest.send({
+        name: 'ghl/pipeline.update',
+        data: {
+          user_email: userData.email,
+          workspace_id,
+          lifecycle_event: 'lead_purchase',
+          metadata: { lead_count: parseInt(lead_count, 10) },
         },
       })
     }

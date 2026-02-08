@@ -148,5 +148,10 @@ export const { GET, POST, PUT } = serve({
 
     // DFY Onboarding Sequence
     functions.dfyOnboardingSequence,
+
+    // Autonomous Monitoring & Pipeline Tracking
+    functions.universalFailureHandler,
+    functions.ghlPipelineLifecycle,
+    functions.customerLifecycleMonitor,
   ],
 })

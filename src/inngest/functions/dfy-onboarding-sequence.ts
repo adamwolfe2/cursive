@@ -146,6 +146,27 @@ export const dfyOnboardingSequence = inngest.createFunction(
       })
     })
 
+    // Emit pipeline lifecycle event — onboarding completed
+    await step.run('emit-pipeline-update', async () => {
+      try {
+        await inngest.send({
+          name: 'ghl/pipeline.update',
+          data: {
+            user_email,
+            workspace_id,
+            lifecycle_event: 'onboarding_completed',
+            metadata: {
+              company_name,
+              website_url,
+              industries,
+            },
+          },
+        })
+      } catch {
+        // Non-blocking
+      }
+    })
+
     // Wait 3 days
     await step.sleep('wait-3-days', '3d')
 

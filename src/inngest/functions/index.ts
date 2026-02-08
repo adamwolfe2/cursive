@@ -178,3 +178,12 @@ export { ghlSyncContact, ghlBulkSync } from './ghl-sync-contact'
 
 // DFY Onboarding Sequence (post-onboarding form drip)
 export { dfyOnboardingSequence } from './dfy-onboarding-sequence'
+
+// Universal Failure Handler (catches ALL Inngest failures → Slack)
+export { universalFailureHandler } from './inngest-failure-handler'
+
+// GHL Pipeline Lifecycle (auto-moves contacts through pipeline)
+export { ghlPipelineLifecycle } from './ghl-pipeline-lifecycle'
+
+// Customer Health Monitor (daily cron for stuck customers)
+export { customerLifecycleMonitor } from './customer-lifecycle-monitor'

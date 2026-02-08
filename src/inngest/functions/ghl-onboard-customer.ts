@@ -122,6 +122,39 @@ export const ghlOnboardCustomer = inngest.createFunction(
       return result.opportunityId
     })
 
+    // Step 4: Store GHL IDs in workspace settings for future lookups
+    await step.run('store-ghl-ids', async () => {
+      if (!contactId && !opportunityId) return
+
+      try {
+        const { createAdminClient } = await import('@/lib/supabase/admin')
+        const supabase = createAdminClient()
+
+        const { data: workspace } = await supabase
+          .from('workspaces')
+          .select('settings')
+          .eq('id', workspace_id)
+          .single()
+
+        const currentSettings = (workspace?.settings as Record<string, unknown>) || {}
+
+        await supabase
+          .from('workspaces')
+          .update({
+            settings: {
+              ...currentSettings,
+              ghl_contact_id: contactId,
+              ...(opportunityId ? { ghl_opportunity_id: opportunityId } : {}),
+            },
+          })
+          .eq('id', workspace_id)
+
+        safeLog(`[GHL Onboard] Stored GHL IDs in workspace settings`)
+      } catch (error) {
+        safeError('[GHL Onboard] Failed to store GHL IDs (non-blocking)', error)
+      }
+    })
+
     return {
       success: true,
       contactId,

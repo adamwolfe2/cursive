@@ -208,6 +208,26 @@ export const ghlCreateSubaccount = inngest.createFunction(
       safeLog(`[GHL Sub-Account] Admin notified about new DFY client: ${company_name}`)
     })
 
+    // Step 6: Emit pipeline lifecycle event → moves opportunity to WON
+    await step.run('emit-pipeline-update', async () => {
+      try {
+        await inngest.send({
+          name: 'ghl/pipeline.update',
+          data: {
+            user_email,
+            workspace_id,
+            lifecycle_event: 'subaccount_created',
+            metadata: {
+              location_id: locationId,
+              company_name,
+            },
+          },
+        })
+      } catch {
+        // Non-blocking
+      }
+    })
+
     return {
       success: true,
       locationId,

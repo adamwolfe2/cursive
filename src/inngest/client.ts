@@ -496,6 +496,24 @@ export type Events = {
       onboarding_data: Record<string, any>
     }
   }
+
+  // GHL Pipeline Lifecycle Events
+  'ghl/pipeline.update': {
+    data: {
+      user_email: string
+      workspace_id: string
+      lifecycle_event:
+        | 'subaccount_created'
+        | 'onboarding_completed'
+        | 'pixel_live'
+        | 'first_leads_delivered'
+        | 'subscription_cancelled'
+        | 'subscription_renewed'
+        | 'credit_purchase'
+        | 'lead_purchase'
+      metadata?: Record<string, any>
+    }
+  }
 }
 
 // Lazy-load Inngest client to avoid build-time initialization

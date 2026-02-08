@@ -5,7 +5,19 @@
 
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 
-export type AlertType = 'email_failure' | 'webhook_failure' | 'dlq_threshold' | 'system_health'
+export type AlertType =
+  | 'email_failure'
+  | 'webhook_failure'
+  | 'dlq_threshold'
+  | 'system_health'
+  | 'inngest_failure'
+  | 'pipeline_update'
+  | 'customer_stuck'
+  | 'ghl_sync_failure'
+  | 'new_dfy_client'
+  | 'dfy_onboarding_complete'
+  | 'stripe_payment'
+  | (string & {}) // Allow any string for extensibility
 export type AlertSeverity = 'info' | 'warning' | 'error' | 'critical'
 
 export interface SlackAlert {
