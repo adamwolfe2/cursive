@@ -66,7 +66,9 @@ export function OnboardingForm({ subscriptionId, tierName, initialData = {} }: O
   const [error, setError] = useState('')
 
   const [formData, setFormData] = useState({
-    // Step 1: Industry & Company Size
+    // Step 1: Company Basics
+    companyName: (initialData.company_name as string) || '',
+    websiteUrl: (initialData.website_url as string) || '',
     industries: (initialData.industries as string[]) || [],
     companySize: (initialData.company_size as string) || '',
     revenueRange: (initialData.revenue_range as string) || '',
@@ -104,7 +106,7 @@ export function OnboardingForm({ subscriptionId, tierName, initialData = {} }: O
   const canProceed = () => {
     switch (step) {
       case 1:
-        return formData.industries.length > 0 && formData.companySize && formData.revenueRange
+        return formData.companyName.trim() && formData.websiteUrl.trim() && formData.industries.length > 0 && formData.companySize && formData.revenueRange
       case 2:
         return formData.targetTitles.trim() && formData.targetSeniority.length > 0
       case 3:
@@ -139,6 +141,8 @@ export function OnboardingForm({ subscriptionId, tierName, initialData = {} }: O
         body: JSON.stringify({
           subscription_id: subscriptionId,
           onboarding_data: {
+            company_name: formData.companyName,
+            website_url: formData.websiteUrl,
             industries: formData.industries,
             company_size: formData.companySize,
             revenue_range: formData.revenueRange,
@@ -194,13 +198,42 @@ export function OnboardingForm({ subscriptionId, tierName, initialData = {} }: O
         {step === 1 && (
           <div>
             <h2 className="text-2xl font-bold text-zinc-900 mb-2">
-              Tell me about your target companies
+              Tell me about your company
             </h2>
             <p className="text-zinc-600 mb-6">
-              What industries and company sizes are you targeting?
+              Basic info so we can set up your tracking pixel and campaigns.
             </p>
 
             <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-zinc-900 mb-3">
+                  Company name
+                </label>
+                <input
+                  type="text"
+                  value={formData.companyName}
+                  onChange={e => updateField('companyName', e.target.value)}
+                  placeholder="Acme Inc."
+                  className="w-full px-4 py-3 rounded-lg border border-zinc-200 focus:border-primary focus:ring-1 focus:ring-primary"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-zinc-900 mb-3">
+                  Website URL
+                </label>
+                <input
+                  type="url"
+                  value={formData.websiteUrl}
+                  onChange={e => updateField('websiteUrl', e.target.value)}
+                  placeholder="https://yourcompany.com"
+                  className="w-full px-4 py-3 rounded-lg border border-zinc-200 focus:border-primary focus:ring-1 focus:ring-primary"
+                />
+                <p className="text-sm text-zinc-500 mt-2">
+                  We'll install a visitor tracking pixel on this domain
+                </p>
+              </div>
+
               <div>
                 <label className="block text-sm font-medium text-zinc-900 mb-3">
                   Industries (select all that apply)

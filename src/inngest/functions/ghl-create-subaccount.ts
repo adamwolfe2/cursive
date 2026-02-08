@@ -163,7 +163,7 @@ export const ghlCreateSubaccount = inngest.createFunction(
 
       const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://leads.meetcursive.com'
       const GHL_LOGIN_URL = `https://app.gohighlevel.com/`
-      const onboardingFormUrl = `${APP_URL}/onboarding/dfy?workspace=${workspace_id}`
+      const onboardingFormUrl = `${APP_URL}/services/onboarding`
 
       const ghlInviteNote = userCreated
         ? `<p style="margin: 0 0 8px 0;">You should also receive a separate invite email from GoHighLevel to set your password.</p>`

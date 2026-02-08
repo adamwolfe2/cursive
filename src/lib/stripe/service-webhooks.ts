@@ -167,7 +167,7 @@ export async function handleSubscriptionCreated(subscription: Stripe.Subscriptio
         })
 
         // For tiers that include sub-account setup, create one
-        if (tier.features && (tier.features as Record<string, unknown>).ghl_subaccount) {
+        if (tier.platform_features && (tier.platform_features as Record<string, unknown>).ghl_subaccount) {
           await inngest.send({
             name: 'ghl-admin/create-subaccount',
             data: {

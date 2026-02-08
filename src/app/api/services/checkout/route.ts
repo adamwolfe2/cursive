@@ -80,6 +80,7 @@ export async function POST(request: NextRequest) {
     // Create Stripe Checkout session
     const checkoutResult = await createServiceCheckout({
       workspaceId,
+      userId: user.id,
       serviceTierSlug: validated.tier_slug,
       negotiatedMonthlyPrice: validated.negotiated_monthly_price,
       billingEmail: billingEmail || undefined,

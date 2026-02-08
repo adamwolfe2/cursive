@@ -68,6 +68,7 @@ export default async function CheckoutPage({ searchParams }: CheckoutPageProps) 
     // Create Stripe checkout session
     const checkoutUrl = await createServiceCheckout({
       workspaceId: userData.workspace_id,
+      userId: user.id,
       serviceTierSlug: tierSlug,
     })
 

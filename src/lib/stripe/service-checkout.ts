@@ -20,6 +20,7 @@ const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
 
 export interface CreateServiceCheckoutParams {
   workspaceId: string
+  userId: string
   serviceTierSlug: string
   negotiatedMonthlyPrice?: number
   billingEmail?: string
@@ -41,6 +42,7 @@ export async function createServiceCheckout(
 ): Promise<ServiceCheckoutResult> {
   const {
     workspaceId,
+    userId,
     serviceTierSlug,
     negotiatedMonthlyPrice,
     billingEmail,
@@ -90,6 +92,7 @@ export async function createServiceCheckout(
     customer_email: billingEmail,
     metadata: {
       workspace_id: workspaceId,
+      user_id: userId,
       service_tier_id: tier.id,
       service_tier_slug: tier.slug,
       monthly_price: (negotiatedMonthlyPrice ?? tier.monthly_price ?? 0).toString(),
@@ -98,6 +101,7 @@ export async function createServiceCheckout(
     subscription_data: {
       metadata: {
         workspace_id: workspaceId,
+        user_id: userId,
         service_tier_id: tier.id,
         service_tier_slug: tier.slug
       }
