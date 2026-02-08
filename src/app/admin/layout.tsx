@@ -19,20 +19,20 @@ export default async function AdminLayout({
 }) {
   // Check admin role from database
   const supabase = await createClient()
-  const { data: { session } } = await supabase.auth.getSession()
+  const { data: { user } } = await supabase.auth.getUser()
 
-  if (!session?.user) {
+  if (!user) {
     redirect('/login?error=unauthorized')
   }
 
   // Verify user has admin or owner role
-  const hasAdminAccess = await isAdmin(session.user)
+  const hasAdminAccess = await isAdmin(user)
   if (!hasAdminAccess) {
     redirect('/dashboard?error=admin_required')
   }
 
-  const user = await getUserWithRole(session.user)
-  const adminEmail = user?.email || session.user.email || 'Admin'
+  const userWithRole = await getUserWithRole(user)
+  const adminEmail = userWithRole?.email || user.email || 'Admin'
 
   return (
     <div className="min-h-screen bg-zinc-50">

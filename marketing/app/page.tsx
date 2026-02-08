@@ -6,12 +6,12 @@ import { HumanHomePage } from "@/components/human-home-page"
 import { FAQSection } from "@/components/homepage/faq-section"
 
 export const metadata: Metadata = {
-  title: "Identify Website Visitors & Automate Outreach | Cursive",
-  description: "Turn anonymous visitors into qualified leads. Cursive identifies website visitors, enriches contact data, and automates AI-powered outreach.",
+  title: "Turn Website Visitors Into Booked Meetings | Cursive",
+  description: "98% of visitors leave without converting. Cursive tracks leads with pixels, enriches against 220M verified contacts, and automates personalized outreach.",
   keywords: "B2B lead generation, visitor identification, intent data, direct mail marketing, audience targeting, AI SDR, outbound automation",
   openGraph: {
-    title: "Identify Website Visitors & Automate Outreach | Cursive",
-    description: "Turn anonymous visitors into qualified leads. Cursive identifies website visitors, enriches contact data, and automates AI-powered outreach.",
+    title: "Turn Website Visitors Into Booked Meetings | Cursive",
+    description: "98% of visitors leave without converting. Cursive tracks leads with pixels, enriches against 220M verified contacts, and automates personalized outreach.",
     url: "https://meetcursive.com",
     siteName: "Cursive",
     images: [{
@@ -24,8 +24,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Identify Website Visitors & Automate Outreach | Cursive",
-    description: "Turn anonymous visitors into qualified leads. Cursive identifies website visitors, enriches contact data, and automates AI-powered outreach.",
+    title: "Turn Website Visitors Into Booked Meetings | Cursive",
+    description: "98% of visitors leave without converting. Cursive tracks leads with pixels, enriches against 220M verified contacts, and automates personalized outreach.",
     images: ["https://meetcursive.com/cursive-social-preview.png"],
     creator: "@meetcursive",
   },
@@ -131,7 +131,7 @@ export default function HomePage() {
           <div className="mb-12 pb-6 border-b border-gray-200">
             <h1 className="text-2xl text-gray-900 font-bold mb-4">CURSIVE</h1>
             <p className="text-gray-700 leading-relaxed">
-              Cursive identifies anonymous website visitors, enriches them with verified contact data, and automates personalized outreach to book more meetings.
+              Turn website visitors into booked meetings. 98% of visitors leave without converting. Cursive tracks leads with pixels, enriches against 220M verified contacts, and automates personalized outreach.
             </p>
           </div>
 

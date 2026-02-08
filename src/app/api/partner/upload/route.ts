@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
     // Get user with access control fields
     const { data: user } = await supabase
       .from('users')
-      .select('id, role, partner_approved, email, full_name')
+      .select('id, role, partner_approved, email, full_name, linked_partner_id')
       .eq('auth_user_id', authUser.id)
       .single()
 
@@ -375,7 +375,7 @@ export async function POST(request: NextRequest) {
         // Prepare lead for insertion
         leadsToInsert.push({
           workspace_id: null, // Will be set when lead is purchased or routed
-          partner_id: user.id, // CRITICAL: Set to authenticated partner user ID
+          partner_id: user.linked_partner_id || user.id, // Use linked partner record ID (falls back to user ID if not linked)
           upload_batch_id: batchId,
           first_name: validatedRow.first_name,
           last_name: validatedRow.last_name,
@@ -398,6 +398,7 @@ export async function POST(request: NextRequest) {
           freshness_score: freshnessScore,
           marketplace_price: marketplacePrice,
           is_marketplace_listed: true,
+          marketplace_status: 'available',
           verification_status: 'pending',
           source: 'partner',
           enrichment_status: 'pending',

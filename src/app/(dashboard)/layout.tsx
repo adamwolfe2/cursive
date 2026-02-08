@@ -23,12 +23,12 @@ export default async function DashboardLayout({
 
   // Check authentication
   const {
-    data: { session },
-  } = await supabase.auth.getSession()
+    data: { user },
+  } = await supabase.auth.getUser()
 
   // Development-only: admin bypass cookie for local testing
   if (process.env.NODE_ENV === 'development') {
-    if (!session && hasAdminBypass) {
+    if (!user && hasAdminBypass) {
       const mockUser = {
         id: '00000000-0000-0000-0000-000000000000',
         full_name: 'Admin',
@@ -70,7 +70,7 @@ export default async function DashboardLayout({
     }
   }
 
-  if (!session) {
+  if (!user) {
     redirect('/login')
   }
 
@@ -78,7 +78,7 @@ export default async function DashboardLayout({
   const { data: userData } = await supabase
     .from('users')
     .select('*, workspaces(*)')
-    .eq('auth_user_id', session.user.id)
+    .eq('auth_user_id', user.id)
     .single()
 
   // Type the user data

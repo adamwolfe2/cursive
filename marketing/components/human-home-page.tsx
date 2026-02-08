@@ -85,15 +85,12 @@ export function HumanHomePage() {
               transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
               className="lg:w-[40%] lg:flex-shrink-0 text-center lg:text-left mb-8 lg:mb-0"
             >
-              <h1 className="text-3xl sm:text-4xl lg:text-[2.5rem] xl:text-[2.75rem] font-light text-gray-900 mb-4 leading-[1.15]">
-                See Who&apos;s Visiting Your Site.
-                <span className="block text-gray-500 mt-1">
-                  Reach Out Before They Leave.
-                </span>
+              <h1 className="text-[1.65rem] sm:text-4xl lg:text-[2.5rem] xl:text-[2.75rem] font-light text-gray-900 mb-4 leading-[1.15]">
+                Turn Website Visitors Into Booked Meetings.
               </h1>
 
               <p className="text-base text-gray-600 mb-4 leading-relaxed max-w-lg mx-auto lg:mx-0">
-                <span className="font-cursive text-gray-900 text-lg">Cursive</span> reveals anonymous website visitors, enriches them with verified contact data, and automates personalized outreach—so you never miss a warm lead.
+                98% of visitors leave your site without converting. <span className="font-cursive text-gray-900 text-lg">Cursive</span> tracks leads with pixels, enriches leads against 220M verified contacts, and automates personalized outreach so you can make sales in your sleep.
               </p>
 
               {/* Stats */}

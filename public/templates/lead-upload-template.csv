@@ -1,0 +1,3 @@
+email,first_name,last_name,company_name,job_title,phone,city,state,postal_code,country,company_size,company_domain,linkedin_url,sic_code
+john.smith@acmecorp.com,John,Smith,Acme Corp,VP of Engineering,555-123-4567,Austin,TX,78701,US,51-200,acmecorp.com,https://linkedin.com/in/johnsmith,7372
+jane.doe@techstartup.io,Jane,Doe,Tech Startup Inc,Director of Marketing,555-987-6543,Denver,CO,80202,US,11-50,techstartup.io,https://linkedin.com/in/janedoe,7371

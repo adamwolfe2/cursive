@@ -13,14 +13,14 @@ export async function PartnerAuthWrapper({
   children: React.ReactNode
 }) {
   const supabase = await createClient()
-  const { data: { session } } = await supabase.auth.getSession()
+  const { data: { user: authUser } } = await supabase.auth.getUser()
 
-  if (!session?.user) {
+  if (!authUser) {
     redirect('/login?error=unauthorized')
   }
 
   // Get user with role
-  const user = await getUserWithRole(session.user)
+  const user = await getUserWithRole(authUser)
   if (!user) {
     redirect('/login?error=user_not_found')
   }
@@ -31,7 +31,7 @@ export async function PartnerAuthWrapper({
   }
 
   // Check if partner is approved
-  const approved = await isApprovedPartner(session.user)
+  const approved = await isApprovedPartner(authUser)
   if (!approved) {
     redirect('/partner/pending?status=awaiting_approval')
   }

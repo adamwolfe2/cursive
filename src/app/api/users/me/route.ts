@@ -94,6 +94,7 @@ export async function GET(request: NextRequest) {
       subscription_period_end: user.subscription_period_end,
       cancel_at_period_end: user.cancel_at_period_end,
       notification_preferences: user.notification_preferences,
+      api_key: (user as any).api_key || null,
     })
   } catch (error: any) {
     return handleApiError(error)

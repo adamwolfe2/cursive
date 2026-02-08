@@ -98,12 +98,12 @@ const STATE_OPTIONS = [
 export default async function TargetingPreferencesPage() {
   const supabase = await createClient()
 
-  // Get session
+  // Get user
   const {
-    data: { session },
-  } = await supabase.auth.getSession()
+    data: { user },
+  } = await supabase.auth.getUser()
 
-  if (!session) {
+  if (!user) {
     redirect('/login')
   }
 
@@ -111,7 +111,7 @@ export default async function TargetingPreferencesPage() {
   const { data: userData, error: userError } = await supabase
     .from('users')
     .select('id, workspace_id, full_name, email')
-    .eq('auth_user_id', session.user.id)
+    .eq('auth_user_id', user.id)
     .single()
 
   if (userError || !userData) {

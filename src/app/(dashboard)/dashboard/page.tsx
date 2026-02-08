@@ -10,10 +10,10 @@ import { serviceTierRepository } from '@/lib/repositories/service-tier.repositor
 export default async function DashboardPage() {
   const supabase = await createClient()
 
-  // Get session
-  const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+  // Get user
+  const { data: { user }, error: authError } = await supabase.auth.getUser()
 
-  if (sessionError || !session) {
+  if (authError || !user) {
     redirect('/login')
   }
 
@@ -21,7 +21,7 @@ export default async function DashboardPage() {
   const { data: userData, error: userError } = await supabase
     .from('users')
     .select('*, workspaces(*)')
-    .eq('auth_user_id', session.user.id)
+    .eq('auth_user_id', user.id)
     .single()
 
   // Type the user data
