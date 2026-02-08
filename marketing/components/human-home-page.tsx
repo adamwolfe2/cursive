@@ -61,62 +61,62 @@ export function HumanHomePage() {
   return (
     <main className="bg-white">
       {/* ===== HERO SECTION ===== */}
-      <section className="pt-20 pb-12 bg-white">
-        <Container>
+      <section className="pt-14 pb-6 bg-white lg:min-h-[90vh] lg:flex lg:flex-col lg:justify-center">
+        <Container className="max-w-[1440px] lg:px-12">
           {/* Eyebrow Badge */}
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
-            className="text-center lg:text-left mb-8"
+            className="text-center lg:text-left mb-4"
           >
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-gray-50 border border-gray-200 rounded-full text-sm text-gray-600">
-              <Zap className="w-3.5 h-3.5 text-[#007AFF]" />
+            <span className="inline-flex items-center gap-2 px-3 py-1 bg-gray-50 border border-gray-200 rounded-full text-xs text-gray-600">
+              <Zap className="w-3 h-3 text-[#007AFF]" />
               AI Intent Systems That Never Sleep
             </span>
           </motion.div>
 
           {/* Split Layout: Copy Left, Demo Right */}
-          <div className="lg:flex lg:gap-12 xl:gap-16 items-start">
+          <div className="lg:flex lg:gap-8 xl:gap-12 items-start">
             {/* Left Column: Copy */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-              className="lg:w-[45%] xl:w-[42%] lg:flex-shrink-0 text-center lg:text-left mb-10 lg:mb-0"
+              className="lg:w-[40%] lg:flex-shrink-0 text-center lg:text-left mb-8 lg:mb-0"
             >
-              <h1 className="text-4xl sm:text-5xl lg:text-[3.25rem] xl:text-6xl font-light text-gray-900 mb-6 leading-[1.1]">
+              <h1 className="text-3xl sm:text-4xl lg:text-[2.5rem] xl:text-[2.75rem] font-light text-gray-900 mb-4 leading-[1.15]">
                 See Who&apos;s Visiting Your Site.
-                <span className="block text-gray-500 mt-2">
+                <span className="block text-gray-500 mt-1">
                   Reach Out Before They Leave.
                 </span>
               </h1>
 
-              <p className="text-lg text-gray-600 mb-6 leading-relaxed max-w-xl mx-auto lg:mx-0">
-                <span className="font-cursive text-gray-900 text-xl">Cursive</span> reveals anonymous website visitors, enriches them with verified contact data, and automates personalized outreach—so you never miss a warm lead.
+              <p className="text-base text-gray-600 mb-4 leading-relaxed max-w-lg mx-auto lg:mx-0">
+                <span className="font-cursive text-gray-900 text-lg">Cursive</span> reveals anonymous website visitors, enriches them with verified contact data, and automates personalized outreach—so you never miss a warm lead.
               </p>
 
               {/* Stats */}
-              <div className="flex justify-center lg:justify-start gap-8 mb-6 py-4 border-y border-gray-100">
+              <div className="flex justify-center lg:justify-start gap-6 mb-4 py-3 border-y border-gray-100">
                 {[
                   { value: "70%", label: "Visitor ID Rate" },
                   { value: "220M+", label: "Consumer Profiles" },
                   { value: "140M+", label: "Business Profiles" },
                 ].map((stat) => (
                   <div key={stat.label}>
-                    <div className="text-3xl lg:text-4xl text-gray-900 font-light">{stat.value}</div>
-                    <div className="text-xs text-gray-500 mt-1">{stat.label}</div>
+                    <div className="text-2xl lg:text-3xl text-gray-900 font-light">{stat.value}</div>
+                    <div className="text-[11px] text-gray-500">{stat.label}</div>
                   </div>
                 ))}
               </div>
 
               {/* CTAs */}
-              <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-3 mb-2">
+              <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-3 mb-1">
                 <Button
                   size="lg"
                   href="https://cal.com/cursive/30min"
                   target="_blank"
-                  className="bg-[#007AFF] text-white hover:bg-[#0066DD] text-lg px-8 py-4"
+                  className="bg-[#007AFF] text-white hover:bg-[#0066DD] px-6 py-3"
                 >
                   Book Your Free AI Audit
                 </Button>
@@ -125,14 +125,15 @@ export function HumanHomePage() {
                   variant="outline"
                   href="https://leads.meetcursive.com/signup?source=homepage"
                   target="_blank"
+                  className="px-6 py-3"
                 >
                   Get 100 Free Leads
                 </Button>
               </div>
-              <p className="text-sm text-gray-400 mb-6">No commitment required</p>
+              <p className="text-xs text-gray-400 mb-4">No commitment required</p>
 
               {/* Desktop Feature Pills (ClickUp-style flex-wrap rows) */}
-              <div className="hidden lg:flex lg:flex-wrap gap-2">
+              <div className="hidden lg:flex lg:flex-wrap gap-1.5">
                 {heroFeatures.map((feature) => {
                   const Icon = feature.icon
                   const isActive = activeFeature === feature.id
@@ -140,13 +141,13 @@ export function HumanHomePage() {
                     <button
                       key={feature.id}
                       onClick={() => setActiveFeature(feature.id)}
-                      className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] transition-all whitespace-nowrap ${
+                      className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs transition-all whitespace-nowrap ${
                         isActive
                           ? 'bg-gray-900 text-white font-medium shadow-sm'
                           : 'text-gray-600 hover:bg-gray-50 border border-gray-200'
                       }`}
                     >
-                      <Icon className={`w-3.5 h-3.5 flex-shrink-0 ${isActive ? 'text-white' : 'text-gray-400'}`} />
+                      <Icon className={`w-3 h-3 flex-shrink-0 ${isActive ? 'text-white' : 'text-gray-400'}`} />
                       {feature.label}
                     </button>
                   )
@@ -162,7 +163,7 @@ export function HumanHomePage() {
               className="lg:flex-1 lg:min-w-0"
             >
               {/* Mobile Feature Grid (ClickUp-style 4x3 icon grid) */}
-              <div className="lg:hidden grid grid-cols-4 gap-px bg-gray-200 rounded-xl overflow-hidden mb-6">
+              <div className="lg:hidden grid grid-cols-4 gap-px bg-gray-200 rounded-xl overflow-hidden mb-4">
                 {heroFeatures.map((feature) => {
                   const Icon = feature.icon
                   const isActive = activeFeature === feature.id
@@ -170,12 +171,12 @@ export function HumanHomePage() {
                     <button
                       key={feature.id}
                       onClick={() => setActiveFeature(feature.id)}
-                      className={`flex flex-col items-center justify-center gap-1.5 py-4 px-1 transition-colors ${
+                      className={`flex flex-col items-center justify-center gap-1 py-3 px-1 transition-colors ${
                         isActive ? 'bg-blue-50' : 'bg-white'
                       }`}
                     >
-                      <Icon className={`w-5 h-5 ${isActive ? 'text-[#007AFF]' : 'text-gray-400'}`} />
-                      <span className={`text-[11px] leading-tight text-center ${
+                      <Icon className={`w-4 h-4 ${isActive ? 'text-[#007AFF]' : 'text-gray-400'}`} />
+                      <span className={`text-[10px] leading-tight text-center ${
                         isActive ? 'text-[#007AFF] font-medium' : 'text-gray-500'
                       }`}>
                         {feature.shortLabel}
@@ -186,14 +187,14 @@ export function HumanHomePage() {
               </div>
 
               {/* Demo with Browser Chrome */}
-              <div className="bg-gradient-to-br from-blue-50/50 to-blue-100/50 rounded-2xl p-3 md:p-4">
+              <div className="bg-gradient-to-br from-blue-50/50 to-blue-100/50 rounded-2xl p-2 md:p-3">
                 <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
-                  <div className="bg-gray-100 px-4 py-2.5 flex items-center gap-1.5 border-b border-gray-200">
-                    <div className="w-2.5 h-2.5 rounded-full bg-gray-300" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-gray-300" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-gray-300" />
+                  <div className="bg-gray-100 px-3 py-2 flex items-center gap-1.5 border-b border-gray-200">
+                    <div className="w-2 h-2 rounded-full bg-gray-300" />
+                    <div className="w-2 h-2 rounded-full bg-gray-300" />
+                    <div className="w-2 h-2 rounded-full bg-gray-300" />
                   </div>
-                  <div className="p-4 md:p-6">
+                  <div className="p-3 md:p-4 max-h-[60vh] overflow-y-auto">
                     <AnimatePresence mode="wait">
                       <motion.div
                         key={activeFeature}
