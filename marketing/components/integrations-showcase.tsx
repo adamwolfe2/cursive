@@ -3,6 +3,8 @@
 import { motion } from "framer-motion"
 
 const integrations = [
+  { name: "Stripe", logo: "/integrations/stripe logo.png" },
+  { name: "Mailchimp", logo: "/integrations/mailchimp logo.jpg" },
   { name: "Slack", logo: "/integrations/slack-svgrepo-com.svg" },
   { name: "Gmail", logo: "/integrations/gmail.svg" },
   { name: "HubSpot", logo: "/integrations/hubspot-svgrepo-com.svg" },
@@ -39,6 +41,7 @@ const integrations = [
   { name: "Typeform", logo: "/integrations/typeform.svg" },
   { name: "Webflow", logo: "/integrations/Webflow_id2IyfqSKv_0.svg" },
   { name: "WordPress", logo: "/integrations/icons8-wordpress.svg" },
+  { name: "Zapier", logo: "/integrations/zapier.png" },
 ]
 
 interface IntegrationsShowcaseProps {

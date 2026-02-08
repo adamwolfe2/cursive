@@ -297,7 +297,7 @@ export const integrations: Integration[] = [
     slug: 'mailchimp',
     name: 'Mailchimp',
     category: 'Marketing Automation',
-    logo: '📧',
+    logo: '/integrations/mailchimp logo.jpg',
     connectionMethod: 'webhook',
     description:
       'Mailchimp is one of the most widely used email marketing platforms, offering campaign creation, audience management, landing pages, and basic automation. Its generous free tier and ease of use make it a go-to for small businesses and growing teams.',
@@ -798,7 +798,7 @@ export const integrations: Integration[] = [
     slug: 'zapier',
     name: 'Zapier',
     category: 'Automation Platform',
-    logo: '/integrations/zapier.svg',
+    logo: '/integrations/zapier.png',
     connectionMethod: 'zapier',
     description:
       'Zapier is the most popular no-code automation platform, connecting over 6,000 apps through simple trigger-action workflows called Zaps. Its intuitive interface makes it possible for anyone to automate data flow between tools without writing code.',
