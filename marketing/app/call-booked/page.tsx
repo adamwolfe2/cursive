@@ -16,7 +16,25 @@ import {
 import Link from "next/link"
 import Image from "next/image"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
-import { useState } from "react"
+import React, { useState } from "react"
+
+function CycleStep({ icon: Icon, label, subtitle, delay }: { icon: React.ComponentType<{ className?: string }>; label: string; subtitle: string; delay: number }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.5 }}
+      whileInView={{ opacity: 1, scale: 1 }}
+      viewport={{ once: true }}
+      transition={{ delay }}
+      className="flex flex-col items-center w-[110px]"
+    >
+      <div className="w-12 h-12 bg-white rounded-xl border border-gray-200 flex items-center justify-center shadow-sm mb-1.5">
+        <Icon className="h-5 w-5 text-[#007AFF]" />
+      </div>
+      <span className="text-xs font-semibold text-gray-900 mb-0.5">{label}</span>
+      <span className="text-[10px] text-gray-500 text-center leading-tight">{subtitle}</span>
+    </motion.div>
+  )
+}
 
 export default function CallBookedPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null)
@@ -237,138 +255,51 @@ export default function CallBookedPage() {
                     </div>
                   </motion.div>
 
-                  {/* Cycle Diagram - Fixed with Cursive logo centered */}
+                  {/* Cycle Diagram - Grid layout */}
                   <motion.div
                     initial={{ opacity: 0, x: 20 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     className="flex flex-col items-center"
                   >
-                    <div className="relative w-80 h-80 lg:w-96 lg:h-96">
-                      {/* Central circle with Cursive logo */}
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-28 h-28 bg-white rounded-full flex items-center justify-center shadow-lg border-2 border-[#007AFF]/20">
-                          <Image
-                            src="/cursive-logo.png"
-                            alt="Cursive"
-                            width={56}
-                            height={56}
-                            className="w-14 h-14"
-                          />
+                    {/* Row 1: Identify (top center) */}
+                    <div className="flex justify-center mb-3">
+                      <CycleStep icon={Eye} label="Identify" subtitle="High-intent visitors & engagement signals" delay={0.3} />
+                    </div>
+
+                    {/* Row 2: Learn (left) + Logo (center) + Enrich (right) */}
+                    <div className="flex items-center gap-4 lg:gap-6 mb-3">
+                      <CycleStep icon={Sparkles} label="Learn" subtitle="Feed insights back into targeting" delay={0.75} />
+
+                      <div className="relative flex-shrink-0">
+                        <div className="w-20 h-20 lg:w-24 lg:h-24 rounded-full border-2 border-dashed border-gray-200 flex items-center justify-center">
+                          <div className="w-16 h-16 lg:w-20 lg:h-20 bg-white rounded-full flex items-center justify-center shadow-lg border border-[#007AFF]/20">
+                            <Image
+                              src="/cursive-logo.png"
+                              alt="Cursive"
+                              width={40}
+                              height={40}
+                              className="w-10 h-10"
+                            />
+                          </div>
                         </div>
+                        {/* Arrows */}
+                        <Repeat className="absolute -top-1 left-1/2 -translate-x-1/2 h-3 w-3 text-gray-300" />
+                        <Repeat className="absolute -bottom-1 left-1/2 -translate-x-1/2 h-3 w-3 text-gray-300 rotate-180" />
                       </div>
-                      {/* Connecting ring */}
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-52 h-52 lg:w-64 lg:h-64 rounded-full border-2 border-dashed border-gray-200" />
-                      </div>
-                      {/* Cycle steps — 5 evenly spaced */}
-                      {[
-                        { label: "Identify", subtitle: "High-intent visitors & engagement signals", angle: 270, icon: Eye },
-                        { label: "Enrich", subtitle: "Turn signals into actionable data & lookalikes", angle: 342, icon: Database },
-                        { label: "Reach", subtitle: "Multi-channel outreach informed by past wins", angle: 54, icon: Send },
-                        { label: "Convert", subtitle: "Close deals with messaging that already worked", angle: 126, icon: TrendingUp },
-                        { label: "Learn", subtitle: "Feed insights back into targeting", angle: 198, icon: Sparkles },
-                      ].map((step, i) => {
-                        const radians = (step.angle * Math.PI) / 180
-                        const x = 50 + 40 * Math.cos(radians)
-                        const y = 50 + 40 * Math.sin(radians)
-                        return (
-                          <motion.div
-                            key={i}
-                            initial={{ opacity: 0, scale: 0.5 }}
-                            whileInView={{ opacity: 1, scale: 1 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: 0.3 + i * 0.15 }}
-                            className="absolute flex flex-col items-center group"
-                            style={{
-                              left: `${x}%`,
-                              top: `${y}%`,
-                              transform: "translate(-50%, -50%)",
-                            }}
-                          >
-                            <div className="w-12 h-12 bg-white rounded-xl border border-gray-200 flex items-center justify-center shadow-sm mb-1 group-hover:border-[#007AFF] transition-colors">
-                              <step.icon className="h-5 w-5 text-[#007AFF]" />
-                            </div>
-                            <span className="text-xs font-semibold text-gray-900">{step.label}</span>
-                            <span className="text-[10px] text-gray-500 max-w-[100px] text-center leading-tight hidden sm:block">{step.subtitle}</span>
-                          </motion.div>
-                        )
-                      })}
+
+                      <CycleStep icon={Database} label="Enrich" subtitle="Turn signals into actionable data & lookalikes" delay={0.45} />
+                    </div>
+
+                    {/* Row 3: Convert (left) + Reach (right) */}
+                    <div className="flex items-start gap-12 lg:gap-20">
+                      <CycleStep icon={TrendingUp} label="Convert" subtitle="Close deals with messaging that already worked" delay={0.6} />
+                      <CycleStep icon={Send} label="Reach" subtitle="Multi-channel outreach informed by past wins" delay={0.55} />
                     </div>
                   </motion.div>
                 </div>
 
-                {/* Block 2: Visual Left, Text Right */}
-                <div className="grid lg:grid-cols-2 gap-12 items-center mb-20">
-                  {/* Most Businesses vs Cursive */}
-                  <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    className="order-2 lg:order-1"
-                  >
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
-                        <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-4">Most Businesses</p>
-                        <div className="space-y-3 text-sm text-gray-600">
-                          <div className="flex items-start gap-2">
-                            <div className="w-1.5 h-1.5 bg-gray-300 rounded-full mt-1.5 flex-shrink-0" />
-                            <p>Reset daily instead of compounding</p>
-                          </div>
-                          <div className="flex items-start gap-2">
-                            <div className="w-1.5 h-1.5 bg-gray-300 rounded-full mt-1.5 flex-shrink-0" />
-                            <p>Lose knowledge when people leave</p>
-                          </div>
-                          <div className="flex items-start gap-2">
-                            <div className="w-1.5 h-1.5 bg-gray-300 rounded-full mt-1.5 flex-shrink-0" />
-                            <p>Make the same targeting mistakes</p>
-                          </div>
-                          <div className="flex items-start gap-2">
-                            <div className="w-1.5 h-1.5 bg-gray-300 rounded-full mt-1.5 flex-shrink-0" />
-                            <p>Treat every acquisition like the first</p>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="bg-[#007AFF]/5 rounded-xl p-6 border border-[#007AFF]/20">
-                        <p className="text-xs font-medium text-[#007AFF] uppercase tracking-wide mb-4">Cursive Businesses</p>
-                        <div className="space-y-3 text-sm text-gray-700">
-                          <div className="flex items-start gap-2">
-                            <CheckCircle2 className="w-4 h-4 text-[#007AFF] mt-0.5 flex-shrink-0" />
-                            <p>Identify high-intent signals</p>
-                          </div>
-                          <div className="flex items-start gap-2">
-                            <CheckCircle2 className="w-4 h-4 text-[#007AFF] mt-0.5 flex-shrink-0" />
-                            <p>Enrich data into intelligence</p>
-                          </div>
-                          <div className="flex items-start gap-2">
-                            <CheckCircle2 className="w-4 h-4 text-[#007AFF] mt-0.5 flex-shrink-0" />
-                            <p>Reach through channels that work</p>
-                          </div>
-                          <div className="flex items-start gap-2">
-                            <CheckCircle2 className="w-4 h-4 text-[#007AFF] mt-0.5 flex-shrink-0" />
-                            <p>Learn from every interaction</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
-
-                  <motion.div
-                    initial={{ opacity: 0, x: 20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    className="space-y-6 order-1 lg:order-2"
-                  >
-                    <p className="text-lg text-gray-600 leading-relaxed">
-                      Cursive changes that. We built a system where every visitor identified makes your targeting sharper. Every conversion enriches your lookalike models. Every outreach attempt teaches the next sequence what works. <strong className="text-gray-900">Your competitors reset monthly. You compound daily.</strong>
-                    </p>
-                    <p className="text-lg text-gray-600 leading-relaxed">
-                      Most growth tools work in isolation. Your pixel doesn&apos;t talk to your CRM. Your CRM doesn&apos;t inform your outreach. Your outreach doesn&apos;t improve your targeting. Every tool is a dead end. Cursive connects every signal into a single feedback loop that gets smarter with every interaction.
-                    </p>
-                  </motion.div>
-                </div>
-
-                {/* Block 3: Centered Conclusion */}
+                {/* Block 2: Centered Conclusion */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
