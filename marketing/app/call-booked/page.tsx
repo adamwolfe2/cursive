@@ -10,9 +10,11 @@ import {
   GraduationCap, Home, Megaphone, Sparkles,
   TrendingUp, Shield, Clock, Phone, MapPin, Layers,
   ChevronRight, BookOpen, CreditCard, Star, Award,
-  MessageSquare, Calendar, Search, Link2, Repeat
+  MessageSquare, Calendar, Search, Link2, Repeat,
+  Gift, ArrowDown, Check
 } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
 import { useState } from "react"
 
@@ -26,9 +28,9 @@ export default function CallBookedPage() {
         <main>
 
           {/* ============================================ */}
-          {/* SECTION 1: Hero - Confirmation + Excitement  */}
+          {/* SECTION 1: Hero - Confirmation + Action Items */}
           {/* ============================================ */}
-          <section className="pt-28 pb-20 bg-white">
+          <section className="pt-28 pb-16 bg-white">
             <Container>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -53,18 +55,71 @@ export default function CallBookedPage() {
                 </motion.div>
 
                 <h1 className="text-5xl lg:text-7xl font-light text-gray-900 mb-4">
-                  You're In.
+                  You&apos;re In.
                 </h1>
-                <p className="font-cursive text-4xl lg:text-6xl text-gray-900 mb-6">
+                <p className="font-cursive text-4xl lg:text-6xl text-gray-900 mb-10">
                   Your Call is Booked.
                 </p>
-                <p className="text-xl text-gray-600 mb-4 max-w-3xl mx-auto leading-relaxed">
-                  While you wait, here's everything you need to know about how Cursive can transform your business.
-                </p>
-                <p className="text-sm text-gray-400 flex items-center justify-center gap-2">
-                  <Mail className="h-4 w-4" />
-                  Check your email for calendar confirmation
-                </p>
+
+                {/* 3 Action Items */}
+                <div className="max-w-2xl mx-auto space-y-4">
+                  {/* Action 1: Confirm Meeting */}
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.6 }}
+                    className="flex items-start gap-4 bg-[#F7F9FB] rounded-xl p-5 border border-gray-200 text-left"
+                  >
+                    <div className="w-8 h-8 bg-[#007AFF] rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Mail className="h-4 w-4 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-gray-900 font-medium mb-1">Check your email and confirm the meeting</p>
+                      <p className="text-sm text-gray-500">Please add it to your calendar to be respectful of both our time. Your time is valuable — and so is ours.</p>
+                    </div>
+                  </motion.div>
+
+                  {/* Action 2: Explore the Platform */}
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.75 }}
+                    className="flex items-start gap-4 bg-[#F7F9FB] rounded-xl p-5 border border-gray-200 text-left"
+                  >
+                    <div className="w-8 h-8 bg-[#007AFF] rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Search className="h-4 w-4 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-gray-900 font-medium mb-1">Explore Cursive below</p>
+                      <p className="text-sm text-gray-500">Scroll down to see case studies, FAQs, our different services, and everything Cursive can do for your business.</p>
+                    </div>
+                  </motion.div>
+
+                  {/* Action 3: Free Gift */}
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.9 }}
+                    className="flex items-start gap-4 bg-gradient-to-r from-[#007AFF]/5 to-purple-50 rounded-xl p-5 border border-[#007AFF]/20 text-left"
+                  >
+                    <div className="w-8 h-8 bg-gradient-to-br from-[#007AFF] to-purple-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Gift className="h-4 w-4 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-gray-900 font-medium mb-1">Scroll to the bottom for a free gift</p>
+                      <p className="text-sm text-gray-500">As a thank you for booking, we have something special waiting for you at the end of this page.</p>
+                    </div>
+                  </motion.div>
+                </div>
+
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 1.2 }}
+                  className="mt-8"
+                >
+                  <ArrowDown className="h-5 w-5 text-gray-300 mx-auto animate-bounce" />
+                </motion.div>
               </motion.div>
             </Container>
           </section>
@@ -84,8 +139,11 @@ export default function CallBookedPage() {
                 <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-6">
                   What is <span className="font-cursive text-4xl lg:text-5xl">Cursive</span>?
                 </h2>
-                <p className="text-xl text-gray-600 leading-relaxed max-w-3xl mx-auto">
+                <p className="text-xl text-gray-600 leading-relaxed max-w-3xl mx-auto mb-6">
                   Cursive is the all-in-one growth platform that identifies your website visitors, builds targeted audiences from 360M+ verified contacts, and runs automated outbound campaigns — so you can turn anonymous traffic into revenue.
+                </p>
+                <p className="text-lg text-gray-500 leading-relaxed max-w-3xl mx-auto">
+                  Tools like ZoomInfo, Apollo, and RB2B are great for simple, single-channel solutions. But they only give you one piece of the pie. You deserve the whole thing when it comes to growth and driving revenue for your business. Cursive replaces your entire stack with one platform that compounds — every channel, every signal, every interaction feeding the next.
                 </p>
               </motion.div>
 
@@ -115,11 +173,11 @@ export default function CallBookedPage() {
           </section>
 
           {/* ============================================ */}
-          {/* SECTION 3: The Cursive Philosophy             */}
+          {/* SECTION 3: Philosophy - 3 Alternating Blocks  */}
           {/* ============================================ */}
           <section className="py-20 bg-white">
             <Container>
-              <div className="max-w-5xl mx-auto">
+              <div className="max-w-6xl mx-auto">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -130,26 +188,17 @@ export default function CallBookedPage() {
                   <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
                     Why We Built Cursive:
                   </h2>
-                  <p className="font-cursive text-3xl lg:text-4xl text-gray-900">
+                  <p className="font-cursive text-3xl lg:text-4xl text-gray-900 mb-6">
                     Recursive Intelligence
                   </p>
-                </motion.div>
-
-                {/* Definition */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  className="text-center mb-12"
-                >
                   <div className="inline-block bg-white rounded-xl px-8 py-4 border border-gray-200 shadow-sm">
                     <p className="text-sm text-[#007AFF] font-medium tracking-wide mb-1">re·cur·sive <span className="text-gray-400">(adj.)</span></p>
                     <p className="text-lg text-gray-900">A system that improves itself by learning from itself.</p>
                   </div>
                 </motion.div>
 
-                <div className="grid lg:grid-cols-2 gap-12 items-start">
-                  {/* Content */}
+                {/* Block 1: Text Left, Cycle Diagram Right */}
+                <div className="grid lg:grid-cols-2 gap-12 items-center mb-20">
                   <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     whileInView={{ opacity: 1, x: 0 }}
@@ -157,73 +206,51 @@ export default function CallBookedPage() {
                     className="space-y-6"
                   >
                     <p className="text-xl text-gray-900 leading-relaxed font-medium">
-                      We're betting everything on a simple premise: AI will compound. Your business should too.
+                      We&apos;re betting everything on a simple premise: AI will compound. Your business should too.
                     </p>
                     <p className="text-lg text-gray-600 leading-relaxed">
                       Every model getting smarter teaches the next model to be smarter. Every pattern learned improves the next pattern. Every iteration compounds on the last. This is recursive intelligence — the exponential curve that will define everything.
                     </p>
                     <p className="text-lg text-gray-600 leading-relaxed">
-                      <strong className="text-gray-900">Your business is the only system not doing this.</strong> Your customers convert and you forget why. Your campaigns end and the learnings disappear. Your targeting resets with every new hire. Employees leave with knowledge. Decisions get forgotten. Patterns don't transfer.
-                    </p>
-                    <p className="text-lg text-gray-600 leading-relaxed">
-                      Cursive changes that. We built a system where every visitor identified makes your targeting sharper. Every conversion enriches your lookalike models. Every outreach attempt teaches the next sequence what works. <strong className="text-gray-900">Your competitors reset monthly. You compound daily.</strong>
+                      <strong className="text-gray-900">Your business is the only system not doing this.</strong> Your customers convert and you forget why. Your campaigns end and the learnings disappear. Your targeting resets with every new hire. Employees leave with knowledge. Decisions get forgotten. Patterns don&apos;t transfer.
                     </p>
 
                     {/* The Compounding Effect */}
                     <div className="bg-[#F7F9FB] rounded-xl p-6 border border-gray-200 space-y-3">
                       <p className="text-sm font-medium text-gray-900 uppercase tracking-wide">The Cycle That Compounds</p>
                       <div className="space-y-2 text-sm text-gray-600">
-                        <p>Monday's visitors inform Tuesday's targeting</p>
-                        <p>This week's conversions improve next week's messaging</p>
-                        <p>Last month's patterns prevent next month's mistakes</p>
+                        <p>Monday&apos;s visitors inform Tuesday&apos;s targeting</p>
+                        <p>This week&apos;s conversions improve next week&apos;s messaging</p>
+                        <p>Last month&apos;s patterns prevent next month&apos;s mistakes</p>
                         <p>Every interaction makes your lookalike audiences sharper</p>
                         <p>Every data point lowers your CAC and increases your LTV</p>
                       </div>
                     </div>
-
-                    {/* Contrast */}
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="bg-gray-50 rounded-xl p-5 border border-gray-200">
-                        <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-3">Most Businesses</p>
-                        <div className="space-y-2 text-sm text-gray-600">
-                          <p>Reset daily instead of compounding</p>
-                          <p>Lose knowledge when people leave</p>
-                          <p>Make the same targeting mistakes</p>
-                          <p>Treat every acquisition like the first</p>
-                        </div>
-                      </div>
-                      <div className="bg-[#007AFF]/5 rounded-xl p-5 border border-[#007AFF]/20">
-                        <p className="text-xs font-medium text-[#007AFF] uppercase tracking-wide mb-3">Cursive Businesses</p>
-                        <div className="space-y-2 text-sm text-gray-700">
-                          <p>Identify high-intent signals</p>
-                          <p>Enrich data into intelligence</p>
-                          <p>Reach through channels that work</p>
-                          <p>Learn from every interaction</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl p-6 text-white">
-                      <p className="text-lg font-light leading-relaxed">
-                        "While your competitors treat every lead like the first lead they've ever gotten, Cursive treats every lead like the thousandth. <em>Because it is.</em>"
-                      </p>
-                      <p className="text-sm text-gray-400 mt-3">The result: your CAC drops, your LTV rises, your growth compounds instead of plateaus.</p>
-                    </div>
                   </motion.div>
 
-                  {/* Cycle Diagram */}
+                  {/* Cycle Diagram - Fixed with Cursive logo centered */}
                   <motion.div
                     initial={{ opacity: 0, x: 20 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     className="flex flex-col items-center"
                   >
-                    <div className="relative w-80 h-80">
-                      {/* Central circle */}
+                    <div className="relative w-80 h-80 lg:w-96 lg:h-96">
+                      {/* Central circle with Cursive logo */}
                       <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-24 h-24 bg-[#007AFF] rounded-full flex items-center justify-center shadow-lg">
-                          <Repeat className="h-10 w-10 text-white" />
+                        <div className="w-28 h-28 bg-white rounded-full flex items-center justify-center shadow-lg border-2 border-[#007AFF]/20">
+                          <Image
+                            src="/cursive-logo.png"
+                            alt="Cursive"
+                            width={56}
+                            height={56}
+                            className="w-14 h-14"
+                          />
                         </div>
+                      </div>
+                      {/* Connecting ring */}
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-52 h-52 lg:w-64 lg:h-64 rounded-full border-2 border-dashed border-gray-200" />
                       </div>
                       {/* Cycle steps — 5 evenly spaced */}
                       {[
@@ -259,13 +286,93 @@ export default function CallBookedPage() {
                         )
                       })}
                     </div>
+                  </motion.div>
+                </div>
 
-                    {/* Diagram caption */}
-                    <p className="text-sm text-gray-500 text-center max-w-md mt-6 leading-relaxed italic">
-                      Each cycle through the Cursive system makes the next cycle more efficient. Your first month identifies patterns. Your third month exploits them. Your sixth month? You&apos;re targeting prospects your competitors can&apos;t even see.
+                {/* Block 2: Visual Left, Text Right */}
+                <div className="grid lg:grid-cols-2 gap-12 items-center mb-20">
+                  {/* Most Businesses vs Cursive */}
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    className="order-2 lg:order-1"
+                  >
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                        <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-4">Most Businesses</p>
+                        <div className="space-y-3 text-sm text-gray-600">
+                          <div className="flex items-start gap-2">
+                            <div className="w-1.5 h-1.5 bg-gray-300 rounded-full mt-1.5 flex-shrink-0" />
+                            <p>Reset daily instead of compounding</p>
+                          </div>
+                          <div className="flex items-start gap-2">
+                            <div className="w-1.5 h-1.5 bg-gray-300 rounded-full mt-1.5 flex-shrink-0" />
+                            <p>Lose knowledge when people leave</p>
+                          </div>
+                          <div className="flex items-start gap-2">
+                            <div className="w-1.5 h-1.5 bg-gray-300 rounded-full mt-1.5 flex-shrink-0" />
+                            <p>Make the same targeting mistakes</p>
+                          </div>
+                          <div className="flex items-start gap-2">
+                            <div className="w-1.5 h-1.5 bg-gray-300 rounded-full mt-1.5 flex-shrink-0" />
+                            <p>Treat every acquisition like the first</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="bg-[#007AFF]/5 rounded-xl p-6 border border-[#007AFF]/20">
+                        <p className="text-xs font-medium text-[#007AFF] uppercase tracking-wide mb-4">Cursive Businesses</p>
+                        <div className="space-y-3 text-sm text-gray-700">
+                          <div className="flex items-start gap-2">
+                            <CheckCircle2 className="w-4 h-4 text-[#007AFF] mt-0.5 flex-shrink-0" />
+                            <p>Identify high-intent signals</p>
+                          </div>
+                          <div className="flex items-start gap-2">
+                            <CheckCircle2 className="w-4 h-4 text-[#007AFF] mt-0.5 flex-shrink-0" />
+                            <p>Enrich data into intelligence</p>
+                          </div>
+                          <div className="flex items-start gap-2">
+                            <CheckCircle2 className="w-4 h-4 text-[#007AFF] mt-0.5 flex-shrink-0" />
+                            <p>Reach through channels that work</p>
+                          </div>
+                          <div className="flex items-start gap-2">
+                            <CheckCircle2 className="w-4 h-4 text-[#007AFF] mt-0.5 flex-shrink-0" />
+                            <p>Learn from every interaction</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    className="space-y-6 order-1 lg:order-2"
+                  >
+                    <p className="text-lg text-gray-600 leading-relaxed">
+                      Cursive changes that. We built a system where every visitor identified makes your targeting sharper. Every conversion enriches your lookalike models. Every outreach attempt teaches the next sequence what works. <strong className="text-gray-900">Your competitors reset monthly. You compound daily.</strong>
+                    </p>
+                    <p className="text-lg text-gray-600 leading-relaxed">
+                      Most growth tools work in isolation. Your pixel doesn&apos;t talk to your CRM. Your CRM doesn&apos;t inform your outreach. Your outreach doesn&apos;t improve your targeting. Every tool is a dead end. Cursive connects every signal into a single feedback loop that gets smarter with every interaction.
                     </p>
                   </motion.div>
                 </div>
+
+                {/* Block 3: Centered Conclusion */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="max-w-3xl mx-auto"
+                >
+                  <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl p-8 text-white text-center">
+                    <p className="text-xl font-light leading-relaxed mb-4">
+                      &quot;While your competitors treat every lead like the first lead they&apos;ve ever gotten, Cursive treats every lead like the thousandth. <em>Because it is.</em>&quot;
+                    </p>
+                    <p className="text-sm text-gray-400">The result: your CAC drops, your LTV rises, your growth compounds instead of plateaus.</p>
+                  </div>
+                </motion.div>
               </div>
             </Container>
           </section>
@@ -290,6 +397,7 @@ export default function CallBookedPage() {
                 </p>
               </motion.div>
 
+              {/* 12 solutions = 4 rows of 3 */}
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
                 {[
                   {
@@ -351,6 +459,18 @@ export default function CallBookedPage() {
                     title: "Lead Marketplace",
                     description: "Browse and buy verified leads on-demand with credits. Filter by industry, title, company size, and intent score.",
                     href: "/marketplace",
+                  },
+                  {
+                    icon: Database,
+                    title: "Data Enrichment",
+                    description: "Enrich any contact or company record with 100+ data points. Waterfall enrichment checks multiple sources for maximum coverage.",
+                    href: "/data-enrichment",
+                  },
+                  {
+                    icon: BarChart3,
+                    title: "Attribution & Analytics",
+                    description: "Track every touchpoint from first visit to closed deal. Multi-touch attribution shows exactly what's driving revenue.",
+                    href: "/attribution",
                   },
                 ].map((solution, i) => (
                   <motion.div
@@ -428,7 +548,7 @@ export default function CallBookedPage() {
                     ))}
                   </div>
 
-                  <div className="flex flex-col sm:flex-row gap-4 items-center">
+                  <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
                     <Button href="/marketplace">
                       Start Free — 100 Credits Included
                       <ArrowRight className="ml-2 h-4 w-4" />
@@ -527,7 +647,7 @@ export default function CallBookedPage() {
                   ))}
                 </div>
 
-                {/* Venture Studio */}
+                {/* Venture Studio - Light theme */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -535,22 +655,22 @@ export default function CallBookedPage() {
                 >
                   <Link
                     href="/venture-studio"
-                    className="block bg-gradient-to-r from-gray-900 to-gray-800 rounded-xl p-6 lg:p-8 text-white hover:shadow-xl transition-all group"
+                    className="block bg-gradient-to-r from-[#F7F9FB] to-blue-50 rounded-xl p-6 lg:p-8 border border-gray-200 hover:border-[#007AFF] hover:shadow-lg transition-all group"
                   >
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                       <div>
-                        <div className="text-sm text-gray-400 mb-1">WHITE-GLOVE</div>
-                        <h4 className="text-2xl font-light mb-2">Venture Studio</h4>
-                        <p className="text-gray-400 max-w-xl">
+                        <div className="text-sm text-[#007AFF] font-medium mb-1">WHITE-GLOVE</div>
+                        <h4 className="text-2xl font-light text-gray-900 mb-2">Venture Studio</h4>
+                        <p className="text-gray-600 max-w-xl">
                           Dedicated team, custom integrations, weekly strategy sessions. For companies that want a fully embedded growth partner.
                         </p>
                       </div>
                       <div className="flex items-center gap-4">
                         <div>
-                          <span className="text-3xl font-light">$25,000+</span>
-                          <span className="text-gray-400">/mo</span>
+                          <span className="text-3xl font-light text-gray-900">$25,000+</span>
+                          <span className="text-gray-500">/mo</span>
                         </div>
-                        <ArrowRight className="h-6 w-6 text-gray-400 group-hover:text-white transition-colors" />
+                        <ArrowRight className="h-6 w-6 text-gray-400 group-hover:text-[#007AFF] transition-colors" />
                       </div>
                     </div>
                   </Link>
@@ -658,53 +778,70 @@ export default function CallBookedPage() {
               >
                 <span className="text-sm text-[#007AFF] mb-4 block font-medium tracking-wide">HOW IT WORKS</span>
                 <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
-                  From Stranger to Customer in 4 Steps
+                  From Website Visitor to Your Customer in 4 Steps
                 </h2>
               </motion.div>
 
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
-                {[
-                  {
-                    step: "01",
-                    title: "We Learn Your ICP",
-                    description: "Share your ideal customer profile. We map it against our database of 360M+ contacts to find your best-fit prospects.",
-                    icon: Search,
-                  },
-                  {
-                    step: "02",
-                    title: "We Find Your Buyers",
-                    description: "Identify website visitors, build targeted audiences, and surface leads with active buying intent.",
-                    icon: Target,
-                  },
-                  {
-                    step: "03",
-                    title: "We Reach Them",
-                    description: "Launch automated multi-channel outreach: email, LinkedIn, direct mail. Personalized at scale.",
-                    icon: Send,
-                  },
-                  {
-                    step: "04",
-                    title: "You Close Deals",
-                    description: "Qualified meetings land on your calendar. Your CRM stays updated. Pipeline grows predictably.",
-                    icon: TrendingUp,
-                  },
-                ].map((step, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.15 }}
-                    className="relative text-center"
-                  >
-                    <div className="text-5xl font-light text-gray-200 mb-4">{step.step}</div>
-                    <div className="w-16 h-16 rounded-2xl bg-[#F7F9FB] border border-gray-200 flex items-center justify-center mx-auto mb-4">
-                      <step.icon className="h-8 w-8 text-[#007AFF]" />
-                    </div>
-                    <h3 className="text-xl text-gray-900 mb-3 font-medium">{step.title}</h3>
-                    <p className="text-gray-600 leading-relaxed text-sm">{step.description}</p>
-                  </motion.div>
-                ))}
+              <div className="max-w-6xl mx-auto">
+                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 relative">
+                  {/* Connecting line (desktop only) */}
+                  <div className="hidden lg:block absolute top-[68px] left-[12.5%] right-[12.5%] h-0.5 bg-gradient-to-r from-[#007AFF]/20 via-[#007AFF]/40 to-[#007AFF]/20" />
+
+                  {[
+                    {
+                      step: "01",
+                      title: "We Learn Your ICP",
+                      description: "Share your ideal customer profile. We map it against our database of 360M+ contacts to find your best-fit prospects.",
+                      icon: Search,
+                    },
+                    {
+                      step: "02",
+                      title: "We Find Your Buyers",
+                      description: "Identify website visitors, build targeted audiences, and surface leads with active buying intent.",
+                      icon: Target,
+                    },
+                    {
+                      step: "03",
+                      title: "We Reach Them",
+                      description: "Launch automated multi-channel outreach: email, LinkedIn, direct mail. Personalized at scale.",
+                      icon: Send,
+                    },
+                    {
+                      step: "04",
+                      title: "You Close Deals",
+                      description: "Qualified meetings land on your calendar. Your CRM stays updated. Pipeline grows predictably.",
+                      icon: TrendingUp,
+                    },
+                  ].map((step, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: i * 0.15 }}
+                      className="relative text-center"
+                    >
+                      <div className="text-5xl font-light text-gray-200 mb-4">{step.step}</div>
+                      <div className="w-16 h-16 rounded-2xl bg-[#F7F9FB] border border-gray-200 flex items-center justify-center mx-auto mb-4 relative z-10">
+                        <step.icon className="h-8 w-8 text-[#007AFF]" />
+                      </div>
+                      {/* Arrow between steps (desktop) */}
+                      {i < 3 && (
+                        <div className="hidden lg:block absolute top-[68px] -right-4 z-20">
+                          <ChevronRight className="h-5 w-5 text-[#007AFF]/40" />
+                        </div>
+                      )}
+                      {/* Arrow between steps (mobile) */}
+                      {i < 3 && (
+                        <div className="lg:hidden flex justify-center my-2 md:hidden">
+                          <ArrowDown className="h-4 w-4 text-gray-300" />
+                        </div>
+                      )}
+                      <h3 className="text-xl text-gray-900 mb-3 font-medium">{step.title}</h3>
+                      <p className="text-gray-600 leading-relaxed text-sm">{step.description}</p>
+                    </motion.div>
+                  ))}
+                </div>
               </div>
             </Container>
           </section>
@@ -764,7 +901,7 @@ export default function CallBookedPage() {
           </section>
 
           {/* ============================================ */}
-          {/* SECTION 9: Integrations Showcase              */}
+          {/* SECTION 9: Integrations with Real Logos       */}
           {/* ============================================ */}
           <section className="py-20 bg-white">
             <Container>
@@ -778,16 +915,29 @@ export default function CallBookedPage() {
                 <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-6">
                   Works With Your Existing Stack
                 </h2>
-                <p className="text-lg text-gray-600 mb-10 max-w-2xl mx-auto">
+                <p className="text-lg text-gray-600 mb-12 max-w-2xl mx-auto">
                   Cursive connects natively with your CRM, ad platforms, email tools, and more. Two-way data sync keeps everything current.
                 </p>
 
-                {/* Integration logos / badges */}
-                <div className="flex flex-wrap justify-center gap-3 mb-10">
+                {/* Integration logos in even grid - 4 rows of 4 = 16 */}
+                <div className="grid grid-cols-4 md:grid-cols-8 gap-4 mb-10 max-w-4xl mx-auto">
                   {[
-                    "Salesforce", "HubSpot", "Pipedrive", "Slack",
-                    "Google Ads", "Meta", "LinkedIn", "Mailchimp",
-                    "Zapier", "Shopify", "Marketo", "Outreach",
+                    { name: "Salesforce", logo: "/integrations/salesforce.svg" },
+                    { name: "HubSpot", logo: "/integrations/hubspot-svgrepo-com.svg" },
+                    { name: "Slack", logo: "/integrations/slack-svgrepo-com.svg" },
+                    { name: "Google Ads", logo: "/integrations/google-ads-svgrepo-com.svg" },
+                    { name: "Meta", logo: "/integrations/meta-color.svg" },
+                    { name: "LinkedIn", logo: "/integrations/linkedin.svg" },
+                    { name: "Mailchimp", logo: "/integrations/email.svg" },
+                    { name: "Zapier", logo: "/integrations/zapier.svg" },
+                    { name: "Shopify", logo: "/integrations/shopify.svg" },
+                    { name: "Stripe", logo: "/integrations/stripe.svg" },
+                    { name: "Gmail", logo: "/integrations/gmail.svg" },
+                    { name: "Apollo", logo: "/integrations/apollo.svg" },
+                    { name: "Klaviyo", logo: "/integrations/klaviyo.svg" },
+                    { name: "Calendly", logo: "/integrations/calendly.svg" },
+                    { name: "Notion", logo: "/integrations/notion.svg" },
+                    { name: "Airtable", logo: "/integrations/airtable-svgrepo-com.svg" },
                   ].map((tool, i) => (
                     <motion.div
                       key={i}
@@ -795,9 +945,16 @@ export default function CallBookedPage() {
                       whileInView={{ opacity: 1, scale: 1 }}
                       viewport={{ once: true }}
                       transition={{ delay: i * 0.03 }}
-                      className="bg-[#F7F9FB] rounded-lg px-5 py-3 border border-gray-200 text-sm text-gray-700 font-medium"
+                      className="bg-[#F7F9FB] rounded-xl p-4 border border-gray-200 flex flex-col items-center justify-center gap-2 hover:border-[#007AFF]/30 hover:shadow-sm transition-all aspect-square"
                     >
-                      {tool}
+                      <Image
+                        src={tool.logo}
+                        alt={tool.name}
+                        width={28}
+                        height={28}
+                        className="w-7 h-7 object-contain"
+                      />
+                      <span className="text-[10px] text-gray-600 font-medium text-center leading-tight">{tool.name}</span>
                     </motion.div>
                   ))}
                 </div>
@@ -1102,7 +1259,7 @@ export default function CallBookedPage() {
           </section>
 
           {/* ============================================ */}
-          {/* SECTION 11: Final CTA                         */}
+          {/* SECTION 11: Free Gift - Marketplace Access    */}
           {/* ============================================ */}
           <section className="py-24 bg-white">
             <Container>
@@ -1110,67 +1267,62 @@ export default function CallBookedPage() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="text-center max-w-4xl mx-auto mb-16"
+                className="max-w-3xl mx-auto"
               >
-                <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
-                  Your Call is Booked.
-                </h2>
-                <p className="font-cursive text-3xl lg:text-4xl text-gray-900 mb-6">
-                  Here's What to Do Next.
-                </p>
-              </motion.div>
-
-              <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto mb-12">
-                {[
-                  {
-                    icon: Mail,
-                    title: "Check Your Email",
-                    description: "You'll find a calendar confirmation with all the details for your upcoming call, including a prep sheet.",
-                    cta: null,
-                  },
-                  {
-                    icon: Search,
-                    title: "Explore the Platform",
-                    description: "Try the Lead Marketplace with your free credits. Search for leads, see data quality, and come to your call with questions.",
-                    cta: { label: "Browse Marketplace", href: "/marketplace" },
-                  },
-                  {
-                    icon: BookOpen,
-                    title: "Read Our Blog",
-                    description: "Get strategies and insights on outbound, visitor identification, intent data, and more to make the most of your call.",
-                    cta: { label: "Read the Blog", href: "/blog" },
-                  },
-                ].map((action, i) => (
+                {/* Gift reveal */}
+                <div className="text-center mb-10">
                   <motion.div
-                    key={i}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
+                    initial={{ scale: 0 }}
+                    whileInView={{ scale: 1 }}
                     viewport={{ once: true }}
-                    transition={{ delay: i * 0.1 }}
-                    className="bg-[#F7F9FB] rounded-xl p-8 border border-gray-200 text-center"
+                    transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                    className="w-20 h-20 bg-gradient-to-br from-[#007AFF]/10 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-6"
                   >
-                    <div className="w-14 h-14 bg-white rounded-2xl border border-gray-200 flex items-center justify-center mx-auto mb-5">
-                      <action.icon className="h-7 w-7 text-[#007AFF]" />
-                    </div>
-                    <h3 className="text-xl text-gray-900 mb-3 font-medium">{action.title}</h3>
-                    <p className="text-gray-600 leading-relaxed text-sm mb-5">{action.description}</p>
-                    {action.cta && (
-                      <Button variant="outline" size="sm" href={action.cta.href}>
-                        {action.cta.label} <ArrowRight className="ml-2 h-4 w-4" />
-                      </Button>
-                    )}
+                    <Gift className="h-10 w-10 text-[#007AFF]" />
                   </motion.div>
-                ))}
-              </div>
+                  <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
+                    Your Free Gift
+                  </h2>
+                  <p className="font-cursive text-2xl lg:text-3xl text-gray-900 mb-6">
+                    As promised.
+                  </p>
+                  <p className="text-lg text-gray-600 leading-relaxed max-w-2xl mx-auto mb-8">
+                    As a thank you for booking a call, get free access to the Cursive Lead Marketplace. Browse leads in your industry, see our data quality firsthand, and come to your call already knowing exactly what Cursive can do for you.
+                  </p>
+                </div>
 
-              <div className="text-center">
-                <p className="text-sm text-gray-400">
-                  Questions before your call? Email us at{" "}
-                  <a href="mailto:hello@meetcursive.com" className="text-[#007AFF] hover:underline">
-                    hello@meetcursive.com
-                  </a>
-                </p>
-              </div>
+                <div className="bg-gradient-to-br from-[#007AFF]/5 to-purple-50 rounded-2xl p-8 lg:p-10 border border-[#007AFF]/20 text-center">
+                  <div className="flex items-center justify-center gap-3 mb-4">
+                    <div className="w-10 h-10 bg-[#007AFF] rounded-xl flex items-center justify-center">
+                      <ShoppingCart className="h-5 w-5 text-white" />
+                    </div>
+                    <h3 className="text-2xl font-light text-gray-900">Lead Marketplace</h3>
+                  </div>
+                  <p className="text-gray-600 mb-2">100 free credits included. No credit card required.</p>
+                  <p className="text-sm text-gray-500 mb-8">Search by industry, title, company size, intent score, and more. Export leads instantly.</p>
+
+                  <div className="flex flex-col items-center gap-4">
+                    <Button href="https://leads.meetcursive.com/signup?source=call-booked-gift" target="_blank" size="lg">
+                      Try the Marketplace Free
+                      <ArrowRight className="ml-2 h-5 w-5" />
+                    </Button>
+                    <div className="flex items-center gap-6 text-sm text-gray-500">
+                      <span className="flex items-center gap-1.5"><Check className="h-4 w-4 text-green-600" /> 100 free credits</span>
+                      <span className="flex items-center gap-1.5"><Check className="h-4 w-4 text-green-600" /> No credit card</span>
+                      <span className="flex items-center gap-1.5"><Check className="h-4 w-4 text-green-600" /> Instant access</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="text-center mt-10">
+                  <p className="text-sm text-gray-400">
+                    Questions before your call? Email us at{" "}
+                    <a href="mailto:hello@meetcursive.com" className="text-[#007AFF] hover:underline">
+                      hello@meetcursive.com
+                    </a>
+                  </p>
+                </div>
+              </motion.div>
             </Container>
           </section>
 
@@ -1191,7 +1343,7 @@ export default function CallBookedPage() {
 
           <MachineSection title="Platform Overview">
             <p className="text-gray-700 mb-4">
-              Cursive combines visitor identification, audience building, and outbound automation into a single recursive intelligence platform. Every interaction makes the system smarter through feedback loops: identify visitors, enrich data, reach prospects, convert leads, learn from outcomes, and optimize targeting.
+              Cursive combines visitor identification, audience building, and outbound automation into a single recursive intelligence platform. Every interaction makes the system smarter through feedback loops: identify visitors, enrich data, reach prospects, convert leads, learn from outcomes, and optimize targeting. Unlike point solutions like ZoomInfo, Apollo, or RB2B that only handle one piece of the growth puzzle, Cursive replaces your entire stack with one compounding platform.
             </p>
             <MachineList items={[
               "360M+ verified contacts (220M+ consumer, 140M+ business)",
@@ -1213,6 +1365,8 @@ export default function CallBookedPage() {
               { label: "CRM Integrations", href: "https://meetcursive.com/integrations", description: "Native sync with 200+ tools" },
               { label: "Website Pixel", href: "https://meetcursive.com/pixel", description: "5-minute install, GDPR/CCPA compliant tracking" },
               { label: "Lead Marketplace", href: "https://meetcursive.com/marketplace", description: "Browse and buy verified leads on-demand with credits" },
+              { label: "Data Enrichment", href: "https://meetcursive.com/data-enrichment", description: "Enrich contacts with 100+ data points via waterfall enrichment" },
+              { label: "Attribution & Analytics", href: "https://meetcursive.com/attribution", description: "Multi-touch attribution from first visit to closed deal" },
             ]} />
           </MachineSection>
 
@@ -1272,7 +1426,7 @@ export default function CallBookedPage() {
               </div>
               <div>
                 <p className="text-gray-900 font-medium mb-1">How is Cursive different from other lead gen tools?</p>
-                <p className="text-gray-700">Recursive intelligence: every interaction makes the system smarter. Plus Cursive handles identification AND outreach, not just one or the other.</p>
+                <p className="text-gray-700">Recursive intelligence: every interaction makes the system smarter. Plus Cursive handles identification AND outreach, not just one or the other. Tools like ZoomInfo and Apollo only solve one piece of the puzzle.</p>
               </div>
               <div>
                 <p className="text-gray-900 font-medium mb-1">How does visitor identification work?</p>
@@ -1296,7 +1450,7 @@ export default function CallBookedPage() {
           <MachineSection title="Get Started">
             <MachineList items={[
               { label: "Book a Call", href: "https://cal.com/cursive/30min", description: "30-minute strategy call to review your ICP and see matching leads" },
-              { label: "Lead Marketplace", href: "https://meetcursive.com/marketplace", description: "Browse and buy verified leads with free credits" },
+              { label: "Lead Marketplace (Free Gift)", href: "https://leads.meetcursive.com/signup?source=call-booked-gift", description: "Try the marketplace free with 100 credits — no credit card required" },
               { label: "View Pricing", href: "https://meetcursive.com/pricing", description: "See all plans and pricing details" },
               { label: "Contact Us", href: "https://meetcursive.com/contact", description: "Email hello@meetcursive.com for questions" },
             ]} />
