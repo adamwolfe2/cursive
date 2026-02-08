@@ -14,7 +14,8 @@
  * - Campaign scheduling with templates
  *
  * Auth: Bearer token via EMAILBISON_API_KEY env var
- * Base URL: https://dedi.emailbison.com (configured via EMAILBISON_API_URL)
+ * Base URL: Your custom host URL + /api/ (e.g. https://send.meetcursive.com/api/)
+ * Each EmailBison instance has its own host URL (configured via EMAILBISON_API_URL)
  */
 
 import { fetchWithTimeout } from '@/lib/utils/retry'
@@ -23,7 +24,7 @@ import { fetchWithTimeout } from '@/lib/utils/retry'
 // CONFIGURATION
 // ============================================================================
 
-const EMAILBISON_API_URL = process.env.EMAILBISON_API_URL || 'https://dedi.emailbison.com'
+const EMAILBISON_API_URL = process.env.EMAILBISON_API_URL || 'https://send.meetcursive.com'
 const EMAILBISON_API_KEY = process.env.EMAILBISON_API_KEY || ''
 const EMAILBISON_TIMEOUT = 30000
 
