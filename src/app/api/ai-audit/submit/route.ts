@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { inngest } from '@/inngest/client'
 import { handleApiError, created } from '@/lib/utils/api-error-handler'
+import { sendSlackAlert } from '@/lib/monitoring/alerts'
 
 // CORS headers for cross-origin requests from marketing site
 const corsHeaders = {
@@ -142,6 +143,20 @@ export async function POST(request: NextRequest) {
       name: 'ai-audit/submitted',
       data: eventData as any,
     })
+
+    // Non-blocking Slack notification
+    sendSlackAlert({
+      type: 'ai_audit_submission',
+      severity: 'info',
+      message: `New AI Audit submission: ${eventData.company_name || 'N/A'} (${eventData.email})`,
+      metadata: {
+        name: eventData.name,
+        email: eventData.email,
+        company: eventData.company_name || 'N/A',
+        industry: eventData.industry || 'N/A',
+        ai_maturity: eventData.ai_maturity || 'N/A',
+      },
+    }).catch(() => {})
 
     const response = created({
       message: 'Audit submission received successfully!',

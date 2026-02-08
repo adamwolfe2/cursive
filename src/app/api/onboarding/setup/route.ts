@@ -6,6 +6,7 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { z } from 'zod'
 
 const businessSchema = z.object({
@@ -115,6 +116,20 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Failed to create user profile' }, { status: 500 })
       }
 
+      // Non-blocking Slack notification
+      sendSlackAlert({
+        type: 'new_signup',
+        severity: 'info',
+        message: `New business signup: ${validated.businessName}`,
+        metadata: {
+          email: authUser.email,
+          name: authUser.user_metadata.full_name || authUser.user_metadata.name || 'N/A',
+          business: validated.businessName,
+          industry: validated.industry,
+          workspace_id: workspace.id,
+        },
+      }).catch(() => {})
+
       return NextResponse.json({ workspace_id: workspace.id })
 
     } else {
@@ -161,6 +176,20 @@ export async function POST(request: NextRequest) {
         console.error('[Onboarding] Partner user creation failed:', userError)
         return NextResponse.json({ error: 'Failed to create user profile' }, { status: 500 })
       }
+
+      // Non-blocking Slack notification
+      sendSlackAlert({
+        type: 'new_signup',
+        severity: 'info',
+        message: `New partner signup: ${validated.companyName}`,
+        metadata: {
+          email: authUser.email,
+          name: authUser.user_metadata.full_name || authUser.user_metadata.name || 'N/A',
+          company: validated.companyName,
+          role: 'partner',
+          workspace_id: workspace.id,
+        },
+      }).catch(() => {})
 
       return NextResponse.json({ workspace_id: workspace.id })
     }

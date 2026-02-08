@@ -3,6 +3,7 @@
 
 import { inngest } from '../client'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { parse } from 'csv-parse'
 import { Readable } from 'stream'
 import {
@@ -461,6 +462,21 @@ export const processPartnerUpload = inngest.createFunction(
         data: {
           batch_id: batch_id,
           partner_id: partner_id,
+        },
+      })
+
+      // Notify Slack of completed upload
+      await sendSlackAlert({
+        type: 'partner_upload',
+        severity: 'info',
+        message: `Partner upload completed: ${totalResults.successful} leads listed`,
+        metadata: {
+          batch_id,
+          partner_id,
+          successful: totalResults.successful,
+          duplicates: totalResults.duplicates_cross_partner + totalResults.duplicates_platform_owned,
+          validation_errors: totalResults.validation_errors,
+          total_rows: fileData.totalRows,
         },
       })
     })

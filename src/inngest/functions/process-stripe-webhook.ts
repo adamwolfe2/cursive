@@ -124,6 +124,22 @@ async function processCreditPurchase({
     }
   })
 
+  // Notify Slack of successful credit purchase
+  await step.run('notify-credit-purchase', async () => {
+    await sendSlackAlert({
+      type: 'stripe_payment',
+      severity: 'info',
+      message: `Credit purchase completed: ${creditsAmount} credits ($${((amountTotal || 0) / 100).toFixed(2)})`,
+      metadata: {
+        purchase_id: credit_purchase_id,
+        credits: creditsAmount,
+        new_balance: result.newBalance,
+        amount: `$${((amountTotal || 0) / 100).toFixed(2)}`,
+        workspace_id,
+      },
+    })
+  })
+
   // Send confirmation email via Inngest (with its own retry logic)
   await step.run('queue-confirmation-email', async () => {
     const adminClient = createAdminClient()
@@ -259,6 +275,23 @@ async function processLeadPurchase({
 
     return { ...dbResult, duplicate: false, downloadUrl }
   })
+
+  // Notify Slack of successful lead purchase
+  if (!result.duplicate) {
+    await step.run('notify-lead-purchase', async () => {
+      await sendSlackAlert({
+        type: 'stripe_payment',
+        severity: 'info',
+        message: `Lead purchase completed: ${lead_count} leads ($${(metadata.amount_total ? metadata.amount_total / 100 : 0).toFixed(2)})`,
+        metadata: {
+          purchase_id,
+          leads: lead_count,
+          amount: `$${(metadata.amount_total ? metadata.amount_total / 100 : 0).toFixed(2)}`,
+          workspace_id,
+        },
+      })
+    })
+  }
 
   // If this was a duplicate, skip email sending
   if (result.duplicate) {
