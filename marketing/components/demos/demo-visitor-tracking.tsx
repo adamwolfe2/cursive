@@ -1,66 +1,107 @@
 "use client"
 
 import { motion, AnimatePresence } from "framer-motion"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 
 interface Visitor {
   id: string
   name: string
   email: string
   phone: string
-  location: string
   page: string
   enrichmentStep: number
 }
 
-const visitorPool = [
-  { name: "Sarah Johnson", email: "sarah.j@acmecorp.com", phone: "(555) 234-5678", location: "San Francisco, CA", page: "/pricing" },
-  { name: "Mike Chen", email: "m.chen@techstart.io", phone: "(555) 789-0123", location: "New York, NY", page: "/features" },
-  { name: "Emily Rodriguez", email: "emily@saasco.com", phone: "(555) 456-7890", location: "Austin, TX", page: "/demo" },
-  { name: "David Park", email: "d.park@innovate.co", phone: "(555) 321-9876", location: "Seattle, WA", page: "/platform" },
-  { name: "Jessica Martinez", email: "jess@growth.io", phone: "(555) 654-3210", location: "Miami, FL", page: "/contact" },
-  { name: "Tom Anderson", email: "tom.a@scale.ai", phone: "(555) 987-6543", location: "Boston, MA", page: "/about" },
+const firstNames = [
+  "Sarah", "Mike", "Jessica", "David", "Rachel", "Tom", "Amanda", "James",
+  "Nicole", "Ryan", "Olivia", "Marcus", "Priya", "Alex", "Megan", "Chris",
+  "Danielle", "Brian", "Samantha", "Kevin", "Lauren", "Derek", "Vanessa",
+  "Eric", "Kaitlyn", "Jason", "Heather", "Tyler", "Monica", "Nathan",
+  "Brooke", "Justin", "Allison", "Brandon", "Tiffany", "Jordan", "Cassandra",
+  "Aaron", "Victoria", "Patrick", "Lindsay", "Corey", "Stephanie", "Trevor",
+  "Natalie", "Garrett", "Katherine", "Ian", "Christina", "Wesley",
 ]
+
+const lastNames = [
+  "Johnson", "Chen", "Rodriguez", "Park", "Martinez", "Anderson", "Patel",
+  "Thompson", "Kim", "Lewis", "Walker", "Davis", "Wilson", "Moore", "Taylor",
+  "Jackson", "White", "Harris", "Clark", "Allen", "Young", "King", "Wright",
+  "Scott", "Hill", "Adams", "Baker", "Nelson", "Carter", "Mitchell",
+  "Perez", "Roberts", "Turner", "Phillips", "Campbell", "Parker", "Evans",
+  "Edwards", "Collins", "Stewart", "Morris", "Rivera", "Cooper", "Reed",
+  "Bailey", "Bell", "Murphy", "Brooks", "Foster", "Sanders",
+]
+
+const domains = [
+  "acmecorp.com", "techstart.io", "saasco.com", "innovate.co", "growth.io",
+  "scale.ai", "cloudnine.dev", "brightpath.com", "nextera.io", "synapse.co",
+  "dataflow.ai", "primevault.com", "hyperloop.io", "stratify.co", "optima.ai",
+  "zenith.dev", "catalyst.io", "momentum.co", "pinnacle.ai", "vertex.dev",
+]
+
+const pages = [
+  "/pricing", "/features", "/demo", "/platform", "/contact",
+  "/about", "/blog", "/integrations", "/case-studies", "/solutions",
+]
+
+const areaCodes = ["555", "415", "212", "512", "206", "305", "617", "310", "720", "503"]
+
+let nameIndex = 0
+
+function generateVisitor(): Omit<Visitor, "id" | "enrichmentStep"> {
+  const first = firstNames[nameIndex % firstNames.length]
+  const last = lastNames[Math.floor(nameIndex / firstNames.length) % lastNames.length]
+  nameIndex++
+  const domain = domains[Math.floor(Math.random() * domains.length)]
+  const emailPrefix = `${first.toLowerCase().charAt(0)}.${last.toLowerCase()}`
+  const areaCode = areaCodes[Math.floor(Math.random() * areaCodes.length)]
+  const phone = `(${areaCode}) ${Math.floor(Math.random() * 900 + 100)}-${Math.floor(Math.random() * 9000 + 1000)}`
+
+  return {
+    name: `${first} ${last}`,
+    email: `${emailPrefix}@${domain}`,
+    phone,
+    page: pages[Math.floor(Math.random() * pages.length)],
+  }
+}
 
 export function DemoVisitorTracking() {
   const [visitors, setVisitors] = useState<Visitor[]>([])
-  const [totalToday, setTotalToday] = useState(124)
-  const [liveCount, setLiveCount] = useState(3)
+  const [totalToday, setTotalToday] = useState(10500)
+  const [liveCount, setLiveCount] = useState(4800)
+  const tickRef = useRef(0)
 
-  // Add new visitors periodically
+  // Initialize with 5 visitors
   useEffect(() => {
-    // Start with 3 visitors
-    const initialVisitors = visitorPool.slice(0, 3).map((v, i) => ({
-      ...v,
-      id: `initial-${i}`,
-      enrichmentStep: 4, // Fully enriched
+    const initial = Array.from({ length: 5 }, (_, i) => ({
+      ...generateVisitor(),
+      id: `init-${i}`,
+      enrichmentStep: 4,
     }))
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setVisitors(initialVisitors)
+    setVisitors(initial)
+  }, [])
 
+  // Add new visitors fast — every 1.8s
+  useEffect(() => {
     const interval = setInterval(() => {
-      const randomVisitor = visitorPool[Math.floor(Math.random() * visitorPool.length)]
+      const v = generateVisitor()
       const newVisitor: Visitor = {
-        ...randomVisitor,
-        id: `visitor-${Math.random()}`,
+        ...v,
+        id: `v-${Date.now()}-${Math.random()}`,
         enrichmentStep: 0,
       }
 
-      setVisitors(prev => {
-        const updated = [newVisitor, ...prev].slice(0, 3) // Keep max 3 visitors
-        return updated
-      })
-
-      setTotalToday(prev => prev + 1)
-      setLiveCount(prev => Math.min(prev + 1, 8))
-    }, 4000) // New visitor every 4 seconds
+      setVisitors(prev => [newVisitor, ...prev].slice(0, 5))
+      setTotalToday(prev => prev + Math.floor(Math.random() * 3) + 1)
+      setLiveCount(prev => prev + Math.floor(Math.random() * 3) + 1)
+    }, 1800)
 
     return () => clearInterval(interval)
   }, [])
 
-  // Animate enrichment for new visitors
+  // Enrich new visitors quickly
   useEffect(() => {
-    const enrichmentInterval = setInterval(() => {
+    const interval = setInterval(() => {
       setVisitors(prev =>
         prev.map(visitor =>
           visitor.enrichmentStep < 4
@@ -68,21 +109,30 @@ export function DemoVisitorTracking() {
             : visitor
         )
       )
-    }, 500) // Enrich one field every 500ms
+    }, 400)
 
-    return () => clearInterval(enrichmentInterval)
+    return () => clearInterval(interval)
   }, [])
 
-  // Animate stat counters
+  // Steadily tick up counters between visitor adds
   useEffect(() => {
-    const statInterval = setInterval(() => {
-      if (Math.random() > 0.7) {
-        setLiveCount(prev => Math.max(3, Math.min(10, prev + (Math.random() > 0.5 ? 1 : -1))))
+    const interval = setInterval(() => {
+      tickRef.current++
+      if (tickRef.current % 2 === 0) {
+        setTotalToday(prev => prev + 1)
       }
-    }, 3000)
+      if (tickRef.current % 3 === 0) {
+        setLiveCount(prev => prev + (Math.random() > 0.3 ? 1 : 0))
+      }
+    }, 600)
 
-    return () => clearInterval(statInterval)
+    return () => clearInterval(interval)
   }, [])
+
+  const formatCount = (n: number) => {
+    if (n >= 1000) return `${(n / 1000).toFixed(1)}K`
+    return n.toLocaleString()
+  }
 
   return (
     <div className="space-y-2">
@@ -96,12 +146,12 @@ export function DemoVisitorTracking() {
         >
           <motion.div
             key={totalToday}
-            initial={{ scale: 1.2, color: "#007AFF" }}
+            initial={{ scale: 1.1, color: "#007AFF" }}
             animate={{ scale: 1, color: "#111827" }}
             transition={{ duration: 0.3 }}
             className="text-xl text-gray-900 font-light"
           >
-            {totalToday}
+            {formatCount(totalToday)}
           </motion.div>
           <div className="text-xs text-gray-600">Identified Today</div>
         </motion.div>
@@ -113,12 +163,12 @@ export function DemoVisitorTracking() {
         >
           <motion.div
             key={liveCount}
-            initial={{ scale: 1.2, color: "#10B981" }}
+            initial={{ scale: 1.1, color: "#10B981" }}
             animate={{ scale: 1, color: "#111827" }}
             transition={{ duration: 0.3 }}
             className="text-xl text-gray-900 font-light"
           >
-            {liveCount}
+            {formatCount(liveCount)}
           </motion.div>
           <div className="text-xs text-gray-600">Live Now</div>
         </motion.div>
