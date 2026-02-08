@@ -94,7 +94,7 @@ export default function ServicesPage() {
           </ul>
 
           <Link
-            href="/services/onboarding?tier=cursive-data"
+            href="/services/checkout?tier=cursive-data"
             className="w-full px-6 py-3 bg-white text-primary font-semibold rounded-lg hover:bg-white/90 transition-colors text-center"
           >
             Get Started

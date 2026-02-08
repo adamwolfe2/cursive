@@ -4,10 +4,15 @@ import Link from 'next/link'
 import { OnboardingChecklist } from '@/components/onboarding/checklist'
 import { GradientCard, GradientBadge } from '@/components/ui/gradient-card'
 import { PageContainer, PageHeader } from '@/components/layout/page-container'
-import { Users, TrendingUp, Crown, ArrowRight, Sparkles, Package } from 'lucide-react'
+import { Users, TrendingUp, Crown, ArrowRight, Sparkles, Package, CheckCircle } from 'lucide-react'
 import { serviceTierRepository } from '@/lib/repositories/service-tier.repository'
 
-export default async function DashboardPage() {
+interface DashboardPageProps {
+  searchParams: Promise<{ onboarding?: string }>
+}
+
+export default async function DashboardPage({ searchParams }: DashboardPageProps) {
+  const { onboarding } = await searchParams
   const supabase = await createClient()
 
   // Get user
@@ -86,6 +91,17 @@ export default async function DashboardPage() {
           </div>
         </div>
       </GradientCard>
+
+      {/* Onboarding Complete Banner */}
+      {onboarding === 'complete' && (
+        <div className="mb-8 p-4 bg-green-50 border border-green-200 rounded-xl flex items-start gap-3">
+          <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+          <div>
+            <p className="font-semibold text-green-900">Onboarding complete!</p>
+            <p className="text-sm text-green-700">We're setting up your tracking pixel and campaigns now. You'll get an email when everything is live.</p>
+          </div>
+        </div>
+      )}
 
       {/* Getting Started Guide for New Users */}
       {leadsCount === 0 && (

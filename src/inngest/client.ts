@@ -490,6 +490,7 @@ export type Events = {
       workspace_id: string
       subscription_id: string
       user_email: string
+      user_name?: string
       company_name: string
       website_url: string
       industries: string[]

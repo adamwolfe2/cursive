@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
     // Get user's workspace
     const { data: userData } = await supabase
       .from('users')
-      .select('workspace_id')
+      .select('workspace_id, full_name')
       .eq('auth_user_id', user.id)
       .single()
 
@@ -102,6 +102,7 @@ export async function POST(request: NextRequest) {
           workspace_id: userData.workspace_id,
           subscription_id: validated.subscription_id,
           user_email: user.email || '',
+          user_name: userData.full_name || user.email?.split('@')[0] || '',
           company_name: validated.onboarding_data.company_name,
           website_url: validated.onboarding_data.website_url,
           industries: validated.onboarding_data.industries,

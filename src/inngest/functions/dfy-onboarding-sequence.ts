@@ -29,13 +29,14 @@ export const dfyOnboardingSequence = inngest.createFunction(
       workspace_id,
       subscription_id,
       user_email,
+      user_name,
       company_name,
       website_url,
       industries,
       onboarding_data,
     } = event.data
 
-    const firstName = (onboarding_data.company_name || company_name || '').split(' ')[0]
+    const firstName = (user_name || user_email.split('@')[0] || '').split(' ')[0]
 
     // Step 1: Notify admin — client is ready for pixel setup
     await step.run('notify-admin-ready-for-pixel', async () => {
