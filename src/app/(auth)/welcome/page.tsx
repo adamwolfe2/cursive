@@ -37,19 +37,7 @@ export default function WelcomePage() {
       const { data: { session } } = await supabase.auth.getSession()
 
       if (!session) {
-        // Not authenticated - check if on waitlist domain
-        const hostname = window.location.hostname
-        const isWaitlistDomain = hostname === 'leads.meetcursive.com'
-        // SECURITY: Admin bypass cookie only checked in development mode
-        const hasAdminBypass =
-          process.env.NODE_ENV === 'development' &&
-          document.cookie.includes('admin_bypass_waitlist=true')
-
-        if (isWaitlistDomain && !hasAdminBypass) {
-          router.push('/waitlist')
-        } else {
-          router.push('/login')
-        }
+        router.push('/login')
         return
       }
 

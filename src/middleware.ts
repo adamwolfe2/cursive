@@ -68,18 +68,6 @@ export async function middleware(req: NextRequest) {
     const host = hostname.split(':')[0] // Remove port if present
     const subdomain = getSubdomain(hostname)
 
-    // Check if this is the leads.meetcursive.com domain (waitlist mode)
-    const isWaitlistDomain = host === 'leads.meetcursive.com'
-
-    // Check if waitlist is disabled via environment variable
-    const isWaitlistDisabled = process.env.DISABLE_WAITLIST === 'true'
-
-    // Check for admin bypass cookie - ONLY in development mode
-    // SECURITY: This bypass must NEVER work in production
-    const hasAdminBypass =
-      process.env.NODE_ENV === 'development' &&
-      req.cookies.get('admin_bypass_waitlist')?.value === 'true'
-
     // Admin-only routes
     const isAdminRoute = pathname.startsWith('/admin')
 
@@ -130,23 +118,8 @@ export async function middleware(req: NextRequest) {
       return redirectResponse
     }
 
-    // Waitlist enforcement
-    // If on waitlist domain without admin bypass cookie, disabled waitlist, or authenticated user, redirect to waitlist
-    if (isWaitlistDomain && !hasAdminBypass && !isWaitlistDisabled && !user) {
-      const isWaitlistPath =
-        pathname === '/waitlist' ||
-        pathname.startsWith('/api/waitlist') ||
-        pathname.startsWith('/api/admin/bypass-waitlist') ||
-        pathname.startsWith('/api/health') ||
-        pathname.startsWith('/_next') ||
-        pathname.startsWith('/auth/callback') ||
-        pathname.startsWith('/login') ||
-        pathname.startsWith('/auth')
-
-      if (!isWaitlistPath) {
-        return NextResponse.redirect(new URL('/waitlist', req.url))
-      }
-    }
+    // Waitlist page is still accessible but no longer force-redirects users
+    // Users can visit /waitlist directly if needed
 
     // Auth routes (login, signup) - allow access even if authenticated
     // Users may want to re-login or access these pages directly

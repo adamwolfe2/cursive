@@ -37,26 +37,37 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Grant credits - add to workspace balance
-    const { error: updateError } = await supabase.rpc('add_credits_to_workspace', {
+    // Grant credits - add to workspace balance via RPC
+    const { error: updateError } = await supabase.rpc('add_workspace_credits', {
       p_workspace_id: userData.workspace_id,
-      p_credits: FREE_TRIAL_CREDITS.credits,
+      p_amount: FREE_TRIAL_CREDITS.credits,
+      p_source: 'free_trial',
     })
 
     if (updateError) {
-      // If RPC doesn't exist, try direct update
-      const { data: workspace } = await supabase
-        .from('workspaces')
-        .select('credits_balance')
-        .eq('id', userData.workspace_id)
+      // If RPC doesn't exist, try direct insert/update on workspace_credits table
+      const { data: existing } = await supabase
+        .from('workspace_credits')
+        .select('balance')
+        .eq('workspace_id', userData.workspace_id)
         .single()
 
-      const currentBalance = (workspace as any)?.credits_balance || 0
-
-      await supabase
-        .from('workspaces')
-        .update({ credits_balance: currentBalance + FREE_TRIAL_CREDITS.credits })
-        .eq('id', userData.workspace_id)
+      if (existing) {
+        await supabase
+          .from('workspace_credits')
+          .update({ balance: existing.balance + FREE_TRIAL_CREDITS.credits })
+          .eq('workspace_id', userData.workspace_id)
+      } else {
+        await supabase
+          .from('workspace_credits')
+          .insert({
+            workspace_id: userData.workspace_id,
+            balance: FREE_TRIAL_CREDITS.credits,
+            total_purchased: 0,
+            total_used: 0,
+            total_earned: 0,
+          })
+      }
     }
 
     // Record the grant
