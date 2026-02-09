@@ -1,4 +1,6 @@
 import { generateMetadata } from '@/lib/seo/metadata'
+import { StructuredData } from '@/components/seo/structured-data'
+import { generateBreadcrumbSchema } from '@/lib/seo/structured-data'
 
 export const metadata = generateMetadata({
   title: 'B2B Data Access - 220M+ Consumer & 140M+ Business Profiles',
@@ -17,5 +19,13 @@ export const metadata = generateMetadata({
 })
 
 export default function DataAccessLayout({ children }: { children: React.ReactNode }) {
-  return children
+  return (
+    <>
+      <StructuredData data={generateBreadcrumbSchema([
+        { name: 'Home', url: 'https://meetcursive.com' },
+        { name: 'Data Access', url: 'https://meetcursive.com/data-access' },
+      ])} />
+      {children}
+    </>
+  )
 }

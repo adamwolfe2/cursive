@@ -1,4 +1,6 @@
 import { generateMetadata } from '@/lib/seo/metadata'
+import { StructuredData } from '@/components/seo/structured-data'
+import { generateBreadcrumbSchema } from '@/lib/seo/structured-data'
 
 export const metadata = generateMetadata({
   title: 'B2B Lead Marketplace - Buy Verified Leads On Demand',
@@ -17,5 +19,13 @@ export const metadata = generateMetadata({
 })
 
 export default function MarketplaceLayout({ children }: { children: React.ReactNode }) {
-  return children
+  return (
+    <>
+      <StructuredData data={generateBreadcrumbSchema([
+        { name: 'Home', url: 'https://meetcursive.com' },
+        { name: 'Marketplace', url: 'https://meetcursive.com/marketplace' },
+      ])} />
+      {children}
+    </>
+  )
 }

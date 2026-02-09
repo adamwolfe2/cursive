@@ -1,4 +1,6 @@
 import { generateMetadata } from '@/lib/seo/metadata'
+import { StructuredData } from '@/components/seo/structured-data'
+import { generateBreadcrumbSchema } from '@/lib/seo/structured-data'
 
 export const metadata = generateMetadata({
   title: 'Venture Studio | White-Glove Revenue Engine Partnership',
@@ -12,5 +14,13 @@ export default function VentureStudioLayout({
 }: {
   children: React.ReactNode
 }) {
-  return children
+  return (
+    <>
+      <StructuredData data={generateBreadcrumbSchema([
+        { name: 'Home', url: 'https://meetcursive.com' },
+        { name: 'Venture Studio', url: 'https://meetcursive.com/venture-studio' },
+      ])} />
+      {children}
+    </>
+  )
 }

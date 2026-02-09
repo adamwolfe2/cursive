@@ -1,4 +1,6 @@
 import { generateMetadata } from '@/lib/seo/metadata'
+import { StructuredData } from '@/components/seo/structured-data'
+import { generateBreadcrumbSchema } from '@/lib/seo/structured-data'
 
 export const metadata = generateMetadata({
   title: 'Website Visitor Tracking Pixel - Identify Anonymous Traffic',
@@ -17,5 +19,13 @@ export const metadata = generateMetadata({
 })
 
 export default function PixelLayout({ children }: { children: React.ReactNode }) {
-  return children
+  return (
+    <>
+      <StructuredData data={generateBreadcrumbSchema([
+        { name: 'Home', url: 'https://meetcursive.com' },
+        { name: 'Visitor Pixel', url: 'https://meetcursive.com/pixel' },
+      ])} />
+      {children}
+    </>
+  )
 }

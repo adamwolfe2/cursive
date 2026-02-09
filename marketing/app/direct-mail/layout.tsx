@@ -1,4 +1,6 @@
 import { generateMetadata } from '@/lib/seo/metadata'
+import { StructuredData } from '@/components/seo/structured-data'
+import { generateBreadcrumbSchema } from '@/lib/seo/structured-data'
 
 export const metadata = generateMetadata({
   title: 'Direct Mail Automation - Trigger Physical Mail from Digital Behavior',
@@ -21,5 +23,13 @@ export default function DirectMailLayout({
 }: {
   children: React.ReactNode
 }) {
-  return children
+  return (
+    <>
+      <StructuredData data={generateBreadcrumbSchema([
+        { name: 'Home', url: 'https://meetcursive.com' },
+        { name: 'Direct Mail', url: 'https://meetcursive.com/direct-mail' },
+      ])} />
+      {children}
+    </>
+  )
 }

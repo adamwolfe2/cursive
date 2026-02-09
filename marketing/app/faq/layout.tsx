@@ -1,4 +1,6 @@
 import { generateMetadata } from '@/lib/seo/metadata'
+import { StructuredData } from '@/components/seo/structured-data'
+import { generateBreadcrumbSchema } from '@/lib/seo/structured-data'
 
 export const metadata = generateMetadata({
   title: 'FAQ - Frequently Asked Questions About Cursive',
@@ -8,5 +10,13 @@ export const metadata = generateMetadata({
 })
 
 export default function FAQLayout({ children }: { children: React.ReactNode }) {
-  return children
+  return (
+    <>
+      <StructuredData data={generateBreadcrumbSchema([
+        { name: 'Home', url: 'https://meetcursive.com' },
+        { name: 'FAQ', url: 'https://meetcursive.com/faq' },
+      ])} />
+      {children}
+    </>
+  )
 }

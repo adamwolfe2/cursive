@@ -1,4 +1,6 @@
 import { generateMetadata } from '@/lib/seo/metadata'
+import { StructuredData } from '@/components/seo/structured-data'
+import { generateBreadcrumbSchema } from '@/lib/seo/structured-data'
 
 export const metadata = generateMetadata({
   title: 'Custom Audiences | Bespoke B2B Lead Lists Built to Your Spec',
@@ -12,5 +14,13 @@ export default function CustomAudiencesLayout({
 }: {
   children: React.ReactNode
 }) {
-  return children
+  return (
+    <>
+      <StructuredData data={generateBreadcrumbSchema([
+        { name: 'Home', url: 'https://meetcursive.com' },
+        { name: 'Custom Audiences', url: 'https://meetcursive.com/custom-audiences' },
+      ])} />
+      {children}
+    </>
+  )
 }

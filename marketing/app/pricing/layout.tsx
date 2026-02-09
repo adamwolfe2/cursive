@@ -1,4 +1,6 @@
 import { generateMetadata } from '@/lib/seo/metadata'
+import { StructuredData } from '@/components/seo/structured-data'
+import { generateBreadcrumbSchema } from '@/lib/seo/structured-data'
 
 export const metadata = generateMetadata({
   title: 'Pricing - Self-Serve Credits & Done-For-You Services',
@@ -17,5 +19,13 @@ export const metadata = generateMetadata({
 })
 
 export default function PricingLayout({ children }: { children: React.ReactNode }) {
-  return children
+  return (
+    <>
+      <StructuredData data={generateBreadcrumbSchema([
+        { name: 'Home', url: 'https://meetcursive.com' },
+        { name: 'Pricing', url: 'https://meetcursive.com/pricing' },
+      ])} />
+      {children}
+    </>
+  )
 }

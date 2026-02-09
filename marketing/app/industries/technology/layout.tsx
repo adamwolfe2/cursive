@@ -1,4 +1,6 @@
 import { generateMetadata } from '@/lib/seo/metadata'
+import { StructuredData } from '@/components/seo/structured-data'
+import { generateBreadcrumbSchema } from '@/lib/seo/structured-data'
 
 export const metadata = generateMetadata({
   title: 'Technology Industry Lead Generation & ABM Solutions',
@@ -8,5 +10,14 @@ export const metadata = generateMetadata({
 })
 
 export default function TechnologyLayout({ children }: { children: React.ReactNode }) {
-  return children
+  return (
+    <>
+      <StructuredData data={generateBreadcrumbSchema([
+        { name: 'Home', url: 'https://meetcursive.com' },
+        { name: 'Industries', url: 'https://meetcursive.com/industries' },
+        { name: 'Technology', url: 'https://meetcursive.com/industries/technology' },
+      ])} />
+      {children}
+    </>
+  )
 }
