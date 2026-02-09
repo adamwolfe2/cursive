@@ -94,13 +94,7 @@ export default function WelcomePage() {
         throw new Error(data.error || 'Failed to create account')
       }
 
-      // Grant free credits for all new signups
-      try {
-        await fetch('/api/marketplace/credits/grant-free', { method: 'POST' })
-      } catch (creditErr) {
-        // Non-blocking - don't fail onboarding if credit grant fails
-        console.error('Failed to grant free credits:', creditErr)
-      }
+      // Free credits are now granted synchronously in the onboarding API route
 
       // Redirect based on signup source
       const redirectTo = isMarketplace ? '/marketplace' : '/dashboard'

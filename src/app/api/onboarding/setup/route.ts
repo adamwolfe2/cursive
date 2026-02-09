@@ -8,6 +8,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { inngest } from '@/inngest/client'
+import { FREE_TRIAL_CREDITS } from '@/lib/constants/credit-packages'
 import { z } from 'zod'
 
 const businessSchema = z.object({
@@ -95,7 +96,7 @@ export async function POST(request: NextRequest) {
       }
 
       // Create user profile
-      const { error: userError } = await admin
+      const { data: userProfile, error: userError } = await admin
         .from('users')
         .insert({
           auth_user_id: authUser.id,
@@ -109,6 +110,8 @@ export async function POST(request: NextRequest) {
           active_subscription: false,
           partner_approved: false,
         })
+        .select('id')
+        .single()
 
       if (userError) {
         // Rollback workspace
@@ -117,17 +120,58 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Failed to create user profile' }, { status: 500 })
       }
 
+      // Grant free trial credits (transactional with workspace creation)
+      try {
+        // Create workspace_credits record with free trial balance
+        const { error: creditsError } = await admin
+          .from('workspace_credits')
+          .insert({
+            workspace_id: workspace.id,
+            balance: FREE_TRIAL_CREDITS.credits,
+            total_purchased: 0,
+            total_used: 0,
+            total_earned: FREE_TRIAL_CREDITS.credits,
+          })
+
+        if (creditsError) {
+          throw new Error(`Failed to initialize credits: ${creditsError.message}`)
+        }
+
+        // Record the free credit grant
+        const { error: grantError } = await admin
+          .from('free_credit_grants')
+          .insert({
+            workspace_id: workspace.id,
+            user_id: userProfile.id,
+            credits_granted: FREE_TRIAL_CREDITS.credits,
+          })
+
+        if (grantError) {
+          throw new Error(`Failed to record credit grant: ${grantError.message}`)
+        }
+      } catch (creditError) {
+        // Rollback workspace and user on credit grant failure
+        await admin.from('users').delete().eq('id', userProfile.id)
+        await admin.from('workspaces').delete().eq('id', workspace.id)
+        console.error('[Onboarding] Credit grant failed:', creditError)
+        return NextResponse.json(
+          { error: 'Failed to grant free credits' },
+          { status: 500 }
+        )
+      }
+
       // Non-blocking Slack notification
       sendSlackAlert({
         type: 'new_signup',
         severity: 'info',
-        message: `New business signup: ${validated.businessName}`,
+        message: `New business signup: ${validated.businessName} (${FREE_TRIAL_CREDITS.credits} free credits granted)`,
         metadata: {
           email: authUser.email,
           name: authUser.user_metadata.full_name || authUser.user_metadata.name || 'N/A',
           business: validated.businessName,
           industry: validated.industry,
           workspace_id: workspace.id,
+          free_credits: FREE_TRIAL_CREDITS.credits,
         },
       }).catch(() => {})
 
@@ -171,7 +215,7 @@ export async function POST(request: NextRequest) {
       }
 
       // Create partner user
-      const { error: userError } = await admin
+      const { data: userProfile, error: userError } = await admin
         .from('users')
         .insert({
           auth_user_id: authUser.id,
@@ -183,6 +227,8 @@ export async function POST(request: NextRequest) {
           partner_approved: false,
           active_subscription: true,
         })
+        .select('id')
+        .single()
 
       if (userError) {
         // Rollback workspace
@@ -191,17 +237,58 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Failed to create user profile' }, { status: 500 })
       }
 
+      // Grant free trial credits (transactional with workspace creation)
+      try {
+        // Create workspace_credits record with free trial balance
+        const { error: creditsError } = await admin
+          .from('workspace_credits')
+          .insert({
+            workspace_id: workspace.id,
+            balance: FREE_TRIAL_CREDITS.credits,
+            total_purchased: 0,
+            total_used: 0,
+            total_earned: FREE_TRIAL_CREDITS.credits,
+          })
+
+        if (creditsError) {
+          throw new Error(`Failed to initialize credits: ${creditsError.message}`)
+        }
+
+        // Record the free credit grant
+        const { error: grantError } = await admin
+          .from('free_credit_grants')
+          .insert({
+            workspace_id: workspace.id,
+            user_id: userProfile.id,
+            credits_granted: FREE_TRIAL_CREDITS.credits,
+          })
+
+        if (grantError) {
+          throw new Error(`Failed to record credit grant: ${grantError.message}`)
+        }
+      } catch (creditError) {
+        // Rollback workspace and user on credit grant failure
+        await admin.from('users').delete().eq('id', userProfile.id)
+        await admin.from('workspaces').delete().eq('id', workspace.id)
+        console.error('[Onboarding] Credit grant failed:', creditError)
+        return NextResponse.json(
+          { error: 'Failed to grant free credits' },
+          { status: 500 }
+        )
+      }
+
       // Non-blocking Slack notification
       sendSlackAlert({
         type: 'new_signup',
         severity: 'info',
-        message: `New partner signup: ${validated.companyName}`,
+        message: `New partner signup: ${validated.companyName} (${FREE_TRIAL_CREDITS.credits} free credits granted)`,
         metadata: {
           email: authUser.email,
           name: authUser.user_metadata.full_name || authUser.user_metadata.name || 'N/A',
           company: validated.companyName,
           role: 'partner',
           workspace_id: workspace.id,
+          free_credits: FREE_TRIAL_CREDITS.credits,
         },
       }).catch(() => {})
 
