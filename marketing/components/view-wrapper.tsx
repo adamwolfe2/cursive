@@ -6,18 +6,38 @@ interface ViewWrapperProps {
   children: React.ReactNode
 }
 
+/**
+ * HumanView — Always renders children in DOM for SSR.
+ * Uses CSS to hide when machine view is active.
+ */
 export function HumanView({ children }: ViewWrapperProps) {
   const { view } = useView()
-  return view === 'human' ? <>{children}</> : null
-}
-
-export function MachineView({ children }: ViewWrapperProps) {
-  const { view } = useView()
-  return view === 'machine' ? (
-    <div className="machine-view bg-white text-gray-900 font-mono text-sm leading-relaxed border-t border-gray-200">
+  return (
+    <div className={view !== 'human' ? 'hidden' : ''} data-view="human">
       {children}
     </div>
-  ) : null
+  )
+}
+
+/**
+ * MachineView — Always renders children in DOM for SSR/SEO.
+ * Content is screen-reader-only by default (accessible to crawlers),
+ * becomes visible when machine view is active via ?view=machine.
+ */
+export function MachineView({ children }: ViewWrapperProps) {
+  const { view } = useView()
+  return (
+    <div
+      className={
+        view === 'machine'
+          ? 'machine-view bg-white text-gray-900 font-mono text-sm leading-relaxed border-t border-gray-200'
+          : 'sr-only'
+      }
+      data-view="machine"
+    >
+      {children}
+    </div>
+  )
 }
 
 interface MachineContentProps {

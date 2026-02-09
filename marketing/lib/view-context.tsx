@@ -1,7 +1,6 @@
 "use client"
 
-import { createContext, useContext, useEffect, useState, useRef } from 'react'
-import { useSearchParams, usePathname, useRouter } from 'next/navigation'
+import { createContext, useContext, useEffect, useState, useRef, useCallback } from 'react'
 
 type ViewMode = 'human' | 'machine'
 
@@ -13,15 +12,10 @@ interface ViewContextType {
 const ViewContext = createContext<ViewContextType | undefined>(undefined)
 
 export function ViewProvider({ children }: { children: React.ReactNode }) {
-  const searchParams = useSearchParams()
-  const pathname = usePathname()
-  const router = useRouter()
-
-  // Initialize from URL param or localStorage
   const [view, setViewState] = useState<ViewMode>('human')
   const scrollPositionRef = useRef<number>(0)
 
-  const setView = (newView: ViewMode) => {
+  const setView = useCallback((newView: ViewMode) => {
     // Save current scroll position before state change
     if (typeof window !== 'undefined') {
       scrollPositionRef.current = window.scrollY
@@ -34,40 +28,34 @@ export function ViewProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem('cursive-view-mode', newView)
     }
 
-    // Update URL parameter without scroll
-    const params = new URLSearchParams(searchParams.toString())
-    params.set('view', newView)
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false })
+    // Update URL parameter without triggering navigation/suspension
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href)
+      url.searchParams.set('view', newView)
+      window.history.replaceState({}, '', url.toString())
+    }
 
-    // Restore scroll position after a brief delay to ensure DOM has updated
+    // Restore scroll position after DOM update
     if (typeof window !== 'undefined') {
       requestAnimationFrame(() => {
         window.scrollTo(0, scrollPositionRef.current)
       })
     }
-  }
+  }, [])
 
-  // Initialize from URL and localStorage on mount
+  // Initialize from URL param or localStorage on mount (client-side only)
   useEffect(() => {
-    const urlView = searchParams.get('view')
+    const params = new URLSearchParams(window.location.search)
+    const urlView = params.get('view')
     if (urlView === 'machine' || urlView === 'human') {
       setViewState(urlView)
-    } else if (typeof window !== 'undefined') {
+    } else {
       const stored = localStorage.getItem('cursive-view-mode')
       if (stored === 'machine' || stored === 'human') {
         setViewState(stored)
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-
-  // Sync with URL changes
-  useEffect(() => {
-    const urlView = searchParams.get('view')
-    if (urlView === 'machine' || urlView === 'human') {
-      setViewState(urlView)
-    }
-  }, [searchParams])
 
   return (
     <ViewContext.Provider value={{ view, setView }}>

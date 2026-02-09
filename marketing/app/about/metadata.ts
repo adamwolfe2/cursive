@@ -1,5 +1,4 @@
 import { Metadata } from "next"
-import { generateOrganizationSchema } from "@/lib/seo/structured-data"
 
 export const metadata: Metadata = {
   title: "About Cursive | AI-Powered Lead Generation Platform",
@@ -28,38 +27,4 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://meetcursive.com/about",
   },
-  other: {
-    // Organization Schema
-    'script:ld+json:organization': JSON.stringify({
-      '@context': 'https://schema.org',
-      '@type': 'Organization',
-      name: 'Cursive',
-      url: 'https://meetcursive.com',
-      logo: 'https://meetcursive.com/cursive-logo.png',
-      description: 'AI-powered B2B lead generation and outbound automation platform',
-      sameAs: [
-        'https://twitter.com/meetcursive',
-        'https://linkedin.com/company/cursive',
-      ],
-      foundingDate: '2023',
-      areaServed: ['US', 'CA', 'UK', 'AU'],
-      slogan: 'Turn Website Visitors Into Booked Meetings',
-      contactPoint: {
-        '@type': 'ContactPoint',
-        telephone: '+1-844-CURSIVE',
-        contactType: 'Sales',
-        email: 'hello@meetcursive.com',
-        areaServed: 'US',
-        availableLanguage: ['en']
-      },
-    }),
-    // Company Mission Schema
-    'script:ld+json:mission': JSON.stringify({
-      '@context': 'https://schema.org',
-      '@type': 'Thing',
-      name: 'Cursive Mission',
-      description: 'Make lead generation effortless by providing high-quality verified leads, AI-powered outreach, and done-for-you campaigns accessible to every company.',
-      text: 'Every company deserves access to high-quality leads without hiring an army of BDRs or stitching together 10 tools.'
-    }),
-  }
 }

@@ -22,7 +22,7 @@ const dancingScript = Dancing_Script({
 export const metadata: Metadata = {
   ...generateMetadata({
     title: "Turn Website Visitors Into Booked Meetings",
-    description: "Cursive identifies your anonymous website visitors, enriches them with verified contact data, and automates personalized outreach across email, LinkedIn, and SMS—so you book more meetings on autopilot.",
+    description: "Identify 70% of website visitors and automate personalized outreach. Turn anonymous traffic into booked meetings with AI-powered lead generation.",
     keywords: ['website visitor identification', 'B2B lead generation', 'anonymous visitor tracking', 'automated outbound', 'AI SDR', 'lead enrichment', 'outbound automation', 'intent data', 'visitor deanonymization'],
     canonical: 'https://meetcursive.com',
   }),
@@ -41,6 +41,12 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <head>
+        {/* Preconnect hints for external domains */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://cal.com" />
+        <link rel="dns-prefetch" href="https://leads.meetcursive.com" />
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
         {/* Google tag (gtag.js) */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-JZ9C4QKCX4"
