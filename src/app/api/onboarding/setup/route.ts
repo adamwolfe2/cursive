@@ -7,9 +7,11 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
-import { inngest } from '@/inngest/client'
 import { FREE_TRIAL_CREDITS } from '@/lib/constants/credit-packages'
 import { z } from 'zod'
+
+// Allow up to 60s on Pro plan (Hobby caps at 10s regardless)
+export const maxDuration = 60
 
 const businessSchema = z.object({
   role: z.literal('business'),
@@ -38,28 +40,47 @@ const partnerSchema = z.object({
 
 const setupSchema = z.discriminatedUnion('role', [businessSchema, partnerSchema])
 
+/** Fire-and-forget: send Inngest event without blocking response */
+function fireInngestEvent(eventData: { name: string; data: Record<string, any> }) {
+  try {
+    // Lazy-import to avoid module-level init issues
+    const { inngest } = require('@/inngest/client')
+    inngest.send(eventData).catch(() => {})
+  } catch {
+    // Swallow any synchronous throws from Proxy/client init
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
-    console.log('[Onboarding] Starting POST request')
+    // NOTE: console.warn used instead of console.log because production
+    // next.config.js strips console.log (removeConsole: { exclude: ['error','warn'] })
+    console.warn('[Onboarding] Starting POST request')
 
-    // 1. Verify auth session server-side
+    // 1. Verify auth session server-side (with timeout)
     const supabase = await createClient()
-    console.log('[Onboarding] Created Supabase client')
 
-    const { data: { user: authUser }, error: authError } = await supabase.auth.getUser()
-    console.log('[Onboarding] Auth check:', { hasUser: !!authUser, authError: authError?.message })
+    const authResult = await Promise.race([
+      supabase.auth.getUser(),
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('Auth getUser timeout (8s)')), 8000)
+      ),
+    ])
+    const authUser = authResult.data?.user
+    const authError = authResult.error
+
+    console.warn('[Onboarding] Auth check:', { hasUser: !!authUser, authError: authError?.message })
 
     if (!authUser) {
-      console.log('[Onboarding] No auth user - returning 401')
+      console.warn('[Onboarding] No auth user - returning 401')
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
     }
 
     // 2. Parse and validate body
     const body = await request.json()
-    console.log('[Onboarding] Received body:', { role: body.role, email: body.email })
+    console.warn('[Onboarding] Received body:', { role: body.role, email: body.email })
 
     const validated = setupSchema.parse(body)
-    console.log('[Onboarding] Validation passed')
 
     // 3. Use admin client (service role) to bypass RLS
     const admin = createAdminClient()
@@ -69,7 +90,7 @@ export async function POST(request: NextRequest) {
       .from('users')
       .select('workspace_id')
       .eq('auth_user_id', authUser.id)
-      .single()
+      .maybeSingle()
 
     if (existingUser?.workspace_id) {
       return NextResponse.json(
@@ -78,30 +99,29 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (validated.role === 'business') {
-      const slug = validated.companyName
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/(^-|-$)/g, '')
+    // 5. Generate slug from company name
+    const slug = validated.companyName
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '')
 
-      // Check slug availability
-      const { data: existing } = await admin
-        .from('workspaces')
-        .select('id')
-        .eq('slug', slug)
-        .single()
+    // 6. Check slug availability (both business AND partner flows)
+    const { data: existingSlug } = await admin
+      .from('workspaces')
+      .select('id')
+      .eq('slug', slug)
+      .maybeSingle()
 
-      if (existing) {
-        return NextResponse.json(
-          { error: 'Company name is taken. Please try another.' },
-          { status: 409 }
-        )
-      }
+    if (existingSlug) {
+      return NextResponse.json(
+        { error: 'Company name is taken. Please try another.' },
+        { status: 409 }
+      )
+    }
 
-      // Create workspace
-      const { data: workspace, error: workspaceError } = await admin
-        .from('workspaces')
-        .insert({
+    // 7. Create workspace
+    const workspaceInsert = validated.role === 'business'
+      ? {
           name: validated.companyName,
           slug,
           subdomain: slug,
@@ -109,20 +129,31 @@ export async function POST(request: NextRequest) {
           allowed_industries: [validated.industry],
           allowed_regions: validated.targetLocations ? [validated.targetLocations] : ['US'],
           onboarding_status: 'completed',
-        })
-        .select('id')
-        .single()
+        }
+      : {
+          name: validated.companyName,
+          slug,
+          subdomain: slug,
+          onboarding_status: 'completed',
+        }
 
-      if (workspaceError) {
-        console.error('[Onboarding] Workspace creation failed:', workspaceError)
-        return NextResponse.json({ error: 'Failed to create workspace' }, { status: 500 })
-      }
+    const { data: workspace, error: workspaceError } = await admin
+      .from('workspaces')
+      .insert(workspaceInsert)
+      .select('id')
+      .single()
 
-      // Create user profile
-      const fullName = `${validated.firstName} ${validated.lastName}`
-      const { data: userProfile, error: userError } = await admin
-        .from('users')
-        .insert({
+    if (workspaceError) {
+      console.error('[Onboarding] Workspace creation failed:', workspaceError)
+      return NextResponse.json({ error: 'Failed to create workspace' }, { status: 500 })
+    }
+
+    console.warn('[Onboarding] Workspace created:', workspace.id)
+
+    // 8. Create user profile
+    const fullName = `${validated.firstName} ${validated.lastName}`
+    const userInsert = validated.role === 'business'
+      ? {
           auth_user_id: authUser.id,
           workspace_id: workspace.id,
           email: validated.email,
@@ -133,118 +164,8 @@ export async function POST(request: NextRequest) {
           daily_credits_used: 0,
           active_subscription: false,
           partner_approved: false,
-        })
-        .select('id')
-        .single()
-
-      if (userError) {
-        // Rollback workspace
-        await admin.from('workspaces').delete().eq('id', workspace.id)
-        console.error('[Onboarding] User creation failed:', userError)
-        return NextResponse.json({ error: 'Failed to create user profile' }, { status: 500 })
-      }
-
-      // Grant free trial credits (transactional with workspace creation)
-      try {
-        // Create workspace_credits record with free trial balance
-        const { error: creditsError } = await admin
-          .from('workspace_credits')
-          .insert({
-            workspace_id: workspace.id,
-            balance: FREE_TRIAL_CREDITS.credits,
-            total_purchased: 0,
-            total_used: 0,
-            total_earned: FREE_TRIAL_CREDITS.credits,
-          })
-
-        if (creditsError) {
-          throw new Error(`Failed to initialize credits: ${creditsError.message}`)
         }
-
-        // Record the free credit grant
-        const { error: grantError } = await admin
-          .from('free_credit_grants')
-          .insert({
-            workspace_id: workspace.id,
-            user_id: userProfile.id,
-            credits_granted: FREE_TRIAL_CREDITS.credits,
-          })
-
-        if (grantError) {
-          throw new Error(`Failed to record credit grant: ${grantError.message}`)
-        }
-      } catch (creditError) {
-        // Rollback workspace and user on credit grant failure
-        await admin.from('users').delete().eq('id', userProfile.id)
-        await admin.from('workspaces').delete().eq('id', workspace.id)
-        console.error('[Onboarding] Credit grant failed:', creditError)
-        return NextResponse.json(
-          { error: 'Failed to grant free credits' },
-          { status: 500 }
-        )
-      }
-
-      // Non-blocking Slack notification
-      sendSlackAlert({
-        type: 'new_signup',
-        severity: 'info',
-        message: `New business signup: ${validated.companyName} (${FREE_TRIAL_CREDITS.credits} free credits granted)`,
-        metadata: {
-          email: validated.email,
-          name: fullName,
-          company: validated.companyName,
-          industry: validated.industry,
-          target_locations: validated.targetLocations || 'Not specified',
-          monthly_lead_need: validated.monthlyLeadNeed,
-          workspace_id: workspace.id,
-          free_credits: FREE_TRIAL_CREDITS.credits,
-        },
-      }).catch(() => {})
-
-      // Non-blocking GHL onboard (creates contact in Cursive's GHL CRM)
-      inngest.send({
-        name: 'ghl-admin/onboard-customer',
-        data: {
-          user_id: authUser.id,
-          user_email: authUser.email!,
-          user_name: authUser.user_metadata.full_name || authUser.user_metadata.name || 'Customer',
-          workspace_id: workspace.id,
-          purchase_type: 'free_signup',
-          amount: 0,
-        },
-      }).catch(() => {})
-
-      return NextResponse.json({ workspace_id: workspace.id })
-
-    } else {
-      // Partner flow
-      const slug = validated.companyName
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/(^-|-$)/g, '')
-
-      // Create workspace
-      const { data: workspace, error: workspaceError } = await admin
-        .from('workspaces')
-        .insert({
-          name: validated.companyName,
-          slug,
-          subdomain: slug,
-          onboarding_status: 'completed',
-        })
-        .select('id')
-        .single()
-
-      if (workspaceError) {
-        console.error('[Onboarding] Partner workspace creation failed:', workspaceError)
-        return NextResponse.json({ error: 'Failed to create workspace' }, { status: 500 })
-      }
-
-      // Create partner user
-      const fullName = `${validated.firstName} ${validated.lastName}`
-      const { data: userProfile, error: userError } = await admin
-        .from('users')
-        .insert({
+      : {
           auth_user_id: authUser.id,
           workspace_id: workspace.id,
           email: validated.email,
@@ -253,63 +174,77 @@ export async function POST(request: NextRequest) {
           plan: 'free',
           partner_approved: false,
           active_subscription: true,
+        }
+
+    const { data: userProfile, error: userError } = await admin
+      .from('users')
+      .insert(userInsert)
+      .select('id')
+      .single()
+
+    if (userError) {
+      await admin.from('workspaces').delete().eq('id', workspace.id)
+      console.error('[Onboarding] User creation failed:', userError)
+      return NextResponse.json({ error: 'Failed to create user profile' }, { status: 500 })
+    }
+
+    console.warn('[Onboarding] User created:', userProfile.id)
+
+    // 9. Grant free trial credits
+    try {
+      const { error: creditsError } = await admin
+        .from('workspace_credits')
+        .insert({
+          workspace_id: workspace.id,
+          balance: FREE_TRIAL_CREDITS.credits,
+          total_purchased: 0,
+          total_used: 0,
+          total_earned: FREE_TRIAL_CREDITS.credits,
         })
-        .select('id')
-        .single()
 
-      if (userError) {
-        // Rollback workspace
-        await admin.from('workspaces').delete().eq('id', workspace.id)
-        console.error('[Onboarding] Partner user creation failed:', userError)
-        return NextResponse.json({ error: 'Failed to create user profile' }, { status: 500 })
+      if (creditsError) {
+        throw new Error(`Failed to initialize credits: ${creditsError.message}`)
       }
 
-      // Grant free trial credits (transactional with workspace creation)
-      try {
-        // Create workspace_credits record with free trial balance
-        const { error: creditsError } = await admin
-          .from('workspace_credits')
-          .insert({
-            workspace_id: workspace.id,
-            balance: FREE_TRIAL_CREDITS.credits,
-            total_purchased: 0,
-            total_used: 0,
-            total_earned: FREE_TRIAL_CREDITS.credits,
-          })
+      const { error: grantError } = await admin
+        .from('free_credit_grants')
+        .insert({
+          workspace_id: workspace.id,
+          user_id: userProfile.id,
+          credits_granted: FREE_TRIAL_CREDITS.credits,
+        })
 
-        if (creditsError) {
-          throw new Error(`Failed to initialize credits: ${creditsError.message}`)
-        }
-
-        // Record the free credit grant
-        const { error: grantError } = await admin
-          .from('free_credit_grants')
-          .insert({
-            workspace_id: workspace.id,
-            user_id: userProfile.id,
-            credits_granted: FREE_TRIAL_CREDITS.credits,
-          })
-
-        if (grantError) {
-          throw new Error(`Failed to record credit grant: ${grantError.message}`)
-        }
-      } catch (creditError) {
-        // Rollback workspace and user on credit grant failure
-        await admin.from('users').delete().eq('id', userProfile.id)
-        await admin.from('workspaces').delete().eq('id', workspace.id)
-        console.error('[Onboarding] Credit grant failed:', creditError)
-        return NextResponse.json(
-          { error: 'Failed to grant free credits' },
-          { status: 500 }
-        )
+      if (grantError) {
+        throw new Error(`Failed to record credit grant: ${grantError.message}`)
       }
+    } catch (creditError) {
+      await admin.from('users').delete().eq('id', userProfile.id)
+      await admin.from('workspaces').delete().eq('id', workspace.id)
+      console.error('[Onboarding] Credit grant failed:', creditError)
+      return NextResponse.json(
+        { error: 'Failed to grant free credits' },
+        { status: 500 }
+      )
+    }
 
-      // Non-blocking Slack notification
-      sendSlackAlert({
-        type: 'new_signup',
-        severity: 'info',
-        message: `New partner signup: ${validated.companyName} (${FREE_TRIAL_CREDITS.credits} free credits granted)`,
-        metadata: {
+    console.warn('[Onboarding] Credits granted. Returning success.')
+
+    // Build the response FIRST, then fire non-blocking side effects
+    const response = NextResponse.json({ workspace_id: workspace.id })
+
+    // Non-blocking Slack notification (fire-and-forget)
+    const slackMetadata = validated.role === 'business'
+      ? {
+          email: validated.email,
+          name: fullName,
+          company: validated.companyName,
+          industry: validated.industry,
+          target_locations: validated.targetLocations || 'Not specified',
+          monthly_lead_need: validated.monthlyLeadNeed,
+          workspace_id: workspace.id,
+          free_credits: FREE_TRIAL_CREDITS.credits,
+        }
+      : {
           email: validated.email,
           name: fullName,
           company: validated.companyName,
@@ -321,37 +256,41 @@ export async function POST(request: NextRequest) {
           website: validated.website || 'Not specified',
           workspace_id: workspace.id,
           free_credits: FREE_TRIAL_CREDITS.credits,
-        },
-      }).catch(() => {})
+        }
 
-      // Non-blocking GHL onboard (creates contact in Cursive's GHL CRM)
-      inngest.send({
-        name: 'ghl-admin/onboard-customer',
-        data: {
-          user_id: authUser.id,
-          user_email: authUser.email!,
-          user_name: authUser.user_metadata.full_name || authUser.user_metadata.name || 'Partner',
-          workspace_id: workspace.id,
-          purchase_type: 'partner_signup',
-          amount: 0,
-        },
-      }).catch(() => {})
+    sendSlackAlert({
+      type: 'new_signup',
+      severity: 'info',
+      message: `New ${validated.role} signup: ${validated.companyName} (${FREE_TRIAL_CREDITS.credits} free credits granted)`,
+      metadata: slackMetadata,
+    }).catch(() => {})
 
-      return NextResponse.json({ workspace_id: workspace.id })
-    }
+    // Non-blocking GHL onboard (fire-and-forget, lazy-loaded to avoid blocking)
+    fireInngestEvent({
+      name: 'ghl-admin/onboard-customer',
+      data: {
+        user_id: authUser.id,
+        user_email: authUser.email!,
+        user_name: authUser.user_metadata?.full_name || authUser.user_metadata?.name || validated.firstName,
+        workspace_id: workspace.id,
+        purchase_type: validated.role === 'business' ? 'free_signup' : 'partner_signup',
+        amount: 0,
+      },
+    })
+
+    return response
   } catch (error) {
     console.error('[Onboarding] Caught error:', error)
 
     if (error instanceof z.ZodError) {
-      console.error('[Onboarding] Validation error:', error.errors)
       return NextResponse.json(
         { error: 'Validation error', details: error.errors },
         { status: 400 }
       )
     }
 
-    console.error('[Onboarding] Unexpected error:', error)
-    console.error('[Onboarding] Error stack:', error instanceof Error ? error.stack : 'no stack')
+    console.error('[Onboarding] Unexpected error:', error instanceof Error ? error.message : error)
+    console.error('[Onboarding] Stack:', error instanceof Error ? error.stack : 'no stack')
     return NextResponse.json({
       error: 'Internal server error',
       message: error instanceof Error ? error.message : 'Unknown error'
