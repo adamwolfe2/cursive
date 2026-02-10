@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import WelcomeForm from './welcome-form'
 
 export default async function WelcomePage({
@@ -16,8 +17,9 @@ export default async function WelcomePage({
     redirect('/login')
   }
 
-  // Server-side workspace check using authenticated user context
-  const { data: user, error } = await supabase
+  // Use admin client to bypass RLS (prevents redirect loop)
+  const admin = createAdminClient()
+  const { data: user } = await admin
     .from('users')
     .select('workspace_id, role')
     .eq('auth_user_id', session.user.id)
