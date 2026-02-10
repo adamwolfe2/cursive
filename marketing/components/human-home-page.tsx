@@ -142,11 +142,11 @@ export function HumanHomePage() {
                       onClick={() => setActiveFeature(feature.id)}
                       className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs transition-all whitespace-nowrap ${
                         isActive
-                          ? 'bg-gray-900 text-white font-medium shadow-sm'
+                          ? 'bg-blue-50 text-blue-700 font-medium shadow-sm border border-blue-200'
                           : 'text-gray-600 hover:bg-gray-50 border border-gray-200'
                       }`}
                     >
-                      <Icon className={`w-3 h-3 flex-shrink-0 ${isActive ? 'text-white' : 'text-gray-400'}`} />
+                      <Icon className={`w-3 h-3 flex-shrink-0 ${isActive ? 'text-blue-600' : 'text-gray-400'}`} />
                       {feature.label}
                     </button>
                   )
