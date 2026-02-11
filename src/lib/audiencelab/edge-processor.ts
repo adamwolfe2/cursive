@@ -350,7 +350,7 @@ export async function processEventInline(
                 state: normalized.state,
               } : null,
               source: 'audiencelab',
-              enrichment_status: 'completed',
+              enrichment_status: 'enriched',
               delivery_status: 'pending',
               hash_key: dedupResult.hashKey,
               qualification_score: normalized.deliverability_score,

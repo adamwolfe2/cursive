@@ -306,7 +306,7 @@ export const processAudienceLabEvent = inngest.createFunction(
             state: identity.state,
           } : null,
           source: 'audiencelab',
-          enrichment_status: 'completed',
+          enrichment_status: 'enriched',
           delivery_status: 'pending',
           hash_key: dedupResult.hashKey,
           intent_score: identity.deliverability_score,
