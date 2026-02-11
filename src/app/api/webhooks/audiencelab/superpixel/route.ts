@@ -12,7 +12,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { SuperPixelWebhookPayloadSchema } from '@/lib/audiencelab/schemas'
 import { unwrapWebhookPayload, extractEventType, extractIpAddress } from '@/lib/audiencelab/field-map'
-import { inngest } from '@/inngest/client'
+import { processEventInline } from '@/lib/audiencelab/edge-processor'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 
 export const runtime = 'edge'
@@ -238,24 +238,28 @@ export async function POST(request: NextRequest) {
 
       if (inserted) {
         insertedIds.push(inserted.id)
-
-        // Queue async processing via Inngest
-        await inngest.send({
-          name: 'audiencelab/event-received',
-          data: {
-            event_id: inserted.id,
-            workspace_id: workspaceId || '',
-            source: 'superpixel' as const,
-          },
-        })
       }
     }
 
     safeLog(`${LOG_PREFIX} Stored ${insertedIds.length}/${events.length} events`)
 
+    // Process events inline (Edge-compatible — bypasses Inngest callback)
+    const processed: string[] = []
+    for (const id of insertedIds) {
+      try {
+        const result = await processEventInline(id, workspaceId || '', 'superpixel')
+        if (result.success) processed.push(id)
+      } catch (err) {
+        safeError(`${LOG_PREFIX} Inline processing failed for ${id}`, err)
+      }
+    }
+
+    safeLog(`${LOG_PREFIX} Processed ${processed.length}/${insertedIds.length} events inline`)
+
     return NextResponse.json({
       success: true,
       stored: insertedIds.length,
+      processed: processed.length,
       total: events.length,
     })
   } catch (error) {
