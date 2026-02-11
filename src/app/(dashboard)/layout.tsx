@@ -11,7 +11,7 @@ import { ImpersonationBanner } from '@/components/admin'
 import { isAdmin } from '@/lib/auth/admin'
 import { TierProvider } from '@/lib/hooks/use-tier'
 import { BrandThemeWrapper } from '@/components/layout/brand-theme-wrapper'
-import { ContactWidget } from '@/components/contact-widget'
+import { CrispChat } from '@/components/crisp-chat'
 
 export default async function DashboardLayout({
   children,
@@ -68,7 +68,7 @@ export default async function DashboardLayout({
             >
               {children}
             </AppShell>
-            <ContactWidget />
+            <CrispChat />
           </BrandThemeWrapper>
         </TierProvider>
       )
@@ -165,7 +165,7 @@ export default async function DashboardLayout({
         >
           {children}
         </AppShell>
-        <ContactWidget />
+        <CrispChat />
       </BrandThemeWrapper>
     </TierProvider>
   )
