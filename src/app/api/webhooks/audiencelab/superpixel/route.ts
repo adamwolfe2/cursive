@@ -5,26 +5,57 @@
  * Stores raw events, then delegates processing to Inngest for async normalization.
  *
  * Target: <250ms response time.
+ * Uses Edge runtime for fast cold starts.
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import crypto from 'crypto'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { SuperPixelWebhookPayloadSchema } from '@/lib/audiencelab/schemas'
 import { unwrapWebhookPayload, extractEventType, extractIpAddress } from '@/lib/audiencelab/field-map'
 import { inngest } from '@/inngest/client'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 
+export const runtime = 'edge'
+
 const LOG_PREFIX = '[AL SuperPixel]'
 const MAX_BODY_SIZE = 3 * 1024 * 1024 // 3MB
 
 /**
+ * Constant-time string comparison (Edge-compatible, no Node crypto)
+ */
+function safeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false
+  let result = 0
+  for (let i = 0; i < a.length; i++) {
+    result |= a.charCodeAt(i) ^ b.charCodeAt(i)
+  }
+  return result === 0
+}
+
+/**
+ * HMAC-SHA256 using Web Crypto API (Edge-compatible)
+ */
+async function hmacSha256(key: string, message: string): Promise<string> {
+  const enc = new TextEncoder()
+  const cryptoKey = await crypto.subtle.importKey(
+    'raw',
+    enc.encode(key),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  )
+  const sig = await crypto.subtle.sign('HMAC', cryptoKey, enc.encode(message))
+  return Array.from(new Uint8Array(sig))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('')
+}
+
+/**
  * Verify webhook secret header
  */
-function verifySecret(request: NextRequest, rawBody: string): boolean {
+async function verifySecret(request: NextRequest, rawBody: string): Promise<boolean> {
   const secret = process.env.AUDIENCELAB_WEBHOOK_SECRET
   if (!secret) {
-    // If no secret configured, reject all requests
     console.error(`${LOG_PREFIX} AUDIENCELAB_WEBHOOK_SECRET not configured`)
     return false
   }
@@ -32,23 +63,16 @@ function verifySecret(request: NextRequest, rawBody: string): boolean {
   // Check shared secret header
   const headerSecret = request.headers.get('x-audiencelab-secret')
   if (headerSecret) {
-    return crypto.timingSafeEqual(
-      Buffer.from(headerSecret),
-      Buffer.from(secret)
-    )
+    return safeEqual(headerSecret, secret)
   }
 
   // Fallback: check HMAC signature
   const signature = request.headers.get('x-audiencelab-signature') ||
                     request.headers.get('x-webhook-signature')
   if (signature) {
-    const expected = crypto.createHmac('sha256', secret).update(rawBody).digest('hex')
+    const expected = await hmacSha256(secret, rawBody)
     const provided = signature.replace(/^sha256=/, '')
-    try {
-      return crypto.timingSafeEqual(Buffer.from(provided), Buffer.from(expected))
-    } catch {
-      return false
-    }
+    return safeEqual(provided, expected)
   }
 
   return false
@@ -140,7 +164,7 @@ export async function POST(request: NextRequest) {
     const rawHeaders = captureHeaders(request)
 
     // Verify authentication
-    if (!verifySecret(request, rawBody)) {
+    if (!(await verifySecret(request, rawBody))) {
       safeLog(`${LOG_PREFIX} Rejected: invalid secret/signature`)
       return NextResponse.json(
         { error: 'Unauthorized' },

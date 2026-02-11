@@ -1,12 +1,11 @@
 import { NextResponse } from 'next/server'
 
-// Explicitly use Node.js runtime (NOT edge) to test serverless function behavior
-export const runtime = 'nodejs'
+export const runtime = 'edge'
 
 export async function GET() {
-  return NextResponse.json({ ok: true, runtime: 'nodejs', ts: Date.now() })
+  return NextResponse.json({ ok: true, ts: Date.now() })
 }
 
 export async function POST() {
-  return NextResponse.json({ ok: true, runtime: 'nodejs', method: 'POST', ts: Date.now() })
+  return NextResponse.json({ ok: true, method: 'POST', ts: Date.now() })
 }
