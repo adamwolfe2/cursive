@@ -1,7 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { OnboardingChecklist } from '@/components/onboarding/checklist'
 import { GradientCard, GradientBadge } from '@/components/ui/gradient-card'
 import { PageContainer, PageHeader } from '@/components/layout/page-container'
 import { Users, TrendingUp, Crown, ArrowRight, Sparkles, Package, CheckCircle } from 'lucide-react'
@@ -59,7 +58,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   // Get recent leads - only select needed columns, NOT contact_email
   const { data: recentLeads } = await supabase
     .from('leads')
-    .select('id, company_name, contact_name, industry, status, created_at, intent_score_calculated, source')
+    .select('id, company_name, full_name, first_name, last_name, company_industry, status, created_at, intent_score_calculated, source')
     .eq('workspace_id', userProfile.workspace_id)
     .order('created_at', { ascending: false })
     .limit(5)
@@ -158,11 +157,6 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         </div>
       )}
 
-      {/* Onboarding Checklist */}
-      <div className="mb-8">
-        <OnboardingChecklist />
-      </div>
-
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         {/* Total Leads */}
@@ -250,7 +244,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg font-semibold text-foreground">Recent Leads</h2>
           <Link
-            href="/leads"
+            href="/my-leads"
             className="flex items-center gap-1 text-sm font-medium text-primary hover:underline"
           >
             View all
@@ -267,10 +261,10 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
               >
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-foreground truncate">
-                    {lead.company_name || lead.contact_name || 'Unknown'}
+                    {lead.company_name || lead.full_name || [lead.first_name, lead.last_name].filter(Boolean).join(' ') || 'Unknown'}
                   </p>
                   <p className="text-sm text-muted-foreground truncate">
-                    {lead.industry || lead.source || 'No details'}
+                    {lead.company_industry || lead.source || 'No details'}
                   </p>
                 </div>
                 <GradientBadge className={`flex-shrink-0 ${

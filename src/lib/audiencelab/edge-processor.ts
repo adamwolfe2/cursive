@@ -288,6 +288,9 @@ export async function processEventInline(
       }
       if (normalized.first_name) updateFields.first_name = normalized.first_name
       if (normalized.last_name) updateFields.last_name = normalized.last_name
+      if (normalized.first_name || normalized.last_name) {
+        updateFields.full_name = [normalized.first_name, normalized.last_name].filter(Boolean).join(' ')
+      }
       if (normalized.company_name) updateFields.company_name = normalized.company_name
       if (normalized.company_domain) updateFields.company_domain = normalized.company_domain
       if (normalized.job_title) updateFields.job_title = normalized.job_title
@@ -337,6 +340,7 @@ export async function processEventInline(
               email: normalized.primary_email,
               first_name: normalized.first_name,
               last_name: normalized.last_name,
+              full_name: [normalized.first_name, normalized.last_name].filter(Boolean).join(' ') || null,
               company_name: normalized.company_name || 'Unknown',
               company_domain: normalized.company_domain,
               job_title: normalized.job_title,
