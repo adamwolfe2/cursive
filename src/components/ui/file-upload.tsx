@@ -820,8 +820,8 @@ const FileUploadList = React.forwardRef<HTMLDivElement, FileUploadListProps>(
 
     const context = useFileUploadContext(LIST_NAME);
 
-    const shouldRender =
-      forceMount || useStore((state) => state.files.size > 0);
+    const hasFiles = useStore((state) => state.files.size > 0);
+    const shouldRender = forceMount || hasFiles;
 
     if (!shouldRender) return null;
 
@@ -1301,7 +1301,8 @@ const FileUploadClear = React.forwardRef<
     [store, propsRef],
   );
 
-  const shouldRender = forceMount || useStore((state) => state.files.size > 0);
+  const hasFiles = useStore((state) => state.files.size > 0);
+  const shouldRender = forceMount || hasFiles;
 
   if (!shouldRender) return null;
 

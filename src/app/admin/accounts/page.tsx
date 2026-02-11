@@ -65,13 +65,6 @@ export default function AdminAccountsPage() {
     checkAdmin()
   }, [])
 
-  if (!authChecked) {
-    return <div className="flex items-center justify-center min-h-screen"><p>Checking access...</p></div>
-  }
-  if (!isAdmin) {
-    return null
-  }
-
   const { data: workspaces, isLoading, refetch } = useQuery({
     queryKey: ['admin', 'workspaces', search, industryFilter, statusFilter],
     queryFn: async () => {
@@ -105,6 +98,7 @@ export default function AdminAccountsPage() {
       if (error) throw error
       return data as Workspace[]
     },
+    enabled: authChecked && isAdmin,
   })
 
   // Impersonation mutation
@@ -126,6 +120,13 @@ export default function AdminAccountsPage() {
       router.push('/dashboard')
     },
   })
+
+  if (!authChecked) {
+    return <div className="flex items-center justify-center min-h-screen"><p>Checking access...</p></div>
+  }
+  if (!isAdmin) {
+    return null
+  }
 
   const handleImpersonate = (workspace: Workspace) => {
     setSelectedWorkspace(workspace)
@@ -214,7 +215,7 @@ export default function AdminAccountsPage() {
       <div className="mb-6">
         <h1 className="text-xl font-medium text-zinc-900">Business Accounts</h1>
         <p className="text-[13px] text-zinc-500 mt-1">
-          Manage all registered businesses. Use "Switch Into" to view any account as if you were the owner.
+          Manage all registered businesses. Use &quot;Switch Into&quot; to view any account as if you were the owner.
         </p>
       </div>
 
@@ -425,7 +426,7 @@ export default function AdminAccountsPage() {
               Switch Into Account
             </h3>
             <p className="text-sm text-zinc-600 mb-4">
-              You're about to view <strong>{selectedWorkspace.name}</strong>'s account as if you
+              You&apos;re about to view <strong>{selectedWorkspace.name}</strong>&apos;s account as if you
               were the owner. All your actions will be logged for audit purposes.
             </p>
 

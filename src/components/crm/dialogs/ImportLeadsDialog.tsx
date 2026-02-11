@@ -168,7 +168,7 @@ export function ImportLeadsDialog({ open, onOpenChange, onSuccess }: ImportLeads
           <div className="text-sm text-muted-foreground space-y-2">
             <p className="font-medium">Required columns:</p>
             <ul className="space-y-1 text-xs">
-              <li>• <strong>email</strong> (required) - Lead's email address</li>
+              <li>• <strong>email</strong> (required) - Lead&apos;s email address</li>
               <li>• <strong>first_name</strong> - First name</li>
               <li>• <strong>last_name</strong> - Last name</li>
               <li>• <strong>phone</strong> - Phone number</li>

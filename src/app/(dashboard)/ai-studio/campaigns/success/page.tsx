@@ -131,7 +131,7 @@ export default function CampaignSuccessPage() {
               <li className="flex items-start gap-3">
                 <span className="text-primary mt-1">2.</span>
                 <p className="text-gray-700">
-                  We'll set up your Meta Ads campaign with optimized targeting
+                  We&apos;ll set up your Meta Ads campaign with optimized targeting
                 </p>
               </li>
               <li className="flex items-start gap-3">
@@ -143,7 +143,7 @@ export default function CampaignSuccessPage() {
               <li className="flex items-start gap-3">
                 <span className="text-primary mt-1">4.</span>
                 <p className="text-gray-700">
-                  You'll receive daily updates on lead generation progress
+                  You&apos;ll receive daily updates on lead generation progress
                 </p>
               </li>
             </ul>

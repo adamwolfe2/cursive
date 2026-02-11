@@ -83,7 +83,7 @@ export default function VerifyEmailPage() {
               </h3>
               <p className="mt-2 text-[13px] text-zinc-600">
                 Click the verification link in the email to activate your account.
-                If you don't see it, check your spam folder.
+                If you don&apos;t see it, check your spam folder.
               </p>
             </div>
           </div>

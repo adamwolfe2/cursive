@@ -243,7 +243,7 @@ export default function MyLeadsPage() {
             <div>
               <h1 className="text-xl font-semibold text-zinc-900">My Purchased Leads</h1>
               <p className="text-[13px] text-zinc-500 mt-1">
-                All leads you've purchased from the marketplace
+                All leads you&apos;ve purchased from the marketplace
               </p>
             </div>
             <div className="flex items-center gap-3">

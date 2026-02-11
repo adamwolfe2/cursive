@@ -141,7 +141,7 @@ export function ChatPanel({ workspaceId, context = 'general' }: ChatPanelProps) 
           </Button>
         </div>
         <p className="text-xs text-gray-500 mt-2">
-          Try: "Generate a Facebook ad for our main product"
+          Try: &quot;Generate a Facebook ad for our main product&quot;
         </p>
       </div>
     </Card>

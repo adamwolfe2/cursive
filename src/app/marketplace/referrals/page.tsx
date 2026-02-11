@@ -255,7 +255,7 @@ export default function ReferralsPage() {
               <div>
                 <h4 className="text-[13px] font-medium text-zinc-900 mb-1">Is there a limit to how many people I can refer?</h4>
                 <p className="text-[13px] text-zinc-600">
-                  No! There's no limit. Refer as many friends as you'd like and earn credits for each successful referral.
+                  No! There&apos;s no limit. Refer as many friends as you&apos;d like and earn credits for each successful referral.
                 </p>
               </div>
               <div>
@@ -267,7 +267,7 @@ export default function ReferralsPage() {
               <div>
                 <h4 className="text-[13px] font-medium text-zinc-900 mb-1">Do credits expire?</h4>
                 <p className="text-[13px] text-zinc-600">
-                  No, credits never expire. Use them whenever you're ready to purchase leads.
+                  No, credits never expire. Use them whenever you&apos;re ready to purchase leads.
                 </p>
               </div>
             </div>

@@ -212,7 +212,7 @@ export default function PartnerRegisterPage() {
 
             <p className="text-xs text-zinc-500 text-center">
               By continuing, you agree to connect your Stripe account for receiving payouts.
-              You'll be redirected to Stripe to complete onboarding.
+              You&apos;ll be redirected to Stripe to complete onboarding.
             </p>
           </form>
         </div>

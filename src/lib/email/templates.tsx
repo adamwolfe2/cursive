@@ -783,7 +783,7 @@ export function PartnerApprovedEmail({
           </code>
         </Text>
         <Text style={{ fontSize: '12px', color: '#6b7280', marginTop: '8px', marginBottom: 0 }}>
-          Save this API key securely. You'll need it to upload leads via CSV or API.
+          Save this API key securely. You&apos;ll need it to upload leads via CSV or API.
         </Text>
       </Callout>
 
@@ -836,7 +836,7 @@ export function PartnerRejectedEmail({
 
       <Text>
         Thank you for your interest in becoming a data partner for <strong>{companyName}</strong>.
-        After reviewing your application, we're unable to approve your partnership at this time.
+        After reviewing your application, we&apos;re unable to approve your partnership at this time.
       </Text>
 
       <Callout variant="warning">
@@ -848,7 +848,7 @@ export function PartnerRejectedEmail({
       </Callout>
 
       <Text>
-        If you'd like to discuss this decision or reapply in the future, please don't hesitate to
+        If you&apos;d like to discuss this decision or reapply in the future, please don&apos;t hesitate to
         contact our team at <a href={`mailto:${supportEmail}`}>{supportEmail}</a>.
       </Text>
 
@@ -922,7 +922,7 @@ export function PurchaseConfirmationEmail({
           <strong>Download Available Until:</strong> {downloadExpiresAt}
           <br />
           <span style={{ fontSize: '12px', color: '#6b7280' }}>
-            You have 90 days to download your leads. After that, you'll need to access them from your purchase history.
+            You have 90 days to download your leads. After that, you&apos;ll need to access them from your purchase history.
           </span>
         </Text>
       </Callout>

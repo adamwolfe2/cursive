@@ -239,7 +239,7 @@ function LimitReachedPrompt({
             {resourceName} Limit Reached
           </h3>
           <p className="mt-1 text-xs text-amber-700">
-            You've reached your {currentTier} plan limit of {limit} {resourceName.toLowerCase()}.
+            You&apos;ve reached your {currentTier} plan limit of {limit} {resourceName.toLowerCase()}.
           </p>
           {canUpgrade && (
             <div className="mt-2 flex flex-wrap items-center gap-3">

@@ -161,7 +161,7 @@ export function CampaignRequestForm() {
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Let our experts craft a high-converting email campaign tailored to your ICP.
-            Fill out the form below and we'll reach out within 24 hours.
+            Fill out the form below and we&apos;ll reach out within 24 hours.
           </p>
         </div>
 
@@ -528,7 +528,7 @@ export function CampaignRequestForm() {
               {/* Submit */}
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t">
                 <p className="text-sm text-gray-500 text-center sm:text-left">
-                  We'll review your request and contact you within 24 hours
+                  We&apos;ll review your request and contact you within 24 hours
                 </p>
                 <Button
                   type="submit"

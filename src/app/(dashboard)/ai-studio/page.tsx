@@ -233,7 +233,7 @@ export default function AIStudioPage() {
             </div>
           </div>
           <p className="text-sm text-muted-foreground">
-            We'll analyze your brand and generate content, or select a workspace.
+            We&apos;ll analyze your brand and generate content, or select a workspace.
           </p>
         </form>
       </GradientCard>
@@ -374,7 +374,7 @@ export default function AIStudioPage() {
                   Ready to launch campaigns?
                 </h3>
                 <p className="text-sm text-muted-foreground mb-4">
-                  We'll build and run email campaigns using your brand voice. Done-for-you outreach that converts.
+                  We&apos;ll build and run email campaigns using your brand voice. Done-for-you outreach that converts.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3">
                   <a

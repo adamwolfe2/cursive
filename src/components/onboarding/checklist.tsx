@@ -216,7 +216,7 @@ export function OnboardingChecklist() {
             <div className="flex-1">
               <p className="text-[14px] font-medium text-foreground">All done!</p>
               <p className="text-[13px] text-muted-foreground mt-0.5">
-                You're all set. Start exploring the platform.
+                You&apos;re all set. Start exploring the platform.
               </p>
             </div>
             <button

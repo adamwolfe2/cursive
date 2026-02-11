@@ -151,7 +151,7 @@ export function StepSequence({ formData, updateFormData }: StepSequenceProps) {
         <ul className="text-xs text-muted-foreground space-y-1">
           <li>• 3-5 emails typically works best for cold outreach</li>
           <li>• Space follow-ups 3-7 days apart for optimal response rates</li>
-          <li>• First follow-up is the most important - don't wait too long</li>
+          <li>• First follow-up is the most important - don&apos;t wait too long</li>
           <li>• Later follow-ups can be spaced further apart</li>
         </ul>
       </div>

@@ -187,7 +187,7 @@ export function CampaignsList() {
             <div className="flex-1">
               <h3 className="text-sm font-medium text-red-800">Campaign limit reached</h3>
               <p className="mt-1 text-sm text-red-700">
-                You've reached your {tierName} plan limit of {usage?.limit} campaigns.
+                You&apos;ve reached your {tierName} plan limit of {usage?.limit} campaigns.
                 {canUpgrade && ' Upgrade to create more campaigns.'}
               </p>
               {canUpgrade && (

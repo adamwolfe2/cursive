@@ -208,7 +208,7 @@ export function StepReview({ formData }: StepReviewProps) {
               Human Review Required
             </h4>
             <p className="mt-1 text-sm text-amber-600 dark:text-amber-300">
-              This campaign will be created in <strong>draft</strong> status. You'll need to review
+              This campaign will be created in <strong>draft</strong> status. You&apos;ll need to review
               and approve it before any emails are sent. All AI-generated content will also require
               human approval.
             </p>

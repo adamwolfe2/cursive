@@ -108,7 +108,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
           <div>
             <p className="font-semibold text-green-900">Onboarding complete!</p>
-            <p className="text-sm text-green-700">We're setting up your tracking pixel and campaigns now. You'll get an email when everything is live.</p>
+            <p className="text-sm text-green-700">We&apos;re setting up your tracking pixel and campaigns now. You&apos;ll get an email when everything is live.</p>
           </div>
         </div>
       )}

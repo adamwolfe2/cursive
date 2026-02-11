@@ -82,7 +82,7 @@ export function ServiceLimitBanner({
           <p className={`text-sm mb-3 ${
             isCritical ? 'text-red-700' : 'text-amber-700'
           }`}>
-            You've used {used} of {limit} {resourceLabel} on your {tierName} plan.
+            You&apos;ve used {used} of {limit} {resourceLabel} on your {tierName} plan.
             {typeof remaining === 'number' && remaining > 0 && ` ${remaining} remaining.`}
           </p>
 
@@ -195,7 +195,7 @@ export function LimitExceededBanner({
             Limit Reached
           </h3>
           <p className="text-sm text-red-700 mb-3">
-            You've reached your {tierName} plan limit of {limit} {resourceLabel}s.
+            You&apos;ve reached your {tierName} plan limit of {limit} {resourceLabel}s.
             Upgrade to continue.
           </p>
 

@@ -95,7 +95,7 @@ export default function RoleSelectionPage() {
 
               {/* Content */}
               <h2 className="text-2xl font-bold text-zinc-900 mb-3">
-                I'm a Business
+                I&apos;m a Business
               </h2>
               <p className="text-zinc-600 mb-6 leading-relaxed">
                 Looking to buy qualified leads for my business. Get access to the marketplace and CRM.
@@ -147,7 +147,7 @@ export default function RoleSelectionPage() {
 
               {/* Content */}
               <h2 className="text-2xl font-bold text-zinc-900 mb-3">
-                I'm a Partner
+                I&apos;m a Partner
               </h2>
               <p className="text-zinc-600 mb-6 leading-relaxed">
                 I want to upload and sell leads. Earn 70% commission on every lead sold.

@@ -267,7 +267,7 @@ export function SettingsClient({ partner, payouts }: SettingsClientProps) {
                   )}
                 </Button>
                 <p className="text-xs text-muted-foreground mt-2">
-                  You'll be redirected to Stripe to complete the connection process
+                  You&apos;ll be redirected to Stripe to complete the connection process
                 </p>
               </div>
             </div>

@@ -235,7 +235,7 @@ export function BuyLeadButton({ lead, onPurchaseComplete }: BuyLeadButtonProps) 
                 </div>
               )}
               <div className="text-xs text-muted-foreground mt-2">
-                Complete your purchase for $20. After payment, you'll receive
+                Complete your purchase for $20. After payment, you&apos;ll receive
                 full contact information including email and phone.
               </div>
             </DialogDescription>

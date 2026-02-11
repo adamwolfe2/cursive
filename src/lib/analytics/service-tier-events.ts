@@ -202,10 +202,9 @@ export function useServiceTierPageTracking(
   page: 'hub' | 'detail' | 'success',
   properties?: ServiceTierEventProperties
 ) {
-  if (typeof window === 'undefined') return
-
-  // Track on mount
+  // Track on mount (skip in SSR)
   React.useEffect(() => {
+    if (typeof window === 'undefined') return
     trackServicePageView(page, properties)
   }, [page, properties])
 }

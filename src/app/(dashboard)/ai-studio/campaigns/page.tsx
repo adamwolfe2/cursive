@@ -207,7 +207,7 @@ export default function CampaignsPage() {
           <div>
             <h1 className="text-2xl font-semibold text-foreground">Create Campaign</h1>
             <p className="text-sm text-muted-foreground">
-              Choose a plan and we'll run your Meta ads campaign
+              Choose a plan and we&apos;ll run your Meta ads campaign
             </p>
           </div>
         </div>

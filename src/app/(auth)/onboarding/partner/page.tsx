@@ -148,7 +148,7 @@ export default function PartnerOnboardingPage() {
             {/* Info box */}
             <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
               <p className="text-sm text-emerald-800 leading-relaxed">
-                <strong>Next steps:</strong> After completing setup, you'll be able to upload leads immediately and start earning 70% commission on every sale.
+                <strong>Next steps:</strong> After completing setup, you&apos;ll be able to upload leads immediately and start earning 70% commission on every sale.
               </p>
             </div>
 

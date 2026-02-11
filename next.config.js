@@ -6,15 +6,12 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 const nextConfig = {
   reactStrictMode: true,
   typescript: {
-    // !! WARN !!
-    // Dangerously allow production builds to successfully complete even if
-    // your project has type errors.
+    // TODO: Fix remaining TS errors and remove this
     ignoreBuildErrors: true,
   },
   eslint: {
-    // Warning: This allows production builds to successfully complete even if
-    // your project has ESLint errors.
-    ignoreDuringBuilds: true,
+    // Lint errors are now resolved — enforce during builds
+    ignoreDuringBuilds: false,
   },
 
   // ============================================
@@ -37,8 +34,6 @@ const nextConfig = {
         hostname: '**.googleusercontent.com',
       },
     ],
-    // Modern image formats
-    formats: ['image/avif', 'image/webp'],
     // Minimize image processing memory
     minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days
     // Device sizes for responsive images

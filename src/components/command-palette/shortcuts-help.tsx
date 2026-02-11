@@ -79,7 +79,7 @@ export function ShortcutsHelp({ isOpen, onClose, className }: ShortcutsHelpProps
         <div className="max-h-[60vh] overflow-y-auto p-4">
           {filteredGroups.length === 0 ? (
             <div className="py-8 text-center text-muted-foreground">
-              No shortcuts found matching "{searchQuery}"
+              No shortcuts found matching &quot;{searchQuery}&quot;
             </div>
           ) : (
             <div className="space-y-6">

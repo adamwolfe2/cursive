@@ -261,7 +261,7 @@ export default function ClientProfileSettingsPage() {
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground mb-4">
-              Define the types of people you want to reach (e.g., "VP of Sales at SaaS companies")
+              Define the types of people you want to reach (e.g., &quot;VP of Sales at SaaS companies&quot;)
             </p>
 
             <div className="flex flex-wrap gap-2 mb-4">

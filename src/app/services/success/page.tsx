@@ -61,7 +61,7 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
           </h1>
 
           <p className="text-lg text-zinc-600 mb-8">
-            Your subscription has been activated successfully. We're excited to help you scale your lead generation and outreach.
+            Your subscription has been activated successfully. We&apos;re excited to help you scale your lead generation and outreach.
           </p>
 
           {/* What Happens Next */}
@@ -71,13 +71,13 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
               <li className="flex items-start gap-3">
                 <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
                 <span className="text-zinc-700">
-                  You'll receive a welcome email at {userData.email} with next steps
+                  You&apos;ll receive a welcome email at {userData.email} with next steps
                 </span>
               </li>
               <li className="flex items-start gap-3">
                 <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
                 <span className="text-zinc-700">
-                  I'll reach out personally within 24 hours to schedule our kickoff call
+                  I&apos;ll reach out personally within 24 hours to schedule our kickoff call
                 </span>
               </li>
               <li className="flex items-start gap-3">

@@ -407,6 +407,7 @@ export function LeadsTable({ initialFilters }: LeadsTableProps) {
       .filter(Boolean)
   }, [rowSelection, table])
 
+  const { mutateAsync: doDelete } = deleteMutation
   const handleBulkDelete = useCallback(async () => {
     if (
       selectedLeadIds.length === 0 ||
@@ -414,8 +415,8 @@ export function LeadsTable({ initialFilters }: LeadsTableProps) {
     ) {
       return
     }
-    await deleteMutation.mutateAsync(selectedLeadIds)
-  }, [selectedLeadIds, deleteMutation])
+    await doDelete(selectedLeadIds)
+  }, [selectedLeadIds, doDelete])
 
   // Show error state
   if (error) {

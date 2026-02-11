@@ -274,7 +274,7 @@ export function StepTemplates({ formData, updateFormData }: StepTemplatesProps) 
             </div>
             <div className="ml-3">
               <p className="text-sm text-muted-foreground">
-                With intelligent matching, templates are selected at send time based on each lead's profile.
+                With intelligent matching, templates are selected at send time based on each lead&apos;s profile.
                 Select templates you want available for the AI to choose from, or leave empty to use all.
               </p>
             </div>

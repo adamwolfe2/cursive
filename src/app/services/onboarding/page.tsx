@@ -43,13 +43,13 @@ export default async function OnboardingPage() {
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-zinc-900 mb-4">
-            Let's get your first leads rolling
+            Let&apos;s get your first leads rolling
           </h1>
           <p className="text-xl text-zinc-600">
             Tell me about your ideal customer so I can deliver leads that actually convert.
           </p>
           <p className="text-sm text-zinc-500 mt-2">
-            This takes about 10 minutes. You're setting up {tier?.name}.
+            This takes about 10 minutes. You&apos;re setting up {tier?.name}.
           </p>
         </div>
 

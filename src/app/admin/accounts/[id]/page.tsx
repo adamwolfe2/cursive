@@ -412,7 +412,7 @@ export default function AdminWorkspaceDetailPage() {
               </div>
             </div>
             <div className="bg-white border border-zinc-200 rounded-lg p-4">
-              <div className="text-xs text-zinc-500">Today's Leads</div>
+              <div className="text-xs text-zinc-500">Today&apos;s Leads</div>
               <div className="text-lg font-semibold text-zinc-900 mt-1">
                 {usageStats?.dailyLeads || 0} / {effectiveDailyLimit}
               </div>
@@ -667,7 +667,7 @@ export default function AdminWorkspaceDetailPage() {
           <div className="relative bg-white rounded-xl shadow-xl max-w-md w-full mx-4 p-6">
             <h3 className="text-lg font-semibold text-zinc-900 mb-4">Edit Limit Overrides</h3>
             <p className="text-sm text-zinc-500 mb-4">
-              Leave blank to use the tier's default limits.
+              Leave blank to use the tier&apos;s default limits.
             </p>
             <div className="space-y-4 mb-4">
               <div>

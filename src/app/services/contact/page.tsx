@@ -56,7 +56,7 @@ export default function ContactSalesPage() {
             Thank You!
           </h1>
           <p className="text-xl text-zinc-600 mb-8">
-            We've received your inquiry and our team will contact you within 24 hours.
+            We&apos;ve received your inquiry and our team will contact you within 24 hours.
           </p>
 
           <div className="bg-white rounded-xl border border-zinc-200 p-8 mb-8 text-left">
@@ -70,7 +70,7 @@ export default function ContactSalesPage() {
               </li>
               <li className="flex items-start gap-3">
                 <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
-                <span>We'll discuss your specific needs and goals</span>
+                <span>We&apos;ll discuss your specific needs and goals</span>
               </li>
               <li className="flex items-start gap-3">
                 <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
@@ -104,10 +104,10 @@ export default function ContactSalesPage() {
           </Link>
 
           <h1 className="text-4xl font-bold text-zinc-900 mb-4">
-            Let's Talk About Your Growth
+            Let&apos;s Talk About Your Growth
           </h1>
           <p className="text-xl text-zinc-600">
-            Tell us about your business and we'll create a custom solution for you.
+            Tell us about your business and we&apos;ll create a custom solution for you.
           </p>
         </div>
 
@@ -254,7 +254,7 @@ export default function ContactSalesPage() {
 
             <p className="text-xs text-zinc-500 text-center">
               By submitting this form, you agree to be contacted by our sales team.
-              We'll never share your information with third parties.
+              We&apos;ll never share your information with third parties.
             </p>
           </div>
         </form>

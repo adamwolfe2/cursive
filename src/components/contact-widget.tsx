@@ -159,7 +159,7 @@ export function ContactWidget() {
           {/* Footer */}
           <div className="px-6 py-3 bg-zinc-50 border-t border-zinc-200">
             <p className="text-xs text-zinc-500 text-center">
-              We'll get back to you as soon as possible
+              We&apos;ll get back to you as soon as possible
             </p>
           </div>
         </div>

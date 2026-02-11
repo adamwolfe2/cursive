@@ -221,7 +221,7 @@ Test Company 3,Solar,WA,US,test3@test.com,test-workspace`
 
           {results.length === 0 && !testing && (
             <div className="bg-white border border-zinc-200 rounded-lg shadow-sm p-12 text-center">
-              <p className="text-[13px] text-zinc-500">No tests run yet. Click "Run All Tests" to begin.</p>
+              <p className="text-[13px] text-zinc-500">No tests run yet. Click &quot;Run All Tests&quot; to begin.</p>
             </div>
           )}
         </div>

@@ -168,12 +168,13 @@ export default function LeadDiscoveryPage() {
     },
   })
 
+  const { mutate: doSearch } = searchMutation
   const handleSearch = useCallback(() => {
     if (!filters.topic && filters.keywords.length === 0 && filters.industries.length === 0) {
       return
     }
-    searchMutation.mutate(filters)
-  }, [filters, searchMutation])
+    doSearch(filters)
+  }, [filters, doSearch])
 
   const addKeyword = useCallback(() => {
     if (keywordInput.trim() && !filters.keywords.includes(keywordInput.trim())) {
@@ -247,7 +248,7 @@ export default function LeadDiscoveryPage() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <div className="p-4 bg-white border border-zinc-200 rounded-lg">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-zinc-600">Today's Leads</span>
+            <span className="text-sm font-medium text-zinc-600">Today&apos;s Leads</span>
             {dailyRemaining !== null && dailyRemaining <= 5 && dailyRemaining > 0 && (
               <span className="px-2 py-0.5 text-xs font-medium bg-amber-100 text-amber-700 rounded-full">
                 Low
@@ -347,7 +348,7 @@ export default function LeadDiscoveryPage() {
             <div>
               <h3 className="font-medium text-amber-800">Daily limit reached</h3>
               <p className="mt-1 text-sm text-amber-700">
-                You've used all your daily leads. Limits reset at midnight UTC.
+                You&apos;ve used all your daily leads. Limits reset at midnight UTC.
                 {canUpgrade && ' Upgrade your plan to get more leads.'}
               </p>
               {canUpgrade && (

@@ -90,14 +90,14 @@ function PartnerConnectSuccessContent() {
             </p>
 
             <div className="bg-zinc-50 rounded-xl p-6 mb-8 text-left">
-              <h2 className="font-semibold text-zinc-900 mb-4">What's Next?</h2>
+              <h2 className="font-semibold text-zinc-900 mb-4">What&apos;s Next?</h2>
               <div className="space-y-3">
                 <div className="flex gap-3">
                   <svg className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                   <p className="text-sm text-zinc-700">
-                    Your account is under review. You'll receive an email notification once approved (usually within 24 hours).
+                    Your account is under review. You&apos;ll receive an email notification once approved (usually within 24 hours).
                   </p>
                 </div>
                 <div className="flex gap-3">
@@ -113,7 +113,7 @@ function PartnerConnectSuccessContent() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                   <p className="text-sm text-zinc-700">
-                    You'll receive weekly payouts automatically via Stripe when your leads are sold.
+                    You&apos;ll receive weekly payouts automatically via Stripe when your leads are sold.
                   </p>
                 </div>
               </div>

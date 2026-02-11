@@ -51,7 +51,7 @@ export default function CampaignRequestSuccessPage() {
                     2
                   </span>
                   <span>
-                    <strong>Strategy Call:</strong> We'll schedule a call to discuss your campaign strategy
+                    <strong>Strategy Call:</strong> We&apos;ll schedule a call to discuss your campaign strategy
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
@@ -67,7 +67,7 @@ export default function CampaignRequestSuccessPage() {
                     4
                   </span>
                   <span>
-                    <strong>Campaign Launch:</strong> Once approved, we'll craft and launch your campaign
+                    <strong>Campaign Launch:</strong> Once approved, we&apos;ll craft and launch your campaign
                   </span>
                 </li>
               </ol>

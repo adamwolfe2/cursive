@@ -78,7 +78,7 @@ export default function CustomAudiencePage() {
           </div>
           <h2 className="text-2xl font-bold text-foreground mb-4">Request Submitted!</h2>
           <p className="text-muted-foreground mb-2">
-            We'll review your criteria and deliver a free 25-lead sample within 48 hours.
+            We&apos;ll review your criteria and deliver a free 25-lead sample within 48 hours.
           </p>
           <p className="text-sm text-muted-foreground">
             Check your email for confirmation and next steps.

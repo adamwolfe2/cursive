@@ -72,13 +72,6 @@ export default function AdminLeadsPage() {
     checkAdmin()
   }, [])
 
-  if (!authChecked) {
-    return <div className="flex items-center justify-center min-h-screen"><p>Checking access...</p></div>
-  }
-  if (!isAdmin) {
-    return null
-  }
-
   // Fetch leads
   const { data: leads, isLoading, refetch } = useQuery({
     queryKey: ['admin', 'leads'],
@@ -95,6 +88,7 @@ export default function AdminLeadsPage() {
       if (error) throw error
       return data as Lead[]
     },
+    enabled: authChecked && isAdmin,
   })
 
   // Fetch verification queue
@@ -114,7 +108,15 @@ export default function AdminLeadsPage() {
       if (error) throw error
       return data as Lead[]
     },
+    enabled: authChecked && isAdmin,
   })
+
+  if (!authChecked) {
+    return <div className="flex items-center justify-center min-h-screen"><p>Checking access...</p></div>
+  }
+  if (!isAdmin) {
+    return null
+  }
 
   // Handle approve lead
   const handleApprove = async (leadId: string) => {

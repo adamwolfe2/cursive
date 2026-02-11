@@ -73,13 +73,6 @@ export default function AdminDashboard() {
     checkAdmin()
   }, [])
 
-  if (!authChecked) {
-    return <div className="flex items-center justify-center min-h-screen"><p>Checking access...</p></div>
-  }
-  if (!isAdmin) {
-    return null
-  }
-
   const fetchRules = async () => {
     setRulesLoading(true)
     try {
@@ -118,11 +111,19 @@ export default function AdminDashboard() {
   }
 
   useEffect(() => {
+    if (!authChecked || !isAdmin) return
     fetchRules()
     fetchLeads()
     const interval = setInterval(fetchLeads, 5000)
     return () => clearInterval(interval)
-  }, [])
+  }, [authChecked, isAdmin])
+
+  if (!authChecked) {
+    return <div className="flex items-center justify-center min-h-screen"><p>Checking access...</p></div>
+  }
+  if (!isAdmin) {
+    return null
+  }
 
   const deleteRule = async (id: string) => {
     await supabase.from('lead_routing_rules').delete().eq('id', id)
@@ -269,7 +270,7 @@ export default function AdminDashboard() {
                   ) : rules.length === 0 ? (
                     <tr>
                       <td colSpan={6} className="px-5 py-12 text-center text-zinc-500 text-[13px]">
-                        No routing rules configured. Click "+ Add Rule" to create one.
+                        No routing rules configured. Click &quot;+ Add Rule&quot; to create one.
                       </td>
                     </tr>
                   ) : (
