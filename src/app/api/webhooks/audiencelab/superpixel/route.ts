@@ -15,7 +15,7 @@ import { unwrapWebhookPayload, extractEventType, extractIpAddress } from '@/lib/
 import { inngest } from '@/inngest/client'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 
-// Note: Uses Node.js runtime (default) for crypto module compatibility
+export const runtime = 'edge'
 
 const LOG_PREFIX = '[AL SuperPixel]'
 const MAX_BODY_SIZE = 3 * 1024 * 1024 // 3MB

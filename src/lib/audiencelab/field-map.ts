@@ -6,7 +6,28 @@
  * primary email selection, and deliverability scoring.
  */
 
-import { normalizeEmail, normalizePhone } from '@/lib/services/deduplication.service'
+// Inline normalizeEmail/normalizePhone to avoid transitive crypto dependency
+// (deduplication.service.ts imports Node.js crypto, blocking Edge runtime)
+
+function normalizeEmail(email: string): string {
+  if (!email) return ''
+  const [local, domain] = email.toLowerCase().trim().split('@')
+  if (!local || !domain) return email.toLowerCase().trim()
+  const gmailDomains = ['gmail.com', 'googlemail.com']
+  if (gmailDomains.includes(domain)) {
+    return local.replace(/\./g, '') + '@' + domain
+  }
+  return local + '@' + domain
+}
+
+function normalizePhone(phone: string | null | undefined): string {
+  if (!phone) return ''
+  const digits = phone.replace(/\D/g, '')
+  if (digits.length === 11 && digits.startsWith('1')) {
+    return digits.slice(1)
+  }
+  return digits
+}
 
 // ============ Lead-Worthiness Policy ============
 
