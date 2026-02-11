@@ -10,7 +10,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
-import { inngest } from '@/inngest/client'
+import { processEventInline } from '@/lib/audiencelab/edge-processor'
 import { z } from 'zod'
 
 const ParamsSchema = z.object({
@@ -73,20 +73,17 @@ export async function POST(
       .update({ processed: false, error: null })
       .eq('id', eventId)
 
-    // Re-trigger processing
-    await inngest.send({
-      name: 'audiencelab/event-received',
-      data: {
-        event_id: eventId,
-        workspace_id: event.workspace_id || userData.workspace_id,
-        source: event.source as 'superpixel' | 'audiencesync' | 'export',
-      },
-    })
+    // Process inline (bypasses Inngest callback which hangs on Vercel)
+    const result = await processEventInline(
+      eventId,
+      event.workspace_id || userData.workspace_id,
+      event.source
+    )
 
     return NextResponse.json({
       success: true,
       event_id: eventId,
-      message: 'Event queued for re-processing',
+      ...result,
     })
   } catch (error) {
     console.error('[AL Replay] Error:', error)
