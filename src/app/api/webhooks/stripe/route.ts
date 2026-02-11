@@ -21,7 +21,7 @@ function getStripe(): Stripe {
       throw new Error('STRIPE_SECRET_KEY is not configured')
     }
     stripeClient = new Stripe(STRIPE_CONFIG.secretKey, {
-      apiVersion: STRIPE_CONFIG.apiVersion,
+      apiVersion: STRIPE_CONFIG.apiVersion as Stripe.LatestApiVersion,
       httpClient: Stripe.createFetchHttpClient(),
     })
   }

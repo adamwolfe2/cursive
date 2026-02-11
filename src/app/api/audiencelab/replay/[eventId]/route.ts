@@ -81,9 +81,8 @@ export async function POST(
     )
 
     return NextResponse.json({
-      success: true,
-      event_id: eventId,
       ...result,
+      event_id: eventId,
     })
   } catch (error) {
     console.error('[AL Replay] Error:', error)
