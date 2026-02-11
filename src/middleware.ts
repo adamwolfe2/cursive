@@ -32,7 +32,9 @@ export async function middleware(req: NextRequest) {
       pathname.startsWith('/api/inngest') ||
       pathname === '/api/health'
     ) {
-      return NextResponse.next()
+      return NextResponse.next({
+        request: req,
+      })
     }
 
     // Create Supabase client using SSR pattern
