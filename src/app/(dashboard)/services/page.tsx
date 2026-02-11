@@ -150,7 +150,7 @@ export default function ServicesPage() {
 
             {/* CTA Button */}
             <a
-              href={getServiceLink(tier.key)}
+              href={tier.key === 'data' ? getServiceLink(tier.key) : `/services/request?tier=cursive-${tier.key}`}
               className={`block w-full text-center rounded-lg px-6 py-3 text-sm font-semibold transition-colors shadow-sm ${
                 tier.popular
                   ? 'bg-primary text-primary-foreground hover:bg-primary/90'

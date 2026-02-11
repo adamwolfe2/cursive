@@ -55,6 +55,16 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     .select('*', { count: 'exact', head: true })
     .eq('workspace_id', userProfile.workspace_id)
 
+  // Check if workspace has a pixel installed
+  const { data: pixelData } = await supabase
+    .from('audiencelab_pixels')
+    .select('pixel_id')
+    .eq('workspace_id', userProfile.workspace_id)
+    .eq('is_active', true)
+    .maybeSingle()
+
+  const hasPixel = !!pixelData
+
   // Get recent leads - only select needed columns, NOT contact_email
   const { data: recentLeads } = await supabase
     .from('leads')
@@ -122,30 +132,65 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                 <p className="text-xs text-muted-foreground">Done!</p>
               </div>
             </div>
-            {/* Step 2: Set up targeting */}
+            {/* Step 2: Install pixel */}
             <div className="flex items-start gap-3">
               <div className="flex-shrink-0 mt-0.5">
-                <div className="h-6 w-6 rounded-full border-2 border-primary flex items-center justify-center">
-                  <span className="text-xs font-bold text-primary">2</span>
+                {hasPixel ? (
+                  <div className="h-6 w-6 rounded-full bg-green-100 flex items-center justify-center">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                  </div>
+                ) : (
+                  <div className="h-6 w-6 rounded-full border-2 border-primary flex items-center justify-center">
+                    <span className="text-xs font-bold text-primary">2</span>
+                  </div>
+                )}
+              </div>
+              <div>
+                <p className={`text-sm font-medium ${hasPixel ? 'text-muted-foreground line-through' : 'text-foreground'}`}>
+                  Install pixel on your site
+                </p>
+                {hasPixel ? (
+                  <p className="text-xs text-muted-foreground">Done!</p>
+                ) : (
+                  <>
+                    <p className="text-xs text-muted-foreground mb-2">Add a tracking snippet to identify website visitors</p>
+                    <Link
+                      href="/settings/pixel"
+                      className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:text-primary/80"
+                    >
+                      Set up pixel
+                      <ArrowRight className="h-3 w-3" />
+                    </Link>
+                  </>
+                )}
+              </div>
+            </div>
+            {/* Step 3: Set up targeting */}
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 mt-0.5">
+                <div className={`h-6 w-6 rounded-full border-2 ${hasPixel ? 'border-primary' : 'border-muted-foreground/30'} flex items-center justify-center`}>
+                  <span className={`text-xs font-bold ${hasPixel ? 'text-primary' : 'text-muted-foreground/50'}`}>3</span>
                 </div>
               </div>
               <div>
-                <p className="text-sm font-medium text-foreground">Set up your lead preferences</p>
+                <p className={`text-sm font-medium ${hasPixel ? 'text-foreground' : 'text-muted-foreground/70'}`}>Set up your lead preferences</p>
                 <p className="text-xs text-muted-foreground mb-2">Tell us what industries and locations you serve</p>
-                <Link
-                  href="/my-leads/preferences"
-                  className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:text-primary/80"
-                >
-                  Set preferences
-                  <ArrowRight className="h-3 w-3" />
-                </Link>
+                {hasPixel && (
+                  <Link
+                    href="/my-leads/preferences"
+                    className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:text-primary/80"
+                  >
+                    Set preferences
+                    <ArrowRight className="h-3 w-3" />
+                  </Link>
+                )}
               </div>
             </div>
-            {/* Step 3: Leads arrive */}
+            {/* Step 4: Leads arrive */}
             <div className="flex items-start gap-3">
               <div className="flex-shrink-0 mt-0.5">
                 <div className="h-6 w-6 rounded-full border-2 border-muted-foreground/30 flex items-center justify-center">
-                  <span className="text-xs font-bold text-muted-foreground/50">3</span>
+                  <span className="text-xs font-bold text-muted-foreground/50">4</span>
                 </div>
               </div>
               <div>

@@ -12,6 +12,7 @@ const settingsTabs = [
   { label: 'Security', href: '/settings/security' },
   { label: 'Notifications', href: '/settings/notifications' },
   { label: 'Integrations', href: '/settings/integrations' },
+  { label: 'Pixel', href: '/settings/pixel' },
 ]
 
 export default function SettingsLayout({
