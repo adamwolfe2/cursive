@@ -22,7 +22,8 @@ export async function isAdmin(): Promise<boolean> {
     const supabase = await createClient()
 
     // Get current user
-    const { data: { user } } = await supabase.auth.getUser()
+    const { data: { session } } = await supabase.auth.getSession()
+    const user = session?.user ?? null
 
     if (!user?.email) {
       return false
@@ -49,7 +50,8 @@ export async function isAdmin(): Promise<boolean> {
 export async function getCurrentAdminEmail(): Promise<string | null> {
   try {
     const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const { data: { session } } = await supabase.auth.getSession()
+    const user = session?.user ?? null
     return user?.email || null
   } catch {
     return null
@@ -73,7 +75,8 @@ export async function requireAdmin(): Promise<void> {
 export async function getCurrentAdminId(): Promise<string | null> {
   try {
     const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const { data: { session } } = await supabase.auth.getSession()
+    const user = session?.user ?? null
 
     if (!user?.email) {
       return null
@@ -98,7 +101,8 @@ export async function getCurrentAdminId(): Promise<string | null> {
 export async function getCurrentAdmin(): Promise<PlatformAdmin | null> {
   try {
     const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const { data: { session } } = await supabase.auth.getSession()
+    const user = session?.user ?? null
 
     if (!user?.email) {
       return null

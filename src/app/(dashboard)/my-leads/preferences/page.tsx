@@ -98,10 +98,11 @@ const STATE_OPTIONS = [
 export default async function TargetingPreferencesPage() {
   const supabase = await createClient()
 
-  // Get user
+  // Get user (session read from cookie — no network call; layout already verified auth)
   const {
-    data: { user },
-  } = await supabase.auth.getUser()
+    data: { session },
+  } = await supabase.auth.getSession()
+  const user = session?.user ?? null
 
   if (!user) {
     redirect('/login')

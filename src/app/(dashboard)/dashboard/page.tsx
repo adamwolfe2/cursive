@@ -14,10 +14,11 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   const { onboarding } = await searchParams
   const supabase = await createClient()
 
-  // Get user
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  // Get user (session read from cookie — no network call; layout already verified auth)
+  const { data: { session } } = await supabase.auth.getSession()
+  const user = session?.user ?? null
 
-  if (authError || !user) {
+  if (!user) {
     redirect('/login')
   }
 

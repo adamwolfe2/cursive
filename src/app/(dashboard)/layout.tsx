@@ -22,10 +22,14 @@ export default async function DashboardLayout({
 
   const supabase = await createClient()
 
-  // Check authentication
+  // Check authentication using getSession() for fast local JWT check.
+  // getSession() reads cookies locally without a network call (only calls network
+  // if JWT needs refreshing). This is much faster than getUser() which always
+  // makes a network call to Supabase Auth server.
   const {
-    data: { user },
-  } = await supabase.auth.getUser()
+    data: { session },
+  } = await supabase.auth.getSession()
+  const user = session?.user ?? null
 
   // Development-only: admin bypass cookie for local testing
   if (process.env.NODE_ENV === 'development') {

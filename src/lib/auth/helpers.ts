@@ -35,8 +35,9 @@ export async function getCurrentUser(): Promise<User | null> {
   const supabase = await createClient()
 
   const {
-    data: { user: authUser },
-  } = await supabase.auth.getUser()
+    data: { session },
+  } = await supabase.auth.getSession()
+  const authUser = session?.user ?? null
 
   if (!authUser) {
     return null
@@ -92,8 +93,9 @@ export async function getUserWithWorkspace() {
   const supabase = await createClient()
 
   const {
-    data: { user: authUser },
-  } = await supabase.auth.getUser()
+    data: { session },
+  } = await supabase.auth.getSession()
+  const authUser = session?.user ?? null
 
   if (!authUser) {
     return null
@@ -177,14 +179,14 @@ export async function requirePermission(
 
 /**
  * Get authenticated user
- * Returns the verified Supabase auth user via getUser() (server-validated)
+ * Returns the Supabase auth user via getSession() (fast local cookie read)
  */
 export async function getAuthUser() {
   const supabase = await createClient()
   const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  return user
+    data: { session },
+  } = await supabase.auth.getSession()
+  return session?.user ?? null
 }
 
 /**
