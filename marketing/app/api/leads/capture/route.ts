@@ -167,8 +167,8 @@ async function sendLeadConfirmation(leadData: LeadData): Promise<void> {
         </p>
         <ul style="margin: 12px 0; padding-left: 20px; color: #666;">
           <li><a href="https://cal.com/cursive/30min" style="color: #007aff; text-decoration: none;">Book a free AI audit</a> - Get a personalized assessment</li>
-          <li><a href="https://meetcursive.com/platform" style="color: #007aff; text-decoration: none;">Explore our platform</a> - See how Cursive identifies your visitors</li>
-          <li><a href="https://meetcursive.com/blog" style="color: #007aff; text-decoration: none;">Read our blog</a> - B2B marketing tips and insights</li>
+          <li><a href="https://www.meetcursive.com/platform" style="color: #007aff; text-decoration: none;">Explore our platform</a> - See how Cursive identifies your visitors</li>
+          <li><a href="https://www.meetcursive.com/blog" style="color: #007aff; text-decoration: none;">Read our blog</a> - B2B marketing tips and insights</li>
         </ul>
       </div>
 
@@ -185,7 +185,7 @@ async function sendLeadConfirmation(leadData: LeadData): Promise<void> {
       <hr style="border: none; border-top: 1px solid #ddd; margin: 24px 0;" />
 
       <p style="color: #999; font-size: 12px; margin: 0;">
-        Cursive AI | <a href="https://meetcursive.com" style="color: #007aff; text-decoration: none;">meetcursive.com</a>
+        Cursive AI | <a href="https://www.meetcursive.com" style="color: #007aff; text-decoration: none;">meetcursive.com</a>
       </p>
     </div>
   `

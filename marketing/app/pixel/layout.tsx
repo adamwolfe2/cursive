@@ -15,15 +15,15 @@ export const metadata = generateMetadata({
     'real-time visitor identification',
     'done-for-you pixel setup',
   ],
-  canonical: 'https://meetcursive.com/pixel',
+  canonical: 'https://www.meetcursive.com/pixel',
 })
 
 export default function PixelLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <StructuredData data={generateBreadcrumbSchema([
-        { name: 'Home', url: 'https://meetcursive.com' },
-        { name: 'Visitor Pixel', url: 'https://meetcursive.com/pixel' },
+        { name: 'Home', url: 'https://www.meetcursive.com' },
+        { name: 'Visitor Pixel', url: 'https://www.meetcursive.com/pixel' },
       ])} />
       {children}
     </>

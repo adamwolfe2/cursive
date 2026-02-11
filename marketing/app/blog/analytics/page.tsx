@@ -24,7 +24,7 @@ export const metadata = generateMetadata({
     "marketing metrics",
     "campaign attribution",
   ],
-  canonical: "https://meetcursive.com/blog/analytics",
+  canonical: "https://www.meetcursive.com/blog/analytics",
 })
 
 const faqs = [
@@ -54,7 +54,7 @@ export default function AnalyticsPage() {
   return (
     <main>
       <StructuredData data={generateFAQSchema({ faqs })} />
-      <StructuredData data={generateBlogPostSchema({ title: "Marketing Analytics & Attribution: The Complete B2B Dashboard Guide (2026)", description: "Build marketing analytics dashboards that prove ROI. Learn multi-touch attribution modeling, pipeline metrics, and how to measure what actually drives B2B revenue.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://meetcursive.com/cursive-logo.png" })} />
+      <StructuredData data={generateBlogPostSchema({ title: "Marketing Analytics & Attribution: The Complete B2B Dashboard Guide (2026)", description: "Build marketing analytics dashboards that prove ROI. Learn multi-touch attribution modeling, pipeline metrics, and how to measure what actually drives B2B revenue.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://www.meetcursive.com/cursive-logo.png" })} />
 
       {/* Breadcrumb */}
       <section className="py-6 bg-gray-50 border-b border-gray-200">

@@ -24,7 +24,7 @@ export const metadata = generateMetadata({
     "clearbit review 2026",
     "best clearbit alternative"
   ],
-  canonical: "https://meetcursive.com/blog/cursive-vs-clearbit",
+  canonical: "https://www.meetcursive.com/blog/cursive-vs-clearbit",
 })
 
 const faqs = [
@@ -66,7 +66,7 @@ export default function BlogPost() {
   return (
     <main>
       <StructuredData data={generateFAQSchema({ faqs })} />
-      <StructuredData data={generateBlogPostSchema({ title: "Cursive vs Clearbit: The Best Clearbit Replacement (2026)", description: "Clearbit was acquired by HubSpot and its standalone features are being sunset. Cursive is the modern replacement for teams that relied on Clearbit for visitor identification and enrichment. Full comparison inside.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://meetcursive.com/cursive-logo.png" })} />
+      <StructuredData data={generateBlogPostSchema({ title: "Cursive vs Clearbit: The Best Clearbit Replacement (2026)", description: "Clearbit was acquired by HubSpot and its standalone features are being sunset. Cursive is the modern replacement for teams that relied on Clearbit for visitor identification and enrichment. Full comparison inside.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://www.meetcursive.com/cursive-logo.png" })} />
 
       {/* Header */}
       <section className="py-12 bg-white">

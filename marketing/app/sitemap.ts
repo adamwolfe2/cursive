@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next'
 import { integrations } from '@/lib/integrations-data'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://meetcursive.com'
+  const baseUrl = 'https://www.meetcursive.com'
   const lastModified = new Date('2026-02-07')
 
   // Core pages - highest priority

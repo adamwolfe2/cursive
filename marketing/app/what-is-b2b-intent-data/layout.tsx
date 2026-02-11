@@ -15,7 +15,7 @@ export const metadata = genMeta({
     'account-based intent',
     'intent scoring',
   ],
-  canonical: 'https://meetcursive.com/what-is-b2b-intent-data',
+  canonical: 'https://www.meetcursive.com/what-is-b2b-intent-data',
 })
 
 export default function Layout({ children }: { children: React.ReactNode }) {

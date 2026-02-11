@@ -208,7 +208,7 @@ export default function CleanRoomPage() {
           },
           {
             label: "View Pricing",
-            href: "https://meetcursive.com/pricing",
+            href: "https://www.meetcursive.com/pricing",
             description: "See pricing tiers"
           }
         ]} />
@@ -224,7 +224,7 @@ export default function CleanRoomPage() {
           },
           {
             label: "Website",
-            href: "https://meetcursive.com"
+            href: "https://www.meetcursive.com"
           }
         ]} />
       </MachineSection>

@@ -68,7 +68,7 @@ export default function VentureStudioPage() {
     "@graph": [
       {
         "@type": "Service",
-        "@id": "https://meetcursive.com/venture-studio#service",
+        "@id": "https://www.meetcursive.com/venture-studio#service",
         "name": "Cursive Venture Studio",
         "description": "White-glove partnership for ambitious companies. Cursive embeds a dedicated team to build, launch, and scale your entire go-to-market. $25,000-$150,000/mo. By application only.",
         "provider": {
@@ -93,13 +93,13 @@ export default function VentureStudioPage() {
             "@type": "ListItem",
             "position": 1,
             "name": "Home",
-            "item": "https://meetcursive.com"
+            "item": "https://www.meetcursive.com"
           },
           {
             "@type": "ListItem",
             "position": 2,
             "name": "Venture Studio",
-            "item": "https://meetcursive.com/venture-studio"
+            "item": "https://www.meetcursive.com/venture-studio"
           }
         ]
       }
@@ -425,12 +425,12 @@ export default function VentureStudioPage() {
               },
               {
                 label: "View Other Services",
-                href: "https://meetcursive.com/services",
+                href: "https://www.meetcursive.com/services",
                 description: "Explore other Cursive services from $1,000/month"
               },
               {
                 label: "Website",
-                href: "https://meetcursive.com"
+                href: "https://www.meetcursive.com"
               }
             ]} />
           </MachineSection>

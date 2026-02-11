@@ -15,15 +15,15 @@ export const metadata = generateMetadata({
     'B2B lead generation',
     'website visitor tracking',
   ],
-  canonical: 'https://meetcursive.com/free-audit',
+  canonical: 'https://www.meetcursive.com/free-audit',
 })
 
 export default function FreeAuditLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <StructuredData data={generateBreadcrumbSchema([
-        { name: 'Home', url: 'https://meetcursive.com' },
-        { name: 'Free Audit', url: 'https://meetcursive.com/free-audit' },
+        { name: 'Home', url: 'https://www.meetcursive.com' },
+        { name: 'Free Audit', url: 'https://www.meetcursive.com/free-audit' },
       ])} />
       {children}
     </>

@@ -1291,17 +1291,17 @@ export default function CallBookedPage() {
 
           <MachineSection title="Core Solutions">
             <MachineList items={[
-              { label: "Visitor Identification", href: "https://meetcursive.com/visitor-identification", description: "Identify up to 70% of anonymous B2B website traffic with company + individual data" },
-              { label: "Audience Builder", href: "https://meetcursive.com/audience-builder", description: "Build custom audiences from 220M+ consumer and 140M+ business profiles" },
-              { label: "Intent Data", href: "https://meetcursive.com/intent-audiences", description: "Track 450B+ monthly intent signals to find active buyers" },
-              { label: "Outbound Campaigns", href: "https://meetcursive.com/services", description: "AI-powered email campaigns with domain setup, warmup, and optimization" },
-              { label: "Direct Mail", href: "https://meetcursive.com/direct-mail", description: "Automated postcards and letters to high-intent prospects" },
-              { label: "Custom Audiences", href: "https://meetcursive.com/custom-audiences", description: "Custom audience building by any criteria" },
-              { label: "CRM Integrations", href: "https://meetcursive.com/integrations", description: "Native sync with 200+ tools" },
-              { label: "Website Pixel", href: "https://meetcursive.com/pixel", description: "5-minute install, GDPR/CCPA compliant tracking" },
-              { label: "Lead Marketplace", href: "https://meetcursive.com/marketplace", description: "Browse and buy verified leads on-demand with credits" },
-              { label: "Data Enrichment", href: "https://meetcursive.com/data-enrichment", description: "Enrich contacts with 100+ data points via waterfall enrichment" },
-              { label: "Attribution & Analytics", href: "https://meetcursive.com/attribution", description: "Multi-touch attribution from first visit to closed deal" },
+              { label: "Visitor Identification", href: "https://www.meetcursive.com/visitor-identification", description: "Identify up to 70% of anonymous B2B website traffic with company + individual data" },
+              { label: "Audience Builder", href: "https://www.meetcursive.com/audience-builder", description: "Build custom audiences from 220M+ consumer and 140M+ business profiles" },
+              { label: "Intent Data", href: "https://www.meetcursive.com/intent-audiences", description: "Track 450B+ monthly intent signals to find active buyers" },
+              { label: "Outbound Campaigns", href: "https://www.meetcursive.com/services", description: "AI-powered email campaigns with domain setup, warmup, and optimization" },
+              { label: "Direct Mail", href: "https://www.meetcursive.com/direct-mail", description: "Automated postcards and letters to high-intent prospects" },
+              { label: "Custom Audiences", href: "https://www.meetcursive.com/custom-audiences", description: "Custom audience building by any criteria" },
+              { label: "CRM Integrations", href: "https://www.meetcursive.com/integrations", description: "Native sync with 200+ tools" },
+              { label: "Website Pixel", href: "https://www.meetcursive.com/pixel", description: "5-minute install, GDPR/CCPA compliant tracking" },
+              { label: "Lead Marketplace", href: "https://www.meetcursive.com/marketplace", description: "Browse and buy verified leads on-demand with credits" },
+              { label: "Data Enrichment", href: "https://www.meetcursive.com/data-enrichment", description: "Enrich contacts with 100+ data points via waterfall enrichment" },
+              { label: "Attribution & Analytics", href: "https://www.meetcursive.com/attribution", description: "Multi-touch attribution from first visit to closed deal" },
             ]} />
           </MachineSection>
 
@@ -1315,7 +1315,7 @@ export default function CallBookedPage() {
               "Venture Studio: $25,000+/month - White-glove service, dedicated team, custom integrations, weekly strategy",
             ]} />
             <MachineList items={[
-              { label: "View Full Pricing", href: "https://meetcursive.com/pricing", description: "Detailed pricing for all plans and add-ons" },
+              { label: "View Full Pricing", href: "https://www.meetcursive.com/pricing", description: "Detailed pricing for all plans and add-ons" },
             ]} />
           </MachineSection>
 
@@ -1327,20 +1327,20 @@ export default function CallBookedPage() {
               "E-Commerce Brand: $200K revenue in 90 days, 500 new customers",
             ]} />
             <MachineList items={[
-              { label: "View All Case Studies", href: "https://meetcursive.com/case-studies", description: "Detailed results from Cursive customers across industries" },
+              { label: "View All Case Studies", href: "https://www.meetcursive.com/case-studies", description: "Detailed results from Cursive customers across industries" },
             ]} />
           </MachineSection>
 
           <MachineSection title="Industries Served">
             <MachineList items={[
-              { label: "B2B Software", href: "https://meetcursive.com/industries/b2b-software" },
-              { label: "E-Commerce", href: "https://meetcursive.com/industries/ecommerce" },
-              { label: "Agencies", href: "https://meetcursive.com/industries/agencies" },
-              { label: "Financial Services", href: "https://meetcursive.com/industries/financial-services" },
-              { label: "Real Estate", href: "https://meetcursive.com/industries/real-estate" },
-              { label: "Education", href: "https://meetcursive.com/industries/education" },
-              { label: "Healthcare", href: "https://meetcursive.com/industries/healthcare" },
-              { label: "Franchises", href: "https://meetcursive.com/industries/franchises" },
+              { label: "B2B Software", href: "https://www.meetcursive.com/industries/b2b-software" },
+              { label: "E-Commerce", href: "https://www.meetcursive.com/industries/ecommerce" },
+              { label: "Agencies", href: "https://www.meetcursive.com/industries/agencies" },
+              { label: "Financial Services", href: "https://www.meetcursive.com/industries/financial-services" },
+              { label: "Real Estate", href: "https://www.meetcursive.com/industries/real-estate" },
+              { label: "Education", href: "https://www.meetcursive.com/industries/education" },
+              { label: "Healthcare", href: "https://www.meetcursive.com/industries/healthcare" },
+              { label: "Franchises", href: "https://www.meetcursive.com/industries/franchises" },
             ]} />
           </MachineSection>
 
@@ -1386,8 +1386,8 @@ export default function CallBookedPage() {
             <MachineList items={[
               { label: "Book a Call", href: "https://cal.com/cursive/30min", description: "30-minute strategy call to review your ICP and see matching leads" },
               { label: "Lead Marketplace (Free Gift)", href: "https://leads.meetcursive.com/signup?source=call-booked-gift", description: "Try the marketplace free with 100 credits — no credit card required" },
-              { label: "View Pricing", href: "https://meetcursive.com/pricing", description: "See all plans and pricing details" },
-              { label: "Contact Us", href: "https://meetcursive.com/contact", description: "Email hello@meetcursive.com for questions" },
+              { label: "View Pricing", href: "https://www.meetcursive.com/pricing", description: "See all plans and pricing details" },
+              { label: "Contact Us", href: "https://www.meetcursive.com/contact", description: "Email hello@meetcursive.com for questions" },
             ]} />
           </MachineSection>
         </MachineContent>

@@ -756,7 +756,7 @@ export default function AudienceBuilderPage() {
           <MachineList items={[
             {
               label: "View Pricing",
-              href: "https://meetcursive.com/pricing",
+              href: "https://www.meetcursive.com/pricing",
               description: "Explore pricing tiers and plans"
             },
             {
@@ -777,7 +777,7 @@ export default function AudienceBuilderPage() {
             },
             {
               label: "Website",
-              href: "https://meetcursive.com"
+              href: "https://www.meetcursive.com"
             },
             {
               label: "Platform Access",

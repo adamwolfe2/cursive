@@ -8,8 +8,8 @@ const organizationSchema = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
   name: 'Cursive',
-  url: 'https://meetcursive.com',
-  logo: 'https://meetcursive.com/cursive-logo.png',
+  url: 'https://www.meetcursive.com',
+  logo: 'https://www.meetcursive.com/cursive-logo.png',
   description: 'AI-powered B2B lead generation and outbound automation platform',
   sameAs: [
     'https://twitter.com/meetcursive',
@@ -37,8 +37,8 @@ export default function AboutLayout({
       <StructuredData data={[
         organizationSchema,
         generateBreadcrumbSchema([
-          { name: 'Home', url: 'https://meetcursive.com' },
-          { name: 'About', url: 'https://meetcursive.com/about' },
+          { name: 'Home', url: 'https://www.meetcursive.com' },
+          { name: 'About', url: 'https://www.meetcursive.com/about' },
         ]),
       ]} />
       {children}

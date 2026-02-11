@@ -68,7 +68,7 @@ export default function robots(): MetadataRoute.Robots {
         allow: '/',
       },
     ],
-    sitemap: 'https://meetcursive.com/sitemap.xml',
-    host: 'https://meetcursive.com',
+    sitemap: 'https://www.meetcursive.com/sitemap.xml',
+    host: 'https://www.meetcursive.com',
   }
 }

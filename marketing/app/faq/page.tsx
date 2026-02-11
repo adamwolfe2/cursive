@@ -273,7 +273,7 @@ export default function FAQPage() {
           },
           {
             label: "Contact Support",
-            href: "https://meetcursive.com/contact",
+            href: "https://www.meetcursive.com/contact",
             description: "Send us a message and we'll respond within 24 hours"
           }
         ]} />

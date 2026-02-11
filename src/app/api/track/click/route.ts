@@ -101,9 +101,10 @@ export async function GET(request: NextRequest) {
 
           // Update campaign stats
           if (emailSend.campaign_id) {
-            await supabase.rpc('increment_campaign_clicks', {
+            const { error: rpcError } = await supabase.rpc('increment_campaign_clicks', {
               p_campaign_id: emailSend.campaign_id,
-            }).catch(() => {})
+            })
+            if (rpcError) console.error('increment_campaign_clicks error:', rpcError)
           }
         }
       }

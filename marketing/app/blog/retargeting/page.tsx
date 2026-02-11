@@ -24,7 +24,7 @@ export const metadata = generateMetadata({
     "retargeting audience segments",
     "cookieless retargeting",
   ],
-  canonical: "https://meetcursive.com/blog/retargeting",
+  canonical: "https://www.meetcursive.com/blog/retargeting",
 })
 
 const faqs = [
@@ -54,7 +54,7 @@ export default function RetargetingPage() {
   return (
     <main>
       <StructuredData data={generateFAQSchema({ faqs })} />
-      <StructuredData data={generateBlogPostSchema({ title: "B2B Retargeting: Cross-Platform Strategies Using First-Party Data (2026)", description: "Master cross-platform B2B retargeting using first-party visitor data. Build high-converting audience segments for ads, email, and direct mail without relying on third-party cookies.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://meetcursive.com/cursive-logo.png" })} />
+      <StructuredData data={generateBlogPostSchema({ title: "B2B Retargeting: Cross-Platform Strategies Using First-Party Data (2026)", description: "Master cross-platform B2B retargeting using first-party visitor data. Build high-converting audience segments for ads, email, and direct mail without relying on third-party cookies.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://www.meetcursive.com/cursive-logo.png" })} />
 
       {/* Breadcrumb */}
       <section className="py-6 bg-gray-50 border-b border-gray-200">

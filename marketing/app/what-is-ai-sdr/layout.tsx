@@ -15,7 +15,7 @@ export const metadata = genMeta({
     'automated sales outreach',
     'AI sales agent',
   ],
-  canonical: 'https://meetcursive.com/what-is-ai-sdr',
+  canonical: 'https://www.meetcursive.com/what-is-ai-sdr',
 })
 
 export default function Layout({ children }: { children: React.ReactNode }) {

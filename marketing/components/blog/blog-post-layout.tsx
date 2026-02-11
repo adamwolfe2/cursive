@@ -25,7 +25,7 @@ interface BlogPostLayoutProps {
 export function BlogPostLayout({ post, relatedPosts = [] }: BlogPostLayoutProps) {
   const readingTime = calculateReadingTime(post.content)
   const headings = extractHeadings(post.content)
-  const pageUrl = `https://meetcursive.com/blog/${post.category}/${post.slug}`
+  const pageUrl = `https://www.meetcursive.com/blog/${post.category}/${post.slug}`
 
   // Generate BlogPosting schema
   const blogSchema = {
@@ -46,7 +46,7 @@ export function BlogPostLayout({ post, relatedPosts = [] }: BlogPostLayoutProps)
       name: 'Cursive',
       logo: {
         '@type': 'ImageObject',
-        url: 'https://meetcursive.com/cursive-logo.png',
+        url: 'https://www.meetcursive.com/cursive-logo.png',
       },
     },
     mainEntityOfPage: {

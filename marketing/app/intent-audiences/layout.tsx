@@ -15,15 +15,15 @@ export const metadata = generateMetadata({
     'intent data provider',
     'behavioral targeting',
   ],
-  canonical: 'https://meetcursive.com/intent-audiences',
+  canonical: 'https://www.meetcursive.com/intent-audiences',
 })
 
 export default function IntentAudiencesLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <StructuredData data={generateBreadcrumbSchema([
-        { name: 'Home', url: 'https://meetcursive.com' },
-        { name: 'Intent Audiences', url: 'https://meetcursive.com/intent-audiences' },
+        { name: 'Home', url: 'https://www.meetcursive.com' },
+        { name: 'Intent Audiences', url: 'https://www.meetcursive.com/intent-audiences' },
       ])} />
       {children}
     </>

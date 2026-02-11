@@ -20,7 +20,7 @@ export default function IntentAudiencesPage() {
     "@graph": [
       {
         "@type": "Product",
-        "@id": "https://meetcursive.com/intent-audiences#product",
+        "@id": "https://www.meetcursive.com/intent-audiences#product",
         "name": "Cursive Intent Audiences",
         "description": "Pre-built intent audience segments across 8 high-value verticals. Access 280M+ US profiles with 450B+ monthly intent signals. Updated every 7 days.",
         "brand": {
@@ -29,7 +29,7 @@ export default function IntentAudiencesPage() {
         },
         "offers": {
           "@type": "Offer",
-          "url": "https://meetcursive.com/intent-audiences",
+          "url": "https://www.meetcursive.com/intent-audiences",
           "priceCurrency": "USD",
           "availability": "https://schema.org/InStock"
         },
@@ -42,13 +42,13 @@ export default function IntentAudiencesPage() {
             "@type": "ListItem",
             "position": 1,
             "name": "Home",
-            "item": "https://meetcursive.com"
+            "item": "https://www.meetcursive.com"
           },
           {
             "@type": "ListItem",
             "position": 2,
             "name": "Intent Audiences",
-            "item": "https://meetcursive.com/intent-audiences"
+            "item": "https://www.meetcursive.com/intent-audiences"
           }
         ]
       },
@@ -941,7 +941,7 @@ export default function IntentAudiencesPage() {
           <MachineList items={[
             {
               label: "See Pricing",
-              href: "https://meetcursive.com/pricing",
+              href: "https://www.meetcursive.com/pricing",
               description: "View pricing tiers"
             },
             {
@@ -962,7 +962,7 @@ export default function IntentAudiencesPage() {
             },
             {
               label: "Website",
-              href: "https://meetcursive.com"
+              href: "https://www.meetcursive.com"
             }
           ]} />
         </MachineSection>

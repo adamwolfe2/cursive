@@ -24,7 +24,7 @@ export const metadata = generateMetadata({
     "lead generation tools",
     "intent data platforms"
   ],
-  canonical: "https://meetcursive.com/blog/rb2b-alternative",
+  canonical: "https://www.meetcursive.com/blog/rb2b-alternative",
 })
 
 const faqs = [
@@ -66,7 +66,7 @@ export default function BlogPost() {
   return (
     <main>
       <StructuredData data={generateFAQSchema({ faqs })} />
-      <StructuredData data={generateBlogPostSchema({ title: "Best RB2B Alternatives: 7 Website Visitor ID Tools Compared (2026)", description: "Compare the top RB2B alternatives for website visitor identification. Find tools with higher match rates, built-in outreach automation, intent data, and multi-channel capabilities.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://meetcursive.com/cursive-logo.png" })} />
+      <StructuredData data={generateBlogPostSchema({ title: "Best RB2B Alternatives: 7 Website Visitor ID Tools Compared (2026)", description: "Compare the top RB2B alternatives for website visitor identification. Find tools with higher match rates, built-in outreach automation, intent data, and multi-channel capabilities.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://www.meetcursive.com/cursive-logo.png" })} />
 
       {/* Header */}
       <section className="py-12 bg-white">

@@ -14,5 +14,5 @@ export const metadata: Metadata = generateMetadata({
     "AI outbound platform",
     "B2B sales platform",
   ],
-  canonical: "https://meetcursive.com/platform",
+  canonical: "https://www.meetcursive.com/platform",
 })

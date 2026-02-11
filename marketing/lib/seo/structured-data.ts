@@ -3,8 +3,8 @@ export function generateOrganizationSchema() {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: 'Cursive',
-    url: 'https://meetcursive.com',
-    logo: 'https://meetcursive.com/cursive-logo.png',
+    url: 'https://www.meetcursive.com',
+    logo: 'https://www.meetcursive.com/cursive-logo.png',
     description: 'AI-powered B2B lead generation and outbound automation. Identify 70% of anonymous website visitors and automate personalized outreach.',
     sameAs: [
       'https://twitter.com/meetcursive',
@@ -24,12 +24,12 @@ export function generateWebSiteSchema() {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: 'Cursive',
-    url: 'https://meetcursive.com',
+    url: 'https://www.meetcursive.com',
     description: 'AI-powered visitor identification and outbound automation platform for B2B companies.',
     publisher: {
       '@type': 'Organization',
       name: 'Cursive',
-      url: 'https://meetcursive.com',
+      url: 'https://www.meetcursive.com',
     },
   }
 }

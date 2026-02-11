@@ -15,7 +15,7 @@ export default function DataAccessPage() {
     "@graph": [
       {
         "@type": "Product",
-        "@id": "https://meetcursive.com/data-access#product",
+        "@id": "https://www.meetcursive.com/data-access#product",
         "name": "Cursive Data Access",
         "description": "Direct access to 220M+ consumer profiles and 140M+ business profiles. Query, filter, and export verified contact data on demand via API, bulk exports, or real-time lookups.",
         "brand": {
@@ -24,7 +24,7 @@ export default function DataAccessPage() {
         },
         "offers": {
           "@type": "Offer",
-          "url": "https://meetcursive.com/data-access",
+          "url": "https://www.meetcursive.com/data-access",
           "priceCurrency": "USD",
           "availability": "https://schema.org/InStock"
         },
@@ -37,13 +37,13 @@ export default function DataAccessPage() {
             "@type": "ListItem",
             "position": 1,
             "name": "Home",
-            "item": "https://meetcursive.com"
+            "item": "https://www.meetcursive.com"
           },
           {
             "@type": "ListItem",
             "position": 2,
             "name": "Data Access",
-            "item": "https://meetcursive.com/data-access"
+            "item": "https://www.meetcursive.com/data-access"
           }
         ]
       }
@@ -368,12 +368,12 @@ export default function DataAccessPage() {
           },
           {
             label: "View Pricing",
-            href: "https://meetcursive.com/pricing",
+            href: "https://www.meetcursive.com/pricing",
             description: "See pricing tiers and plans"
           },
           {
             label: "Try the Marketplace",
-            href: "https://meetcursive.com/marketplace",
+            href: "https://www.meetcursive.com/marketplace",
             description: "Self-serve search and export with 100 free credits"
           }
         ]} />
@@ -384,22 +384,22 @@ export default function DataAccessPage() {
         <MachineList items={[
           {
             label: "Custom Audiences",
-            href: "https://meetcursive.com/custom-audiences",
+            href: "https://www.meetcursive.com/custom-audiences",
             description: "Build targeted audiences using Cursive data filters"
           },
           {
             label: "Visitor Identification",
-            href: "https://meetcursive.com/visitor-identification",
+            href: "https://www.meetcursive.com/visitor-identification",
             description: "Identify anonymous website visitors with the Cursive pixel"
           },
           {
             label: "Intent Audiences",
-            href: "https://meetcursive.com/intent-audiences",
+            href: "https://www.meetcursive.com/intent-audiences",
             description: "Target contacts based on real-time purchase intent signals"
           },
           {
             label: "Privacy Policy",
-            href: "https://meetcursive.com/privacy",
+            href: "https://www.meetcursive.com/privacy",
             description: "Learn how Cursive handles and protects data"
           }
         ]} />
@@ -415,12 +415,12 @@ export default function DataAccessPage() {
           },
           {
             label: "Free Audit",
-            href: "https://meetcursive.com/free-audit",
+            href: "https://www.meetcursive.com/free-audit",
             description: "Get a free analysis of your last 100 website visitors"
           },
           {
             label: "Website",
-            href: "https://meetcursive.com"
+            href: "https://www.meetcursive.com"
           }
         ]} />
       </MachineSection>

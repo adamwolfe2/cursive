@@ -10,7 +10,7 @@ const productSchema = {
   name: 'Cursive',
   applicationCategory: 'BusinessApplication',
   operatingSystem: 'Web',
-  url: 'https://meetcursive.com/platform',
+  url: 'https://www.meetcursive.com/platform',
   description: 'All-in-one B2B lead generation and AI-powered outreach platform with visitor identification, people search, lead marketplace, and campaign management.',
   offers: {
     '@type': 'Offer',
@@ -55,8 +55,8 @@ export default function PlatformLayout({
       <StructuredData data={[
         productSchema,
         generateBreadcrumbSchema([
-          { name: 'Home', url: 'https://meetcursive.com' },
-          { name: 'Platform', url: 'https://meetcursive.com/platform' },
+          { name: 'Home', url: 'https://www.meetcursive.com' },
+          { name: 'Platform', url: 'https://www.meetcursive.com/platform' },
         ]),
       ]} />
       {children}

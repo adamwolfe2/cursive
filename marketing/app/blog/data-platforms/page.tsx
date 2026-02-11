@@ -25,7 +25,7 @@ export const metadata = generateMetadata({
     "data quality management",
     "CRM data enrichment",
   ],
-  canonical: "https://meetcursive.com/blog/data-platforms",
+  canonical: "https://www.meetcursive.com/blog/data-platforms",
 })
 
 const faqs = [
@@ -55,7 +55,7 @@ export default function DataPlatformsPage() {
   return (
     <main>
       <StructuredData data={generateFAQSchema({ faqs })} />
-      <StructuredData data={generateBlogPostSchema({ title: "Choosing a B2B Data Platform: Comparison, Features, and Data Quality Guide (2026)", description: "How to choose the right B2B data platform for your sales and marketing team. Compare approaches to contact enrichment, data quality management, and integration strategies. Covers CDPs, enrichment tools, and unified data platforms.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://meetcursive.com/cursive-logo.png" })} />
+      <StructuredData data={generateBlogPostSchema({ title: "Choosing a B2B Data Platform: Comparison, Features, and Data Quality Guide (2026)", description: "How to choose the right B2B data platform for your sales and marketing team. Compare approaches to contact enrichment, data quality management, and integration strategies. Covers CDPs, enrichment tools, and unified data platforms.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://www.meetcursive.com/cursive-logo.png" })} />
 
       {/* Header */}
       <section className="py-12 bg-white">

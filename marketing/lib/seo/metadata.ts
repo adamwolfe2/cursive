@@ -17,7 +17,7 @@ export function generateMetadata({
   ogImage = '/cursive-social-preview.png',
   noindex = false,
 }: PageMetadata): Metadata {
-  const baseUrl = 'https://meetcursive.com'
+  const baseUrl = 'https://www.meetcursive.com'
   const fullTitle = `${title} | Cursive`
   const fullOgImage = ogImage.startsWith('http') ? ogImage : `${baseUrl}${ogImage}`
 

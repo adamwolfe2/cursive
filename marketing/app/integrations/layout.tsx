@@ -6,15 +6,15 @@ export const metadata = generateMetadata({
   title: 'Integrations - Connect to 200+ Tools',
   description: 'Seamlessly sync Cursive data with your existing marketing stack. 200+ integrations including Salesforce, HubSpot, Google Ads, and more.',
   keywords: ['integrations', 'CRM integration', 'marketing automation', 'API', 'webhooks', 'data sync'],
-  canonical: 'https://meetcursive.com/integrations',
+  canonical: 'https://www.meetcursive.com/integrations',
 })
 
 export default function IntegrationsLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <StructuredData data={generateBreadcrumbSchema([
-        { name: 'Home', url: 'https://meetcursive.com' },
-        { name: 'Integrations', url: 'https://meetcursive.com/integrations' },
+        { name: 'Home', url: 'https://www.meetcursive.com' },
+        { name: 'Integrations', url: 'https://www.meetcursive.com/integrations' },
       ])} />
       {children}
     </>

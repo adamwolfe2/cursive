@@ -16,13 +16,13 @@ export const metadata: Metadata = generateMetadata({
     'intent signal targeting',
     'audience segmentation',
   ],
-  canonical: 'https://meetcursive.com/audience-builder',
+  canonical: 'https://www.meetcursive.com/audience-builder',
 })
 
 const softwareSchema = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  "@id": "https://meetcursive.com/audience-builder#product",
+  "@id": "https://www.meetcursive.com/audience-builder#product",
   "name": "Cursive Audience Builder",
   "description": "Build unlimited B2B and B2C audiences with 220M+ consumer profiles and 140M+ business profiles. Filter by demographics, firmographics, and 450B+ monthly intent signals.",
   "applicationCategory": "BusinessApplication",
@@ -30,7 +30,7 @@ const softwareSchema = {
   "brand": { "@type": "Brand", "name": "Cursive" },
   "offers": {
     "@type": "Offer",
-    "url": "https://meetcursive.com/audience-builder",
+    "url": "https://www.meetcursive.com/audience-builder",
     "priceCurrency": "USD",
     "availability": "https://schema.org/InStock"
   }
@@ -59,8 +59,8 @@ export default function AudienceBuilderLayout({
       <StructuredData data={[
         softwareSchema,
         generateBreadcrumbSchema([
-          { name: 'Home', url: 'https://meetcursive.com' },
-          { name: 'Audience Builder', url: 'https://meetcursive.com/audience-builder' },
+          { name: 'Home', url: 'https://www.meetcursive.com' },
+          { name: 'Audience Builder', url: 'https://www.meetcursive.com/audience-builder' },
         ]),
         generateFAQSchema(audienceBuilderFAQs),
       ]} />

@@ -16,10 +16,10 @@ export const metadata: Metadata = {
     title: "AI SDR vs Human BDR: When to Use Each for B2B Sales | Cursive",
     description: "Compare AI SDRs and human BDRs for outbound sales. Learn when to use automation vs human touch, cost analysis, and hybrid strategies for maximum ROI.",
     type: "article",
-    url: "https://meetcursive.com/blog/ai-sdr-vs-human-bdr",
+    url: "https://www.meetcursive.com/blog/ai-sdr-vs-human-bdr",
     siteName: "Cursive",
     images: [{
-      url: "https://meetcursive.com/og-image.png",
+      url: "https://www.meetcursive.com/og-image.png",
       width: 1200,
       height: 630,
     }],
@@ -30,12 +30,12 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "AI SDR vs Human BDR: When to Use Each for B2B Sales | Cursive",
     description: "Compare AI SDRs and human BDRs for outbound sales. Learn when to use automation vs human touch, cost analysis, and hybrid strategies for maximum ROI.",
-    images: ["https://meetcursive.com/og-image.png"],
+    images: ["https://www.meetcursive.com/og-image.png"],
     creator: "@meetcursive",
   },
 
   alternates: {
-    canonical: "https://meetcursive.com/blog/ai-sdr-vs-human-bdr",
+    canonical: "https://www.meetcursive.com/blog/ai-sdr-vs-human-bdr",
   },
 
   robots: {
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
 export default function BlogPost() {
   return (
     <main>
-      <StructuredData data={generateBlogPostSchema({ title: "AI SDR vs Human BDR: When to Use Each for B2B Sales", description: "Compare AI SDRs and human BDRs for outbound sales. Learn when to use automation vs human touch, cost analysis, and hybrid strategies for maximum ROI.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://meetcursive.com/cursive-logo.png" })} />
+      <StructuredData data={generateBlogPostSchema({ title: "AI SDR vs Human BDR: When to Use Each for B2B Sales", description: "Compare AI SDRs and human BDRs for outbound sales. Learn when to use automation vs human touch, cost analysis, and hybrid strategies for maximum ROI.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://www.meetcursive.com/cursive-logo.png" })} />
 
       {/* Header */}
       <section className="py-12 bg-white">

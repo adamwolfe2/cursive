@@ -124,8 +124,8 @@ async function sendWelcomeEmail(email: string): Promise<void> {
       </p>
 
       <ul style="margin: 12px 0; padding-left: 20px; color: #666;">
-        <li><a href="https://meetcursive.com/blog" style="color: #007aff; text-decoration: none;">Our Blog</a> - Deep dives on B2B marketing</li>
-        <li><a href="https://meetcursive.com/platform" style="color: #007aff; text-decoration: none;">Platform Overview</a> - See what Cursive can do</li>
+        <li><a href="https://www.meetcursive.com/blog" style="color: #007aff; text-decoration: none;">Our Blog</a> - Deep dives on B2B marketing</li>
+        <li><a href="https://www.meetcursive.com/platform" style="color: #007aff; text-decoration: none;">Platform Overview</a> - See what Cursive can do</li>
         <li><a href="https://cal.com/cursive/30min" style="color: #007aff; text-decoration: none;">Book a Demo</a> - Get a personalized walkthrough</li>
       </ul>
 
@@ -137,7 +137,7 @@ async function sendWelcomeEmail(email: string): Promise<void> {
       <hr style="border: none; border-top: 1px solid #ddd; margin: 24px 0;" />
 
       <p style="color: #999; font-size: 12px; margin: 0;">
-        Cursive AI | <a href="https://meetcursive.com" style="color: #007aff; text-decoration: none;">meetcursive.com</a>
+        Cursive AI | <a href="https://www.meetcursive.com" style="color: #007aff; text-decoration: none;">meetcursive.com</a>
       </p>
       <p style="color: #999; font-size: 12px; margin: 4px 0 0 0;">
         You're receiving this because you subscribed at meetcursive.com. If this wasn't you, you can safely ignore this email.

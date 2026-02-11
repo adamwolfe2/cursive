@@ -24,7 +24,7 @@ export const metadata = generateMetadata({
     "abm for smb",
     "enterprise abm alternatives"
   ],
-  canonical: "https://meetcursive.com/blog/demandbase-alternative",
+  canonical: "https://www.meetcursive.com/blog/demandbase-alternative",
 })
 
 const faqs = [
@@ -66,7 +66,7 @@ export default function BlogPost() {
   return (
     <main>
       <StructuredData data={generateFAQSchema({ faqs })} />
-      <StructuredData data={generateBlogPostSchema({ title: "Demandbase Alternatives: Affordable ABM Platforms for 2026", description: "Compare affordable Demandbase alternatives for account-based marketing. Find ABM platforms with visitor identification, intent data, and AI outreach starting at a fraction of the cost.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://meetcursive.com/cursive-logo.png" })} />
+      <StructuredData data={generateBlogPostSchema({ title: "Demandbase Alternatives: Affordable ABM Platforms for 2026", description: "Compare affordable Demandbase alternatives for account-based marketing. Find ABM platforms with visitor identification, intent data, and AI outreach starting at a fraction of the cost.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://www.meetcursive.com/cursive-logo.png" })} />
 
       {/* Header */}
       <section className="py-12 bg-white">

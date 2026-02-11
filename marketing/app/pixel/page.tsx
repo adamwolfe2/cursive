@@ -18,7 +18,7 @@ export default function PixelPage() {
     "@graph": [
       {
         "@type": "Product",
-        "@id": "https://meetcursive.com/pixel#product",
+        "@id": "https://www.meetcursive.com/pixel#product",
         "name": "Cursive Pixel - Website Visitor Identification",
         "description": "Done-for-you website visitor tracking pixel. Identify anonymous visitors, get company names, decision-maker contacts, pages viewed, and intent scores. Setup in 48 hours.",
         "brand": {
@@ -606,12 +606,12 @@ export default function PixelPage() {
               },
               {
                 label: "Browse Lead Marketplace",
-                href: "https://meetcursive.com/marketplace",
+                href: "https://www.meetcursive.com/marketplace",
                 description: "Self-serve access to 50,000+ verified B2B leads"
               },
               {
                 label: "View All Services",
-                href: "https://meetcursive.com/services",
+                href: "https://www.meetcursive.com/services",
                 description: "Done-for-you lead generation, outbound campaigns, and AI SDR automation"
               }
             ]} />

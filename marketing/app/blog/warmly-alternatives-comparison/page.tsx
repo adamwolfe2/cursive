@@ -23,7 +23,7 @@ export const metadata = generateMetadata({
     "account identification software",
     "website deanonymization tools"
   ],
-  canonical: "https://meetcursive.com/blog/warmly-alternatives-comparison",
+  canonical: "https://www.meetcursive.com/blog/warmly-alternatives-comparison",
 })
 
 const faqs = [

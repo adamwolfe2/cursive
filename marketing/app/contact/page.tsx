@@ -67,17 +67,17 @@ export default function ContactPage() {
     "@graph": [
       {
         "@type": "ContactPage",
-        "@id": "https://meetcursive.com/contact#page",
+        "@id": "https://www.meetcursive.com/contact#page",
         "name": "Contact Cursive",
         "description": "Get in touch with our team for sales inquiries, technical support, or partnership opportunities. Multiple contact methods available with fast response times.",
-        "url": "https://meetcursive.com/contact"
+        "url": "https://www.meetcursive.com/contact"
       },
       {
         "@type": "Organization",
-        "@id": "https://meetcursive.com#organization",
+        "@id": "https://www.meetcursive.com#organization",
         "name": "Cursive",
-        "url": "https://meetcursive.com",
-        "logo": "https://meetcursive.com/logo.png",
+        "url": "https://www.meetcursive.com",
+        "logo": "https://www.meetcursive.com/logo.png",
         "contactPoint": [
           {
             "@type": "ContactPoint",
@@ -110,13 +110,13 @@ export default function ContactPage() {
             "@type": "ListItem",
             "position": 1,
             "name": "Home",
-            "item": "https://meetcursive.com"
+            "item": "https://www.meetcursive.com"
           },
           {
             "@type": "ListItem",
             "position": 2,
             "name": "Contact",
-            "item": "https://meetcursive.com/contact"
+            "item": "https://www.meetcursive.com/contact"
           }
         ]
       }
@@ -630,7 +630,7 @@ export default function ContactPage() {
         <MachineList items={[
           {
             label: "Website",
-            href: "https://meetcursive.com"
+            href: "https://www.meetcursive.com"
           },
           {
             label: "Platform Login",
@@ -647,32 +647,32 @@ export default function ContactPage() {
         <MachineList items={[
           {
             label: "B2B Software Companies",
-            href: "https://meetcursive.com/industries/b2b-software",
+            href: "https://www.meetcursive.com/industries/b2b-software",
             description: "Scale outbound, identify website visitors, and build multi-channel pipeline"
           },
           {
             label: "Digital Agencies",
-            href: "https://meetcursive.com/industries/agencies",
+            href: "https://www.meetcursive.com/industries/agencies",
             description: "White-label our platform to offer data-driven lead generation as a service"
           },
           {
             label: "Financial Services",
-            href: "https://meetcursive.com/industries/financial-services",
+            href: "https://www.meetcursive.com/industries/financial-services",
             description: "Reach decision-makers with compliant, verified data and personalized outreach"
           },
           {
             label: "eCommerce Brands",
-            href: "https://meetcursive.com/industries/ecommerce",
+            href: "https://www.meetcursive.com/industries/ecommerce",
             description: "Identify anonymous visitors and retarget high-intent shoppers"
           },
           {
             label: "Home Services",
-            href: "https://meetcursive.com/industries/home-services",
+            href: "https://www.meetcursive.com/industries/home-services",
             description: "Target homeowners by demographics, location, and purchase intent"
           },
           {
             label: "Education",
-            href: "https://meetcursive.com/industries/education",
+            href: "https://www.meetcursive.com/industries/education",
             description: "Reach prospective students and corporate training buyers with targeted campaigns"
           }
         ]} />
@@ -777,27 +777,27 @@ export default function ContactPage() {
         <MachineList items={[
           {
             label: "FAQ Page",
-            href: "https://meetcursive.com/faq",
+            href: "https://www.meetcursive.com/faq",
             description: "Comprehensive answers to common questions"
           },
           {
             label: "Pricing",
-            href: "https://meetcursive.com/pricing",
+            href: "https://www.meetcursive.com/pricing",
             description: "View pricing tiers and plans"
           },
           {
             label: "Platform Overview",
-            href: "https://meetcursive.com/platform",
+            href: "https://www.meetcursive.com/platform",
             description: "Explore platform features and capabilities"
           },
           {
             label: "Free Audit",
-            href: "https://meetcursive.com/free-audit",
+            href: "https://www.meetcursive.com/free-audit",
             description: "Request a free analysis of your last 100 website visitors"
           },
           {
             label: "Case Studies",
-            href: "https://meetcursive.com/case-studies",
+            href: "https://www.meetcursive.com/case-studies",
             description: "See real results from Cursive clients"
           }
         ]} />

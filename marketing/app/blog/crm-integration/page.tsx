@@ -24,7 +24,7 @@ export const metadata = generateMetadata({
     "CRM visitor data",
     "B2B CRM strategy",
   ],
-  canonical: "https://meetcursive.com/blog/crm-integration",
+  canonical: "https://www.meetcursive.com/blog/crm-integration",
 })
 
 const faqs = [
@@ -54,7 +54,7 @@ export default function CRMIntegrationPage() {
   return (
     <main>
       <StructuredData data={generateFAQSchema({ faqs })} />
-      <StructuredData data={generateBlogPostSchema({ title: "CRM Integration & Data Enrichment: The Complete B2B Guide (2026)", description: "Learn how to integrate your CRM with visitor identification, automate data enrichment workflows, and sync intent signals to HubSpot, Salesforce, and your entire marketing stack.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://meetcursive.com/cursive-logo.png" })} />
+      <StructuredData data={generateBlogPostSchema({ title: "CRM Integration & Data Enrichment: The Complete B2B Guide (2026)", description: "Learn how to integrate your CRM with visitor identification, automate data enrichment workflows, and sync intent signals to HubSpot, Salesforce, and your entire marketing stack.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://www.meetcursive.com/cursive-logo.png" })} />
 
       {/* Breadcrumb */}
       <section className="py-6 bg-gray-50 border-b border-gray-200">

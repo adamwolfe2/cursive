@@ -18,7 +18,7 @@ export default function DirectMailPage() {
     "@graph": [
       {
         "@type": "Service",
-        "@id": "https://meetcursive.com/direct-mail#service",
+        "@id": "https://www.meetcursive.com/direct-mail#service",
         "name": "Cursive Direct Mail Automation",
         "description": "Turn website visitors into physical touchpoints. Automated direct mail campaigns starting at $1.50 per piece. Trigger postcards based on digital behavior.",
         "provider": {
@@ -35,13 +35,13 @@ export default function DirectMailPage() {
             "@type": "ListItem",
             "position": 1,
             "name": "Home",
-            "item": "https://meetcursive.com"
+            "item": "https://www.meetcursive.com"
           },
           {
             "@type": "ListItem",
             "position": 2,
             "name": "Direct Mail",
-            "item": "https://meetcursive.com/direct-mail"
+            "item": "https://www.meetcursive.com/direct-mail"
           }
         ]
       },
@@ -966,12 +966,12 @@ export default function DirectMailPage() {
             },
             {
               label: "See Pricing",
-              href: "https://meetcursive.com/pricing",
+              href: "https://www.meetcursive.com/pricing",
               description: "View detailed pricing"
             },
             {
               label: "Website",
-              href: "https://meetcursive.com"
+              href: "https://www.meetcursive.com"
             }
           ]} />
         </MachineSection>

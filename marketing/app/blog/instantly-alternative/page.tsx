@@ -24,7 +24,7 @@ export const metadata = generateMetadata({
     "ai cold email",
     "outbound email platform"
   ],
-  canonical: "https://meetcursive.com/blog/instantly-alternative",
+  canonical: "https://www.meetcursive.com/blog/instantly-alternative",
 })
 
 const faqs = [
@@ -66,7 +66,7 @@ export default function BlogPost() {
   return (
     <main>
       <StructuredData data={generateFAQSchema({ faqs })} />
-      <StructuredData data={generateBlogPostSchema({ title: "Instantly Alternatives: Cold Email + Visitor ID Combined (2026)", description: "Compare the best Instantly alternatives that combine cold email outreach with visitor identification and intent data. Find all-in-one platforms that replace your entire outbound stack.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://meetcursive.com/cursive-logo.png" })} />
+      <StructuredData data={generateBlogPostSchema({ title: "Instantly Alternatives: Cold Email + Visitor ID Combined (2026)", description: "Compare the best Instantly alternatives that combine cold email outreach with visitor identification and intent data. Find all-in-one platforms that replace your entire outbound stack.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://www.meetcursive.com/cursive-logo.png" })} />
 
       {/* Header */}
       <section className="py-12 bg-white">

@@ -26,7 +26,7 @@ export const metadata = generateMetadata({
     "prospecting database alternative",
     "intent-based outreach"
   ],
-  canonical: "https://meetcursive.com/blog/cursive-vs-apollo",
+  canonical: "https://www.meetcursive.com/blog/cursive-vs-apollo",
 })
 
 const faqs = [
@@ -68,7 +68,7 @@ export default function BlogPost() {
   return (
     <main>
       <StructuredData data={generateFAQSchema({ faqs })} />
-      <StructuredData data={generateBlogPostSchema({ title: "Cursive vs Apollo: Visitor ID vs Prospecting Database (2026)", description: "Compare Cursive and Apollo.io for B2B sales. Apollo is a 200M+ contact prospecting database for cold outreach. Cursive identifies YOUR website visitors and automates warm, personalized outreach. Different approaches, complementary tools.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://meetcursive.com/cursive-logo.png" })} />
+      <StructuredData data={generateBlogPostSchema({ title: "Cursive vs Apollo: Visitor ID vs Prospecting Database (2026)", description: "Compare Cursive and Apollo.io for B2B sales. Apollo is a 200M+ contact prospecting database for cold outreach. Cursive identifies YOUR website visitors and automates warm, personalized outreach. Different approaches, complementary tools.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://www.meetcursive.com/cursive-logo.png" })} />
 
       {/* Header */}
       <section className="py-12 bg-white">

@@ -35,10 +35,10 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Turn Website Visitors Into Booked Meetings | Cursive",
     description: "Identify 70% of website visitors and automate personalized outreach. Turn anonymous traffic into booked meetings with AI-powered lead generation.",
-    url: "https://meetcursive.com",
+    url: "https://www.meetcursive.com",
     siteName: "Cursive",
     images: [{
-      url: "https://meetcursive.com/cursive-social-preview.png",
+      url: "https://www.meetcursive.com/cursive-social-preview.png",
       width: 1200,
       height: 630,
     }],
@@ -49,11 +49,11 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Turn Website Visitors Into Booked Meetings | Cursive",
     description: "Identify 70% of website visitors and automate personalized outreach. Turn anonymous traffic into booked meetings with AI-powered lead generation.",
-    images: ["https://meetcursive.com/cursive-social-preview.png"],
+    images: ["https://www.meetcursive.com/cursive-social-preview.png"],
     creator: "@meetcursive",
   },
   alternates: {
-    canonical: "https://meetcursive.com",
+    canonical: "https://www.meetcursive.com",
   },
 }
 
@@ -100,32 +100,32 @@ export default function HomePage() {
             <MachineList items={[
               {
                 label: "Visitor Identification",
-                href: "https://meetcursive.com/visitor-identification",
+                href: "https://www.meetcursive.com/visitor-identification",
                 description: "Reveal up to 70% of anonymous website visitors in real-time. See which companies viewed your pricing page, feature pages, or comparison content before they fill out a form."
               },
               {
                 label: "AI-Powered Outreach",
-                href: "https://meetcursive.com/platform",
+                href: "https://www.meetcursive.com/platform",
                 description: "AI agents that book meetings while you sleep. Multi-channel campaigns across email, LinkedIn, and SMS with autonomous follow-ups and meeting booking."
               },
               {
                 label: "Intent Data Audiences",
-                href: "https://meetcursive.com/intent-audiences",
+                href: "https://www.meetcursive.com/intent-audiences",
                 description: "Pre-built segments across 8 high-value verticals with verified purchase intent signals. Updated weekly with 450B+ monthly intent signals."
               },
               {
                 label: "Audience Builder",
-                href: "https://meetcursive.com/audience-builder",
+                href: "https://www.meetcursive.com/audience-builder",
                 description: "Build unlimited custom audiences using 220M+ consumer and 140M+ business profiles. No size limits or restrictive licensing."
               },
               {
                 label: "Direct Mail Automation",
-                href: "https://meetcursive.com/direct-mail",
+                href: "https://www.meetcursive.com/direct-mail",
                 description: "Send physical postcards triggered by digital behavior. Automated triggers based on website visits, email engagement, or custom events."
               },
               {
                 label: "Lead Marketplace",
-                href: "https://meetcursive.com/marketplace",
+                href: "https://www.meetcursive.com/marketplace",
                 description: "Self-serve B2B lead marketplace. Browse and buy verified leads with credits starting at $0.60/lead."
               }
             ]} />
@@ -185,17 +185,17 @@ export default function HomePage() {
             <MachineList items={[
               {
                 label: "Cursive Data — $1,000/month",
-                href: "https://meetcursive.com/services",
+                href: "https://www.meetcursive.com/services",
                 description: "Verified B2B contacts delivered monthly. Custom targeting based on your ICP with 95%+ email deliverability."
               },
               {
                 label: "Cursive Outbound — $2,500/month",
-                href: "https://meetcursive.com/services",
+                href: "https://www.meetcursive.com/services",
                 description: "Done-for-you email campaigns with AI-powered personalization. We build, launch, and optimize campaigns using your brand voice."
               },
               {
                 label: "Cursive Pipeline — $5,000/month",
-                href: "https://meetcursive.com/services",
+                href: "https://www.meetcursive.com/services",
                 description: "Full-stack AI SDR solution. Researches, writes, sends, follows up, and books meetings automatically across email, LinkedIn, and SMS."
               }
             ]} />
@@ -230,15 +230,15 @@ export default function HomePage() {
           {/* Industries */}
           <MachineSection title="Industries We Serve">
             <MachineList items={[
-              { label: "B2B Software", href: "https://meetcursive.com/industries/b2b-software", description: "Visitor identification and intent data for SaaS companies." },
-              { label: "Agencies", href: "https://meetcursive.com/industries/agencies", description: "White-label visitor identification for client services." },
-              { label: "Ecommerce", href: "https://meetcursive.com/industries/ecommerce", description: "Identify anonymous shoppers and retarget cart abandoners." },
-              { label: "Financial Services", href: "https://meetcursive.com/industries/financial-services", description: "Compliant lead generation for financial advisors and lenders." },
-              { label: "Home Services", href: "https://meetcursive.com/industries/home-services", description: "Reach homeowners searching for HVAC, plumbing, roofing services." },
-              { label: "Education", href: "https://meetcursive.com/industries/education", description: "Identify prospective students researching programs." },
-              { label: "Franchises", href: "https://meetcursive.com/industries/franchises", description: "Multi-location lead generation with centralized management." },
-              { label: "Retail", href: "https://meetcursive.com/industries/retail", description: "Identify in-market shoppers and drive foot traffic." },
-              { label: "Media & Advertising", href: "https://meetcursive.com/industries/media-advertising", description: "Audience intelligence for media buyers and publishers." },
+              { label: "B2B Software", href: "https://www.meetcursive.com/industries/b2b-software", description: "Visitor identification and intent data for SaaS companies." },
+              { label: "Agencies", href: "https://www.meetcursive.com/industries/agencies", description: "White-label visitor identification for client services." },
+              { label: "Ecommerce", href: "https://www.meetcursive.com/industries/ecommerce", description: "Identify anonymous shoppers and retarget cart abandoners." },
+              { label: "Financial Services", href: "https://www.meetcursive.com/industries/financial-services", description: "Compliant lead generation for financial advisors and lenders." },
+              { label: "Home Services", href: "https://www.meetcursive.com/industries/home-services", description: "Reach homeowners searching for HVAC, plumbing, roofing services." },
+              { label: "Education", href: "https://www.meetcursive.com/industries/education", description: "Identify prospective students researching programs." },
+              { label: "Franchises", href: "https://www.meetcursive.com/industries/franchises", description: "Multi-location lead generation with centralized management." },
+              { label: "Retail", href: "https://www.meetcursive.com/industries/retail", description: "Identify in-market shoppers and drive foot traffic." },
+              { label: "Media & Advertising", href: "https://www.meetcursive.com/industries/media-advertising", description: "Audience intelligence for media buyers and publishers." },
             ]} />
           </MachineSection>
 
@@ -261,12 +261,12 @@ export default function HomePage() {
                 },
                 {
                   label: "Explore Platform Features",
-                  href: "https://meetcursive.com/platform",
+                  href: "https://www.meetcursive.com/platform",
                   description: "Deep dive into visitor identification, AI Studio, and intent audiences"
                 },
                 {
                   label: "View Pricing",
-                  href: "https://meetcursive.com/pricing",
+                  href: "https://www.meetcursive.com/pricing",
                   description: "Self-serve credits from $0.60/lead, managed services from $1,000/month"
                 }
               ]} />
@@ -323,7 +323,7 @@ export default function HomePage() {
           {/* Contact & Support */}
           <MachineSection title="Contact & Support">
             <MachineList items={[
-              { label: "Website", href: "https://meetcursive.com" },
+              { label: "Website", href: "https://www.meetcursive.com" },
               { label: "Email", href: "mailto:hello@meetcursive.com" },
               { label: "Schedule Demo", href: "https://cal.com/cursive/30min" },
               { label: "LinkedIn", href: "https://linkedin.com/company/cursive" },
@@ -337,8 +337,8 @@ export default function HomePage() {
               Cursive is fully compliant with GDPR, CCPA, and other privacy regulations. We provide opt-out mechanisms, respect Do Not Track signals, and maintain strict data handling policies.
             </p>
             <MachineList items={[
-              { label: "Privacy Policy", href: "https://meetcursive.com/privacy" },
-              { label: "Terms of Service", href: "https://meetcursive.com/terms" },
+              { label: "Privacy Policy", href: "https://www.meetcursive.com/privacy" },
+              { label: "Terms of Service", href: "https://www.meetcursive.com/terms" },
             ]} />
           </MachineSection>
 

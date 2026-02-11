@@ -23,7 +23,7 @@ export const metadata = generateMetadata({
     "b2b lead generation",
     "contact enrichment"
   ],
-  canonical: "https://meetcursive.com/blog/zoominfo-vs-cursive-comparison",
+  canonical: "https://www.meetcursive.com/blog/zoominfo-vs-cursive-comparison",
 })
 
 const faqs = [
@@ -53,7 +53,7 @@ export default function BlogPost() {
   return (
     <main>
       <StructuredData data={generateFAQSchema({ faqs })} />
-      <StructuredData data={generateBlogPostSchema({ title: "ZoomInfo vs Cursive: Complete Comparison (2026)", description: "Compare ZoomInfo and Cursive for B2B data, visitor identification, and sales intelligence. Discover which platform delivers better ROI for your sales team.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://meetcursive.com/cursive-logo.png" })} />
+      <StructuredData data={generateBlogPostSchema({ title: "ZoomInfo vs Cursive: Complete Comparison (2026)", description: "Compare ZoomInfo and Cursive for B2B data, visitor identification, and sales intelligence. Discover which platform delivers better ROI for your sales team.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://www.meetcursive.com/cursive-logo.png" })} />
 
       {/* Header */}
       <section className="py-12 bg-white">

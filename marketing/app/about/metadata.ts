@@ -7,10 +7,10 @@ export const metadata: Metadata = {
   openGraph: {
     title: "About Cursive | AI-Powered Lead Generation Platform",
     description: "Meet the team behind Cursive. We built the world's most advanced visitor identification and AI outreach platform because we were tired of bad lead data.",
-    url: "https://meetcursive.com/about",
+    url: "https://www.meetcursive.com/about",
     siteName: "Cursive",
     images: [{
-      url: "https://meetcursive.com/cursive-social-preview.png",
+      url: "https://www.meetcursive.com/cursive-social-preview.png",
       width: 1200,
       height: 630,
     }],
@@ -21,10 +21,10 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "About Cursive | AI-Powered Lead Generation Platform",
     description: "Meet the team behind Cursive. We built the world's most advanced visitor identification and AI outreach platform because we were tired of bad lead data.",
-    images: ["https://meetcursive.com/cursive-social-preview.png"],
+    images: ["https://www.meetcursive.com/cursive-social-preview.png"],
     creator: "@meetcursive",
   },
   alternates: {
-    canonical: "https://meetcursive.com/about",
+    canonical: "https://www.meetcursive.com/about",
   },
 }

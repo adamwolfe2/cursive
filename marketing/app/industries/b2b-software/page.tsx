@@ -13,9 +13,9 @@ export default function B2BSoftwarePage() {
   return (
     <>
       <StructuredData data={generateBreadcrumbSchema([
-        { name: 'Home', url: 'https://meetcursive.com' },
-        { name: 'Industries', url: 'https://meetcursive.com/industries' },
-        { name: 'B2B Software', url: 'https://meetcursive.com/industries/b2b-software' },
+        { name: 'Home', url: 'https://www.meetcursive.com' },
+        { name: 'Industries', url: 'https://www.meetcursive.com/industries' },
+        { name: 'B2B Software', url: 'https://www.meetcursive.com/industries/b2b-software' },
       ])} />
       {/* Human View */}
       <HumanView>
@@ -328,11 +328,11 @@ export default function B2BSoftwarePage() {
             },
             {
               label: "Website",
-              href: "https://meetcursive.com"
+              href: "https://www.meetcursive.com"
             },
             {
               label: "Industries",
-              href: "https://meetcursive.com/industries"
+              href: "https://www.meetcursive.com/industries"
             }
           ]} />
         </MachineSection>

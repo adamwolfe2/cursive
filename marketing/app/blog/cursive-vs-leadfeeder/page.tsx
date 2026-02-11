@@ -24,7 +24,7 @@ export const metadata = generateMetadata({
     "b2b visitor tracking",
     "best leadfeeder alternative 2026"
   ],
-  canonical: "https://meetcursive.com/blog/cursive-vs-leadfeeder",
+  canonical: "https://www.meetcursive.com/blog/cursive-vs-leadfeeder",
 })
 
 const faqs = [
@@ -66,7 +66,7 @@ export default function BlogPost() {
   return (
     <main>
       <StructuredData data={generateFAQSchema({ faqs })} />
-      <StructuredData data={generateBlogPostSchema({ title: "Cursive vs Leadfeeder: Person-Level vs Company-Level ID (2026)", description: "Leadfeeder identifies companies visiting your site. Cursive identifies the actual people. Compare these two fundamentally different approaches to website visitor identification and find out which delivers more pipeline.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://meetcursive.com/cursive-logo.png" })} />
+      <StructuredData data={generateBlogPostSchema({ title: "Cursive vs Leadfeeder: Person-Level vs Company-Level ID (2026)", description: "Leadfeeder identifies companies visiting your site. Cursive identifies the actual people. Compare these two fundamentally different approaches to website visitor identification and find out which delivers more pipeline.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://www.meetcursive.com/cursive-logo.png" })} />
 
       {/* Header */}
       <section className="py-12 bg-white">

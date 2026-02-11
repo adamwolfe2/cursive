@@ -24,7 +24,7 @@ export const metadata = generateMetadata({
     "cheaper than zoominfo",
     "b2b prospecting tools 2026"
   ],
-  canonical: "https://meetcursive.com/blog/zoominfo-alternatives-comparison",
+  canonical: "https://www.meetcursive.com/blog/zoominfo-alternatives-comparison",
 })
 
 const faqs = [
@@ -58,7 +58,7 @@ export default function BlogPost() {
   return (
     <main>
       <StructuredData data={generateFAQSchema({ faqs })} />
-      <StructuredData data={generateBlogPostSchema({ title: "8 Best ZoomInfo Alternatives & Competitors for 2026 (Cheaper Options)", description: "Tired of ZoomInfo's $15k-$40k+ annual contracts? Compare 8 affordable ZoomInfo alternatives for B2B data, intent signals, and prospecting. Find the right fit for your budget.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://meetcursive.com/cursive-logo.png" })} />
+      <StructuredData data={generateBlogPostSchema({ title: "8 Best ZoomInfo Alternatives & Competitors for 2026 (Cheaper Options)", description: "Tired of ZoomInfo's $15k-$40k+ annual contracts? Compare 8 affordable ZoomInfo alternatives for B2B data, intent signals, and prospecting. Find the right fit for your budget.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://www.meetcursive.com/cursive-logo.png" })} />
 
       {/* Header */}
       <section className="py-12 bg-white">
@@ -409,7 +409,7 @@ export default function BlogPost() {
                 Cursive identifies your website visitors and automates outreach -- no massive database contract required.
               </p>
               <Link
-                href="https://meetcursive.com/platform"
+                href="https://www.meetcursive.com/platform"
                 className="inline-block bg-white text-blue-600 font-bold px-6 py-3 rounded-lg hover:bg-blue-50 transition-colors"
               >
                 See How Cursive Works

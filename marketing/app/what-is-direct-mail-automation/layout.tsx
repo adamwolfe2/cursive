@@ -15,7 +15,7 @@ export const metadata = genMeta({
     'direct mail campaigns',
     'B2B direct mail',
   ],
-  canonical: 'https://meetcursive.com/what-is-direct-mail-automation',
+  canonical: 'https://www.meetcursive.com/what-is-direct-mail-automation',
 })
 
 export default function Layout({ children }: { children: React.ReactNode }) {

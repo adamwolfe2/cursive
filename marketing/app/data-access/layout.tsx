@@ -15,15 +15,15 @@ export const metadata = generateMetadata({
     'bulk data export',
     'real-time data lookup',
   ],
-  canonical: 'https://meetcursive.com/data-access',
+  canonical: 'https://www.meetcursive.com/data-access',
 })
 
 export default function DataAccessLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <StructuredData data={generateBreadcrumbSchema([
-        { name: 'Home', url: 'https://meetcursive.com' },
-        { name: 'Data Access', url: 'https://meetcursive.com/data-access' },
+        { name: 'Home', url: 'https://www.meetcursive.com' },
+        { name: 'Data Access', url: 'https://www.meetcursive.com/data-access' },
       ])} />
       {children}
     </>

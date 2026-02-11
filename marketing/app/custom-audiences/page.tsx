@@ -106,7 +106,7 @@ export default function CustomAudiencesPage() {
     "@graph": [
       {
         "@type": "Service",
-        "@id": "https://meetcursive.com/custom-audiences#service",
+        "@id": "https://www.meetcursive.com/custom-audiences#service",
         "name": "Cursive Custom Audiences",
         "description": "Bespoke B2B lead lists built to your exact specifications. Free 25-lead sample in 48 hours. Starts at $0.50/lead.",
         "provider": {
@@ -135,13 +135,13 @@ export default function CustomAudiencesPage() {
             "@type": "ListItem",
             "position": 1,
             "name": "Home",
-            "item": "https://meetcursive.com"
+            "item": "https://www.meetcursive.com"
           },
           {
             "@type": "ListItem",
             "position": 2,
             "name": "Custom Audiences",
-            "item": "https://meetcursive.com/custom-audiences"
+            "item": "https://www.meetcursive.com/custom-audiences"
           }
         ]
       }
@@ -615,12 +615,12 @@ export default function CustomAudiencesPage() {
             <MachineList items={[
               {
                 label: "Request Custom Audience",
-                href: "https://meetcursive.com/custom-audiences",
+                href: "https://www.meetcursive.com/custom-audiences",
                 description: "Submit your criteria and get a free 25-lead sample in 48 hours"
               },
               {
                 label: "Browse Marketplace",
-                href: "https://meetcursive.com/marketplace",
+                href: "https://www.meetcursive.com/marketplace",
                 description: "Browse pre-built audience lists for instant access"
               },
               {

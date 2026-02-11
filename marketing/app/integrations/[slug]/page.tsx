@@ -31,7 +31,7 @@ export async function generateMetadata({
     description: `Connect Cursive visitor identification data with ${integration.name}. ${integration.whyCursive}`,
     keywords: integration.keywords,
     alternates: {
-      canonical: `https://meetcursive.com/integrations/${integration.slug}`,
+      canonical: `https://www.meetcursive.com/integrations/${integration.slug}`,
     },
     openGraph: {
       title: `Cursive + ${integration.name} Integration`,
@@ -115,7 +115,7 @@ export default async function IntegrationPage({
 
   const faqSchema = generateFAQSchema({
     faqs: integration.faqs,
-    pageUrl: `https://meetcursive.com/integrations/${integration.slug}`,
+    pageUrl: `https://www.meetcursive.com/integrations/${integration.slug}`,
   })
 
   return (

@@ -23,7 +23,7 @@ export const metadata = generateMetadata({
     "sales intelligence comparison",
     "outreach automation"
   ],
-  canonical: "https://meetcursive.com/blog/apollo-vs-cursive-comparison",
+  canonical: "https://www.meetcursive.com/blog/apollo-vs-cursive-comparison",
 })
 
 const faqs = [
@@ -53,7 +53,7 @@ export default function BlogPost() {
   return (
     <main>
       <StructuredData data={generateFAQSchema({ faqs })} />
-      <StructuredData data={generateBlogPostSchema({ title: "Apollo vs Cursive: Complete Comparison (2026)", description: "Compare Apollo.io and Cursive for sales intelligence, visitor identification, and outreach automation. Discover which platform delivers better ROI for your B2B sales team.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://meetcursive.com/cursive-logo.png" })} />
+      <StructuredData data={generateBlogPostSchema({ title: "Apollo vs Cursive: Complete Comparison (2026)", description: "Compare Apollo.io and Cursive for sales intelligence, visitor identification, and outreach automation. Discover which platform delivers better ROI for your B2B sales team.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://www.meetcursive.com/cursive-logo.png" })} />
 
       {/* Header */}
       <section className="py-12 bg-white">

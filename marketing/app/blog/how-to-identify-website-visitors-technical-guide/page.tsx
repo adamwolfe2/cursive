@@ -26,7 +26,7 @@ export const metadata: Metadata = generateMetadata({
     "privacy-safe visitor tracking",
     "visitor identification software"
   ],
-  canonical: "https://meetcursive.com/blog/how-to-identify-website-visitors-technical-guide",
+  canonical: "https://www.meetcursive.com/blog/how-to-identify-website-visitors-technical-guide",
 })
 
 export default function BlogPost() {
@@ -74,13 +74,13 @@ export default function BlogPost() {
       name: "Cursive",
       logo: {
         "@type": "ImageObject",
-        url: "https://meetcursive.com/cursive-logo.png"
+        url: "https://www.meetcursive.com/cursive-logo.png"
       }
     },
     datePublished: "2026-02-04",
     dateModified: "2026-02-04",
-    image: "https://meetcursive.com/cursive-social-preview.png",
-    url: "https://meetcursive.com/blog/how-to-identify-website-visitors-technical-guide"
+    image: "https://www.meetcursive.com/cursive-social-preview.png",
+    url: "https://www.meetcursive.com/blog/how-to-identify-website-visitors-technical-guide"
   }
 
   const breadcrumbSchema = {
@@ -91,13 +91,13 @@ export default function BlogPost() {
         "@type": "ListItem",
         position: 1,
         name: "Blog",
-        item: "https://meetcursive.com/blog"
+        item: "https://www.meetcursive.com/blog"
       },
       {
         "@type": "ListItem",
         position: 2,
         name: "How to Identify Website Visitors: Technical Guide",
-        item: "https://meetcursive.com/blog/how-to-identify-website-visitors-technical-guide"
+        item: "https://www.meetcursive.com/blog/how-to-identify-website-visitors-technical-guide"
       }
     ]
   }

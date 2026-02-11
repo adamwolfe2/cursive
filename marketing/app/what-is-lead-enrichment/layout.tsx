@@ -15,7 +15,7 @@ export const metadata = genMeta({
     'lead enrichment tools',
     'enrichment API',
   ],
-  canonical: 'https://meetcursive.com/what-is-lead-enrichment',
+  canonical: 'https://www.meetcursive.com/what-is-lead-enrichment',
 })
 
 export default function Layout({ children }: { children: React.ReactNode }) {

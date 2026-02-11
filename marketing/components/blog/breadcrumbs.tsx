@@ -19,7 +19,7 @@ export function Breadcrumbs({ items }: BreadcrumbsProps) {
       '@type': 'ListItem',
       position: index + 1,
       name: item.name,
-      item: `https://meetcursive.com${item.href}`,
+      item: `https://www.meetcursive.com${item.href}`,
     })),
   }
 

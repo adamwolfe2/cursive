@@ -25,7 +25,7 @@ export const metadata = generateMetadata({
     "behavioral targeting",
     "account-based marketing",
   ],
-  canonical: "https://meetcursive.com/blog/audience-targeting",
+  canonical: "https://www.meetcursive.com/blog/audience-targeting",
 })
 
 const faqs = [
@@ -55,7 +55,7 @@ export default function AudienceTargetingPage() {
   return (
     <main>
       <StructuredData data={generateFAQSchema({ faqs })} />
-      <StructuredData data={generateBlogPostSchema({ title: "B2B Audience Targeting: The Complete Guide to Data-Driven Segmentation (2026)", description: "Master B2B audience targeting with data-driven segmentation strategies. Learn how to build your ICP, use firmographic and intent data, and create high-converting audience segments at scale.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://meetcursive.com/cursive-logo.png" })} />
+      <StructuredData data={generateBlogPostSchema({ title: "B2B Audience Targeting: The Complete Guide to Data-Driven Segmentation (2026)", description: "Master B2B audience targeting with data-driven segmentation strategies. Learn how to build your ICP, use firmographic and intent data, and create high-converting audience segments at scale.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://www.meetcursive.com/cursive-logo.png" })} />
 
       {/* Header */}
       <section className="py-12 bg-white">

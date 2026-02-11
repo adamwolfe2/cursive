@@ -21,7 +21,7 @@ export default function PricingPage() {
     "@graph": [
       {
         "@type": "Product",
-        "@id": "https://meetcursive.com/pricing#cursive-data",
+        "@id": "https://www.meetcursive.com/pricing#cursive-data",
         "name": "Cursive Data",
         "description": "Verified B2B contacts delivered monthly. Custom targeting based on your ICP with 95%+ email deliverability.",
         "brand": {
@@ -39,7 +39,7 @@ export default function PricingPage() {
       },
       {
         "@type": "Product",
-        "@id": "https://meetcursive.com/pricing#cursive-outbound",
+        "@id": "https://www.meetcursive.com/pricing#cursive-outbound",
         "name": "Cursive Outbound",
         "description": "Done-for-you email campaigns with AI-powered personalization, email infrastructure setup, and campaign optimization.",
         "brand": {
@@ -61,7 +61,7 @@ export default function PricingPage() {
       },
       {
         "@type": "Product",
-        "@id": "https://meetcursive.com/pricing#cursive-pipeline",
+        "@id": "https://www.meetcursive.com/pricing#cursive-pipeline",
         "name": "Cursive Pipeline",
         "description": "Full-stack AI SDR solution with multi-channel campaigns, unlimited lead enrichment, and dedicated success manager.",
         "brand": {
@@ -83,7 +83,7 @@ export default function PricingPage() {
       },
       {
         "@type": "Product",
-        "@id": "https://meetcursive.com/pricing#marketplace-starter",
+        "@id": "https://www.meetcursive.com/pricing#marketplace-starter",
         "name": "Cursive Marketplace - Starter",
         "description": "100 self-serve lead credits for on-demand B2B prospecting.",
         "brand": {
@@ -1287,7 +1287,7 @@ export default function PricingPage() {
           },
           {
             label: "Contact Sales for Enterprise",
-            href: "https://meetcursive.com/contact",
+            href: "https://www.meetcursive.com/contact",
             description: "Custom pricing for 10,000+ leads/month or white-label partnerships"
           }
         ]} />

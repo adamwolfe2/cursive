@@ -724,7 +724,7 @@ export default function VisitorIdentificationPage() {
           <MachineList items={[
             {
               label: "View Detailed Pricing",
-              href: "https://meetcursive.com/pricing",
+              href: "https://www.meetcursive.com/pricing",
               description: "See all plans and volume discounts"
             }
           ]} />
@@ -753,12 +753,12 @@ export default function VisitorIdentificationPage() {
             },
             {
               label: "View Platform",
-              href: "https://meetcursive.com/platform",
+              href: "https://www.meetcursive.com/platform",
               description: "Explore all platform features"
             },
             {
               label: "Contact Sales",
-              href: "https://meetcursive.com/contact",
+              href: "https://www.meetcursive.com/contact",
               description: "Get custom pricing for high-volume needs"
             }
           ]} />
@@ -772,11 +772,11 @@ export default function VisitorIdentificationPage() {
           <MachineList items={[
             {
               label: "Privacy Policy",
-              href: "https://meetcursive.com/privacy"
+              href: "https://www.meetcursive.com/privacy"
             },
             {
               label: "Terms of Service",
-              href: "https://meetcursive.com/terms"
+              href: "https://www.meetcursive.com/terms"
             }
           ]} />
         </MachineSection>

@@ -24,7 +24,7 @@ export const metadata = generateMetadata({
     "rb2b review",
     "best visitor id tool 2026"
   ],
-  canonical: "https://meetcursive.com/blog/cursive-vs-rb2b",
+  canonical: "https://www.meetcursive.com/blog/cursive-vs-rb2b",
 })
 
 const faqs = [
@@ -66,7 +66,7 @@ export default function BlogPost() {
   return (
     <main>
       <StructuredData data={generateFAQSchema({ faqs })} />
-      <StructuredData data={generateBlogPostSchema({ title: "Cursive vs RB2B: Which Visitor ID Tool is Better? (2026)", description: "An in-depth comparison of Cursive and RB2B for B2B visitor identification. Compare match rates, outreach capabilities, pricing, and total cost of ownership to find the right tool for your team.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://meetcursive.com/cursive-logo.png" })} />
+      <StructuredData data={generateBlogPostSchema({ title: "Cursive vs RB2B: Which Visitor ID Tool is Better? (2026)", description: "An in-depth comparison of Cursive and RB2B for B2B visitor identification. Compare match rates, outreach capabilities, pricing, and total cost of ownership to find the right tool for your team.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://www.meetcursive.com/cursive-logo.png" })} />
 
       {/* Header */}
       <section className="py-12 bg-white">

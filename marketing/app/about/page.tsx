@@ -707,22 +707,22 @@ export default function AboutPage() {
         <MachineList items={[
           {
             label: "Case Studies",
-            href: "https://meetcursive.com/case-studies",
+            href: "https://www.meetcursive.com/case-studies",
             description: "See real, anonymized results from Cursive clients across SaaS, agencies, financial services, and eCommerce"
           },
           {
             label: "Platform Overview",
-            href: "https://meetcursive.com/platform",
+            href: "https://www.meetcursive.com/platform",
             description: "Explore the full Cursive platform and its capabilities"
           },
           {
             label: "Data Access",
-            href: "https://meetcursive.com/data-access",
+            href: "https://www.meetcursive.com/data-access",
             description: "Learn about our 220M+ consumer profiles and 140M+ business profiles"
           },
           {
             label: "Pricing",
-            href: "https://meetcursive.com/pricing",
+            href: "https://www.meetcursive.com/pricing",
             description: "View transparent pricing for all plans and services"
           }
         ]} />
@@ -738,7 +738,7 @@ export default function AboutPage() {
           },
           {
             label: "Website",
-            href: "https://meetcursive.com"
+            href: "https://www.meetcursive.com"
           },
           {
             label: "Email",

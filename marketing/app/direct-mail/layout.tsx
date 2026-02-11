@@ -15,7 +15,7 @@ export const metadata = generateMetadata({
     'direct mail retargeting',
     'website to mailbox',
   ],
-  canonical: 'https://meetcursive.com/direct-mail',
+  canonical: 'https://www.meetcursive.com/direct-mail',
 })
 
 export default function DirectMailLayout({
@@ -26,8 +26,8 @@ export default function DirectMailLayout({
   return (
     <>
       <StructuredData data={generateBreadcrumbSchema([
-        { name: 'Home', url: 'https://meetcursive.com' },
-        { name: 'Direct Mail', url: 'https://meetcursive.com/direct-mail' },
+        { name: 'Home', url: 'https://www.meetcursive.com' },
+        { name: 'Direct Mail', url: 'https://www.meetcursive.com/direct-mail' },
       ])} />
       {children}
     </>

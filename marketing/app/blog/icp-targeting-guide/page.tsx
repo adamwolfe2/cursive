@@ -16,10 +16,10 @@ export const metadata: Metadata = {
     title: "Complete ICP Targeting Guide for B2B Marketers | Cursive",
     description: "Build and target your ideal customer profile (ICP) with data-driven strategies. Define firmographics, behaviors, and intent signals for better conversions.",
     type: "article",
-    url: "https://meetcursive.com/blog/icp-targeting-guide",
+    url: "https://www.meetcursive.com/blog/icp-targeting-guide",
     siteName: "Cursive",
     images: [{
-      url: "https://meetcursive.com/og-image.png",
+      url: "https://www.meetcursive.com/og-image.png",
       width: 1200,
       height: 630,
     }],
@@ -30,12 +30,12 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Complete ICP Targeting Guide for B2B Marketers | Cursive",
     description: "Build and target your ideal customer profile (ICP) with data-driven strategies. Define firmographics, behaviors, and intent signals for better conversions.",
-    images: ["https://meetcursive.com/og-image.png"],
+    images: ["https://www.meetcursive.com/og-image.png"],
     creator: "@meetcursive",
   },
 
   alternates: {
-    canonical: "https://meetcursive.com/blog/icp-targeting-guide",
+    canonical: "https://www.meetcursive.com/blog/icp-targeting-guide",
   },
 
   robots: {
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
 export default function BlogPost() {
   return (
     <main>
-      <StructuredData data={generateBlogPostSchema({ title: "Complete ICP Targeting Guide for B2B Marketers", description: "Build and target your ideal customer profile (ICP) with data-driven strategies. Define firmographics, behaviors, and intent signals for better conversions.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://meetcursive.com/cursive-logo.png" })} />
+      <StructuredData data={generateBlogPostSchema({ title: "Complete ICP Targeting Guide for B2B Marketers", description: "Build and target your ideal customer profile (ICP) with data-driven strategies. Define firmographics, behaviors, and intent signals for better conversions.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://www.meetcursive.com/cursive-logo.png" })} />
 
       {/* Header */}
       <section className="py-12 bg-white">

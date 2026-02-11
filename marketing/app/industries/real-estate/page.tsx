@@ -13,9 +13,9 @@ export default function RealEstatePage() {
   return (
     <>
       <StructuredData data={generateBreadcrumbSchema([
-        { name: 'Home', url: 'https://meetcursive.com' },
-        { name: 'Industries', url: 'https://meetcursive.com/industries' },
-        { name: 'Real Estate', url: 'https://meetcursive.com/industries/real-estate' },
+        { name: 'Home', url: 'https://www.meetcursive.com' },
+        { name: 'Industries', url: 'https://www.meetcursive.com/industries' },
+        { name: 'Real Estate', url: 'https://www.meetcursive.com/industries/real-estate' },
       ])} />
       {/* Human View */}
       <HumanView>
@@ -305,11 +305,11 @@ export default function RealEstatePage() {
             },
             {
               label: "Website",
-              href: "https://meetcursive.com"
+              href: "https://www.meetcursive.com"
             },
             {
               label: "Industries",
-              href: "https://meetcursive.com/industries"
+              href: "https://www.meetcursive.com/industries"
             }
           ]} />
         </MachineSection>

@@ -14,7 +14,7 @@ export default function ServicesPage() {
     "@graph": [
       {
         "@type": "Service",
-        "@id": "https://meetcursive.com/services#data",
+        "@id": "https://www.meetcursive.com/services#data",
         "name": "Cursive Data - Monthly Lead Lists",
         "description": "Get verified B2B contacts delivered monthly. Custom targeting based on your ICP, ready to import into your CRM and activate immediately.",
         "provider": {
@@ -32,7 +32,7 @@ export default function ServicesPage() {
       },
       {
         "@type": "Service",
-        "@id": "https://meetcursive.com/services#outbound",
+        "@id": "https://www.meetcursive.com/services#outbound",
         "name": "Cursive Outbound - Done-For-You Campaigns",
         "description": "We build, launch, and optimize email campaigns using your brand voice. You just close the meetings.",
         "provider": {
@@ -50,7 +50,7 @@ export default function ServicesPage() {
       },
       {
         "@type": "Service",
-        "@id": "https://meetcursive.com/services#pipeline",
+        "@id": "https://www.meetcursive.com/services#pipeline",
         "name": "Cursive Pipeline - AI SDR Automation",
         "description": "Your AI team that never sleeps. Researches, writes, sends, follows up, and books meetings -- automatically.",
         "provider": {
@@ -736,12 +736,12 @@ export default function ServicesPage() {
           },
           {
             label: "View Pricing",
-            href: "https://meetcursive.com/pricing",
+            href: "https://www.meetcursive.com/pricing",
             description: "See all pricing options for services and marketplace credits"
           },
           {
             label: "Browse Marketplace",
-            href: "https://meetcursive.com/marketplace",
+            href: "https://www.meetcursive.com/marketplace",
             description: "Self-serve lead search with no subscription required"
           }
         ]} />

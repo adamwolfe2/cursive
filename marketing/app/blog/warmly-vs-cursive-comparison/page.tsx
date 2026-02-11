@@ -25,7 +25,7 @@ export const metadata: Metadata = generateMetadata({
     'account-based marketing tools',
     'buyer intent platforms',
   ],
-  canonical: 'https://meetcursive.com/blog/warmly-vs-cursive-comparison',
+  canonical: 'https://www.meetcursive.com/blog/warmly-vs-cursive-comparison',
 })
 
 const faqs = [
@@ -68,7 +68,7 @@ export default function WarmlyVsCursiveComparison() {
     <main>
       {/* FAQ Schema Markup */}
       <StructuredData data={generateFAQSchema({ faqs })} />
-      <StructuredData data={generateBlogPostSchema({ title: "Warmly vs Cursive Comparison: Which Intent Platform is Right for You?", description: "Compare Warmly and Cursive side-by-side. See how these two intent-based platforms differ in features, pricing, use cases, and ROI. Detailed analysis for B2B teams.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://meetcursive.com/cursive-logo.png" })} />
+      <StructuredData data={generateBlogPostSchema({ title: "Warmly vs Cursive Comparison: Which Intent Platform is Right for You?", description: "Compare Warmly and Cursive side-by-side. See how these two intent-based platforms differ in features, pricing, use cases, and ROI. Detailed analysis for B2B teams.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://www.meetcursive.com/cursive-logo.png" })} />
 
       {/* Header */}
       <section className="py-12 bg-white">

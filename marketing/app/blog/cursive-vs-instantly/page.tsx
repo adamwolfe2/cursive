@@ -26,7 +26,7 @@ export const metadata = generateMetadata({
     "ai sdr platform",
     "sales engagement platform"
   ],
-  canonical: "https://meetcursive.com/blog/cursive-vs-instantly",
+  canonical: "https://www.meetcursive.com/blog/cursive-vs-instantly",
 })
 
 const faqs = [
@@ -64,7 +64,7 @@ export default function BlogPost() {
   return (
     <main>
       <StructuredData data={generateFAQSchema({ faqs })} />
-      <StructuredData data={generateBlogPostSchema({ title: "Cursive vs Instantly: Visitor ID + Email Outreach Combined (2026)", description: "Compare Cursive and Instantly for B2B outreach automation. Instantly is email-only at $97/mo. Cursive combines visitor identification, AI email, LinkedIn, SMS, and direct mail to replace your entire outreach stack.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://meetcursive.com/cursive-logo.png" })} />
+      <StructuredData data={generateBlogPostSchema({ title: "Cursive vs Instantly: Visitor ID + Email Outreach Combined (2026)", description: "Compare Cursive and Instantly for B2B outreach automation. Instantly is email-only at $97/mo. Cursive combines visitor identification, AI email, LinkedIn, SMS, and direct mail to replace your entire outreach stack.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://www.meetcursive.com/cursive-logo.png" })} />
 
       {/* Header */}
       <section className="py-12 bg-white">

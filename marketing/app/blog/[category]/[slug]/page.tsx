@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     }
   }
 
-  const pageUrl = `https://meetcursive.com/blog/${params.category}/${params.slug}`
+  const pageUrl = `https://www.meetcursive.com/blog/${params.category}/${params.slug}`
 
   return {
     title: `${post.title} | Cursive Blog`,

@@ -112,8 +112,8 @@ async function sendContactEmail(formData: ContactFormData): Promise<void> {
           <strong>In the meantime:</strong>
         </p>
         <ul style="margin: 12px 0; padding-left: 20px; color: #666;">
-          <li>Check out our <a href="https://meetcursive.com/faq" style="color: #007aff; text-decoration: none;">FAQ page</a> for quick answers</li>
-          <li>Visit our <a href="https://meetcursive.com/platform" style="color: #007aff; text-decoration: none;">platform page</a> to learn more</li>
+          <li>Check out our <a href="https://www.meetcursive.com/faq" style="color: #007aff; text-decoration: none;">FAQ page</a> for quick answers</li>
+          <li>Visit our <a href="https://www.meetcursive.com/platform" style="color: #007aff; text-decoration: none;">platform page</a> to learn more</li>
           <li>Book a demo at <a href="https://cal.com/cursive/30min" style="color: #007aff; text-decoration: none;">our calendar</a></li>
         </ul>
       </div>
@@ -126,7 +126,7 @@ async function sendContactEmail(formData: ContactFormData): Promise<void> {
       <hr style="border: none; border-top: 1px solid #ddd; margin: 24px 0;" />
 
       <p style="color: #999; font-size: 12px; margin: 0;">
-        Cursive AI | <a href="https://meetcursive.com" style="color: #007aff; text-decoration: none;">meetcursive.com</a>
+        Cursive AI | <a href="https://www.meetcursive.com" style="color: #007aff; text-decoration: none;">meetcursive.com</a>
       </p>
     </div>
   `

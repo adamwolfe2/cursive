@@ -8,10 +8,10 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Visitor Identification & Lead Generation Blog | Cursive',
     description: 'Expert guides on visitor identification, intent data, B2B lead generation, and sales automation.',
-    url: 'https://meetcursive.com/blog',
+    url: 'https://www.meetcursive.com/blog',
     siteName: 'Cursive',
     images: [{
-      url: 'https://meetcursive.com/cursive-social-preview.png',
+      url: 'https://www.meetcursive.com/cursive-social-preview.png',
       width: 1200,
       height: 630,
     }],
@@ -22,11 +22,11 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Visitor Identification & Lead Generation Blog | Cursive',
     description: 'Expert guides on visitor identification, intent data, B2B lead generation, and sales automation.',
-    images: ['https://meetcursive.com/cursive-social-preview.png'],
+    images: ['https://www.meetcursive.com/cursive-social-preview.png'],
     creator: '@meetcursive',
   },
   alternates: {
-    canonical: 'https://meetcursive.com/blog',
+    canonical: 'https://www.meetcursive.com/blog',
   },
 }
 

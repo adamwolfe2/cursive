@@ -23,7 +23,7 @@ export const metadata = generateMetadata({
     "b2b intent data",
     "account based marketing"
   ],
-  canonical: "https://meetcursive.com/blog/6sense-vs-cursive-comparison",
+  canonical: "https://www.meetcursive.com/blog/6sense-vs-cursive-comparison",
 })
 
 const faqs = [
@@ -53,7 +53,7 @@ export default function BlogPost() {
   return (
     <main>
       <StructuredData data={generateFAQSchema({ faqs })} />
-      <StructuredData data={generateBlogPostSchema({ title: "6sense vs Cursive: Complete Comparison (2026)", description: "Compare 6sense and Cursive for visitor identification, intent data, and automated outreach. Discover which platform delivers better ROI for your B2B sales team.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://meetcursive.com/cursive-logo.png" })} />
+      <StructuredData data={generateBlogPostSchema({ title: "6sense vs Cursive: Complete Comparison (2026)", description: "Compare 6sense and Cursive for visitor identification, intent data, and automated outreach. Discover which platform delivers better ROI for your B2B sales team.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://www.meetcursive.com/cursive-logo.png" })} />
 
       {/* Header */}
       <section className="py-12 bg-white">

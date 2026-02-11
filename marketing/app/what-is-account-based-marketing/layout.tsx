@@ -15,7 +15,7 @@ export const metadata = genMeta({
     'ABM measurement',
     'ABM implementation',
   ],
-  canonical: 'https://meetcursive.com/what-is-account-based-marketing',
+  canonical: 'https://www.meetcursive.com/what-is-account-based-marketing',
 })
 
 export default function Layout({ children }: { children: React.ReactNode }) {

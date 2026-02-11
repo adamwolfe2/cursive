@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     title: "Turn Website Visitors Into Booked Meetings",
     description: "Identify 70% of website visitors and automate personalized outreach. Turn anonymous traffic into booked meetings with AI-powered lead generation.",
     keywords: ['website visitor identification', 'B2B lead generation', 'anonymous visitor tracking', 'automated outbound', 'AI SDR', 'lead enrichment', 'outbound automation', 'intent data', 'visitor deanonymization'],
-    canonical: 'https://meetcursive.com',
+    canonical: 'https://www.meetcursive.com',
   }),
   icons: {
     icon: '/cursive-logo.png',

@@ -25,7 +25,7 @@ export const metadata = generateMetadata({
     "website visitor identification tools",
     "deanonymization",
   ],
-  canonical: "https://meetcursive.com/blog/visitor-tracking",
+  canonical: "https://www.meetcursive.com/blog/visitor-tracking",
 })
 
 const faqs = [
@@ -55,7 +55,7 @@ export default function VisitorTrackingPage() {
   return (
     <main>
       <StructuredData data={generateFAQSchema({ faqs })} />
-      <StructuredData data={generateBlogPostSchema({ title: "Website Visitor Tracking: How It Works and How to Implement It (2026 Guide)", description: "Learn how website visitor tracking works for B2B companies. Covers IP-based identification, cookie tracking, privacy-compliant methods, and step-by-step implementation for turning anonymous traffic into qualified leads.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://meetcursive.com/cursive-logo.png" })} />
+      <StructuredData data={generateBlogPostSchema({ title: "Website Visitor Tracking: How It Works and How to Implement It (2026 Guide)", description: "Learn how website visitor tracking works for B2B companies. Covers IP-based identification, cookie tracking, privacy-compliant methods, and step-by-step implementation for turning anonymous traffic into qualified leads.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://www.meetcursive.com/cursive-logo.png" })} />
 
       {/* Header */}
       <section className="py-12 bg-white">

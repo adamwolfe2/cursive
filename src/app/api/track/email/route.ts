@@ -57,11 +57,11 @@ export async function GET(request: NextRequest) {
 
         // Update campaign stats
         if (emailSend.campaign_id) {
-          await supabase.rpc('increment_campaign_opens', {
+          const { error: rpcError } = await supabase.rpc('increment_campaign_opens', {
             p_campaign_id: emailSend.campaign_id,
-          }).catch(() => {
-            // Function might not exist yet
           })
+          // Function might not exist yet
+          if (rpcError) console.warn('increment_campaign_opens error:', rpcError.message)
         }
       }
     } catch (error) {
@@ -128,11 +128,11 @@ export async function POST(request: NextRequest) {
 
       // Update campaign stats
       if (emailSend.campaign_id) {
-        await supabase.rpc('increment_campaign_clicks', {
+        const { error: rpcError } = await supabase.rpc('increment_campaign_clicks', {
           p_campaign_id: emailSend.campaign_id,
-        }).catch(() => {
-          // Function might not exist yet
         })
+        // Function might not exist yet
+        if (rpcError) console.warn('increment_campaign_clicks error:', rpcError.message)
       }
     }
 

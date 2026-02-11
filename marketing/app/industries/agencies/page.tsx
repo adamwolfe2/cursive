@@ -13,9 +13,9 @@ export default function AgenciesPage() {
   return (
     <>
       <StructuredData data={generateBreadcrumbSchema([
-        { name: 'Home', url: 'https://meetcursive.com' },
-        { name: 'Industries', url: 'https://meetcursive.com/industries' },
-        { name: 'Marketing Agencies', url: 'https://meetcursive.com/industries/agencies' },
+        { name: 'Home', url: 'https://www.meetcursive.com' },
+        { name: 'Industries', url: 'https://www.meetcursive.com/industries' },
+        { name: 'Marketing Agencies', url: 'https://www.meetcursive.com/industries/agencies' },
       ])} />
 
       {/* Human View */}
@@ -315,7 +315,7 @@ export default function AgenciesPage() {
             },
             {
               label: "Contact Sales",
-              href: "https://meetcursive.com/contact",
+              href: "https://www.meetcursive.com/contact",
               description: "Get custom agency pricing"
             }
           ]} />

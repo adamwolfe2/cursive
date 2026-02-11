@@ -13,9 +13,9 @@ export default function HomeServicesPage() {
   return (
     <>
       <StructuredData data={generateBreadcrumbSchema([
-        { name: 'Home', url: 'https://meetcursive.com' },
-        { name: 'Industries', url: 'https://meetcursive.com/industries' },
-        { name: 'Home Services', url: 'https://meetcursive.com/industries/home-services' },
+        { name: 'Home', url: 'https://www.meetcursive.com' },
+        { name: 'Industries', url: 'https://www.meetcursive.com/industries' },
+        { name: 'Home Services', url: 'https://www.meetcursive.com/industries/home-services' },
       ])} />
 
       {/* Human View */}
@@ -314,7 +314,7 @@ export default function HomeServicesPage() {
             },
             {
               label: "Contact Sales",
-              href: "https://meetcursive.com/contact",
+              href: "https://www.meetcursive.com/contact",
               description: "Get custom pricing for home services companies"
             }
           ]} />

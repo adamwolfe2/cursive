@@ -9,7 +9,7 @@
  * for SSR since script tags are fine in that context.
  */
 
-const BASE_URL = "https://meetcursive.com"
+const BASE_URL = "https://www.meetcursive.com"
 
 // ---------- Organization Schema ----------
 

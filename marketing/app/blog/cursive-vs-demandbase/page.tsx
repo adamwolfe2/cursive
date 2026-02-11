@@ -26,7 +26,7 @@ export const metadata = generateMetadata({
     "abm software comparison",
     "mid-market abm"
   ],
-  canonical: "https://meetcursive.com/blog/cursive-vs-demandbase",
+  canonical: "https://www.meetcursive.com/blog/cursive-vs-demandbase",
 })
 
 const faqs = [
@@ -68,7 +68,7 @@ export default function BlogPost() {
   return (
     <main>
       <StructuredData data={generateFAQSchema({ faqs })} />
-      <StructuredData data={generateBlogPostSchema({ title: "Cursive vs Demandbase: Affordable ABM Alternative (2026)", description: "Compare Cursive and Demandbase for account-based marketing. Demandbase costs $50k+/year with long implementation. Cursive delivers ABM-like capabilities at $1k/mo with 5-minute setup.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://meetcursive.com/cursive-logo.png" })} />
+      <StructuredData data={generateBlogPostSchema({ title: "Cursive vs Demandbase: Affordable ABM Alternative (2026)", description: "Compare Cursive and Demandbase for account-based marketing. Demandbase costs $50k+/year with long implementation. Cursive delivers ABM-like capabilities at $1k/mo with 5-minute setup.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://www.meetcursive.com/cursive-logo.png" })} />
 
       {/* Header */}
       <section className="py-12 bg-white">

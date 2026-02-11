@@ -13,9 +13,9 @@ export default function FinancialServicesPage() {
   return (
     <>
       <StructuredData data={generateBreadcrumbSchema([
-        { name: 'Home', url: 'https://meetcursive.com' },
-        { name: 'Industries', url: 'https://meetcursive.com/industries' },
-        { name: 'Financial Services', url: 'https://meetcursive.com/industries/financial-services' },
+        { name: 'Home', url: 'https://www.meetcursive.com' },
+        { name: 'Industries', url: 'https://www.meetcursive.com/industries' },
+        { name: 'Financial Services', url: 'https://www.meetcursive.com/industries/financial-services' },
       ])} />
 
       {/* Human View */}
@@ -314,7 +314,7 @@ export default function FinancialServicesPage() {
             },
             {
               label: "Contact Sales",
-              href: "https://meetcursive.com/contact",
+              href: "https://www.meetcursive.com/contact",
               description: "Get custom pricing for financial institutions"
             }
           ]} />

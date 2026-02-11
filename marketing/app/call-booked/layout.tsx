@@ -12,7 +12,7 @@ export const metadata = generateMetadata({
     'AI SDR',
     'growth platform',
   ],
-  canonical: 'https://meetcursive.com/call-booked',
+  canonical: 'https://www.meetcursive.com/call-booked',
 })
 
 export default function CallBookedLayout({ children }: { children: React.ReactNode }) {

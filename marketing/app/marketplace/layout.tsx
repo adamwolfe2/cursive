@@ -15,15 +15,15 @@ export const metadata = generateMetadata({
     'B2B contact database',
     'lead list marketplace',
   ],
-  canonical: 'https://meetcursive.com/marketplace',
+  canonical: 'https://www.meetcursive.com/marketplace',
 })
 
 export default function MarketplaceLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <StructuredData data={generateBreadcrumbSchema([
-        { name: 'Home', url: 'https://meetcursive.com' },
-        { name: 'Marketplace', url: 'https://meetcursive.com/marketplace' },
+        { name: 'Home', url: 'https://www.meetcursive.com' },
+        { name: 'Marketplace', url: 'https://www.meetcursive.com/marketplace' },
       ])} />
       {children}
     </>

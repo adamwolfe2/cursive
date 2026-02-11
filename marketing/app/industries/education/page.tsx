@@ -13,9 +13,9 @@ export default function EducationPage() {
   return (
     <>
       <StructuredData data={generateBreadcrumbSchema([
-        { name: 'Home', url: 'https://meetcursive.com' },
-        { name: 'Industries', url: 'https://meetcursive.com/industries' },
-        { name: 'Education', url: 'https://meetcursive.com/industries/education' },
+        { name: 'Home', url: 'https://www.meetcursive.com' },
+        { name: 'Industries', url: 'https://www.meetcursive.com/industries' },
+        { name: 'Education', url: 'https://www.meetcursive.com/industries/education' },
       ])} />
 
       {/* Human View */}
@@ -314,7 +314,7 @@ export default function EducationPage() {
             },
             {
               label: "Contact Sales",
-              href: "https://meetcursive.com/contact",
+              href: "https://www.meetcursive.com/contact",
               description: "Get custom pricing for education institutions"
             }
           ]} />

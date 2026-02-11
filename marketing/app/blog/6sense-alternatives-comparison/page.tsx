@@ -23,7 +23,7 @@ export const metadata = generateMetadata({
     "buyer intent software",
     "revenue intelligence platforms"
   ],
-  canonical: "https://meetcursive.com/blog/6sense-alternatives-comparison",
+  canonical: "https://www.meetcursive.com/blog/6sense-alternatives-comparison",
 })
 
 const faqs = [

@@ -8,7 +8,7 @@
  */
 
 const INDEXNOW_KEY = process.env.INDEXNOW_KEY || '7c33bde0a15b132aa38f5bea1dd15077'
-const BASE_URL = 'https://meetcursive.com'
+const BASE_URL = 'https://www.meetcursive.com'
 
 // IndexNow API endpoints (submit to any one and it propagates to all participating search engines)
 const INDEXNOW_ENDPOINTS = [
@@ -29,7 +29,7 @@ interface IndexNowSubmission {
  * This function extracts all URLs that should be indexed
  */
 export function getAllUrls(): string[] {
-  const baseUrl = 'https://meetcursive.com'
+  const baseUrl = 'https://www.meetcursive.com'
 
   // Core pages - highest priority, frequent updates
   const corePages = [

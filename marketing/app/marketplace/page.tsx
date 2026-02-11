@@ -17,7 +17,7 @@ export default function MarketplacePage() {
     "@graph": [
       {
         "@type": "Product",
-        "@id": "https://meetcursive.com/marketplace#starter",
+        "@id": "https://www.meetcursive.com/marketplace#starter",
         "name": "Cursive Marketplace - Starter Credits",
         "description": "100 verified B2B lead credits for self-serve marketplace access. Filter by industry, seniority, intent, and more.",
         "brand": {
@@ -33,7 +33,7 @@ export default function MarketplacePage() {
       },
       {
         "@type": "Product",
-        "@id": "https://meetcursive.com/marketplace#growth",
+        "@id": "https://www.meetcursive.com/marketplace#growth",
         "name": "Cursive Marketplace - Growth Credits",
         "description": "500 verified B2B lead credits at $0.80/credit. Most popular package for growing teams.",
         "brand": {
@@ -49,7 +49,7 @@ export default function MarketplacePage() {
       },
       {
         "@type": "Product",
-        "@id": "https://meetcursive.com/marketplace#scale",
+        "@id": "https://www.meetcursive.com/marketplace#scale",
         "name": "Cursive Marketplace - Scale Credits",
         "description": "1,000 verified B2B lead credits at $0.70/credit. Best per-credit value for scaling outreach.",
         "brand": {
@@ -65,7 +65,7 @@ export default function MarketplacePage() {
       },
       {
         "@type": "Product",
-        "@id": "https://meetcursive.com/marketplace#enterprise",
+        "@id": "https://www.meetcursive.com/marketplace#enterprise",
         "name": "Cursive Marketplace - Enterprise Credits",
         "description": "5,000 verified B2B lead credits at $0.60/credit. Maximum volume discount for enterprise teams.",
         "brand": {
@@ -542,7 +542,7 @@ export default function MarketplacePage() {
               },
               {
                 label: "Done-For-You Services",
-                href: "https://meetcursive.com/services",
+                href: "https://www.meetcursive.com/services",
                 description: "Need managed lead generation? See our service packages"
               },
               {

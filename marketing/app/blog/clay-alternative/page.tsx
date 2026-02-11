@@ -24,7 +24,7 @@ export const metadata = generateMetadata({
     "lead building tools",
     "outbound data platform"
   ],
-  canonical: "https://meetcursive.com/blog/clay-alternative",
+  canonical: "https://www.meetcursive.com/blog/clay-alternative",
 })
 
 const faqs = [
@@ -66,7 +66,7 @@ export default function BlogPost() {
   return (
     <main>
       <StructuredData data={generateFAQSchema({ faqs })} />
-      <StructuredData data={generateBlogPostSchema({ title: "Clay Alternatives: Easier Data Enrichment + Outbound Tools (2026)", description: "Compare the best Clay alternatives for data enrichment, lead building, and outbound automation. Find simpler platforms that combine enrichment with visitor identification and outreach.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://meetcursive.com/cursive-logo.png" })} />
+      <StructuredData data={generateBlogPostSchema({ title: "Clay Alternatives: Easier Data Enrichment + Outbound Tools (2026)", description: "Compare the best Clay alternatives for data enrichment, lead building, and outbound automation. Find simpler platforms that combine enrichment with visitor identification and outreach.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://www.meetcursive.com/cursive-logo.png" })} />
 
       {/* Header */}
       <section className="py-12 bg-white">

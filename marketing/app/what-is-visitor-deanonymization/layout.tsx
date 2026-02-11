@@ -15,7 +15,7 @@ export const metadata = genMeta({
     'B2B visitor identification',
     'visitor deanonymization tools',
   ],
-  canonical: 'https://meetcursive.com/what-is-visitor-deanonymization',
+  canonical: 'https://www.meetcursive.com/what-is-visitor-deanonymization',
 })
 
 export default function Layout({ children }: { children: React.ReactNode }) {

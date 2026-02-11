@@ -247,12 +247,22 @@ async function checkStorageBucket() {
 
 async function checkRLSPolicies() {
   try {
-    const { data, error } = await supabase.rpc('check_rls_enabled', {
+    let data: any = null
+    let error: any = null
+
+    const rpcResult = await supabase.rpc('check_rls_enabled', {
       table_names: ['service_tiers', 'service_subscriptions', 'service_deliveries']
-    }).catch(() => {
-      // Fallback: use raw query if RPC doesn't exist
-      return supabase.from('pg_tables').select('tablename, rowsecurity').in('tablename', ['service_tiers', 'service_subscriptions', 'service_deliveries'])
     })
+
+    if (rpcResult.error) {
+      // Fallback: use raw query if RPC doesn't exist
+      const fallbackResult = await supabase.from('pg_tables').select('tablename, rowsecurity').in('tablename', ['service_tiers', 'service_subscriptions', 'service_deliveries'])
+      data = fallbackResult.data
+      error = fallbackResult.error
+    } else {
+      data = rpcResult.data
+      error = rpcResult.error
+    }
 
     // Since RPC might not exist, just verify we can query the tables (which means RLS allows it)
     const checks = await Promise.all([

@@ -16,19 +16,19 @@ export const metadata: Metadata = generateMetadata({
     'reverse IP lookup',
     'B2B website intelligence',
   ],
-  canonical: 'https://meetcursive.com/visitor-identification',
+  canonical: 'https://www.meetcursive.com/visitor-identification',
 })
 
 const productSchema = {
   "@context": "https://schema.org",
   "@type": "Product",
-  "@id": "https://meetcursive.com/visitor-identification#product",
+  "@id": "https://www.meetcursive.com/visitor-identification#product",
   "name": "Cursive Visitor Identification",
   "description": "Identify up to 70% of anonymous website visitors in real-time. Turn unknown traffic into qualified leads with company and individual-level data.",
   "brand": { "@type": "Brand", "name": "Cursive" },
   "offers": {
     "@type": "Offer",
-    "url": "https://meetcursive.com/visitor-identification",
+    "url": "https://www.meetcursive.com/visitor-identification",
     "priceCurrency": "USD",
     "availability": "https://schema.org/InStock"
   },
@@ -58,8 +58,8 @@ export default function VisitorIdentificationLayout({
       <StructuredData data={[
         productSchema,
         generateBreadcrumbSchema([
-          { name: 'Home', url: 'https://meetcursive.com' },
-          { name: 'Visitor Identification', url: 'https://meetcursive.com/visitor-identification' },
+          { name: 'Home', url: 'https://www.meetcursive.com' },
+          { name: 'Visitor Identification', url: 'https://www.meetcursive.com/visitor-identification' },
         ]),
         generateFAQSchema(visitorIdFAQs),
       ]} />

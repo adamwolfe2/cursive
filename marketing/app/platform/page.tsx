@@ -791,7 +791,7 @@ export default function PlatformPage() {
           },
           {
             label: "View Pricing",
-            href: "https://meetcursive.com/pricing",
+            href: "https://www.meetcursive.com/pricing",
             description: "Explore pricing tiers and add-on features"
           }
         ]} />

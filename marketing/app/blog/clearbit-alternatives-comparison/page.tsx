@@ -24,7 +24,7 @@ export const metadata = generateMetadata({
     "b2b prospecting tools",
     "contact enrichment software"
   ],
-  canonical: "https://meetcursive.com/blog/clearbit-alternatives-comparison",
+  canonical: "https://www.meetcursive.com/blog/clearbit-alternatives-comparison",
 })
 
 const faqs = [
@@ -54,7 +54,7 @@ export default function BlogPost() {
   return (
     <main>
       <StructuredData data={generateFAQSchema({ faqs })} />
-      <StructuredData data={generateBlogPostSchema({ title: "Clearbit Alternatives: 10 Tools Compared (2026)", description: "Compare the top 10 Clearbit alternatives for B2B data enrichment, visitor identification, and lead intelligence. Find the best fit for your sales team with our detailed comparison.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://meetcursive.com/cursive-logo.png" })} />
+      <StructuredData data={generateBlogPostSchema({ title: "Clearbit Alternatives: 10 Tools Compared (2026)", description: "Compare the top 10 Clearbit alternatives for B2B data enrichment, visitor identification, and lead intelligence. Find the best fit for your sales team with our detailed comparison.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://www.meetcursive.com/cursive-logo.png" })} />
 
       {/* Header */}
       <section className="py-12 bg-white">

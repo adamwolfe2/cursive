@@ -8,10 +8,10 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Terms of Service | Cursive",
     description: "Read the Cursive Terms of Service. Understand the terms and conditions for using our visitor identification, audience building, and lead generation platform.",
-    url: "https://meetcursive.com/terms",
+    url: "https://www.meetcursive.com/terms",
     siteName: "Cursive",
     images: [{
-      url: "https://meetcursive.com/cursive-social-preview.png",
+      url: "https://www.meetcursive.com/cursive-social-preview.png",
       width: 1200,
       height: 630,
     }],
@@ -22,11 +22,11 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Terms of Service | Cursive",
     description: "Read the Cursive Terms of Service. Understand the terms and conditions for using our visitor identification, audience building, and lead generation platform.",
-    images: ["https://meetcursive.com/cursive-social-preview.png"],
+    images: ["https://www.meetcursive.com/cursive-social-preview.png"],
     creator: "@meetcursive",
   },
   alternates: {
-    canonical: "https://meetcursive.com/terms",
+    canonical: "https://www.meetcursive.com/terms",
   },
 }
 

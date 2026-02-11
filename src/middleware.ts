@@ -193,7 +193,7 @@ export async function middleware(req: NextRequest) {
         method: req.method,
         pathname,
         duration,
-        ip: req.ip || req.headers.get('x-forwarded-for') || 'unknown',
+        ip: req.headers.get('x-forwarded-for') || 'unknown',
       })
     }
 

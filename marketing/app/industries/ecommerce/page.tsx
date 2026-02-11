@@ -13,9 +13,9 @@ export default function EcommercePage() {
   return (
     <>
       <StructuredData data={generateBreadcrumbSchema([
-        { name: 'Home', url: 'https://meetcursive.com' },
-        { name: 'Industries', url: 'https://meetcursive.com/industries' },
-        { name: 'eCommerce', url: 'https://meetcursive.com/industries/ecommerce' },
+        { name: 'Home', url: 'https://www.meetcursive.com' },
+        { name: 'Industries', url: 'https://www.meetcursive.com/industries' },
+        { name: 'eCommerce', url: 'https://www.meetcursive.com/industries/ecommerce' },
       ])} />
       {/* Human View */}
       <HumanView>
@@ -283,7 +283,7 @@ export default function EcommercePage() {
             },
             {
               label: "Website",
-              href: "https://meetcursive.com"
+              href: "https://www.meetcursive.com"
             }
           ]} />
         </MachineSection>

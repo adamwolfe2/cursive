@@ -367,14 +367,14 @@ export class LeadProviderService {
     const supabase = await createClient()
 
     // Insert usage record
-    await supabase.from('lead_usage').insert({
+    const { error: insertError } = await supabase.from('lead_usage').insert({
       workspace_id: workspaceId,
       count,
       provider,
       created_at: new Date().toISOString(),
-    }).catch(() => {
-      // Ignore if table doesn't exist yet
     })
+    // Ignore if table doesn't exist yet
+    if (insertError) console.warn('lead_usage insert skipped:', insertError.message)
   }
 
   /**

@@ -25,7 +25,7 @@ export const metadata = generateMetadata({
     "marketing automation",
     "multi-channel marketing",
   ],
-  canonical: "https://meetcursive.com/blog/direct-mail",
+  canonical: "https://www.meetcursive.com/blog/direct-mail",
 })
 
 const faqs = [
@@ -55,7 +55,7 @@ export default function DirectMailPage() {
   return (
     <main>
       <StructuredData data={generateFAQSchema({ faqs })} />
-      <StructuredData data={generateBlogPostSchema({ title: "Direct Mail Marketing Automation: Combine Digital + Physical for 3-5x Higher Conversions (2026)", description: "Learn how to automate direct mail campaigns triggered by digital behavior. Covers combining offline and online marketing, ROI measurement, address verification, and implementation for B2B teams.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://meetcursive.com/cursive-logo.png" })} />
+      <StructuredData data={generateBlogPostSchema({ title: "Direct Mail Marketing Automation: Combine Digital + Physical for 3-5x Higher Conversions (2026)", description: "Learn how to automate direct mail campaigns triggered by digital behavior. Covers combining offline and online marketing, ROI measurement, address verification, and implementation for B2B teams.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://www.meetcursive.com/cursive-logo.png" })} />
 
       {/* Header */}
       <section className="py-12 bg-white">

@@ -24,7 +24,7 @@ export const metadata = generateMetadata({
     "sales engagement platforms",
     "b2b data providers"
   ],
-  canonical: "https://meetcursive.com/blog/apollo-alternatives-comparison",
+  canonical: "https://www.meetcursive.com/blog/apollo-alternatives-comparison",
 })
 
 const faqs = [
@@ -58,7 +58,7 @@ export default function BlogPost() {
   return (
     <main>
       <StructuredData data={generateFAQSchema({ faqs })} />
-      <StructuredData data={generateBlogPostSchema({ title: "7 Best Apollo.io Alternatives & Competitors in 2026", description: "Looking for Apollo.io alternatives? Compare the 7 best competitors for B2B prospecting, intent data, and outbound automation. Find the right tool for your sales team in 2026.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://meetcursive.com/cursive-logo.png" })} />
+      <StructuredData data={generateBlogPostSchema({ title: "7 Best Apollo.io Alternatives & Competitors in 2026", description: "Looking for Apollo.io alternatives? Compare the 7 best competitors for B2B prospecting, intent data, and outbound automation. Find the right tool for your sales team in 2026.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://www.meetcursive.com/cursive-logo.png" })} />
 
       {/* Header */}
       <section className="py-12 bg-white">
@@ -310,7 +310,7 @@ export default function BlogPost() {
                 and direct mail. No more spray-and-pray cold outreach.
               </p>
               <Link
-                href="https://meetcursive.com/platform"
+                href="https://www.meetcursive.com/platform"
                 className="inline-block bg-white text-blue-600 font-bold px-6 py-3 rounded-lg hover:bg-blue-50 transition-colors"
               >
                 See How Cursive Works

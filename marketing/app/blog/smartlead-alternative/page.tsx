@@ -24,7 +24,7 @@ export const metadata = generateMetadata({
     "visitor identification email",
     "ai sdr platform"
   ],
-  canonical: "https://meetcursive.com/blog/smartlead-alternative",
+  canonical: "https://www.meetcursive.com/blog/smartlead-alternative",
 })
 
 const faqs = [
@@ -62,7 +62,7 @@ export default function BlogPost() {
   return (
     <main>
       <StructuredData data={generateFAQSchema({ faqs })} />
-      <StructuredData data={generateBlogPostSchema({ title: "Smartlead Alternatives: Email Outreach with Visitor Tracking (2026)", description: "Compare the best Smartlead alternatives that combine email outreach with visitor identification and intent data. Find platforms with built-in visitor tracking, AI SDR, and multi-channel outreach.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://meetcursive.com/cursive-logo.png" })} />
+      <StructuredData data={generateBlogPostSchema({ title: "Smartlead Alternatives: Email Outreach with Visitor Tracking (2026)", description: "Compare the best Smartlead alternatives that combine email outreach with visitor identification and intent data. Find platforms with built-in visitor tracking, AI SDR, and multi-channel outreach.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://www.meetcursive.com/cursive-logo.png" })} />
 
       {/* Header */}
       <section className="py-12 bg-white">

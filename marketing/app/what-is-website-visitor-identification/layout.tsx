@@ -15,7 +15,7 @@ export const metadata = genMeta({
     'identify anonymous traffic',
     'website visitor intelligence',
   ],
-  canonical: 'https://meetcursive.com/what-is-website-visitor-identification',
+  canonical: 'https://www.meetcursive.com/what-is-website-visitor-identification',
 })
 
 export default function Layout({ children }: { children: React.ReactNode }) {

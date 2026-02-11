@@ -425,16 +425,16 @@ async function handleEmailOpened(
 
   // Update campaign stats (only on first open)
   if (isFirstOpen) {
-    await supabase.rpc('increment_campaign_opens', { campaign_id: emailSend.campaign_id })
-      .catch(() => {
-        // Fallback if RPC doesn't exist
-        supabase
-          .from('email_campaigns')
-          .update({
-            emails_opened: supabase.raw('COALESCE(emails_opened, 0) + 1'),
-          })
-          .eq('id', emailSend.campaign_id)
-      })
+    const { error: rpcError } = await supabase.rpc('increment_campaign_opens', { campaign_id: emailSend.campaign_id })
+    if (rpcError) {
+      // Fallback if RPC doesn't exist
+      await supabase
+        .from('email_campaigns')
+        .update({
+          emails_opened: supabase.raw('COALESCE(emails_opened, 0) + 1'),
+        })
+        .eq('id', emailSend.campaign_id)
+    }
 
     // Update campaign_lead engagement tracking
     await supabase
@@ -500,16 +500,16 @@ async function handleEmailClicked(
 
   // Update campaign stats (only on first click)
   if (isFirstClick) {
-    await supabase.rpc('increment_campaign_clicks', { campaign_id: emailSend.campaign_id })
-      .catch(() => {
-        // Fallback if RPC doesn't exist
-        supabase
-          .from('email_campaigns')
-          .update({
-            emails_clicked: supabase.raw('COALESCE(emails_clicked, 0) + 1'),
-          })
-          .eq('id', emailSend.campaign_id)
-      })
+    const { error: rpcError } = await supabase.rpc('increment_campaign_clicks', { campaign_id: emailSend.campaign_id })
+    if (rpcError) {
+      // Fallback if RPC doesn't exist
+      await supabase
+        .from('email_campaigns')
+        .update({
+          emails_clicked: supabase.raw('COALESCE(emails_clicked, 0) + 1'),
+        })
+        .eq('id', emailSend.campaign_id)
+    }
 
     // Update campaign_lead engagement tracking
     await supabase

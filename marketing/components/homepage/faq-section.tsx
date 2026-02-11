@@ -67,7 +67,7 @@ export function FAQSection() {
   // Generate FAQ schema markup
   const faqSchema = generateFAQSchema({
     faqs,
-    pageUrl: "https://meetcursive.com"
+    pageUrl: "https://www.meetcursive.com"
   })
 
   return (

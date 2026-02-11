@@ -15,15 +15,15 @@ export const metadata = generateMetadata({
     'managed outbound',
     'lead generation agency',
   ],
-  canonical: 'https://meetcursive.com/services',
+  canonical: 'https://www.meetcursive.com/services',
 })
 
 export default function ServicesLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <StructuredData data={generateBreadcrumbSchema([
-        { name: 'Home', url: 'https://meetcursive.com' },
-        { name: 'Services', url: 'https://meetcursive.com/services' },
+        { name: 'Home', url: 'https://www.meetcursive.com' },
+        { name: 'Services', url: 'https://www.meetcursive.com/services' },
       ])} />
       {children}
     </>

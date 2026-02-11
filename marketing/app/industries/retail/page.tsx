@@ -13,9 +13,9 @@ export default function RetailPage() {
   return (
     <>
       <StructuredData data={generateBreadcrumbSchema([
-        { name: 'Home', url: 'https://meetcursive.com' },
-        { name: 'Industries', url: 'https://meetcursive.com/industries' },
-        { name: 'Retail', url: 'https://meetcursive.com/industries/retail' },
+        { name: 'Home', url: 'https://www.meetcursive.com' },
+        { name: 'Industries', url: 'https://www.meetcursive.com/industries' },
+        { name: 'Retail', url: 'https://www.meetcursive.com/industries/retail' },
       ])} />
 
       {/* Human View */}
@@ -314,7 +314,7 @@ export default function RetailPage() {
             },
             {
               label: "Contact Sales",
-              href: "https://meetcursive.com/contact",
+              href: "https://www.meetcursive.com/contact",
               description: "Get custom pricing for retail businesses"
             }
           ]} />
