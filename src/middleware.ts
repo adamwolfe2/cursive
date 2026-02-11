@@ -42,8 +42,17 @@ export async function middleware(req: NextRequest) {
     const client = createClient(req)
     const { supabase } = client
 
-    // Check if this is a truly public route that doesn't need auth
+    // Check if this is a truly public route that doesn't need auth at all.
+    // Skip auth for these routes entirely to prevent any redirect loop possibility.
     const isTrulyPublicRoute =
+      pathname.startsWith('/login') ||
+      pathname.startsWith('/signup') ||
+      pathname.startsWith('/welcome') ||
+      pathname.startsWith('/auth/callback') ||
+      pathname.startsWith('/forgot-password') ||
+      pathname.startsWith('/reset-password') ||
+      pathname.startsWith('/verify-email') ||
+      pathname === '/' ||
       pathname.startsWith('/api/waitlist') ||
       pathname.startsWith('/api/webhooks') ||
       pathname.startsWith('/api/cron') ||
@@ -55,26 +64,22 @@ export async function middleware(req: NextRequest) {
     let authenticatedUser: { id: string; email?: string } | null = null
     if (!isTrulyPublicRoute) {
       try {
-        // Use getUser() instead of getSession() — getUser() validates against
-        // the Supabase auth server and properly refreshes expired tokens.
-        // getSession() only reads the JWT cookie and returns null when expired.
-        const userPromise = supabase.auth.getUser()
-        const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Auth check timeout')), 5000)
-        )
-
-        const result = await Promise.race([userPromise, timeoutPromise]) as
-          | { data: { user: { id: string; email?: string } | null } }
-          | undefined
-        authenticatedUser = result?.data?.user || null
+        // Use getSession() in middleware for a fast, local JWT check.
+        // getSession() reads the session from cookies without a network call
+        // (only makes a network call if the JWT is expired and needs refreshing).
+        // Page-level getUser() in dashboard layout provides actual server validation.
+        // This avoids timeout-induced redirect loops that getUser() caused.
+        const { data: { session } } = await supabase.auth.getSession()
+        authenticatedUser = session?.user ? {
+          id: session.user.id,
+          email: session.user.email,
+        } : null
       } catch (e) {
-        console.error('[Middleware] Failed to check auth:', e)
-        // SECURITY: Do NOT fail open. Redirect to login when auth check fails.
-        // This prevents unauthenticated access when the auth check times out.
-        const loginUrl = new URL('/login', req.url)
-        loginUrl.searchParams.set('redirect', pathname)
-        loginUrl.searchParams.set('reason', 'auth_error')
-        return NextResponse.redirect(loginUrl)
+        console.error('[Middleware] Auth session check failed:', e)
+        // On error, set user to null — the protected route check below (line ~145)
+        // will redirect to login for protected routes, while public routes pass through.
+        // This prevents redirect loops when /login itself triggers an auth error.
+        authenticatedUser = null
       }
     }
 
@@ -248,7 +253,18 @@ export async function middleware(req: NextRequest) {
       )
     }
 
-    // SECURITY: Do NOT fail open. Redirect to login when middleware encounters an error.
+    // For public routes (login, signup, welcome, etc.), don't redirect — just pass through
+    // to prevent infinite redirect loops when middleware errors on /login itself.
+    const isPublicOnError =
+      pathname.startsWith('/login') ||
+      pathname.startsWith('/signup') ||
+      pathname.startsWith('/welcome') ||
+      pathname.startsWith('/auth/callback') ||
+      pathname === '/'
+    if (isPublicOnError) {
+      return NextResponse.next({ request: req })
+    }
+
     const loginUrl = new URL('/login', req.url)
     loginUrl.searchParams.set('reason', 'middleware_error')
     return NextResponse.redirect(loginUrl)
