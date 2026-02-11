@@ -11,7 +11,9 @@ import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 import { STRIPE_CONFIG } from '@/lib/stripe/config'
 import { TIMEOUTS, getDaysFromNow } from '@/lib/constants/timeouts'
 
-// Lazy-load Stripe to avoid build-time initialization
+export const runtime = 'edge'
+
+// Lazy-load Stripe with Web Crypto provider for Edge runtime
 let stripeClient: Stripe | null = null
 function getStripe(): Stripe {
   if (!stripeClient) {
@@ -20,6 +22,7 @@ function getStripe(): Stripe {
     }
     stripeClient = new Stripe(STRIPE_CONFIG.secretKey, {
       apiVersion: STRIPE_CONFIG.apiVersion,
+      httpClient: Stripe.createFetchHttpClient(),
     })
   }
   return stripeClient
@@ -239,11 +242,14 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Verify webhook signature
+    // Verify webhook signature (async for Edge runtime Web Crypto compatibility)
     let event: Stripe.Event
 
     try {
-      event = getStripe().webhooks.constructEvent(body, signature, webhookSecret)
+      const cryptoProvider = Stripe.createSubtleCryptoProvider()
+      event = await getStripe().webhooks.constructEventAsync(
+        body, signature, webhookSecret, undefined, cryptoProvider
+      )
     } catch (err) {
       console.error('[Stripe Webhook] Signature verification failed:', err)
       return NextResponse.json(
@@ -267,22 +273,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Handle checkout session completed (credit purchases and lead purchases)
-    // Queue in Inngest for automatic retries instead of processing directly
+    // Process inline since Inngest callbacks hang on Vercel (Node.js serverless issue)
     if (event.type === 'checkout.session.completed') {
-      const { inngest } = await import('@/inngest/client')
-      const session = event.data.object as any
-
-      await inngest.send({
-        name: 'stripe/webhook.received',
-        data: {
-          eventType: event.type,
-          eventId: event.id,
-          sessionId: session.id,
-          metadata: session.metadata,
-          amountTotal: session.amount_total,
-        },
-      })
-
+      await handleCheckoutSessionCompleted(event)
       return NextResponse.json({ received: true })
     }
 
