@@ -25,7 +25,7 @@ export function CheckoutButton({
   className = ''
 }: CheckoutButtonProps) {
   const [loading, setLoading] = useState(false)
-  const router = useRouter()
+  const _router = useRouter()
   const toast = useToast()
 
   const handleCheckout = async () => {

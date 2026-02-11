@@ -107,7 +107,7 @@ export function SearchResults({
               {results.map((result) => {
                 const person = result.person_data
                 const isRevealed = person.email_revealed || !!revealedEmails[result.id]
-                const displayEmail = revealedEmails[result.id] || person.email
+                const _displayEmail = revealedEmails[result.id] || person.email
 
                 return (
                   <tr key={result.id} className="hover:bg-zinc-50 transition-colors">

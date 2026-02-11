@@ -44,7 +44,7 @@ export function DeliveriesList({ deliveries }: DeliveriesListProps) {
     return (bytes / (1024 * 1024)).toFixed(1) + ' MB'
   }
 
-  const handleDownload = async (deliveryId: string, filePath: string, fileName: string) => {
+  const handleDownload = async (deliveryId: string, _filePath: string, _fileName: string) => {
     setDownloading(deliveryId)
 
     try {

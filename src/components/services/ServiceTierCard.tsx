@@ -125,7 +125,7 @@ export function ServiceTierCard({ tier, featured = false }: ServiceTierCardProps
         {/* Features */}
         <div className="space-y-3">
           <p className="text-sm font-semibold text-zinc-900 mb-3">
-            What's included:
+            What&apos;s included:
           </p>
           {features.slice(0, 6).map((feature, index) => (
             <div key={index} className="flex items-start gap-3">

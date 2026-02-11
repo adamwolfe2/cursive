@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
-import { FormField, FormLabel, FormSelect } from '@/components/ui/form'
+import { FormField, FormSelect } from '@/components/ui/form'
 import { EmptyState } from '@/components/ui/empty-state'
 import {
   Modal,
@@ -147,7 +147,7 @@ export function TemplateBrowser() {
         const error = await response.json()
         toast.error(error.error || 'Failed to duplicate template')
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error('Failed to duplicate template')
     } finally {
       setDuplicating(false)

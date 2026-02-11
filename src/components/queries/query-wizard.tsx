@@ -8,8 +8,6 @@ import { CompanySizeFilterStep } from './wizard-steps/company-size-filter-step'
 import { IndustryFilterStep } from './wizard-steps/industry-filter-step'
 import { ReviewStep } from './wizard-steps/review-step'
 import type { QueryFilters } from '@/types'
-import { LoadingButton } from '@/components/loading-button'
-import { ErrorDisplay } from '@/components/error-display'
 
 export interface WizardState {
   step: number
@@ -56,7 +54,7 @@ export function QueryWizard() {
       try {
         const parsedState = JSON.parse(saved)
         setState(parsedState)
-      } catch (err) {
+      } catch (_err) {
         // Ignore invalid saved state
       }
     }

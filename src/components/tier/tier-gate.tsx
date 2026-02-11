@@ -9,7 +9,7 @@
 'use client'
 
 import React from 'react'
-import { useTier, type TierFeature } from '@/lib/hooks/use-tier'
+import { useTier } from '@/lib/hooks/use-tier'
 import type { ProductTierFeatures } from '@/types'
 import Link from 'next/link'
 import { getSubscriptionLink, getCreditLink } from '@/lib/stripe/payment-links'

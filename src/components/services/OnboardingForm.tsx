@@ -59,7 +59,7 @@ const REGIONS = [
   'Global'
 ]
 
-export function OnboardingForm({ subscriptionId, tierName, initialData = {} }: OnboardingFormProps) {
+export function OnboardingForm({ subscriptionId, tierName: _tierName, initialData = {} }: OnboardingFormProps) {
   const router = useRouter()
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
@@ -230,7 +230,7 @@ export function OnboardingForm({ subscriptionId, tierName, initialData = {} }: O
                   className="w-full px-4 py-3 rounded-lg border border-zinc-200 focus:border-primary focus:ring-1 focus:ring-primary"
                 />
                 <p className="text-sm text-zinc-500 mt-2">
-                  We'll install a visitor tracking pixel on this domain
+                  We&apos;ll install a visitor tracking pixel on this domain
                 </p>
               </div>
 
@@ -399,7 +399,7 @@ export function OnboardingForm({ subscriptionId, tierName, initialData = {} }: O
               Use case & ideal profile
             </h2>
             <p className="text-zinc-600 mb-6">
-              Help me understand what you're building and who converts best.
+              Help me understand what you&apos;re building and who converts best.
             </p>
 
             <div className="space-y-6">
