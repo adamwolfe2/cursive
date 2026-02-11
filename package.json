@@ -21,6 +21,7 @@
     "validate": "pnpm typecheck && pnpm lint && pnpm test",
     "seed:marketplace": "npx tsx scripts/seed-marketplace.ts",
     "seed:leads": "tsx scripts/seed-leads.ts",
+    "crisp:import": "tsx scripts/crisp-bulk-import.ts",
     "analyze": "ANALYZE=true pnpm build"
   },
   "dependencies": {

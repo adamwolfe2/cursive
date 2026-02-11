@@ -1,0 +1,17 @@
+# Crisp Articles Directory
+
+Place your markdown files here for bulk import to Crisp helpdesk.
+
+See the example files for formatting guidelines:
+- example-article.md
+- example-faq.md
+
+Run the import script with:
+```bash
+pnpm crisp:import
+```
+
+Or:
+```bash
+npx tsx scripts/crisp-bulk-import.ts
+```
