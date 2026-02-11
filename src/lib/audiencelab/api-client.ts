@@ -111,6 +111,97 @@ export interface ALEnrichedProfile {
   [key: string]: unknown
 }
 
+// --- Audience Builder types ---
+
+export interface ALAudienceFilter {
+  segment?: string[]
+  industries?: string[]
+  departments?: string[]
+  seniority?: string[]
+  sic?: string[]
+  city?: string[]
+  state?: string[]
+  zip?: string[]
+  days_back?: number
+  [key: string]: unknown
+}
+
+export interface ALAudienceCreateRequest {
+  name?: string
+  filters: ALAudienceFilter
+  description?: string
+}
+
+export interface ALAudienceCreateResponse {
+  id: string
+  audienceId?: string
+  name?: string
+  status?: string
+  size?: number
+  created_at?: string
+  [key: string]: unknown
+}
+
+export interface ALAudiencePreviewRequest {
+  filters: ALAudienceFilter
+}
+
+export interface ALAudiencePreviewResponse {
+  count: number
+  sample?: ALEnrichedProfile[]
+  [key: string]: unknown
+}
+
+export interface ALAudienceRecordsResponse {
+  records: ALEnrichedProfile[]
+  total?: number
+  page: number
+  page_size: number
+  has_more?: boolean
+  [key: string]: unknown
+}
+
+export interface ALAttributeValue {
+  id?: string
+  name?: string
+  value?: string
+  count?: number
+  [key: string]: unknown
+}
+
+// --- Batch Enrichment types ---
+
+export interface ALBatchEnrichRecord {
+  email?: string
+  phone?: string
+  first_name?: string
+  last_name?: string
+  company_domain?: string
+  linkedin_url?: string
+  [key: string]: unknown
+}
+
+export interface ALBatchEnrichRequest {
+  records: ALBatchEnrichRecord[]
+  fields?: string[]
+}
+
+export interface ALBatchEnrichResponse {
+  jobId: string
+  status: string
+  total?: number
+  [key: string]: unknown
+}
+
+export interface ALBatchEnrichStatusResponse {
+  jobId: string
+  status: 'pending' | 'processing' | 'completed' | 'failed'
+  total?: number
+  processed?: number
+  results?: ALEnrichedProfile[]
+  [key: string]: unknown
+}
+
 // ============================================================================
 // API CLIENT
 // ============================================================================
@@ -236,6 +327,103 @@ export async function enrich(params: ALEnrichRequest): Promise<ALEnrichResult> {
       filter: params.filter,
       ...(params.fields && { fields: params.fields }),
     }),
+  })
+}
+
+// ============================================================================
+// AUDIENCE BUILDER (segment queries → pull leads at scale)
+// ============================================================================
+
+/**
+ * Discover available attribute values for audience building.
+ * e.g., getAudienceAttributes('segments') → list of segment IDs
+ *       getAudienceAttributes('industries') → available industries
+ *       getAudienceAttributes('sic') → SIC codes
+ */
+export async function getAudienceAttributes(
+  attribute: 'segments' | 'industries' | 'departments' | 'seniority' | 'sic' | string
+): Promise<ALAttributeValue[]> {
+  const response = await alFetch<ALAttributeValue[] | { data: ALAttributeValue[] } | { attributes: ALAttributeValue[] }>(
+    `/audiences/attributes/${attribute}`,
+    { method: 'GET' }
+  )
+  if (Array.isArray(response)) return response
+  if ('data' in response && Array.isArray((response as any).data)) return (response as any).data
+  if ('attributes' in response && Array.isArray((response as any).attributes)) return (response as any).attributes
+  return []
+}
+
+/**
+ * Preview an audience query — returns count + sample without creating.
+ * Use this to validate filters before committing to a full pull.
+ */
+export async function previewAudience(
+  params: ALAudiencePreviewRequest
+): Promise<ALAudiencePreviewResponse> {
+  return alFetch<ALAudiencePreviewResponse>('/audiences/preview', {
+    method: 'POST',
+    body: JSON.stringify(params),
+  })
+}
+
+/**
+ * Create a named audience with filters. Returns an audienceId
+ * that can be used to fetch paginated records.
+ */
+export async function createAudience(
+  params: ALAudienceCreateRequest
+): Promise<ALAudienceCreateResponse> {
+  return alFetch<ALAudienceCreateResponse>('/audiences', {
+    method: 'POST',
+    body: JSON.stringify(params),
+  })
+}
+
+/**
+ * Fetch paginated records from a created audience.
+ * @param audienceId - The audience ID from createAudience()
+ * @param page - 1-indexed page number
+ * @param pageSize - Records per page (max 1000)
+ */
+export async function fetchAudienceRecords(
+  audienceId: string,
+  page = 1,
+  pageSize = 500
+): Promise<ALAudienceRecordsResponse> {
+  const params = new URLSearchParams({
+    page: String(page),
+    page_size: String(Math.min(pageSize, 1000)),
+  })
+  return alFetch<ALAudienceRecordsResponse>(
+    `/audiences/${audienceId}?${params.toString()}`,
+    { method: 'GET' }
+  )
+}
+
+// ============================================================================
+// BATCH ENRICHMENT
+// ============================================================================
+
+/**
+ * Submit a batch enrichment job. Returns a jobId to poll for results.
+ */
+export async function createBatchEnrichment(
+  params: ALBatchEnrichRequest
+): Promise<ALBatchEnrichResponse> {
+  return alFetch<ALBatchEnrichResponse>('/enrichments', {
+    method: 'POST',
+    body: JSON.stringify(params),
+  })
+}
+
+/**
+ * Check status of a batch enrichment job.
+ */
+export async function getBatchEnrichmentStatus(
+  jobId: string
+): Promise<ALBatchEnrichStatusResponse> {
+  return alFetch<ALBatchEnrichStatusResponse>(`/enrichments/${jobId}`, {
+    method: 'GET',
   })
 }
 

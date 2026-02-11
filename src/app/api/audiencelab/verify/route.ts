@@ -1,16 +1,24 @@
 /**
  * AudienceLab API Verification Endpoint
  *
- * Admin-only endpoint to test AL REST API connectivity.
- * Tests: listPixels, listAudiences, and optionally enrich.
+ * Admin-only endpoint to test ALL AL REST API capabilities.
+ * Tests: health, pixels, audiences, attributes, preview, enrich.
  *
  * GET /api/audiencelab/verify
  * GET /api/audiencelab/verify?enrich=test@example.com
+ * GET /api/audiencelab/verify?preview=true&industry=HVAC&state=FL
  */
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { listPixels, listAudiences, enrich, healthCheck } from '@/lib/audiencelab/api-client'
+import {
+  listPixels,
+  listAudiences,
+  enrich,
+  healthCheck,
+  getAudienceAttributes,
+  previewAudience,
+} from '@/lib/audiencelab/api-client'
 
 export async function GET(request: NextRequest) {
   // Auth check — admin only
@@ -31,7 +39,11 @@ export async function GET(request: NextRequest) {
   }
 
   const results: Record<string, unknown> = {}
-  const enrichEmail = request.nextUrl.searchParams.get('enrich')
+  const searchParams = request.nextUrl.searchParams
+  const enrichEmail = searchParams.get('enrich')
+  const doPreview = searchParams.get('preview') === 'true'
+  const previewIndustry = searchParams.get('industry')
+  const previewState = searchParams.get('state')
 
   // Test 1: Health check (calls listPixels)
   try {
@@ -56,7 +68,41 @@ export async function GET(request: NextRequest) {
     results.audiences = { error: err instanceof Error ? err.message : 'Unknown error' }
   }
 
-  // Test 4: Enrich (optional, only if email param provided)
+  // Test 4: Discover audience attributes (segments, industries)
+  const attributeTests = ['segments', 'industries', 'sic'] as const
+  for (const attr of attributeTests) {
+    try {
+      const values = await getAudienceAttributes(attr)
+      results[`attributes_${attr}`] = {
+        count: values.length,
+        sample: values.slice(0, 5),
+      }
+    } catch (err) {
+      results[`attributes_${attr}`] = {
+        error: err instanceof Error ? err.message : 'Unknown error',
+        note: 'Endpoint may not exist — this is expected if AL API does not support attribute discovery',
+      }
+    }
+  }
+
+  // Test 5: Preview audience (optional, triggered by ?preview=true)
+  if (doPreview) {
+    try {
+      const filters: Record<string, unknown> = {}
+      if (previewIndustry) filters.industries = [previewIndustry]
+      if (previewState) filters.state = [previewState]
+
+      const preview = await previewAudience({ filters })
+      results.audience_preview = preview
+    } catch (err) {
+      results.audience_preview = {
+        error: err instanceof Error ? err.message : 'Unknown error',
+        note: 'Endpoint may not exist — this is expected if AL API does not support audience preview',
+      }
+    }
+  }
+
+  // Test 6: Enrich (optional, only if email param provided)
   if (enrichEmail) {
     try {
       const enrichResult = await enrich({ filter: { email: enrichEmail } })
@@ -69,6 +115,14 @@ export async function GET(request: NextRequest) {
   return NextResponse.json({
     api_key_configured: !!process.env.AUDIENCELAB_ACCOUNT_API_KEY,
     timestamp: new Date().toISOString(),
+    endpoints_tested: [
+      'GET /pixels (health + list)',
+      'GET /audiences',
+      ...attributeTests.map(a => `GET /audiences/attributes/${a}`),
+      ...(doPreview ? ['POST /audiences/preview'] : []),
+      ...(enrichEmail ? ['POST /enrich'] : []),
+    ],
+    usage: '?enrich=test@example.com to test enrichment, ?preview=true&industry=HVAC&state=FL to test audience preview',
     results,
   })
 }

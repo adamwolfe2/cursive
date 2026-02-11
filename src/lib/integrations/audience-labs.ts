@@ -6,10 +6,14 @@
  *      1. SuperPixel events → /api/webhooks/audiencelab/superpixel
  *      2. AudienceSync HTTP destination → /api/webhooks/audiencelab/audiencesync
  *      3. Batch export imports → /api/audiencelab/import
- *   B) Pull (REST API) — provisioning + enrichment:
+ *   B) Pull (REST API) — provisioning, enrichment, and audience queries:
  *      - Pixel creation: POST /pixels (automated B2B onboarding)
- *      - Audience listing: GET /audiences
- *      - On-demand enrichment: POST /enrich
+ *      - Audience attributes: GET /audiences/attributes/{attr} (discover segments, industries)
+ *      - Audience preview: POST /audiences/preview (count + sample)
+ *      - Audience create: POST /audiences (build segment query)
+ *      - Audience fetch: GET /audiences/{id} (paginated record pull)
+ *      - Single enrichment: POST /enrich
+ *      - Batch enrichment: POST /enrichments (job-based)
  *
  * REST API client: src/lib/audiencelab/api-client.ts
  * Schemas: src/lib/audiencelab/schemas.ts
@@ -92,4 +96,12 @@ export {
   enrich,
   provisionCustomerPixel,
   healthCheck as alHealthCheck,
+  // Audience builder
+  getAudienceAttributes,
+  previewAudience,
+  createAudience,
+  fetchAudienceRecords,
+  // Batch enrichment
+  createBatchEnrichment,
+  getBatchEnrichmentStatus,
 } from '@/lib/audiencelab/api-client'

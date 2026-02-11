@@ -156,5 +156,8 @@ export const { GET, POST, PUT } = serve({
 
     // Audience Labs Event Processing
     functions.processAudienceLabEvent,
+
+    // Audience Labs Segment Puller (cron — pulls leads from AL Audiences API)
+    functions.audienceLabSegmentPuller,
   ],
 })

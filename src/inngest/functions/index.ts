@@ -190,3 +190,6 @@ export { customerLifecycleMonitor } from './customer-lifecycle-monitor'
 
 // Audience Labs Event Processing
 export { processAudienceLabEvent } from './audiencelab-processor'
+
+// Audience Labs Segment Puller (cron — pulls leads from AL Audiences API)
+export { audienceLabSegmentPuller } from './audiencelab-segment-puller'

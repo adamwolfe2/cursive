@@ -513,6 +513,12 @@ export type Events = {
       lead_id?: string
     }
   }
+  'audiencelab/segment-pull': {
+    data: {
+      manual?: boolean
+      workspace_id?: string
+    }
+  }
 
   // GHL Pipeline Lifecycle Events
   'ghl/pipeline.update': {
