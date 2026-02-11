@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import Link from 'next/link'
 import { UpgradeModal } from './upgrade-modal'
+import { ServiceRequestBanner } from '@/components/ui/service-request-banner'
 
 type Tier = 'free' | 'starter' | 'pro' | 'outbound'
 
@@ -74,12 +75,14 @@ export function FeatureGate({
           {featureDescription ||
             `We're building something great. ${featureName} will be available soon.`}
         </p>
-        <p className="text-sm text-muted-foreground">
-          Want to be notified?{' '}
-          <Link href="/settings/notifications" className="text-primary hover:underline">
-            Manage notifications
-          </Link>
-        </p>
+        <ServiceRequestBanner
+          title={`Request Early Access to ${featureName}`}
+          description={`Be the first to know when ${featureName} launches. We'll notify you and help you get set up.`}
+          requestType={`early_access_${featureName.toLowerCase().replace(/\s+/g, '_')}`}
+          variant="inline"
+          ctaLabel="Request Early Access"
+          showBookCall={false}
+        />
       </div>
     )
   }

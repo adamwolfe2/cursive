@@ -37,7 +37,7 @@ export interface ALPixelCreateRequest {
 
 export interface ALPixelCreateResponse {
   pixel_id: string
-  install_url?: string
+  install_url: string
   script?: string
   website_name: string
   website_url: string

@@ -11,6 +11,7 @@ interface PixelStatus {
     domain: string
     is_active: boolean
     snippet: string | null
+    install_url: string | null
     label: string | null
     created_at: string
   } | null
@@ -23,6 +24,8 @@ export default function PixelSettingsPage() {
   const [websiteUrl, setWebsiteUrl] = useState('')
   const [websiteName, setWebsiteName] = useState('')
   const [copied, setCopied] = useState(false)
+  const [manualSnippet, setManualSnippet] = useState('')
+  const [savingSnippet, setSavingSnippet] = useState(false)
 
   const { data, isLoading } = useQuery<PixelStatus>({
     queryKey: ['pixel', 'status'],
@@ -83,6 +86,32 @@ export default function PixelSettingsPage() {
     }
   }
 
+  const handleSaveSnippet = async () => {
+    if (!manualSnippet.trim()) {
+      toast.error('Please paste your snippet first')
+      return
+    }
+    setSavingSnippet(true)
+    try {
+      const response = await fetch('/api/pixel/snippet', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ snippet: manualSnippet.trim() }),
+      })
+      if (!response.ok) {
+        const err = await response.json()
+        throw new Error(err.error || 'Failed to save snippet')
+      }
+      toast.success('Snippet saved successfully!')
+      setManualSnippet('')
+      queryClient.invalidateQueries({ queryKey: ['pixel', 'status'] })
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to save snippet')
+    } finally {
+      setSavingSnippet(false)
+    }
+  }
+
   if (isLoading) {
     return (
       <div className="space-y-6">
@@ -94,6 +123,9 @@ export default function PixelSettingsPage() {
 
   // Has pixel - show status + snippet
   if (data?.has_pixel && data.pixel) {
+    const hasSnippet = !!data.pixel.snippet
+    const hasInstallUrl = !!data.pixel.install_url
+
     return (
       <div className="space-y-6">
         {/* Pixel Status Card */}
@@ -124,47 +156,94 @@ export default function PixelSettingsPage() {
               <p className="text-sm font-mono text-zinc-600 truncate">{data.pixel.pixel_id}</p>
             </div>
           </div>
+
+          {hasInstallUrl && (
+            <div className="mt-4 pt-4 border-t border-zinc-100">
+              <a
+                href={data.pixel.install_url!}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-lg border border-primary/30 bg-primary/5 px-4 py-2 text-sm font-medium text-primary hover:bg-primary/10 transition-colors"
+              >
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+                Open Install Guide
+              </a>
+            </div>
+          )}
         </div>
 
         {/* Installation Snippet */}
-        <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h2 className="text-lg font-semibold text-zinc-900">Installation Snippet</h2>
-              <p className="text-sm text-zinc-500 mt-1">
-                Paste this code before the closing <code className="text-xs bg-zinc-100 px-1.5 py-0.5 rounded font-mono">&lt;/head&gt;</code> tag on your website.
-              </p>
+        {hasSnippet && (
+          <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-lg font-semibold text-zinc-900">Installation Snippet</h2>
+                <p className="text-sm text-zinc-500 mt-1">
+                  Paste this code before the closing <code className="text-xs bg-zinc-100 px-1.5 py-0.5 rounded font-mono">&lt;/head&gt;</code> tag on your website.
+                </p>
+              </div>
+              <button
+                onClick={handleCopySnippet}
+                className="rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 transition-colors"
+              >
+                {copied ? 'Copied!' : 'Copy'}
+              </button>
             </div>
+
+            <pre className="text-sm bg-zinc-900 text-zinc-100 p-4 rounded-lg overflow-x-auto font-mono">
+              {data.pixel.snippet}
+            </pre>
+
+            <div className="mt-4 rounded-lg bg-primary/5 border border-primary/20 p-4">
+              <h3 className="text-sm font-semibold text-primary mb-2">How it works</h3>
+              <ol className="text-sm text-zinc-600 space-y-2">
+                <li className="flex gap-2">
+                  <span className="font-semibold text-primary flex-shrink-0">1.</span>
+                  Add the snippet to your website&apos;s HTML head section
+                </li>
+                <li className="flex gap-2">
+                  <span className="font-semibold text-primary flex-shrink-0">2.</span>
+                  The pixel identifies visitors to your website in real-time
+                </li>
+                <li className="flex gap-2">
+                  <span className="font-semibold text-primary flex-shrink-0">3.</span>
+                  Matching leads appear in your My Leads dashboard automatically
+                </li>
+              </ol>
+            </div>
+          </div>
+        )}
+
+        {/* Manual Snippet Entry — shown when no snippet exists yet */}
+        {!hasSnippet && (
+          <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
+            <h2 className="text-lg font-semibold text-zinc-900 mb-2">Manual Snippet Entry</h2>
+            <p className="text-sm text-zinc-500 mb-4">
+              No installation snippet on file yet.
+              {hasInstallUrl
+                ? ' Use the Install Guide above to get your snippet, then paste it here.'
+                : ' Paste your AudienceLab pixel snippet below to save it for reference.'}
+            </p>
+
+            <textarea
+              className="block w-full rounded-lg border-zinc-300 shadow-sm focus:border-primary focus:ring-primary font-mono text-sm"
+              rows={4}
+              placeholder={'<script src="..." async></script>'}
+              value={manualSnippet}
+              onChange={(e) => setManualSnippet(e.target.value)}
+            />
+
             <button
-              onClick={handleCopySnippet}
-              className="rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 transition-colors"
+              onClick={handleSaveSnippet}
+              disabled={savingSnippet || !manualSnippet.trim()}
+              className="mt-3 rounded-lg bg-primary px-5 py-2 text-sm font-semibold text-white hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
             >
-              {copied ? 'Copied!' : 'Copy'}
+              {savingSnippet ? 'Saving...' : 'Save Snippet'}
             </button>
           </div>
-
-          <pre className="text-sm bg-zinc-900 text-zinc-100 p-4 rounded-lg overflow-x-auto font-mono">
-            {data.pixel.snippet || 'Snippet not available'}
-          </pre>
-
-          <div className="mt-4 rounded-lg bg-primary/5 border border-primary/20 p-4">
-            <h3 className="text-sm font-semibold text-primary mb-2">How it works</h3>
-            <ol className="text-sm text-zinc-600 space-y-2">
-              <li className="flex gap-2">
-                <span className="font-semibold text-primary flex-shrink-0">1.</span>
-                Add the snippet to your website&apos;s HTML head section
-              </li>
-              <li className="flex gap-2">
-                <span className="font-semibold text-primary flex-shrink-0">2.</span>
-                The pixel identifies visitors to your website in real-time
-              </li>
-              <li className="flex gap-2">
-                <span className="font-semibold text-primary flex-shrink-0">3.</span>
-                Matching leads appear in your My Leads dashboard automatically
-              </li>
-            </ol>
-          </div>
-        </div>
+        )}
       </div>
     )
   }

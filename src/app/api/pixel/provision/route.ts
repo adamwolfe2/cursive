@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
     // Check if workspace already has an active pixel — return it (idempotent)
     const { data: existingPixel } = await adminSupabase
       .from('audiencelab_pixels')
-      .select('pixel_id, domain, is_active, snippet, label, created_at')
+      .select('pixel_id, domain, is_active, snippet, install_url, label, created_at')
       .eq('workspace_id', userData.workspace_id)
       .eq('is_active', true)
       .maybeSingle()
@@ -70,6 +70,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         pixel_id: existingPixel.pixel_id,
         snippet: existingPixel.snippet,
+        install_url: existingPixel.install_url,
         domain: existingPixel.domain,
         existing: true,
       })
@@ -85,11 +86,12 @@ export async function POST(request: NextRequest) {
       websiteUrl: validated.website_url,
     })
 
-    // Build snippet from AL response or generate a default
+    // Build snippet from AL response: prefer script if provided, else derive from install_url
+    const installUrl = result.install_url
     const snippet = result.script ||
-      `<script src="${result.install_url || `https://t.audiencelab.io/pixel/${result.pixel_id}`}" async></script>`
+      (installUrl ? `<script src="${installUrl}" async></script>` : null)
 
-    // Store in audiencelab_pixels
+    // Store in audiencelab_pixels (install_url is primary, snippet is derived/optional)
     const { error: insertError } = await adminSupabase
       .from('audiencelab_pixels')
       .insert({
@@ -98,6 +100,7 @@ export async function POST(request: NextRequest) {
         domain,
         is_active: true,
         label: websiteName,
+        install_url: installUrl,
         snippet,
       })
 
@@ -106,7 +109,7 @@ export async function POST(request: NextRequest) {
       if (insertError.code === '23505') {
         const { data: racePixel } = await adminSupabase
           .from('audiencelab_pixels')
-          .select('pixel_id, domain, snippet')
+          .select('pixel_id, domain, snippet, install_url')
           .eq('workspace_id', userData.workspace_id)
           .eq('is_active', true)
           .maybeSingle()
@@ -115,6 +118,7 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({
             pixel_id: racePixel.pixel_id,
             snippet: racePixel.snippet,
+            install_url: racePixel.install_url,
             domain: racePixel.domain,
             existing: true,
           })
@@ -157,6 +161,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       pixel_id: result.pixel_id,
       snippet,
+      install_url: installUrl,
       domain,
     })
   } catch (error) {

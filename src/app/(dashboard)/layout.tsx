@@ -11,6 +11,7 @@ import { ImpersonationBanner } from '@/components/admin'
 import { isAdmin } from '@/lib/auth/admin'
 import { TierProvider } from '@/lib/hooks/use-tier'
 import { BrandThemeWrapper } from '@/components/layout/brand-theme-wrapper'
+import { ContactWidget } from '@/components/contact-widget'
 
 export default async function DashboardLayout({
   children,
@@ -67,6 +68,7 @@ export default async function DashboardLayout({
             >
               {children}
             </AppShell>
+            <ContactWidget />
           </BrandThemeWrapper>
         </TierProvider>
       )
@@ -163,6 +165,7 @@ export default async function DashboardLayout({
         >
           {children}
         </AppShell>
+        <ContactWidget />
       </BrandThemeWrapper>
     </TierProvider>
   )

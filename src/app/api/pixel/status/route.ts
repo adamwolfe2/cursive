@@ -29,7 +29,7 @@ export async function GET() {
     // Get pixel for this workspace
     const { data: pixel } = await adminSupabase
       .from('audiencelab_pixels')
-      .select('pixel_id, domain, is_active, snippet, created_at, label')
+      .select('pixel_id, domain, is_active, snippet, install_url, created_at, label')
       .eq('workspace_id', userData.workspace_id)
       .maybeSingle()
 
@@ -54,6 +54,7 @@ export async function GET() {
         domain: pixel.domain,
         is_active: pixel.is_active,
         snippet: pixel.snippet,
+        install_url: pixel.install_url,
         label: pixel.label,
         created_at: pixel.created_at,
       } : null,
