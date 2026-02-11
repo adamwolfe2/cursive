@@ -1,38 +1,41 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import WelcomeForm from './welcome-form'
+import { OnboardingFlow } from './onboarding-flow'
+import { AutoSubmitOnboarding } from './auto-submit-onboarding'
 
 export default async function WelcomePage({
   searchParams,
 }: {
-  searchParams: Promise<{ source?: string }>
+  searchParams: Promise<{ source?: string; returning?: string }>
 }) {
   const supabase = await createClient()
-
-  // Server-side auth check
   const { data: { session } } = await supabase.auth.getSession()
 
-  if (!session) {
-    redirect('/login')
-  }
-
-  // Use admin client to bypass RLS (prevents redirect loop)
-  const admin = createAdminClient()
-  const { data: user } = await admin
-    .from('users')
-    .select('workspace_id, role')
-    .eq('auth_user_id', session.user.id)
-    .maybeSingle()
-
-  // If user already has workspace, redirect to dashboard
-  if (user?.workspace_id) {
-    redirect('/dashboard')
-  }
-
-  // If error or no workspace, show onboarding form
   const params = await searchParams
   const isMarketplace = params.source === 'marketplace'
+  const isReturning = params.returning === 'true'
 
-  return <WelcomeForm isMarketplace={isMarketplace} />
+  if (session) {
+    // Use admin client to bypass RLS
+    const admin = createAdminClient()
+    const { data: user } = await admin
+      .from('users')
+      .select('workspace_id, role')
+      .eq('auth_user_id', session.user.id)
+      .maybeSingle()
+
+    // If user already has workspace, redirect to dashboard
+    if (user?.workspace_id) {
+      redirect('/dashboard')
+    }
+
+    // User has session but no workspace — they're returning from OAuth
+    if (isReturning) {
+      return <AutoSubmitOnboarding isMarketplace={isMarketplace} />
+    }
+  }
+
+  // No session or session without workspace — show the quiz flow
+  return <OnboardingFlow isMarketplace={isMarketplace} />
 }

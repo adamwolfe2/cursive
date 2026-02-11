@@ -172,7 +172,7 @@ export async function GET(request: NextRequest) {
 
       // Redirect to welcome page if no user profile exists
       if (!user || !user.workspace_id) {
-        redirectUrl = '/welcome'
+        redirectUrl = '/welcome?returning=true'
       }
     }
 

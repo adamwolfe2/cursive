@@ -31,7 +31,6 @@ export async function middleware(req: NextRequest) {
 
     // Check if this is a truly public route that doesn't need auth
     const isTrulyPublicRoute =
-      pathname === '/waitlist' ||
       pathname.startsWith('/api/waitlist') ||
       pathname.startsWith('/api/webhooks') ||
       pathname.startsWith('/api/admin/bypass-waitlist') ||
@@ -88,10 +87,9 @@ export async function middleware(req: NextRequest) {
       pathname.startsWith('/auth/callback') ||
       pathname.startsWith('/auth/accept-invite') ||
       pathname === '/' ||
-      pathname === '/waitlist' || // Waitlist page is public
       pathname.startsWith('/_next') ||
       pathname.startsWith('/api/webhooks') || // Webhooks are authenticated differently
-      pathname.startsWith('/api/waitlist') || // Waitlist API is public
+      pathname.startsWith('/api/waitlist') || // Waitlist API is public (admin management)
       pathname.startsWith('/api/admin/bypass-waitlist') || // Admin bypass endpoint
       pathname === '/api/health' || // Health check endpoint for monitoring
       pathname.startsWith('/api/inngest') // Inngest routes

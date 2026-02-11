@@ -98,7 +98,8 @@ export async function googleLoginAction(redirectTo: string = '/dashboard') {
     return { error: 'Site URL not configured. Please contact support.' }
   }
 
-  const callbackUrl = `${siteUrl}/auth/callback?next=${redirectTo}`
+  const normalizedSiteUrl = siteUrl.replace(/\/+$/, '')
+  const callbackUrl = `${normalizedSiteUrl}/auth/callback?next=${encodeURIComponent(redirectTo)}`
   console.warn('[Auth] Google OAuth callbackUrl:', callbackUrl)
 
   const supabase = await createClient()
