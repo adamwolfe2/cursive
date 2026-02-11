@@ -8,7 +8,6 @@ import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { AppShell } from '@/components/layout'
 import { ImpersonationBanner } from '@/components/admin'
-import { isAdmin } from '@/lib/auth/admin'
 import { TierProvider } from '@/lib/hooks/use-tier'
 import { BrandThemeWrapper } from '@/components/layout/brand-theme-wrapper'
 
@@ -81,15 +80,27 @@ export default async function DashboardLayout({
     redirect('/login')
   }
 
-  // Get user profile
-  const { data: userData } = await supabase
-    .from('users')
-    .select('*, workspaces(*)')
-    .eq('auth_user_id', user.id)
-    .single()
+  // Fetch user profile and admin status in parallel (both only need user.id/email)
+  const [userProfileResult, adminResult] = await Promise.all([
+    supabase
+      .from('users')
+      .select('*, workspaces(*)')
+      .eq('auth_user_id', user.id)
+      .single(),
+    // Inline admin check to avoid redundant getSession() call in isAdmin()
+    user.email
+      ? supabase
+          .from('platform_admins')
+          .select('id')
+          .eq('email', user.email)
+          .eq('is_active', true)
+          .single()
+          .then(({ data }) => !!data)
+      : Promise.resolve(false),
+  ])
 
   // Type the user data
-  const userProfile = userData as {
+  const userProfile = userProfileResult.data as {
     id: string
     full_name: string | null
     email: string
@@ -110,11 +121,13 @@ export default async function DashboardLayout({
     } | null
   } | null
 
+  const userIsAdmin = adminResult
+
   if (!userProfile) {
     redirect('/welcome')
   }
 
-  // Fetch workspace credit balance from workspace_credits table
+  // Fetch workspace credit balance
   let creditBalance = 0
   if (userProfile.workspace_id) {
     const { data: creditsData } = await supabase
@@ -125,9 +138,6 @@ export default async function DashboardLayout({
 
     creditBalance = creditsData?.balance ?? 0
   }
-
-  // Check if user is an admin (for showing impersonation banner)
-  const userIsAdmin = await isAdmin()
 
   const workspace = userProfile.workspaces as {
     name: string
