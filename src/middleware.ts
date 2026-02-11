@@ -29,6 +29,7 @@ export async function middleware(req: NextRequest) {
     // without creating a Supabase client (which can hang on serverless functions)
     if (
       pathname.startsWith('/api/webhooks') ||
+      pathname.startsWith('/api/cron') ||
       pathname.startsWith('/api/inngest') ||
       pathname === '/api/health'
     ) {
@@ -45,6 +46,7 @@ export async function middleware(req: NextRequest) {
     const isTrulyPublicRoute =
       pathname.startsWith('/api/waitlist') ||
       pathname.startsWith('/api/webhooks') ||
+      pathname.startsWith('/api/cron') ||
       pathname.startsWith('/api/admin/bypass-waitlist') ||
       pathname === '/api/health' ||
       pathname.startsWith('/api/inngest')
@@ -101,6 +103,7 @@ export async function middleware(req: NextRequest) {
       pathname === '/' ||
       pathname.startsWith('/_next') ||
       pathname.startsWith('/api/webhooks') || // Webhooks are authenticated differently
+      pathname.startsWith('/api/cron') || // Cron routes use CRON_SECRET auth
       pathname.startsWith('/api/waitlist') || // Waitlist API is public (admin management)
       pathname.startsWith('/api/admin/bypass-waitlist') || // Admin bypass endpoint
       pathname === '/api/health' || // Health check endpoint for monitoring
@@ -109,6 +112,7 @@ export async function middleware(req: NextRequest) {
     // API routes (except webhooks, waitlist, and bypass) require authentication
     const isApiRoute = pathname.startsWith('/api') &&
       !pathname.startsWith('/api/webhooks') &&
+      !pathname.startsWith('/api/cron') &&
       !pathname.startsWith('/api/waitlist') &&
       !pathname.startsWith('/api/admin/bypass-waitlist') &&
       pathname !== '/api/health'

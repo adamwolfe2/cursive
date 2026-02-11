@@ -121,6 +121,9 @@ export async function GET(request: NextRequest) {
           continue
         }
 
+        // Brief wait for audience to finish processing
+        await new Promise(r => setTimeout(r, 2000))
+
         // Fetch records page by page
         let inserted = 0
         let skipped = 0
