@@ -148,7 +148,7 @@ export const audienceLabSegmentPuller = inngest.createFunction(
             filters,
           })
 
-          const audienceId = audience.audienceId || audience.id
+          const audienceId = audience.audienceId
           if (!audienceId) {
             safeLog(`${LOG_PREFIX} No audienceId returned from create`)
             return { inserted: 0, skipped: 0, error: 'No audienceId returned' }
@@ -164,7 +164,7 @@ export const audienceLabSegmentPuller = inngest.createFunction(
             if (pageSize <= 0) break
 
             const recordsResponse = await fetchAudienceRecords(audienceId, page, pageSize)
-            const records = recordsResponse.records || []
+            const records = recordsResponse.data || []
 
             if (records.length === 0) break
 
@@ -182,7 +182,8 @@ export const audienceLabSegmentPuller = inngest.createFunction(
               else skipped++
             }
 
-            if (!recordsResponse.has_more) break
+            // Use page-based pagination (no has_more field)
+            if (page >= (recordsResponse.total_pages || 1)) break
           }
 
           return { inserted, skipped, error: null as string | null }
@@ -334,7 +335,17 @@ export const audienceLabSegmentPuller = inngest.createFunction(
 )
 
 /**
+ * Parse comma-separated email/phone fields from AL records.
+ * AL returns multi-value fields as comma-separated strings.
+ */
+function parseCSV(val: unknown): string[] {
+  if (!val || typeof val !== 'string') return []
+  return val.split(',').map(s => s.trim()).filter(Boolean)
+}
+
+/**
  * Insert a single lead from an AL audience record.
+ * AL records use UPPER_CASE field names (verified against live API).
  * Returns 'inserted' or 'skipped' (if duplicate).
  */
 async function insertLeadFromALRecord(
@@ -343,7 +354,10 @@ async function insertLeadFromALRecord(
   workspaceId: string,
   combo: TargetingCombo
 ): Promise<'inserted' | 'skipped'> {
-  const email = record.email || record.personal_emails?.[0] || record.business_emails?.[0]
+  // AL records use UPPER_CASE: PERSONAL_EMAILS, BUSINESS_EMAIL (comma-separated strings)
+  const personalEmails = parseCSV(record.PERSONAL_EMAILS)
+  const businessEmails = parseCSV(record.BUSINESS_EMAIL)
+  const email = personalEmails[0] || businessEmails[0]
 
   // Skip records without email — can't dedupe
   if (!email) return 'skipped'
@@ -359,9 +373,12 @@ async function insertLeadFromALRecord(
 
   if (existing) return 'skipped'
 
-  const firstName = record.first_name || ''
-  const lastName = record.last_name || ''
+  const firstName = record.FIRST_NAME || ''
+  const lastName = record.LAST_NAME || ''
   const fullName = [firstName, lastName].filter(Boolean).join(' ')
+
+  // Parse phones from AL fields
+  const phones = parseCSV(record.PERSONAL_PHONE || record.MOBILE_PHONE || record.DIRECT_NUMBER)
 
   const { error } = await supabase
     .from('leads')
@@ -374,33 +391,33 @@ async function insertLeadFromALRecord(
       last_name: lastName || null,
       full_name: fullName || null,
       email: email.toLowerCase(),
-      phone: record.phones?.[0] || null,
-      company_name: record.company_name || null,
-      company_industry: combo.industries[0] || null,
-      company_domain: record.company_domain || null,
-      city: record.city || null,
-      state: record.state || null,
-      state_code: record.state || null,
+      phone: phones[0] || null,
+      company_name: record.COMPANY_NAME || null,
+      company_industry: record.COMPANY_INDUSTRY || combo.industries[0] || null,
+      company_domain: record.COMPANY_DOMAIN || null,
+      city: record.PERSONAL_CITY || record.COMPANY_CITY || null,
+      state: record.PERSONAL_STATE || record.COMPANY_STATE || null,
+      state_code: record.PERSONAL_STATE || record.COMPANY_STATE || null,
       country: 'US',
       country_code: 'US',
-      postal_code: record.zip || null,
-      job_title: record.job_title || null,
-      lead_score: 60, // Default score for pull-sourced leads
+      postal_code: record.PERSONAL_ZIP || record.COMPANY_ZIP || null,
+      job_title: record.JOB_TITLE || null,
+      lead_score: 60,
       intent_score_calculated: 50,
       freshness_score: 100,
       has_email: true,
-      has_phone: !!record.phones?.length,
+      has_phone: phones.length > 0,
       validated: false,
       enrichment_method: 'audiencelab_pull',
       tags: ['audiencelab', 'segment-pull', ...(combo.industries.map(i => i.toLowerCase()))],
       company_data: {
-        name: record.company_name || null,
-        industry: combo.industries[0] || null,
-        domain: record.company_domain || null,
+        name: record.COMPANY_NAME || null,
+        industry: record.COMPANY_INDUSTRY || combo.industries[0] || null,
+        domain: record.COMPANY_DOMAIN || null,
       },
       company_location: {
-        city: record.city || null,
-        state: record.state || null,
+        city: record.PERSONAL_CITY || record.COMPANY_CITY || null,
+        state: record.PERSONAL_STATE || record.COMPANY_STATE || null,
         country: 'US',
       },
     })

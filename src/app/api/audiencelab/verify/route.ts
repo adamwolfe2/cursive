@@ -7,10 +7,14 @@
  * GET /api/audiencelab/verify
  * GET /api/audiencelab/verify?enrich=test@example.com
  * GET /api/audiencelab/verify?preview=true&industry=HVAC&state=FL
+ *
+ * Auth: Requires authenticated admin user via Supabase session cookie.
+ * Uses Edge runtime so it works on Vercel (Node.js routes hang).
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createServerClient } from '@supabase/ssr'
+import { createAdminClient } from '@/lib/supabase/admin'
 import {
   listPixels,
   listAudiences,
@@ -20,15 +24,33 @@ import {
   previewAudience,
 } from '@/lib/audiencelab/api-client'
 
+export const runtime = 'edge'
+
 export async function GET(request: NextRequest) {
-  // Auth check — admin only
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  // Auth check — admin only (Edge-compatible cookie read)
+  const supabaseAuth = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll: () => {
+          const cookieHeader = request.headers.get('cookie') || ''
+          return cookieHeader.split(';').map(c => {
+            const [name, ...rest] = c.trim().split('=')
+            return { name, value: rest.join('=') }
+          }).filter(c => c.name)
+        },
+      },
+    }
+  )
+
+  const { data: { user } } = await supabaseAuth.auth.getUser()
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const { data: userData } = await supabase
+  const adminClient = createAdminClient()
+  const { data: userData } = await adminClient
     .from('users')
     .select('role')
     .eq('auth_user_id', user.id)
@@ -62,8 +84,8 @@ export async function GET(request: NextRequest) {
 
   // Test 3: List audiences
   try {
-    const audiences = await listAudiences({ limit: 5 })
-    results.audiences = audiences
+    const audiences = await listAudiences({ page_size: 5 })
+    results.audiences = { total: audiences.total, page: audiences.page, data: audiences.data?.slice(0, 5) }
   } catch (err) {
     results.audiences = { error: err instanceof Error ? err.message : 'Unknown error' }
   }
@@ -80,7 +102,7 @@ export async function GET(request: NextRequest) {
     } catch (err) {
       results[`attributes_${attr}`] = {
         error: err instanceof Error ? err.message : 'Unknown error',
-        note: 'Endpoint may not exist — this is expected if AL API does not support attribute discovery',
+        note: 'Endpoint may not exist — check AL API docs',
       }
     }
   }
@@ -93,11 +115,14 @@ export async function GET(request: NextRequest) {
       if (previewState) filters.state = [previewState]
 
       const preview = await previewAudience({ filters })
-      results.audience_preview = preview
+      results.audience_preview = {
+        count: preview.count,
+        job_id: preview.job_id,
+        sample_count: preview.result?.length || 0,
+      }
     } catch (err) {
       results.audience_preview = {
         error: err instanceof Error ? err.message : 'Unknown error',
-        note: 'Endpoint may not exist — this is expected if AL API does not support audience preview',
       }
     }
   }
@@ -106,7 +131,11 @@ export async function GET(request: NextRequest) {
   if (enrichEmail) {
     try {
       const enrichResult = await enrich({ filter: { email: enrichEmail } })
-      results.enrich = enrichResult
+      results.enrich = {
+        found: enrichResult.found,
+        result_count: enrichResult.result?.length || 0,
+        sample_keys: enrichResult.result?.[0] ? Object.keys(enrichResult.result[0]).slice(0, 15) : [],
+      }
     } catch (err) {
       results.enrich = { error: err instanceof Error ? err.message : 'Unknown error' }
     }

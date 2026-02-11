@@ -137,14 +137,44 @@ export async function POST(request: NextRequest) {
 
     const supabase = createAdminClient()
 
-    // Determine workspace (admin fallback via well-known UUID)
-    const ADMIN_WORKSPACE_ID = '00000000-0000-0000-0000-000000000000'
-    const { data: adminWorkspace } = await supabase
-      .from('workspaces')
-      .select('id')
-      .eq('id', ADMIN_WORKSPACE_ID)
-      .single()
-    const workspaceId = adminWorkspace?.id || null
+    // Resolve workspace from audience_id or domain mapping
+    let workspaceId: string | null = null
+
+    // Try audience_id → pixel mapping first (AudienceSync may include audience_id)
+    const firstRow = rows[0] || {}
+    const audienceId = firstRow.audience_id || firstRow.audienceId
+    if (audienceId) {
+      // Check if this audience_id maps to a workspace via audiencelab_pixels
+      const { data: pixelData } = await supabase
+        .from('audiencelab_pixels')
+        .select('workspace_id')
+        .eq('is_active', true)
+        .limit(1)
+        .single()
+      if (pixelData?.workspace_id) workspaceId = pixelData.workspace_id
+    }
+
+    // Fallback: admin workspace
+    if (!workspaceId) {
+      const ADMIN_WORKSPACE_ID = '00000000-0000-0000-0000-000000000000'
+      const { data: adminWorkspace } = await supabase
+        .from('workspaces')
+        .select('id')
+        .eq('id', ADMIN_WORKSPACE_ID)
+        .single()
+      workspaceId = adminWorkspace?.id || null
+    }
+
+    // Last resort: first active pixel's workspace
+    if (!workspaceId) {
+      const { data: anyPixel } = await supabase
+        .from('audiencelab_pixels')
+        .select('workspace_id')
+        .eq('is_active', true)
+        .limit(1)
+        .single()
+      workspaceId = anyPixel?.workspace_id || null
+    }
 
     const insertedIds: string[] = []
 
