@@ -113,11 +113,12 @@ export async function POST(request: NextRequest) {
 
     const supabase = createAdminClient()
 
-    // Determine workspace (admin fallback)
+    // Determine workspace (admin fallback via well-known UUID)
+    const ADMIN_WORKSPACE_ID = '00000000-0000-0000-0000-000000000000'
     const { data: adminWorkspace } = await supabase
       .from('workspaces')
       .select('id')
-      .eq('is_admin', true)
+      .eq('id', ADMIN_WORKSPACE_ID)
       .single()
     const workspaceId = adminWorkspace?.id || null
 

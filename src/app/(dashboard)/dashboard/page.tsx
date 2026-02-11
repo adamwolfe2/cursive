@@ -105,57 +105,57 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
       {/* Getting Started Guide for New Users */}
       {leadsCount === 0 && (
-        <GradientCard variant="primary" className="mb-8">
-          <div className="text-center py-8 px-4">
-            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
-              Let's Get Your First Leads
-            </h2>
-            <p className="text-white/90 mb-8 max-w-2xl mx-auto">
-              Choose how you want to use Cursive:
-            </p>
-
-            <div className="grid sm:grid-cols-3 gap-4 max-w-4xl mx-auto">
-              {/* Option 1: Browse Marketplace */}
-              <Link
-                href="/marketplace"
-                className="bg-white/10 hover:bg-white/20 border-2 border-white/30 rounded-xl p-6 transition-all text-left"
-              >
-                <div className="text-3xl mb-3">📦</div>
-                <h3 className="text-lg font-bold text-white mb-2">Browse Marketplace</h3>
-                <p className="text-sm text-white/80 mb-4">
-                  Buy pre-verified leads from our partners
-                </p>
-                <span className="text-xs text-white/70">Best for: Testing quickly</span>
-              </Link>
-
-              {/* Option 2: Install Tracking */}
-              <Link
-                href="/integrations"
-                className="bg-white/10 hover:bg-white/20 border-2 border-white/30 rounded-xl p-6 transition-all text-left"
-              >
-                <div className="text-3xl mb-3">👀</div>
-                <h3 className="text-lg font-bold text-white mb-2">Install Tracking</h3>
-                <p className="text-sm text-white/80 mb-4">
-                  Identify your website visitors automatically
-                </p>
-                <span className="text-xs text-white/70">Best for: Ongoing pipeline</span>
-              </Link>
-
-              {/* Option 3: Done-for-you */}
-              <Link
-                href="/services"
-                className="bg-white hover:bg-white/90 border-2 border-white rounded-xl p-6 transition-all text-left"
-              >
-                <div className="text-3xl mb-3">✨</div>
-                <h3 className="text-lg font-bold text-primary mb-2">Get Done-For-You</h3>
-                <p className="text-sm text-primary mb-4">
-                  We build + manage campaigns for you
-                </p>
-                <span className="text-xs text-primary/70">Best for: Hands-off approach</span>
-              </Link>
+        <div className="mb-8 rounded-xl border border-border bg-background p-8">
+          <h2 className="text-xl font-bold text-foreground mb-2">Getting Started</h2>
+          <p className="text-sm text-muted-foreground mb-6">
+            Complete these steps to start receiving leads.
+          </p>
+          <div className="space-y-4">
+            {/* Step 1: Account Created - always done */}
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 mt-0.5">
+                <div className="h-6 w-6 rounded-full bg-green-100 flex items-center justify-center">
+                  <CheckCircle className="h-4 w-4 text-green-600" />
+                </div>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-foreground line-through text-muted-foreground">Create your account</p>
+                <p className="text-xs text-muted-foreground">Done!</p>
+              </div>
+            </div>
+            {/* Step 2: Set up targeting */}
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 mt-0.5">
+                <div className="h-6 w-6 rounded-full border-2 border-primary flex items-center justify-center">
+                  <span className="text-xs font-bold text-primary">2</span>
+                </div>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-foreground">Set up your lead preferences</p>
+                <p className="text-xs text-muted-foreground mb-2">Tell us what industries and locations you serve</p>
+                <Link
+                  href="/my-leads/preferences"
+                  className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:text-primary/80"
+                >
+                  Set preferences
+                  <ArrowRight className="h-3 w-3" />
+                </Link>
+              </div>
+            </div>
+            {/* Step 3: Leads arrive */}
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 mt-0.5">
+                <div className="h-6 w-6 rounded-full border-2 border-muted-foreground/30 flex items-center justify-center">
+                  <span className="text-xs font-bold text-muted-foreground/50">3</span>
+                </div>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground/70">Leads start arriving</p>
+                <p className="text-xs text-muted-foreground">Matched leads will appear in My Leads automatically</p>
+              </div>
             </div>
           </div>
-        </GradientCard>
+        </div>
       )}
 
       {/* Onboarding Checklist */}
@@ -300,27 +300,8 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       </GradientCard>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Link href="/ai-studio" className="group">
-          <GradientCard variant="primary" className="hover:shadow-lg transition-all duration-200">
-            <div className="flex items-start gap-4">
-              <div className="p-3 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                <Sparkles className="h-6 w-6 text-primary" />
-              </div>
-              <div className="flex-1">
-                <h3 className="font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
-                  AI Studio
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  Generate brand content with AI
-                </p>
-              </div>
-              <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
-            </div>
-          </GradientCard>
-        </Link>
-
-        <Link href="/crm/leads" className="group">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <Link href="/my-leads" className="group">
           <GradientCard variant="subtle" className="hover:shadow-lg transition-all duration-200">
             <div className="flex items-start gap-4">
               <div className="p-3 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
@@ -328,10 +309,10 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
               </div>
               <div className="flex-1">
                 <h3 className="font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
-                  CRM
+                  My Leads
                 </h3>
                 <p className="text-sm text-muted-foreground">
-                  Manage leads and pipeline
+                  View and manage your matched leads
                 </p>
               </div>
               <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
@@ -339,18 +320,18 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           </GradientCard>
         </Link>
 
-        <Link href="/settings" className="group">
+        <Link href="/settings/billing" className="group">
           <GradientCard variant="subtle" className="hover:shadow-lg transition-all duration-200">
             <div className="flex items-start gap-4">
               <div className="p-3 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                <TrendingUp className="h-6 w-6 text-primary" />
+                <Crown className="h-6 w-6 text-primary" />
               </div>
               <div className="flex-1">
                 <h3 className="font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
-                  Settings
+                  Buy Credits
                 </h3>
                 <p className="text-sm text-muted-foreground">
-                  Configure your workspace
+                  Purchase credits for lead access
                 </p>
               </div>
               <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
@@ -365,16 +346,11 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                 <Package className="h-6 w-6 text-white" />
               </div>
               <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <h3 className="font-semibold text-white group-hover:text-white/90 transition-colors">
-                    Services
-                  </h3>
-                  <GradientBadge className="bg-white/20 text-white border-white/30 text-xs">
-                    New
-                  </GradientBadge>
-                </div>
+                <h3 className="font-semibold text-white mb-1 group-hover:text-white/90 transition-colors">
+                  Services
+                </h3>
                 <p className="text-sm text-white/80">
-                  From DIY to done-for-you
+                  Explore done-for-you options
                 </p>
               </div>
               <ArrowRight className="h-5 w-5 text-white/80 group-hover:text-white group-hover:translate-x-1 transition-all" />

@@ -14,22 +14,22 @@ interface ChecklistItem {
 
 const CHECKLIST_ITEMS: Omit<ChecklistItem, 'completed'>[] = [
   {
-    id: 'path',
-    title: 'Choose your path',
-    description: 'Marketplace, visitor tracking, or done-for-you service',
+    id: 'account',
+    title: 'Account created',
+    description: 'Your workspace is set up and ready',
     href: '/dashboard',
   },
   {
-    id: 'payment',
-    title: 'Set up payment method',
-    description: 'Add a payment method to get started',
-    href: '/settings/billing',
+    id: 'targeting',
+    title: 'Set up lead preferences',
+    description: 'Choose your target industries and locations',
+    href: '/my-leads/preferences',
   },
   {
-    id: 'action',
-    title: 'Take your first action',
-    description: 'Create a campaign, install tracking, or browse leads',
-    href: '/marketplace',
+    id: 'leads',
+    title: 'Receive your first lead',
+    description: 'Matched leads will appear in My Leads',
+    href: '/my-leads',
   },
 ]
 

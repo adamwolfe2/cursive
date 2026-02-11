@@ -65,6 +65,7 @@ export interface NormalizedIdentity {
   email_last_seen: string | null
   skiptrace_match_by: string | null
   deliverability_score: number
+  company_industry: string | null
   landing_url: string | null
   referrer: string | null
 }
@@ -339,6 +340,7 @@ export function normalizeALPayload(raw: Record<string, any>): NormalizedIdentity
     email_validation_status: bestValidation || null,
     email_last_seen: bestLastSeen || null,
     skiptrace_match_by: skiptraceMatchBy,
+    company_industry: flat.COMPANY_INDUSTRY || flat.company_industry || flat.INDUSTRY || flat.industry || null,
     deliverability_score: deliverabilityScore,
     landing_url: flat.landing_url || flat.page_url || null,
     referrer: flat.referrer || null,

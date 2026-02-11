@@ -11,6 +11,8 @@ interface SidebarItem {
   href: string
   icon: React.ReactNode
   badge?: string | number
+  requiredTier?: 'free' | 'starter' | 'pro' | 'outbound'
+  comingSoon?: boolean
   children?: { name: string; href: string }[]
 }
 
@@ -146,6 +148,52 @@ export function Sidebar({ items, workspace, className }: SidebarProps) {
           {items.map((item) => {
             const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
             const hasChildren = item.children && item.children.length > 0
+            const isComingSoon = item.comingSoon === true
+            const showTierBadge = item.requiredTier && item.requiredTier !== 'free'
+
+            // Tier badge color mapping
+            const tierBadgeStyles: Record<string, string> = {
+              starter: 'bg-sky-100 text-sky-700',
+              pro: 'bg-purple-100 text-purple-700',
+              outbound: 'bg-orange-100 text-orange-700',
+            }
+
+            const tierBadgeLabel: Record<string, string> = {
+              starter: 'Starter',
+              pro: 'Pro',
+              outbound: 'Outbound',
+            }
+
+            // Coming soon items: grayed out, not clickable
+            if (isComingSoon) {
+              return (
+                <li key={item.href}>
+                  <div
+                    className="group flex items-center gap-3 rounded-lg px-3 py-2.5 sm:py-2 text-sm font-medium opacity-50 cursor-default"
+                  >
+                    <span className="flex h-5 w-5 items-center justify-center text-muted-foreground">
+                      {item.icon}
+                    </span>
+                    <span className="flex-1 text-muted-foreground">{item.name}</span>
+                    <span className="flex items-center gap-1">
+                      {showTierBadge && (
+                        <span
+                          className={cn(
+                            'inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-semibold',
+                            tierBadgeStyles[item.requiredTier!]
+                          )}
+                        >
+                          {tierBadgeLabel[item.requiredTier!]}
+                        </span>
+                      )}
+                      <span className="inline-flex items-center rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-semibold text-muted-foreground">
+                        Coming Soon
+                      </span>
+                    </span>
+                  </div>
+                </li>
+              )
+            }
 
             return (
               <li key={item.href}>
@@ -167,18 +215,30 @@ export function Sidebar({ items, workspace, className }: SidebarProps) {
                     {item.icon}
                   </span>
                   <span className="flex-1">{item.name}</span>
-                  {item.badge !== undefined && (
-                    <span
-                      className={cn(
-                        'flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-semibold',
-                        isActive
-                          ? 'bg-primary text-primary-foreground'
-                          : 'bg-muted text-muted-foreground'
-                      )}
-                    >
-                      {item.badge}
-                    </span>
-                  )}
+                  <span className="flex items-center gap-1">
+                    {item.badge !== undefined && (
+                      <span
+                        className={cn(
+                          'flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-semibold',
+                          isActive
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-muted text-muted-foreground'
+                        )}
+                      >
+                        {item.badge}
+                      </span>
+                    )}
+                    {showTierBadge && (
+                      <span
+                        className={cn(
+                          'inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-semibold',
+                          tierBadgeStyles[item.requiredTier!]
+                        )}
+                      >
+                        {tierBadgeLabel[item.requiredTier!]}
+                      </span>
+                    )}
+                  </span>
                 </Link>
 
                 {/* Children */}

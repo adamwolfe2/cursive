@@ -5,9 +5,24 @@ import { cn } from '@/lib/design-system'
 import { Sidebar, SidebarMobile } from './sidebar'
 import { Header } from './header'
 
+// Tier type for navigation gating
+type NavTier = 'free' | 'starter' | 'pro' | 'outbound'
+
+// Navigation item configuration with tier-gating and coming-soon support
+interface NavItemConfig {
+  name: string
+  href: string
+  icon: React.ReactNode
+  badge?: string | number
+  adminOnly?: boolean
+  requiredTier?: NavTier
+  comingSoon?: boolean
+  children?: { name: string; href: string }[]
+}
+
 // Navigation items for the sidebar
 // Items marked with adminOnly: true are only visible to admin/owner roles
-const navigationItems = [
+const navigationItems: NavItemConfig[] = [
   {
     name: 'Dashboard',
     href: '/dashboard',
@@ -25,6 +40,7 @@ const navigationItems = [
   {
     name: 'Queries',
     href: '/queries',
+    requiredTier: 'pro',
     icon: (
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path
@@ -61,6 +77,8 @@ const navigationItems = [
   {
     name: 'CRM',
     href: '/crm',
+    requiredTier: 'pro',
+    comingSoon: true,
     icon: (
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path
@@ -82,6 +100,7 @@ const navigationItems = [
     name: 'AI Studio',
     href: '/ai-studio',
     adminOnly: true,
+    requiredTier: 'outbound',
     icon: (
       <img src="/cursive-logo.png" alt="Cursive" className="h-5 w-5 object-contain" />
     ),
@@ -99,6 +118,7 @@ const navigationItems = [
     name: 'Leads',
     href: '/leads',
     adminOnly: true,
+    requiredTier: 'outbound',
     icon: (
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path
@@ -118,6 +138,7 @@ const navigationItems = [
   {
     name: 'People Search',
     href: '/people-search',
+    requiredTier: 'pro',
     icon: (
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path
@@ -133,6 +154,7 @@ const navigationItems = [
     name: 'AI Agents',
     href: '/agents',
     adminOnly: true,
+    requiredTier: 'outbound',
     icon: (
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path
@@ -152,6 +174,7 @@ const navigationItems = [
     name: 'Campaigns',
     href: '/campaigns',
     adminOnly: true,
+    requiredTier: 'outbound',
     icon: (
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path
@@ -172,6 +195,7 @@ const navigationItems = [
     name: 'Templates',
     href: '/templates',
     adminOnly: true,
+    requiredTier: 'outbound',
     icon: (
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path
@@ -186,6 +210,8 @@ const navigationItems = [
   {
     name: 'Trends',
     href: '/trends',
+    requiredTier: 'pro',
+    comingSoon: true,
     icon: (
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path
@@ -215,6 +241,7 @@ const navigationItems = [
     name: 'Services',
     href: '/services',
     badge: 'New',
+    requiredTier: 'starter',
     icon: (
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path

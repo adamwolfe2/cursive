@@ -7,9 +7,6 @@ import Image from 'next/image'
 import { useToast } from '@/lib/hooks/use-toast'
 import { SlackIntegration } from '@/components/integrations/slack-integration'
 import { ZapierIntegration } from '@/components/integrations/zapier-integration'
-import { SalesforceIntegration } from '@/components/integrations/salesforce-integration'
-import { GoogleSheetsIntegration } from '@/components/integrations/google-sheets-integration'
-import { HubSpotIntegration } from '@/components/integrations/hubspot-integration'
 
 // Integration logo configuration - using uploaded files from public folder
 const INTEGRATION_LOGOS: Record<string, { src: string; alt: string }> = {
@@ -362,16 +359,6 @@ export default function IntegrationsPage() {
         <div className="grid gap-6 md:grid-cols-2">
           <SlackIntegration user={user} isPro={isPro} />
           <ZapierIntegration user={user} isPro={isPro} />
-        </div>
-      </div>
-
-      {/* CRM Integrations - Dedicated Components */}
-      <div>
-        <h2 className="text-lg font-semibold text-zinc-900 mb-4">CRM Integrations</h2>
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <SalesforceIntegration workspaceId={user?.workspace_id ?? ''} isPro={isPro} />
-          <GoogleSheetsIntegration workspaceId={user?.workspace_id ?? ''} isPro={isPro} />
-          <HubSpotIntegration workspaceId={user?.workspace_id ?? ''} isPro={isPro} />
         </div>
       </div>
 
@@ -758,12 +745,27 @@ export default function IntegrationsPage() {
         )}
       </div>
 
-      {/* Coming Soon */}
+      {/* CRM & Other Integrations - Coming Soon */}
       <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
-        <h2 className="text-lg font-semibold text-zinc-900 mb-6">Coming Soon</h2>
+        <h2 className="text-lg font-semibold text-zinc-900 mb-6">CRM & Other Integrations</h2>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {[
+            {
+              name: 'Salesforce',
+              key: 'salesforce',
+              description: 'Sync leads directly to your Salesforce CRM',
+            },
+            {
+              name: 'HubSpot',
+              key: 'hubspot',
+              description: 'Push leads into HubSpot contacts and deals',
+            },
+            {
+              name: 'Google Sheets',
+              key: 'google-sheets',
+              description: 'Export leads automatically to Google Sheets',
+            },
             {
               name: 'Pipedrive',
               key: 'pipedrive',
@@ -812,8 +814,8 @@ export default function IntegrationsPage() {
             <div>
               <h2 className="text-2xl font-bold mb-2">Unlock All Integrations</h2>
               <p className="text-white/80">
-                Upgrade to Pro to connect Slack, Zapier, HubSpot, Salesforce, Google Sheets,
-                custom webhooks, and access our API. Automate your entire lead workflow.
+                Upgrade to Pro to connect Slack, Zapier, custom webhooks, and access our API.
+                CRM integrations coming soon. Automate your entire lead workflow.
               </p>
             </div>
             <div className="flex-shrink-0">

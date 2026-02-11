@@ -226,6 +226,12 @@ export const processAudienceLabEvent = inngest.createFunction(
         if (identity.company_domain) updateFields.company_domain = identity.company_domain
         if (identity.job_title) updateFields.job_title = identity.job_title
         if (identity.phones.length > 0) updateFields.phone = identity.phones[0]
+        if (identity.state) {
+          updateFields.state = identity.state
+          updateFields.state_code = identity.state // AL provides state codes (e.g. 'FL', 'CA')
+        }
+        if (identity.city) updateFields.city = identity.city
+        if (identity.company_industry) updateFields.company_industry = identity.company_industry
         if (identity.city || identity.state) {
           updateFields.company_location = {
             city: identity.city,
@@ -291,6 +297,10 @@ export const processAudienceLabEvent = inngest.createFunction(
           company_domain: identity.company_domain,
           job_title: identity.job_title,
           phone: identity.phones[0] || null,
+          state: identity.state || null,
+          state_code: identity.state || null,  // AL provides state codes (e.g. 'FL', 'CA')
+          city: identity.city || null,
+          company_industry: identity.company_industry || null,
           company_location: identity.city || identity.state ? {
             city: identity.city,
             state: identity.state,
@@ -336,6 +346,22 @@ export const processAudienceLabEvent = inngest.createFunction(
         } catch (err) {
           // Routing failure is non-fatal — lead is queued for retry
           safeError(`${LOG_PREFIX} Routing failed for lead ${leadResult.lead_id}`, err)
+        }
+      })
+
+      // Also route to individual users based on their targeting preferences
+      await step.run('route-lead-to-users', async () => {
+        try {
+          const targetWorkspaceId = workspace_id || rawEvent.workspace_id
+          const { UserLeadRouterService } = await import('@/lib/services/user-lead-router.service')
+          const userRouter = new UserLeadRouterService(targetWorkspaceId)
+          const result = await userRouter.routeLead(leadResult.lead_id!)
+          if (result.matched) {
+            safeLog(`${LOG_PREFIX} Lead ${leadResult.lead_id} routed to ${result.assignedTo.length} user(s)`)
+          }
+        } catch (err) {
+          // User routing failure is non-fatal
+          safeError(`${LOG_PREFIX} User routing failed for lead ${leadResult.lead_id}`, err)
         }
       })
     }
