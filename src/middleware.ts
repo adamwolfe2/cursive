@@ -289,7 +289,9 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      * - public files (public folder)
+     * - api/webhooks (webhook handlers have their own auth)
+     * - api/inngest (Inngest has its own signing key auth)
      */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|api/webhooks|api/inngest|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }
