@@ -33,8 +33,9 @@ export default async function CheckoutPage({ searchParams }: CheckoutPageProps) 
 
   const supabase = await createClient()
 
-  // Get current user
-  const { data: { user } } = await supabase.auth.getUser()
+  // Get current user via session (fast local JWT check, no network call)
+  const { data: { session } } = await supabase.auth.getSession()
+  const user = session?.user ?? null
 
   // If not logged in, redirect to sign up first
   if (!user) {

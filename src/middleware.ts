@@ -31,6 +31,7 @@ export async function middleware(req: NextRequest) {
       pathname.startsWith('/api/webhooks') ||
       pathname.startsWith('/api/cron') ||
       pathname.startsWith('/api/inngest') ||
+      pathname.startsWith('/api/debug') ||
       pathname === '/api/health'
     ) {
       return NextResponse.next({
@@ -56,6 +57,7 @@ export async function middleware(req: NextRequest) {
       pathname.startsWith('/api/waitlist') ||
       pathname.startsWith('/api/webhooks') ||
       pathname.startsWith('/api/cron') ||
+      pathname.startsWith('/api/debug') ||
       pathname.startsWith('/api/admin/bypass-waitlist') ||
       pathname === '/api/health' ||
       pathname.startsWith('/api/inngest')
@@ -112,15 +114,17 @@ export async function middleware(req: NextRequest) {
       pathname.startsWith('/api/webhooks') || // Webhooks are authenticated differently
       pathname.startsWith('/api/cron') || // Cron routes use CRON_SECRET auth
       pathname.startsWith('/api/waitlist') || // Waitlist API is public (admin management)
+      pathname.startsWith('/api/debug') || // Debug/diagnostic endpoints (handle own auth)
       pathname.startsWith('/api/admin/bypass-waitlist') || // Admin bypass endpoint
       pathname === '/api/health' || // Health check endpoint for monitoring
       pathname.startsWith('/api/inngest') // Inngest routes
 
-    // API routes (except webhooks, waitlist, and bypass) require authentication
+    // API routes (except webhooks, waitlist, debug, and bypass) require authentication
     const isApiRoute = pathname.startsWith('/api') &&
       !pathname.startsWith('/api/webhooks') &&
       !pathname.startsWith('/api/cron') &&
       !pathname.startsWith('/api/waitlist') &&
+      !pathname.startsWith('/api/debug') &&
       !pathname.startsWith('/api/admin/bypass-waitlist') &&
       pathname !== '/api/health'
 

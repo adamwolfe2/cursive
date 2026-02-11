@@ -16,10 +16,9 @@ export const dynamic = 'force-dynamic'
 export default async function PartnerDashboard() {
   const supabase = await createClient()
 
-  // Get authenticated user
-  const {
-    data: { user: authUser },
-  } = await supabase.auth.getUser()
+  // Get authenticated user via session (fast local JWT check, no network call)
+  const { data: { session } } = await supabase.auth.getSession()
+  const authUser = session?.user ?? null
   if (!authUser) redirect('/login')
 
   // Get user profile
