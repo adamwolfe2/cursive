@@ -51,24 +51,26 @@ export async function middleware(req: NextRequest) {
       pathname === '/api/health' ||
       pathname.startsWith('/api/inngest')
 
-    // Skip session check for truly public routes to improve performance
-    let session = null
+    // Skip auth check for truly public routes to improve performance
+    let authenticatedUser: { id: string; email?: string } | null = null
     if (!isTrulyPublicRoute) {
       try {
-        // Add 5 second timeout to prevent hanging
-        const sessionPromise = supabase.auth.getSession()
+        // Use getUser() instead of getSession() — getUser() validates against
+        // the Supabase auth server and properly refreshes expired tokens.
+        // getSession() only reads the JWT cookie and returns null when expired.
+        const userPromise = supabase.auth.getUser()
         const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Auth session timeout')), 5000)
+          setTimeout(() => reject(new Error('Auth check timeout')), 5000)
         )
 
-        const result = await Promise.race([sessionPromise, timeoutPromise]) as
-          | { data: { session: { user: { id: string; email?: string } } | null } }
+        const result = await Promise.race([userPromise, timeoutPromise]) as
+          | { data: { user: { id: string; email?: string } | null } }
           | undefined
-        session = result?.data?.session || null
+        authenticatedUser = result?.data?.user || null
       } catch (e) {
-        console.error('[Middleware] Failed to check session:', e)
+        console.error('[Middleware] Failed to check auth:', e)
         // SECURITY: Do NOT fail open. Redirect to login when auth check fails.
-        // This prevents unauthenticated access when the session check times out.
+        // This prevents unauthenticated access when the auth check times out.
         const loginUrl = new URL('/login', req.url)
         loginUrl.searchParams.set('redirect', pathname)
         loginUrl.searchParams.set('reason', 'auth_error')
@@ -120,8 +122,8 @@ export async function middleware(req: NextRequest) {
     // Auth routes (login, signup) - redirect to dashboard if already authenticated
     const isAuthRoute = pathname.startsWith('/login') || pathname.startsWith('/signup')
 
-    // Use the session we already fetched above (don't fetch again)
-    const user = session?.user || null
+    // Use the authenticated user we already fetched above (don't fetch again)
+    const user = authenticatedUser
 
     // Helper to create redirect with cookies preserved
     const redirectWithCookies = (url: URL) => {
