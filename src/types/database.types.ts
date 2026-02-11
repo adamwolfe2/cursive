@@ -401,29 +401,6 @@ export interface Database {
           created_at?: string
         }
       }
-      lead_purchases: {
-        Row: {
-          id: string
-          lead_id: string
-          buyer_id: string
-          price_paid: number
-          purchased_at: string
-        }
-        Insert: {
-          id?: string
-          lead_id: string
-          buyer_id: string
-          price_paid: number
-          purchased_at?: string
-        }
-        Update: {
-          id?: string
-          lead_id?: string
-          buyer_id?: string
-          price_paid?: number
-          purchased_at?: string
-        }
-      }
       bulk_upload_jobs: {
         Row: {
           id: string

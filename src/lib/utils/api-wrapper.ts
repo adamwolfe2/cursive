@@ -36,7 +36,7 @@ export function withMonitoring(
     // Extract request metadata
     const method = req.method
     const pathname = req.nextUrl.pathname
-    const ip = req.ip || req.headers.get('x-forwarded-for') || 'unknown'
+    const ip = (req as any).ip || req.headers.get('x-forwarded-for') || 'unknown'
     const userAgent = req.headers.get('user-agent') || 'unknown'
 
     // Start performance tracking

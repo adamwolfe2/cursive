@@ -18,9 +18,9 @@ export const createClient = (request: NextRequest) => {
         getAll() {
           return request.cookies.getAll()
         },
-        setAll(cookiesToSet) {
+        setAll(cookiesToSet: { name: string; value: string; options?: Record<string, unknown> }[]) {
           // Update request cookies for downstream handlers
-          cookiesToSet.forEach(({ name, value }) =>
+          cookiesToSet.forEach(({ name, value }: { name: string; value: string }) =>
             request.cookies.set(name, value)
           )
           // Recreate response with updated request
@@ -28,8 +28,8 @@ export const createClient = (request: NextRequest) => {
             request,
           })
           // CRITICAL: Set cookies on response for browser persistence
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
+          cookiesToSet.forEach(({ name, value, options }: { name: string; value: string; options?: Record<string, unknown> }) =>
+            supabaseResponse.cookies.set(name, value, options as any)
           )
         },
       },
