@@ -17,6 +17,7 @@ type UserLeadAssignmentUpdate = Database['public']['Tables']['user_lead_assignme
 interface MyLeadsTableProps {
   userId: string
   workspaceId: string
+  onLeadChange?: () => void
 }
 
 interface LeadAssignment {
@@ -55,7 +56,7 @@ const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
 
 const PAGE_SIZE = 25
 
-export function MyLeadsTable({ userId, workspaceId }: MyLeadsTableProps) {
+export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTableProps) {
   const [assignments, setAssignments] = useState<LeadAssignment[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<string>('all')
@@ -163,6 +164,7 @@ export function MyLeadsTable({ userId, workspaceId }: MyLeadsTableProps) {
               return [newAssignment, ...prev]
             })
             setNewLeadCount((c) => c + 1)
+            onLeadChange?.()
           }
         }
       )
@@ -182,6 +184,7 @@ export function MyLeadsTable({ userId, workspaceId }: MyLeadsTableProps) {
                 : a
             )
           )
+          onLeadChange?.()
         }
       )
       .on(
@@ -194,6 +197,7 @@ export function MyLeadsTable({ userId, workspaceId }: MyLeadsTableProps) {
         },
         (payload) => {
           setAssignments((prev) => prev.filter((a) => a.id !== payload.old.id))
+          onLeadChange?.()
         }
       )
       .subscribe()
@@ -227,8 +231,9 @@ export function MyLeadsTable({ userId, workspaceId }: MyLeadsTableProps) {
       setAssignments((prev) =>
         prev.map((a) => (a.id === assignmentId ? { ...a, status: newStatus } : a))
       )
+      onLeadChange?.()
     }
-  }, [])
+  }, [onLeadChange])
 
   function formatDate(dateStr: string) {
     return new Date(dateStr).toLocaleDateString('en-US', {
