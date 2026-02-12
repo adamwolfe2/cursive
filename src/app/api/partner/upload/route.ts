@@ -348,7 +348,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Calculate hash key for new lead
-        const hashKey = calculateHashKey(
+        const hashKey = await calculateHashKey(
           email,
           validatedRow.company_domain || null,
           validatedRow.phone || null

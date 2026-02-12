@@ -5,8 +5,6 @@
  * Handles webhook delivery to workspace endpoints with retry logic.
  */
 
-import crypto from 'crypto'
-
 export interface WebhookPayload {
   event: string
   timestamp: string
@@ -21,18 +19,43 @@ export interface WebhookDeliveryResult {
 }
 
 /**
+ * Generate HMAC-SHA256 hex digest (Edge-compatible)
+ */
+async function hmacSha256Hex(key: string, data: string): Promise<string> {
+  const encoder = new TextEncoder()
+  const cryptoKey = await crypto.subtle.importKey(
+    'raw',
+    encoder.encode(key),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  )
+  const sig = await crypto.subtle.sign('HMAC', cryptoKey, encoder.encode(data))
+  return Array.from(new Uint8Array(sig)).map(b => b.toString(16).padStart(2, '0')).join('')
+}
+
+/**
+ * Timing-safe string comparison (Edge-compatible)
+ */
+function timingSafeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false
+  let result = 0
+  for (let i = 0; i < a.length; i++) {
+    result |= a.charCodeAt(i) ^ b.charCodeAt(i)
+  }
+  return result === 0
+}
+
+/**
  * Generate HMAC signature for webhook payload
  */
-export function generateWebhookSignature(
+export async function generateWebhookSignature(
   payload: string,
   secret: string
-): string {
+): Promise<string> {
   const timestamp = Math.floor(Date.now() / 1000).toString()
   const signaturePayload = `${timestamp}.${payload}`
-  const signature = crypto
-    .createHmac('sha256', secret)
-    .update(signaturePayload)
-    .digest('hex')
+  const signature = await hmacSha256Hex(secret, signaturePayload)
 
   return `t=${timestamp},v1=${signature}`
 }
@@ -40,12 +63,12 @@ export function generateWebhookSignature(
 /**
  * Verify webhook signature
  */
-export function verifyWebhookSignature(
+export async function verifyWebhookSignature(
   payload: string,
   signature: string,
   secret: string,
   tolerance: number = 300 // 5 minutes
-): boolean {
+): Promise<boolean> {
   const parts = signature.split(',')
   const timestamp = parts.find((p) => p.startsWith('t='))?.split('=')[1]
   const v1 = parts.find((p) => p.startsWith('v1='))?.split('=')[1]
@@ -62,15 +85,9 @@ export function verifyWebhookSignature(
 
   // Verify signature
   const signaturePayload = `${timestamp}.${payload}`
-  const expectedSignature = crypto
-    .createHmac('sha256', secret)
-    .update(signaturePayload)
-    .digest('hex')
+  const expectedSignature = await hmacSha256Hex(secret, signaturePayload)
 
-  return crypto.timingSafeEqual(
-    Buffer.from(v1),
-    Buffer.from(expectedSignature)
-  )
+  return timingSafeEqual(v1, expectedSignature)
 }
 
 /**
@@ -84,7 +101,7 @@ export async function deliverWebhook(
 ): Promise<WebhookDeliveryResult> {
   try {
     const payloadString = JSON.stringify(payload)
-    const signature = generateWebhookSignature(payloadString, secret)
+    const signature = await generateWebhookSignature(payloadString, secret)
 
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), timeoutMs)

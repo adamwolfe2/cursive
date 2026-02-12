@@ -317,7 +317,7 @@ export const processPartnerUpload = inngest.createFunction(
             }
 
             // Calculate scores
-            const hashKey = calculateHashKey(email, validatedRow.company_domain || null, validatedRow.phone || null)
+            const hashKey = await calculateHashKey(email, validatedRow.company_domain || null, validatedRow.phone || null)
             const intentScore = calculateIntentScore({
               seniority_level: validatedRow.seniority_level || 'unknown',
               company_size: validatedRow.company_size || null,

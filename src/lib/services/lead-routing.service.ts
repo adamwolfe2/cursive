@@ -15,7 +15,8 @@
 import { createClient, createAdminClient } from '@/lib/supabase/server'
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
 import type { Database } from '@/types/database.types'
-import crypto from 'crypto'
+
+// No Node.js 'crypto' import needed — crypto.randomUUID() is available globally in Edge runtime
 
 type Lead = Database['public']['Tables']['leads']['Row']
 type RoutingRule = Database['public']['Tables']['lead_routing_rules']['Row']

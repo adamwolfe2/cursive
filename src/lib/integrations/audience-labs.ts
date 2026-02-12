@@ -20,7 +20,29 @@
  * Field normalization: src/lib/audiencelab/field-map.ts
  */
 
-import crypto from 'crypto'
+// Edge-compatible crypto helpers (no Node.js 'crypto' import)
+
+async function hmacSha256Hex(key: string, data: string): Promise<string> {
+  const encoder = new TextEncoder()
+  const cryptoKey = await crypto.subtle.importKey(
+    'raw',
+    encoder.encode(key),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  )
+  const sig = await crypto.subtle.sign('HMAC', cryptoKey, encoder.encode(data))
+  return Array.from(new Uint8Array(sig)).map(b => b.toString(16).padStart(2, '0')).join('')
+}
+
+function constantTimeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false
+  let result = 0
+  for (let i = 0; i < a.length; i++) {
+    result |= a.charCodeAt(i) ^ b.charCodeAt(i)
+  }
+  return result === 0
+}
 
 // Re-export schemas and field-map for convenience
 export { SuperPixelEventSchema, AudienceSyncEventSchema, ExportRowSchema } from '@/lib/audiencelab/schemas'
@@ -30,23 +52,20 @@ export { normalizeALPayload, computeDeliverabilityScore } from '@/lib/audiencela
  * Verify AL webhook secret (shared secret or HMAC signature).
  * Used by both superpixel and audiencesync webhook handlers.
  */
-export function verifyAudienceLabWebhook(
+export async function verifyAudienceLabWebhook(
   rawBody: string,
   headers: {
     secret?: string | null
     signature?: string | null
   }
-): boolean {
+): Promise<boolean> {
   const webhookSecret = process.env.AUDIENCELAB_WEBHOOK_SECRET
   if (!webhookSecret) return false
 
   // Check shared secret header
   if (headers.secret) {
     try {
-      return crypto.timingSafeEqual(
-        Buffer.from(headers.secret),
-        Buffer.from(webhookSecret)
-      )
+      return constantTimeEqual(headers.secret, webhookSecret)
     } catch {
       return false
     }
@@ -54,16 +73,10 @@ export function verifyAudienceLabWebhook(
 
   // Check HMAC signature
   if (headers.signature) {
-    const expected = crypto
-      .createHmac('sha256', webhookSecret)
-      .update(rawBody)
-      .digest('hex')
+    const expected = await hmacSha256Hex(webhookSecret, rawBody)
     const provided = headers.signature.replace(/^sha256=/, '')
     try {
-      return crypto.timingSafeEqual(
-        Buffer.from(provided),
-        Buffer.from(expected)
-      )
+      return constantTimeEqual(provided, expected)
     } catch {
       return false
     }

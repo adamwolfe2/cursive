@@ -6,7 +6,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { CRMLeadRepository } from '@/lib/repositories/crm-lead.repository'
-import { inngest } from '@/inngest/client'
 import { z } from 'zod'
 
 // Use edge runtime for better performance
@@ -137,23 +136,8 @@ export async function POST(req: NextRequest) {
     }
 
     // Emit lead/created events for all imported leads (non-blocking)
-    if (createdLeadIds.length > 0) {
-      try {
-        const events = createdLeadIds.map((leadId) => ({
-          name: 'lead/created' as const,
-          data: {
-            lead_id: leadId,
-            workspace_id: user.workspace_id,
-            source: 'import',
-          },
-        }))
-        inngest.send(events).catch((err: unknown) => {
-          console.error('[Lead Import] Failed to emit lead/created events:', err)
-        })
-      } catch {
-        // Best-effort: don't fail import if event emission fails
-      }
-    }
+    // Inngest disabled (Node.js runtime not available on this deployment)
+    // Original: inngest.send(createdLeadIds.map(id => ({ name: 'lead/created', data: { lead_id: id, workspace_id, source: 'import' } })))
 
     // Calculate statistics
     const imported = results.filter(r => r.success).length

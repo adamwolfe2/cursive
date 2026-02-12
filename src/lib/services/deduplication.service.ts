@@ -1,8 +1,14 @@
 // Lead Deduplication Service
 // Handles duplicate detection, hash calculation, and rejection logging
 
-import { createHash } from 'crypto'
 import { createAdminClient } from '@/lib/supabase/admin'
+
+// Edge-compatible crypto helper (no Node.js 'crypto' import)
+async function sha256Hex(data: string): Promise<string> {
+  const encoded = new TextEncoder().encode(data)
+  const hash = await crypto.subtle.digest('SHA-256', encoded)
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('')
+}
 
 // Rejection reason codes
 export enum RejectionReason {
@@ -92,18 +98,18 @@ export function normalizePhone(phone: string | null | undefined): string {
  * Calculate hash key for lead deduplication
  * SHA256(lower(email) + '|' + lower(company_domain) + '|' + digits_only(phone))
  */
-export function calculateHashKey(
+export async function calculateHashKey(
   email: string,
   companyDomain: string | null,
   phone: string | null
-): string {
+): Promise<string> {
   const normalizedEmail = normalizeEmail(email)
   const normalizedDomain = (companyDomain || extractDomainFromEmail(email)).toLowerCase().trim()
   const normalizedPhone = normalizePhone(phone)
 
   const hashInput = `${normalizedEmail}|${normalizedDomain}|${normalizedPhone}`
 
-  return createHash('sha256').update(hashInput).digest('hex')
+  return sha256Hex(hashInput)
 }
 
 /**
@@ -117,7 +123,7 @@ export async function checkDuplicate(
 ): Promise<DeduplicationResult> {
   const supabase = createAdminClient()
 
-  const hashKey = calculateHashKey(email, companyDomain, phone)
+  const hashKey = await calculateHashKey(email, companyDomain, phone)
 
   // Check for existing lead with same hash
   const { data: existingLead, error } = await supabase
@@ -267,8 +273,9 @@ export async function batchCheckDuplicates(
   const hashMap = new Map<string, { email: string; companyName?: string | null; index: number }>()
   const results = new Map<string, DeduplicationResult>()
 
-  leads.forEach((lead, index) => {
-    const hashKey = calculateHashKey(lead.email, lead.companyDomain || null, lead.phone || null)
+  for (let index = 0; index < leads.length; index++) {
+    const lead = leads[index]
+    const hashKey = await calculateHashKey(lead.email, lead.companyDomain || null, lead.phone || null)
     hashMap.set(hashKey, { email: lead.email, companyName: lead.companyName, index })
     // Default to not duplicate
     results.set(lead.email, {
@@ -277,7 +284,7 @@ export async function batchCheckDuplicates(
       isPlatformOwned: false,
       hashKey,
     })
-  })
+  }
 
   // STEP 1: Check for exact hash duplicates
   const hashKeys = Array.from(hashMap.keys())

@@ -6,7 +6,35 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createHmac, randomBytes, timingSafeEqual } from 'crypto'
+
+// Edge-compatible crypto helpers (no Node.js 'crypto' import)
+
+function generateRandomHex(byteLength: number): string {
+  const bytes = crypto.getRandomValues(new Uint8Array(byteLength))
+  return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('')
+}
+
+async function hmacSha256Hex(key: string, data: string): Promise<string> {
+  const encoder = new TextEncoder()
+  const cryptoKey = await crypto.subtle.importKey(
+    'raw',
+    encoder.encode(key),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  )
+  const sig = await crypto.subtle.sign('HMAC', cryptoKey, encoder.encode(data))
+  return Array.from(new Uint8Array(sig)).map(b => b.toString(16).padStart(2, '0')).join('')
+}
+
+function constantTimeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false
+  let result = 0
+  for (let i = 0; i < a.length; i++) {
+    result |= a.charCodeAt(i) ^ b.charCodeAt(i)
+  }
+  return result === 0
+}
 
 // ============================================
 // CSRF PROTECTION
@@ -20,7 +48,7 @@ const CSRF_COOKIE_NAME = '__csrf'
  * Generate a CSRF token
  */
 export function generateCsrfToken(): string {
-  return randomBytes(CSRF_TOKEN_LENGTH).toString('hex')
+  return generateRandomHex(CSRF_TOKEN_LENGTH)
 }
 
 /**
@@ -49,14 +77,7 @@ export function validateCsrfToken(request: NextRequest): boolean {
   }
 
   try {
-    const cookieBuffer = Buffer.from(cookieToken)
-    const headerBuffer = Buffer.from(headerToken)
-
-    if (cookieBuffer.length !== headerBuffer.length) {
-      return false
-    }
-
-    return timingSafeEqual(cookieBuffer, headerBuffer)
+    return constantTimeEqual(cookieToken, headerToken)
   } catch {
     return false
   }
@@ -365,34 +386,28 @@ export function checkPasswordStrength(password: string): PasswordStrengthResult 
 /**
  * Generate HMAC signature
  */
-export function generateSignature(
+export async function generateSignature(
   payload: string,
   secret: string,
   algorithm = 'sha256'
-): string {
-  return createHmac(algorithm, secret).update(payload).digest('hex')
+): Promise<string> {
+  // Edge runtime only supports SHA-256 via crypto.subtle
+  return hmacSha256Hex(secret, payload)
 }
 
 /**
  * Verify HMAC signature
  */
-export function verifySignature(
+export async function verifySignature(
   payload: string,
   signature: string,
   secret: string,
   algorithm = 'sha256'
-): boolean {
-  const expected = generateSignature(payload, secret, algorithm)
+): Promise<boolean> {
+  const expected = await generateSignature(payload, secret, algorithm)
 
   try {
-    const signatureBuffer = Buffer.from(signature)
-    const expectedBuffer = Buffer.from(expected)
-
-    if (signatureBuffer.length !== expectedBuffer.length) {
-      return false
-    }
-
-    return timingSafeEqual(signatureBuffer, expectedBuffer)
+    return constantTimeEqual(signature, expected)
   } catch {
     return false
   }
@@ -401,11 +416,11 @@ export function verifySignature(
 /**
  * Verify Stripe webhook signature
  */
-export function verifyStripeSignature(
+export async function verifyStripeSignature(
   payload: string,
   signature: string,
   secret: string
-): boolean {
+): Promise<boolean> {
   const parts = signature.split(',')
   const timestamp = parts.find((p) => p.startsWith('t='))?.split('=')[1]
   const v1Signature = parts.find((p) => p.startsWith('v1='))?.split('=')[1]
@@ -415,7 +430,6 @@ export function verifyStripeSignature(
   }
 
   const signedPayload = `${timestamp}.${payload}`
-  const expectedSignature = generateSignature(signedPayload, secret)
 
   return verifySignature(signedPayload, v1Signature, secret)
 }
@@ -553,7 +567,7 @@ export function isIpBlocked(ip: string, blocklist: string[]): boolean {
  * Generate a secure random token
  */
 export function generateSecureToken(length = 32): string {
-  return randomBytes(length).toString('hex')
+  return generateRandomHex(length)
 }
 
 /**
@@ -567,8 +581,6 @@ export function generateApiKey(prefix = 'oi'): string {
 /**
  * Hash an API key for storage
  */
-export function hashApiKey(apiKey: string): string {
-  return createHmac('sha256', process.env.API_KEY_SECRET || 'default-secret')
-    .update(apiKey)
-    .digest('hex')
+export async function hashApiKey(apiKey: string): Promise<string> {
+  return hmacSha256Hex(process.env.API_KEY_SECRET || 'default-secret', apiKey)
 }

@@ -2,7 +2,6 @@
 // Handles referral program logic for both buyers and partners
 
 import { createAdminClient } from '@/lib/supabase/admin'
-import crypto from 'crypto'
 
 // Referral configuration - EXACT SPEC VALUES
 export const REFERRAL_CONFIG = {
@@ -63,7 +62,9 @@ interface ReferralRewardResult {
  */
 export function generateReferralCode(type: 'buyer' | 'partner'): string {
   const prefix = REFERRAL_CONFIG.CODE_PREFIX[type]
-  const random = crypto.randomBytes(4).toString('hex').toUpperCase().slice(0, REFERRAL_CONFIG.CODE_LENGTH)
+  const bytes = new Uint8Array(4)
+  crypto.getRandomValues(bytes)
+  const random = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase().slice(0, REFERRAL_CONFIG.CODE_LENGTH)
   return `${prefix}-${random}`
 }
 

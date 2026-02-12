@@ -4,7 +4,19 @@
  */
 
 import { createClient } from '@/lib/supabase/server'
-import { randomBytes, createHash } from 'crypto'
+
+// Edge-compatible crypto helpers (no Node.js 'crypto' import)
+
+function generateRandomHex(byteLength: number): string {
+  const bytes = crypto.getRandomValues(new Uint8Array(byteLength))
+  return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('')
+}
+
+async function sha256Hex(data: string): Promise<string> {
+  const encoded = new TextEncoder().encode(data)
+  const hash = await crypto.subtle.digest('SHA-256', encoded)
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('')
+}
 
 export type IntegrationProvider =
   | 'emailbison'
@@ -524,11 +536,11 @@ export async function createApiKey(
 ): Promise<{ success: boolean; apiKey?: { id: string; key: string }; error?: string }> {
   const supabase = await createClient()
 
-  // Generate a random API key
-  const keyBytes = randomBytes(32)
-  const fullKey = `lm_${keyBytes.toString('hex')}`
+  // Generate a random API key (Edge-compatible)
+  const keyHex = generateRandomHex(32)
+  const fullKey = `lm_${keyHex}`
   const keyPrefix = fullKey.slice(0, 10)
-  const keyHash = createHash('sha256').update(fullKey).digest('hex')
+  const keyHash = await sha256Hex(fullKey)
 
   const { data: result, error } = await supabase
     .from('workspace_api_keys')
@@ -616,7 +628,7 @@ export async function validateApiKey(
 ): Promise<{ valid: boolean; workspaceId?: string; scopes?: string[] }> {
   const supabase = await createClient()
 
-  const keyHash = createHash('sha256').update(apiKey).digest('hex')
+  const keyHash = await sha256Hex(apiKey)
 
   const { data, error } = await supabase
     .from('workspace_api_keys')

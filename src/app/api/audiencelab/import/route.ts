@@ -16,7 +16,6 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { ImportRequestSchema, ExportRowSchema } from '@/lib/audiencelab/schemas'
-import { inngest } from '@/inngest/client'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 import { retryFetch } from '@/lib/utils/retry'
 
@@ -211,18 +210,9 @@ export async function POST(request: NextRequest) {
         continue
       }
 
-      // Queue processing for each event
+      // Inngest disabled (Node.js runtime not available on this deployment)
+      // Original: inngest.send(inserted.map(row => ({ name: 'audiencelab/event-received', data: { event_id: row.id, workspace_id, source: 'export' } })))
       if (inserted) {
-        const inngestEvents = inserted.map(row => ({
-          name: 'audiencelab/event-received' as const,
-          data: {
-            event_id: row.id,
-            workspace_id: workspaceId,
-            source: 'export' as const,
-          },
-        }))
-
-        await inngest.send(inngestEvents)
         stored += inserted.length
       }
     }

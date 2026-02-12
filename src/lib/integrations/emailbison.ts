@@ -530,23 +530,27 @@ export async function createCampaignSchedule(
 /**
  * Verify EmailBison webhook signature
  */
-export function verifyWebhookSignature(
+export async function verifyWebhookSignature(
   payload: string,
   signature: string,
   secret: string = process.env.EMAILBISON_WEBHOOK_SECRET || ''
-): boolean {
+): Promise<boolean> {
   if (!secret) return false
 
-  const crypto = require('crypto')
-  const expected = crypto
-    .createHmac('sha256', secret)
-    .update(payload)
-    .digest('hex')
-
-  return crypto.timingSafeEqual(
-    Buffer.from(signature),
-    Buffer.from(expected)
+  const encoder = new TextEncoder()
+  const key = await crypto.subtle.importKey(
+    'raw', encoder.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
   )
+  const sig = await crypto.subtle.sign('HMAC', key, encoder.encode(payload))
+  const expected = Array.from(new Uint8Array(sig)).map(b => b.toString(16).padStart(2, '0')).join('')
+
+  // Constant-time comparison
+  if (signature.length !== expected.length) return false
+  let result = 0
+  for (let i = 0; i < signature.length; i++) {
+    result |= signature.charCodeAt(i) ^ expected.charCodeAt(i)
+  }
+  return result === 0
 }
 
 // ============================================================================
