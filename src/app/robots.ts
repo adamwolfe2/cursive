@@ -1,38 +1,20 @@
 /**
  * Robots.txt Generator
- * Cursive Platform Marketing Site
+ * leads.meetcursive.com (App Domain)
  *
- * Generates robots.txt for search engines.
+ * Disallows all crawling — this is the app, not the marketing site.
+ * The marketing site at meetcursive.com has its own robots.txt.
  */
 
 import type { MetadataRoute } from 'next'
-
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://meetcursive.com'
 
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
       {
         userAgent: '*',
-        allow: '/',
-        disallow: [
-          '/api/',
-          '/admin/',
-          '/dashboard/',
-          '/_next/',
-          '/private/',
-        ],
-      },
-      {
-        userAgent: 'GPTBot',
-        disallow: '/',
-      },
-      {
-        userAgent: 'ChatGPT-User',
         disallow: '/',
       },
     ],
-    sitemap: `${baseUrl}/sitemap.xml`,
-    host: baseUrl,
   }
 }
