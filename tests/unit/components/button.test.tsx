@@ -93,14 +93,16 @@ describe('Button', () => {
       render(<Button size="default">Default Size</Button>)
 
       const button = screen.getByRole('button')
-      expect(button).toHaveClass('h-10', 'px-4', 'py-2')
+      // Component uses responsive sizing: h-11 on mobile, h-10 on sm+
+      expect(button).toHaveClass('h-11', 'sm:h-10', 'px-4', 'py-2')
     })
 
     it('applies small size classes', () => {
       render(<Button size="sm">Small</Button>)
 
       const button = screen.getByRole('button')
-      expect(button).toHaveClass('h-8', 'px-3')
+      // Component uses responsive sizing: h-11 on mobile, h-8 on sm+
+      expect(button).toHaveClass('h-11', 'sm:h-8', 'px-3')
     })
 
     it('applies large size classes', () => {
@@ -114,7 +116,8 @@ describe('Button', () => {
       render(<Button size="icon">X</Button>)
 
       const button = screen.getByRole('button')
-      expect(button).toHaveClass('h-10', 'w-10')
+      // Component uses responsive sizing: h-11/w-11 on mobile, h-10/w-10 on sm+
+      expect(button).toHaveClass('h-11', 'w-11', 'sm:h-10', 'sm:w-10')
     })
   })
 
