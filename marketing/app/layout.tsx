@@ -7,6 +7,7 @@ import { Footer } from "@/components/footer";
 import { generateMetadata } from "@/lib/seo/metadata";
 import { ClientLayout } from "@/components/client-layout";
 import { ExitIntentPopup } from "@/components/exit-intent-popup";
+import { CookieConsent } from "@/components/cookie-consent";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -102,6 +103,7 @@ export default function RootLayout({
           <main className="pt-16">{children}</main>
           <Footer />
           <ExitIntentPopup />
+          <CookieConsent />
         </ClientLayout>
       </body>
     </html>
