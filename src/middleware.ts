@@ -102,7 +102,6 @@ export async function middleware(req: NextRequest) {
       pathname.startsWith('/login') ||
       pathname.startsWith('/signup') ||
       pathname.startsWith('/welcome') || // Welcome/setup page
-      pathname.startsWith('/setup-admin') || // TEMPORARY: Admin bootstrap - DELETE AFTER USE
       pathname.startsWith('/onboarding') || // Legacy onboarding pages
       pathname.startsWith('/role-selection') || // Legacy role selection
       pathname.startsWith('/forgot-password') ||

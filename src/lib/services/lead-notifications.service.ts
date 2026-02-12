@@ -9,6 +9,7 @@
  */
 
 import { createAdminClient } from '@/lib/supabase/admin'
+import { sendSlackAlert } from '@/lib/monitoring/alerts'
 
 const LOG_PREFIX = '[Lead Notifications]'
 
@@ -375,6 +376,20 @@ export async function notifyNewLead(
         `Slack=${result.slack.count}/${slackUrls.size}, ` +
         `Zapier=${result.zapier.count}/${zapierUrls.size}`
     )
+
+    // Admin-level Slack notification (system SLACK_WEBHOOK_URL)
+    // This fires regardless of per-user webhook config so Adam always sees assignments
+    await sendSlackAlert({
+      type: 'lead_assigned',
+      severity: 'info',
+      message: `Lead assigned: ${lead.first_name || ''} ${lead.last_name || ''} (${lead.company_name || 'Unknown'})`,
+      metadata: {
+        lead_id: lead.lead_id,
+        workspace_id: workspaceId,
+        email: lead.email || 'none',
+        source: lead.source || 'unknown',
+      },
+    }).catch(() => {}) // Best-effort, don't block
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Unknown error'
     console.error(`${LOG_PREFIX} Unexpected error in notifyNewLead: ${message}`)
