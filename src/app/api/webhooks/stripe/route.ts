@@ -235,7 +235,7 @@ export async function POST(request: NextRequest) {
     const signature = request.headers.get('stripe-signature')
 
     if (!signature) {
-      console.error('[Stripe Webhook] Missing signature')
+      safeError('[Stripe Webhook] Missing signature')
       return NextResponse.json(
         { error: 'Missing stripe-signature header' },
         { status: 400 }
@@ -251,7 +251,7 @@ export async function POST(request: NextRequest) {
         body, signature, webhookSecret, undefined, cryptoProvider
       )
     } catch (err) {
-      console.error('[Stripe Webhook] Signature verification failed:', err)
+      safeError('[Stripe Webhook] Signature verification failed:', err)
       return NextResponse.json(
         { error: 'Invalid signature' },
         { status: 400 }
@@ -279,10 +279,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ received: true })
     }
 
-    console.warn('[Stripe Webhook] Unhandled event type:', event.type)
+    safeLog('[Stripe Webhook] Unhandled event type: ' + event.type)
     return NextResponse.json({ received: true, unhandled: true })
   } catch (error) {
-    console.error('[Stripe Webhook] Error processing webhook:', error)
+    safeError('[Stripe Webhook] Error processing webhook:', error)
     return NextResponse.json(
       { error: 'Webhook handler failed' },
       { status: 500 }

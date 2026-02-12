@@ -10,6 +10,7 @@ export const runtime = 'edge'
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
+import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 
 export async function POST(req: NextRequest) {
   try {
@@ -40,7 +41,7 @@ export async function POST(req: NextRequest) {
     const { error } = await supabase.auth.signOut()
 
     if (error) {
-      console.error('[Sign Out] Error:', error)
+      safeError('[Sign Out] Error:', error)
       return NextResponse.json(
         { error: 'Failed to sign out' },
         { status: 500 }
@@ -69,7 +70,7 @@ export async function POST(req: NextRequest) {
 
     return response
   } catch (error: any) {
-    console.error('[Sign Out] Error:', error)
+    safeError('[Sign Out] Error:', error)
     return NextResponse.json(
       { error: 'Failed to sign out' },
       { status: 500 }

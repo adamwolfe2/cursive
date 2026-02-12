@@ -189,7 +189,8 @@ export default function MarketplacePage() {
     if (urlParams.get('success') === 'true') {
       setShowSuccessMessage(true)
       window.history.replaceState({}, '', '/marketplace')
-      setTimeout(() => setShowSuccessMessage(false), 5000)
+      const timer = setTimeout(() => setShowSuccessMessage(false), 5000)
+      return () => clearTimeout(timer)
     }
   }, [])
 

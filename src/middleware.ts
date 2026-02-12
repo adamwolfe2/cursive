@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/middleware'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { validateRequiredEnvVars } from '@/lib/env-validation'
 import { logger } from '@/lib/monitoring/logger'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function middleware(req: NextRequest) {
   // Validate critical environment variables on first request
@@ -77,7 +78,7 @@ export async function middleware(req: NextRequest) {
           email: session.user.email,
         } : null
       } catch (e) {
-        console.error('[Middleware] Auth session check failed:', e)
+        safeError('[Middleware] Auth session check failed:', e)
         // On error, set user to null — the protected route check below (line ~145)
         // will redirect to login for protected routes, while public routes pass through.
         // This prevents redirect loops when /login itself triggers an auth error.
@@ -162,21 +163,34 @@ export async function middleware(req: NextRequest) {
     }
 
     // Workspace check: verify authenticated users have a workspace for dashboard routes.
-    // Uses a single DB query instead of 2-3. Admin routes already bypass this (isAdminRoute check above).
-    // The dashboard layout provides additional checks (profile existence, credit balance).
+    // Caches workspace_id in a cookie to avoid DB query on every request (~50-100ms savings).
     if (user && !isPublicRoute && !isAdminRoute && !isPartnerRoute && !pathname.startsWith('/onboarding') && !pathname.startsWith('/welcome') && !pathname.startsWith('/api/onboarding')) {
-      const adminSupabase = createAdminClient()
-      const { data: userRecord } = await adminSupabase
-        .from('users')
-        .select('workspace_id')
-        .eq('auth_user_id', user.id)
-        .single()
+      // Check cookie cache first to avoid DB roundtrip on every request
+      const cachedWorkspaceId = req.cookies.get('x-workspace-id')?.value
 
-      if (!userRecord?.workspace_id) {
-        // No workspace — redirect to onboarding. Admin routes are excluded above,
-        // so /admin/* is still accessible for admins without workspaces.
-        const onboardingUrl = new URL('/welcome', req.url)
-        return redirectWithCookies(onboardingUrl)
+      if (!cachedWorkspaceId) {
+        const adminSupabase = createAdminClient()
+        const { data: userRecord } = await adminSupabase
+          .from('users')
+          .select('workspace_id')
+          .eq('auth_user_id', user.id)
+          .single()
+
+        if (!userRecord?.workspace_id) {
+          // No workspace — redirect to onboarding. Admin routes are excluded above,
+          // so /admin/* is still accessible for admins without workspaces.
+          const onboardingUrl = new URL('/welcome', req.url)
+          return redirectWithCookies(onboardingUrl)
+        }
+
+        // Cache workspace_id in a cookie (httpOnly, same-site, 1 hour TTL)
+        client.response.cookies.set('x-workspace-id', userRecord.workspace_id, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+          maxAge: 3600, // 1 hour
+          path: '/',
+        })
       }
     }
 
@@ -199,8 +213,8 @@ export async function middleware(req: NextRequest) {
 
     return client.response
   } catch (error) {
-    console.error('Middleware invocation failed:', error)
-    console.error('Error details:', {
+    safeError('Middleware invocation failed:', error)
+    safeError('Error details:', {
       message: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,
       pathname: req.nextUrl.pathname,

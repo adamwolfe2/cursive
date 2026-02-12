@@ -55,7 +55,7 @@ async function hmacSha256(key: string, message: string): Promise<string> {
 async function verifySecret(request: NextRequest, rawBody: string): Promise<boolean> {
   const secret = process.env.AUDIENCELAB_WEBHOOK_SECRET
   if (!secret) {
-    console.error(`${LOG_PREFIX} AUDIENCELAB_WEBHOOK_SECRET not configured`)
+    safeError(`${LOG_PREFIX} AUDIENCELAB_WEBHOOK_SECRET not configured`)
     return false
   }
 

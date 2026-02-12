@@ -16,6 +16,7 @@ import {
 import { calculateIntentScore, calculateFreshnessScore, calculateMarketplacePrice } from '@/lib/services/lead-scoring.service'
 import { withRateLimit } from '@/lib/middleware/rate-limiter'
 import { UPLOAD_LIMITS } from '@/lib/constants/timeouts'
+import { routeLeadsToMatchingUsers } from '@/lib/services/marketplace-lead-routing'
 
 // Input validation for lead data
 const leadSchema = z.object({
@@ -450,6 +451,21 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Route newly created leads to matching users
+    let routingStats = { routed: 0, notified: 0 }
+    if (leadsToInsert.length > 0) {
+      const { data: insertedLeads } = await adminClient
+        .from('leads')
+        .select('id')
+        .eq('upload_batch_id', batchId)
+
+      if (insertedLeads?.length) {
+        const newLeadIds = insertedLeads.map((l: { id: string }) => l.id)
+        routingStats = await routeLeadsToMatchingUsers(newLeadIds, { source: 'partner' })
+        console.log(`[Partner Upload] Routed ${routingStats.routed} leads to matching users`)
+      }
+    }
+
     // Store rejection log if any
     let rejectedRowsUrl: string | null = null
     if (rejections.length > 0) {
@@ -494,6 +510,7 @@ export async function POST(request: NextRequest) {
       },
       validation_errors: results.validation_errors,
       rejected_rows_url: rejectedRowsUrl,
+      routing: routingStats,
     })
   } catch (error: unknown) {
     console.error('[Partner Upload] Error:', error)

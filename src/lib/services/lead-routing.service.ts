@@ -92,7 +92,7 @@ export class LeadRoutingService {
       // STEP 2: Fetch lead data with RLS compliance
       const { data: lead, error: leadError } = await supabase
         .from('leads')
-        .select('*, contact_data')
+        .select('*')
         .eq('id', leadId)
         .eq('workspace_id', sourceWorkspaceId) // RLS: explicit workspace filter
         .single()
@@ -152,7 +152,7 @@ export class LeadRoutingService {
       // STEP 4: Fetch active routing rules
       const { data: rules, error: rulesError } = await supabase
         .from('lead_routing_rules')
-        .select('*')
+        .select('id, name, workspace_id, destination_workspace_id, priority, is_active, conditions, match_type, rule_name, actions, created_at')
         .eq('workspace_id', sourceWorkspaceId) // RLS: explicit workspace filter
         .eq('is_active', true)
         .order('priority', { ascending: false })

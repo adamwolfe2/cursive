@@ -3,6 +3,7 @@ export const runtime = 'edge'
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { withRateLimit } from '@/lib/middleware/rate-limiter'
 
 const contactSchema = z.object({
   name: z.string().min(1, 'Name is required').max(100),
@@ -14,6 +15,9 @@ const contactSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    const rateLimited = await withRateLimit(request, 'public-form')
+    if (rateLimited) return rateLimited
+
     const body = await request.json()
     const validated = contactSchema.parse(body)
 

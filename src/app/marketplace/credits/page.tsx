@@ -70,6 +70,7 @@ export default function CreditsPage() {
     fetchCredits()
 
     // Handle Stripe redirect
+    const timers: NodeJS.Timeout[] = []
     const urlParams = new URLSearchParams(window.location.search)
     if (urlParams.get('success') === 'true') {
       const credits = urlParams.get('credits')
@@ -78,11 +79,15 @@ export default function CreditsPage() {
       }
       setShowSuccess(true)
       window.history.replaceState({}, '', '/marketplace/credits')
-      setTimeout(() => setShowSuccess(false), 5000)
+      timers.push(setTimeout(() => setShowSuccess(false), 5000))
     } else if (urlParams.get('canceled') === 'true') {
       setShowCanceled(true)
       window.history.replaceState({}, '', '/marketplace/credits')
-      setTimeout(() => setShowCanceled(false), 5000)
+      timers.push(setTimeout(() => setShowCanceled(false), 5000))
+    }
+
+    return () => {
+      timers.forEach(clearTimeout)
     }
   }, [fetchCredits, user])
 

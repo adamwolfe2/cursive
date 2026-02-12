@@ -6,7 +6,7 @@
  * Displays the user's assigned leads with status management.
  */
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback, useRef, useMemo, memo } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/design-system'
 import type { Database } from '@/types/database.types'
@@ -53,16 +53,25 @@ const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
   archived: { bg: 'bg-zinc-100', text: 'text-zinc-500' },
 }
 
+const PAGE_SIZE = 25
+
 export function MyLeadsTable({ userId, workspaceId }: MyLeadsTableProps) {
   const [assignments, setAssignments] = useState<LeadAssignment[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<string>('all')
   const [selectedLead, setSelectedLead] = useState<LeadAssignment | null>(null)
   const [newLeadCount, setNewLeadCount] = useState(0)
+  const [page, setPage] = useState(1)
+  const [totalCount, setTotalCount] = useState(0)
   const channelRef = useRef<RealtimeChannel | null>(null)
+
+  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE))
 
   const fetchAssignments = useCallback(async () => {
     const supabase = createClient()
+
+    const from = (page - 1) * PAGE_SIZE
+    const to = from + PAGE_SIZE - 1
 
     let query = supabase
       .from('user_lead_assignments')
@@ -91,7 +100,8 @@ export function MyLeadsTable({ userId, workspaceId }: MyLeadsTableProps) {
           company_industry,
           created_at
         )
-      `
+      `,
+        { count: 'exact' }
       )
       .eq('user_id', userId)
       .eq('workspace_id', workspaceId)
@@ -101,17 +111,18 @@ export function MyLeadsTable({ userId, workspaceId }: MyLeadsTableProps) {
       query = query.eq('status', filter)
     }
 
-    const { data, error } = await query.limit(50)
+    const { data, error, count } = await query.range(from, to)
 
     if (error) {
       console.error('Failed to fetch assignments:', error)
     } else {
       setAssignments((data as unknown as LeadAssignment[]) || [])
+      setTotalCount(count ?? 0)
       setNewLeadCount(0)
     }
 
     setLoading(false)
-  }, [userId, workspaceId, filter])
+  }, [userId, workspaceId, filter, page])
 
   useEffect(() => {
     fetchAssignments()
@@ -194,7 +205,7 @@ export function MyLeadsTable({ userId, workspaceId }: MyLeadsTableProps) {
     }
   }, [userId])
 
-  async function updateStatus(assignmentId: string, newStatus: string) {
+  const updateStatus = useCallback(async (assignmentId: string, newStatus: string) => {
     const supabase = createClient()
 
     const update: UserLeadAssignmentUpdate = {
@@ -217,7 +228,7 @@ export function MyLeadsTable({ userId, workspaceId }: MyLeadsTableProps) {
         prev.map((a) => (a.id === assignmentId ? { ...a, status: newStatus } : a))
       )
     }
-  }
+  }, [])
 
   function formatDate(dateStr: string) {
     return new Date(dateStr).toLocaleDateString('en-US', {
@@ -253,15 +264,10 @@ export function MyLeadsTable({ userId, workspaceId }: MyLeadsTableProps) {
     <div className="rounded-lg border border-zinc-200 bg-white">
       {/* New leads notification */}
       {newLeadCount > 0 && (
-        <button
-          onClick={() => {
-            fetchAssignments()
-            setNewLeadCount(0)
-          }}
-          className="w-full px-4 py-2 text-sm font-medium text-blue-700 bg-blue-50 border-b border-blue-100 hover:bg-blue-100 transition-colors"
-        >
-          {newLeadCount} new lead{newLeadCount > 1 ? 's' : ''} arrived — click to refresh
-        </button>
+        <div className="w-full px-4 py-2 text-sm font-medium text-green-700 bg-green-50 border-b border-green-100 flex items-center gap-2">
+          <span className="inline-block h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+          {newLeadCount} new lead{newLeadCount > 1 ? 's' : ''} added to your list
+        </div>
       )}
 
       {/* Filter tabs */}
@@ -270,7 +276,7 @@ export function MyLeadsTable({ userId, workspaceId }: MyLeadsTableProps) {
           {['all', 'new', 'viewed', 'contacted', 'converted'].map((status) => (
             <button
               key={status}
-              onClick={() => setFilter(status)}
+              onClick={() => { setFilter(status); setPage(1) }}
               className={cn(
                 'px-3 py-1.5 text-sm font-medium rounded-md transition-colors',
                 filter === status
@@ -407,6 +413,57 @@ export function MyLeadsTable({ userId, workspaceId }: MyLeadsTableProps) {
         </div>
       )}
 
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between px-4 py-3 border-t border-zinc-200">
+          <p className="text-sm text-zinc-500">
+            Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, totalCount)} of {totalCount}
+          </p>
+          <div className="flex gap-1">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="px-3 py-1.5 text-sm font-medium rounded-md border border-zinc-200 disabled:opacity-40 hover:bg-zinc-50 transition-colors"
+            >
+              Previous
+            </button>
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              let pageNum: number
+              if (totalPages <= 5) {
+                pageNum = i + 1
+              } else if (page <= 3) {
+                pageNum = i + 1
+              } else if (page >= totalPages - 2) {
+                pageNum = totalPages - 4 + i
+              } else {
+                pageNum = page - 2 + i
+              }
+              return (
+                <button
+                  key={pageNum}
+                  onClick={() => setPage(pageNum)}
+                  className={cn(
+                    'px-3 py-1.5 text-sm font-medium rounded-md transition-colors',
+                    page === pageNum
+                      ? 'bg-blue-100 text-blue-700'
+                      : 'border border-zinc-200 hover:bg-zinc-50'
+                  )}
+                >
+                  {pageNum}
+                </button>
+              )
+            })}
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+              className="px-3 py-1.5 text-sm font-medium rounded-md border border-zinc-200 disabled:opacity-40 hover:bg-zinc-50 transition-colors"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Lead detail modal */}
       {selectedLead && (
         <LeadDetailModal
@@ -422,7 +479,7 @@ export function MyLeadsTable({ userId, workspaceId }: MyLeadsTableProps) {
   )
 }
 
-function LeadDetailModal({
+const LeadDetailModal = memo(function LeadDetailModal({
   assignment,
   onClose,
   onStatusChange,
@@ -592,4 +649,4 @@ function LeadDetailModal({
       </div>
     </div>
   )
-}
+})

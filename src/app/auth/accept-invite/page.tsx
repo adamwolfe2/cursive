@@ -19,42 +19,48 @@ function AcceptInviteContent() {
       return
     }
 
+    let redirectTimer: NodeJS.Timeout | undefined
+
     // Check if user is logged in
-    checkAuthAndAccept()
-  }, [token])
+    async function checkAuthAndAccept() {
+      try {
+        setStatus('accepting')
 
-  async function checkAuthAndAccept() {
-    try {
-      setStatus('accepting')
+        const res = await fetch('/api/team/invites/accept', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token }),
+        })
 
-      const res = await fetch('/api/team/invites/accept', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token }),
-      })
+        const data = await res.json()
 
-      const data = await res.json()
-
-      if (!res.ok) {
-        if (res.status === 401) {
-          // User not logged in - redirect to login with return URL
-          router.push(`/auth/login?redirect=/auth/accept-invite?token=${token}`)
-          return
+        if (!res.ok) {
+          if (res.status === 401) {
+            // User not logged in - redirect to login with return URL
+            router.push(`/auth/login?redirect=/auth/accept-invite?token=${token}`)
+            return
+          }
+          throw new Error(data.error || 'Failed to accept invitation')
         }
-        throw new Error(data.error || 'Failed to accept invitation')
+
+        setStatus('success')
+
+        // Redirect to dashboard after 2 seconds
+        redirectTimer = setTimeout(() => {
+          router.push('/dashboard')
+        }, 2000)
+      } catch (err: any) {
+        setStatus('error')
+        setError(err.message)
       }
-
-      setStatus('success')
-
-      // Redirect to dashboard after 2 seconds
-      setTimeout(() => {
-        router.push('/dashboard')
-      }, 2000)
-    } catch (err: any) {
-      setStatus('error')
-      setError(err.message)
     }
-  }
+
+    checkAuthAndAccept()
+
+    return () => {
+      if (redirectTimer) clearTimeout(redirectTimer)
+    }
+  }, [token, router])
 
   return (
     <div className="w-full max-w-md">

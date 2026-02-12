@@ -22,10 +22,10 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     redirect('/login')
   }
 
-  // Get user profile
+  // Get user profile (lightweight — layout already fetches full profile for sidebar)
   const { data: userData, error: userError } = await supabase
     .from('users')
-    .select('*, workspaces(*)')
+    .select('id, auth_user_id, workspace_id, email, full_name, plan, role, workspaces(id, name, industry_vertical)')
     .eq('auth_user_id', user.id)
     .single()
 
@@ -50,32 +50,30 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     redirect('/welcome')
   }
 
-  // Get leads count (safe query)
-  const { count: leadsCount } = await supabase
-    .from('leads')
-    .select('*', { count: 'exact', head: true })
-    .eq('workspace_id', userProfile.workspace_id)
+  // Parallelize all dashboard queries — they all depend only on workspace_id
+  const [leadsCountResult, pixelResult, recentLeadsResult, activeSubscription] = await Promise.all([
+    supabase
+      .from('leads')
+      .select('*', { count: 'exact', head: true })
+      .eq('workspace_id', userProfile.workspace_id),
+    supabase
+      .from('audiencelab_pixels')
+      .select('pixel_id')
+      .eq('workspace_id', userProfile.workspace_id)
+      .eq('is_active', true)
+      .maybeSingle(),
+    supabase
+      .from('leads')
+      .select('id, company_name, full_name, first_name, last_name, company_industry, status, created_at, intent_score_calculated, source')
+      .eq('workspace_id', userProfile.workspace_id)
+      .order('created_at', { ascending: false })
+      .limit(5),
+    serviceTierRepository.getWorkspaceActiveSubscription(userProfile.workspace_id),
+  ])
 
-  // Check if workspace has a pixel installed
-  const { data: pixelData } = await supabase
-    .from('audiencelab_pixels')
-    .select('pixel_id')
-    .eq('workspace_id', userProfile.workspace_id)
-    .eq('is_active', true)
-    .maybeSingle()
-
-  const hasPixel = !!pixelData
-
-  // Get recent leads - only select needed columns, NOT contact_email
-  const { data: recentLeads } = await supabase
-    .from('leads')
-    .select('id, company_name, full_name, first_name, last_name, company_industry, status, created_at, intent_score_calculated, source')
-    .eq('workspace_id', userProfile.workspace_id)
-    .order('created_at', { ascending: false })
-    .limit(5)
-
-  // Check for active service subscription
-  const activeSubscription = await serviceTierRepository.getWorkspaceActiveSubscription(userProfile.workspace_id)
+  const leadsCount = leadsCountResult.count
+  const hasPixel = !!pixelResult.data
+  const recentLeads = recentLeadsResult.data
 
   const workspace = userProfile.workspaces
 

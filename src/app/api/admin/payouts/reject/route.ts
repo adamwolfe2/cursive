@@ -9,6 +9,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { requireAdmin } from '@/lib/auth/admin'
+import { z } from 'zod'
+
+const payoutRejectSchema = z.object({
+  payout_id: z.string().uuid(),
+  reason: z.string().max(500).optional(),
+})
 
 export async function POST(req: NextRequest) {
   try {
@@ -22,12 +28,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Parse request body
-    const { payout_id, reason } = await req.json()
-
-    if (!payout_id) {
-      return NextResponse.json({ error: 'payout_id is required' }, { status: 400 })
-    }
+    // Parse and validate request body
+    const { payout_id, reason } = payoutRejectSchema.parse(await req.json())
 
     const adminClient = createAdminClient()
 
@@ -83,6 +85,12 @@ export async function POST(req: NextRequest) {
       message: `Payout of $${payout.amount.toFixed(2)} rejected`,
     })
   } catch (error: any) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { error: 'Invalid request', details: error.errors },
+        { status: 400 }
+      )
+    }
     console.error('[Admin Payouts] Rejection error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },

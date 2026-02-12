@@ -12,6 +12,7 @@ import {
   isBounceReceivedEvent,
   type ReplyReceivedEvent,
 } from '@/lib/services/emailbison'
+import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 
 interface RouteContext {
   params: Promise<{ agentId: string }>
@@ -51,7 +52,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
 
     // SECURITY: Always require webhook secret for signature verification
     if (!WEBHOOK_SECRET) {
-      console.error('[EmailBison Webhook] Missing EMAILBISON_WEBHOOK_SECRET')
+      safeError('[EmailBison Webhook] Missing EMAILBISON_WEBHOOK_SECRET')
       return NextResponse.json(
         { error: 'Webhook not configured' },
         { status: 500 }
@@ -61,7 +62,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
     // Verify signature - REQUIRED for security (Edge-compatible)
     const isValid = await verifySignatureEdge(rawBody, signature, WEBHOOK_SECRET)
     if (!isValid) {
-      console.error('[EmailBison Webhook] Signature verification failed')
+      safeError('[EmailBison Webhook] Signature verification failed')
       return NextResponse.json(
         { error: 'Invalid signature' },
         { status: 401 }
@@ -83,7 +84,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
       .single()
 
     if (agentError || !agent) {
-      console.error('[EmailBison Webhook] Agent not found:', agentId)
+      safeError('[EmailBison Webhook] Agent not found:', agentId)
       return NextResponse.json(
         { error: 'Agent not found' },
         { status: 404 }
@@ -166,7 +167,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
 
     return NextResponse.json(response)
   } catch (error) {
-    console.error('[EmailBison Webhook] Error:', error)
+    safeError('[EmailBison Webhook] Error:', error)
 
     // Mark idempotency key as failed to allow retry
     if (idempotencyKey && workspaceId) {
@@ -181,7 +182,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
           .eq('idempotency_key', idempotencyKey)
           .eq('workspace_id', workspaceId)
       } catch (idempotencyError) {
-        console.error('[EmailBison Webhook] Failed to update idempotency key:', idempotencyError)
+        safeError('[EmailBison Webhook] Failed to update idempotency key:', idempotencyError)
       }
     }
 
@@ -249,7 +250,7 @@ async function handleReplyReceived(
       .single()
 
     if (threadError || !newThread) {
-      console.error('[EmailBison Webhook] Failed to create thread:', threadError)
+      safeError('[EmailBison Webhook] Failed to create thread:', threadError)
       throw new Error('Failed to create email thread')
     }
 
@@ -268,7 +269,7 @@ async function handleReplyReceived(
     })
 
   if (messageError) {
-    console.error('[EmailBison Webhook] Failed to create message:', messageError)
+    safeError('[EmailBison Webhook] Failed to create message:', messageError)
     throw new Error('Failed to create email message')
   }
 

@@ -12,6 +12,7 @@ import { cookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
 import { z } from 'zod'
 import { withRateLimit, getRequestIdentifier } from '@/lib/middleware/rate-limiter'
+import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 
 // Request validation schema
 const changePasswordSchema = z.object({
@@ -103,7 +104,7 @@ export async function POST(req: NextRequest) {
     })
 
     if (updateError) {
-      console.error('[Change Password] Update error:', updateError)
+      safeError('[Change Password] Update error:', updateError)
       return NextResponse.json(
         { error: 'Failed to update password' },
         { status: 500 }
@@ -115,7 +116,7 @@ export async function POST(req: NextRequest) {
       message: 'Password updated successfully',
     })
   } catch (error: any) {
-    console.error('[Change Password] Error:', error)
+    safeError('[Change Password] Error:', error)
     return NextResponse.json(
       { error: 'Failed to change password' },
       { status: 500 }

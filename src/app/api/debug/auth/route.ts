@@ -5,6 +5,10 @@ import { createAdminClient } from '@/lib/supabase/admin'
 export const runtime = 'edge'
 
 export async function GET(req: NextRequest) {
+  if (process.env.NODE_ENV === 'production') {
+    return NextResponse.json({ error: 'Not found' }, { status: 404 })
+  }
+
   const response = NextResponse.next()
 
   const supabase = createServerClient(

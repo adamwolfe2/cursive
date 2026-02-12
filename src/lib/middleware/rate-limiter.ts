@@ -55,6 +55,13 @@ export const RATE_LIMITS = {
     message: 'Too many password change attempts. Please wait before trying again.',
   },
 
+  // Public form submissions (contact, waitlist) - strict to prevent spam
+  'public-form': {
+    windowMs: 60 * 1000, // 1 minute
+    maxRequests: 5, // 5 submissions per minute per IP
+    message: 'Too many submissions. Please wait before trying again.',
+  },
+
   // Default fallback
   'default': {
     windowMs: 60 * 1000, // 1 minute

@@ -171,9 +171,10 @@ export function CommandPalette({
   React.useEffect(() => {
     if (isOpen) {
       // Small delay to ensure modal is rendered
-      setTimeout(() => {
+      const timer = setTimeout(() => {
         inputRef.current?.focus()
       }, 0)
+      return () => clearTimeout(timer)
     }
   }, [isOpen])
 

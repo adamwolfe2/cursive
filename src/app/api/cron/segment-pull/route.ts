@@ -52,11 +52,15 @@ function parseCSV(val: unknown): string[] {
 }
 
 export async function GET(request: NextRequest) {
+  // Disabled — marketplace leads use admin/partner upload, not auto-pull
+  return NextResponse.json({ skipped: true, reason: 'Disabled — marketplace leads use admin/partner upload' })
+
   // Auth: Vercel Cron sends CRON_SECRET automatically
   const authHeader = request.headers.get('authorization')
   const cronSecret = process.env.CRON_SECRET
 
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+  // Fix: reject if CRON_SECRET is missing (was previously open when unset)
+  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -82,7 +86,7 @@ export async function GET(request: NextRequest) {
 
     // Group by unique industry+state combos
     const comboMap = new Map<string, TargetingCombo>()
-    for (const row of targetingRows) {
+    for (const row of targetingRows!) {
       const industries = (row.target_industries || []).sort()
       const states = (row.target_states || []).sort()
       const key = `${industries.join(',')}|${states.join(',')}`
@@ -151,8 +155,8 @@ export async function GET(request: NextRequest) {
 
         totalInserted += inserted
         totalSkipped += skipped
-      } catch (err) {
-        const msg = err instanceof Error ? err.message : 'Unknown error'
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? (err as Error).message : 'Unknown error'
         safeError(`${LOG_PREFIX} Error pulling combo ${i}`, err)
         errors.push(msg)
       }
@@ -170,7 +174,7 @@ export async function GET(request: NextRequest) {
 
       if (newLeads?.length) {
         let routed = 0
-        for (const lead of newLeads) {
+        for (const lead of newLeads!) {
           const { data: targetingUsers } = await supabase
             .from('user_targeting')
             .select('user_id, target_industries, target_states, target_cities, target_zips, daily_lead_cap, daily_lead_count, weekly_lead_cap, weekly_lead_count, monthly_lead_cap, monthly_lead_count')
@@ -182,7 +186,7 @@ export async function GET(request: NextRequest) {
           const leadState = lead.state_code || lead.state
           const leadIndustry = lead.company_industry
 
-          for (const ut of targetingUsers) {
+          for (const ut of targetingUsers!) {
             if (ut.daily_lead_cap && ut.daily_lead_count >= ut.daily_lead_cap) continue
             if (ut.weekly_lead_cap && ut.weekly_lead_count >= ut.weekly_lead_cap) continue
             if (ut.monthly_lead_cap && ut.monthly_lead_count >= ut.monthly_lead_cap) continue
@@ -226,7 +230,7 @@ export async function GET(request: NextRequest) {
               })
 
             if (assignErr) {
-              if (assignErr.code === '23505') continue
+              if ((assignErr as { code?: string }).code === '23505') continue
               safeError(`${LOG_PREFIX} Failed to assign lead ${lead.id}`, assignErr)
               continue
             }
@@ -252,7 +256,7 @@ export async function GET(request: NextRequest) {
           }
         }
 
-        safeLog(`${LOG_PREFIX} Routed ${routed} assignment(s) for ${newLeads.length} new leads`)
+        safeLog(`${LOG_PREFIX} Routed ${routed} assignment(s) for ${newLeads!.length} new leads`)
       }
     }
 

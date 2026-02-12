@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 import { SkipLink } from '@/components/ui/skip-link'
 import { Providers } from '@/components/providers'
 import { CrispChat } from '@/components/crisp-chat'
@@ -74,6 +75,7 @@ export default function RootLayout({
           {children}
         </Providers>
         <CrispChat />
+        <SpeedInsights />
       </body>
     </html>
   )

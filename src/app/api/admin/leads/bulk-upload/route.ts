@@ -1,9 +1,11 @@
 export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { requireAdmin } from '@/lib/auth/admin'
 import { parse } from 'csv-parse/sync'
+import { calculateIntentScore, calculateFreshnessScore, calculateMarketplacePrice } from '@/lib/services/lead-scoring.service'
+import { routeLeadsToMatchingUsers } from '@/lib/services/marketplace-lead-routing'
 
 // Industry mapping
 const INDUSTRY_MAP: Record<string, string> = {
@@ -75,7 +77,7 @@ export async function POST(request: NextRequest) {
     // Check admin authorization (throws if not admin)
     await requireAdmin()
 
-    const supabase = await createClient()
+    const adminClient = createAdminClient()
 
     // Parse form data
     const formData = await request.formData()
@@ -103,26 +105,41 @@ export async function POST(request: NextRequest) {
         successful: 0,
         failed: 0,
         errors: [`CSV parsing error: ${e.message}`],
-        routing_summary: {},
+        category_summary: {},
       })
     }
 
-    // Get all workspaces for routing
-    const { data: workspaces } = await supabase
-      .from('workspaces')
-      .select('id, name, allowed_industries, allowed_regions')
+    // Collect all emails for batch deduplication check
+    const emailsToCheck = records
+      .map((row: any) => row.email?.toLowerCase().trim())
+      .filter(Boolean) as string[]
+
+    // Batch check: find existing marketplace leads (workspace_id IS NULL) with these emails
+    const existingEmails = new Set<string>()
+    if (emailsToCheck.length > 0) {
+      const { data: existingLeads } = await adminClient
+        .from('leads')
+        .select('email')
+        .is('workspace_id', null)
+        .in('email', emailsToCheck)
+
+      if (existingLeads) {
+        for (const lead of existingLeads) {
+          if (lead.email) existingEmails.add(lead.email.toLowerCase())
+        }
+      }
+    }
 
     // Process leads
     const results = {
       total: records.length,
       successful: 0,
       failed: 0,
+      skipped_duplicates: 0,
       errors: [] as string[],
-      routing_summary: {} as Record<string, number>,
+      category_summary: {} as Record<string, number>,
     }
-
-    // Track created leads for event emission
-    const createdLeads: Array<{ id: string; workspace_id: string }> = []
+    const insertedLeadIds: string[] = []
 
     for (let i = 0; i < records.length; i++) {
       const row = records[i]
@@ -142,6 +159,8 @@ export async function POST(request: NextRequest) {
           continue
         }
 
+        const email = row.email.toLowerCase().trim()
+
         const state = normalizeState(row.state)
         if (!state) {
           results.errors.push(`Row ${rowNum}: Invalid state code "${row.state}"`)
@@ -156,41 +175,71 @@ export async function POST(request: NextRequest) {
           continue
         }
 
-        // Find matching workspace
-        const matchingWorkspace = workspaces?.find((w) => {
-          const matchesIndustry = w.allowed_industries?.includes(industry)
-          const matchesState = w.allowed_regions?.includes(state)
-          return matchesIndustry && matchesState
-        })
-
-        if (!matchingWorkspace) {
-          results.errors.push(`Row ${rowNum}: No matching workspace for ${industry} in ${state}`)
+        // Deduplicate: skip if a marketplace lead with this email already exists,
+        // or if we already saw this email earlier in the current batch
+        if (existingEmails.has(email)) {
+          results.skipped_duplicates++
+          results.errors.push(`Row ${rowNum}: Duplicate email "${email}" (already exists or seen in batch)`)
           results.failed++
           continue
         }
 
-        // Calculate lead score
+        // Mark email as seen for in-batch dedup
+        existingEmails.add(email)
+
+        // Calculate lead score (basic)
         const leadScore = calculateLeadScore(row)
 
-        // Insert lead
-        const { data: insertedLead, error: insertError } = await supabase.from('leads').insert({
-          workspace_id: matchingWorkspace.id,
+        // Calculate marketplace scores
+        const intentScore = calculateIntentScore({
+          seniority_level: row.seniority_level || 'unknown',
+          company_size: row.company_size || null,
+          company_employee_count: row.company_employee_count ? Number(row.company_employee_count) : null,
+          email: email,
+          company_domain: row.company_domain || null,
+          phone: row.phone || null,
           first_name: row.first_name,
           last_name: row.last_name,
-          email: row.email,
-          phone: row.phone || null,
-          company_name: row.company_name || `${row.first_name}'s Request`,
-          company_industry: industry,
-          company_location: {
-            address: row.address || null,
-            city: row.city || null,
-            state: state,
-            zip: row.zip || null,
-            country: 'US',
-          },
-          intent_signal: row.intent_signal || null,
+          city: row.city || null,
+          state: state,
+          job_title: row.job_title || null,
+        })
+
+        const freshnessScore = calculateFreshnessScore(new Date())
+        const marketplacePrice = calculateMarketplacePrice({
+          intentScore: intentScore.score,
+          freshnessScore,
+          hasPhone: !!row.phone,
+          verificationStatus: 'pending',
+        })
+
+        const fullName = [row.first_name, row.last_name].filter(Boolean).join(' ')
+
+        // Insert lead as marketplace lead using admin client
+        const { data: insertedLead, error: insertError } = await adminClient.from('leads').insert({
+          workspace_id: null,
+          is_marketplace_listed: true,
+          marketplace_status: 'available',
           source: source,
+          first_name: row.first_name,
+          last_name: row.last_name,
+          full_name: fullName,
+          email: email,
+          phone: row.phone || null,
+          company_name: row.company_name || `${row.first_name}'s Company`,
+          company_domain: row.company_domain || null,
+          company_industry: industry,
+          job_title: row.job_title || null,
+          city: row.city || null,
+          state: state,
+          state_code: state,
+          country: 'US',
+          country_code: 'US',
+          intent_signal: row.intent_signal || null,
           lead_score: leadScore,
+          intent_score_calculated: intentScore.score,
+          freshness_score: freshnessScore,
+          marketplace_price: marketplacePrice,
           utm_source: row.utm_source || null,
           utm_medium: row.utm_medium || null,
           utm_campaign: row.utm_campaign || null,
@@ -204,14 +253,15 @@ export async function POST(request: NextRequest) {
           continue
         }
 
-        results.successful++
         if (insertedLead) {
-          createdLeads.push({ id: insertedLead.id, workspace_id: matchingWorkspace.id })
+          insertedLeadIds.push(insertedLead.id)
         }
 
-        // Track routing summary
-        const workspaceName = matchingWorkspace.name
-        results.routing_summary[workspaceName] = (results.routing_summary[workspaceName] || 0) + 1
+        results.successful++
+
+        // Track category summary by industry + state
+        const categoryKey = `${industry} - ${state}`
+        results.category_summary[categoryKey] = (results.category_summary[categoryKey] || 0) + 1
 
       } catch (e: any) {
         console.error('[Bulk Upload] Row error:', e)
@@ -220,15 +270,19 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Inngest disabled (Node.js runtime not available on this deployment)
-    // Original: inngest.send(createdLeads.map(lead => ({ name: 'lead/created', data: { lead_id, workspace_id, source } })))
-    if (createdLeads.length > 0) {
-      console.log(`[Admin Bulk Upload] ${createdLeads.length} leads created (Inngest events skipped - Edge runtime)`)
+    console.log(`[Admin Bulk Upload] ${results.successful} marketplace leads created, ${results.skipped_duplicates} duplicates skipped`)
+
+    // Route newly created leads to matching users
+    let routingStats = { routed: 0, notified: 0 }
+    if (insertedLeadIds.length > 0) {
+      routingStats = await routeLeadsToMatchingUsers(insertedLeadIds, { source: 'admin_upload' })
+      console.log(`[Admin Bulk Upload] Routed ${routingStats.routed} leads to matching users`)
     }
 
     return NextResponse.json({
       success: results.failed === 0,
       ...results,
+      routing: routingStats,
     })
 
   } catch (error: any) {

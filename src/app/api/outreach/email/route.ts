@@ -3,6 +3,10 @@
  * POST /api/outreach/email - Send email(s)
  */
 
+// NOTE: Cannot use Edge runtime — nodemailer requires Node.js APIs (stream, fs, crypto).
+// This route will hang on Vercel's Node.js serverless (known platform issue).
+// If this route is needed in production, replace nodemailer with Resend or fetch-based email API.
+
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'

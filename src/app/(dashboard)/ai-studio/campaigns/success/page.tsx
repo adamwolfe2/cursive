@@ -42,6 +42,7 @@ export default function CampaignSuccessPage() {
     // Poll for campaign status update (webhook might take a moment)
     let attempts = 0
     const maxAttempts = 10
+    let pollTimerId: NodeJS.Timeout | undefined
 
     const pollCampaign = async () => {
       try {
@@ -57,7 +58,7 @@ export default function CampaignSuccessPage() {
         // If payment is still pending and we haven't hit max attempts, poll again
         if (data.campaign.payment_status === 'pending' && attempts < maxAttempts) {
           attempts++
-          setTimeout(pollCampaign, 2000) // Poll every 2 seconds
+          pollTimerId = setTimeout(pollCampaign, 2000) // Poll every 2 seconds
         } else {
           setIsLoading(false)
 
@@ -73,6 +74,10 @@ export default function CampaignSuccessPage() {
     }
 
     pollCampaign()
+
+    return () => {
+      if (pollTimerId) clearTimeout(pollTimerId)
+    }
   }, [sessionId, campaignId])
 
   if (isLoading) {

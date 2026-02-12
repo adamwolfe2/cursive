@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { WaitlistRepository } from '@/lib/repositories/waitlist.repository'
 import { handleApiError, success, created } from '@/lib/utils/api-error-handler'
+import { withRateLimit } from '@/lib/middleware/rate-limiter'
 
 // Validation schema for waitlist signup
 const waitlistSignupSchema = z.object({
@@ -46,6 +47,9 @@ const waitlistSignupSchema = z.object({
  */
 export async function POST(request: NextRequest) {
   try {
+    const rateLimited = await withRateLimit(request, 'public-form')
+    if (rateLimited) return rateLimited
+
     // Parse and validate request body
     const body = await request.json()
     const validatedData = waitlistSignupSchema.parse(body)
