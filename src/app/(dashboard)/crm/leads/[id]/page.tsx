@@ -2,7 +2,7 @@
 // Full details view for a single lead
 
 import { notFound, redirect } from 'next/navigation'
-import { getCurrentUser } from '@/lib/auth/helpers'
+import { createClient } from '@/lib/supabase/server'
 import { LeadRepository } from '@/lib/repositories/lead.repository'
 import { QueryProvider } from '@/components/providers/query-provider'
 import { LeadDetailClient } from './components/LeadDetailClient'
@@ -23,15 +23,21 @@ export async function generateMetadata({ params }: PageProps) {
 export default async function LeadDetailPage({ params }: PageProps) {
   const { id } = await params
 
-  // Check authentication
-  const user = await getCurrentUser()
-  if (!user) {
-    redirect('/login')
-  }
+  // Layout already verified auth — get session for workspace lookup
+  const supabase = await createClient()
+  const { data: { session } } = await supabase.auth.getSession()
+  if (!session?.user) redirect('/login')
+
+  const { data: userData } = await supabase
+    .from('users')
+    .select('workspace_id')
+    .eq('auth_user_id', session.user.id)
+    .single()
+  if (!userData?.workspace_id) redirect('/welcome')
 
   // Fetch lead data
   const leadRepo = new LeadRepository()
-  const lead = await leadRepo.findById(id, user.workspace_id)
+  const lead = await leadRepo.findById(id, userData.workspace_id)
 
   if (!lead) {
     notFound()

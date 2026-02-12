@@ -1,12 +1,10 @@
 // Lead Data Page
 
 import type { Metadata } from 'next'
-import { getCurrentUser } from '@/lib/auth/helpers'
 
 export const metadata: Metadata = {
   title: 'Data | Cursive',
 }
-import { redirect } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import { LeadStats } from '@/components/leads/lead-stats'
 import { PageContainer, PageHeader } from '@/components/layout'
@@ -29,12 +27,7 @@ export default async function DataPage({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
-  const user = await getCurrentUser()
-
-  if (!user) {
-    redirect('/login')
-  }
-
+  // Layout already verified auth
   const params = await searchParams
 
   // Extract initial filters from query params

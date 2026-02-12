@@ -1,6 +1,6 @@
 // Agent Detail Page
 
-import { getCurrentUser } from '@/lib/auth/helpers'
+import { createClient } from '@/lib/supabase/server'
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import { AgentRepository } from '@/lib/repositories/agent.repository'
@@ -15,15 +15,22 @@ interface PageProps {
 
 export default async function AgentDetailPage({ params }: PageProps) {
   const { id } = await params
-  const user = await getCurrentUser()
 
-  if (!user) {
-    redirect('/login')
-  }
+  // Layout already verified auth — get session for workspace lookup
+  const supabase = await createClient()
+  const { data: { session } } = await supabase.auth.getSession()
+  if (!session?.user) redirect('/login')
+
+  const { data: userData } = await supabase
+    .from('users')
+    .select('workspace_id')
+    .eq('auth_user_id', session.user.id)
+    .single()
+  if (!userData?.workspace_id) redirect('/welcome')
 
   // Get agent with details
   const agentRepo = new AgentRepository()
-  const result = await agentRepo.findByIdWithDetails(id, user.workspace_id)
+  const result = await agentRepo.findByIdWithDetails(id, userData.workspace_id)
 
   if (!result) {
     notFound()

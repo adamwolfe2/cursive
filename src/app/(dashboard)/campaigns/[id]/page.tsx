@@ -1,7 +1,5 @@
 // Campaign Detail Page
 
-import { getCurrentUser } from '@/lib/auth/helpers'
-import { redirect } from 'next/navigation'
 import { CampaignDetail } from '@/components/campaigns/campaign-detail'
 
 interface PageProps {
@@ -9,12 +7,7 @@ interface PageProps {
 }
 
 export default async function CampaignDetailPage({ params }: PageProps) {
-  const user = await getCurrentUser()
-
-  if (!user) {
-    redirect('/login')
-  }
-
+  // Layout already verified auth
   const { id } = await params
   return <CampaignDetail campaignId={id} />
 }

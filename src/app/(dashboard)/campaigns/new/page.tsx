@@ -1,8 +1,6 @@
 // New Campaign Request Page
 // Users apply for a custom EmailBison campaign
 
-import { getCurrentUser } from '@/lib/auth/helpers'
-import { redirect } from 'next/navigation'
 import { CampaignRequestForm } from '@/components/campaigns/campaign-request-form'
 
 export const metadata = {
@@ -11,11 +9,6 @@ export const metadata = {
 }
 
 export default async function NewCampaignPage() {
-  const user = await getCurrentUser()
-
-  if (!user) {
-    redirect('/login')
-  }
-
+  // Layout already verified auth
   return <CampaignRequestForm />
 }

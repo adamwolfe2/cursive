@@ -1,6 +1,6 @@
 // AI Agents List Page
 
-import { getCurrentUser } from '@/lib/auth/helpers'
+import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { AgentRepository } from '@/lib/repositories/agent.repository'
@@ -12,15 +12,21 @@ import { EmptyState } from '@/components/ui/empty-state'
 import { AgentsListWrapper } from '@/components/agents/agents-list-wrapper'
 
 export default async function AgentsPage() {
-  const user = await getCurrentUser()
+  // Layout already verified auth — get session for workspace lookup
+  const supabase = await createClient()
+  const { data: { session } } = await supabase.auth.getSession()
+  if (!session?.user) redirect('/login')
 
-  if (!user) {
-    redirect('/login')
-  }
+  const { data: userData } = await supabase
+    .from('users')
+    .select('workspace_id')
+    .eq('auth_user_id', session.user.id)
+    .single()
+  if (!userData?.workspace_id) redirect('/welcome')
 
   // Get agents
   const agentRepo = new AgentRepository()
-  const agents = await agentRepo.findByWorkspace(user.workspace_id)
+  const agents = await agentRepo.findByWorkspace(userData.workspace_id)
 
   return (
     <PageContainer>

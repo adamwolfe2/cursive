@@ -3,7 +3,7 @@
 
 import { QueryProvider } from '@/components/providers/query-provider'
 import { LeadsPageClient } from './components/LeadsPageClient'
-import { getCurrentUser } from '@/lib/auth/helpers'
+import { createClient } from '@/lib/supabase/server'
 import { CRMLeadRepository } from '@/lib/repositories/crm-lead.repository'
 import { redirect } from 'next/navigation'
 
@@ -17,11 +17,17 @@ interface CRMLeadsPageProps {
 }
 
 export default async function CRMLeadsPage({ searchParams }: CRMLeadsPageProps) {
-  // Fetch current user
-  const user = await getCurrentUser()
-  if (!user) {
-    redirect('/login')
-  }
+  // Layout already verified auth — get session for workspace lookup
+  const supabase = await createClient()
+  const { data: { session } } = await supabase.auth.getSession()
+  if (!session?.user) redirect('/login')
+
+  const { data: userData } = await supabase
+    .from('users')
+    .select('workspace_id')
+    .eq('auth_user_id', session.user.id)
+    .single()
+  if (!userData?.workspace_id) redirect('/welcome')
 
   const params = await searchParams
   const page = Math.max(1, parseInt(params.page || '1', 10) || 1)
@@ -29,7 +35,7 @@ export default async function CRMLeadsPage({ searchParams }: CRMLeadsPageProps) 
 
   // Fetch paginated leads data
   const leadRepo = new CRMLeadRepository()
-  const { leads, total } = await leadRepo.findByWorkspace(user.workspace_id, {
+  const { leads, total } = await leadRepo.findByWorkspace(userData.workspace_id, {
     page,
     pageSize: perPage,
   })

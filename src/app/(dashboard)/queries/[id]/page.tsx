@@ -1,7 +1,6 @@
 // Query Detail Page
 
 import { createClient } from '@/lib/supabase/server'
-import { getCurrentUser } from '@/lib/auth/helpers'
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import { QueryRepository } from '@/lib/repositories/query.repository'
@@ -14,22 +13,28 @@ interface QueryDetailPageProps {
 
 export default async function QueryDetailPage({ params }: QueryDetailPageProps) {
   const { id } = await params
-  const user = await getCurrentUser()
 
-  if (!user) {
-    redirect('/login')
-  }
+  // Layout already verified auth — get session for workspace lookup
+  const supabase = await createClient()
+  const { data: { session } } = await supabase.auth.getSession()
+  if (!session?.user) redirect('/login')
+
+  const { data: userData } = await supabase
+    .from('users')
+    .select('workspace_id')
+    .eq('auth_user_id', session.user.id)
+    .single()
+  if (!userData?.workspace_id) redirect('/welcome')
 
   // Fetch query details
   const queryRepo = new QueryRepository()
-  const query = await queryRepo.findById(id, user.workspace_id)
+  const query = await queryRepo.findById(id, userData.workspace_id)
 
   if (!query) {
     notFound()
   }
 
   // Fetch recent leads for this query
-  const supabase = await createClient()
   const { data: leads } = await supabase
     .from('leads')
     .select('*')

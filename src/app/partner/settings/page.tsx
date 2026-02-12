@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
-import { getCurrentUser } from '@/lib/auth/helpers'
+import { createClient } from '@/lib/supabase/server'
 import { PartnerRepository } from '@/lib/repositories/partner.repository'
 import { SettingsClient } from './components/SettingsClient'
 import { ArrowLeft, Settings } from 'lucide-react'
@@ -13,11 +13,17 @@ export const metadata = {
 }
 
 async function getPartnerSettings() {
-  const user = await getCurrentUser()
+  const supabase = await createClient()
+  const { data: { session } } = await supabase.auth.getSession()
+  if (!session?.user) redirect('/login')
 
-  if (!user || !user.linked_partner_id) {
-    redirect('/login')
-  }
+  const { data: user } = await supabase
+    .from('users')
+    .select('linked_partner_id')
+    .eq('auth_user_id', session.user.id)
+    .single()
+
+  if (!user?.linked_partner_id) redirect('/login')
 
   const repo = new PartnerRepository()
   const partner = await repo.findById(user.linked_partner_id)
