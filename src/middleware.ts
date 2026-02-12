@@ -1,5 +1,5 @@
 // Next.js Middleware
-// Handles authentication and multi-tenant routing
+// Handles authentication, multi-tenant routing, and rate limiting
 
 import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/middleware'
@@ -7,6 +7,52 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { validateRequiredEnvVars } from '@/lib/env-validation'
 import { logger } from '@/lib/monitoring/logger'
 import { safeError } from '@/lib/utils/log-sanitizer'
+
+// ─── Rate Limiting (in-memory, Edge-compatible) ───────────────────────────
+// Shared across requests within the same Edge instance.
+// Not durable across cold starts, but provides burst protection.
+const rateLimitStore = new Map<string, { count: number; resetAt: number }>()
+
+const RATE_LIMIT_TIERS = {
+  auth:  { windowMs: 60_000, max: 10 },   // /api/auth/*: 10 req/min
+  write: { windowMs: 60_000, max: 30 },   // POST/PUT/DELETE: 30 req/min
+  read:  { windowMs: 60_000, max: 60 },   // GET: 60 req/min
+} as const
+
+function getClientIp(req: NextRequest): string {
+  return req.headers.get('x-forwarded-for')?.split(',')[0].trim()
+    || req.headers.get('x-real-ip')?.trim()
+    || 'unknown'
+}
+
+function checkRateLimit(key: string, tier: keyof typeof RATE_LIMIT_TIERS): {
+  allowed: boolean; remaining: number; retryAfter: number
+} {
+  const { windowMs, max } = RATE_LIMIT_TIERS[tier]
+  const now = Date.now()
+  let entry = rateLimitStore.get(key)
+
+  if (!entry || now > entry.resetAt) {
+    entry = { count: 0, resetAt: now + windowMs }
+  }
+  entry.count++
+  rateLimitStore.set(key, entry)
+
+  const remaining = Math.max(0, max - entry.count)
+  const retryAfter = Math.ceil((entry.resetAt - now) / 1000)
+  return { allowed: entry.count <= max, remaining, retryAfter }
+}
+
+// Cleanup expired entries every 60 seconds
+let lastCleanup = Date.now()
+function maybeCleanup() {
+  const now = Date.now()
+  if (now - lastCleanup < 60_000) return
+  lastCleanup = now
+  for (const [key, entry] of rateLimitStore) {
+    if (now > entry.resetAt) rateLimitStore.delete(key)
+  }
+}
 
 export async function middleware(req: NextRequest) {
   // Validate critical environment variables on first request
@@ -37,6 +83,29 @@ export async function middleware(req: NextRequest) {
       return NextResponse.next({
         request: req,
       })
+    }
+
+    // ─── Rate Limiting for API routes ───────────────────────────────
+    if (pathname.startsWith('/api')) {
+      maybeCleanup()
+      const ip = getClientIp(req)
+      const tier: keyof typeof RATE_LIMIT_TIERS =
+        pathname.startsWith('/api/auth') ? 'auth'
+        : req.method !== 'GET' ? 'write'
+        : 'read'
+      const rl = checkRateLimit(`${tier}:${ip}`, tier)
+      if (!rl.allowed) {
+        return NextResponse.json(
+          { error: 'Too many requests', retryAfter: rl.retryAfter },
+          {
+            status: 429,
+            headers: {
+              'Retry-After': String(rl.retryAfter),
+              'X-RateLimit-Remaining': '0',
+            },
+          }
+        )
+      }
     }
 
     // Create Supabase client using SSR pattern
