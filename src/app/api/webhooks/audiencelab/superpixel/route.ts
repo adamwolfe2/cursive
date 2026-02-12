@@ -34,6 +34,15 @@ function safeEqual(a: string, b: string): boolean {
 }
 
 /**
+ * SHA-256 hash using Web Crypto API (Edge-compatible)
+ */
+async function sha256Hex(data: string): Promise<string> {
+  const encoded = new TextEncoder().encode(data)
+  const hash = await crypto.subtle.digest('SHA-256', encoded)
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('')
+}
+
+/**
  * HMAC-SHA256 using Web Crypto API (Edge-compatible)
  */
 async function hmacSha256(key: string, message: string): Promise<string> {
@@ -176,6 +185,25 @@ export async function POST(request: NextRequest) {
 
     const supabase = createAdminClient()
 
+    // IDEMPOTENCY: Hash raw body to detect exact retries
+    const eventHash = await sha256Hex(rawBody)
+
+    const { data: existingEvent } = await supabase
+      .from('processed_webhook_events')
+      .select('id, payload_summary')
+      .eq('event_id', eventHash)
+      .eq('source', 'audience-labs')
+      .single()
+
+    if (existingEvent) {
+      safeLog(`${LOG_PREFIX} Duplicate webhook detected, skipping`)
+      return NextResponse.json({
+        success: true,
+        duplicate: true,
+        ...(existingEvent.payload_summary as Record<string, unknown> || {}),
+      })
+    }
+
     // Resolve workspace strictly by pixel_id
     const firstEvent = events[0] || {}
     const pixelId = firstEvent.pixel_id || null
@@ -221,13 +249,23 @@ export async function POST(request: NextRequest) {
         },
       }).catch(() => {})
 
-      return NextResponse.json({
+      const unknownResponse = {
         success: true,
         stored: events.length,
         processed: 0,
         total: events.length,
         warning: 'unknown_pixel_id',
+      }
+
+      // Record processed webhook event for idempotency
+      await supabase.from('processed_webhook_events').insert({
+        event_id: eventHash,
+        source: 'audience-labs',
+        event_type: 'superpixel_batch',
+        payload_summary: unknownResponse,
       })
+
+      return NextResponse.json(unknownResponse)
     }
 
     // Known pixel — store and process normally
@@ -280,12 +318,22 @@ export async function POST(request: NextRequest) {
 
     safeLog(`${LOG_PREFIX} Processed ${processed.length}/${insertedIds.length} events inline`)
 
-    return NextResponse.json({
+    const successResponse = {
       success: true,
       stored: insertedIds.length,
       processed: processed.length,
       total: events.length,
+    }
+
+    // Record processed webhook event for idempotency
+    await supabase.from('processed_webhook_events').insert({
+      event_id: eventHash,
+      source: 'audience-labs',
+      event_type: 'superpixel_batch',
+      payload_summary: successResponse,
     })
+
+    return NextResponse.json(successResponse)
   } catch (error) {
     safeError(`${LOG_PREFIX} Unhandled error`, error)
     return NextResponse.json(

@@ -32,7 +32,6 @@ export async function middleware(req: NextRequest) {
       pathname.startsWith('/api/webhooks') ||
       pathname.startsWith('/api/cron') ||
       pathname.startsWith('/api/inngest') ||
-      pathname.startsWith('/api/debug') ||
       pathname === '/api/health'
     ) {
       return NextResponse.next({
@@ -71,19 +70,13 @@ export async function middleware(req: NextRequest) {
       pathname.startsWith('/_next') ||
       pathname.startsWith('/api/webhooks') ||
       pathname.startsWith('/api/cron') ||
-      pathname.startsWith('/api/waitlist') ||
-      pathname.startsWith('/api/debug') ||
-      pathname.startsWith('/api/admin/bypass-waitlist') ||
       pathname === '/api/health' ||
       pathname.startsWith('/api/inngest')
 
-    // API routes (except webhooks, waitlist, debug, and bypass) require authentication
+    // API routes (except webhooks and health) require authentication
     const isApiRoute = pathname.startsWith('/api') &&
       !pathname.startsWith('/api/webhooks') &&
       !pathname.startsWith('/api/cron') &&
-      !pathname.startsWith('/api/waitlist') &&
-      !pathname.startsWith('/api/debug') &&
-      !pathname.startsWith('/api/admin/bypass-waitlist') &&
       pathname !== '/api/health'
 
     // Skip auth check entirely for public routes to prevent redirect loops
