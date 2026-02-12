@@ -17,6 +17,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export const runtime = 'edge'
 
@@ -119,7 +120,9 @@ export async function GET(request: NextRequest) {
       severity: 'error',
       message: 'Database health check cron failed',
       metadata: { run_id: runId, error: message, duration_ms: String(durationMs) },
-    }).catch(() => {}) // Don't let Slack failure crash the cron
+    }).catch((error) => {
+      safeError('[DB Health] Slack alert failed:', error)
+    })
 
     return NextResponse.json(
       { error: 'Health check failed', detail: message, run_id: runId, duration_ms: durationMs },

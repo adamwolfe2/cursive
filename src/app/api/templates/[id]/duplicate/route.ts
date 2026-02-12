@@ -8,6 +8,7 @@ import { TemplateRepository } from '@/lib/repositories/template.repository'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized, notFound, created } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface RouteContext {
   params: Promise<{ id: string }>
@@ -26,7 +27,10 @@ export async function POST(request: NextRequest, context: RouteContext) {
     const user = await getCurrentUser()
     if (!user) return unauthorized()
 
-    const body = await request.json().catch(() => ({}))
+    const body = await request.json().catch((error) => {
+      safeError('[Template Duplicate] Failed to parse request body, using defaults:', error)
+      return {}
+    })
     const validatedData = duplicateSchema.parse(body)
 
     const repo = new TemplateRepository()

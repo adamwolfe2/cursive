@@ -8,6 +8,7 @@ import { z } from 'zod'
 import { handleApiError, created } from '@/lib/utils/api-error-handler'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { withRateLimit } from '@/lib/middleware/rate-limiter'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // CORS headers for cross-origin requests from marketing site
 const corsHeaders = {
@@ -159,7 +160,9 @@ export async function POST(request: NextRequest) {
         industry: eventData.industry || 'N/A',
         ai_maturity: eventData.ai_maturity || 'N/A',
       },
-    }).catch(() => {})
+    }).catch((error) => {
+      safeError('[AI Audit] Slack notification failed:', error)
+    })
 
     const response = created({
       message: 'Audit submission received successfully!',

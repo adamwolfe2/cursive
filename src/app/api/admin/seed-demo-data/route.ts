@@ -9,6 +9,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { requireAdmin } from '@/lib/auth/admin'
 import { createClient } from '@/lib/supabase/server'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // Realistic company data for demos
 const DEMO_COMPANIES = [
@@ -102,7 +103,10 @@ export async function POST(request: NextRequest) {
     const workspaceId = user.workspace_id
 
     // Parse options from request body
-    const body = await request.json().catch(() => ({}))
+    const body = await request.json().catch((error) => {
+      safeError('[Seed Demo Data] Failed to parse request body, using defaults:', error)
+      return {}
+    })
     const leadCount = Math.min(body.lead_count || 50, 200) // Max 200 leads
     const clearExisting = body.clear_existing || false
 

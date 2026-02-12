@@ -247,7 +247,9 @@ export async function POST(request: NextRequest) {
           event_count: events.length,
           source: 'superpixel',
         },
-      }).catch(() => {})
+      }).catch((error) => {
+        safeError('[SuperPixel] Slack alert failed for unknown pixel:', error)
+      })
 
       const unknownResponse = {
         success: true,

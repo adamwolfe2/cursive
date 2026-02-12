@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { provisionCustomerPixel } from '@/lib/audiencelab/api-client'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export const runtime = 'edge'
 
@@ -137,7 +138,9 @@ export async function POST(request: NextRequest) {
           domain,
           error: insertError.message,
         },
-      }).catch(() => {})
+      }).catch((error) => {
+        safeError('[Pixel Provision] Critical: Slack alert failed for DB insert error:', error)
+      })
 
       return NextResponse.json(
         { error: 'Failed to save pixel. Our team has been notified.' },
@@ -156,7 +159,9 @@ export async function POST(request: NextRequest) {
         pixel_id: result.pixel_id,
         domain,
       },
-    }).catch(() => {})
+    }).catch((error) => {
+      safeError('[Pixel Provision] Slack notification failed:', error)
+    })
 
     return NextResponse.json({
       pixel_id: result.pixel_id,

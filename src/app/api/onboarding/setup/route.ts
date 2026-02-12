@@ -11,6 +11,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { FREE_TRIAL_CREDITS } from '@/lib/constants/credit-packages'
 import { z } from 'zod'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // Monthly lead need → daily/weekly/monthly caps
 const LEAD_CAPS: Record<string, { daily: number; weekly: number; monthly: number }> = {
@@ -116,9 +117,11 @@ function fireInngestEvent(eventData: { name: string; data: Record<string, any> }
   try {
     // Lazy-import to avoid module-level init issues
     const { inngest } = require('@/inngest/client')
-    inngest.send(eventData).catch(() => {})
-  } catch {
-    // Swallow any synchronous throws from Proxy/client init
+    inngest.send(eventData).catch((error) => {
+      safeError('[Onboarding] Inngest event send failed:', error)
+    })
+  } catch (error) {
+    safeError('[Onboarding] Inngest client init failed:', error)
   }
 }
 
@@ -400,7 +403,9 @@ export async function POST(request: NextRequest) {
       severity: 'info',
       message: `New ${validated.role} signup: ${validated.companyName} (${FREE_TRIAL_CREDITS.credits} free credits granted)`,
       metadata: slackMetadata,
-    }).catch(() => {})
+    }).catch((error) => {
+      safeError('[Onboarding] Slack notification failed:', error)
+    })
 
     // Non-blocking GHL onboard (fire-and-forget, lazy-loaded to avoid blocking)
     fireInngestEvent({

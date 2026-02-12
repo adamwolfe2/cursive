@@ -267,7 +267,9 @@ export async function GET(request: NextRequest) {
         severity: 'info',
         message: `AL Segment Pull: ${totalInserted} new leads, ${totalSkipped} skipped (dupes)`,
         metadata: { combos: combos.length, inserted: totalInserted, skipped: totalSkipped, errors: errors.length },
-      }).catch(() => {})
+      }).catch((error) => {
+        safeError(`${LOG_PREFIX} Slack notification failed:`, error)
+      })
     }
 
     const result = {
