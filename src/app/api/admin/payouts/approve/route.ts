@@ -10,6 +10,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getStripeClient } from '@/lib/stripe/client'
 import { requireAdmin } from '@/lib/auth/admin'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import { z } from 'zod'
 
 const payoutApproveSchema = z.object({
@@ -127,7 +128,7 @@ export async function POST(req: NextRequest) {
         message: `Payout of $${payout.amount.toFixed(2)} approved and transferred to ${payout.partner.name}`,
       })
     } catch (stripeError: any) {
-      console.error('[Admin Payouts] Stripe transfer failed:', stripeError)
+      safeError('[Admin Payouts] Stripe transfer failed:', stripeError)
 
       // Update payout status to 'failed'
       await adminClient
@@ -151,7 +152,7 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       )
     }
-    console.error('[Admin Payouts] Approval error:', error)
+    safeError('[Admin Payouts] Approval error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

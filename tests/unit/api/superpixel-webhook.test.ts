@@ -71,6 +71,12 @@ vi.mock('@/lib/supabase/admin', () => ({
       if (table === 'user_targeting') {
         return createChainMock({ data: [], error: null })
       }
+      if (table === 'processed_webhook_events') {
+        // For idempotency checks - return null by default (no duplicate)
+        const chain = createChainMock({ data: null, error: { code: 'PGRST116' } })
+        chain.insert = vi.fn().mockReturnValue(createChainMock({ data: { id: 'evt-001' }, error: null }))
+        return chain
+      }
       return createChainMock()
     })
     return { from: fromMock }

@@ -127,10 +127,10 @@ function fireInngestEvent(eventData: { name: string; data: Record<string, any> }
 
 export async function POST(request: NextRequest) {
   try {
-    // NOTE: console.warn used instead of console.log/console.error because
+    // NOTE: safeError used instead of console.log/console.error because
     // production next.config.js strips console.log AND Vercel runtime logs
     // don't reliably surface console.error through the logs API.
-    console.warn('[Onboarding] Starting POST request')
+    safeError('[Onboarding] Starting POST request')
 
     // 1. Verify auth session server-side (with timeout)
     const supabase = await createClient()
@@ -144,21 +144,21 @@ export async function POST(request: NextRequest) {
     const authUser = authResult.data?.user
     const authError = authResult.error
 
-    console.warn('[Onboarding] Auth check:', { hasUser: !!authUser, authError: authError?.message })
+    safeError('[Onboarding] Auth check:', { hasUser: !!authUser, authError: authError?.message })
 
     if (!authUser) {
-      console.warn('[Onboarding] No auth user - returning 401')
+      safeError('[Onboarding] No auth user - returning 401')
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
     }
 
     // 2. Parse and validate body
     const body = await request.json()
-    console.warn('[Onboarding] Received body:', { role: body.role, email: body.email })
+    safeError('[Onboarding] Received body:', { role: body.role, email: body.email })
 
     const validated = setupSchema.parse(body)
 
     // 3. Use admin client (service role) to bypass RLS
-    console.warn('[Onboarding] Creating admin client...')
+    safeError('[Onboarding] Creating admin client...')
     const admin = createAdminClient()
 
     // 3b. Verify admin client connectivity
@@ -168,13 +168,13 @@ export async function POST(request: NextRequest) {
       .limit(1)
 
     if (connError) {
-      console.warn('[Onboarding] Admin client connectivity FAILED:', connError.message, connError.code)
+      safeError('[Onboarding] Admin client connectivity FAILED:', { message: connError.message, code: connError.code })
       return NextResponse.json(
         { error: 'Database connection failed', detail: connError.message },
         { status: 500 }
       )
     }
-    console.warn('[Onboarding] Admin client connected OK')
+    safeError('[Onboarding] Admin client connected OK')
 
     // 4. Check if user already has a workspace
     const { data: existingUser } = await admin
@@ -196,7 +196,7 @@ export async function POST(request: NextRequest) {
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '')
 
-    console.warn('[Onboarding] Generated slug:', slug)
+    safeError('[Onboarding] Generated slug:', slug)
 
     // 6. Check slug availability (both business AND partner flows)
     const { data: existingSlug } = await admin
@@ -230,7 +230,7 @@ export async function POST(request: NextRequest) {
           onboarding_status: 'completed',
         }
 
-    console.warn('[Onboarding] Inserting workspace:', JSON.stringify(workspaceInsert))
+    safeError('[Onboarding] Inserting workspace:', JSON.stringify(workspaceInsert))
 
     const { data: workspace, error: workspaceError } = await admin
       .from('workspaces')
@@ -239,14 +239,19 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (workspaceError) {
-      console.warn('[Onboarding] Workspace creation FAILED:', workspaceError.message, workspaceError.code, workspaceError.details, workspaceError.hint)
+      safeError('[Onboarding] Workspace creation FAILED:', {
+        message: workspaceError.message,
+        code: workspaceError.code,
+        details: workspaceError.details,
+        hint: workspaceError.hint
+      })
       return NextResponse.json(
         { error: 'Failed to create workspace', detail: workspaceError.message, code: workspaceError.code },
         { status: 500 }
       )
     }
 
-    console.warn('[Onboarding] Workspace created:', workspace.id)
+    safeError('[Onboarding] Workspace created:', workspace.id)
 
     // 8. Create user profile
     // NOTE: Only use columns that exist in the users table.
@@ -274,7 +279,7 @@ export async function POST(request: NextRequest) {
           is_partner: true,
         }
 
-    console.warn('[Onboarding] Inserting user for auth_user_id:', authUser.id)
+    safeError('[Onboarding] Inserting user for auth_user_id:', authUser.id)
 
     const { data: userProfile, error: userError } = await admin
       .from('users')
@@ -285,14 +290,19 @@ export async function POST(request: NextRequest) {
     if (userError) {
       // Rollback: delete the workspace we just created
       await admin.from('workspaces').delete().eq('id', workspace.id)
-      console.warn('[Onboarding] User creation FAILED:', userError.message, userError.code, userError.details, userError.hint)
+      safeError('[Onboarding] User creation FAILED:', {
+        message: userError.message,
+        code: userError.code,
+        details: userError.details,
+        hint: userError.hint
+      })
       return NextResponse.json(
         { error: 'Failed to create user profile', detail: userError.message, code: userError.code },
         { status: 500 }
       )
     }
 
-    console.warn('[Onboarding] User created:', userProfile.id)
+    safeError('[Onboarding] User created:', userProfile.id)
 
     // 9. Grant free trial credits
     try {
@@ -325,14 +335,14 @@ export async function POST(request: NextRequest) {
       // Rollback: delete user and workspace
       await admin.from('users').delete().eq('id', userProfile.id)
       await admin.from('workspaces').delete().eq('id', workspace.id)
-      console.warn('[Onboarding] Credit grant FAILED:', creditError instanceof Error ? creditError.message : creditError)
+      safeError('[Onboarding] Credit grant FAILED:', creditError instanceof Error ? creditError.message : creditError)
       return NextResponse.json(
         { error: 'Failed to grant free credits', detail: creditError instanceof Error ? creditError.message : 'Unknown' },
         { status: 500 }
       )
     }
 
-    console.warn('[Onboarding] Credits granted.')
+    safeError('[Onboarding] Credits granted.')
 
     // 10. Create user targeting for business users (enables lead routing)
     if (validated.role === 'business') {
@@ -356,18 +366,18 @@ export async function POST(request: NextRequest) {
             is_active: true,
           })
 
-        console.warn('[Onboarding] User targeting created:', {
+        safeError('[Onboarding] User targeting created:', {
           industries: [validated.industry],
           states: targetStates,
           caps,
         })
       } catch (targetingError) {
         // Non-fatal: user can set targeting later from dashboard
-        console.warn('[Onboarding] User targeting creation failed (non-fatal):', targetingError instanceof Error ? targetingError.message : targetingError)
+        safeError('[Onboarding] User targeting creation failed (non-fatal):', targetingError instanceof Error ? targetingError.message : targetingError)
       }
     }
 
-    console.warn('[Onboarding] Returning success.')
+    safeError('[Onboarding] Returning success.')
 
     // Build the response FIRST, then fire non-blocking side effects
     const response = NextResponse.json({ workspace_id: workspace.id })
@@ -422,8 +432,8 @@ export async function POST(request: NextRequest) {
 
     return response
   } catch (error) {
-    console.warn('[Onboarding] Caught error:', error instanceof Error ? error.message : error)
-    console.warn('[Onboarding] Stack:', error instanceof Error ? error.stack : 'no stack')
+    safeError('[Onboarding] Caught error:', error instanceof Error ? error.message : error)
+    safeError('[Onboarding] Stack:', error instanceof Error ? error.stack : 'no stack')
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(

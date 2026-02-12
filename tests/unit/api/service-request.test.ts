@@ -49,6 +49,9 @@ vi.mock('@supabase/ssr', () => ({
   })),
 }))
 
+// Store inserted data for test assertions
+let lastInsertedData: any = null
+
 // Mock admin client for DB operations
 vi.mock('@/lib/supabase/admin', () => ({
   createAdminClient: vi.fn(() => ({
@@ -59,6 +62,7 @@ vi.mock('@/lib/supabase/admin', () => ({
       if (table === 'support_messages') {
         const chain: any = {}
         chain.insert = vi.fn((data: any) => {
+          lastInsertedData = data
           return mockInsert(data)
         })
         return chain
@@ -98,6 +102,7 @@ function makeRequest(body: unknown): NextRequest {
 describe('POST /api/service-request', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    lastInsertedData = null
 
     // Default: authenticated user
     mockGetUser.mockResolvedValue({
@@ -281,16 +286,14 @@ describe('POST /api/service-request', () => {
       })
       await POST(request)
 
-      expect(mockInsert).toHaveBeenCalledWith(
-        expect.objectContaining({
-          name: 'Test User',
-          email: 'user@acme.com',
-          subject: 'Service Request: GHL Setup',
-          priority: 'normal',
-          status: 'unread',
-          source: 'service_request',
-        })
-      )
+      expect(lastInsertedData).toMatchObject({
+        name: 'Test User',
+        email: 'user@acme.com',
+        subject: 'Service Request: GHL Setup',
+        priority: 'normal',
+        status: 'unread',
+        source: 'service_request',
+      })
     })
 
     it('should include metadata in message body when present', async () => {
@@ -301,10 +304,9 @@ describe('POST /api/service-request', () => {
       })
       await POST(request)
 
-      const insertCall = mockInsert.mock.calls[0][0]
-      expect(insertCall.message).toContain('Need help')
-      expect(insertCall.message).toContain('Metadata:')
-      expect(insertCall.message).toContain('tier')
+      expect(lastInsertedData.message).toContain('Need help')
+      expect(lastInsertedData.message).toContain('Metadata:')
+      expect(lastInsertedData.message).toContain('tier')
     })
 
     it('should use email as name fallback when full_name is null', async () => {
@@ -324,8 +326,7 @@ describe('POST /api/service-request', () => {
       })
       await POST(request)
 
-      const insertCall = mockInsert.mock.calls[0][0]
-      expect(insertCall.name).toBe('user@acme.com')
+      expect(lastInsertedData.name).toBe('user@acme.com')
     })
 
     it('should return 500 when support_messages insert fails', async () => {

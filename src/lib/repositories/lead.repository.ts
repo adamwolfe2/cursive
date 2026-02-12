@@ -3,6 +3,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { sanitizeSearchTerm } from '@/lib/utils/sanitize-search'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import type { Lead, LeadInsert, LeadUpdate } from '@/types'
 import type { LeadWithRelations, LeadStatus } from '@/types/crm.types'
 
@@ -88,7 +89,7 @@ export class LeadRepository {
     const { data, error, count } = await query
 
     if (error) {
-      console.error('[LeadRepository] Find by workspace error:', error)
+      safeError('[LeadRepository] Find by workspace error:', error)
       throw new Error(`Failed to fetch leads: ${error.message}`)
     }
 
@@ -117,7 +118,7 @@ export class LeadRepository {
       if (error.code === 'PGRST116') {
         return null
       }
-      console.error('[LeadRepository] Find by ID error:', error)
+      safeError('[LeadRepository] Find by ID error:', error)
       throw new Error(`Failed to fetch lead: ${error.message}`)
     }
 
@@ -139,7 +140,7 @@ export class LeadRepository {
     })
 
     if (error) {
-      console.error('[LeadRepository] Find by intent score error:', error)
+      safeError('[LeadRepository] Find by intent score error:', error)
       throw new Error(`Failed to fetch leads by intent score: ${error.message}`)
     }
 
@@ -161,7 +162,7 @@ export class LeadRepository {
     })
 
     if (error) {
-      console.error('[LeadRepository] Find ready for upload error:', error)
+      safeError('[LeadRepository] Find ready for upload error:', error)
       throw new Error(`Failed to fetch leads ready for upload: ${error.message}`)
     }
 
@@ -188,7 +189,7 @@ export class LeadRepository {
       .single()
 
     if (error) {
-      console.error('[LeadRepository] Get intent breakdown error:', error)
+      safeError('[LeadRepository] Get intent breakdown error:', error)
       return {
         hot_count: 0,
         warm_count: 0,
@@ -228,7 +229,7 @@ export class LeadRepository {
     })
 
     if (error) {
-      console.error('[LeadRepository] Get platform stats error:', error)
+      safeError('[LeadRepository] Get platform stats error:', error)
       return []
     }
 
@@ -256,7 +257,7 @@ export class LeadRepository {
       .single()
 
     if (error) {
-      console.error('[LeadRepository] Create error:', error)
+      safeError('[LeadRepository] Create error:', error)
       throw new Error(`Failed to create lead: ${error.message}`)
     }
 
@@ -282,7 +283,7 @@ export class LeadRepository {
       .single()
 
     if (error) {
-      console.error('[LeadRepository] Update error:', error)
+      safeError('[LeadRepository] Update error:', error)
       throw new Error(`Failed to update lead: ${error.message}`)
     }
 
@@ -302,7 +303,7 @@ export class LeadRepository {
       .eq('workspace_id', workspaceId)
 
     if (error) {
-      console.error('[LeadRepository] Delete error:', error)
+      safeError('[LeadRepository] Delete error:', error)
       throw new Error(`Failed to delete lead: ${error.message}`)
     }
   }

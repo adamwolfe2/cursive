@@ -59,6 +59,23 @@ export async function GET() {
     : db.status === 'unhealthy' ? 'unhealthy'
     : 'degraded'
 
+  // Mask detailed service status in production (security: information disclosure)
+  const isProduction = process.env.NODE_ENV === 'production'
+
+  if (isProduction) {
+    return NextResponse.json(
+      {
+        status: overall,
+        timestamp: new Date().toISOString(),
+      },
+      {
+        status: overall === 'unhealthy' ? 503 : 200,
+        headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' },
+      }
+    )
+  }
+
+  // Detailed status only in development/staging
   return NextResponse.json(
     {
       status: overall,
