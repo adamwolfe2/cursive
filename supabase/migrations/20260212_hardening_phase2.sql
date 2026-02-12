@@ -395,7 +395,7 @@ BEGIN
     'schema', schemaname,
     'table', relname,
     'index', indexrelname,
-    'size_bytes', pg_relation_size(indexrelid),
+    'size_bytes', pg_relation_size(sui.indexrelid),
     'suggestion', format('DROP INDEX IF EXISTS %I.%I;', schemaname, indexrelname)
   )), '[]'::jsonb)
   INTO v_count, v_unused
