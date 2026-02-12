@@ -22,10 +22,14 @@ export async function GET(req: NextRequest) {
     const searchParams = req.nextUrl.searchParams
     const status = searchParams.get('status') || 'all'
     const partnerId = searchParams.get('partner_id')
+    const page = parseInt(searchParams.get('page') || '1')
+    const limit = parseInt(searchParams.get('limit') || '50')
+    const offset = (page - 1) * limit
 
     const adminClient = createAdminClient()
 
-    // Build query
+    // Build query with pagination
+    // PERFORMANCE: Prevents loading 10,000+ payouts into memory
     let query = adminClient
       .from('payout_requests')
       .select(`
@@ -37,8 +41,9 @@ export async function GET(req: NextRequest) {
           stripe_account_id,
           payout_rate
         )
-      `)
+      `, { count: 'exact' })
       .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1)
 
     // Filter by status
     if (status !== 'all') {
@@ -50,7 +55,7 @@ export async function GET(req: NextRequest) {
       query = query.eq('partner_id', partnerId)
     }
 
-    const { data: payouts, error } = await query
+    const { data: payouts, error, count } = await query
 
     if (error) {
       console.error('[Admin Payouts] Query error:', error)
@@ -81,6 +86,12 @@ export async function GET(req: NextRequest) {
       success: true,
       payouts,
       totals,
+      pagination: {
+        page,
+        limit,
+        total: count || 0,
+        totalPages: Math.ceil((count || 0) / limit),
+      },
     })
   } catch (error: any) {
     console.error('[Admin Payouts] Error:', error)
