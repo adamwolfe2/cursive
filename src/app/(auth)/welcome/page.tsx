@@ -1,5 +1,10 @@
+import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+
+export const metadata: Metadata = {
+  title: 'Welcome | Cursive',
+}
 import { createAdminClient } from '@/lib/supabase/admin'
 import { OnboardingFlow } from './onboarding-flow'
 import { AutoSubmitOnboarding } from './auto-submit-onboarding'

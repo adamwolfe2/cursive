@@ -1,4 +1,9 @@
+import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
+
+export const metadata: Metadata = {
+  title: 'Dashboard | Cursive',
+}
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { GradientCard, GradientBadge } from '@/components/ui/gradient-card'

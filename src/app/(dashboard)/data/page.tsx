@@ -1,6 +1,11 @@
 // Lead Data Page
 
+import type { Metadata } from 'next'
 import { getCurrentUser } from '@/lib/auth/helpers'
+
+export const metadata: Metadata = {
+  title: 'Data | Cursive',
+}
 import { redirect } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import { LeadStats } from '@/components/leads/lead-stats'

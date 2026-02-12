@@ -1,5 +1,10 @@
+import type { Metadata } from 'next'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { StudioSidebar } from '@/components/ai-studio/studio-sidebar'
+
+export const metadata: Metadata = {
+  title: 'AI Studio | Cursive',
+}
 
 export default function AIStudioLayout({
   children,
