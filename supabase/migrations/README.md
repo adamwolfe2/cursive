@@ -18,7 +18,8 @@ This directory contains all Supabase database migrations for the Cursive platfor
 9. `20260211_add_performance_indexes.sql` - Initial performance indexes
 
 ### Hardening Audit (2026-02-12)
-10. `20260212_hardening_audit.sql` - Comprehensive database hardening
+10. `20260212_hardening_audit.sql` - Comprehensive database hardening (Phase 1)
+11. `20260212_hardening_phase2.sql` - Function lockdown, regression guards, realtime policies
 
 ## Hardening Audit Summary (2026-02-12)
 
@@ -46,6 +47,21 @@ This directory contains all Supabase database migrations for the Cursive platfor
 | **Performance: Cleanup** | Dropped duplicate indexes | 4 indexes |
 | **Realtime** | Added `leads` + `user_lead_assignments` to publication | 2 tables |
 | **Realtime** | Set `REPLICA IDENTITY FULL` for filtered subscriptions | 2 tables |
+| **Realtime** | Workspace-scoped policies on `realtime.messages` | 2 policies |
+
+### Phase 2 Hardening Summary
+
+| Category | Changes | Count |
+|----------|---------|-------|
+| **Security: Functions** | Revoked `PUBLIC` EXECUTE (correct ACL pattern) | all custom functions |
+| **Security: Functions** | `search_path = pg_catalog, public` on SECURITY DEFINER | 39 functions |
+| **Security: Functions** | Set `STABLE` on read-only SECURITY DEFINER | 29 functions |
+| **Security: Functions** | Documented `VOLATILE` justification on write functions | 8 functions |
+| **Security: Regression** | `check_rls_regression()` guard function (service_role) | 1 function |
+| **Performance: Advisor** | `audit_unused_indexes()` helper function (service_role) | 1 function |
+| **Integrity** | `api_idempotency_keys.expires_at` column + CHECK constraint | 1 column, 1 constraint |
+| **Performance** | Cleanup indexes on `api_idempotency_keys`, `processed_webhook_events` | 2 indexes |
+| **Documentation** | `COMMENT ON POLICY` for 7 intentional broad policies | 7 comments |
 
 ### Payments Concurrency Audit Result
 - All critical payment paths use `SELECT FOR UPDATE` row locks
