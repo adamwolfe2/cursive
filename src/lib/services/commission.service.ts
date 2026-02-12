@@ -165,7 +165,7 @@ export async function processPendingCommissions(): Promise<{
       .single()
 
     if (partner) {
-      await supabase
+      const { error: balanceError } = await supabase
         .from('partners')
         .update({
           pending_balance: Math.max(0, (partner.pending_balance || 0) - amount),
@@ -173,6 +173,10 @@ export async function processPendingCommissions(): Promise<{
           updated_at: new Date().toISOString(),
         })
         .eq('id', partnerId)
+
+      if (balanceError) {
+        console.error(`[Commission] Failed to update partner ${partnerId} balance:`, balanceError)
+      }
     }
   }
 
@@ -282,13 +286,17 @@ export async function recordCommission(params: {
   }
 
   // Record in partner_earnings table
-  await supabase.from('partner_earnings').insert({
+  const { error: earningsError } = await supabase.from('partner_earnings').insert({
     partner_id: params.partnerId,
     lead_id: null, // Can be linked to lead_id if needed
     amount: commission.amount,
     status: 'pending',
     description: `Commission from lead sale (${Math.round(commission.rate * 100)}%)`,
   })
+
+  if (earningsError) {
+    console.error('[Commission] Failed to record partner earnings:', earningsError)
+  }
 }
 
 /**

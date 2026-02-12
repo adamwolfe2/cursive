@@ -10,6 +10,20 @@ const REQUIRED_ENV_VARS = [
   'NEXT_PUBLIC_SUPABASE_URL',
   'NEXT_PUBLIC_SUPABASE_ANON_KEY',
   'SUPABASE_SERVICE_ROLE_KEY',
+  'STRIPE_SECRET_KEY',
+  'STRIPE_WEBHOOK_SECRET',
+  'CRON_SECRET',
+  'AUDIENCELAB_WEBHOOK_SECRET',
+  'ANTHROPIC_API_KEY',
+] as const
+
+const OPTIONAL_WITH_WARNING = [
+  'SLACK_WEBHOOK_URL',
+  'EMAILBISON_API_KEY',
+  'GHL_CURSIVE_LOCATION_TOKEN',
+  'RESEND_API_KEY',
+  'INNGEST_EVENT_KEY',
+  'INNGEST_SIGNING_KEY',
 ] as const
 
 let validated = false
@@ -17,6 +31,7 @@ let validated = false
 /**
  * Validates that all required environment variables are set.
  * Throws a descriptive error if any are missing.
+ * Logs warnings for optional but recommended variables.
  * Only runs once per process lifecycle (cached after first call).
  */
 export function validateRequiredEnvVars(): void {
@@ -43,6 +58,20 @@ export function validateRequiredEnvVars(): void {
 
     console.error(message)
     throw new Error(message)
+  }
+
+  // Check optional vars and warn
+  const missingOptional: string[] = []
+  for (const envVar of OPTIONAL_WITH_WARNING) {
+    if (!process.env[envVar]) {
+      missingOptional.push(envVar)
+    }
+  }
+
+  if (missingOptional.length > 0) {
+    console.warn(
+      `[WARN] Missing optional environment variables (some features may not work):\n${missingOptional.map((v) => `  - ${v}`).join('\n')}`
+    )
   }
 
   validated = true

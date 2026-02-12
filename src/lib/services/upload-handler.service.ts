@@ -552,7 +552,7 @@ export class UploadHandlerService {
 
     // Create company association if we have SIC code
     if (row.sic_code && row.company_name) {
-      await supabase.from('lead_companies').insert({
+      const { error: companyError } = await supabase.from('lead_companies').insert({
         lead_id: data.id,
         workspace_id: this.workspaceId,
         company_name: row.company_name,
@@ -560,6 +560,10 @@ export class UploadHandlerService {
         sic_code: row.sic_code,
         is_primary: true,
       })
+
+      if (companyError) {
+        console.error('[Upload] Failed to create company association:', companyError)
+      }
     }
 
     return data.id
@@ -594,7 +598,11 @@ export class UploadHandlerService {
       dedupeData.name_address_key = nameKey
     }
 
-    await supabase.from('lead_dedupe_keys').upsert(dedupeData, { onConflict: 'lead_id' })
+    const { error: dedupeError } = await supabase.from('lead_dedupe_keys').upsert(dedupeData, { onConflict: 'lead_id' })
+
+    if (dedupeError) {
+      console.error('[Upload] Failed to upsert dedupe keys:', dedupeError)
+    }
   }
 
   /**
@@ -603,10 +611,14 @@ export class UploadHandlerService {
   private async updateJobStatus(jobId: string, status: string, extraData: Record<string, any> = {}): Promise<void> {
     const supabase = await createClient()
 
-    await supabase
+    const { error: jobError } = await supabase
       .from('upload_jobs')
       .update({ status, ...extraData, updated_at: new Date().toISOString() })
       .eq('id', jobId)
+
+    if (jobError) {
+      console.error('[Upload] Failed to update job status:', jobError)
+    }
   }
 
   /**

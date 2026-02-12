@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { handleApiError, created } from '@/lib/utils/api-error-handler'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
+import { withRateLimit } from '@/lib/middleware/rate-limiter'
 
 // CORS headers for cross-origin requests from marketing site
 const corsHeaders = {
@@ -114,6 +115,9 @@ export async function OPTIONS() {
  */
 export async function POST(request: NextRequest) {
   try {
+    const rateLimited = await withRateLimit(request, 'public-form')
+    if (rateLimited) return rateLimited
+
     const body = await request.json()
     const validated = aiAuditSchema.parse(body)
 

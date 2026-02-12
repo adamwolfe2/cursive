@@ -13,6 +13,7 @@ import { z } from 'zod'
 import { createServerClient } from '@supabase/ssr'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
+import { withRateLimit } from '@/lib/middleware/rate-limiter'
 
 export const runtime = 'edge'
 
@@ -24,6 +25,9 @@ const serviceRequestSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    const rateLimited = await withRateLimit(request, 'default')
+    if (rateLimited) return rateLimited
+
     // 1. Auth — Edge-compatible cookie read
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,

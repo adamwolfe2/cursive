@@ -67,13 +67,17 @@ export class CreditService {
       const nextReset = new Date(now)
       nextReset.setHours(24, 0, 0, 0) // Reset at midnight
 
-      await supabase
+      const { error: resetError } = await supabase
         .from('users')
         .update({
           daily_credits_used: 0,
           daily_credits_reset_at: nextReset.toISOString(),
         })
         .eq('id', userId)
+
+      if (resetError) {
+        console.error('[CreditService] Failed to reset daily credits:', resetError)
+      }
     }
 
     // Get limit and cost
@@ -121,21 +125,29 @@ export class CreditService {
         .single()
 
       if (user) {
-        await supabase
+        const { error: fallbackError } = await supabase
           .from('users')
           .update({ daily_credits_used: user.daily_credits_used + cost })
           .eq('id', userId)
+
+        if (fallbackError) {
+          console.error('[CreditService] Failed to update credits (fallback):', fallbackError)
+        }
       }
     }
 
     // Log usage
-    await supabase.from('credit_usage').insert({
+    const { error: logError } = await supabase.from('credit_usage').insert({
       workspace_id: workspaceId,
       user_id: userId,
       action_type: action,
       credits_used: cost,
       timestamp: new Date().toISOString(),
     })
+
+    if (logError) {
+      console.error('[CreditService] Failed to log credit usage:', logError)
+    }
   }
 
   /**

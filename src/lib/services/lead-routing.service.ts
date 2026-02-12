@@ -501,10 +501,14 @@ export class LeadRoutingService {
           result.succeeded++
 
           // Mark queue item as processed
-          await supabase
+          const { error: processedError } = await supabase
             .from('lead_routing_queue')
             .update({ processed_at: new Date().toISOString() })
             .eq('id', item.id)
+
+          if (processedError) {
+            safeError('[Lead Routing] Failed to mark queue item as processed:', processedError)
+          }
         } else {
           result.failed++
           result.errors.push({
@@ -513,13 +517,17 @@ export class LeadRoutingService {
           })
 
           // Update error count in queue
-          await supabase
+          const { error: queueUpdateError } = await supabase
             .from('lead_routing_queue')
             .update({
               last_error: routingResult.error,
               error_count: item.attempt_number + 1,
             })
             .eq('id', item.id)
+
+          if (queueUpdateError) {
+            safeError('[Lead Routing] Failed to update queue error count:', queueUpdateError)
+          }
         }
       } catch (error: any) {
         result.failed++

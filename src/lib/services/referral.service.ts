@@ -203,7 +203,7 @@ export async function processBuyerSignupMilestone(referralId: string): Promise<{
   await addCreditsToWorkspace(referral.referrer_user_id!, creditsAwarded, 'referral')
 
   // Record milestone
-  await supabase
+  const { error: milestoneError } = await supabase
     .from('referrals')
     .update({
       milestones_achieved: [...milestones, 'signup'],
@@ -216,6 +216,10 @@ export async function processBuyerSignupMilestone(referralId: string): Promise<{
       converted_at: referral.converted_at || new Date().toISOString(),
     })
     .eq('id', referralId)
+
+  if (milestoneError) {
+    console.error('[Referral] Failed to record signup milestone:', milestoneError)
+  }
 
   return { rewarded: true, creditsAwarded }
 }
@@ -255,7 +259,7 @@ export async function processBuyerFirstPurchaseMilestone(referralId: string): Pr
   await addCreditsToWorkspace(referral.referred_user_id!, refereeCredits, 'referral')
 
   // Record milestone
-  await supabase
+  const { error: purchaseMilestoneError } = await supabase
     .from('referrals')
     .update({
       milestones_achieved: [...milestones, 'first_purchase'],
@@ -267,6 +271,10 @@ export async function processBuyerFirstPurchaseMilestone(referralId: string): Pr
       total_rewards_value: (referral.total_rewards_value || 0) + referrerCredits + refereeCredits,
     })
     .eq('id', referralId)
+
+  if (purchaseMilestoneError) {
+    console.error('[Referral] Failed to record first_purchase milestone:', purchaseMilestoneError)
+  }
 
   return { rewarded: true, referrerCredits, refereeCredits }
 }
@@ -312,7 +320,7 @@ export async function processBuyerSpendMilestone(referralId: string): Promise<{
   const creditsAwarded = REFERRAL_CONFIG.BUYER_SPEND_MILESTONE_REFERRER_CREDIT
   await addCreditsToWorkspace(referral.referrer_user_id!, creditsAwarded, 'referral')
 
-  await supabase
+  const { error: spendMilestoneError } = await supabase
     .from('referrals')
     .update({
       milestones_achieved: [...milestones, 'spend_500'],
@@ -324,6 +332,10 @@ export async function processBuyerSpendMilestone(referralId: string): Promise<{
       status: 'rewarded',
     })
     .eq('id', referralId)
+
+  if (spendMilestoneError) {
+    console.error('[Referral] Failed to record spend_500 milestone:', spendMilestoneError)
+  }
 
   return { rewarded: true, creditsAwarded }
 }
@@ -381,12 +393,16 @@ export async function processPartnerReferralMilestones(referralId: string): Prom
         .eq('id', referral.referrer_partner_id)
         .single()
 
-      await supabase
+      const { error: m1Error } = await supabase
         .from('partners')
         .update({
           available_balance: (referrerPartner?.available_balance || 0) + REFERRAL_CONFIG.PARTNER_MILESTONE_1_REWARD,
         })
         .eq('id', referral.referrer_partner_id)
+
+      if (m1Error) {
+        console.error('[Referral] Failed to update partner balance (M1):', m1Error)
+      }
     }
   }
 
@@ -402,12 +418,16 @@ export async function processPartnerReferralMilestones(referralId: string): Prom
         .eq('id', referral.referrer_partner_id)
         .single()
 
-      await supabase
+      const { error: m2Error } = await supabase
         .from('partners')
         .update({
           available_balance: (referrerPartner?.available_balance || 0) + REFERRAL_CONFIG.PARTNER_MILESTONE_2_REWARD,
         })
         .eq('id', referral.referrer_partner_id)
+
+      if (m2Error) {
+        console.error('[Referral] Failed to update partner balance (M2):', m2Error)
+      }
     }
   }
 
@@ -423,12 +443,16 @@ export async function processPartnerReferralMilestones(referralId: string): Prom
         .eq('id', referral.referrer_partner_id)
         .single()
 
-      await supabase
+      const { error: m3Error } = await supabase
         .from('partners')
         .update({
           available_balance: (referrerPartner?.available_balance || 0) + REFERRAL_CONFIG.PARTNER_MILESTONE_3_REWARD,
         })
         .eq('id', referral.referrer_partner_id)
+
+      if (m3Error) {
+        console.error('[Referral] Failed to update partner balance (M3):', m3Error)
+      }
     }
   }
 
@@ -445,7 +469,7 @@ export async function processPartnerReferralMilestones(referralId: string): Prom
       at: new Date().toISOString()
     }))
 
-    await supabase
+    const { error: referralUpdateError } = await supabase
       .from('referrals')
       .update({
         milestones_achieved: [...milestones, ...newMilestones],
@@ -454,6 +478,10 @@ export async function processPartnerReferralMilestones(referralId: string): Prom
         status: newMilestones.length > 0 ? 'rewarded' : referral.status,
       })
       .eq('id', referralId)
+
+    if (referralUpdateError) {
+      console.error('[Referral] Failed to update referral record:', referralUpdateError)
+    }
   }
 
   return { milestonesAwarded: newMilestones, totalCashAwarded }
@@ -513,7 +541,7 @@ async function addCreditsToWorkspace(
     .single()
 
   if (existingCredits) {
-    await supabase
+    const { error: creditUpdateError } = await supabase
       .from('workspace_credits')
       .update({
         balance: existingCredits.balance + amount,
@@ -521,14 +549,22 @@ async function addCreditsToWorkspace(
         updated_at: new Date().toISOString(),
       })
       .eq('workspace_id', workspaceId)
+
+    if (creditUpdateError) {
+      console.error('[Referral] Failed to update workspace credits:', creditUpdateError)
+    }
   } else {
-    await supabase.from('workspace_credits').insert({
+    const { error: creditInsertError } = await supabase.from('workspace_credits').insert({
       workspace_id: workspaceId,
       balance: amount,
       total_purchased: 0,
       total_used: 0,
       total_earned: amount,
     })
+
+    if (creditInsertError) {
+      console.error('[Referral] Failed to create workspace credits:', creditInsertError)
+    }
   }
 }
 
@@ -635,10 +671,14 @@ export async function assignWorkspaceReferralCode(workspaceId: string): Promise<
     attempts++
   }
 
-  await supabase
+  const { error: codeError } = await supabase
     .from('workspaces')
     .update({ referral_code: code })
     .eq('id', workspaceId)
+
+  if (codeError) {
+    console.error('[Referral] Failed to assign workspace referral code:', codeError)
+  }
 
   return code
 }
@@ -665,10 +705,14 @@ export async function assignPartnerReferralCode(partnerId: string): Promise<stri
     attempts++
   }
 
-  await supabase
+  const { error: partnerCodeError } = await supabase
     .from('partners')
     .update({ referral_code: code })
     .eq('id', partnerId)
+
+  if (partnerCodeError) {
+    console.error('[Referral] Failed to assign partner referral code:', partnerCodeError)
+  }
 
   return code
 }
