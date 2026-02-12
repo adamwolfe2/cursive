@@ -2,6 +2,7 @@
 // Lazy initialization to avoid build-time errors
 
 import Stripe from 'stripe'
+import { logger } from '@/lib/monitoring/logger'
 
 let stripeClient: Stripe | null = null
 
@@ -69,7 +70,7 @@ export async function createCheckoutSession(params: {
 
     return session
   } catch (error) {
-    console.error('[Stripe] Failed to create checkout session:', error)
+    logger.error('[Stripe] Failed to create checkout session', { error: error instanceof Error ? error.message : String(error) })
     throw new Error(`Stripe checkout failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
   }
 }
@@ -87,7 +88,7 @@ export async function cancelSubscription(subscriptionId: string) {
 
     return subscription
   } catch (error) {
-    console.error('[Stripe] Failed to cancel subscription:', error)
+    logger.error('[Stripe] Failed to cancel subscription', { error: error instanceof Error ? error.message : String(error) })
     throw new Error(`Stripe cancellation failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
   }
 }
@@ -105,7 +106,7 @@ export async function resumeSubscription(subscriptionId: string) {
 
     return subscription
   } catch (error) {
-    console.error('[Stripe] Failed to resume subscription:', error)
+    logger.error('[Stripe] Failed to resume subscription', { error: error instanceof Error ? error.message : String(error) })
     throw new Error(`Stripe resume failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
   }
 }
@@ -127,7 +128,7 @@ export async function createPortalSession(params: {
 
     return session
   } catch (error) {
-    console.error('[Stripe] Failed to create portal session:', error)
+    logger.error('[Stripe] Failed to create portal session', { error: error instanceof Error ? error.message : String(error) })
     throw new Error(`Stripe portal session failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
   }
 }

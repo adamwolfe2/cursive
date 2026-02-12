@@ -7,6 +7,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth'
+import { logger } from '@/lib/monitoring/logger'
 
 interface RouteContext {
   params: Promise<{ id: string }>
@@ -50,7 +51,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
       .in('id', email_ids)
 
     if (emailsError) {
-      console.error('Failed to fetch emails:', emailsError)
+      logger.error('Failed to fetch emails', { error: emailsError instanceof Error ? emailsError.message : String(emailsError), campaignId })
       return NextResponse.json({ error: 'Failed to fetch emails' }, { status: 500 })
     }
 
@@ -74,7 +75,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
       .in('id', validIds)
 
     if (updateError) {
-      console.error('Failed to approve emails:', updateError)
+      logger.error('Failed to approve emails', { error: updateError instanceof Error ? updateError.message : String(updateError), campaignId })
       return NextResponse.json({ error: 'Failed to approve emails' }, { status: 500 })
     }
 
@@ -94,7 +95,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
     // Original: await inngest.send(emails.map(email => ({ name: 'campaign/email-approved', data: { email_send_id, campaign_lead_id, workspace_id } })))
     const approvedWithCampaignLead = emails.filter((email) => leadToCampaignLead.has(email.lead_id))
     if (approvedWithCampaignLead.length > 0) {
-      console.log(`[Campaign Email Approve] ${approvedWithCampaignLead.length} emails approved (Inngest events skipped - Edge runtime)`)
+      logger.info('Emails approved (Inngest events skipped - Edge runtime)', { count: approvedWithCampaignLead.length, campaignId })
     }
 
     return NextResponse.json({
@@ -108,7 +109,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
         { status: 400 }
       )
     }
-    console.error('Approve emails error:', error)
+    logger.error('Approve emails error', { error: error instanceof Error ? error.message : String(error) })
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

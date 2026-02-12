@@ -8,6 +8,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth'
+import { logger } from '@/lib/monitoring/logger'
 
 interface RouteContext {
   params: Promise<{ id: string; emailId: string }>
@@ -71,7 +72,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
 
     return NextResponse.json({ data: email })
   } catch (error) {
-    console.error('Get email error:', error)
+    logger.error('Get email error', { error: error instanceof Error ? error.message : String(error) })
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
@@ -137,7 +138,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
       .single()
 
     if (updateError) {
-      console.error('Failed to update email:', updateError)
+      logger.error('Failed to update email', { error: updateError instanceof Error ? updateError.message : String(updateError), emailId })
       return NextResponse.json({ error: 'Failed to update email' }, { status: 500 })
     }
 
@@ -149,7 +150,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
         { status: 400 }
       )
     }
-    console.error('Update email error:', error)
+    logger.error('Update email error', { error: error instanceof Error ? error.message : String(error) })
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

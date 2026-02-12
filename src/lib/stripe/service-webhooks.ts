@@ -12,6 +12,7 @@ import {
   sendPaymentFailedEmail,
   sendCancellationEmail,
 } from '@/lib/email/service-emails'
+import { logger } from '@/lib/monitoring/logger'
 
 /**
  * Get a service tier by ID using admin client (bypasses RLS).
@@ -143,7 +144,7 @@ export async function handleSubscriptionCreated(subscription: Stripe.Subscriptio
         monthlyPrice: monthlyPrice,
       })
     } catch (emailError: any) {
-      console.error('[Webhook] Failed to send welcome email:', emailError)
+      logger.error('[Webhook] Failed to send welcome email', { error: emailError instanceof Error ? emailError.message : String(emailError) })
       // Don't throw - email failures shouldn't block webhook processing
     }
 
@@ -181,13 +182,13 @@ export async function handleSubscriptionCreated(subscription: Stripe.Subscriptio
           })
         }
       } catch (ghlError: any) {
-        console.error('[Webhook] Failed to trigger GHL onboarding:', ghlError)
+        logger.error('[Webhook] Failed to trigger GHL onboarding', { error: ghlError instanceof Error ? ghlError.message : String(ghlError) })
         // Don't throw - GHL setup failures shouldn't block subscription
       }
     }
 
   } catch (error: any) {
-    console.error('[Webhook] Error handling subscription.created:', error)
+    logger.error('[Webhook] Error handling subscription.created', { error: error instanceof Error ? error.message : String(error) })
     throw error
   }
 }
@@ -264,7 +265,7 @@ export async function handleSubscriptionUpdated(subscription: Stripe.Subscriptio
           periodEnd: existingSubscription.current_period_end,
         })
       } catch (emailError: any) {
-        console.error('[Webhook] Failed to send activation email:', emailError)
+        logger.error('[Webhook] Failed to send activation email', { error: emailError instanceof Error ? emailError.message : String(emailError) })
         // Don't throw - email failures shouldn't block webhook processing
       }
     } else if (status === 'pending_payment') {
@@ -279,13 +280,13 @@ export async function handleSubscriptionUpdated(subscription: Stripe.Subscriptio
           amount: existingSubscription.monthly_price,
         })
       } catch (emailError: any) {
-        console.error('[Webhook] Failed to send payment failed email:', emailError)
+        logger.error('[Webhook] Failed to send payment failed email', { error: emailError instanceof Error ? emailError.message : String(emailError) })
         // Don't throw - email failures shouldn't block webhook processing
       }
     }
 
   } catch (error: any) {
-    console.error('[Webhook] Error handling subscription.updated:', error)
+    logger.error('[Webhook] Error handling subscription.updated', { error: error instanceof Error ? error.message : String(error) })
     throw error
   }
 }
@@ -330,14 +331,14 @@ export async function handleSubscriptionDeleted(subscription: Stripe.Subscriptio
         })
       }
     } catch (emailError: any) {
-      console.error('[Webhook] Failed to send cancellation email:', emailError)
+      logger.error('[Webhook] Failed to send cancellation email', { error: emailError instanceof Error ? emailError.message : String(emailError) })
     }
 
     // FUTURE: Schedule data retention/deletion if applicable
     // This will be implemented when we add automated data cleanup policies
 
   } catch (error: any) {
-    console.error('[Webhook] Error handling subscription.deleted:', error)
+    logger.error('[Webhook] Error handling subscription.deleted', { error: error instanceof Error ? error.message : String(error) })
     throw error
   }
 }
@@ -386,11 +387,11 @@ export async function handleInvoicePaymentFailed(invoice: Stripe.Invoice): Promi
         })
       }
     } catch (emailError: any) {
-      console.error('[Webhook] Failed to send payment failed email:', emailError)
+      logger.error('[Webhook] Failed to send payment failed email', { error: emailError instanceof Error ? emailError.message : String(emailError) })
     }
 
   } catch (error: any) {
-    console.error('[Webhook] Error handling invoice.payment_failed:', error)
+    logger.error('[Webhook] Error handling invoice.payment_failed', { error: error instanceof Error ? error.message : String(error) })
     throw error
   }
 }
@@ -404,7 +405,7 @@ export async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice): Pr
 
   try {
     if (!invoice.subscription) {
-      console.warn('[Webhook] Invoice has no subscription, skipping')
+      logger.warn('[Webhook] Invoice has no subscription, skipping')
       return
     }
 
@@ -452,7 +453,7 @@ export async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice): Pr
           periodEnd: new Date(invoice.period_end! * 1000).toISOString(),
         })
       } catch (emailError: any) {
-        console.error('[Webhook] Failed to send payment success email:', emailError)
+        logger.error('[Webhook] Failed to send payment success email', { error: emailError instanceof Error ? emailError.message : String(emailError) })
       }
     }
 
@@ -460,7 +461,7 @@ export async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice): Pr
     // This will be implemented when we add recurring delivery scheduling
 
   } catch (error: any) {
-    console.error('[Webhook] Error handling invoice.payment_succeeded:', error)
+    logger.error('[Webhook] Error handling invoice.payment_succeeded', { error: error instanceof Error ? error.message : String(error) })
     throw error
   }
 }
@@ -495,7 +496,7 @@ export async function handleServiceWebhookEvent(event: Stripe.Event): Promise<vo
         break
     }
   } catch (error: any) {
-    console.error('[Webhook] Error processing event:', event.type, error)
+    logger.error('[Webhook] Error processing event', { eventType: event.type, error: error instanceof Error ? error.message : String(error) })
     throw error
   }
 }

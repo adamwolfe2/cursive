@@ -1,6 +1,7 @@
 import Stripe from 'stripe'
 import { serviceTierRepository } from '@/lib/repositories/service-tier.repository'
 import { getStripeConfigForTier } from './service-products'
+import { logger } from '@/lib/monitoring/logger'
 
 // Lazy-load Stripe to avoid build-time initialization
 let stripeClient: Stripe | null = null
@@ -168,7 +169,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session): Promis
   const setupFee = parseFloat(session.metadata?.setup_fee || '0')
 
   if (!workspaceId || !serviceTierId) {
-    console.error('[Stripe] Missing metadata in checkout session:', session.id)
+    logger.error('[Stripe] Missing metadata in checkout session', { sessionId: session.id })
     return
   }
 
@@ -196,7 +197,7 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription): Pro
   const serviceTierId = subscription.metadata?.service_tier_id
 
   if (!workspaceId || !serviceTierId) {
-    console.error('[Stripe] Missing metadata in subscription:', subscription.id)
+    logger.error('[Stripe] Missing metadata in subscription', { subscriptionId: subscription.id })
     return
   }
 
@@ -220,7 +221,7 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription): Pro
   const existingSubscription = await serviceTierRepository.getSubscriptionByStripeId(subscription.id)
 
   if (!existingSubscription) {
-    console.error('[Stripe] Subscription not found:', subscription.id)
+    logger.error('[Stripe] Subscription not found', { subscriptionId: subscription.id })
     return
   }
 
@@ -249,7 +250,7 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription): Pro
   const existingSubscription = await serviceTierRepository.getSubscriptionByStripeId(subscription.id)
 
   if (!existingSubscription) {
-    console.error('[Stripe] Subscription not found:', subscription.id)
+    logger.error('[Stripe] Subscription not found', { subscriptionId: subscription.id })
     return
   }
 

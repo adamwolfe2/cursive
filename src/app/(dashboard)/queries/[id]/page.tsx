@@ -277,7 +277,7 @@ export default async function QueryDetailPage({ params }: QueryDetailPageProps) 
                   </div>
                   <span
                     className={`ml-3 inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                      lead.enrichment_status === 'completed'
+                      lead.enrichment_status === 'enriched'
                         ? 'bg-green-100 text-green-800'
                         : lead.enrichment_status === 'pending'
                           ? 'bg-yellow-100 text-yellow-800'

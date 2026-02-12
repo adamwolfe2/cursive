@@ -11,6 +11,7 @@
  */
 
 import { createClient } from '@/lib/supabase/server'
+import { logger } from '@/lib/monitoring/logger'
 import type { ProductTierFeatures } from '@/types'
 
 // Default free tier features
@@ -287,9 +288,12 @@ export async function requireFeature(
 
   if (!hasFeature) {
     const tier = await getWorkspaceTier(workspaceId)
-    console.error(
-      `[TierCheck] Feature '${String(feature)}' denied for workspace ${workspaceId} (tier: ${tier.tierSlug}, source: ${tier.source})`
-    )
+    logger.error('Feature denied for workspace', {
+      feature: String(feature),
+      workspaceId,
+      tierSlug: tier.tierSlug,
+      source: tier.source,
+    })
     throw new FeatureNotAvailableError(
       errorMessage || `This feature requires an upgrade from your ${tier.tierName} plan.`,
       feature,
@@ -310,9 +314,12 @@ export async function requireWithinLimit(
   const { withinLimit, used, limit } = await isWorkspaceWithinLimit(workspaceId, resource)
 
   if (!withinLimit) {
-    console.error(
-      `[TierCheck] Limit exceeded for workspace ${workspaceId}: ${resource} (used: ${used}, limit: ${limit})`
-    )
+    logger.error('Limit exceeded for workspace', {
+      workspaceId,
+      resource,
+      used,
+      limit,
+    })
     throw new LimitExceededError(
       errorMessage || `You've reached your limit of ${limit} ${resource.replace('_', ' ')}.`,
       resource,

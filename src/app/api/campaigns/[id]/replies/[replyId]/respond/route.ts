@@ -8,6 +8,7 @@ import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth'
 import { EmailBisonClient } from '@/lib/services/emailbison'
+import { logger } from '@/lib/monitoring/logger'
 
 interface RouteContext {
   params: Promise<{ id: string; replyId: string }>
@@ -146,7 +147,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
       .single()
 
     if (sendError) {
-      console.error('Failed to create response record:', sendError)
+      logger.error('Failed to create response record', { error: sendError instanceof Error ? sendError.message : String(sendError), replyId, campaignId })
     }
 
     // Update reply status
@@ -163,7 +164,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
       .eq('id', replyId)
 
     if (updateError) {
-      console.error('Failed to update reply status:', updateError)
+      logger.error('Failed to update reply status', { error: updateError instanceof Error ? updateError.message : String(updateError), replyId })
     }
 
     return NextResponse.json({
@@ -178,7 +179,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
         { status: 400 }
       )
     }
-    console.error('Send response error:', error)
+    logger.error('Send response error', { error: error instanceof Error ? error.message : String(error) })
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
