@@ -3,6 +3,7 @@ export const runtime = 'edge'
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { z } from 'zod'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // Allowed domains for redirect URLs (prevent open redirect attacks)
 const ALLOWED_REDIRECT_DOMAINS = [
@@ -83,7 +84,7 @@ export async function GET(request: NextRequest) {
 
       if (emailSend) {
         // Record click event
-        await supabase.from('email_tracking_events').insert({
+        const { error: insertError } = await supabase.from('email_tracking_events').insert({
           email_send_id: emailSendId,
           event_type: 'click',
           link_url: targetUrl,
@@ -91,9 +92,13 @@ export async function GET(request: NextRequest) {
           user_agent: request.headers.get('user-agent'),
         })
 
+        if (insertError) {
+          safeError('[Click Track] Failed to insert tracking event:', insertError)
+        }
+
         // Update email send status if first click
         if (!emailSend.clicked_at) {
-          await supabase
+          const { error: updateError } = await supabase
             .from('email_sends')
             .update({
               status: 'clicked',
@@ -101,17 +106,23 @@ export async function GET(request: NextRequest) {
             })
             .eq('id', emailSendId)
 
+          if (updateError) {
+            safeError('[Click Track] Failed to update email send status:', updateError)
+          }
+
           // Update campaign stats
           if (emailSend.campaign_id) {
             const { error: rpcError } = await supabase.rpc('increment_campaign_clicks', {
               p_campaign_id: emailSend.campaign_id,
             })
-            if (rpcError) console.error('increment_campaign_clicks error:', rpcError)
+            if (rpcError) {
+              safeError('[Click Track] Failed to increment campaign clicks:', rpcError)
+            }
           }
         }
       }
     } catch (error) {
-      console.error('Click tracking error:', error)
+      safeError('[Click Track] Tracking error:', error)
     }
   }
 

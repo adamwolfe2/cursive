@@ -3,6 +3,7 @@ export const runtime = 'edge'
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { z } from 'zod'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // 1x1 transparent GIF for tracking pixel
 const TRACKING_PIXEL = Buffer.from(
@@ -40,15 +41,19 @@ export async function GET(request: NextRequest) {
         // Record open event
         const now = new Date().toISOString()
 
-        await supabase.from('email_tracking_events').insert({
+        const { error: insertError } = await supabase.from('email_tracking_events').insert({
           email_send_id: emailSendId,
           event_type: 'open',
           ip_address: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip'),
           user_agent: request.headers.get('user-agent'),
         })
 
+        if (insertError) {
+          safeError('[Email Track] Failed to insert open event:', insertError)
+        }
+
         // Update email send status
-        await supabase
+        const { error: updateError } = await supabase
           .from('email_sends')
           .update({
             status: 'opened',
@@ -57,17 +62,22 @@ export async function GET(request: NextRequest) {
           .eq('id', emailSendId)
           .is('opened_at', null)
 
+        if (updateError) {
+          safeError('[Email Track] Failed to update email send status:', updateError)
+        }
+
         // Update campaign stats
         if (emailSend.campaign_id) {
           const { error: rpcError } = await supabase.rpc('increment_campaign_opens', {
             p_campaign_id: emailSend.campaign_id,
           })
-          // Function might not exist yet
-          if (rpcError) console.warn('increment_campaign_opens error:', rpcError.message)
+          if (rpcError) {
+            safeError('[Email Track] Failed to increment campaign opens:', rpcError)
+          }
         }
       }
     } catch (error) {
-      console.error('Email open tracking error:', error)
+      safeError('[Email Track] Email open tracking error:', error)
     }
   }
 
@@ -110,7 +120,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Record click event
-    await supabase.from('email_tracking_events').insert({
+    const { error: insertError } = await supabase.from('email_tracking_events').insert({
       email_send_id: emailSendId,
       event_type: 'click',
       link_url: url,
@@ -118,9 +128,13 @@ export async function POST(request: NextRequest) {
       user_agent: request.headers.get('user-agent'),
     })
 
+    if (insertError) {
+      safeError('[Email Track POST] Failed to insert click event:', insertError)
+    }
+
     // Update email send status if first click
     if (!emailSend.clicked_at) {
-      await supabase
+      const { error: updateError } = await supabase
         .from('email_sends')
         .update({
           status: 'clicked',
@@ -128,19 +142,24 @@ export async function POST(request: NextRequest) {
         })
         .eq('id', emailSendId)
 
+      if (updateError) {
+        safeError('[Email Track POST] Failed to update email send status:', updateError)
+      }
+
       // Update campaign stats
       if (emailSend.campaign_id) {
         const { error: rpcError } = await supabase.rpc('increment_campaign_clicks', {
           p_campaign_id: emailSend.campaign_id,
         })
-        // Function might not exist yet
-        if (rpcError) console.warn('increment_campaign_clicks error:', rpcError.message)
+        if (rpcError) {
+          safeError('[Email Track POST] Failed to increment campaign clicks:', rpcError)
+        }
       }
     }
 
     return NextResponse.json({ success: true })
   } catch (error: any) {
-    console.error('Email click tracking error:', error)
+    safeError('[Email Track POST] Email click tracking error:', error)
     return NextResponse.json({ error: 'Tracking failed' }, { status: 500 })
   }
 }
