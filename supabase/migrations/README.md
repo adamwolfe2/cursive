@@ -27,9 +27,10 @@ This directory contains all Supabase database migrations for the Cursive platfor
 | Category | Changes | Count |
 |----------|---------|-------|
 | **Security: RLS** | Enabled RLS on unprotected tables | 3 tables |
-| **Security: Functions** | Revoked `anon` EXECUTE on all RPCs | ~90 functions |
+| **Security: Functions** | Revoked `PUBLIC` EXECUTE on all custom RPCs (closes anon inheritance) | ~130 functions |
 | **Security: Functions** | Restricted internal functions to `service_role` | 28 functions |
-| **Security: Functions** | Set `search_path = public` on all custom functions | ~90 functions |
+| **Security: Functions** | Set `search_path = public` on all custom functions | ~130 functions |
+| **Security: Policies** | Wrapped `auth.uid()` with `(SELECT auth.uid())` for plan stability | ~170 policies |
 | **Security: Views** | Set `SECURITY INVOKER` on all views | 7 views |
 | **Security: Policies** | Dropped dead `waitlist_signups` INSERT policy | 1 policy |
 | **Integrity: NOT NULL** | `workspace_id` on user-facing tables | 3 columns |
@@ -38,7 +39,8 @@ This directory contains all Supabase database migrations for the Cursive platfor
 | **Integrity: CHECK** | Non-system email templates require `workspace_id` | 1 constraint |
 | **Integrity: Table** | Created `api_idempotency_keys` (was in code but missing) | 1 table |
 | **Idempotency** | Partial unique indexes on Stripe IDs | 10 indexes |
-| **Performance: FK indexes** | Indexes on unindexed foreign keys | 6 indexes (84 total across sessions) |
+| **Performance: FK indexes** | Indexes on unindexed foreign keys | 6 indexes |
+| **Performance: User-ID indexes** | Indexes for RLS predicate support | 4 indexes |
 | **Performance: Time indexes** | `created_at DESC` for dashboard queries | 6 indexes |
 | **Performance: Composite** | Multi-column indexes for My Leads hot paths | 3 indexes |
 | **Performance: Cleanup** | Dropped duplicate indexes | 4 indexes |
@@ -56,15 +58,21 @@ This directory contains all Supabase database migrations for the Cursive platfor
 
 ### Known Acceptable Warnings (from Supabase Advisors)
 - **unused_index (390)**: Young app with low query volume — indexes exist for anticipated query patterns
-- **auth_rls_initplan (178)**: Standard `auth.uid()` subquery pattern in RLS policies
+- **auth_rls_initplan**: RESOLVED — all policies now use `(SELECT auth.uid())` InitPlan pattern
 - **multiple_permissive_policies (123)**: Multiple PERMISSIVE policies OR'd together (Postgres default behavior)
 - **support_messages INSERT true**: Intentional — public support form submission
 - **pg_trgm in public schema**: Extension installed by default, cannot easily move
 - **Leaked password protection**: Disabled — enable in Supabase Auth dashboard settings
 
+### Important: Default Privileges
+Supabase auto-grants `EXECUTE` to `PUBLIC` on new functions via `ALTER DEFAULT PRIVILEGES`.
+This cannot be changed via SQL (permission denied). After any `CREATE OR REPLACE FUNCTION`,
+you must re-run: `REVOKE EXECUTE ON FUNCTION public.func_name(...) FROM PUBLIC;`
+
 ### Manual Action Required
 1. **Enable Leaked Password Protection**: Supabase Dashboard → Auth → Settings → Password Security
 2. **Monitor**: Run `get_advisors` periodically to catch new issues
+3. **After migrations**: Re-run anon revoke if any functions are created/replaced
 
 ## Running Migrations
 

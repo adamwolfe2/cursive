@@ -271,3 +271,89 @@ CREATE INDEX IF NOT EXISTS idx_ula_user_workspace_created
   ON user_lead_assignments (user_id, workspace_id, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_leads_workspace_enrichment_delivery
   ON leads (workspace_id, enrichment_status, delivery_status);
+
+-- ============================================================================
+-- 16. SECURITY: Wrap auth.uid() with (SELECT auth.uid()) for plan stability
+--     PostgreSQL evaluates bare auth.uid() per-row; wrapping in SELECT makes
+--     it an InitPlan evaluated once per statement.
+-- ============================================================================
+DO $$
+DECLARE
+  pol record;
+  new_qual text;
+  new_with_check text;
+BEGIN
+  FOR pol IN
+    SELECT schemaname, tablename, policyname, qual, with_check
+    FROM pg_policies
+    WHERE schemaname = 'public'
+  LOOP
+    new_qual := NULL;
+    new_with_check := NULL;
+
+    IF pol.qual IS NOT NULL
+       AND pol.qual LIKE '%auth.uid()%'
+       AND pol.qual NOT LIKE '%SELECT auth.uid()%' THEN
+      new_qual := replace(pol.qual, 'auth.uid()', '(SELECT auth.uid())');
+    END IF;
+
+    IF pol.with_check IS NOT NULL
+       AND pol.with_check LIKE '%auth.uid()%'
+       AND pol.with_check NOT LIKE '%SELECT auth.uid()%' THEN
+      new_with_check := replace(pol.with_check, 'auth.uid()', '(SELECT auth.uid())');
+    END IF;
+
+    IF new_qual IS NOT NULL AND new_with_check IS NOT NULL THEN
+      EXECUTE format('ALTER POLICY %I ON %I.%I USING (%s) WITH CHECK (%s)',
+        pol.policyname, pol.schemaname, pol.tablename, new_qual, new_with_check);
+    ELSIF new_qual IS NOT NULL THEN
+      EXECUTE format('ALTER POLICY %I ON %I.%I USING (%s)',
+        pol.policyname, pol.schemaname, pol.tablename, new_qual);
+    ELSIF new_with_check IS NOT NULL THEN
+      EXECUTE format('ALTER POLICY %I ON %I.%I WITH CHECK (%s)',
+        pol.policyname, pol.schemaname, pol.tablename, new_with_check);
+    END IF;
+  END LOOP;
+END $$;
+
+-- ============================================================================
+-- 17. SECURITY: Revoke PUBLIC EXECUTE on all custom functions
+--     Supabase default privileges grant EXECUTE to PUBLIC on new functions.
+--     anon inherits from PUBLIC, so revoking from anon alone is insufficient.
+--     authenticated + service_role retain access via their direct grants.
+-- ============================================================================
+DO $$
+DECLARE
+  func record;
+BEGIN
+  FOR func IN
+    SELECT p.proname, pg_get_function_identity_arguments(p.oid) as args
+    FROM pg_proc p
+    JOIN pg_namespace n ON p.pronamespace = n.oid
+    WHERE n.nspname = 'public'
+      AND p.prokind = 'f'
+      AND p.proacl::text LIKE '%=X/%'
+      AND p.proname NOT IN (
+        'similarity', 'similarity_op', 'similarity_dist',
+        'word_similarity', 'word_similarity_op', 'word_similarity_dist_op',
+        'word_similarity_commutator_op', 'word_similarity_dist_commutator_op',
+        'strict_word_similarity', 'strict_word_similarity_op', 'strict_word_similarity_dist_op',
+        'strict_word_similarity_commutator_op', 'strict_word_similarity_dist_commutator_op',
+        'set_limit', 'show_limit', 'show_trgm',
+        'gin_extract_query_trgm', 'gin_extract_value_trgm', 'gin_trgm_consistent', 'gin_trgm_triconsistent',
+        'gtrgm_compress', 'gtrgm_consistent', 'gtrgm_decompress', 'gtrgm_distance',
+        'gtrgm_in', 'gtrgm_options', 'gtrgm_out', 'gtrgm_penalty', 'gtrgm_picksplit',
+        'gtrgm_same', 'gtrgm_union'
+      )
+  LOOP
+    EXECUTE format('REVOKE EXECUTE ON FUNCTION public.%I(%s) FROM PUBLIC', func.proname, func.args);
+  END LOOP;
+END $$;
+
+-- ============================================================================
+-- 18. PERFORMANCE: User-ID indexes for RLS predicate support
+-- ============================================================================
+CREATE INDEX IF NOT EXISTS idx_audit_logs_user_id ON audit_logs (user_id);
+CREATE INDEX IF NOT EXISTS idx_notification_digest_queue_user_id ON notification_digest_queue (user_id);
+CREATE INDEX IF NOT EXISTS idx_security_events_user_id ON security_events (user_id);
+CREATE INDEX IF NOT EXISTS idx_workspace_api_keys_user_id ON workspace_api_keys (user_id);
