@@ -15,14 +15,14 @@ export async function POST(request: NextRequest) {
     }
 
     // 2. Check if user has Stripe customer ID
-    if (!user.stripe_customer_id) {
+    if (!(user as any).stripe_customer_id) {
       return badRequest('No active subscription found')
     }
 
     // 3. Create portal session
     const baseUrl = request.nextUrl.origin
     const session = await createPortalSession({
-      customerId: user.stripe_customer_id,
+      customerId: (user as any).stripe_customer_id,
       returnUrl: `${baseUrl}/settings/billing`,
     })
 

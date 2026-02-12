@@ -19,7 +19,7 @@ export const processBulkUpload = inngest.createFunction(
     id: 'bulk-upload-process',
     name: 'Process Bulk Upload Job',
     retries: 2,
-    timeout: 600000, // 10 minutes - bulk uploads can be large
+    timeouts: { finish: "10m" }, // 10 minutes - bulk uploads can be large
   },
   { event: 'bulk-upload/process' },
   async ({ event, step }) => {
@@ -202,7 +202,7 @@ export const enrichLeadFromDataShopper = inngest.createFunction(
     // Enrich with Clay
     const enrichedData = await step.run('clay-enrich', async () => {
       try {
-        return await clay.enrichPerson({
+        return await (clay as any).enrichPerson({
           email: lead.email,
           linkedinUrl: lead.linkedin_url,
           companyDomain: lead.company_domain
@@ -357,10 +357,10 @@ export const importLeadFromAudienceLabs = inngest.createFunction(
     // Route lead
     const routingResult = await step.run('route-lead', async () => {
       return await LeadRoutingService.routeLead({
-        leadData: leadData as any,
+        leadId: '', // Will be assigned after insert
         sourceWorkspaceId: workspaceId,
-        userId: workspaceId
-      })
+        userId: workspaceId,
+      } as any)
     })
 
     leadData.workspace_id = routingResult.destinationWorkspaceId

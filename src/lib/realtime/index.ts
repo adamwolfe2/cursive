@@ -31,7 +31,7 @@ export interface RealtimeOptions {
   onDisconnect?: () => void
 }
 
-export type RealtimeCallback<T> = (
+export type RealtimeCallback<T extends { [key: string]: any } = Record<string, unknown>> = (
   payload: RealtimePostgresChangesPayload<T>
 ) => void
 
@@ -65,18 +65,18 @@ export function useRealtimeSubscription<T extends Record<string, unknown>>(
     const channel = supabase
       .channel(channelName)
       .on(
-        'postgres_changes' as const,
+        'postgres_changes' as any,
         {
           event: filter.event,
           schema: filter.schema || 'public',
           table: filter.table,
           filter: filter.filter,
-        },
-        (payload: RealtimePostgresChangesPayload<T>) => {
+        } as any,
+        (payload: any) => {
           callbackRef.current(payload)
         }
       )
-      .subscribe((status) => {
+      .subscribe((status: string) => {
         if (status === 'SUBSCRIBED') {
           onConnect?.()
         } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
@@ -161,10 +161,10 @@ export function usePresence(channelName: string, options: PresenceOptions) {
         setPresenceState(state)
         onSync?.(state)
       })
-      .on('presence', { event: 'join' }, ({ key, currentPresences, newPresences }) => {
+      .on('presence', { event: 'join' }, ({ key, currentPresences, newPresences }: any) => {
         onJoin?.(key, currentPresences, newPresences)
       })
-      .on('presence', { event: 'leave' }, ({ key, currentPresences, leftPresences }) => {
+      .on('presence', { event: 'leave' }, ({ key, currentPresences, leftPresences }: any) => {
         onLeave?.(key, currentPresences, leftPresences)
       })
       .subscribe(async (status) => {

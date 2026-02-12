@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     // Rate limiting
     const rateLimitResult = await withRateLimit(
       request,
-      'crm-operations',
+      'crm-operations' as any,
       `user:${user.id}`
     )
     if (rateLimitResult) {

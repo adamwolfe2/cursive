@@ -33,11 +33,12 @@ export default async function OnboardingPage() {
   }
 
   // If already completed, redirect to dashboard
-  if (subscription.onboarding_completed) {
+  const sub = subscription as any
+  if (sub.onboarding_completed) {
     redirect('/dashboard?onboarding=complete')
   }
 
-  const tier = subscription.service_tiers
+  const tier = sub.service_tiers
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-zinc-50 to-white">
@@ -57,7 +58,7 @@ export default async function OnboardingPage() {
         <OnboardingForm
           subscriptionId={subscription.id}
           tierName={tier?.name || 'your subscription'}
-          initialData={subscription.onboarding_data as Record<string, any> || {}}
+          initialData={sub.onboarding_data as Record<string, any> || {}}
         />
       </div>
     </div>

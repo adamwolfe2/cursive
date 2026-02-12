@@ -132,32 +132,42 @@ async function incrementSendCountManual(
   const today = new Date().toISOString().split('T')[0]
 
   try {
-    // Update campaign
+    // Fetch current campaign state, then increment
+    const { data: campaign } = await supabase
+      .from('email_campaigns')
+      .select('sends_today, last_send_reset_at')
+      .eq('id', campaignId)
+      .single()
+
+    const campaignSendsToday = campaign?.last_send_reset_at === today
+      ? ((campaign?.sends_today || 0) + 1)
+      : 1
+
     await supabase
       .from('email_campaigns')
       .update({
-        sends_today: supabase.sql`
-          CASE
-            WHEN last_send_reset_at < '${today}'::date THEN 1
-            ELSE sends_today + 1
-          END
-        `,
+        sends_today: campaignSendsToday,
         last_send_reset_at: today,
-      })
+      } as any)
       .eq('id', campaignId)
 
-    // Update workspace
+    // Fetch current workspace state, then increment
+    const { data: workspace } = await supabase
+      .from('workspaces')
+      .select('sends_today, last_send_reset_at')
+      .eq('id', workspaceId)
+      .single()
+
+    const workspaceSendsToday = (workspace as any)?.last_send_reset_at === today
+      ? (((workspace as any)?.sends_today || 0) + 1)
+      : 1
+
     await supabase
       .from('workspaces')
       .update({
-        sends_today: supabase.sql`
-          CASE
-            WHEN last_send_reset_at < '${today}'::date THEN 1
-            ELSE sends_today + 1
-          END
-        `,
+        sends_today: workspaceSendsToday,
         last_send_reset_at: today,
-      })
+      } as any)
       .eq('id', workspaceId)
 
     return true

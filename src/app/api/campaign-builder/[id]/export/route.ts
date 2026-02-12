@@ -94,7 +94,7 @@ export async function GET(
 
     // Mark as exported (optional)
     if (markAsExported && draft.status !== 'exported') {
-      await repo.markExported(id, userData.workspace_id, { format })
+      await repo.markExported(id, userData.workspace_id, { format: format as any })
     }
 
     // Return appropriate response based on format
@@ -314,7 +314,7 @@ export async function POST(
 
     // Mark as exported with EmailBison campaign ID
     await repo.markExported(id, userData.workspace_id, {
-      format: 'emailbison',
+      format: 'emailbison' as any,
       emailbison_campaign_id: result.campaignId,
     })
 

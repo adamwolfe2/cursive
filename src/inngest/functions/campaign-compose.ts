@@ -156,7 +156,7 @@ export const composeCampaignEmail = inngest.createFunction(
       return emailComposerService.composeEmail({
         campaignLead: { ...campaignLead, lead },
         campaign,
-        template: selectedTemplate,
+        template: selectedTemplate as any,
         senderName,
         senderTitle,
         senderCompany,

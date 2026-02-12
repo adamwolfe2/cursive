@@ -41,7 +41,7 @@ export default async function ManageSubscriptionPage() {
     .order('created_at', { ascending: false })
     .limit(50)
 
-  const tier = subscription.service_tiers
+  const tier = (subscription as any).service_tiers
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-zinc-50 to-white">

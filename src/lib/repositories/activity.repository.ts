@@ -372,7 +372,7 @@ export class ActivityRepository {
    * Mark activity as incomplete
    */
   async markIncomplete(id: string, workspaceId: string): Promise<Activity> {
-    return this.update(id, workspaceId, { completed_at: null })
+    return this.update(id, workspaceId, { completed_at: null } as any)
   }
 
   /**

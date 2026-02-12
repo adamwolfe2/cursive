@@ -36,7 +36,7 @@ export async function POST(
     // Update partner status
     const repo = new PartnerRepository()
     const partner = await repo.update(id, {
-      status: 'active',
+      status: 'approved',
       isActive: true,
       suspensionReason: '',
     })

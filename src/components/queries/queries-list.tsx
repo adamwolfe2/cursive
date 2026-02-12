@@ -33,7 +33,7 @@ export function QueriesList() {
     return (
       <ErrorDisplay
         error={error as Error}
-        retry={() => refetch()}
+        retry={() => { refetch() }}
         variant="card"
         title="Failed to load queries"
       />

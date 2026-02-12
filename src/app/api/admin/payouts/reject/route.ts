@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
       .eq('id', payout_id)
 
     // Refund the amount back to partner's available balance
-    const partner = payout.partner as { id: string; available_balance: number }
+    const partner = payout.partner as unknown as { id: string; available_balance: number }
     await adminClient
       .from('partners')
       .update({

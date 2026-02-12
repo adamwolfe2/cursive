@@ -159,7 +159,7 @@ export function ContactsTable({ data, onRowClick, onCreateClick }: ContactsTable
               <th className="w-12 px-3 py-2">
                 <Checkbox
                   checked={allSelected}
-                  onCheckedChange={toggleAllRows}
+                  onChange={toggleAllRows}
                   className="border-gray-300"
                 />
               </th>
@@ -230,7 +230,7 @@ export function ContactsTable({ data, onRowClick, onCreateClick }: ContactsTable
                     <td className="px-3 py-2.5">
                       <Checkbox
                         checked={isSelected}
-                        onCheckedChange={() => toggleRow(contact.id, { stopPropagation: () => {} } as React.MouseEvent)}
+                        onChange={() => toggleRow(contact.id, { stopPropagation: () => {} } as React.MouseEvent)}
                         onClick={(e) => e.stopPropagation()}
                         className="border-gray-300"
                       />

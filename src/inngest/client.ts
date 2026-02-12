@@ -540,21 +540,21 @@ export type Events = {
 }
 
 // Lazy-load Inngest client to avoid build-time initialization
-let inngestInstance: Inngest<Events> | null = null
+let inngestInstance: Inngest | null = null
 
-export function getInngest(): Inngest<Events> {
+export function getInngest(): Inngest {
   if (!inngestInstance) {
     inngestInstance = new Inngest({
       id: 'cursive-platform',
       name: 'Cursive Platform',
       eventKey: process.env.INNGEST_EVENT_KEY,
-    })
+    } as any)
   }
   return inngestInstance
 }
 
 // Export the inngest instance with lazy initialization
-export const inngest = new Proxy({} as Inngest<Events>, {
+export const inngest = new Proxy({} as Inngest, {
   get(_target, prop) {
     return (getInngest() as any)[prop]
   }

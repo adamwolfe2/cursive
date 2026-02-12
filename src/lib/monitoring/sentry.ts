@@ -45,7 +45,7 @@ export function initSentry() {
       Sentry.browserTracingIntegration({
         // Don't track these endpoints
         tracePropagationTargets: ['localhost', /^\/api\//],
-      }),
+      } as any),
       Sentry.replayIntegration({
         // Mask sensitive data
         maskAllText: isProduction,

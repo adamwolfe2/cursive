@@ -1,7 +1,8 @@
 // SEO Configuration
 // Default SEO settings for the entire application
 
-import type { DefaultSeoProps } from 'next-seo/dist/pages'
+// next-seo types may not be available - define inline
+type DefaultSeoProps = Record<string, any>
 
 const SEO_CONFIG: DefaultSeoProps = {
   defaultTitle: 'Cursive - B2B Intent Lead Intelligence Platform',

@@ -50,7 +50,7 @@ export function CompaniesTable({ data, onRowClick, onCreateClick }: CompaniesTab
   }
 
   // Get company favicon
-  const getCompanyFavicon = (url: string | null) => {
+  const getCompanyFavicon = (url: string | null | undefined) => {
     if (!url) return null
     try {
       const domain = new URL(url.startsWith('http') ? url : `https://${url}`).hostname
@@ -61,7 +61,7 @@ export function CompaniesTable({ data, onRowClick, onCreateClick }: CompaniesTab
   }
 
   // Generate consistent color for company logo based on name
-  const getLogoColor = (name: string | null) => {
+  const getLogoColor = (name: string | null | undefined) => {
     if (!name) return 'bg-gray-200 text-gray-600'
     const colors = [
       'bg-blue-500',
@@ -162,7 +162,7 @@ export function CompaniesTable({ data, onRowClick, onCreateClick }: CompaniesTab
               <th className="w-12 px-3 py-2">
                 <Checkbox
                   checked={allSelected}
-                  onCheckedChange={toggleAllRows}
+                  onChange={toggleAllRows}
                   className="border-gray-300"
                 />
               </th>
@@ -233,7 +233,7 @@ export function CompaniesTable({ data, onRowClick, onCreateClick }: CompaniesTab
                     <td className="px-3 py-2.5">
                       <Checkbox
                         checked={isSelected}
-                        onCheckedChange={() => toggleRow(company.id, { stopPropagation: () => {} } as React.MouseEvent)}
+                        onChange={() => toggleRow(company.id, { stopPropagation: () => {} } as React.MouseEvent)}
                         onClick={(e) => e.stopPropagation()}
                         className="border-gray-300"
                       />

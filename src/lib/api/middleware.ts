@@ -83,8 +83,8 @@ async function getCurrentUser(): Promise<AuthenticatedUser | null> {
       email: authUser.email || '',
       full_name: typedUser.full_name || '',
       workspace_id: typedUser.workspace_id,
-      plan: workspace?.plan || 'free',
-      role: typedUser.role || 'member',
+      plan: (workspace?.plan || 'free') as 'free' | 'pro' | 'enterprise',
+      role: (typedUser.role || 'member') as 'admin' | 'owner' | 'member',
       daily_credits_used: typedUser.daily_credits_used || 0,
       daily_credit_limit: workspace?.daily_credit_limit || 10,
     }

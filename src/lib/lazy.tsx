@@ -72,7 +72,7 @@ function DefaultLoader({ delay = 200 }: DefaultLoaderProps) {
 
   return (
     <div className="flex items-center justify-center p-8">
-      <Spinner size="md" />
+      <Spinner size="default" />
     </div>
   )
 }

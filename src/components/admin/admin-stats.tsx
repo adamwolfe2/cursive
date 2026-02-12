@@ -187,7 +187,7 @@ export function AdminOverviewGrid({ metrics, loading }: AdminOverviewGridProps) 
 // SYSTEM STATUS
 // ============================================
 
-interface SystemService {
+export interface SystemService {
   name: string
   status: 'operational' | 'degraded' | 'outage'
   latency?: number
@@ -282,7 +282,7 @@ export function SystemStatus({ services, loading }: SystemStatusProps) {
 // RECENT ACTIVITY
 // ============================================
 
-interface ActivityItem {
+export interface ActivityItem {
   id: string
   type: 'user_signup' | 'query_created' | 'subscription_changed' | 'export_completed' | 'error'
   description: string

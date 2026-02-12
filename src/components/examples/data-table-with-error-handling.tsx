@@ -38,12 +38,11 @@ export function DataTableWithErrorHandling() {
     refetch,
   } = useQuery({
     queryKey: ['items'],
-    queryFn: () => retryFetchJson<{ data: Item[] }>('/api/items', {
-      retry: {
-        maxRetries: 3,
-        initialDelay: 1000,
-        onRetry: (attempt: number, error: Error) => {
-        },
+    queryFn: () => retryFetchJson<{ data: Item[] }>('/api/items', undefined, {
+      maxRetries: 3,
+      initialDelay: 1000,
+      onRetry: (attempt: number, _error: Error) => {
+        // Log retry attempt
       },
     }),
     // React Query automatic retry configuration
@@ -116,7 +115,7 @@ export function DataTableWithErrorHandling() {
         </div>
         <ErrorDisplay
           error={error as Error}
-          retry={() => refetch()}
+          retry={() => { refetch() }}
           variant="card"
           title="Failed to load items"
         />

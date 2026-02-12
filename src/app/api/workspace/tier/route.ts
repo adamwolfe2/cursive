@@ -138,8 +138,8 @@ export async function GET(request: NextRequest) {
     }
 
     // If service tier exists, map its platform_features to ProductTierFeatures
-    if (serviceTierData && serviceTierData.platform_features) {
-      const platformFeatures = serviceTierData.platform_features as ServiceTierPlatformFeatures
+    if (serviceTierData && (serviceTierData as any).platform_features) {
+      const platformFeatures = (serviceTierData as any).platform_features as ServiceTierPlatformFeatures
       features = {
         ...features,
         campaigns: platformFeatures.campaigns || false,
@@ -161,8 +161,8 @@ export async function GET(request: NextRequest) {
     let monthlyLimit = tierInfo?.monthly_lead_limit_override ?? productTier?.monthly_lead_limit ?? null
 
     // Service tier limits override product tier limits
-    if (serviceTierData && serviceTierData.platform_features) {
-      const platformFeatures = serviceTierData.platform_features as ServiceTierPlatformFeatures
+    if (serviceTierData && (serviceTierData as any).platform_features) {
+      const platformFeatures = (serviceTierData as any).platform_features as ServiceTierPlatformFeatures
       if (platformFeatures.daily_lead_limit !== undefined) {
         dailyLimit = platformFeatures.daily_lead_limit === -1 ? 999999 : platformFeatures.daily_lead_limit
       }
@@ -187,7 +187,7 @@ export async function GET(request: NextRequest) {
         id: serviceTierData.id,
         name: serviceTierData.name,
         slug: serviceTierData.slug,
-        monthlyPrice: serviceSubscription?.monthly_price,
+        monthlyPrice: (serviceSubscription as any)?.monthly_price,
       } : null,
       limits: {
         daily: dailyLimit,

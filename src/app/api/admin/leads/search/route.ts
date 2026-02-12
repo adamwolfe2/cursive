@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
     if (saveToWorkspace && workspaceId && result.leads.length > 0) {
       const supabase = await createClient()
 
-      const leadsToInsert = result.leads.map(lead => ({
+      const leadsToInsert = result.leads.map((lead: any) => ({
         workspace_id: workspaceId,
         company_name: lead.companyName,
         company_domain: lead.companyDomain,

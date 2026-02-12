@@ -20,7 +20,7 @@ export function LeadStats() {
     return (
       <ErrorDisplay
         error={error as Error}
-        retry={() => refetch()}
+        retry={() => { refetch() }}
         variant="card"
         title="Failed to load stats"
       />

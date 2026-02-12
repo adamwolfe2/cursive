@@ -333,8 +333,7 @@ export async function POST(request: NextRequest) {
         totalPrice,
         paymentMethod: 'stripe',
         creditsUsed: 0,
-        status: 'pending',
-      })
+      } as any)
 
       // Add purchase items with commission calculations including bonuses
       const purchaseItems = leads.map((lead) => {

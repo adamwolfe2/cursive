@@ -57,7 +57,7 @@ export async function sendEmailWithResend(
       subject: request.subject,
       html: request.bodyHtml,
       text: request.bodyText,
-      reply_to: request.replyTo,
+      replyTo: request.replyTo,
       tags: request.tags?.map((tag) => ({ name: tag, value: 'true' })),
     })
 
@@ -113,7 +113,7 @@ export async function sendEmailWithEmailBison(
         subject: request.subject,
         html: request.bodyHtml,
         text: request.bodyText,
-        reply_to: request.replyTo,
+        replyTo: request.replyTo,
         track_opens: true,
         track_clicks: true,
         metadata: request.metadata,

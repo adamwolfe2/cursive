@@ -374,14 +374,6 @@ export async function processPartnerReferralMilestones(referralId: string): Prom
 
     // Add to referrer's available balance (as cash, not credits)
     if (referral.referrer_partner_id) {
-      await supabase
-        .from('partners')
-        .update({
-          available_balance: supabase.rpc('coalesce', { value: 'available_balance', default_value: 0 }) + REFERRAL_CONFIG.PARTNER_MILESTONE_1_REWARD,
-        })
-        .eq('id', referral.referrer_partner_id)
-
-      // Actually use a proper update
       const { data: referrerPartner } = await supabase
         .from('partners')
         .select('available_balance')

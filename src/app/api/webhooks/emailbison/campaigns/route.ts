@@ -427,23 +427,18 @@ async function handleEmailOpened(
   if (isFirstOpen) {
     const { error: rpcError } = await supabase.rpc('increment_campaign_opens', { campaign_id: emailSend.campaign_id })
     if (rpcError) {
-      // Fallback if RPC doesn't exist
-      await supabase
-        .from('email_campaigns')
-        .update({
-          emails_opened: supabase.raw('COALESCE(emails_opened, 0) + 1'),
-        })
-        .eq('id', emailSend.campaign_id)
+      // Fallback if RPC doesn't exist - just log the error
+      console.warn('[Campaign Webhook] increment_campaign_opens RPC not available:', rpcError)
     }
 
-    // Update campaign_lead engagement tracking
-    await supabase
-      .from('campaign_leads')
-      .update({
-        emails_opened: supabase.raw('COALESCE(emails_opened, 0) + 1'),
-      })
-      .eq('campaign_id', emailSend.campaign_id)
-      .eq('lead_id', emailSend.lead_id)
+    // Update campaign_lead engagement tracking via RPC or skip
+    const { error: leadRpcError } = await supabase.rpc('increment_campaign_lead_opens', {
+      p_campaign_id: emailSend.campaign_id,
+      p_lead_id: emailSend.lead_id,
+    })
+    if (leadRpcError) {
+      console.warn('[Campaign Webhook] increment_campaign_lead_opens RPC not available:', leadRpcError)
+    }
   }
 
 }
@@ -502,23 +497,18 @@ async function handleEmailClicked(
   if (isFirstClick) {
     const { error: rpcError } = await supabase.rpc('increment_campaign_clicks', { campaign_id: emailSend.campaign_id })
     if (rpcError) {
-      // Fallback if RPC doesn't exist
-      await supabase
-        .from('email_campaigns')
-        .update({
-          emails_clicked: supabase.raw('COALESCE(emails_clicked, 0) + 1'),
-        })
-        .eq('id', emailSend.campaign_id)
+      // Fallback if RPC doesn't exist - just log the error
+      console.warn('[Campaign Webhook] increment_campaign_clicks RPC not available:', rpcError)
     }
 
-    // Update campaign_lead engagement tracking
-    await supabase
-      .from('campaign_leads')
-      .update({
-        emails_clicked: supabase.raw('COALESCE(emails_clicked, 0) + 1'),
-      })
-      .eq('campaign_id', emailSend.campaign_id)
-      .eq('lead_id', emailSend.lead_id)
+    // Update campaign_lead engagement tracking via RPC or skip
+    const { error: leadRpcError } = await supabase.rpc('increment_campaign_lead_clicks', {
+      p_campaign_id: emailSend.campaign_id,
+      p_lead_id: emailSend.lead_id,
+    })
+    if (leadRpcError) {
+      console.warn('[Campaign Webhook] increment_campaign_lead_clicks RPC not available:', leadRpcError)
+    }
   }
 
 }

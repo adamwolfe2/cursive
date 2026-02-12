@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
     const [qualificationResult, companyAnalysis] = await Promise.all([
       qualifyLead(
         {
-          companyName: companyData?.name,
+          companyName: companyData?.name ?? '',
           companyDomain: companyData?.domain,
           industry: companyData?.industry,
           companySize: companyData?.size,
@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
         }
       ),
       analyzeCompany({
-        name: companyData?.name,
+        name: companyData?.name ?? '',
         domain: companyData?.domain,
         description: companyData?.description,
         industry: companyData?.industry,

@@ -16,6 +16,13 @@ interface FormFieldProps {
   htmlFor?: string
 }
 
+function getErrorMessage(error: FormFieldError): string | null {
+  if (!error) return null
+  if (typeof error === 'string') return error
+  if (error.message) return typeof error.message === 'string' ? error.message : 'Validation error'
+  return 'Validation error'
+}
+
 function FormField({
   label,
   description,
@@ -25,6 +32,8 @@ function FormField({
   className,
   htmlFor,
 }: FormFieldProps) {
+  const errorMessage = getErrorMessage(error)
+
   return (
     <div className={cn('space-y-2', className)}>
       {label && (
@@ -40,7 +49,7 @@ function FormField({
         <p className="text-sm text-muted-foreground">{description}</p>
       )}
       {children}
-      {error && (
+      {errorMessage ? (
         <p className="text-sm text-destructive flex items-center gap-1">
           <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
             <path
@@ -49,9 +58,9 @@ function FormField({
               clipRule="evenodd"
             />
           </svg>
-          {typeof error === 'string' ? error : error.message}
+          {errorMessage}
         </p>
-      )}
+      ) : null}
     </div>
   )
 }

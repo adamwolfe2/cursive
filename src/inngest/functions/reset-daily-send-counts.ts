@@ -65,10 +65,11 @@ export const resetDailySendCounts = inngest.createFunction(
       }
     })
 
+    const { success: _wsSuccess, ...restWorkspaceResult } = workspaceResult
     return {
       success: true,
       reset_date: today,
-      ...workspaceResult,
+      ...restWorkspaceResult,
     }
   }
 )

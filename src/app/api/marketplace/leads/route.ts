@@ -6,7 +6,7 @@ import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { MarketplaceRepository } from '@/lib/repositories/marketplace.repository'
 import { withRateLimit } from '@/lib/middleware/rate-limiter'
-import type { MarketplaceFilters } from '@/types/database.types'
+import type { MarketplaceFilters, SeniorityLevel } from '@/types/database.types'
 
 const filtersSchema = z.object({
   industries: z.array(z.string()).optional(),
@@ -92,7 +92,7 @@ export async function GET(request: NextRequest) {
       industries: validated.industries,
       states: validated.states,
       companySizes: validated.companySizes,
-      seniorityLevels: validated.seniorityLevels,
+      seniorityLevels: validated.seniorityLevels as SeniorityLevel[] | undefined,
       intentScoreMin: validated.intentScoreMin,
       intentScoreMax: validated.intentScoreMax,
       freshnessMin: validated.freshnessMin,

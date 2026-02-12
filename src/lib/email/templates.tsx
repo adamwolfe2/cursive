@@ -151,9 +151,10 @@ export function EmailLayout({ children, preview }: EmailLayoutProps) {
 
 interface HeadingProps {
   children: React.ReactNode
+  style?: React.CSSProperties
 }
 
-export function Heading({ children }: HeadingProps) {
+export function Heading({ children, style }: HeadingProps) {
   return (
     <h1
       style={{
@@ -161,6 +162,7 @@ export function Heading({ children }: HeadingProps) {
         fontWeight: 600,
         color: '#111827',
         margin: '0 0 16px',
+        ...style,
       }}
     >
       {children}

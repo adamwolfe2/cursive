@@ -80,8 +80,8 @@ export default function MyLeadsPage() {
         })
         const uniquePurchases = Array.from(purchaseMap.entries()).map(([id, date]) => ({ id, date }))
 
-        setIndustries(uniqueIndustries.sort())
-        setStates(uniqueStates.sort())
+        setIndustries((uniqueIndustries as string[]).sort())
+        setStates((uniqueStates as string[]).sort())
         setPurchases(uniquePurchases.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()))
       } else if (response.status === 401) {
         router.push('/login')

@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
     // Set secure httpOnly cookie that expires in 7 days
     response.cookies.set('admin_bypass_waitlist', 'true', {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: (process.env.NODE_ENV as string) === 'production',
       sameSite: 'lax',
       maxAge: 60 * 60 * 24 * 7, // 7 days
       path: '/',

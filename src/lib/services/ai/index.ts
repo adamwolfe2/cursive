@@ -3,7 +3,7 @@
 // Anthropic is the primary provider — its types take precedence
 
 export * from './anthropic'
-export { OpenAIConfig, OpenAIClient, createOpenAIClient } from './openai'
+export { type OpenAIConfig, OpenAIClient, createOpenAIClient } from './openai'
 export * from './provider'
 export * from './intent'
 export * from './reply'

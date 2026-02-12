@@ -22,9 +22,11 @@ export async function GET(
     .eq('auth_user_id', user.id)
     .single()
 
-  if (!userData.workspace_id) {
+  if (!userData || !userData.workspace_id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
+
+  const workspaceId = userData.workspace_id
 
   // 2. Get purchase and verify ownership
   const { data: purchase } = await supabase
@@ -44,7 +46,7 @@ export async function GET(
     `
     )
     .eq('id', purchaseId)
-    .eq('buyer_workspace_id', userData.workspace_id)
+    .eq('buyer_workspace_id', workspaceId)
     .eq('status', 'completed')
     .single()
 
@@ -104,7 +106,7 @@ export async function GET(
 
   // 5. Log download to audit
   await supabase.from('marketplace_audit_log').insert({
-    workspace_id: userData.workspace_id,
+    workspace_id: workspaceId,
     user_id: user.id,
     action: 'leads_downloaded',
     entity_type: 'purchase',

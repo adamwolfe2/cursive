@@ -69,8 +69,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             type={type}
             className={cn(
               inputVariants({ variant: inputVariant, inputSize, className }),
-              leftIcon && 'pl-10',
-              rightIcon && 'pr-10'
+              leftIcon ? 'pl-10' : undefined,
+              rightIcon ? 'pr-10' : undefined
             )}
             ref={ref}
             onFocus={handleFocus}
@@ -95,7 +95,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         transition={{ duration: 0.2 }}
         onFocus={handleFocus}
         onBlur={handleBlur}
-        {...props}
+        {...props as any}
       />
     )
   }

@@ -178,7 +178,7 @@ export class EmailComposerService {
     if (template.reply_rate && template.reply_rate > 0.05) {
       score += 10
     }
-    if (template.open_rate && template.open_rate > 0.3) {
+    if ((template as any).open_rate && (template as any).open_rate > 0.3) {
       score += 5
     }
 

@@ -12,7 +12,7 @@ import { cn } from '@/lib/design-system'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Select } from '@/components/ui/select-radix'
+import { Select } from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
 import { formatNumber, formatPercentage, formatCurrency } from '@/lib/design-system'
 import {
@@ -80,7 +80,7 @@ export function DateRangePicker({
     <div className={cn('flex items-center gap-2', className)}>
       <Select
         value={dateRange.preset || 'custom'}
-        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+        onChange={(e) => {
           const preset = e.target.value as DateRangePreset
           if (preset === 'custom') {
             setShowCustom(true)
@@ -90,13 +90,11 @@ export function DateRangePicker({
           }
         }}
         className="w-40"
-      >
-        {presets.map((preset) => (
-          <option key={preset.value} value={preset.value}>
-            {preset.label}
-          </option>
-        ))}
-      </Select>
+        options={presets.map((preset) => ({
+          value: preset.value,
+          label: preset.label,
+        }))}
+      />
 
       {showCustom && (
         <>

@@ -241,7 +241,7 @@ export class HubSpotService {
       // Get field mappings
       const { data: connection } = await supabase
         .from('crm_connections')
-        .select('field_mappings')
+        .select('id, field_mappings')
         .eq('workspace_id', this.workspaceId)
         .eq('provider', 'hubspot')
         .single()

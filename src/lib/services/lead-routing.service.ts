@@ -14,7 +14,7 @@
 
 import { createClient, createAdminClient } from '@/lib/supabase/server'
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
-import type { Database } from '@/types/database'
+import type { Database } from '@/types/database.types'
 import crypto from 'crypto'
 
 type Lead = Database['public']['Tables']['leads']['Row']

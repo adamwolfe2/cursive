@@ -66,7 +66,7 @@ export const processEnrichmentJob = inngest.createFunction(
         .update({
           status: 'in_progress',
           started_at: new Date().toISOString(),
-          attempts: supabase.rpc ? 1 : 1, // Increment attempts
+          attempts: 1, // Increment attempts
         })
         .eq('id', job_id)
 
@@ -319,17 +319,17 @@ async function enrichWithAI(
     // Run AI analysis
     const [companyAnalysis, qualification] = await Promise.all([
       analyzeCompany({
-        name: companyData.name,
-        domain: companyData.domain,
-        description: companyData.description,
-        industry: companyData.industry,
+        name: companyData.name ?? '',
+        domain: companyData.domain ?? '',
+        description: companyData.description ?? '',
+        industry: companyData.industry ?? '',
       }),
       qualifyLead(
         {
-          companyName: companyData.name,
-          companyDomain: companyData.domain,
-          industry: companyData.industry,
-          companySize: companyData.size,
+          companyName: companyData.name ?? '',
+          companyDomain: companyData.domain ?? '',
+          industry: companyData.industry ?? '',
+          companySize: companyData.size ?? '',
           contactName: contactData?.contacts?.[0]?.full_name,
           contactTitle: contactData?.contacts?.[0]?.title,
           contactEmail: contactData?.contacts?.[0]?.email,

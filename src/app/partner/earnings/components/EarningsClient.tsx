@@ -156,7 +156,7 @@ export function EarningsClient({
                         initial: { opacity: 0, x: -20 },
                         animate: { opacity: 1, x: 0 },
                         transition: { delay: index * 0.05, duration: 0.3 },
-                        whileHover: { backgroundColor: 'rgba(59, 130, 246, 0.03)' },
+                        whileHover: { backgroundColor: 'rgba(59, 130, 246, 0.03)' } as any,
                       }
                     : {})}
                 >
@@ -235,7 +235,7 @@ export function EarningsClient({
                     initial: { opacity: 0, y: 20 },
                     animate: { opacity: 1, y: 0 },
                     transition: { delay: index * 0.05, duration: 0.3 },
-                    whileHover: { y: -2, shadow: 'md' },
+                    whileHover: { y: -2, shadow: 'md' } as any,
                   }
                 : {})}
             >
@@ -365,7 +365,7 @@ function StatCard({
       className={`rounded-lg border p-4 ${colorClasses[color]} bg-gradient-to-br from-white/50 transition-all duration-200`}
       {...(shouldAnimate
         ? {
-            whileHover: { y: -4, shadow: 'lg' },
+            whileHover: { y: -4, shadow: 'lg' } as any,
             variants: {
               hidden: { opacity: 0, y: 20 },
               visible: { opacity: 1, y: 0 },

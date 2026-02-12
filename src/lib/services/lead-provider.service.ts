@@ -160,7 +160,8 @@ export class LeadProviderService {
       .gte('created_at', startOfMonth.toISOString())
 
     // Calculate limits
-    const tier = tierInfo?.product_tiers as { name: string; daily_lead_limit: number; monthly_lead_limit: number | null } | null
+    const rawTier = (tierInfo as any)?.product_tiers
+    const tier = (Array.isArray(rawTier) ? rawTier[0] : rawTier) as { name: string; daily_lead_limit: number; monthly_lead_limit: number | null } | null
     const dailyLimit = tierInfo?.daily_lead_limit_override ?? tier?.daily_lead_limit ?? 3
     const monthlyLimit = tierInfo?.monthly_lead_limit_override ?? tier?.monthly_lead_limit ?? null
 

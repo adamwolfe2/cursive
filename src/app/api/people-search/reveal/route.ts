@@ -22,6 +22,10 @@ export async function POST(request: NextRequest) {
 
     const { user, credits } = protection.req
 
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     // 2. Validate input with Zod
     const body = await request.json()
     const { result_id } = revealRequestSchema.parse(body)

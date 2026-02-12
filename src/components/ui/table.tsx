@@ -67,7 +67,7 @@ const TableRow = React.forwardRef<
       )}
       whileHover={safeAnimation ? { y: -1 } : undefined}
       transition={{ duration: 0.15 }}
-      {...props}
+      {...props as any}
     />
   )
 })

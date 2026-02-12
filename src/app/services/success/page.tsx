@@ -37,7 +37,7 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
   // Get active subscription
   const subscription = await serviceTierRepository.getWorkspaceActiveSubscription(userData.workspace_id)
 
-  const tierSlug = resolvedSearchParams.tier || subscription?.service_tiers?.slug
+  const tierSlug = resolvedSearchParams.tier || (subscription as any)?.service_tiers?.slug
   let tierName = 'Cursive Service'
 
   if (tierSlug) {

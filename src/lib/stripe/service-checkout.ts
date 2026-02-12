@@ -95,8 +95,8 @@ export async function createServiceCheckout(
       user_id: userId,
       service_tier_id: tier.id,
       service_tier_slug: tier.slug,
-      monthly_price: (negotiatedMonthlyPrice ?? tier.monthly_price ?? 0).toString(),
-      setup_fee: (tier.setup_fee ?? 0).toString()
+      monthly_price: (negotiatedMonthlyPrice ?? (tier as any).monthly_price ?? 0).toString(),
+      setup_fee: ((tier as any).setup_fee ?? 0).toString()
     },
     subscription_data: {
       metadata: {
@@ -177,11 +177,15 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session): Promis
     workspace_id: workspaceId,
     service_tier_id: serviceTierId,
     status: 'pending_payment', // Will be updated when subscription is created
-    monthly_price: monthlyPrice,
-    setup_fee_paid: setupFee,
     stripe_subscription_id: session.subscription as string,
-    stripe_customer_id: session.customer as string
-  })
+    cancel_at_period_end: false,
+    // Fields not yet in generated types
+    ...({
+      monthly_price: monthlyPrice,
+      setup_fee_paid: setupFee,
+      stripe_customer_id: session.customer as string,
+    } as any),
+  } as any)
 }
 
 /**
@@ -339,12 +343,12 @@ export async function createServicePortalSession(
 ): Promise<string> {
   const subscription = await serviceTierRepository.getWorkspaceActiveSubscription(workspaceId)
 
-  if (!subscription || !subscription.stripe_customer_id) {
+  if (!subscription || !(subscription as any).stripe_customer_id) {
     throw new Error('No active subscription found')
   }
 
   const session = await getStripe().billingPortal.sessions.create({
-    customer: subscription.stripe_customer_id,
+    customer: (subscription as any).stripe_customer_id,
     return_url: returnUrl || `${baseUrl}/services/manage`
   })
 

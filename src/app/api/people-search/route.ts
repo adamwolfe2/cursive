@@ -33,6 +33,10 @@ export async function POST(request: NextRequest) {
 
     const { user, credits } = protection.req
 
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     // 2. Validate input with Zod
     const body = await request.json()
     const { filters, save_search, search_name } = searchRequestSchema.parse(body)
@@ -109,6 +113,10 @@ export async function GET(request: NextRequest) {
     }
 
     const { user } = protection.req
+
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
 
     // 2. Fetch saved searches with workspace filtering
     const peopleSearchRepo = new PeopleSearchRepository()

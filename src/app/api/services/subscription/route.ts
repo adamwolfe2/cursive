@@ -53,17 +53,19 @@ export async function GET(request: NextRequest) {
     const deliveries = await serviceTierRepository.getSubscriptionDeliveries(subscription.id)
     const recentDeliveries = deliveries.slice(0, 5)
 
+    const sub = subscription as any
+
     return NextResponse.json({
       has_subscription: true,
       subscription: {
-        id: subscription.id,
-        status: subscription.status,
-        monthly_price: subscription.monthly_price,
-        current_period_start: subscription.current_period_start,
-        current_period_end: subscription.current_period_end,
-        cancel_at_period_end: subscription.cancel_at_period_end,
-        onboarding_completed: subscription.onboarding_completed,
-        created_at: subscription.created_at
+        id: sub.id,
+        status: sub.status,
+        monthly_price: sub.monthly_price,
+        current_period_start: sub.current_period_start,
+        current_period_end: sub.current_period_end,
+        cancel_at_period_end: sub.cancel_at_period_end,
+        onboarding_completed: sub.onboarding_completed,
+        created_at: sub.created_at
       },
       tier: tier ? {
         id: tier.id,
@@ -71,9 +73,9 @@ export async function GET(request: NextRequest) {
         name: tier.name,
         description: tier.description,
         features: tier.features,
-        platform_features: tier.platform_features
+        platform_features: (tier as any).platform_features
       } : null,
-      recent_deliveries: recentDeliveries.map(d => ({
+      recent_deliveries: recentDeliveries.map((d: any) => ({
         id: d.id,
         delivery_type: d.delivery_type,
         status: d.status,

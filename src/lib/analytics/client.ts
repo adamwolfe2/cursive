@@ -108,7 +108,7 @@ export function isFeatureEnabled(flag: string): boolean {
 export function getFeatureFlag(flag: string): string | boolean {
   if (typeof window === 'undefined') return false
 
-  return posthog.getFeatureFlag(flag)
+  return posthog.getFeatureFlag(flag) ?? false
 }
 
 export function onFeatureFlags(callback: (flags: string[], variants: Record<string, string | boolean>) => void) {

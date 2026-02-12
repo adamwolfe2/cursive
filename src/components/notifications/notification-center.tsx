@@ -169,18 +169,18 @@ export function NotificationCenter({
   onClick,
   className,
 }: NotificationCenterProps) {
-  const { addToast } = useToast()
+  const { toast } = useToast()
 
   // Subscribe to new notifications
   useNotificationUpdates(
     userId,
     (payload) => {
       if (payload.eventType === 'INSERT') {
-        const newNotification = payload.new as Notification
-        addToast({
+        const newNotification = payload.new as unknown as Notification
+        toast({
           title: newNotification.title,
-          description: newNotification.message,
-          variant: newNotification.type === 'query_failed' ? 'error' : 'default',
+          message: newNotification.message,
+          type: newNotification.type === 'query_failed' ? 'error' : 'info',
         })
       }
     },
@@ -192,7 +192,7 @@ export function NotificationCenter({
   if (isLoading) {
     return (
       <div className={cn('flex items-center justify-center p-8', className)}>
-        <Spinner size="md" />
+        <Spinner size="default" />
       </div>
     )
   }

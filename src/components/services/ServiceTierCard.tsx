@@ -2,10 +2,18 @@
 
 import Link from 'next/link'
 import { ArrowRight, CheckCircle } from 'lucide-react'
-import type { Database } from '@/types/database.types'
 import { trackCTAClick } from '@/lib/analytics/service-tier-events'
 
-type ServiceTier = Database['public']['Tables']['service_tiers']['Row']
+interface ServiceTier {
+  name: string
+  slug: string
+  description: string | null
+  monthly_price_min: number
+  monthly_price_max: number | null
+  setup_fee: number | null
+  features: unknown
+  qualification_required: boolean
+}
 
 interface ServiceTierCardProps {
   tier: ServiceTier

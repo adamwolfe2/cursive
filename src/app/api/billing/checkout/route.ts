@@ -50,8 +50,8 @@ export async function POST(request: NextRequest) {
       }
 
       finalPriceId = billingPeriod === 'monthly'
-        ? plan.stripe_price_id_monthly
-        : plan.stripe_price_id_yearly
+        ? (plan as any).stripe_price_id_monthly
+        : (plan as any).stripe_price_id_yearly
     }
 
     if (!finalPriceId) {

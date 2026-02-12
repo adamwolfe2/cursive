@@ -125,7 +125,6 @@ class PerformanceMonitor {
 
     // Log to structured logger
     logger.info(`Operation completed: ${data.operation}`, {
-      duration: data.duration,
       ...data,
     })
   }

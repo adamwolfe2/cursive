@@ -94,7 +94,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
       for (const send of templateData) {
         if (!send.template_id) continue
 
-        const templateName = (send.template as { name: string } | null)?.name || 'Unknown'
+        const templateName = (send.template as unknown as { name: string } | null)?.name || 'Unknown'
 
         if (!templateMap.has(send.template_id)) {
           templateMap.set(send.template_id, {
@@ -124,7 +124,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
 
     if (replyTemplateData) {
       for (const reply of replyTemplateData) {
-        const templateId = (reply.email_send as { template_id: string } | null)?.template_id
+        const templateId = (reply.email_send as unknown as { template_id: string } | null)?.template_id
         if (templateId && templateMap.has(templateId)) {
           const entry = templateMap.get(templateId)!
           entry.replies++
@@ -240,7 +240,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
 
     if (stepReplyData) {
       for (const reply of stepReplyData) {
-        const step = (reply.email_send as { step_number: number } | null)?.step_number
+        const step = (reply.email_send as unknown as { step_number: number } | null)?.step_number
         if (step && stepMap.has(step)) {
           stepMap.get(step)!.replies++
         }

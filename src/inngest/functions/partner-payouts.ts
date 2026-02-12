@@ -171,14 +171,20 @@ async function processPartnerPayout(partner: {
       // Don't fail - transfer already succeeded
     }
 
-    // Update partner balance
+    // Update partner balance - fetch current total first then update
+    const { data: currentPartner } = await supabase
+      .from('partners')
+      .select('total_paid_out')
+      .eq('id', partner.partnerId)
+      .single()
+
     await supabase
       .from('partners')
       .update({
         available_balance: 0,
-        total_paid_out: supabase.sql`COALESCE(total_paid_out, 0) + ${partner.availableBalance}`,
+        total_paid_out: ((currentPartner as any)?.total_paid_out || 0) + partner.availableBalance,
         last_payout_at: new Date().toISOString(),
-      } as never)
+      } as any)
       .eq('id', partner.partnerId)
 
     // Mark commissions as paid

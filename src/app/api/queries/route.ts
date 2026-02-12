@@ -99,9 +99,8 @@ export async function POST(request: NextRequest) {
       workspace_id: user.workspace_id,
       topic_id: validatedData.topic_id,
       name: validatedData.name,
-      filters: validatedData.filters,
+      filters: validatedData.filters as any,
       status: 'active',
-      created_by: user.id,
     })
 
     // 5. Return response

@@ -113,7 +113,8 @@ export async function POST(
     })
 
     // Send email notification to partner
-    if (lead.partners && lead.partners.contact_email) {
+    const partnerData = lead.partners as unknown as { id: string; company_name: string; contact_email: string } | null
+    if (partnerData && partnerData.contact_email) {
       try {
         const leadName = [lead.first_name, lead.last_name].filter(Boolean).join(' ') || lead.email || 'Unknown'
 
@@ -121,11 +122,11 @@ export async function POST(
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            to: lead.partners.contact_email,
+            to: partnerData.contact_email,
             subject: 'Lead Rejected - Action Required',
             template: 'lead_rejected',
             data: {
-              partnerName: lead.partners.company_name,
+              partnerName: partnerData.company_name,
               leadName,
               reason: validated.reason,
               reasonCode: validated.reasonCode,

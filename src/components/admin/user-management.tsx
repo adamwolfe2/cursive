@@ -13,7 +13,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
-import { Select } from '@/components/ui/select-radix'
+import { Select } from '@/components/ui/select'
 import { DataTable, TableToolbar, Pagination } from '@/components/ui/data-table'
 import { Avatar } from '@/components/ui/avatar'
 import { Modal, ModalHeader, ModalTitle, ModalDescription, ModalContent, ModalFooter } from '@/components/ui/modal'
@@ -218,30 +218,32 @@ export function UserTable({
             <div className="flex gap-2">
               <Select
                 value={statusFilter}
-                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setStatusFilter(e.target.value)}
+                onChange={(e) => setStatusFilter(e.target.value)}
                 className="w-32"
-              >
-                <option value="all">All Status</option>
-                <option value="active">Active</option>
-                <option value="suspended">Suspended</option>
-                <option value="pending">Pending</option>
-              </Select>
+                options={[
+                  { value: 'all', label: 'All Status' },
+                  { value: 'active', label: 'Active' },
+                  { value: 'suspended', label: 'Suspended' },
+                  { value: 'pending', label: 'Pending' },
+                ]}
+              />
               <Select
                 value={planFilter}
-                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setPlanFilter(e.target.value)}
+                onChange={(e) => setPlanFilter(e.target.value)}
                 className="w-32"
-              >
-                <option value="all">All Plans</option>
-                <option value="free">Free</option>
-                <option value="pro">Pro</option>
-                <option value="enterprise">Enterprise</option>
-              </Select>
+                options={[
+                  { value: 'all', label: 'All Plans' },
+                  { value: 'free', label: 'Free' },
+                  { value: 'pro', label: 'Pro' },
+                  { value: 'enterprise', label: 'Enterprise' },
+                ]}
+              />
             </div>
           }
         />
         <DataTable
-          columns={columns}
-          data={filteredUsers}
+          columns={columns as any}
+          data={filteredUsers as any}
           keyField="id"
           loading={loading}
           loadingRows={5}
@@ -320,15 +322,16 @@ export function UserEditModal({ user, isOpen, onClose, onSave }: UserEditModalPr
             <label className="text-sm font-medium text-foreground">Plan</label>
             <Select
               value={formData.plan}
-              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+              onChange={(e) =>
                 setFormData({ ...formData, plan: e.target.value as AdminUser['plan'] })
               }
               className="mt-1 w-full"
-            >
-              <option value="free">Free</option>
-              <option value="pro">Pro</option>
-              <option value="enterprise">Enterprise</option>
-            </Select>
+              options={[
+                { value: 'free', label: 'Free' },
+                { value: 'pro', label: 'Pro' },
+                { value: 'enterprise', label: 'Enterprise' },
+              ]}
+            />
           </div>
           <div>
             <label className="text-sm font-medium text-foreground">
@@ -347,15 +350,16 @@ export function UserEditModal({ user, isOpen, onClose, onSave }: UserEditModalPr
             <label className="text-sm font-medium text-foreground">Status</label>
             <Select
               value={formData.status}
-              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+              onChange={(e) =>
                 setFormData({ ...formData, status: e.target.value as AdminUser['status'] })
               }
               className="mt-1 w-full"
-            >
-              <option value="active">Active</option>
-              <option value="suspended">Suspended</option>
-              <option value="pending">Pending</option>
-            </Select>
+              options={[
+                { value: 'active', label: 'Active' },
+                { value: 'suspended', label: 'Suspended' },
+                { value: 'pending', label: 'Pending' },
+              ]}
+            />
           </div>
         </div>
       </ModalContent>

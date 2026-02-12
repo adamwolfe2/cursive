@@ -1,6 +1,6 @@
 'use client'
 
-import { ReactNode } from 'react'
+import { ReactNode, useState } from 'react'
 import { MobileMenu } from '@/components/ui/mobile-menu'
 
 interface ResponsiveShellProps {
@@ -19,8 +19,9 @@ export function ResponsiveShell({
   children,
   sidebar,
   header,
-  mobileMenuTriggerClassName = 'h-11 w-11'
 }: ResponsiveShellProps) {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
   return (
     <div className="flex h-screen bg-gradient-cursive-soft">
       {/* Desktop Sidebar - Hidden on mobile */}
@@ -47,7 +48,11 @@ export function ResponsiveShell({
 
       {/* Mobile Menu - Only visible on mobile */}
       <div className="lg:hidden fixed bottom-6 right-6 z-50">
-        <MobileMenu triggerClassName={mobileMenuTriggerClassName}>
+        <MobileMenu
+          isOpen={mobileMenuOpen}
+          onOpen={() => setMobileMenuOpen(true)}
+          onClose={() => setMobileMenuOpen(false)}
+        >
           {sidebar}
         </MobileMenu>
       </div>
@@ -106,6 +111,8 @@ export function ResponsiveHeader({
   showMobileMenu = false,
   mobileMenuContent
 }: ResponsiveHeaderProps) {
+  const [headerMenuOpen, setHeaderMenuOpen] = useState(false)
+
   return (
     <div className="px-4 sm:px-6 py-5">
       <div className="flex items-center justify-between gap-4">
@@ -113,7 +120,11 @@ export function ResponsiveHeader({
           {/* Mobile Menu Button */}
           {showMobileMenu && mobileMenuContent && (
             <div className="lg:hidden flex-shrink-0">
-              <MobileMenu triggerClassName="h-11 w-11">
+              <MobileMenu
+                isOpen={headerMenuOpen}
+                onOpen={() => setHeaderMenuOpen(true)}
+                onClose={() => setHeaderMenuOpen(false)}
+              >
                 {mobileMenuContent}
               </MobileMenu>
             </div>

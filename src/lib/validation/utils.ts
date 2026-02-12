@@ -299,9 +299,9 @@ export const sortSchema = z.object({
 export function makeOptional<T extends z.ZodRawShape>(schema: z.ZodObject<T>) {
   const shape = schema.shape
   const optionalShape = Object.keys(shape).reduce((acc, key) => {
-    acc[key as keyof T] = shape[key as keyof T].optional()
+    acc[key] = (shape as any)[key].optional()
     return acc
-  }, {} as z.ZodRawShape)
+  }, {} as Record<string, z.ZodTypeAny>)
   return z.object(optionalShape)
 }
 
@@ -319,12 +319,11 @@ export function omitFields<T extends z.ZodRawShape, K extends keyof T>(
   schema: z.ZodObject<T>,
   keys: K[]
 ) {
-  return schema.omit(
-    keys.reduce((acc, key) => {
-      acc[key] = true
-      return acc
-    }, {} as Record<K, true>)
-  )
+  const mask = keys.reduce((acc, key) => {
+    acc[key as string] = true
+    return acc
+  }, {} as any)
+  return schema.omit(mask)
 }
 
 /**
@@ -334,12 +333,11 @@ export function pickFields<T extends z.ZodRawShape, K extends keyof T>(
   schema: z.ZodObject<T>,
   keys: K[]
 ) {
-  return schema.pick(
-    keys.reduce((acc, key) => {
-      acc[key] = true
-      return acc
-    }, {} as Record<K, true>)
-  )
+  const mask = keys.reduce((acc, key) => {
+    acc[key as string] = true
+    return acc
+  }, {} as any)
+  return schema.pick(mask)
 }
 
 // ============================================================================

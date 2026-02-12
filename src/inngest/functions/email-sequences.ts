@@ -232,7 +232,7 @@ export const processSequenceStep = inngest.createFunction(
       logger.error(`Step ${step_number} failed: ${stepResult.error}`)
 
       // Mark as failed if email bounced
-      if (stepResult.bounced) {
+      if ((stepResult as any).bounced) {
         await step.run('mark-bounced', async () => {
           const supabase = createAdminClient()
           await supabase
@@ -319,7 +319,7 @@ async function executeEmailStep(
   lead: any,
   workspaceId: string,
   enrollmentId: string
-): Promise<{ success: boolean; error?: string; bounced?: boolean }> {
+): Promise<{ success: boolean; error?: string; bounced?: boolean; [key: string]: any }> {
   const contactData = lead.contact_data as LeadContactData | null
   const companyData = lead.company_data as LeadCompanyData | null
 
@@ -523,10 +523,10 @@ async function executeActionStep(
   switch (config.action) {
     case 'add_tag':
       if (config.tag_id) {
-        await supabase.from('lead_tags').insert({
+        await supabase.from('lead_tags').upsert({
           lead_id: lead.id,
           tag_id: config.tag_id,
-        }).onConflict('lead_id,tag_id').ignore()
+        }, { onConflict: 'lead_id,tag_id', ignoreDuplicates: true })
       }
       break
 

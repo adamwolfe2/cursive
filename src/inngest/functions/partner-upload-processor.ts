@@ -320,14 +320,14 @@ export const processPartnerUpload = inngest.createFunction(
             const hashKey = calculateHashKey(email, validatedRow.company_domain || null, validatedRow.phone || null)
             const intentScore = calculateIntentScore({
               seniority_level: validatedRow.seniority_level || 'unknown',
-              companySize: validatedRow.company_size || null,
-              companyEmployeeCount: validatedRow.company_employee_count || null,
+              company_size: validatedRow.company_size || null,
+              company_employee_count: validatedRow.company_employee_count || null,
               email: email,
-              companyDomain: validatedRow.company_domain || null,
-              hasPhone: !!validatedRow.phone,
-              hasVerifiedEmail: false,
-              dataCompleteness: calculateDataCompleteness(validatedRow),
-            })
+              company_domain: validatedRow.company_domain || null,
+              phone: validatedRow.phone || null,
+              verified_email: null,
+              data_completeness: calculateDataCompleteness(validatedRow),
+            } as any)
             const freshnessScore = calculateFreshnessScore(new Date())
             const marketplacePrice = calculateMarketplacePrice({
               intentScore: intentScore.score,
@@ -447,13 +447,19 @@ export const processPartnerUpload = inngest.createFunction(
         })
         .eq('id', batch_id)
 
-      // Update partner statistics
+      // Update partner statistics - fetch current count first then update
+      const { data: currentPartnerData } = await supabase
+        .from('partners')
+        .select('total_leads_uploaded')
+        .eq('id', partner_id)
+        .single()
+
       await supabase
         .from('partners')
         .update({
-          total_leads_uploaded: supabase.sql`total_leads_uploaded + ${totalResults.successful}`,
+          total_leads_uploaded: ((currentPartnerData as any)?.total_leads_uploaded || 0) + totalResults.successful,
           last_upload_at: new Date().toISOString(),
-        } as never)
+        } as any)
         .eq('id', partner_id)
 
       // Queue new leads for verification
@@ -518,13 +524,19 @@ export const retryStalledUploads = inngest.createFunction(
 
     for (const batch of stalledBatches) {
       await step.run(`retry-${batch.batch_id}`, async () => {
-        // Increment retry count
+        // Increment retry count - fetch current count first
+        const { data: batchInfo } = await supabase
+          .from('partner_upload_batches')
+          .select('retry_count')
+          .eq('id', batch.batch_id)
+          .single()
+
         await supabase
           .from('partner_upload_batches')
           .update({
-            retry_count: supabase.sql`retry_count + 1`,
+            retry_count: ((batchInfo as any)?.retry_count || 0) + 1,
             updated_at: new Date().toISOString(),
-          } as never)
+          } as any)
           .eq('id', batch.batch_id)
 
         // Get storage path

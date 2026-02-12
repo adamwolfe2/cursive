@@ -1,7 +1,7 @@
 import React from 'react'
 
 interface FormLabelProps {
-  htmlFor: string
+  htmlFor?: string
   children: React.ReactNode
   required?: boolean
   optional?: boolean

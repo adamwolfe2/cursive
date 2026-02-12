@@ -271,7 +271,7 @@ export class LeadDataProcessorService {
       lead.full_name = this.cleanString(transformed.full_name)
       // Try to split into first/last if not provided
       if (!transformed.first_name && !transformed.last_name) {
-        const nameParts = lead.full_name.split(' ')
+        const nameParts = lead.full_name!.split(' ')
         if (nameParts.length >= 2) {
           lead.first_name = nameParts[0]
           lead.last_name = nameParts.slice(1).join(' ')

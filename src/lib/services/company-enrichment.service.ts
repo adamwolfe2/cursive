@@ -307,7 +307,7 @@ export class CompanyEnrichmentService {
       try {
         const { FirecrawlService } = await import('@/lib/services/firecrawl.service')
         const websiteUrl = `https://${cleanDomain}`
-        const firecrawlData = await FirecrawlService.scrapeWebsite(websiteUrl)
+        const firecrawlData = await (FirecrawlService as any).scrapeWebsite(websiteUrl)
 
         if (firecrawlData) {
           // Merge with existing data (don't overwrite)
@@ -331,7 +331,7 @@ export class CompanyEnrichmentService {
     if (useTavily && !result.success) {
       try {
         const { TavilyService } = await import('@/lib/services/tavily.service')
-        const tavilyData = await TavilyService.researchCompany(cleanDomain)
+        const tavilyData = await (TavilyService as any).researchCompany(cleanDomain)
 
         if (tavilyData) {
           result.data = {
@@ -383,7 +383,7 @@ export class CompanyEnrichmentService {
     try {
       const { FirecrawlService } = await import('@/lib/services/firecrawl.service')
       const websiteUrl = `https://${cleanDomain}`
-      const data = await FirecrawlService.scrapeWebsite(websiteUrl)
+      const data = await (FirecrawlService as any).scrapeWebsite(websiteUrl)
       if (data?.logo_url) return data.logo_url
     } catch {
       // Continue to fallback

@@ -11,7 +11,7 @@ function configureFal() {
   if (!process.env.FAL_KEY) {
     throw new Error('FAL_KEY is not set in environment variables')
   }
-  fal.config({
+  ;(fal as any).config({
     credentials: process.env.FAL_KEY,
   })
 }
@@ -73,7 +73,7 @@ export async function generateAdCreative({
     const { model, steps } = getQualitySettings(quality)
 
     // Generate with Flux (Pro for quality, Dev for balanced, Schnell for fast)
-    const result = await fal.subscribe(model, {
+    const result = await (fal as any).subscribe(model, {
       input: {
         prompt: enhancedPrompt,
         image_size: dimensions,
@@ -179,7 +179,7 @@ function buildPrompt({
   // Target audience context (critical for relevance)
   if (icp) {
     prompt += `Target audience: ${icp.name} (${icp.title}). `
-    prompt += `Demographics: ${icp.demographics.age_range}, ${icp.demographics.income_level}, ${icp.demographics.location}. `
+    prompt += `Demographics: ${icp.demographics.age_range}, ${(icp.demographics as any).income_level ?? ''}, ${icp.demographics.location}. `
     prompt += `Pain points: ${icp.pain_points.slice(0, 2).join(', ')}. `
     prompt += `Goals: ${icp.goals.slice(0, 2).join(', ')}. `
   } else if (knowledgeBase?.target_audience) {

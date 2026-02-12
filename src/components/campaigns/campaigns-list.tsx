@@ -126,11 +126,11 @@ export function CampaignsList() {
         />
         <div className="mt-6 rounded-lg border border-dashed border-zinc-300 bg-zinc-50/50 p-12 text-center opacity-50 pointer-events-none">
           <EmptyState
-            icon={() => (
+            icon={
               <svg className="h-12 w-12 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
-            )}
+            }
             title="No campaigns yet"
             description="Create your first email outreach campaign"
           />
@@ -163,7 +163,7 @@ export function CampaignsList() {
             )}
             <Button
               onClick={() => router.push('/campaigns/new')}
-              disabled={atLimit}
+              disabled={!!atLimit}
               title={atLimit ? 'Campaign limit reached' : undefined}
             >
               <svg className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -247,9 +247,10 @@ export function CampaignsList() {
             <EmptyState
               title="No campaigns yet"
               description="Create your first campaign to start reaching out to prospects."
-              action={
-                <Button onClick={() => router.push('/campaigns/new')}>Create Campaign</Button>
-              }
+              action={{
+                label: 'Create Campaign',
+                onClick: () => router.push('/campaigns/new'),
+              }}
             />
           ) : (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

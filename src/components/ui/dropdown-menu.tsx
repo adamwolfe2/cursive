@@ -6,7 +6,7 @@ import { cn } from '@/lib/design-system'
 interface DropdownMenuContextValue {
   isOpen: boolean
   setIsOpen: (open: boolean) => void
-  triggerRef: React.RefObject<HTMLButtonElement>
+  triggerRef: React.RefObject<HTMLButtonElement | null>
 }
 
 const DropdownMenuContext = React.createContext<DropdownMenuContextValue | undefined>(

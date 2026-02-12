@@ -83,7 +83,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         whileHover={!isDisabled && safeAnimation ? { scale: 1.02 } : undefined}
         whileTap={!isDisabled && safeAnimation ? { scale: 0.98 } : undefined}
         transition={{ duration: 0.15, type: 'spring', stiffness: 300, damping: 30 }}
-        {...props}
+        {...props as any}
       >
         {loading ? (
           <svg

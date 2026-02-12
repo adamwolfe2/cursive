@@ -93,7 +93,7 @@ export class LeadRepository {
     }
 
     return {
-      leads: (data || []) as LeadWithRelations[],
+      leads: (data || []) as unknown as LeadWithRelations[],
       total: count || 0,
       page,
       per_page: perPage,

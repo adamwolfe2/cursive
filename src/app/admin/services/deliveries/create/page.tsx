@@ -54,7 +54,7 @@ export default async function CreateDeliveryPage() {
         </p>
       </div>
 
-      <DeliveryCreateForm subscriptions={subscriptions || []} />
+      <DeliveryCreateForm subscriptions={(subscriptions || []) as any} />
     </div>
   )
 }

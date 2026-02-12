@@ -15,6 +15,10 @@ export async function GET(req: NextRequest) {
 
   const { user } = protection.req
 
+  if (!user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
   try {
     // Get credit status
     const credits = await CreditService.getRemainingCredits(user.id)

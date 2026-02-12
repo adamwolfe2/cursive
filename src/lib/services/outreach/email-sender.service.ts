@@ -105,11 +105,11 @@ async function sendWithResend(request: EmailSendRequest): Promise<EmailSendResul
       from: fromAddress,
       to: request.to,
       subject: request.subject,
-      html: request.bodyHtml,
+      html: request.bodyHtml || '',
       text: request.bodyText,
-      reply_to: request.replyTo,
+      replyTo: request.replyTo,
       tags: request.tags?.map((tag) => ({ name: tag, value: 'true' })),
-    })
+    } as any)
 
     if (error) {
       return {
@@ -468,16 +468,32 @@ async function getEmailAccount(
 async function incrementSendCount(accountId: string): Promise<void> {
   const supabase = await createClient()
 
-  await supabase.rpc('increment_email_sends', { account_id: accountId })
+  // Try to increment via RPC, fall back to updating last_used_at
+  const { error: rpcError } = await supabase.rpc('increment_email_sends', { account_id: accountId } as any)
 
-  // Fallback if RPC doesn't exist
-  await supabase
-    .from('email_accounts')
-    .update({
-      sends_today: supabase.rpc ? undefined : 1, // Will be incremented by trigger ideally
-      last_used_at: new Date().toISOString(),
-    })
-    .eq('id', accountId)
+  // Always update last_used_at; if RPC failed, do a manual increment
+  if (rpcError) {
+    const { data: account } = await supabase
+      .from('email_accounts')
+      .select('sends_today')
+      .eq('id', accountId)
+      .single()
+
+    await supabase
+      .from('email_accounts')
+      .update({
+        sends_today: ((account as any)?.sends_today || 0) + 1,
+        last_used_at: new Date().toISOString(),
+      } as any)
+      .eq('id', accountId)
+  } else {
+    await supabase
+      .from('email_accounts')
+      .update({
+        last_used_at: new Date().toISOString(),
+      } as any)
+      .eq('id', accountId)
+  }
 }
 
 /**

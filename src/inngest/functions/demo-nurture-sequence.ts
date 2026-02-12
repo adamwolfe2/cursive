@@ -498,8 +498,8 @@ async function sendSequenceEmail({
       trackOpens: true,
       trackClicks: true,
     },
-    null,
-    lead.workspace_id
+    undefined,
+    (lead as any).workspace_id
   )
 
   // Log action

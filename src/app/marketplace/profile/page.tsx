@@ -178,7 +178,7 @@ export default function BuyerProfilePage() {
                   </FormSelect>
                 </FormField>
 
-                <FormField error={errors.service_states}>
+                <FormField error={errors.service_states as any}>
                   <FormLabel
                     htmlFor="service_states"
                     required

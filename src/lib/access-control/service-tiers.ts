@@ -1,7 +1,14 @@
 import { serviceTierRepository } from '@/lib/repositories/service-tier.repository'
-import type { Database } from '@/types/database.types'
 
-type ServiceTier = Database['public']['Tables']['service_tiers']['Row']
+// service_tiers may not be in generated DB types — use flexible type
+type ServiceTier = {
+  id: string
+  name: string
+  slug: string
+  platform_features?: Record<string, any> | null
+  is_public?: boolean
+  [key: string]: any
+}
 type PlatformFeatures = {
   lead_downloads?: boolean
   campaigns?: boolean
@@ -135,7 +142,7 @@ export class ServiceTierAccessControl {
 
     // Find cheapest tier that includes this feature
     for (const tier of tiers) {
-      const tierFeatures = (tier.platform_features as PlatformFeatures) || {}
+      const tierFeatures = ((tier as any).platform_features as PlatformFeatures) || {}
       const featureValue = tierFeatures[feature]
 
       if (typeof featureValue === 'boolean' && featureValue === true) {

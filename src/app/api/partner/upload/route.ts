@@ -355,13 +355,16 @@ export async function POST(request: NextRequest) {
         // Calculate scores for marketplace
         const intentScore = calculateIntentScore({
           seniority_level: validatedRow.seniority_level || 'unknown',
-          companySize: validatedRow.company_size || null,
-          companyEmployeeCount: validatedRow.company_employee_count || null,
+          company_size: validatedRow.company_size || null,
+          company_employee_count: validatedRow.company_employee_count || null,
           email: email,
-          companyDomain: validatedRow.company_domain || null,
-          hasPhone: !!validatedRow.phone,
-          hasVerifiedEmail: false, // Will be updated after verification
-          dataCompleteness: calculateDataCompleteness(validatedRow),
+          company_domain: validatedRow.company_domain || null,
+          phone: validatedRow.phone || null,
+          first_name: validatedRow.first_name,
+          last_name: validatedRow.last_name,
+          city: validatedRow.city || null,
+          state: validatedRow.state,
+          job_title: validatedRow.job_title || null,
         })
 
         const freshnessScore = calculateFreshnessScore(new Date())

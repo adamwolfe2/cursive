@@ -426,14 +426,15 @@ export function LeadsTable({ initialFilters }: LeadsTableProps) {
           table={table}
           globalFilter={globalFilter}
           setGlobalFilter={setGlobalFilter}
-          onRefresh={() => refetch()}
+          onRefresh={() => { refetch() }}
           selectedCount={0}
+          selectedLeadIds={[]}
           onBulkDelete={handleBulkDelete}
           isDeleting={false}
         />
         <ErrorDisplay
           error={error as Error}
-          retry={() => refetch()}
+          retry={() => { refetch() }}
           variant="card"
           title="Failed to load leads"
         />
@@ -457,7 +458,7 @@ export function LeadsTable({ initialFilters }: LeadsTableProps) {
         table={table}
         globalFilter={globalFilter}
         setGlobalFilter={setGlobalFilter}
-        onRefresh={() => refetch()}
+        onRefresh={() => { refetch() }}
         selectedCount={selectedLeadIds.length}
         selectedLeadIds={selectedLeadIds}
         onBulkDelete={handleBulkDelete}
@@ -618,7 +619,7 @@ export function LeadsTable({ initialFilters }: LeadsTableProps) {
         <LeadDetailPanel
           lead={selectedLead}
           onClose={() => setSelectedLead(null)}
-          onRefresh={() => refetch()}
+          onRefresh={() => { refetch() }}
         />
       )}
     </div>

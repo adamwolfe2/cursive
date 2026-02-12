@@ -6,8 +6,7 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 const nextConfig = {
   reactStrictMode: true,
   typescript: {
-    // TODO: Fix remaining TS errors and remove this
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
   eslint: {
     // Lint errors are now resolved — enforce during builds

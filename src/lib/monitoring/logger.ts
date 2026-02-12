@@ -109,7 +109,7 @@ class Logger {
             extra: entry.context,
           })
         } else {
-          captureMessage(entry.message, entry.level === 'critical' ? 'error' : entry.level, {
+          captureMessage(entry.message, entry.level === 'critical' ? 'error' : entry.level === 'warn' ? 'warning' : entry.level as any, {
             tags: entry.context as Record<string, string>,
             extra: entry.context,
           })

@@ -90,17 +90,18 @@ export async function GET(request: NextRequest) {
       || request.headers.get('x-real-ip')
       || 'unknown'
 
-    const rateLimitResult = checkRateLimit(`enrich-company:${clientIp}`, RATE_LIMITS.publicStrict)
-    if (!rateLimitResult.allowed) {
+    const rateLimitResult = checkRateLimit(clientIp, 'enrich-company', RATE_LIMITS.publicStrict)
+    if (!rateLimitResult.success) {
+      const resetInSecs = Math.max(0, Math.ceil((rateLimitResult.resetAt - Date.now()) / 1000))
       return NextResponse.json(
         { error: 'Rate limit exceeded. Please try again later.' },
         {
           status: 429,
           headers: {
-            'Retry-After': String(rateLimitResult.resetIn),
+            'Retry-After': String(resetInSecs),
             'X-RateLimit-Limit': String(RATE_LIMITS.publicStrict.limit),
             'X-RateLimit-Remaining': '0',
-            'X-RateLimit-Reset': String(Math.ceil(Date.now() / 1000) + rateLimitResult.resetIn),
+            'X-RateLimit-Reset': String(Math.ceil(rateLimitResult.resetAt / 1000)),
           },
         }
       )
