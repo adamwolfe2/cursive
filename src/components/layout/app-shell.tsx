@@ -94,15 +94,6 @@ const navigationItems: NavItemConfig[] = [
     icon: (
       <img src="/cursive-logo.png" alt="Cursive" className="h-5 w-5 object-contain" />
     ),
-    children: [
-      { name: 'Home', href: '/ai-studio' },
-      { name: 'Branding', href: '/ai-studio/branding' },
-      { name: 'Knowledge Base', href: '/ai-studio/knowledge' },
-      { name: 'Customer Profiles', href: '/ai-studio/profiles' },
-      { name: 'Offers', href: '/ai-studio/offers' },
-      { name: 'Creatives', href: '/ai-studio/creatives' },
-      { name: 'Campaigns', href: '/ai-studio/campaigns' },
-    ],
   },
   {
     name: 'Leads',
