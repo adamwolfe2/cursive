@@ -6,6 +6,7 @@ export const runtime = 'edge'
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { z } from 'zod'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 const completeSchema = z.object({
   batch_id: z.string().uuid(),
@@ -98,7 +99,7 @@ export async function POST(request: NextRequest) {
 
     // Inngest disabled (Node.js runtime not available on this deployment)
     // Original: await inngest.send({ name: 'partner/upload.process', data: { batch_id, partner_id, storage_path } })
-    console.log(`[Partner Upload Complete] Batch ${batch_id} ready for processing (Inngest event skipped - Edge runtime)`)
+    safeError(`[Partner Upload Complete] Batch ${batch_id} ready for processing (Inngest event skipped - Edge runtime)`)
 
     return NextResponse.json({
       success: true,
@@ -109,7 +110,7 @@ export async function POST(request: NextRequest) {
       estimated_time_seconds: estimateProcessingTime(batch.file_size_bytes || 0),
     })
   } catch (error: unknown) {
-    console.error('[Partner Upload Complete] Error:', error)
+    safeError('[Partner Upload Complete] Error:', error)
     return NextResponse.json({ error: 'Completion failed' }, { status: 500 })
   }
 }

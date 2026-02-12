@@ -5,6 +5,7 @@ export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface RouteParams {
   params: Promise<{ batchId: string }>
@@ -129,7 +130,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 
     return NextResponse.json(response)
   } catch (error: unknown) {
-    console.error('[Partner Upload Status] Error:', error)
+    safeError('[Partner Upload Status] Error:', error)
     return NextResponse.json({ error: 'Status check failed' }, { status: 500 })
   }
 }

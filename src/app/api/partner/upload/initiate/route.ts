@@ -7,6 +7,7 @@ export const runtime = 'edge'
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { z } from 'zod'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 const SMALL_FILE_THRESHOLD = 5 * 1024 * 1024 // 5MB - files under this use direct upload
 const MAX_FILE_SIZE = 50 * 1024 * 1024 // 50MB max
@@ -82,7 +83,7 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (batchError) {
-      console.error('Failed to create upload batch:', batchError)
+      safeError('Failed to create upload batch:', batchError)
       return NextResponse.json({
         error: 'Failed to initiate upload',
       }, { status: 500 })
@@ -96,7 +97,7 @@ export async function POST(request: NextRequest) {
         .createSignedUploadUrl(storagePath)
 
       if (urlError) {
-        console.error('Failed to create signed URL:', urlError)
+        safeError('Failed to create signed URL:', urlError)
         // Fallback to direct upload if storage fails
         return NextResponse.json({
           batch_id: batch.id,
@@ -133,7 +134,7 @@ export async function POST(request: NextRequest) {
       })
     }
   } catch (error: unknown) {
-    console.error('[Partner Upload Initiate] Error:', error)
+    safeError('[Partner Upload Initiate] Error:', error)
     return NextResponse.json({ error: 'Initiation failed' }, { status: 500 })
   }
 }

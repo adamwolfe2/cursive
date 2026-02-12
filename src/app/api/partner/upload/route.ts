@@ -17,6 +17,7 @@ import { calculateIntentScore, calculateFreshnessScore, calculateMarketplacePric
 import { withRateLimit } from '@/lib/middleware/rate-limiter'
 import { UPLOAD_LIMITS } from '@/lib/constants/timeouts'
 import { routeLeadsToMatchingUsers } from '@/lib/services/marketplace-lead-routing'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // Input validation for lead data
 const leadSchema = z.object({
@@ -208,7 +209,7 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (batchError) {
-      console.error('Failed to create upload batch:', batchError)
+      safeError('Failed to create upload batch:', batchError)
       return NextResponse.json({
         success: false,
         error: 'Failed to create upload batch',
@@ -434,7 +435,7 @@ export async function POST(request: NextRequest) {
         .insert(leadsToInsert as never[])
 
       if (insertError) {
-        console.error('Failed to insert leads:', insertError)
+        safeError('Failed to insert leads:', insertError)
         // Update batch status to failed
         await adminClient
           .from('partner_upload_batches')
@@ -462,7 +463,7 @@ export async function POST(request: NextRequest) {
       if (insertedLeads?.length) {
         const newLeadIds = insertedLeads.map((l: { id: string }) => l.id)
         routingStats = await routeLeadsToMatchingUsers(newLeadIds, { source: 'partner' })
-        console.log(`[Partner Upload] Routed ${routingStats.routed} leads to matching users`)
+        safeError(`[Partner Upload] Routed ${routingStats.routed} leads to matching users`)
       }
     }
 
@@ -513,7 +514,7 @@ export async function POST(request: NextRequest) {
       routing: routingStats,
     })
   } catch (error: unknown) {
-    console.error('[Partner Upload] Error:', error)
+    safeError('[Partner Upload] Error:', error)
     return NextResponse.json({ error: 'Upload failed' }, { status: 500 })
   }
 }
