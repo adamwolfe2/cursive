@@ -109,7 +109,7 @@ export async function GET(req: NextRequest) {
       webhook_events: workspace.webhook_events || ['lead.created'],
     })
   } catch (error: any) {
-    console.error('[Webhook Settings] GET error:', error)
+    safeError('[Webhook Settings] GET error:', error)
     return NextResponse.json(
       { error: 'Failed to fetch webhook settings' },
       { status: 500 }
@@ -182,7 +182,7 @@ export async function POST(req: NextRequest) {
       .eq('id', user.workspace_id)
 
     if (error) {
-      console.error('[Webhook Settings] Update error:', error)
+      safeError('[Webhook Settings] Update error:', error)
       return NextResponse.json(
         { error: 'Failed to update webhook settings' },
         { status: 500 }
@@ -210,7 +210,7 @@ export async function POST(req: NextRequest) {
       }),
     })
   } catch (error: any) {
-    console.error('[Webhook Settings] POST error:', error)
+    safeError('[Webhook Settings] POST error:', error)
     return NextResponse.json(
       { error: 'Failed to update webhook settings' },
       { status: 500 }
@@ -309,7 +309,7 @@ export async function PUT(req: NextRequest) {
       })
     }
   } catch (error: any) {
-    console.error('[Webhook Settings] Test error:', error)
+    safeError('[Webhook Settings] Test error:', error)
     return NextResponse.json(
       { error: 'Failed to test webhook' },
       { status: 500 }
@@ -342,7 +342,7 @@ export async function DELETE(req: NextRequest) {
       .eq('id', user.workspace_id)
 
     if (error) {
-      console.error('[Webhook Settings] Regenerate error:', error)
+      safeError('[Webhook Settings] Regenerate error:', error)
       return NextResponse.json(
         { error: 'Failed to regenerate secret' },
         { status: 500 }
@@ -356,7 +356,7 @@ export async function DELETE(req: NextRequest) {
       warning: 'Update your webhook consumer with this new secret immediately to avoid delivery failures.',
     })
   } catch (error: any) {
-    console.error('[Webhook Settings] DELETE error:', error)
+    safeError('[Webhook Settings] DELETE error:', error)
     return NextResponse.json(
       { error: 'Failed to regenerate secret' },
       { status: 500 }

@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { withRateLimit } from '@/lib/middleware/rate-limiter'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 const contactSchema = z.object({
   name: z.string().min(1, 'Name is required').max(100),
@@ -46,7 +47,7 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (error) {
-      console.error('[Contact] Insert error:', error)
+      safeError('[Contact] Insert error:', error)
       throw new Error('Database insert failed')
     }
 
@@ -62,7 +63,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.error('[Contact] Submission error:', error)
+    safeError('[Contact] Submission error:', error)
     return NextResponse.json(
       { error: 'Failed to send message. Please try again.' },
       { status: 500 }

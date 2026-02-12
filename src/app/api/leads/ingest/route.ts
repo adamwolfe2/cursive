@@ -113,7 +113,7 @@ export async function POST(req: NextRequest) {
           assignedTo.push(...clientRouting.assignments.map((a) => a.clientName))
         }
       } catch (err) {
-        console.error('Client routing error:', err)
+        safeError('Client routing error:', err)
       }
 
       // Route to individual users (self-service model)
@@ -124,7 +124,7 @@ export async function POST(req: NextRequest) {
           assignedTo.push(...userRouting.assignedTo)
         }
       } catch (err) {
-        console.error('User routing error:', err)
+        safeError('User routing error:', err)
       }
 
       return { matched, assignedTo }
@@ -192,7 +192,7 @@ export async function POST(req: NextRequest) {
       results,
     })
   } catch (error) {
-    console.error('Lead ingestion error:', error)
+    safeError('Lead ingestion error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -237,7 +237,7 @@ async function createLeadFromPush(
     .single()
 
   if (error) {
-    console.error('[Lead Ingest] Database error:', error)
+    safeError('[Lead Ingest] Database error:', error)
     throw new Error('Failed to create lead')
   }
 
@@ -256,7 +256,7 @@ async function createLeadFromPush(
 
   // Inngest disabled (Node.js runtime not available on this deployment)
   // Original: inngest.send({ name: 'lead/created', data: { lead_id: data.id, workspace_id, source } })
-  console.log(`[Lead Ingest] Lead ${data.id} created (Inngest event skipped - Edge runtime)`)
+  safeError(`[Lead Ingest] Lead ${data.id} created (Inngest event skipped - Edge runtime)`)
 
   return data.id
 }

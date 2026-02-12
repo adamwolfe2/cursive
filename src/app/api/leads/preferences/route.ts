@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ success: true, data: preferences })
   } catch (error: any) {
-    console.error('Get lead preferences error:', error)
+    safeError('Get lead preferences error:', error)
     return NextResponse.json({ error: 'Failed to fetch preferences' }, { status: 500 })
   }
 }
@@ -100,13 +100,13 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (error) {
-      console.error('Create preference error:', error)
+      safeError('Create preference error:', error)
       return NextResponse.json({ error: 'Failed to create preference' }, { status: 500 })
     }
 
     return NextResponse.json({ success: true, data: preference })
   } catch (error: any) {
-    console.error('Create lead preference error:', error)
+    safeError('Create lead preference error:', error)
     return NextResponse.json({ error: 'Failed to create preference' }, { status: 500 })
   }
 }

@@ -160,7 +160,7 @@ export async function POST(req: NextRequest) {
     // Verify webhook signature - REQUIRED for security
     const webhookSecret = process.env.BLAND_WEBHOOK_SECRET
     if (!webhookSecret) {
-      console.error('[Bland Webhook] Missing BLAND_WEBHOOK_SECRET')
+      safeError('[Bland Webhook] Missing BLAND_WEBHOOK_SECRET')
       return NextResponse.json(
         { error: 'Webhook not configured' },
         { status: 500 }
@@ -171,7 +171,7 @@ export async function POST(req: NextRequest) {
                       req.headers.get('x-webhook-signature')
 
     if (!(await verifySignature(rawBody, signature, webhookSecret))) {
-      console.error('[Bland Webhook] Invalid signature')
+      safeError('[Bland Webhook] Invalid signature')
       return NextResponse.json(
         { error: 'Invalid signature' },
         { status: 401 }
@@ -281,7 +281,7 @@ export async function POST(req: NextRequest) {
       .single()
 
     if (callError) {
-      console.error('[Bland Webhook] Failed to save call:', callError)
+      safeError('[Bland Webhook] Failed to save call:', callError)
       // Try inserting into a fallback table or log
       await supabase.from('webhook_logs').insert({
         source: 'bland',
@@ -381,7 +381,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(response)
   } catch (error: any) {
-    console.error('[Bland Webhook] Error:', error)
+    safeError('[Bland Webhook] Error:', error)
 
     // Mark idempotency key as failed to allow retry
     if (call_id) {
@@ -397,7 +397,7 @@ export async function POST(req: NextRequest) {
           .eq('idempotency_key', call_id)
           .eq('workspace_id', idempWorkspaceId)
       } catch (idempotencyError) {
-        console.error('[Bland Webhook] Failed to update idempotency key:', idempotencyError)
+        safeError('[Bland Webhook] Failed to update idempotency key:', idempotencyError)
       }
     }
 

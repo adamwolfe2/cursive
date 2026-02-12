@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
       .eq('id', user.id)
 
     if (userUpdateError) {
-      console.error('[Zapier] Failed to update user webhook URL:', userUpdateError)
+      safeError('[Zapier] Failed to update user webhook URL:', userUpdateError)
       throw new Error('Failed to save webhook URL')
     }
 
@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
         .eq('id', existingIntegration.id)
 
       if (integrationError) {
-        console.error('[Zapier] Failed to update integration:', integrationError)
+        safeError('[Zapier] Failed to update integration:', integrationError)
       }
     } else {
       const { error: integrationError } = await supabase
@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
         .insert(integrationData)
 
       if (integrationError) {
-        console.error('[Zapier] Failed to create integration:', integrationError)
+        safeError('[Zapier] Failed to create integration:', integrationError)
       }
     }
 

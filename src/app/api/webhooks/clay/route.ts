@@ -8,6 +8,7 @@
 export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import { createAdminClient } from '@/lib/supabase/admin'
 
 // Types for Clay webhook payload
@@ -97,7 +98,7 @@ export async function POST(req: NextRequest) {
     // Verify webhook signature
     const webhookSecret = process.env.CLAY_WEBHOOK_SECRET
     if (!webhookSecret) {
-      console.error('[Clay Webhook] Missing CLAY_WEBHOOK_SECRET')
+      safeError('[Clay Webhook] Missing CLAY_WEBHOOK_SECRET')
       return NextResponse.json(
         { error: 'Webhook not configured' },
         { status: 500 }
@@ -108,7 +109,7 @@ export async function POST(req: NextRequest) {
                       req.headers.get('x-webhook-signature')
 
     if (!(await verifySignature(rawBody, signature, webhookSecret))) {
-      console.error('[Clay Webhook] Invalid signature')
+      safeError('[Clay Webhook] Invalid signature')
       return NextResponse.json(
         { error: 'Invalid signature' },
         { status: 401 }
@@ -155,7 +156,7 @@ export async function POST(req: NextRequest) {
 
     // SECURITY: Fail if workspace cannot be determined - do not fallback to admin
     if (!targetWorkspaceId) {
-      console.error('[Clay Webhook] Could not determine target workspace', {
+      safeError('[Clay Webhook] Could not determine target workspace', {
         workspace_id_provided: !!workspace_id,
         enrichment_job_id_provided: !!enrichment_job_id,
         clay_record_id,
@@ -243,7 +244,7 @@ export async function POST(req: NextRequest) {
       .single()
 
     if (leadError) {
-      console.error('[Clay Webhook] Failed to insert lead:', leadError)
+      safeError('[Clay Webhook] Failed to insert lead:', leadError)
 
       // Mark idempotency key as failed
       if (clay_record_id) {
@@ -271,7 +272,7 @@ export async function POST(req: NextRequest) {
       })
 
     if (routeError) {
-      console.error('[Clay Webhook] Lead routing failed:', routeError)
+      safeError('[Clay Webhook] Lead routing failed:', routeError)
       // Don't fail the webhook - lead was created successfully
     }
 
@@ -311,7 +312,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(response)
   } catch (error: any) {
-    console.error('[Clay Webhook] Error:', error)
+    safeError('[Clay Webhook] Error:', error)
 
     // Mark idempotency key as failed to allow retry
     if (clay_record_id && targetWorkspaceId) {
@@ -326,7 +327,7 @@ export async function POST(req: NextRequest) {
           .eq('idempotency_key', clay_record_id)
           .eq('workspace_id', targetWorkspaceId)
       } catch (idempotencyError) {
-        console.error('[Clay Webhook] Failed to update idempotency key:', idempotencyError)
+        safeError('[Clay Webhook] Failed to update idempotency key:', idempotencyError)
       }
     }
 

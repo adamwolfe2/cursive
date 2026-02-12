@@ -148,7 +148,7 @@ export async function POST(req: NextRequest) {
         .select('id')
 
       if (insertError) {
-        console.error('Insert error:', insertError)
+        safeError('Insert error:', insertError)
         insertErrors.push(`Batch ${Math.floor(i / batchSize) + 1}: ${insertError.message}`)
       } else if (inserted) {
         insertedIds.push(...inserted.map((l) => l.id))
@@ -185,7 +185,7 @@ export async function POST(req: NextRequest) {
       warnings: result.warnings,
     })
   } catch (error) {
-    console.error('Import process error:', error)
+    safeError('Import process error:', error)
     return NextResponse.json(
       { error: 'Failed to process import' },
       { status: 500 }

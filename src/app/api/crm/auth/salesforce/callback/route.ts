@@ -9,6 +9,7 @@
 export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import { cookies } from 'next/headers'
 import { createAdminClient } from '@/lib/supabase/admin'
 
@@ -39,7 +40,7 @@ export async function GET(req: NextRequest) {
   // Handle OAuth errors from Salesforce
   if (error) {
     const errorDescription = searchParams.get('error_description') || error
-    console.error('[Salesforce OAuth] Error from provider:', errorDescription)
+    safeError('[Salesforce OAuth] Error from provider:', errorDescription)
     return NextResponse.redirect(
       new URL(`/settings/integrations?error=sf_${error}`, req.url)
     )
@@ -57,7 +58,7 @@ export async function GET(req: NextRequest) {
     // Verify state parameter
     const storedState = cookieStore.get('sf_oauth_state')?.value
     if (!storedState || storedState !== state) {
-      console.error('[Salesforce OAuth] State mismatch')
+      safeError('[Salesforce OAuth] State mismatch')
       return NextResponse.redirect(
         new URL('/settings/integrations?error=sf_invalid_state', req.url)
       )
@@ -82,7 +83,7 @@ export async function GET(req: NextRequest) {
     const clientSecret = process.env.SALESFORCE_CLIENT_SECRET
 
     if (!clientId || !clientSecret) {
-      console.error('[Salesforce OAuth] Missing client credentials')
+      safeError('[Salesforce OAuth] Missing client credentials')
       return NextResponse.redirect(
         new URL('/settings/integrations?error=sf_not_configured', req.url)
       )
@@ -108,7 +109,7 @@ export async function GET(req: NextRequest) {
 
     if (!tokenResponse.ok) {
       const errorData = await tokenResponse.text()
-      console.error('[Salesforce OAuth] Token exchange failed:', errorData)
+      safeError('[Salesforce OAuth] Token exchange failed:', errorData)
       return NextResponse.redirect(
         new URL('/settings/integrations?error=sf_token_failed', req.url)
       )
@@ -152,7 +153,7 @@ export async function GET(req: NextRequest) {
         .eq('id', existingConnection.id)
 
       if (updateError) {
-        console.error('[Salesforce OAuth] Failed to update connection:', updateError)
+        safeError('[Salesforce OAuth] Failed to update connection:', updateError)
         return NextResponse.redirect(
           new URL('/settings/integrations?error=sf_save_failed', req.url)
         )
@@ -164,7 +165,7 @@ export async function GET(req: NextRequest) {
         .insert(connectionData)
 
       if (insertError) {
-        console.error('[Salesforce OAuth] Failed to save connection:', insertError)
+        safeError('[Salesforce OAuth] Failed to save connection:', insertError)
         return NextResponse.redirect(
           new URL('/settings/integrations?error=sf_save_failed', req.url)
         )
@@ -189,7 +190,7 @@ export async function GET(req: NextRequest) {
       new URL('/settings/integrations?success=salesforce_connected', req.url)
     )
   } catch (error: any) {
-    console.error('[Salesforce OAuth] Callback error:', error)
+    safeError('[Salesforce OAuth] Callback error:', error)
     return NextResponse.redirect(
       new URL('/settings/integrations?error=sf_callback_failed', req.url)
     )

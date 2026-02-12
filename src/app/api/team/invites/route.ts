@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
       .order('created_at', { ascending: false })
 
     if (error) {
-      console.error('[Team Invites GET] Database error:', error)
+      safeError('[Team Invites GET] Database error:', error)
       throw new Error('Failed to fetch invites')
     }
 
@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
       if (error.message.includes('already exists')) {
         return badRequest('This user is already a member of your workspace')
       }
-      console.error('[Team Invites POST] Database error:', error)
+      safeError('[Team Invites POST] Database error:', error)
       throw new Error('Failed to create invite')
     }
 
@@ -136,7 +136,7 @@ export async function POST(request: NextRequest) {
         `,
       })
     } catch (emailError) {
-      console.error('[Team Invites] Email send error:', emailError)
+      safeError('[Team Invites] Email send error:', emailError)
       // Don't fail the request if email fails - invite is still created
     }
 

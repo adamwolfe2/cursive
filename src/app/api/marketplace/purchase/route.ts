@@ -13,6 +13,7 @@ import { sendPurchaseConfirmationEmail } from '@/lib/email/service'
 import { withRateLimit } from '@/lib/middleware/rate-limiter'
 import { getStripeClient } from '@/lib/stripe/client'
 import { TIMEOUTS, getDaysFromNow } from '@/lib/constants/timeouts'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 const purchaseSchema = z.object({
   leadIds: z.array(z.string().uuid()).min(1).max(100),
@@ -138,7 +139,7 @@ export async function POST(request: NextRequest) {
       // At this point, the leads are locked for this transaction
       // No other transaction can purchase them until we commit or rollback
     } catch (error: any) {
-      console.error('Failed to validate and lock leads:', error)
+      safeError('Failed to validate and lock leads:', error)
       return NextResponse.json(
         { error: 'Failed to validate lead availability' },
         { status: 500 }
@@ -251,7 +252,7 @@ export async function POST(request: NextRequest) {
       )
 
       if (completionError || !completionResult || completionResult.length === 0) {
-        console.error('Failed to complete purchase:', completionError)
+        safeError('Failed to complete purchase:', completionError)
         return NextResponse.json(
           { error: 'Failed to complete purchase' },
           { status: 500 }
@@ -294,7 +295,7 @@ export async function POST(request: NextRequest) {
           },
         })
       } catch (emailError) {
-        console.error('[Purchase] Failed to queue confirmation email:', emailError)
+        safeError('[Purchase] Failed to queue confirmation email:', emailError)
         // Don't fail the purchase if email queueing fails
         // Inngest will retry automatically
       }
@@ -447,7 +448,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(response)
     }
   } catch (error) {
-    console.error('Failed to process purchase:', error)
+    safeError('Failed to process purchase:', error)
 
     // Mark idempotency key as failed to allow retry
     if (idempotencyKey && workspaceId) {
@@ -462,7 +463,7 @@ export async function POST(request: NextRequest) {
           .eq('idempotency_key', idempotencyKey)
           .eq('workspace_id', workspaceId)
       } catch (idempotencyError) {
-        console.error('Failed to update idempotency key:', idempotencyError)
+        safeError('Failed to update idempotency key:', idempotencyError)
       }
     }
 
@@ -525,7 +526,7 @@ export async function GET(request: NextRequest) {
       leads,
     })
   } catch (error) {
-    console.error('Failed to get purchase:', error)
+    safeError('Failed to get purchase:', error)
     return NextResponse.json(
       { error: 'Failed to get purchase' },
       { status: 500 }

@@ -8,6 +8,7 @@
 export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import { cookies } from 'next/headers'
 import { createAdminClient } from '@/lib/supabase/admin'
 
@@ -39,7 +40,7 @@ export async function GET(req: NextRequest) {
 
   // Handle OAuth errors
   if (error) {
-    console.error('[GHL OAuth] Error from provider:', error)
+    safeError('[GHL OAuth] Error from provider:', error)
     return NextResponse.redirect(
       new URL(`/settings/integrations?error=ghl_${error}`, req.url)
     )
@@ -57,7 +58,7 @@ export async function GET(req: NextRequest) {
     // Verify state parameter
     const storedState = cookieStore.get('ghl_oauth_state')?.value
     if (!storedState || storedState !== state) {
-      console.error('[GHL OAuth] State mismatch')
+      safeError('[GHL OAuth] State mismatch')
       return NextResponse.redirect(
         new URL('/settings/integrations?error=ghl_invalid_state', req.url)
       )
@@ -82,7 +83,7 @@ export async function GET(req: NextRequest) {
     const clientSecret = process.env.GHL_CLIENT_SECRET
 
     if (!clientId || !clientSecret) {
-      console.error('[GHL OAuth] Missing client credentials')
+      safeError('[GHL OAuth] Missing client credentials')
       return NextResponse.redirect(
         new URL('/settings/integrations?error=ghl_not_configured', req.url)
       )
@@ -106,7 +107,7 @@ export async function GET(req: NextRequest) {
 
     if (!tokenResponse.ok) {
       const errorData = await tokenResponse.text()
-      console.error('[GHL OAuth] Token exchange failed:', errorData)
+      safeError('[GHL OAuth] Token exchange failed:', errorData)
       return NextResponse.redirect(
         new URL('/settings/integrations?error=ghl_token_failed', req.url)
       )
@@ -154,7 +155,7 @@ export async function GET(req: NextRequest) {
         .eq('id', existingConnection.id)
 
       if (updateError) {
-        console.error('[GHL OAuth] Failed to update connection:', updateError)
+        safeError('[GHL OAuth] Failed to update connection:', updateError)
         return NextResponse.redirect(
           new URL('/settings/integrations?error=ghl_save_failed', req.url)
         )
@@ -165,7 +166,7 @@ export async function GET(req: NextRequest) {
         .insert(connectionData)
 
       if (insertError) {
-        console.error('[GHL OAuth] Failed to save connection:', insertError)
+        safeError('[GHL OAuth] Failed to save connection:', insertError)
         return NextResponse.redirect(
           new URL('/settings/integrations?error=ghl_save_failed', req.url)
         )
@@ -190,7 +191,7 @@ export async function GET(req: NextRequest) {
       new URL('/settings/integrations?success=ghl_connected', req.url)
     )
   } catch (error: any) {
-    console.error('[GHL OAuth] Callback error:', error)
+    safeError('[GHL OAuth] Callback error:', error)
     return NextResponse.redirect(
       new URL('/settings/integrations?error=ghl_callback_failed', req.url)
     )

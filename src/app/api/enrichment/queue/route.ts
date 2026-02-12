@@ -82,7 +82,7 @@ export async function POST(req: NextRequest) {
     if (error.name === 'ZodError') {
       return NextResponse.json({ error: 'Invalid input', details: error.errors }, { status: 400 })
     }
-    console.error('Enrichment queue error:', error)
+    safeError('Enrichment queue error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
@@ -125,7 +125,7 @@ export async function GET(req: NextRequest) {
       recentJobs,
     })
   } catch (error: any) {
-    console.error('Enrichment stats error:', error)
+    safeError('Enrichment stats error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

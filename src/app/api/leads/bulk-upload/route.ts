@@ -203,7 +203,7 @@ export async function POST(req: NextRequest) {
       .single()
 
     if (jobError) {
-      console.error('[Bulk Upload] Failed to create job:', jobError)
+      safeError('[Bulk Upload] Failed to create job:', jobError)
       return NextResponse.json(
         { error: 'Failed to create upload job' },
         { status: 500 }
@@ -267,7 +267,7 @@ export async function POST(req: NextRequest) {
         .select('id')
 
       if (insertError) {
-        console.error('[Bulk Upload] Batch insert error:', insertError)
+        safeError('[Bulk Upload] Batch insert error:', insertError)
         failed += batch.length
         errors.push(`Batch ${Math.floor(i / BATCH_SIZE) + 1}: ${insertError.message}`)
         continue
@@ -314,7 +314,7 @@ export async function POST(req: NextRequest) {
       errors: errors.slice(0, 10), // Return first 10 errors
     })
   } catch (error: any) {
-    console.error('[Bulk Upload] Error:', error)
+    safeError('[Bulk Upload] Error:', error)
     return NextResponse.json(
       { error: 'Failed to process upload' },
       { status: 500 }

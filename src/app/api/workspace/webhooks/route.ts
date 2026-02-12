@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (error: any) {
-    console.error('Get webhook settings error:', error)
+    safeError('Get webhook settings error:', error)
     return NextResponse.json({ error: 'Failed to fetch settings' }, { status: 500 })
   }
 }
@@ -111,7 +111,7 @@ export async function PATCH(request: NextRequest) {
 
     return NextResponse.json({ success: true })
   } catch (error: any) {
-    console.error('Update webhook settings error:', error)
+    safeError('Update webhook settings error:', error)
     return NextResponse.json({ error: 'Failed to update settings' }, { status: 500 })
   }
 }
@@ -151,7 +151,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true, webhook_secret: newSecret })
   } catch (error: any) {
-    console.error('Regenerate webhook secret error:', error)
+    safeError('Regenerate webhook secret error:', error)
     return NextResponse.json({ error: 'Failed to regenerate secret' }, { status: 500 })
   }
 }
@@ -212,7 +212,7 @@ export async function PUT(request: NextRequest) {
       error: result.error,
     })
   } catch (error: any) {
-    console.error('Test webhook error:', error)
+    safeError('Test webhook error:', error)
     return NextResponse.json({ error: 'Failed to test webhook' }, { status: 500 })
   }
 }

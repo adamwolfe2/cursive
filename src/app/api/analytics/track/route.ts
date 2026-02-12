@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
       })
 
     if (insertError) {
-      console.error('Failed to insert analytics event:', insertError)
+      safeError('Failed to insert analytics event:', insertError)
       // Don't fail the request - analytics should never block user experience
     }
 
@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true })
   } catch (error: any) {
-    console.error('Analytics tracking error:', error)
+    safeError('Analytics tracking error:', error)
     // Always return success - don't disrupt user experience
     return NextResponse.json({ success: true })
   }
@@ -96,6 +96,6 @@ async function sendToPostHog(
       }),
     })
   } catch (error) {
-    console.error('PostHog tracking error:', error)
+    safeError('PostHog tracking error:', error)
   }
 }

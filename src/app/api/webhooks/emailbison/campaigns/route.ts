@@ -5,6 +5,7 @@ export const runtime = 'edge'
 
 import { NextResponse, type NextRequest } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import {
   parseWebhookEvent,
   isEmailSentEvent,
@@ -52,7 +53,7 @@ export async function POST(request: NextRequest) {
 
     // SECURITY: Always require webhook secret for signature verification
     if (!WEBHOOK_SECRET) {
-      console.error('[Campaign Webhook] Missing EMAILBISON_WEBHOOK_SECRET')
+      safeError('[Campaign Webhook] Missing EMAILBISON_WEBHOOK_SECRET')
       return NextResponse.json(
         { error: 'Webhook not configured' },
         { status: 500 }
@@ -62,7 +63,7 @@ export async function POST(request: NextRequest) {
     // Verify signature - REQUIRED for security (Edge-compatible)
     const isValid = await verifySignatureEdge(rawBody, signature, WEBHOOK_SECRET)
     if (!isValid) {
-      console.error('[Campaign Webhook] Signature verification failed')
+      safeError('[Campaign Webhook] Signature verification failed')
       return NextResponse.json(
         { error: 'Invalid signature' },
         { status: 401 }
@@ -138,7 +139,7 @@ export async function POST(request: NextRequest) {
     } else if (isBounceReceivedEvent(event)) {
       await handleBounce(supabase, event)
     } else {
-      console.warn(`[Campaign Webhook] Unhandled event type: ${event.event.type}`)
+      safeError(`[Campaign Webhook] Unhandled event type: ${event.event.type}`)
     }
 
     // Prepare successful response
@@ -159,7 +160,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(response)
   } catch (error) {
-    console.error('[Campaign Webhook] Error:', error)
+    safeError('[Campaign Webhook] Error:', error)
 
     // Mark idempotency key as failed to allow retry
     if (idempotencyKey) {
@@ -174,7 +175,7 @@ export async function POST(request: NextRequest) {
           .eq('idempotency_key', idempotencyKey)
           .eq('workspace_id', 'system')
       } catch (idempotencyError) {
-        console.error('[Campaign Webhook] Failed to update idempotency key:', idempotencyError)
+        safeError('[Campaign Webhook] Failed to update idempotency key:', idempotencyError)
       }
     }
 
@@ -216,7 +217,7 @@ async function handleEmailSent(
       .eq('id', data.tracking_id)
 
     if (error) {
-      console.error('[Campaign Webhook] Failed to update email send:', error)
+      safeError('[Campaign Webhook] Failed to update email send:', error)
     }
   }
 }
@@ -248,7 +249,7 @@ async function handleReplyReceived(
     .single()
 
   if (!emailSend) {
-    console.warn(`[Campaign Webhook] No matching sent email found for ${data.from_email}`)
+    safeError(`[Campaign Webhook] No matching sent email found for ${data.from_email}`)
     return
   }
 
@@ -272,7 +273,7 @@ async function handleReplyReceived(
     .single()
 
   if (replyError) {
-    console.error('[Campaign Webhook] Failed to create reply record:', replyError)
+    safeError('[Campaign Webhook] Failed to create reply record:', replyError)
   }
 
   // Update campaign_lead status
@@ -399,7 +400,7 @@ async function handleEmailOpened(
     .single()
 
   if (findError || !emailSend) {
-    console.warn(`[Campaign Webhook] No sent email found for open event: ${data.to_email}`)
+    safeError(`[Campaign Webhook] No sent email found for open event: ${data.to_email}`)
     return
   }
 
@@ -416,7 +417,7 @@ async function handleEmailOpened(
     .eq('id', emailSend.id)
 
   if (updateError) {
-    console.error('[Campaign Webhook] Failed to update email open:', updateError)
+    safeError('[Campaign Webhook] Failed to update email open:', updateError)
     return
   }
 
@@ -425,7 +426,7 @@ async function handleEmailOpened(
     const { error: rpcError } = await supabase.rpc('increment_campaign_opens', { campaign_id: emailSend.campaign_id })
     if (rpcError) {
       // Fallback if RPC doesn't exist - just log the error
-      console.warn('[Campaign Webhook] increment_campaign_opens RPC not available:', rpcError)
+      safeError('[Campaign Webhook] increment_campaign_opens RPC not available:', rpcError)
     }
 
     // Update campaign_lead engagement tracking via RPC or skip
@@ -434,7 +435,7 @@ async function handleEmailOpened(
       p_lead_id: emailSend.lead_id,
     })
     if (leadRpcError) {
-      console.warn('[Campaign Webhook] increment_campaign_lead_opens RPC not available:', leadRpcError)
+      safeError('[Campaign Webhook] increment_campaign_lead_opens RPC not available:', leadRpcError)
     }
   }
 
@@ -461,7 +462,7 @@ async function handleEmailClicked(
     .single()
 
   if (findError || !emailSend) {
-    console.warn(`[Campaign Webhook] No email found for click event: ${data.to_email}`)
+    safeError(`[Campaign Webhook] No email found for click event: ${data.to_email}`)
     return
   }
 
@@ -486,7 +487,7 @@ async function handleEmailClicked(
     .eq('id', emailSend.id)
 
   if (updateError) {
-    console.error('[Campaign Webhook] Failed to update email click:', updateError)
+    safeError('[Campaign Webhook] Failed to update email click:', updateError)
     return
   }
 
@@ -495,7 +496,7 @@ async function handleEmailClicked(
     const { error: rpcError } = await supabase.rpc('increment_campaign_clicks', { campaign_id: emailSend.campaign_id })
     if (rpcError) {
       // Fallback if RPC doesn't exist - just log the error
-      console.warn('[Campaign Webhook] increment_campaign_clicks RPC not available:', rpcError)
+      safeError('[Campaign Webhook] increment_campaign_clicks RPC not available:', rpcError)
     }
 
     // Update campaign_lead engagement tracking via RPC or skip
@@ -504,7 +505,7 @@ async function handleEmailClicked(
       p_lead_id: emailSend.lead_id,
     })
     if (leadRpcError) {
-      console.warn('[Campaign Webhook] increment_campaign_lead_clicks RPC not available:', leadRpcError)
+      safeError('[Campaign Webhook] increment_campaign_lead_clicks RPC not available:', leadRpcError)
     }
   }
 

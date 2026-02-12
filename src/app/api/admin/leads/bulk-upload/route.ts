@@ -264,19 +264,19 @@ export async function POST(request: NextRequest) {
         results.category_summary[categoryKey] = (results.category_summary[categoryKey] || 0) + 1
 
       } catch (e: any) {
-        console.error('[Bulk Upload] Row error:', e)
+        safeError('[Bulk Upload] Row error:', e)
         results.errors.push(`Row ${rowNum}: Failed to process`)
         results.failed++
       }
     }
 
-    console.log(`[Admin Bulk Upload] ${results.successful} marketplace leads created, ${results.skipped_duplicates} duplicates skipped`)
+    safeError(`[Admin Bulk Upload] ${results.successful} marketplace leads created, ${results.skipped_duplicates} duplicates skipped`)
 
     // Route newly created leads to matching users
     let routingStats = { routed: 0, notified: 0 }
     if (insertedLeadIds.length > 0) {
       routingStats = await routeLeadsToMatchingUsers(insertedLeadIds, { source: 'admin_upload' })
-      console.log(`[Admin Bulk Upload] Routed ${routingStats.routed} leads to matching users`)
+      safeError(`[Admin Bulk Upload] Routed ${routingStats.routed} leads to matching users`)
     }
 
     return NextResponse.json({
@@ -286,7 +286,7 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error: any) {
-    console.error('[Admin Bulk Upload] Error:', error)
+    safeError('[Admin Bulk Upload] Error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
     if (!webhookSecret) {
       // Allow without secret only in development
       if (process.env.NODE_ENV !== 'development') {
-        console.error('INBOUND_EMAIL_WEBHOOK_SECRET is not configured')
+        safeError('INBOUND_EMAIL_WEBHOOK_SECRET is not configured')
         return NextResponse.json({ error: 'Webhook secret not configured' }, { status: 500 })
       }
     } else {
@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
 
     // Reject emails we can't attribute to a workspace
     if (!workspaceId) {
-      console.warn('Inbound email could not be matched to a workspace:', {
+      safeError('Inbound email could not be matched to a workspace:', {
         from: inboundEmail.from,
         to: inboundEmail.to,
         subject: inboundEmail.subject,
@@ -123,7 +123,7 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (insertError) {
-      console.error('Failed to store inbound message:', insertError)
+      safeError('Failed to store inbound message:', insertError)
       return NextResponse.json({ error: 'Failed to store message' }, { status: 500 })
     }
 
@@ -142,7 +142,7 @@ export async function POST(request: NextRequest) {
         const { error: rpcError } = await supabase.rpc('increment_campaign_replies', {
           p_campaign_id: emailSend.campaign_id,
         })
-        if (rpcError) console.error('increment_campaign_replies error:', rpcError)
+        if (rpcError) safeError('increment_campaign_replies error:', rpcError)
       }
     }
 
@@ -177,7 +177,7 @@ export async function POST(request: NextRequest) {
       matched: !!emailSend || !!lead,
     })
   } catch (error: any) {
-    console.error('Inbound email webhook error:', error)
+    safeError('Inbound email webhook error:', error)
     return NextResponse.json({ error: 'Webhook processing failed' }, { status: 500 })
   }
 }

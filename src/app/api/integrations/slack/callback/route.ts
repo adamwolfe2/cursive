@@ -9,6 +9,7 @@
 export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import { cookies } from 'next/headers'
 import { createAdminClient } from '@/lib/supabase/admin'
 
@@ -47,7 +48,7 @@ export async function GET(req: NextRequest) {
 
   // Handle OAuth errors (e.g., user denied access)
   if (error) {
-    console.error('[Slack OAuth] Error from provider:', error)
+    safeError('[Slack OAuth] Error from provider:', error)
     return NextResponse.redirect(
       new URL(`/settings/integrations?error=slack_${error}`, req.url)
     )
@@ -65,7 +66,7 @@ export async function GET(req: NextRequest) {
     // Verify state parameter for CSRF protection
     const storedState = cookieStore.get('slack_oauth_state')?.value
     if (!storedState || storedState !== state) {
-      console.error('[Slack OAuth] State mismatch')
+      safeError('[Slack OAuth] State mismatch')
       return NextResponse.redirect(
         new URL('/settings/integrations?error=slack_invalid_state', req.url)
       )
@@ -90,7 +91,7 @@ export async function GET(req: NextRequest) {
     const clientSecret = process.env.SLACK_CLIENT_SECRET
 
     if (!clientId || !clientSecret) {
-      console.error('[Slack OAuth] Missing client credentials')
+      safeError('[Slack OAuth] Missing client credentials')
       return NextResponse.redirect(
         new URL('/settings/integrations?error=slack_not_configured', req.url)
       )
@@ -115,7 +116,7 @@ export async function GET(req: NextRequest) {
 
     if (!tokenResponse.ok) {
       const errorData = await tokenResponse.text()
-      console.error('[Slack OAuth] Token exchange HTTP error:', errorData)
+      safeError('[Slack OAuth] Token exchange HTTP error:', errorData)
       return NextResponse.redirect(
         new URL('/settings/integrations?error=slack_token_failed', req.url)
       )
@@ -125,7 +126,7 @@ export async function GET(req: NextRequest) {
 
     // Slack API returns ok: false on error even with HTTP 200
     if (!tokenData.ok) {
-      console.error('[Slack OAuth] Token exchange API error:', tokenData.error)
+      safeError('[Slack OAuth] Token exchange API error:', tokenData.error)
       return NextResponse.redirect(
         new URL('/settings/integrations?error=slack_token_failed', req.url)
       )
@@ -133,7 +134,7 @@ export async function GET(req: NextRequest) {
 
     // Validate that we received the incoming webhook
     if (!tokenData.incoming_webhook?.url) {
-      console.error('[Slack OAuth] No incoming webhook URL in response')
+      safeError('[Slack OAuth] No incoming webhook URL in response')
       return NextResponse.redirect(
         new URL('/settings/integrations?error=slack_no_webhook', req.url)
       )
@@ -155,7 +156,7 @@ export async function GET(req: NextRequest) {
       .eq('id', context.user_id)
 
     if (userUpdateError) {
-      console.error('[Slack OAuth] Failed to update user webhook URL:', userUpdateError)
+      safeError('[Slack OAuth] Failed to update user webhook URL:', userUpdateError)
       return NextResponse.redirect(
         new URL('/settings/integrations?error=slack_save_failed', req.url)
       )
@@ -195,7 +196,7 @@ export async function GET(req: NextRequest) {
         .eq('id', existingIntegration.id)
 
       if (updateError) {
-        console.error('[Slack OAuth] Failed to update integration:', updateError)
+        safeError('[Slack OAuth] Failed to update integration:', updateError)
         // Non-fatal: user webhook URL was already saved
       }
     } else {
@@ -204,7 +205,7 @@ export async function GET(req: NextRequest) {
         .insert(integrationData)
 
       if (insertError) {
-        console.error('[Slack OAuth] Failed to save integration:', insertError)
+        safeError('[Slack OAuth] Failed to save integration:', insertError)
         // Non-fatal: user webhook URL was already saved
       }
     }
@@ -230,7 +231,7 @@ export async function GET(req: NextRequest) {
       new URL('/settings/integrations?success=slack_connected', req.url)
     )
   } catch (error: any) {
-    console.error('[Slack OAuth] Callback error:', error)
+    safeError('[Slack OAuth] Callback error:', error)
     return NextResponse.redirect(
       new URL('/settings/integrations?error=slack_callback_failed', req.url)
     )

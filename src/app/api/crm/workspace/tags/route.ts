@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
       .not('tags', 'is', null)
 
     if (error) {
-      console.error('[Workspace Tags] Error:', error)
+      safeError('[Workspace Tags] Error:', error)
       return NextResponse.json(
         { error: 'Failed to fetch workspace tags' },
         { status: 500 }
@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ tags })
 
   } catch (error: any) {
-    console.error('[Workspace Tags] Error:', error)
+    safeError('[Workspace Tags] Error:', error)
     return NextResponse.json(
       { error: 'Failed to fetch workspace tags' },
       { status: 500 }
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ tag: name, success: true })
 
   } catch (error: any) {
-    console.error('[Workspace Tags] Create Error:', error)
+    safeError('[Workspace Tags] Create Error:', error)
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(

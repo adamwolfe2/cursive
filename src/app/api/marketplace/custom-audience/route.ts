@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (insertError) {
-      console.error('Failed to create custom audience request:', insertError)
+      safeError('Failed to create custom audience request:', insertError)
       return NextResponse.json({ error: 'Failed to create request' }, { status: 500 })
     }
 
@@ -124,7 +124,7 @@ export async function POST(request: NextRequest) {
         })
       }
     } catch (slackError) {
-      console.error('Failed to send Slack notification:', slackError)
+      safeError('Failed to send Slack notification:', slackError)
     }
 
     return NextResponse.json({
@@ -135,7 +135,7 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: 'Invalid request', details: error.errors }, { status: 400 })
     }
-    console.error('Custom audience request error:', error)
+    safeError('Custom audience request error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

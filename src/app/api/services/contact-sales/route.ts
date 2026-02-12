@@ -77,7 +77,7 @@ ${validated.message}
       .single()
 
     if (error) {
-      console.error('[API] Contact sales insert error:', error)
+      safeError('[API] Contact sales insert error:', error)
       throw new Error(error.message)
     }
 
@@ -116,7 +116,7 @@ ${validated.message}
     })
 
     if (!salesEmailResult.success) {
-      console.error('[API] Failed to send sales notification email:', salesEmailResult.error)
+      safeError('[API] Failed to send sales notification email:', salesEmailResult.error)
     }
 
     // Send confirmation email to customer
@@ -167,7 +167,7 @@ ${validated.message}
     })
 
     if (!customerEmailResult.success) {
-      console.error('[API] Failed to send customer confirmation email:', customerEmailResult.error)
+      safeError('[API] Failed to send customer confirmation email:', customerEmailResult.error)
       // Don't throw - the inquiry was saved successfully
     }
 
@@ -183,7 +183,7 @@ ${validated.message}
       )
     }
 
-    console.error('[API] Contact sales error:', error)
+    safeError('[API] Contact sales error:', error)
     return NextResponse.json(
       { error: 'Failed to submit inquiry. Please try again.' },
       { status: 500 }

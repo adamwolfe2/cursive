@@ -9,6 +9,7 @@
 export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import { cookies } from 'next/headers'
 import { createAdminClient } from '@/lib/supabase/admin'
 
@@ -36,7 +37,7 @@ export async function GET(req: NextRequest) {
   // Handle OAuth errors from HubSpot
   if (error) {
     const errorDescription = searchParams.get('error_description') || error
-    console.error('[HubSpot OAuth] Error from provider:', errorDescription)
+    safeError('[HubSpot OAuth] Error from provider:', errorDescription)
     return NextResponse.redirect(
       new URL(`/settings/integrations?error=hs_${error}`, req.url)
     )
@@ -54,7 +55,7 @@ export async function GET(req: NextRequest) {
     // Verify state parameter
     const storedState = cookieStore.get('hs_oauth_state')?.value
     if (!storedState || storedState !== state) {
-      console.error('[HubSpot OAuth] State mismatch')
+      safeError('[HubSpot OAuth] State mismatch')
       return NextResponse.redirect(
         new URL('/settings/integrations?error=hs_invalid_state', req.url)
       )
@@ -79,7 +80,7 @@ export async function GET(req: NextRequest) {
     const clientSecret = process.env.HUBSPOT_CLIENT_SECRET
 
     if (!clientId || !clientSecret) {
-      console.error('[HubSpot OAuth] Missing client credentials')
+      safeError('[HubSpot OAuth] Missing client credentials')
       return NextResponse.redirect(
         new URL('/settings/integrations?error=hs_not_configured', req.url)
       )
@@ -105,7 +106,7 @@ export async function GET(req: NextRequest) {
 
     if (!tokenResponse.ok) {
       const errorData = await tokenResponse.text()
-      console.error('[HubSpot OAuth] Token exchange failed:', errorData)
+      safeError('[HubSpot OAuth] Token exchange failed:', errorData)
       return NextResponse.redirect(
         new URL('/settings/integrations?error=hs_token_failed', req.url)
       )
@@ -148,7 +149,7 @@ export async function GET(req: NextRequest) {
         .eq('id', existingConnection.id)
 
       if (updateError) {
-        console.error('[HubSpot OAuth] Failed to update connection:', updateError)
+        safeError('[HubSpot OAuth] Failed to update connection:', updateError)
         return NextResponse.redirect(
           new URL('/settings/integrations?error=hs_save_failed', req.url)
         )
@@ -160,7 +161,7 @@ export async function GET(req: NextRequest) {
         .insert(connectionData)
 
       if (insertError) {
-        console.error('[HubSpot OAuth] Failed to save connection:', insertError)
+        safeError('[HubSpot OAuth] Failed to save connection:', insertError)
         return NextResponse.redirect(
           new URL('/settings/integrations?error=hs_save_failed', req.url)
         )
@@ -184,7 +185,7 @@ export async function GET(req: NextRequest) {
       new URL('/settings/integrations?success=hubspot_connected', req.url)
     )
   } catch (error: any) {
-    console.error('[HubSpot OAuth] Callback error:', error)
+    safeError('[HubSpot OAuth] Callback error:', error)
     return NextResponse.redirect(
       new URL('/settings/integrations?error=hs_callback_failed', req.url)
     )

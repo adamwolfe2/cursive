@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
         })
 
         if (error) {
-          console.error('[Bulk Update Status] Error:', error)
+          safeError('[Bulk Update Status] Error:', error)
           throw new Error('Failed to update status')
         }
         result = { affected: data, message: `Updated ${data} leads to ${status}` }
@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
         })
 
         if (error) {
-          console.error('[Bulk Assign] Error:', error)
+          safeError('[Bulk Assign] Error:', error)
           throw new Error('Failed to assign leads')
         }
         result = { affected: data, message: `Assigned ${data} leads` }
@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
         })
 
         if (error) {
-          console.error('[Bulk Add Tags] Error:', error)
+          safeError('[Bulk Add Tags] Error:', error)
           throw new Error('Failed to add tags')
         }
         result = { affected: data, message: `Added tags to leads` }
@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
         })
 
         if (error) {
-          console.error('[Bulk Remove Tags] Error:', error)
+          safeError('[Bulk Remove Tags] Error:', error)
           throw new Error('Failed to remove tags')
         }
         result = { affected: data, message: `Removed tags from leads` }
@@ -117,7 +117,7 @@ export async function POST(request: NextRequest) {
           .eq('workspace_id', user.workspace_id)
 
         if (error) {
-          console.error('[Bulk Delete] Error:', error)
+          safeError('[Bulk Delete] Error:', error)
           throw new Error('Failed to delete leads')
         }
         result = { affected: lead_ids.length, message: `Deleted ${lead_ids.length} leads` }
