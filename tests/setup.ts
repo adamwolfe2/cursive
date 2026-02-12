@@ -132,6 +132,46 @@ Object.defineProperty(navigator, 'clipboard', {
   },
 })
 
+// Mock localStorage
+class LocalStorageMock {
+  private store: Record<string, string> = {}
+
+  clear() {
+    this.store = {}
+  }
+
+  getItem(key: string): string | null {
+    return this.store[key] || null
+  }
+
+  setItem(key: string, value: string) {
+    this.store[key] = String(value)
+  }
+
+  removeItem(key: string) {
+    delete this.store[key]
+  }
+
+  key(index: number): string | null {
+    const keys = Object.keys(this.store)
+    return keys[index] || null
+  }
+
+  get length(): number {
+    return Object.keys(this.store).length
+  }
+}
+
+Object.defineProperty(window, 'localStorage', {
+  writable: true,
+  value: new LocalStorageMock(),
+})
+
+Object.defineProperty(window, 'sessionStorage', {
+  writable: true,
+  value: new LocalStorageMock(),
+})
+
 // ============================================
 // CUSTOM MATCHERS
 // ============================================

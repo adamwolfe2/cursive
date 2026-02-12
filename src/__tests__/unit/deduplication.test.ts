@@ -98,51 +98,51 @@ describe('Deduplication Service', () => {
   // HASH KEY CALCULATION - CANONICAL TESTS
   // ==========================================================================
   describe('calculateHashKey - Canonical Matching', () => {
-    it('should produce same hash for identical inputs', () => {
-      const hash1 = calculateHashKey('john@company.com', 'company.com', '5551234567')
-      const hash2 = calculateHashKey('john@company.com', 'company.com', '5551234567')
+    it('should produce same hash for identical inputs', async () => {
+      const hash1 = await calculateHashKey('john@company.com', 'company.com', '5551234567')
+      const hash2 = await calculateHashKey('john@company.com', 'company.com', '5551234567')
       expect(hash1).toBe(hash2)
     })
 
-    it('should produce same hash for case variations in email', () => {
-      const hash1 = calculateHashKey('john@company.com', 'company.com', '5551234567')
-      const hash2 = calculateHashKey('JOHN@COMPANY.COM', 'company.com', '5551234567')
+    it('should produce same hash for case variations in email', async () => {
+      const hash1 = await calculateHashKey('john@company.com', 'company.com', '5551234567')
+      const hash2 = await calculateHashKey('JOHN@COMPANY.COM', 'company.com', '5551234567')
       expect(hash1).toBe(hash2)
     })
 
-    it('should produce same hash for case variations in domain', () => {
-      const hash1 = calculateHashKey('john@company.com', 'company.com', '5551234567')
-      const hash2 = calculateHashKey('john@company.com', 'COMPANY.COM', '5551234567')
+    it('should produce same hash for case variations in domain', async () => {
+      const hash1 = await calculateHashKey('john@company.com', 'company.com', '5551234567')
+      const hash2 = await calculateHashKey('john@company.com', 'COMPANY.COM', '5551234567')
       expect(hash1).toBe(hash2)
     })
 
-    it('should produce same hash for phone format variations', () => {
-      const hash1 = calculateHashKey('john@company.com', 'company.com', '5551234567')
-      const hash2 = calculateHashKey('john@company.com', 'company.com', '(555) 123-4567')
-      const hash3 = calculateHashKey('john@company.com', 'company.com', '555.123.4567')
-      const hash4 = calculateHashKey('john@company.com', 'company.com', '+1-555-123-4567')
+    it('should produce same hash for phone format variations', async () => {
+      const hash1 = await calculateHashKey('john@company.com', 'company.com', '5551234567')
+      const hash2 = await calculateHashKey('john@company.com', 'company.com', '(555) 123-4567')
+      const hash3 = await calculateHashKey('john@company.com', 'company.com', '555.123.4567')
+      const hash4 = await calculateHashKey('john@company.com', 'company.com', '+1-555-123-4567')
       expect(hash1).toBe(hash2)
       expect(hash1).toBe(hash3)
       expect(hash1).toBe(hash4)
     })
 
-    it('should produce same hash for whitespace variations', () => {
-      const hash1 = calculateHashKey('john@company.com', 'company.com', '5551234567')
-      const hash2 = calculateHashKey('  john@company.com  ', '  company.com  ', '5551234567')
+    it('should produce same hash for whitespace variations', async () => {
+      const hash1 = await calculateHashKey('john@company.com', 'company.com', '5551234567')
+      const hash2 = await calculateHashKey('  john@company.com  ', '  company.com  ', '5551234567')
       expect(hash1).toBe(hash2)
     })
 
-    it('should produce same hash for Gmail dot variations', () => {
-      const hash1 = calculateHashKey('johndoe@gmail.com', null, null)
-      const hash2 = calculateHashKey('john.doe@gmail.com', null, null)
-      const hash3 = calculateHashKey('j.o.h.n.d.o.e@gmail.com', null, null)
+    it('should produce same hash for Gmail dot variations', async () => {
+      const hash1 = await calculateHashKey('johndoe@gmail.com', null, null)
+      const hash2 = await calculateHashKey('john.doe@gmail.com', null, null)
+      const hash3 = await calculateHashKey('j.o.h.n.d.o.e@gmail.com', null, null)
       expect(hash1).toBe(hash2)
       expect(hash1).toBe(hash3)
     })
 
-    it('should use email domain when company domain is null', () => {
-      const hash1 = calculateHashKey('john@company.com', null, '5551234567')
-      const hash2 = calculateHashKey('john@company.com', 'company.com', '5551234567')
+    it('should use email domain when company domain is null', async () => {
+      const hash1 = await calculateHashKey('john@company.com', null, '5551234567')
+      const hash2 = await calculateHashKey('john@company.com', 'company.com', '5551234567')
       expect(hash1).toBe(hash2)
     })
   })
@@ -151,33 +151,33 @@ describe('Deduplication Service', () => {
   // HASH KEY CALCULATION - NON-MATCHING TESTS
   // ==========================================================================
   describe('calculateHashKey - Non-Matching', () => {
-    it('should produce different hash for different emails', () => {
-      const hash1 = calculateHashKey('john@company.com', 'company.com', '5551234567')
-      const hash2 = calculateHashKey('jane@company.com', 'company.com', '5551234567')
+    it('should produce different hash for different emails', async () => {
+      const hash1 = await calculateHashKey('john@company.com', 'company.com', '5551234567')
+      const hash2 = await calculateHashKey('jane@company.com', 'company.com', '5551234567')
       expect(hash1).not.toBe(hash2)
     })
 
-    it('should produce different hash for different domains', () => {
-      const hash1 = calculateHashKey('john@company.com', 'company.com', '5551234567')
-      const hash2 = calculateHashKey('john@company.com', 'other.com', '5551234567')
+    it('should produce different hash for different domains', async () => {
+      const hash1 = await calculateHashKey('john@company.com', 'company.com', '5551234567')
+      const hash2 = await calculateHashKey('john@company.com', 'other.com', '5551234567')
       expect(hash1).not.toBe(hash2)
     })
 
-    it('should produce different hash for different phones', () => {
-      const hash1 = calculateHashKey('john@company.com', 'company.com', '5551234567')
-      const hash2 = calculateHashKey('john@company.com', 'company.com', '5559876543')
+    it('should produce different hash for different phones', async () => {
+      const hash1 = await calculateHashKey('john@company.com', 'company.com', '5551234567')
+      const hash2 = await calculateHashKey('john@company.com', 'company.com', '5559876543')
       expect(hash1).not.toBe(hash2)
     })
 
-    it('should differentiate similar but different emails', () => {
-      const hash1 = calculateHashKey('johndoe@company.com', 'company.com', '5551234567')
-      const hash2 = calculateHashKey('johndoe1@company.com', 'company.com', '5551234567')
+    it('should differentiate similar but different emails', async () => {
+      const hash1 = await calculateHashKey('johndoe@company.com', 'company.com', '5551234567')
+      const hash2 = await calculateHashKey('johndoe1@company.com', 'company.com', '5551234567')
       expect(hash1).not.toBe(hash2)
     })
 
-    it('should NOT match Gmail dot variations for non-Gmail domains', () => {
-      const hash1 = calculateHashKey('john.doe@company.com', 'company.com', null)
-      const hash2 = calculateHashKey('johndoe@company.com', 'company.com', null)
+    it('should NOT match Gmail dot variations for non-Gmail domains', async () => {
+      const hash1 = await calculateHashKey('john.doe@company.com', 'company.com', null)
+      const hash2 = await calculateHashKey('johndoe@company.com', 'company.com', null)
       expect(hash1).not.toBe(hash2)
     })
   })
@@ -186,33 +186,33 @@ describe('Deduplication Service', () => {
   // HASH KEY CALCULATION - EDGE CASES
   // ==========================================================================
   describe('calculateHashKey - Edge Cases', () => {
-    it('should handle null phone', () => {
-      const hash = calculateHashKey('john@company.com', 'company.com', null)
+    it('should handle null phone', async () => {
+      const hash = await calculateHashKey('john@company.com', 'company.com', null)
       expect(hash).toBeDefined()
       expect(hash.length).toBe(64) // SHA256 hex
     })
 
-    it('should handle null domain and null phone', () => {
-      const hash = calculateHashKey('john@company.com', null, null)
+    it('should handle null domain and null phone', async () => {
+      const hash = await calculateHashKey('john@company.com', null, null)
       expect(hash).toBeDefined()
       expect(hash.length).toBe(64)
     })
 
-    it('should produce consistent hash format (64 hex chars)', () => {
-      const hash = calculateHashKey('test@test.com', 'test.com', '1234567890')
+    it('should produce consistent hash format (64 hex chars)', async () => {
+      const hash = await calculateHashKey('test@test.com', 'test.com', '1234567890')
       expect(hash).toMatch(/^[a-f0-9]{64}$/)
     })
 
-    it('should handle international phone formats', () => {
+    it('should handle international phone formats', async () => {
       // Different formatting, same digits
-      const hash1 = calculateHashKey('john@company.com', 'company.com', '+44 20 7946 0958')
-      const hash2 = calculateHashKey('john@company.com', 'company.com', '442079460958')
+      const hash1 = await calculateHashKey('john@company.com', 'company.com', '+44 20 7946 0958')
+      const hash2 = await calculateHashKey('john@company.com', 'company.com', '442079460958')
       expect(hash1).toBe(hash2)
     })
 
-    it('should handle empty string phone same as null', () => {
-      const hash1 = calculateHashKey('john@company.com', 'company.com', '')
-      const hash2 = calculateHashKey('john@company.com', 'company.com', null)
+    it('should handle empty string phone same as null', async () => {
+      const hash1 = await calculateHashKey('john@company.com', 'company.com', '')
+      const hash2 = await calculateHashKey('john@company.com', 'company.com', null)
       expect(hash1).toBe(hash2)
     })
   })
@@ -221,29 +221,29 @@ describe('Deduplication Service', () => {
   // DEDUPLICATION SCENARIOS
   // ==========================================================================
   describe('Real-World Deduplication Scenarios', () => {
-    it('should deduplicate CRM export variations', () => {
+    it('should deduplicate CRM export variations', async () => {
       // Same person exported from different CRMs with different formatting
-      const hash1 = calculateHashKey('John.Smith@AcmeCorp.com', 'acmecorp.com', '(555) 123-4567')
-      const hash2 = calculateHashKey('john.smith@acmecorp.com', 'AcmeCorp.com', '555.123.4567')
+      const hash1 = await calculateHashKey('John.Smith@AcmeCorp.com', 'acmecorp.com', '(555) 123-4567')
+      const hash2 = await calculateHashKey('john.smith@acmecorp.com', 'AcmeCorp.com', '555.123.4567')
       expect(hash1).toBe(hash2)
     })
 
-    it('should deduplicate manual entry variations', () => {
+    it('should deduplicate manual entry variations', async () => {
       // Same person entered manually with typos in formatting
-      const hash1 = calculateHashKey('  JANE@COMPANY.COM  ', 'company.com', '  555-999-1234  ')
-      const hash2 = calculateHashKey('jane@company.com', 'company.com', '5559991234')
+      const hash1 = await calculateHashKey('  JANE@COMPANY.COM  ', 'company.com', '  555-999-1234  ')
+      const hash2 = await calculateHashKey('jane@company.com', 'company.com', '5559991234')
       expect(hash1).toBe(hash2)
     })
 
-    it('should NOT deduplicate different people at same company', () => {
-      const hashJohn = calculateHashKey('john@company.com', 'company.com', '5551111111')
-      const hashJane = calculateHashKey('jane@company.com', 'company.com', '5552222222')
+    it('should NOT deduplicate different people at same company', async () => {
+      const hashJohn = await calculateHashKey('john@company.com', 'company.com', '5551111111')
+      const hashJane = await calculateHashKey('jane@company.com', 'company.com', '5552222222')
       expect(hashJohn).not.toBe(hashJane)
     })
 
-    it('should NOT deduplicate same person at different companies', () => {
-      const hash1 = calculateHashKey('john@company1.com', 'company1.com', '5551234567')
-      const hash2 = calculateHashKey('john@company2.com', 'company2.com', '5551234567')
+    it('should NOT deduplicate same person at different companies', async () => {
+      const hash1 = await calculateHashKey('john@company1.com', 'company1.com', '5551234567')
+      const hash2 = await calculateHashKey('john@company2.com', 'company2.com', '5551234567')
       expect(hash1).not.toBe(hash2)
     })
   })
