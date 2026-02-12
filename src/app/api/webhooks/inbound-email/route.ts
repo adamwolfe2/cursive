@@ -1,20 +1,19 @@
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import crypto from 'crypto'
 
 /**
- * Verify webhook signature from email provider
+ * Verify webhook signature (Edge-compatible HMAC-SHA256)
  */
-function verifySignature(payload: string, signature: string, secret: string): boolean {
-  const expectedSignature = crypto
-    .createHmac('sha256', secret)
-    .update(payload)
-    .digest('hex')
-
-  return crypto.timingSafeEqual(
-    Buffer.from(signature),
-    Buffer.from(expectedSignature)
+async function verifySignature(payload: string, signature: string, secret: string): Promise<boolean> {
+  const encoder = new TextEncoder()
+  const key = await crypto.subtle.importKey(
+    'raw', encoder.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
   )
+  const sig = await crypto.subtle.sign('HMAC', key, encoder.encode(payload))
+  const expected = Array.from(new Uint8Array(sig)).map(b => b.toString(16).padStart(2, '0')).join('')
+  return expected === signature
 }
 
 /**
@@ -38,7 +37,7 @@ export async function POST(request: NextRequest) {
       if (!signature) {
         return NextResponse.json({ error: 'Missing webhook signature' }, { status: 401 })
       }
-      if (!verifySignature(payload, signature, webhookSecret)) {
+      if (!(await verifySignature(payload, signature, webhookSecret))) {
         return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
       }
     }
