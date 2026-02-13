@@ -53,12 +53,14 @@ export async function POST(
     const body = await request.json()
     const validated = rejectSchema.parse(body)
 
-    // Get lead with partner info
+    // Get lead with partner info and workspace context
+    // Note: Platform admins can access leads from any workspace
     const { data: lead, error: fetchError } = await supabase
       .from('leads')
       .select(
         `
         id,
+        workspace_id,
         partner_id,
         verification_status_admin,
         first_name,
@@ -77,6 +79,9 @@ export async function POST(
     if (fetchError || !lead) {
       return NextResponse.json({ error: 'Lead not found' }, { status: 404 })
     }
+
+    // Platform admins have access to all workspaces
+    // Future enhancement: Could add workspace-scoped admin roles here
 
     // Update lead verification status
     const { data: updatedLead, error: updateError } = await supabase

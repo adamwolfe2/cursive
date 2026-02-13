@@ -35,16 +35,23 @@ export async function POST(
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
-    // Get lead to verify it exists
+    // Get lead to verify it exists and check workspace context
+    // Note: Platform admins can access leads from any workspace
     const { data: lead, error: fetchError } = await supabase
       .from('leads')
-      .select('id, partner_id, verification_status_admin')
+      .select('id, workspace_id, partner_id, verification_status_admin')
       .eq('id', id)
       .single()
 
     if (fetchError || !lead) {
       return NextResponse.json({ error: 'Lead not found' }, { status: 404 })
     }
+
+    // Platform admins have access to all workspaces
+    // Future enhancement: Could add workspace-scoped admin roles here
+    // if (!lead.workspace_id) {
+    //   return NextResponse.json({ error: 'Invalid lead data' }, { status: 400 })
+    // }
 
     // Update lead verification status
     const { data: updatedLead, error: updateError } = await supabase

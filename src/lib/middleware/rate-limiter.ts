@@ -101,10 +101,12 @@ export async function checkRateLimit(
 
   if (error) {
     console.error('Rate limit check failed:', error)
-    // On error, allow the request but log it
+    // SECURITY: Fail closed - reject requests when rate limit DB is unavailable
+    // This prevents abuse during outages but may cause false positives
+    // Monitor error rates and consider circuit breaker pattern if needed
     return {
-      allowed: true,
-      remaining: config.maxRequests,
+      allowed: false,
+      remaining: 0,
       resetAt: new Date(Date.now() + config.windowMs),
       limit: config.maxRequests,
     }

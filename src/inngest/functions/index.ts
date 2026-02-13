@@ -28,6 +28,9 @@ export {
   reconcilePayouts,
 } from './partner-payouts'
 
+// Partner balance audit (nightly verification)
+export { nightlyBalanceAudit } from './nightly-balance-audit'
+
 // Webhook retry processor
 export { webhookRetryProcessor } from './webhook-retry-processor'
 
