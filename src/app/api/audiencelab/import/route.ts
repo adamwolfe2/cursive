@@ -18,6 +18,7 @@ import { cookies } from 'next/headers'
 import { ImportRequestSchema, ExportRowSchema } from '@/lib/audiencelab/schemas'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 import { retryFetch } from '@/lib/utils/retry'
+import { processEventInline } from '@/lib/audiencelab/edge-processor'
 
 async function sha256Hex(data: string): Promise<string> {
   const encoded = new TextEncoder().encode(data)
@@ -210,10 +211,19 @@ export async function POST(request: NextRequest) {
         continue
       }
 
-      // Inngest disabled (Node.js runtime not available on this deployment)
-      // Original: inngest.send(inserted.map(row => ({ name: 'audiencelab/event-received', data: { event_id: row.id, workspace_id, source: 'export' } })))
-      if (inserted) {
+      // Process events inline (Edge-compatible — bypasses Inngest)
+      if (inserted && inserted.length > 0) {
         stored += inserted.length
+
+        // Process each event inline
+        const processedInBatch = await Promise.allSettled(
+          inserted.map(row =>
+            processEventInline(row.id, workspaceId, 'export')
+          )
+        )
+
+        const successCount = processedInBatch.filter(r => r.status === 'fulfilled').length
+        safeLog(`${LOG_PREFIX} Batch ${i / batchSize + 1}: Processed ${successCount}/${inserted.length} events`)
       }
     }
 
