@@ -12,6 +12,7 @@ import { handleApiError, unauthorized, notFound, success, badRequest } from '@/l
 import { z } from 'zod'
 import { checkBulkSuppression } from '@/lib/services/campaign/suppression.service'
 import { sanitizeSearchTerm } from '@/lib/utils/sanitize-search'
+import { sanitizeCsvValue } from '@/lib/utils/csv-sanitizer'
 
 interface RouteContext {
   params: Promise<{ id: string }>
@@ -233,12 +234,13 @@ function parseCSV(input: z.infer<typeof csvImportSchema>): LeadToImport[] {
       continue
     }
 
+    // Sanitize all values to prevent CSV injection attacks
     leads.push({
       email,
-      first_name: firstNameCol >= 0 ? values[firstNameCol]?.trim() : undefined,
-      last_name: lastNameCol >= 0 ? values[lastNameCol]?.trim() : undefined,
-      company_name: companyCol >= 0 ? values[companyCol]?.trim() : undefined,
-      job_title: titleCol >= 0 ? values[titleCol]?.trim() : undefined,
+      first_name: firstNameCol >= 0 ? sanitizeCsvValue(values[firstNameCol]) : undefined,
+      last_name: lastNameCol >= 0 ? sanitizeCsvValue(values[lastNameCol]) : undefined,
+      company_name: companyCol >= 0 ? sanitizeCsvValue(values[companyCol]) : undefined,
+      job_title: titleCol >= 0 ? sanitizeCsvValue(values[titleCol]) : undefined,
     })
   }
 

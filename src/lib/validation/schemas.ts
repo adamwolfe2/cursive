@@ -4,6 +4,31 @@ import { z } from 'zod'
 // REUSABLE SCHEMAS
 // ============================================================================
 
+// Enhanced email validation schema
+// Prevents common email format issues
+export const emailSchema = z
+  .string()
+  .email('Invalid email address')
+  .refine(
+    (email) => {
+      // Prevent consecutive dots
+      if (email.includes('..')) return false
+
+      // Prevent leading/trailing dots in local part
+      if (email.startsWith('.') || email.endsWith('.')) return false
+
+      // Validate domain has at least one dot (e.g., example.com)
+      const [local, domain] = email.split('@')
+      if (!domain || !domain.includes('.')) return false
+
+      // Domain shouldn't start or end with dot
+      if (domain.startsWith('.') || domain.endsWith('.')) return false
+
+      return true
+    },
+    { message: 'Email format is invalid' }
+  )
+
 // Unified password schema used across all auth forms
 export const passwordSchema = z
   .string()
@@ -17,14 +42,14 @@ export const passwordSchema = z
 // ============================================================================
 
 export const loginSchema = z.object({
-  email: z.string().email('Please enter a valid email address'),
+  email: emailSchema,
   password: z.string().min(1, 'Password is required'),
   remember: z.boolean().optional(),
 })
 
 export const signupSchema = z.object({
   full_name: z.string().min(2, 'Full name must be at least 2 characters'),
-  email: z.string().email('Please enter a valid email address'),
+  email: emailSchema,
   password: passwordSchema, // Use unified password schema
   confirm_password: z.string(),
   terms: z.boolean().refine((val) => val === true, {
@@ -36,7 +61,7 @@ export const signupSchema = z.object({
 })
 
 export const forgotPasswordSchema = z.object({
-  email: z.string().email('Please enter a valid email address'),
+  email: emailSchema,
 })
 
 export const resetPasswordSchema = z.object({

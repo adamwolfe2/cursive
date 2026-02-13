@@ -258,31 +258,118 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Handle service subscription events
-    const serviceSubscriptionEvents = [
-      'customer.subscription.created',
-      'customer.subscription.updated',
-      'customer.subscription.deleted',
-      'invoice.payment_succeeded',
-      'invoice.payment_failed'
-    ]
+    // ========================================================================
+    // IDEMPOTENCY CHECK - Prevent duplicate webhook processing
+    // ========================================================================
+    const adminClient = createAdminClient()
+    const processingStartTime = Date.now()
 
-    if (serviceSubscriptionEvents.includes(event.type)) {
-      await handleServiceWebhookEvent(event)
-      return NextResponse.json({ received: true })
+    // Check if this event has already been processed
+    const { data: existingEvent } = await adminClient
+      .from('webhook_events')
+      .select('id, processed_at')
+      .eq('stripe_event_id', event.id)
+      .single()
+
+    if (existingEvent) {
+      safeLog('[Stripe Webhook] Duplicate event detected, skipping', {
+        eventId: event.id,
+        eventType: event.type,
+        originallyProcessedAt: existingEvent.processed_at,
+      })
+      return NextResponse.json({
+        received: true,
+        duplicate: true,
+        originallyProcessedAt: existingEvent.processed_at,
+      })
     }
 
-    // Handle checkout session completed (credit purchases and lead purchases)
-    // Process inline since Inngest callbacks hang on Vercel (Node.js serverless issue)
-    if (event.type === 'checkout.session.completed') {
-      await handleCheckoutSessionCompleted(event)
-      return NextResponse.json({ received: true })
+    // Record that we're processing this event
+    // This prevents race conditions if duplicate webhooks arrive simultaneously
+    const { error: insertError } = await adminClient
+      .from('webhook_events')
+      .insert({
+        stripe_event_id: event.id,
+        event_type: event.type,
+        payload: event as any, // Store full payload for debugging
+      })
+
+    if (insertError) {
+      // If insert fails due to unique constraint, another instance is processing it
+      if (insertError.code === '23505') { // Postgres unique violation
+        safeLog('[Stripe Webhook] Race condition detected, another instance processing', {
+          eventId: event.id,
+        })
+        return NextResponse.json({
+          received: true,
+          duplicate: true,
+          raceCondition: true,
+        })
+      }
+
+      // Other insert errors are unexpected
+      safeError('[Stripe Webhook] Failed to record webhook event', insertError)
+      // Continue processing anyway - better to process twice than not at all
     }
 
-    safeLog('[Stripe Webhook] Unhandled event type: ' + event.type)
-    return NextResponse.json({ received: true, unhandled: true })
+    // ========================================================================
+    // Process the webhook event
+    // ========================================================================
+    let processingError: Error | null = null
+
+    try {
+        // Handle service subscription events
+      const serviceSubscriptionEvents = [
+        'customer.subscription.created',
+        'customer.subscription.updated',
+        'customer.subscription.deleted',
+        'invoice.payment_succeeded',
+        'invoice.payment_failed'
+      ]
+
+      if (serviceSubscriptionEvents.includes(event.type)) {
+        await handleServiceWebhookEvent(event)
+      } else if (event.type === 'checkout.session.completed') {
+        // Handle checkout session completed (credit purchases and lead purchases)
+        // Process inline since Inngest callbacks hang on Vercel (Node.js serverless issue)
+        await handleCheckoutSessionCompleted(event)
+      } else {
+        safeLog('[Stripe Webhook] Unhandled event type: ' + event.type)
+      }
+    } catch (err) {
+      processingError = err instanceof Error ? err : new Error(String(err))
+      safeError('[Stripe Webhook] Error processing event:', processingError)
+    }
+
+    // ========================================================================
+    // Update webhook event record with processing results
+    // ========================================================================
+    const processingDuration = Date.now() - processingStartTime
+
+    await adminClient
+      .from('webhook_events')
+      .update({
+        processing_duration_ms: processingDuration,
+        error_message: processingError?.message || null,
+        resource_id: event.type === 'checkout.session.completed'
+          ? (event.data.object as Stripe.Checkout.Session).metadata?.credit_purchase_id ||
+            (event.data.object as Stripe.Checkout.Session).metadata?.purchase_id
+          : null,
+      })
+      .eq('stripe_event_id', event.id)
+
+    // If processing failed, return 500 so Stripe retries
+    if (processingError) {
+      return NextResponse.json(
+        { error: 'Webhook processing failed', message: processingError.message },
+        { status: 500 }
+      )
+    }
+
+    return NextResponse.json({ received: true })
   } catch (error) {
-    safeError('[Stripe Webhook] Error processing webhook:', error)
+    // Outer catch for unexpected errors (signature verification, etc.)
+    safeError('[Stripe Webhook] Fatal error in webhook handler:', error)
     return NextResponse.json(
       { error: 'Webhook handler failed' },
       { status: 500 }
