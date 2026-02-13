@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getStripeClient } from '@/lib/stripe/client'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function GET(request: NextRequest) {
   try {
@@ -29,10 +30,24 @@ export async function GET(request: NextRequest) {
 
     const supabase = createAdminClient()
 
-    // Get partner with Stripe account ID
+    // First verify the partner exists and belongs to this user
+    const { data: userData, error: userError } = await supabaseAuth
+      .from('users')
+      .select('workspace_id')
+      .eq('auth_user_id', user.id)
+      .single()
+
+    if (userError || !userData) {
+      return NextResponse.json(
+        { error: 'User not found' },
+        { status: 404 }
+      )
+    }
+
+    // Get partner with Stripe account ID and verify ownership
     const { data: partner, error: partnerError } = await supabase
       .from('partners')
-      .select('id, stripe_account_id, stripe_onboarding_complete')
+      .select('id, stripe_account_id, stripe_onboarding_complete, workspace_id')
       .eq('id', partnerId)
       .single()
 
@@ -40,6 +55,20 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(
         { error: 'Partner not found' },
         { status: 404 }
+      )
+    }
+
+    // Verify user owns this partner
+    if (partner.workspace_id !== userData.workspace_id) {
+      safeError('[Verify Connect] Unauthorized access attempt:', {
+        userId: user.id,
+        partnerId,
+        userWorkspace: userData.workspace_id,
+        partnerWorkspace: partner.workspace_id
+      })
+      return NextResponse.json(
+        { error: 'Forbidden: You do not own this partner account' },
+        { status: 403 }
       )
     }
 
@@ -90,7 +119,7 @@ export async function GET(request: NextRequest) {
       detailsSubmitted: account.details_submitted,
     })
   } catch (error: any) {
-    console.error('[Verify Connect] Error:', error)
+    safeError('[Verify Connect] Error:', error)
     return NextResponse.json(
       { error: 'Failed to verify account' },
       { status: 500 }

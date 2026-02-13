@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { PartnerRepository } from '@/lib/repositories/partner.repository'
+import { requireAdmin } from '@/lib/auth/admin'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 const commissionSchema = z.object({
@@ -18,27 +19,19 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // Verify admin using centralized helper
+    await requireAdmin()
+
     const { id } = await params
     const supabase = await createClient()
 
-    // Verify admin
+    // Get user for audit log
     const {
       data: { user },
     } = await supabase.auth.getUser()
 
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const { data: admin } = await supabase
-      .from('platform_admins')
-      .select('id')
-      .eq('email', user.email)
-      .eq('is_active', true)
-      .single()
-
-    if (!admin) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
     // Parse request body
