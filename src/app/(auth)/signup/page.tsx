@@ -8,6 +8,8 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 import { signupSchema, type SignupFormData } from '@/lib/validation/schemas'
+import { PasswordStrength } from '@/components/ui/password-strength'
+import { getErrorMessage } from '@/lib/utils/error-messages'
 
 export default function SignupPage() {
   const router = useRouter()
@@ -20,11 +22,14 @@ export default function SignupPage() {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
-    mode: 'onBlur',
+    mode: 'onTouched', // Show validation on touch, better UX than onBlur
   })
+
+  const passwordValue = watch('password', '')
 
   const handleEmailSignup = async (data: SignupFormData) => {
     setLoading(true)
@@ -50,7 +55,7 @@ export default function SignupPage() {
     })
 
     if (signUpError) {
-      setError(signUpError.message)
+      setError(getErrorMessage(signUpError))
       setLoading(false)
       return
     }
@@ -79,7 +84,7 @@ export default function SignupPage() {
     })
 
     if (signInError) {
-      setError(signInError.message)
+      setError(getErrorMessage(signInError))
       setLoading(false)
     }
   }
@@ -185,9 +190,15 @@ export default function SignupPage() {
                 className={`relative block w-full min-h-[44px] rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ${
                   errors.password ? 'ring-red-500' : 'ring-gray-300'
                 } placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6`}
-                placeholder="Password (min. 8 characters)"
+                placeholder="Password"
                 disabled={loading}
               />
+              {/* Password strength indicator */}
+              {passwordValue && (
+                <div className="mt-2">
+                  <PasswordStrength password={passwordValue} />
+                </div>
+              )}
               {errors.password && (
                 <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
               )}

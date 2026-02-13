@@ -1,6 +1,18 @@
 import { z } from 'zod'
 
 // ============================================================================
+// REUSABLE SCHEMAS
+// ============================================================================
+
+// Unified password schema used across all auth forms
+export const passwordSchema = z
+  .string()
+  .min(8, 'Password must be at least 8 characters')
+  .regex(/[a-z]/, 'Password must contain a lowercase letter')
+  .regex(/[A-Z]/, 'Password must contain an uppercase letter')
+  .regex(/[0-9]/, 'Password must contain a number')
+
+// ============================================================================
 // AUTHENTICATION SCHEMAS
 // ============================================================================
 
@@ -13,13 +25,7 @@ export const loginSchema = z.object({
 export const signupSchema = z.object({
   full_name: z.string().min(2, 'Full name must be at least 2 characters'),
   email: z.string().email('Please enter a valid email address'),
-  password: z
-    .string()
-    .min(8, 'Password must be at least 8 characters')
-    .regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-      'Password must contain at least one uppercase letter, one lowercase letter, and one number'
-    ),
+  password: passwordSchema, // Use unified password schema
   confirm_password: z.string(),
   terms: z.boolean().refine((val) => val === true, {
     message: 'You must agree to the terms and conditions',
@@ -34,13 +40,7 @@ export const forgotPasswordSchema = z.object({
 })
 
 export const resetPasswordSchema = z.object({
-  password: z
-    .string()
-    .min(8, 'Password must be at least 8 characters')
-    .regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-      'Password must contain at least one uppercase letter, one lowercase letter, and one number'
-    ),
+  password: passwordSchema, // Use unified password schema
   confirm_password: z.string(),
 }).refine((data) => data.password === data.confirm_password, {
   message: "Passwords don't match",
@@ -181,13 +181,7 @@ export const profileSettingsSchema = z.object({
 // Password Update
 export const passwordUpdateSchema = z.object({
   current_password: z.string().min(1, 'Current password is required'),
-  new_password: z
-    .string()
-    .min(8, 'Password must be at least 8 characters')
-    .regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-      'Password must contain at least one uppercase letter, one lowercase letter, and one number'
-    ),
+  new_password: passwordSchema, // Use unified password schema
   confirm_password: z.string(),
 }).refine((data) => data.new_password === data.confirm_password, {
   message: "Passwords don't match",
