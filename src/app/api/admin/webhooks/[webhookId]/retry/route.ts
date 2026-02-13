@@ -9,6 +9,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { requireAdmin } from '@/lib/auth/admin'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
+import { getErrorMessage } from '@/lib/utils/error-messages'
 
 interface RouteContext {
   params: Promise<{ webhookId: string }>
@@ -109,10 +110,10 @@ export async function POST(request: NextRequest, context: RouteContext) {
       webhook_id: webhookId,
       event_type: event.event_type,
     })
-  } catch (error: any) {
+  } catch (error) {
     safeError('[Admin Webhook Retry] Error:', error)
     return NextResponse.json(
-      { error: 'Failed to retry webhook' },
+      { error: getErrorMessage(error) },
       { status: 500 }
     )
   }
@@ -143,10 +144,10 @@ export async function GET(request: NextRequest, context: RouteContext) {
     }
 
     return NextResponse.json({ webhook: event })
-  } catch (error: any) {
+  } catch (error) {
     safeError('[Admin Webhooks] GET error:', error)
     return NextResponse.json(
-      { error: 'Failed to fetch webhook' },
+      { error: getErrorMessage(error) },
       { status: 500 }
     )
   }

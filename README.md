@@ -1,6 +1,6 @@
-# Cursive Leads - B2B Intent Lead Intelligence Platform
+# Cursive - B2B Lead Marketplace Platform
 
-A full-stack B2B lead generation platform that identifies companies actively researching specific topics and delivers enriched contact data with intent scoring. Built with Next.js 14, Supabase, Stripe, and Inngest.
+A multi-tenant SaaS platform for buying and selling verified B2B leads. Built with Next.js 15, Supabase, Stripe, and Inngest.
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/adamwolfe2/cursive)
 
@@ -192,6 +192,224 @@ SLACK_CLIENT_SECRET=your_slack_client_secret
 REDIS_URL=redis://localhost:6379
 ```
 
+## 🏛️ Architecture
+
+### System Overview
+
+Cursive follows a **multi-tenant SaaS architecture** with strict workspace isolation enforced at the database level via Row Level Security (RLS) policies.
+
+```
+┌─────────────┐
+│   Browser   │
+└──────┬──────┘
+       │
+       ▼
+┌─────────────────────────────────────────┐
+│  Next.js 15 (App Router + Edge Runtime) │
+│  ─────────────────────────────────────  │
+│  • Server Components (default)          │
+│  • API Routes (/api/*)                  │
+│  • Middleware (auth + routing)          │
+└──────┬──────────────────────────────────┘
+       │
+       ├──────────────┬───────────────┬────────────┐
+       ▼              ▼               ▼            ▼
+┌──────────┐   ┌──────────┐   ┌──────────┐  ┌──────────┐
+│ Supabase │   │  Stripe  │   │ Inngest  │  │  Resend  │
+│ (Auth +  │   │(Payments)│   │  (Jobs)  │  │  (Email) │
+│ Database)│   └──────────┘   └──────────┘  └──────────┘
+└──────────┘
+     │
+     └─ PostgreSQL with RLS
+        • Multi-tenant isolation
+        • Real-time subscriptions
+        • Soft delete support
+```
+
+### Key Design Patterns
+
+**1. Multi-Tenancy**
+- Every table includes `workspace_id` foreign key
+- RLS policies enforce workspace isolation on ALL queries
+- No cross-tenant data leakage possible
+
+**2. Repository Pattern**
+```typescript
+// All DB access goes through repositories
+const repo = new LeadRepository()
+const leads = await repo.findByWorkspace(workspaceId)
+
+// Never direct Supabase calls in components/routes
+```
+
+**3. Error Handling (Phase 2)**
+```typescript
+// Centralized user-friendly error messages
+import { getErrorMessage } from '@/lib/utils/error-messages'
+
+try {
+  // ...
+} catch (error) {
+  return NextResponse.json(
+    { error: getErrorMessage(error) },
+    { status: 500 }
+  )
+}
+```
+
+**4. Financial Integrity (Phase 1)**
+- All financial tables use `ON DELETE RESTRICT` foreign keys
+- CHECK constraints prevent invalid amounts
+- Nightly balance audits detect discrepancies
+
+**5. Performance Optimization (Phase 4)**
+- Composite indexes on hot query paths
+- Materialized views for aggregations (refreshed hourly)
+- SQL aggregation functions replace in-app iteration
+
+**6. GDPR Compliance (Phase 5)**
+- Soft delete with 30-day grace period
+- Automatic hard deletion after retention period
+- Audit trail for all deletions
+
+### Data Flow Examples
+
+**Marketplace Purchase Flow:**
+```
+User clicks "Buy Leads"
+  ↓
+POST /api/marketplace/purchase
+  ↓
+Verify credits/payment
+  ↓
+Start transaction
+  ↓
+Create marketplace_purchase
+  ↓
+Create purchase_items (with partner attribution)
+  ↓
+Create partner_earnings (pending status)
+  ↓
+Deduct credits from workspace
+  ↓
+Send success response
+  ↓
+Inngest event: "purchase.completed"
+  ↓
+Update partner balances
+  ↓
+Send confirmation email (Resend)
+```
+
+**Commission Processing Flow (Inngest):**
+```
+Monthly cron (1st of month)
+  ↓
+Query pending_holdback commissions
+  ↓
+Filter by commission_payable_at < NOW()
+  ↓
+Update status to "payable"
+  ↓
+Update partner.available_balance
+  ↓
+Create audit_log entries
+  ↓
+Send notification to partners
+```
+
+### Security Architecture
+
+**Authentication Layer:**
+- Supabase Auth (JWT-based sessions)
+- SSR-compatible cookie handling (`@supabase/ssr`)
+- Session refresh handled automatically
+
+**Authorization Layer:**
+- RLS policies at database level (cannot be bypassed)
+- Admin role checks in API routes
+- Workspace isolation enforced by RLS
+
+**Input Validation:**
+- Zod schemas on all API endpoints
+- Type-safe form handling (React Hook Form + Zod)
+- CSV injection prevention (Phase 3)
+
+**Rate Limiting (Phase 1):**
+- Database-backed rate limiter
+- Fails closed on errors (rejects requests if DB unavailable)
+- 100 requests/minute per user
+
+### Performance Considerations
+
+**Database Optimizations (Phase 4):**
+- 10+ composite indexes on critical paths
+- Materialized view for partner earnings (50ms vs 5s)
+- SQL aggregation for admin dashboards (100x faster)
+
+**Caching Strategy:**
+- React Query for client-side caching
+- Stale-while-revalidate patterns
+- Optimistic updates for instant UX
+
+**Edge Runtime:**
+- API routes run on Vercel Edge Network
+- Global low-latency responses
+- Automatic geographic routing
+
+### Background Jobs (Inngest)
+
+**Scheduled Jobs:**
+- `nightly-balance-audit` - 2 AM daily (Phase 1)
+- `refresh-earnings-view` - Hourly (Phase 4)
+- `commission-processing` - 1st of month
+- `permanent-delete-old-soft-deletes` - Daily (Phase 5)
+
+**Event-Driven Jobs:**
+- `purchase.completed` → Update balances
+- `lead.verified` → Enable marketplace listing
+- `webhook.retry` → Manual retry failed webhooks (Phase 5)
+
+### Deployment Architecture
+
+```
+GitHub (main branch)
+  ↓ push
+Vercel Build
+  ↓ success
+Automatic Deployment (Edge Network)
+  ↓
+Production (leads.meetcursive.com)
+  │
+  ├─ Supabase (database + auth)
+  ├─ Stripe (webhooks)
+  ├─ Inngest (background jobs)
+  └─ Resend (transactional email)
+```
+
+**Rollback Strategy:**
+- Instant Vercel deployment rollback (<30s)
+- Database migration rollback files (Phase 6)
+- Blue-green deployment for zero-downtime
+
+### Monitoring & Observability
+
+**Application Monitoring:**
+- Vercel Analytics (response time, error rate)
+- Supabase Dashboard (query performance)
+- Inngest Dashboard (job success rate)
+
+**Database Monitoring:**
+- `pg_stat_statements` for slow queries
+- Index usage tracking
+- Connection pool monitoring
+
+**Alerting:**
+- Error rate >1% → Slack notification
+- Response time >2s → Email alert
+- Failed webhooks → Admin dashboard (Phase 3)
+- Balance discrepancies → Nightly alert (Phase 1)
+
 ## 🏗️ Project Structure
 
 ```
@@ -231,22 +449,51 @@ openinfo-platform/
 
 ## 📚 Documentation
 
+### Core Documentation
 - **[CLAUDE.md](./CLAUDE.md)**: Development guidelines and best practices
-- **[DEPLOYMENT.md](./DEPLOYMENT.md)**: Complete deployment guide for Vercel
-- **[PHASE_*.md](./PHASE_0_PROJECT_INITIALIZATION.md)**: Detailed implementation documentation for each phase
+- **[docs/deployment.md](./docs/deployment.md)**: Complete deployment guide for Vercel + Supabase
+- **[docs/database-schema.md](./docs/database-schema.md)**: Database schema with RLS policies
+- **[docs/api-reference.md](./docs/api-reference.md)**: REST API endpoint documentation
 
-### Phase Documentation
+### Platform Excellence Roadmap (2026-02-13)
 
-1. [Phase 0: Project Initialization](./PHASE_0_PROJECT_INITIALIZATION.md)
-2. [Phase 1: Database Foundation](./PHASE_1_DATABASE_FOUNDATION.md)
-3. [Phase 2: Authentication & Multi-Tenancy](./PHASE_2_AUTH_MULTI_TENANCY.md)
-4. [Phase 3: Query Management](./PHASE_3_QUERY_MANAGEMENT.md)
-5. [Phase 4: Lead Pipeline](./PHASE_4_LEAD_PIPELINE.md)
-6. [Phase 5: Lead Management UI](./PHASE_5_LEAD_MANAGEMENT.md)
-7. [Phase 6: People Search](./PHASE_6_PEOPLE_SEARCH.md)
-8. [Phase 7: Trends Dashboard](./PHASE_7_TRENDS.md)
-9. [Phase 8: Billing Integration](./PHASE_8_BILLING.md)
-10. [Phase 9: Settings & Integrations](./PHASE_9_SETTINGS_INTEGRATIONS.md)
+Six-phase production polish initiative:
+
+1. **Phase 1:** Critical Security & Data Integrity ✅
+   - Workspace isolation for financial tables
+   - Foreign key protection (`RESTRICT` vs `SET NULL`)
+   - Financial amount validation
+   - Nightly balance audits
+
+2. **Phase 2:** UX Foundation Layer ✅
+   - Centralized error messages
+   - Password strength indicators
+   - Empty state components
+   - Form validation improvements
+
+3. **Phase 3:** Error Handling & Validation ✅
+   - Webhook idempotency
+   - CSV injection prevention
+   - Enhanced email validation
+   - Retry logic with exponential backoff
+
+4. **Phase 4:** Performance & Indexes ✅
+   - 10+ composite indexes
+   - SQL aggregation functions
+   - Materialized views
+   - Batch query optimizations
+
+5. **Phase 5:** Missing Features & APIs ✅
+   - GDPR-compliant soft delete
+   - Saved filter presets
+   - Bulk operations
+   - Webhook retry API
+
+6. **Phase 6:** Polish & Developer Experience ✅
+   - Migration rollback files
+   - Accessibility improvements (ARIA labels)
+   - Documentation (this file!)
+   - TypeScript type improvements
 
 ## 🚢 Deployment
 

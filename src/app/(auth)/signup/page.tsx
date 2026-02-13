@@ -124,7 +124,7 @@ export default function SignupPage() {
 
         {/* Error Message */}
         {error && (
-          <div className="rounded-md bg-red-50 p-4">
+          <div role="alert" aria-live="polite" className="rounded-md bg-red-50 p-4">
             <div className="flex">
               <div className="ml-3">
                 <h3 className="text-sm font-medium text-red-800">{error}</h3>
@@ -146,6 +146,9 @@ export default function SignupPage() {
                 autoComplete="name"
                 inputMode="text"
                 {...register('full_name')}
+                aria-label="Full name"
+                aria-invalid={!!errors.full_name}
+                aria-describedby={errors.full_name ? 'full_name-error' : undefined}
                 className={`relative block w-full min-h-[44px] rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ${
                   errors.full_name ? 'ring-red-500' : 'ring-gray-300'
                 } placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6`}
@@ -153,7 +156,9 @@ export default function SignupPage() {
                 disabled={loading}
               />
               {errors.full_name && (
-                <p className="mt-1 text-sm text-red-600">{errors.full_name.message}</p>
+                <p id="full_name-error" role="alert" className="mt-1 text-sm text-red-600">
+                  {errors.full_name.message}
+                </p>
               )}
             </div>
 
@@ -167,6 +172,9 @@ export default function SignupPage() {
                 autoComplete="email"
                 inputMode="email"
                 {...register('email')}
+                aria-label="Email address"
+                aria-invalid={!!errors.email}
+                aria-describedby={errors.email ? 'email-error' : undefined}
                 className={`relative block w-full min-h-[44px] rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ${
                   errors.email ? 'ring-red-500' : 'ring-gray-300'
                 } placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6`}
@@ -174,7 +182,9 @@ export default function SignupPage() {
                 disabled={loading}
               />
               {errors.email && (
-                <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+                <p id="email-error" role="alert" className="mt-1 text-sm text-red-600">
+                  {errors.email.message}
+                </p>
               )}
             </div>
 
@@ -187,6 +197,9 @@ export default function SignupPage() {
                 type="password"
                 autoComplete="new-password"
                 {...register('password')}
+                aria-label="Password"
+                aria-invalid={!!errors.password}
+                aria-describedby={errors.password ? 'password-error' : passwordValue ? 'password-strength' : undefined}
                 className={`relative block w-full min-h-[44px] rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset ${
                   errors.password ? 'ring-red-500' : 'ring-gray-300'
                 } placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6`}
@@ -195,12 +208,14 @@ export default function SignupPage() {
               />
               {/* Password strength indicator */}
               {passwordValue && (
-                <div className="mt-2">
+                <div id="password-strength" className="mt-2">
                   <PasswordStrength password={passwordValue} />
                 </div>
               )}
               {errors.password && (
-                <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
+                <p id="password-error" role="alert" className="mt-1 text-sm text-red-600">
+                  {errors.password.message}
+                </p>
               )}
             </div>
 
