@@ -1,7 +1,6 @@
 /**
- * Audience Labs Database Search API
- * Search/preview the 280M+ AL database
- * Credit-based lead purchasing
+ * Run Saved Segment
+ * Execute segment query (preview or pull leads)
  */
 
 export const runtime = 'edge'
@@ -12,8 +11,6 @@ import { createClient } from '@/lib/supabase/server'
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
 import { getErrorMessage } from '@/lib/utils/error-messages'
 import { z } from 'zod'
-
-// Import AL API client
 import {
   previewAudience,
   createAudience,
@@ -21,45 +18,47 @@ import {
   type ALAudienceFilter,
 } from '@/lib/audiencelab/api-client'
 
-const searchSchema = z.object({
-  // Filters
-  industries: z.array(z.string()).optional(),
-  states: z.array(z.string()).optional(),
-  company_sizes: z.array(z.string()).optional(),
-  job_titles: z.array(z.string()).optional(),
-  seniority_levels: z.array(z.string()).optional(),
-
-  // Search
-  search: z.string().optional(),
-
-  // Pagination
-  page: z.number().min(1).default(1),
+const runSchema = z.object({
+  action: z.enum(['preview', 'pull']),
   limit: z.number().min(1).max(100).default(25),
-
-  // Action
-  action: z.enum(['preview', 'pull']).default('preview'),
 })
 
 /**
- * POST /api/audiencelab/database/search
- * Search AL database and preview or pull records
+ * POST /api/segments/[id]/run
+ * Execute the saved segment
  */
-export async function POST(request: NextRequest) {
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     const user = await getCurrentUser()
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const { id } = await params
     const body = await request.json()
-    const params = searchSchema.parse(body)
+    const { action, limit } = runSchema.parse(body)
 
     const supabase = await createClient()
 
-    // Get user's workspace and credits
+    // Fetch segment
+    const { data: segment, error: segmentError } = await supabase
+      .from('saved_segments')
+      .select('*')
+      .eq('id', id)
+      .eq('workspace_id', user.workspace_id)
+      .single()
+
+    if (segmentError || !segment) {
+      return NextResponse.json({ error: 'Segment not found' }, { status: 404 })
+    }
+
+    // Get workspace for credit check
     const { data: workspace } = await supabase
       .from('workspaces')
-      .select('id, name, credits_balance')
+      .select('id, credits_balance')
       .eq('id', user.workspace_id)
       .single()
 
@@ -67,25 +66,33 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Workspace not found' }, { status: 404 })
     }
 
-    // Build AL audience query from filters
-    const audienceQuery = buildAudienceQuery(params)
+    // Convert segment filters to AL format
+    const audienceQuery = segment.filters as ALAudienceFilter
 
-    if (params.action === 'preview') {
-      // Preview mode: just get count and sample
+    if (action === 'preview') {
+      // Preview mode
       try {
         const preview = await previewAudience({
           filters: audienceQuery,
         })
 
-        // Calculate credit cost for 25 leads (or fewer if less available)
         const creditCostPerLead = 0.5
-        const maxPullable = Math.min(preview.count, 25)
+        const maxPullable = Math.min(preview.count, limit)
         const totalCost = maxPullable * creditCostPerLead
+
+        // Update segment stats
+        await supabase
+          .from('saved_segments')
+          .update({
+            last_count: preview.count,
+            last_run_at: new Date().toISOString(),
+          })
+          .eq('id', id)
 
         return NextResponse.json({
           preview: {
             count: preview.count,
-            sample: preview.sample || [],
+            sample: preview.result || [],
             credit_cost: totalCost,
             credit_cost_per_lead: creditCostPerLead,
             can_afford: workspace.credits_balance >= totalCost,
@@ -93,19 +100,19 @@ export async function POST(request: NextRequest) {
           },
         })
       } catch (alError) {
-        safeError('[AL Database Search] Preview error:', alError)
+        safeError('[Segment Run] Preview error:', alError)
         return NextResponse.json(
-          { error: 'Failed to preview audience. AL API may be unavailable.' },
+          { error: 'Failed to preview segment' },
           { status: 502 }
         )
       }
     } else {
-      // Pull mode: create audience and fetch records
+      // Pull mode
       const creditCostPerLead = 0.5
-      const maxRecords = Math.min(params.limit, 100)
+      const maxRecords = Math.min(limit, 100)
       const estimatedCost = maxRecords * creditCostPerLead
 
-      // Check if user has enough credits
+      // Check credits
       if (workspace.credits_balance < estimatedCost) {
         return NextResponse.json(
           {
@@ -119,22 +126,21 @@ export async function POST(request: NextRequest) {
       }
 
       try {
-        // Step 1: Create audience with filters
+        // Create audience and fetch records
         const audience = await createAudience({
           filters: audienceQuery,
-          name: `db-search-${Date.now()}-${workspace.id.substring(0, 8)}`,
+          name: `segment-${id}-${Date.now()}`,
         })
 
-        // Step 2: Fetch records from created audience
         const recordsResponse = await fetchAudienceRecords(
           audience.audienceId,
-          params.page,
+          1,
           maxRecords
         )
 
         const records = recordsResponse.data || []
 
-        if (!records || records.length === 0) {
+        if (records.length === 0) {
           return NextResponse.json({
             leads: [],
             pulled: 0,
@@ -143,7 +149,7 @@ export async function POST(request: NextRequest) {
           })
         }
 
-        // Check for duplicate leads by email BEFORE charging credits
+        // Check for duplicates
         const emails = records
           .map(r => r.BUSINESS_EMAIL || r.PERSONAL_EMAILS?.split(',')[0])
           .filter(Boolean)
@@ -155,8 +161,6 @@ export async function POST(request: NextRequest) {
           .in('email', emails)
 
         const existingEmails = new Set(existingLeads?.map(l => l.email) || [])
-
-        // Filter out leads that already exist
         const newRecords = records.filter(record => {
           const email = record.BUSINESS_EMAIL || record.PERSONAL_EMAILS?.split(',')[0]
           return email && !existingEmails.has(email)
@@ -171,21 +175,14 @@ export async function POST(request: NextRequest) {
           })
         }
 
-        // Calculate actual cost based on NEW records (not duplicates)
+        // Deduct credits using RPC
         const actualCost = newRecords.length * creditCostPerLead
-
-        // Deduct credits atomically using RPC
         const { data: creditResult } = await supabase.rpc('deduct_credits', {
           p_workspace_id: workspace.id,
           p_amount: actualCost,
           p_user_id: user.id,
-          p_action_type: 'al_database_pull',
-          p_metadata: {
-            total_fetched: records.length,
-            new_leads: newRecords.length,
-            duplicates_skipped: records.length - newRecords.length,
-            filters: params,
-          },
+          p_action_type: 'segment_run',
+          p_metadata: { segment_id: id, segment_name: segment.name },
         })
 
         if (!creditResult || !creditResult[0]?.success) {
@@ -195,9 +192,7 @@ export async function POST(request: NextRequest) {
           )
         }
 
-        const newBalance = creditResult[0].new_balance
-
-        // Store only new leads in workspace
+        // Insert leads
         const leadsToInsert = newRecords.map(record => ({
           workspace_id: workspace.id,
           email: record.BUSINESS_EMAIL || record.PERSONAL_EMAILS?.split(',')[0] || null,
@@ -211,8 +206,8 @@ export async function POST(request: NextRequest) {
           company_size: record.COMPANY_EMPLOYEE_COUNT || null,
           state: record.COMPANY_STATE || record.PERSONAL_STATE || null,
           city: record.COMPANY_CITY || record.PERSONAL_CITY || null,
-          source: 'audiencelab_database' as const,
-          verification_status: 'approved' as const,
+          source: 'audiencelab_database',
+          verification_status: 'approved',
           is_marketplace_listed: false,
           marketplace_price: null,
         }))
@@ -223,28 +218,36 @@ export async function POST(request: NextRequest) {
           .select()
 
         if (insertError) {
-          // Refund credits on insert failure using RPC
+          // Refund credits
           await supabase.rpc('refund_credits', {
             p_workspace_id: workspace.id,
             p_amount: actualCost,
             p_user_id: user.id,
             p_reason: 'Lead insert failed',
-            p_original_action: 'al_database_pull',
+            p_original_action: 'segment_run',
           })
 
-          safeError('[AL Database Search] Lead insert failed, credits refunded:', insertError)
+          safeError('[Segment Run] Insert failed:', insertError)
           return NextResponse.json(
             { error: 'Failed to save leads' },
             { status: 500 }
           )
         }
 
-        // Credit usage already logged by deduct_credits RPC
-        safeLog('[AL Database Search] Pulled records:', {
-          workspace_id: workspace.id,
+        // Update segment stats
+        await supabase
+          .from('saved_segments')
+          .update({
+            last_count: records.length,
+            last_run_at: new Date().toISOString(),
+          })
+          .eq('id', id)
+
+        safeLog('[Segment Run] Success:', {
+          segment_id: id,
           total_fetched: records.length,
           new_leads: newRecords.length,
-          duplicates_skipped: records.length - newRecords.length,
+          duplicates: records.length - newRecords.length,
           cost: actualCost,
         })
 
@@ -253,7 +256,7 @@ export async function POST(request: NextRequest) {
           leads: insertedLeads,
           pulled: newRecords.length,
           credits_charged: actualCost,
-          new_balance: newBalance,
+          new_balance: creditResult[0].new_balance,
           message: `Successfully pulled ${newRecords.length} leads${
             records.length > newRecords.length
               ? ` (${records.length - newRecords.length} duplicates skipped)`
@@ -261,9 +264,9 @@ export async function POST(request: NextRequest) {
           }`,
         })
       } catch (alError) {
-        safeError('[AL Database Search] Pull error:', alError)
+        safeError('[Segment Run] Pull error:', alError)
         return NextResponse.json(
-          { error: 'Failed to pull records from AL database' },
+          { error: 'Failed to pull leads' },
           { status: 502 }
         )
       }
@@ -276,42 +279,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    safeError('[AL Database Search] Error:', error)
+    safeError('[Segment Run] Error:', error)
     return NextResponse.json(
       { error: getErrorMessage(error) },
       { status: 500 }
     )
   }
-}
-
-/**
- * Build AL audience query from search parameters
- */
-function buildAudienceQuery(params: z.infer<typeof searchSchema>): ALAudienceFilter {
-  const query: ALAudienceFilter = {}
-
-  // Map industries
-  if (params.industries && params.industries.length > 0) {
-    query.industries = params.industries
-  }
-
-  // Map states
-  if (params.states && params.states.length > 0) {
-    query.state = params.states
-  }
-
-  // Map seniority levels
-  if (params.seniority_levels && params.seniority_levels.length > 0) {
-    query.seniority = params.seniority_levels
-  }
-
-  // Map job titles to departments
-  if (params.job_titles && params.job_titles.length > 0) {
-    query.departments = params.job_titles
-  }
-
-  // Note: company_sizes not directly supported by ALAudienceFilter
-  // Would need to map to SIC codes or employee count ranges
-
-  return query
 }

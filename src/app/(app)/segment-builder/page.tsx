@@ -14,6 +14,16 @@ import {
   SelectValue,
 } from '@/components/ui/select-radix'
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
+import {
   Filter,
   Plus,
   Play,
@@ -22,10 +32,11 @@ import {
   TrendingUp,
   Users,
   Coins,
-  Download,
   AlertCircle,
+  Loader2,
 } from 'lucide-react'
 import { toast } from 'sonner'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 
 interface FilterRule {
   id: string
@@ -37,11 +48,14 @@ interface FilterRule {
 interface Segment {
   id: string
   name: string
-  description: string
-  filters: FilterRule[]
-  last_count: number
-  last_run: string
-  status: 'active' | 'paused'
+  description: string | null
+  filters: Record<string, any>
+  last_count: number | null
+  last_run_at: string | null
+  status: 'active' | 'paused' | 'archived'
+  created_at: string
+  workspace_id: string
+  user_id: string
 }
 
 const INDUSTRIES = [
@@ -102,9 +116,72 @@ const SENIORITY_LEVELS = [
 export default function SegmentBuilderPage() {
   const [filters, setFilters] = useState<FilterRule[]>([])
   const [segmentName, setSegmentName] = useState('')
+  const [segmentDescription, setSegmentDescription] = useState('')
   const [preview, setPreview] = useState<any>(null)
   const [loading, setLoading] = useState(false)
-  const [savedSegments, setSavedSegments] = useState<Segment[]>([])
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [segmentToDelete, setSegmentToDelete] = useState<string | null>(null)
+  const [runningSegmentId, setRunningSegmentId] = useState<string | null>(null)
+
+  const queryClient = useQueryClient()
+
+  // Fetch saved segments
+  const { data: segmentsData, isLoading: segmentsLoading } = useQuery({
+    queryKey: ['segments'],
+    queryFn: async () => {
+      const response = await fetch('/api/segments')
+      if (!response.ok) throw new Error('Failed to fetch segments')
+      return response.json()
+    },
+  })
+
+  const savedSegments = segmentsData?.segments || []
+
+  // Save segment mutation
+  const saveSegmentMutation = useMutation({
+    mutationFn: async (data: { name: string; description?: string; filters: Record<string, any> }) => {
+      const response = await fetch('/api/segments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      })
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Failed to save segment')
+      }
+      return response.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['segments'] })
+      toast.success('Segment saved successfully!')
+      setSegmentName('')
+      setSegmentDescription('')
+    },
+    onError: (error: Error) => {
+      toast.error(error.message)
+    },
+  })
+
+  // Delete segment mutation
+  const deleteSegmentMutation = useMutation({
+    mutationFn: async (segmentId: string) => {
+      const response = await fetch(`/api/segments/${segmentId}`, {
+        method: 'DELETE',
+      })
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Failed to delete segment')
+      }
+      return response.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['segments'] })
+      toast.success('Segment deleted successfully!')
+    },
+    onError: (error: Error) => {
+      toast.error(error.message)
+    },
+  })
 
   const addFilter = () => {
     const newFilter: FilterRule = {
@@ -171,7 +248,7 @@ export default function SegmentBuilderPage() {
       } else {
         toast.error(data.error || 'Failed to preview')
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error('Failed to preview segment')
     } finally {
       setLoading(false)
@@ -189,19 +266,32 @@ export default function SegmentBuilderPage() {
       return
     }
 
-    const newSegment: Segment = {
-      id: Math.random().toString(36).substr(2, 9),
-      name: segmentName,
-      description: `${filters.length} filters applied`,
-      filters,
-      last_count: preview?.count || 0,
-      last_run: new Date().toISOString(),
-      status: 'active',
-    }
+    // Convert FilterRule[] to API format
+    const apiFilters: Record<string, any> = {}
+    filters.forEach((filter) => {
+      if (filter.value) {
+        const fieldMap: any = {
+          industry: 'industries',
+          state: 'states',
+          company_size: 'company_sizes',
+          job_title: 'job_titles',
+          seniority: 'seniority_levels',
+        }
+        const apiField = fieldMap[filter.field]
+        if (!apiFilters[apiField]) apiFilters[apiField] = []
+        if (Array.isArray(filter.value)) {
+          apiFilters[apiField].push(...filter.value)
+        } else {
+          apiFilters[apiField].push(filter.value)
+        }
+      }
+    })
 
-    setSavedSegments([...savedSegments, newSegment])
-    toast.success('Segment saved!')
-    setSegmentName('')
+    saveSegmentMutation.mutate({
+      name: segmentName,
+      description: segmentDescription || `${filters.length} filters applied`,
+      filters: apiFilters,
+    })
   }
 
   const handlePullLeads = async () => {
@@ -253,8 +343,87 @@ export default function SegmentBuilderPage() {
           toast.error(data.error || 'Failed to pull leads')
         }
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error('Failed to pull leads')
+    }
+  }
+
+  const handleRunSavedSegment = async (segmentId: string, action: 'preview' | 'pull') => {
+    setRunningSegmentId(segmentId)
+    try {
+      const response = await fetch(`/api/segments/${segmentId}/run`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, limit: 25 }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        if (action === 'preview') {
+          setPreview(data.preview)
+          toast.success(`Found ${data.preview.count.toLocaleString()} matching leads`)
+        } else {
+          toast.success(data.message || `Pulled ${data.pulled} leads! Charged ${data.credits_charged} credits`)
+          queryClient.invalidateQueries({ queryKey: ['segments'] })
+        }
+      } else {
+        if (response.status === 402) {
+          toast.error(`Insufficient credits: ${data.error}`)
+        } else {
+          toast.error(data.error || 'Failed to run segment')
+        }
+      }
+    } catch (_error) {
+      toast.error('Failed to run segment')
+    } finally {
+      setRunningSegmentId(null)
+    }
+  }
+
+  const handleLoadSegment = (segment: Segment) => {
+    // Convert API filters back to FilterRule[]
+    const filterRules: FilterRule[] = []
+    const apiFilters = segment.filters
+
+    const reverseFieldMap: Record<string, FilterRule['field']> = {
+      industries: 'industry',
+      states: 'state',
+      company_sizes: 'company_size',
+      job_titles: 'job_title',
+      seniority_levels: 'seniority',
+    }
+
+    Object.entries(apiFilters).forEach(([apiField, values]) => {
+      const field = reverseFieldMap[apiField]
+      if (field && Array.isArray(values) && values.length > 0) {
+        values.forEach((value) => {
+          filterRules.push({
+            id: Math.random().toString(36).substr(2, 9),
+            field,
+            operator: 'equals',
+            value,
+          })
+        })
+      }
+    })
+
+    setFilters(filterRules)
+    setSegmentName(segment.name)
+    setSegmentDescription(segment.description || '')
+    toast.success('Segment loaded into builder')
+  }
+
+  const confirmDeleteSegment = (segmentId: string) => {
+    setSegmentToDelete(segmentId)
+    setDeleteDialogOpen(true)
+  }
+
+  const handleDeleteSegment = () => {
+    if (segmentToDelete) {
+      deleteSegmentMutation.mutate(segmentToDelete)
+      setDeleteDialogOpen(false)
+      setSegmentToDelete(null)
     }
   }
 
@@ -409,21 +578,39 @@ export default function SegmentBuilderPage() {
 
               {/* Actions */}
               {filters.length > 0 && (
-                <div className="flex gap-3">
-                  <Input
-                    placeholder="Segment name (optional)"
-                    value={segmentName}
-                    onChange={(e) => setSegmentName(e.target.value)}
-                    className="flex-1"
-                  />
-                  <Button variant="outline" onClick={handleSaveSegment}>
-                    <Save className="mr-2 h-4 w-4" />
-                    Save Segment
-                  </Button>
-                  <Button onClick={handlePreview} disabled={loading}>
-                    <Play className="mr-2 h-4 w-4" />
-                    {loading ? 'Loading...' : 'Preview'}
-                  </Button>
+                <div className="space-y-3">
+                  <div className="flex gap-3">
+                    <Input
+                      placeholder="Segment name"
+                      value={segmentName}
+                      onChange={(e) => setSegmentName(e.target.value)}
+                      className="flex-1"
+                    />
+                    <Input
+                      placeholder="Description (optional)"
+                      value={segmentDescription}
+                      onChange={(e) => setSegmentDescription(e.target.value)}
+                      className="flex-1"
+                    />
+                  </div>
+                  <div className="flex gap-3">
+                    <Button
+                      variant="outline"
+                      onClick={handleSaveSegment}
+                      disabled={saveSegmentMutation.isPending}
+                    >
+                      {saveSegmentMutation.isPending ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      ) : (
+                        <Save className="mr-2 h-4 w-4" />
+                      )}
+                      Save Segment
+                    </Button>
+                    <Button onClick={handlePreview} disabled={loading}>
+                      <Play className="mr-2 h-4 w-4" />
+                      {loading ? 'Loading...' : 'Preview'}
+                    </Button>
+                  </div>
                 </div>
               )}
             </div>
@@ -532,14 +719,19 @@ export default function SegmentBuilderPage() {
               <CardDescription>Reusable audience definitions</CardDescription>
             </CardHeader>
             <CardContent>
-              {savedSegments.length === 0 ? (
+              {segmentsLoading ? (
+                <div className="text-center py-12">
+                  <Loader2 className="h-8 w-8 animate-spin mx-auto text-muted-foreground" />
+                  <p className="text-sm text-muted-foreground mt-4">Loading segments...</p>
+                </div>
+              ) : savedSegments.length === 0 ? (
                 <div className="text-center py-12 text-muted-foreground">
                   <p>No saved segments yet</p>
                   <p className="text-sm mt-2">Build a segment and click "Save" to reuse it</p>
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {savedSegments.map((segment) => (
+                  {savedSegments.map((segment: Segment) => (
                     <div
                       key={segment.id}
                       className="flex items-center justify-between p-4 border rounded-lg"
@@ -547,16 +739,59 @@ export default function SegmentBuilderPage() {
                       <div className="flex-1">
                         <div className="font-medium">{segment.name}</div>
                         <div className="text-sm text-muted-foreground">
-                          {segment.description} • Last count: {segment.last_count.toLocaleString()}
+                          {segment.description || 'No description'}
+                          {segment.last_count !== null && (
+                            <> • Last count: {segment.last_count.toLocaleString()}</>
+                          )}
+                          {segment.last_run_at && (
+                            <> • Last run: {new Date(segment.last_run_at).toLocaleDateString()}</>
+                          )}
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
                         <Badge variant={segment.status === 'active' ? 'default' : 'secondary'}>
                           {segment.status}
                         </Badge>
-                        <Button size="sm">
-                          <Play className="mr-2 h-4 w-4" />
-                          Run
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleLoadSegment(segment)}
+                        >
+                          <Filter className="mr-2 h-4 w-4" />
+                          Load
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleRunSavedSegment(segment.id, 'preview')}
+                          disabled={runningSegmentId === segment.id}
+                        >
+                          {runningSegmentId === segment.id ? (
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          ) : (
+                            <TrendingUp className="mr-2 h-4 w-4" />
+                          )}
+                          Preview
+                        </Button>
+                        <Button
+                          size="sm"
+                          onClick={() => handleRunSavedSegment(segment.id, 'pull')}
+                          disabled={runningSegmentId === segment.id}
+                        >
+                          {runningSegmentId === segment.id ? (
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          ) : (
+                            <Play className="mr-2 h-4 w-4" />
+                          )}
+                          Pull
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => confirmDeleteSegment(segment.id)}
+                          disabled={deleteSegmentMutation.isPending}
+                        >
+                          <Trash2 className="h-4 w-4 text-destructive" />
                         </Button>
                       </div>
                     </div>
@@ -567,6 +802,27 @@ export default function SegmentBuilderPage() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Segment</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this segment? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setSegmentToDelete(null)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteSegment}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }
