@@ -81,6 +81,12 @@ export default async function AdminLayout({
                   Support
                 </Link>
                 <Link
+                  href="/admin/requests"
+                  className="text-sm text-zinc-300 hover:text-white transition-colors"
+                >
+                  Requests
+                </Link>
+                <Link
                   href="/admin/leads"
                   className="text-sm text-zinc-300 hover:text-white transition-colors"
                 >

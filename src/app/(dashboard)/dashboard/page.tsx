@@ -10,6 +10,7 @@ import { GradientCard, GradientBadge } from '@/components/ui/gradient-card'
 import { PageContainer, PageHeader } from '@/components/layout/page-container'
 import { Users, TrendingUp, Crown, ArrowRight, Sparkles, Package, CheckCircle } from 'lucide-react'
 import { serviceTierRepository } from '@/lib/repositories/service-tier.repository'
+import { RequestMoreLeadsBanner } from '@/components/dashboard/RequestMoreLeadsBanner'
 
 interface DashboardPageProps {
   searchParams: Promise<{ onboarding?: string }>
@@ -116,6 +117,13 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           </div>
         </div>
       )}
+
+      {/* Request More Leads Banner - shows when approaching or at limit */}
+      <RequestMoreLeadsBanner
+        currentLeads={leadsCount || 0}
+        leadLimit={100}
+        workspaceName={workspace?.name}
+      />
 
       {/* Getting Started Guide for New Users */}
       {leadsCount === 0 && (
