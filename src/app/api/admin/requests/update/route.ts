@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { sendSlackAlert } from '@/lib/notifications/slack'
+import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { z } from 'zod'
 
 const updateSchema = z.object({
@@ -90,7 +90,18 @@ export async function POST(request: NextRequest) {
 ${validated.admin_notes ? `*Admin Notes:* ${validated.admin_notes}` : ''}
     `.trim()
 
-    await sendSlackAlert(slackMessage, 'info')
+    await sendSlackAlert({
+      type: 'pipeline_update',
+      severity: validated.status === 'approved' ? 'info' : validated.status === 'rejected' ? 'warning' : 'info',
+      message: slackMessage,
+      metadata: {
+        request_id: validated.request_id,
+        status: validated.status,
+        feature_type: featureRequest.feature_type,
+        workspace_id: featureRequest.workspace_id,
+        reviewed_by: userRecord.email,
+      },
+    })
 
     return NextResponse.json({
       success: true,
