@@ -26,6 +26,8 @@ export default function PixelSettingsPage() {
   const [copied, setCopied] = useState(false)
   const [manualSnippet, setManualSnippet] = useState('')
   const [savingSnippet, setSavingSnippet] = useState(false)
+  const [requestDescription, setRequestDescription] = useState('')
+  const [submittingRequest, setSubmittingRequest] = useState(false)
 
   const { data, isLoading } = useQuery<PixelStatus>({
     queryKey: ['pixel', 'status'],
@@ -249,9 +251,6 @@ export default function PixelSettingsPage() {
   }
 
   // No pixel - show REQUEST form (premium feature)
-  const [requestDescription, setRequestDescription] = useState('')
-  const [submittingRequest, setSubmittingRequest] = useState(false)
-
   const handleRequestPixel = async () => {
     if (!websiteUrl) {
       toast.error('Please enter your website URL')
