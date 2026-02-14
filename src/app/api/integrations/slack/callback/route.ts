@@ -12,6 +12,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { cookies } from 'next/headers'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { createClient } from '@/lib/supabase/server'
 
 // Slack OAuth Token URL
 const SLACK_TOKEN_URL = 'https://slack.com/api/oauth.v2.access'
@@ -87,6 +88,52 @@ export async function GET(req: NextRequest) {
       safeError('[Slack OAuth] Failed to parse context cookie:', parseError)
       return NextResponse.redirect(
         new URL('/settings/integrations?error=slack_invalid_context', req.url)
+      )
+    }
+
+    // CRITICAL: Validate context against authenticated user to prevent context injection
+    const authSupabase = await createClient()
+    const { data: { session } } = await authSupabase.auth.getSession()
+
+    if (!session?.user) {
+      safeError('[Slack OAuth] No authenticated session during callback')
+      return NextResponse.redirect(
+        new URL('/login?error=unauthorized&redirect=/settings/integrations', req.url)
+      )
+    }
+
+    // Get authenticated user's workspace
+    const { data: userData } = await authSupabase
+      .from('users')
+      .select('id, workspace_id')
+      .eq('auth_user_id', session.user.id)
+      .single()
+
+    if (!userData) {
+      safeError('[Slack OAuth] User record not found for authenticated session')
+      return NextResponse.redirect(
+        new URL('/settings/integrations?error=slack_user_not_found', req.url)
+      )
+    }
+
+    // Validate context matches authenticated user
+    if (context.user_id !== userData.id) {
+      safeError('[Slack OAuth] SECURITY: Context user_id mismatch', {
+        context_user_id: context.user_id,
+        authenticated_user_id: userData.id,
+      })
+      return NextResponse.redirect(
+        new URL('/settings/integrations?error=slack_invalid_session', req.url)
+      )
+    }
+
+    if (context.workspace_id !== userData.workspace_id) {
+      safeError('[Slack OAuth] SECURITY: Context workspace_id mismatch', {
+        context_workspace_id: context.workspace_id,
+        authenticated_workspace_id: userData.workspace_id,
+      })
+      return NextResponse.redirect(
+        new URL('/settings/integrations?error=slack_invalid_session', req.url)
       )
     }
 

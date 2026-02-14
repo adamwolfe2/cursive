@@ -12,6 +12,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { cookies } from 'next/headers'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { createClient } from '@/lib/supabase/server'
 
 // HubSpot OAuth Token URL
 const HS_TOKEN_URL = 'https://api.hubapi.com/oauth/v1/token'
@@ -76,6 +77,52 @@ export async function GET(req: NextRequest) {
       safeError('[HubSpot OAuth] Failed to parse context cookie:', parseError)
       return NextResponse.redirect(
         new URL('/settings/integrations?error=hs_invalid_context', req.url)
+      )
+    }
+
+    // CRITICAL: Validate context against authenticated user to prevent context injection
+    const authSupabase = await createClient()
+    const { data: { session } } = await authSupabase.auth.getSession()
+
+    if (!session?.user) {
+      safeError('[HubSpot OAuth] No authenticated session during callback')
+      return NextResponse.redirect(
+        new URL('/login?error=unauthorized&redirect=/settings/integrations', req.url)
+      )
+    }
+
+    // Get authenticated user's workspace
+    const { data: userData } = await authSupabase
+      .from('users')
+      .select('id, workspace_id')
+      .eq('auth_user_id', session.user.id)
+      .single()
+
+    if (!userData) {
+      safeError('[HubSpot OAuth] User record not found for authenticated session')
+      return NextResponse.redirect(
+        new URL('/settings/integrations?error=hs_user_not_found', req.url)
+      )
+    }
+
+    // Validate context matches authenticated user
+    if (context.user_id !== userData.id) {
+      safeError('[HubSpot OAuth] SECURITY: Context user_id mismatch', {
+        context_user_id: context.user_id,
+        authenticated_user_id: userData.id,
+      })
+      return NextResponse.redirect(
+        new URL('/settings/integrations?error=hs_invalid_session', req.url)
+      )
+    }
+
+    if (context.workspace_id !== userData.workspace_id) {
+      safeError('[HubSpot OAuth] SECURITY: Context workspace_id mismatch', {
+        context_workspace_id: context.workspace_id,
+        authenticated_workspace_id: userData.workspace_id,
+      })
+      return NextResponse.redirect(
+        new URL('/settings/integrations?error=hs_invalid_session', req.url)
       )
     }
 
