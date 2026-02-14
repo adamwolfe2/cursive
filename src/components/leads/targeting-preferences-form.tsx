@@ -8,7 +8,6 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/design-system'
 import type { Database } from '@/types/database.types'
 
@@ -70,8 +69,6 @@ export function TargetingPreferencesForm({
     setSuccess(false)
 
     try {
-      const supabase = createClient()
-
       // Parse cities and zips from comma-separated strings
       const parsedCities = cities
         .split(',')
@@ -82,11 +79,9 @@ export function TargetingPreferencesForm({
         .map((z) => z.trim())
         .filter(Boolean)
 
-      const data = {
-        user_id: userId,
-        workspace_id: workspaceId,
+      // Prepare data for API (following repository pattern per CLAUDE.md)
+      const requestData = {
         target_industries: industries,
-        target_sic_codes: [] as string[],
         target_states: states,
         target_cities: parsedCities,
         target_zips: parsedZips,
@@ -95,24 +90,26 @@ export function TargetingPreferencesForm({
         monthly_lead_cap: monthlyCap,
         email_notifications: emailNotifications,
         is_active: isActive,
-        updated_at: new Date().toISOString(),
       }
 
-      if (initialData?.id) {
-        // Update existing
-        const { error: updateError } = await supabase
-          .from('user_targeting')
-          .update(data as never)
-          .eq('id', initialData.id)
+      // Call API endpoint instead of direct Supabase access
+      const response = await fetch('/api/leads/targeting', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestData),
+      })
 
-        if (updateError) throw updateError
-      } else {
-        // Insert new
-        const { error: insertError } = await supabase
-          .from('user_targeting')
-          .insert(data as never)
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to save preferences')
+      }
 
-        if (insertError) throw insertError
+      const result = await response.json()
+
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to save preferences')
       }
 
       setSuccess(true)

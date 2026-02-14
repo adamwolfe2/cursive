@@ -11,6 +11,7 @@ import { PageContainer, PageHeader } from '@/components/layout/page-container'
 import { Users, TrendingUp, Crown, ArrowRight, Sparkles, Package, CheckCircle } from 'lucide-react'
 import { serviceTierRepository } from '@/lib/repositories/service-tier.repository'
 import { RequestMoreLeadsBanner } from '@/components/dashboard/RequestMoreLeadsBanner'
+import { sanitizeName, sanitizeCompanyName, sanitizeText } from '@/lib/utils/sanitize-text'
 
 interface DashboardPageProps {
   searchParams: Promise<{ onboarding?: string }>
@@ -312,29 +313,48 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
         {recentLeads && recentLeads.length > 0 ? (
           <div className="space-y-3">
-            {recentLeads.map((lead: any) => (
-              <div
-                key={lead.id}
-                className="flex items-center justify-between gap-4 p-4 rounded-lg bg-background border border-border hover:border-primary/50 transition-colors"
-              >
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium text-foreground truncate">
-                    {lead.company_name || lead.full_name || [lead.first_name, lead.last_name].filter(Boolean).join(' ') || 'Unknown'}
-                  </p>
-                  <p className="text-sm text-muted-foreground truncate">
-                    {lead.company_industry || lead.source || 'No details'}
-                  </p>
+            {recentLeads.map((lead: any) => {
+              // SECURITY: Sanitize all user-generated content to prevent XSS
+              const displayName = sanitizeCompanyName(lead.company_name) ||
+                sanitizeName(lead.full_name) ||
+                sanitizeName([lead.first_name, lead.last_name].filter(Boolean).join(' ')) ||
+                'Unknown'
+
+              const displayDetails = sanitizeText(lead.company_industry) ||
+                sanitizeText(lead.source) ||
+                'No details'
+
+              const displayStatus = sanitizeText(lead.status) || 'new'
+
+              return (
+                <div
+                  key={lead.id}
+                  className="flex items-center justify-between gap-4 p-4 rounded-lg bg-background border border-border hover:border-primary/50 transition-colors"
+                >
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-foreground truncate">
+                      {displayName}
+                    </p>
+                    <p className="text-sm text-muted-foreground truncate">
+                      {displayDetails}
+                    </p>
+                  </div>
+                  <GradientBadge
+                    className={`flex-shrink-0 ${
+                      lead.status === 'new'
+                        ? 'bg-primary/10 text-primary border-primary/20'
+                        : lead.status === 'contacted'
+                          ? 'bg-yellow-500/10 text-yellow-600 border-yellow-500/20'
+                          : lead.status === 'qualified'
+                            ? 'bg-green-500/10 text-green-600 border-green-500/20'
+                            : ''
+                    }`}
+                  >
+                    {displayStatus}
+                  </GradientBadge>
                 </div>
-                <GradientBadge className={`flex-shrink-0 ${
-                  lead.status === 'new' ? 'bg-primary/10 text-primary border-primary/20' :
-                  lead.status === 'contacted' ? 'bg-yellow-500/10 text-yellow-600 border-yellow-500/20' :
-                  lead.status === 'qualified' ? 'bg-green-500/10 text-green-600 border-green-500/20' :
-                  ''
-                }`}>
-                  {lead.status || 'new'}
-                </GradientBadge>
-              </div>
-            ))}
+              )
+            })}
           </div>
         ) : (
           <div className="text-center py-12">

@@ -73,18 +73,55 @@ export function CampaignAnalytics({ campaignId }: CampaignAnalyticsProps) {
   const [valuePropPerf, setValuePropPerf] = useState<ValuePropPerformance[]>([])
   const [stepPerf, setStepPerf] = useState<StepPerformance[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     async function fetchData() {
       try {
+        setLoading(true)
+        setError(null)
+
         // Fetch campaign
         const campaignRes = await fetch(`/api/campaigns/${campaignId}`)
-        if (!campaignRes.ok) throw new Error('Failed to fetch campaign')
+
+        // SECURITY: Handle authorization errors properly
+        if (campaignRes.status === 403) {
+          setError('You do not have permission to view this campaign.')
+          setLoading(false)
+          return
+        }
+
+        if (campaignRes.status === 404) {
+          setError('Campaign not found.')
+          setLoading(false)
+          return
+        }
+
+        if (!campaignRes.ok) {
+          throw new Error('Failed to fetch campaign')
+        }
+
         const campaignData = await campaignRes.json()
+
+        // SECURITY: Verify campaign data exists before setting
+        if (!campaignData?.data) {
+          setError('Invalid campaign data received.')
+          setLoading(false)
+          return
+        }
+
         setCampaign(campaignData.data)
 
         // Fetch analytics
         const analyticsRes = await fetch(`/api/campaigns/${campaignId}/analytics`)
+
+        // Handle analytics errors gracefully
+        if (analyticsRes.status === 403) {
+          setError('You do not have permission to view analytics for this campaign.')
+          setLoading(false)
+          return
+        }
+
         if (analyticsRes.ok) {
           const analyticsData = await analyticsRes.json()
           setStats(analyticsData.stats)
@@ -94,6 +131,7 @@ export function CampaignAnalytics({ campaignId }: CampaignAnalyticsProps) {
         }
       } catch (error) {
         console.error('Failed to fetch analytics:', error)
+        setError('Failed to load campaign analytics. Please try again.')
       } finally {
         setLoading(false)
       }
@@ -112,6 +150,38 @@ export function CampaignAnalytics({ campaignId }: CampaignAnalyticsProps) {
             ))}
           </div>
           <div className="h-64 bg-muted rounded" />
+        </div>
+      </PageContainer>
+    )
+  }
+
+  if (error) {
+    return (
+      <PageContainer>
+        <div className="text-center py-12">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10 mb-4">
+            <svg
+              className="h-6 w-6 text-destructive"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="1.5"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
+              />
+            </svg>
+          </div>
+          <h3 className="text-lg font-semibold mb-2">Error Loading Campaign</h3>
+          <p className="text-muted-foreground mb-6">{error}</p>
+          <div className="flex gap-3 justify-center">
+            <Button variant="outline" onClick={() => router.push('/campaigns')}>
+              Back to Campaigns
+            </Button>
+            <Button onClick={() => window.location.reload()}>Try Again</Button>
+          </div>
         </div>
       </PageContainer>
     )

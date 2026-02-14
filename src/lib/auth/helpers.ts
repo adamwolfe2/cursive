@@ -9,35 +9,35 @@ import type { User } from '@/types'
  * Returns null if not authenticated
  */
 export async function getCurrentUser(): Promise<User | null> {
-  // SECURITY: Development-only bypass with STRICT controls
-  // This bypass ONLY works if ALL of the following conditions are met:
-  // 1. NODE_ENV is explicitly 'development'
-  // 2. ENABLE_DEV_BYPASS environment variable is explicitly 'true'
-  // 3. Domain is explicitly localhost or .local (prevents prod misconfiguration)
-  // 4. Cookie flag is set
-  if (
-    process.env.NODE_ENV === 'development' &&
-    process.env.ENABLE_DEV_BYPASS === 'true'
-  ) {
-    // Additional safety: Verify we're on a dev domain
+  // SECURITY: Development-only bypass - COMPLETELY DISABLED in production builds
+  // This bypass is ONLY available in local development with EXPLICIT configuration.
+  // FAIL CLOSED: Any production indicator (VERCEL_ENV, NEXT_PUBLIC_APP_URL with non-localhost domain)
+  // will completely disable this feature to prevent accidental bypass in staging/production.
+
+  const isProduction =
+    process.env.NODE_ENV === 'production' ||
+    process.env.VERCEL_ENV === 'production' ||
+    process.env.VERCEL_ENV === 'preview' ||
+    (process.env.NEXT_PUBLIC_APP_URL &&
+      !process.env.NEXT_PUBLIC_APP_URL.includes('localhost') &&
+      !process.env.NEXT_PUBLIC_APP_URL.includes('127.0.0.1'))
+
+  // SECURITY: Completely disable bypass if ANY production indicators are present
+  if (!isProduction && process.env.ENABLE_DEV_BYPASS === 'true') {
+    // Additional safety: Verify we're on a dev domain (server-side check only)
     const isDevelopmentDomain =
-      typeof window !== 'undefined'
-        ? window.location.hostname === 'localhost' ||
-          window.location.hostname.endsWith('.local') ||
-          window.location.hostname === '127.0.0.1'
-        : process.env.VERCEL_ENV === 'development' ||
-          !process.env.VERCEL_URL // No Vercel URL means local
+      process.env.VERCEL_ENV === 'development' || !process.env.VERCEL_URL
 
     if (!isDevelopmentDomain) {
-      console.error('🚨 DEV BYPASS attempted on non-development domain - BLOCKED')
-      // Continue to normal auth flow below
+      console.error('🚨 SECURITY: DEV BYPASS attempted on non-development environment - BLOCKED')
+      // Fall through to normal auth flow
     } else {
       const cookieStore = await cookies()
       const hasAdminBypass = cookieStore.get('admin_bypass_waitlist')?.value === 'true'
 
       if (hasAdminBypass) {
         // Log bypass usage for security audit trail
-        console.warn('⚠️  DEV BYPASS MODE ACTIVE - This should NEVER appear in production!')
+        console.warn('⚠️  DEV BYPASS MODE ACTIVE (LOCAL DEVELOPMENT ONLY)')
 
         // Return mock admin user ONLY for local development
         return {

@@ -133,8 +133,9 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
   useEffect(() => {
     const supabase = createClient()
 
+    // SECURITY: Include workspace_id in channel name and all filters to prevent cross-workspace access
     const channel = supabase
-      .channel(`user_leads:${userId}`)
+      .channel(`user_leads:${userId}:${workspaceId}`)
       .on(
         'postgres_changes',
         {
@@ -145,6 +146,7 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
         },
         async (payload) => {
           // Fetch the full assignment with joined lead data
+          // SECURITY: Verify workspace_id matches to prevent data leakage
           const { data } = await supabase
             .from('user_lead_assignments')
             .select(
@@ -154,6 +156,7 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
               `
             )
             .eq('id', payload.new.id)
+            .eq('workspace_id', workspaceId)
             .single()
 
           if (data) {
@@ -177,6 +180,12 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
           filter: `user_id=eq.${userId}`,
         },
         (payload) => {
+          // SECURITY: Verify workspace_id in payload before updating local state
+          if (payload.new.workspace_id !== workspaceId) {
+            console.warn('[Security] Ignoring UPDATE event from different workspace')
+            return
+          }
+
           setAssignments((prev) =>
             prev.map((a) =>
               a.id === payload.new.id
@@ -196,6 +205,12 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
           filter: `user_id=eq.${userId}`,
         },
         (payload) => {
+          // SECURITY: Verify workspace_id in payload before deleting from local state
+          if (payload.old.workspace_id !== workspaceId) {
+            console.warn('[Security] Ignoring DELETE event from different workspace')
+            return
+          }
+
           setAssignments((prev) => prev.filter((a) => a.id !== payload.old.id))
           onLeadChange?.()
         }
@@ -207,7 +222,7 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
     return () => {
       supabase.removeChannel(channel)
     }
-  }, [userId])
+  }, [userId, workspaceId])
 
   const updateStatus = useCallback(async (assignmentId: string, newStatus: string) => {
     const supabase = createClient()
