@@ -441,7 +441,7 @@ function WhiteLabelRequestCards({ toast }: { toast: ReturnType<typeof useToast> 
           <Button
             className="w-full"
             variant="outline"
-            onClick={() => handleRequest('custom_feature', 'Custom Domain Setup Request', 'Please help me set up a custom domain for my workspace')}
+            onClick={() => handleRequest('custom_domain', 'Custom Domain Setup Request', 'Please help me set up a custom domain for my workspace')}
             disabled={requesting === 'custom_domain'}
           >
             {requesting === 'custom_domain' ? 'Requesting...' : '🎁 Request Custom Domain'}
