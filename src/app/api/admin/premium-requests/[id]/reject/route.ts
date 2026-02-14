@@ -7,6 +7,7 @@ export const runtime = 'edge'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { requireAdmin } from '@/lib/auth/admin'
 import { handleApiError, unauthorized, forbidden, badRequest } from '@/lib/utils/api-error-handler'
 
 interface RouteParams {
@@ -16,27 +17,9 @@ interface RouteParams {
 export async function POST(request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params
-    const supabase = await createClient()
 
-    // Get authenticated user
-    const {
-      data: { user: authUser },
-    } = await supabase.auth.getUser()
-
-    if (!authUser) {
-      return unauthorized()
-    }
-
-    // Check if user is admin/owner
-    const { data: userProfile } = await supabase
-      .from('users')
-      .select('id, role')
-      .eq('auth_user_id', authUser.id)
-      .single()
-
-    if (!userProfile || !['admin', 'owner'].includes(userProfile.role)) {
-      return forbidden('Admin access required')
-    }
+    // SECURITY: Verify platform admin authorization (not workspace admin)
+    const admin = await requireAdmin()
 
     const body = await request.json()
     const { notes } = body
@@ -47,7 +30,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       .from('premium_feature_requests')
       .update({
         status: 'rejected',
-        reviewed_by: userProfile.id,
+        reviewed_by: admin.id,
         reviewed_at: new Date().toISOString(),
         review_notes: notes || 'Rejected',
       })

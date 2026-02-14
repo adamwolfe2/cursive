@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { requireAdmin } from '@/lib/auth/admin'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { z } from 'zod'
 
@@ -11,24 +12,9 @@ const updateSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    // SECURITY: Verify platform admin authorization (not workspace admin)
+    const admin = await requireAdmin()
     const supabase = await createClient()
-
-    // Verify authentication
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    // Verify admin role
-    const { data: userRecord } = await supabase
-      .from('users')
-      .select('id, role, email')
-      .eq('auth_user_id', session.user.id)
-      .single()
-
-    if (!userRecord || (userRecord.role !== 'admin' && userRecord.role !== 'owner')) {
-      return NextResponse.json({ error: 'Admin access required' }, { status: 403 })
-    }
 
     // Parse and validate request body
     const body = await request.json()
@@ -55,7 +41,7 @@ export async function POST(request: NextRequest) {
       .update({
         status: validated.status,
         admin_notes: validated.admin_notes,
-        reviewed_by: userRecord.id,
+        reviewed_by: admin.id,
       })
       .eq('id', validated.request_id)
 
@@ -86,7 +72,7 @@ export async function POST(request: NextRequest) {
 *Workspace:* ${featureRequest.workspace?.name}
 *User:* ${featureRequest.user?.full_name || featureRequest.user?.email}
 
-*Reviewed by:* ${userRecord.email}
+*Reviewed by:* ${admin.email}
 ${validated.admin_notes ? `*Admin Notes:* ${validated.admin_notes}` : ''}
     `.trim()
 
@@ -99,7 +85,7 @@ ${validated.admin_notes ? `*Admin Notes:* ${validated.admin_notes}` : ''}
         status: validated.status,
         feature_type: featureRequest.feature_type,
         workspace_id: featureRequest.workspace_id,
-        reviewed_by: userRecord.email,
+        reviewed_by: admin.email,
       },
     })
 

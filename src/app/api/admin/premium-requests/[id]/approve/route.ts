@@ -8,6 +8,7 @@ export const runtime = 'edge'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { requireAdmin } from '@/lib/auth/admin'
 import { handleApiError, unauthorized, forbidden, badRequest } from '@/lib/utils/api-error-handler'
 
 interface RouteParams {
@@ -21,27 +22,11 @@ interface RouteParams {
 export async function POST(request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params
+
+    // SECURITY: Verify platform admin authorization (not workspace admin)
+    // This prevents workspace owners from approving premium requests for other workspaces
+    const admin = await requireAdmin()
     const supabase = await createClient()
-
-    // Get authenticated user
-    const {
-      data: { user: authUser },
-    } = await supabase.auth.getUser()
-
-    if (!authUser) {
-      return unauthorized()
-    }
-
-    // Check if user is admin/owner
-    const { data: userProfile } = await supabase
-      .from('users')
-      .select('id, role')
-      .eq('auth_user_id', authUser.id)
-      .single()
-
-    if (!userProfile || !['admin', 'owner'].includes(userProfile.role)) {
-      return forbidden('Admin access required')
-    }
 
     // Get the feature request
     const { data: featureRequest, error: fetchError } = await supabase
@@ -68,7 +53,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       .from('premium_feature_requests')
       .update({
         status: 'approved',
-        reviewed_by: userProfile.id,
+        reviewed_by: admin.id,
         reviewed_at: new Date().toISOString(),
         review_notes: notes || 'Approved',
       })
@@ -109,18 +94,16 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     }
 
     // 3. Create audit log
-    await adminSupabase.from('audit_logs').insert({
-      workspace_id: featureRequest.workspace_id,
-      user_id: userProfile.id,
-      action: 'premium_feature_approved',
+    await adminSupabase.from('admin_audit_log').insert({
+      admin_email: admin.email,
+      action: 'premium_feature.approved',
       resource_type: 'premium_feature',
       resource_id: id,
-      metadata: {
+      details: {
         feature_type: featureRequest.feature_type,
-        approved_by: userProfile.id,
+        workspace_id: featureRequest.workspace_id,
         notes,
       },
-      severity: 'info',
     })
 
     return NextResponse.json({
