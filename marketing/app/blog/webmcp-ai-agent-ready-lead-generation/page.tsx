@@ -298,17 +298,17 @@ export default function BlogPost() {
         <Container>
           <h2 className="text-3xl font-bold mb-8 text-center">Read Next</h2>
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <Link href="/blog/ai-sdr-vs-human-bdr" className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow">
-              <h3 className="font-bold mb-2">AI SDR vs. Human BDR</h3>
-              <p className="text-sm text-gray-600">When to use automation vs. human touch for outbound</p>
+            <Link href="/blog/what-is-webmcp-guide" className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow">
+              <h3 className="font-bold mb-2">What Is WebMCP?</h3>
+              <p className="text-sm text-gray-600">A practical guide for B2B marketers and growth teams</p>
             </Link>
-            <Link href="/blog/cold-email-2026" className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow">
-              <h3 className="font-bold mb-2">Cold Email in 2026</h3>
-              <p className="text-sm text-gray-600">What&apos;s still working and what&apos;s not</p>
+            <Link href="/blog/ai-agents-replacing-buyer-journey" className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow">
+              <h3 className="font-bold mb-2">Your Next Lead Won&apos;t Fill Out a Form</h3>
+              <p className="text-sm text-gray-600">How AI agents are reshaping the B2B buyer&apos;s journey</p>
             </Link>
-            <Link href="/blog/clearbit-alternatives-comparison" className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow">
-              <h3 className="font-bold mb-2">Clearbit Alternatives</h3>
-              <p className="text-sm text-gray-600">Compare data providers and find the right fit</p>
+            <Link href="/blog/webmcp-implementation-guide-b2b-saas" className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow">
+              <h3 className="font-bold mb-2">WebMCP Implementation Guide</h3>
+              <p className="text-sm text-gray-600">Step-by-step code for adding WebMCP to your B2B site</p>
             </Link>
           </div>
         </Container>
