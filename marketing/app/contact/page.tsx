@@ -172,7 +172,12 @@ export default function ContactPage() {
               viewport={{ once: true }}
             >
               <h2 className="text-3xl font-light text-gray-900 mb-6">Send Us a Message</h2>
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form
+                onSubmit={handleSubmit}
+                className="space-y-6"
+                toolname="contactCursive"
+                tooldescription="Send a message to the Cursive team for sales inquiries, technical questions, or partnership opportunities. Response within 24 hours."
+              >
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
                     Name *
@@ -180,6 +185,7 @@ export default function ContactPage() {
                   <input
                     type="text"
                     id="name"
+                    name="name"
                     required
                     value={formData.name}
                     onChange={(e) => {
@@ -192,6 +198,7 @@ export default function ContactPage() {
                       fieldErrors.name ? "border-red-500" : "border-gray-300"
                     }`}
                     placeholder="Your name"
+                    toolparamdescription="Full name of the person contacting Cursive"
                   />
                   {fieldErrors.name && (
                     <p className="text-red-500 text-sm mt-1">{fieldErrors.name}</p>
@@ -205,6 +212,7 @@ export default function ContactPage() {
                   <input
                     type="email"
                     id="email"
+                    name="email"
                     required
                     value={formData.email}
                     onChange={(e) => {
@@ -217,6 +225,7 @@ export default function ContactPage() {
                       fieldErrors.email ? "border-red-500" : "border-gray-300"
                     }`}
                     placeholder="you@company.com"
+                    toolparamdescription="Work email address for reply"
                   />
                   {fieldErrors.email && (
                     <p className="text-red-500 text-sm mt-1">{fieldErrors.email}</p>
@@ -230,6 +239,7 @@ export default function ContactPage() {
                   <input
                     type="text"
                     id="company"
+                    name="company"
                     value={formData.company}
                     onChange={(e) => {
                       setFormData({ ...formData, company: e.target.value })
@@ -241,6 +251,7 @@ export default function ContactPage() {
                       fieldErrors.company ? "border-red-500" : "border-gray-300"
                     }`}
                     placeholder="Your company name"
+                    toolparamdescription="Company or organization name"
                   />
                   {fieldErrors.company && (
                     <p className="text-red-500 text-sm mt-1">{fieldErrors.company}</p>
@@ -253,6 +264,7 @@ export default function ContactPage() {
                   </label>
                   <textarea
                     id="message"
+                    name="message"
                     required
                     value={formData.message}
                     onChange={(e) => {
@@ -266,6 +278,7 @@ export default function ContactPage() {
                       fieldErrors.message ? "border-red-500" : "border-gray-300"
                     }`}
                     placeholder="Tell us about your needs..."
+                    toolparamdescription="Message describing what you need help with (e.g., demo request, pricing question, partnership inquiry)"
                   />
                   {fieldErrors.message && (
                     <p className="text-red-500 text-sm mt-1">{fieldErrors.message}</p>

@@ -107,13 +107,19 @@ export function FreeAuditForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-6"
+      toolname="requestFreeAudit"
+      tooldescription="Request a free audit of your last 100 website visitors. Includes visitor identification, intent scores, and personalized outreach templates. Results delivered within 24 hours."
+    >
       <div>
         <label htmlFor="websiteUrl" className="block text-sm font-medium text-gray-700 mb-2">
           Website URL
         </label>
         <input
           id="websiteUrl"
+          name="websiteUrl"
           type="text"
           value={formData.websiteUrl}
           onChange={(e) => setFormData({ ...formData, websiteUrl: e.target.value })}
@@ -121,6 +127,7 @@ export function FreeAuditForm() {
           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007AFF] focus:border-transparent outline-none transition-all"
           required
           disabled={isSubmitting}
+          toolparamdescription="The website URL to analyze for visitor identification"
         />
       </div>
 
@@ -130,6 +137,7 @@ export function FreeAuditForm() {
         </label>
         <input
           id="email"
+          name="email"
           type="email"
           value={formData.email}
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -137,6 +145,7 @@ export function FreeAuditForm() {
           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007AFF] focus:border-transparent outline-none transition-all"
           required
           disabled={isSubmitting}
+          toolparamdescription="Work email address to receive the audit report"
         />
       </div>
 
