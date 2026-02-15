@@ -12,6 +12,7 @@ import { Users, TrendingUp, Crown, ArrowRight, Sparkles, Package, CheckCircle } 
 import { serviceTierRepository } from '@/lib/repositories/service-tier.repository'
 import { RequestMoreLeadsBanner } from '@/components/dashboard/RequestMoreLeadsBanner'
 import { sanitizeName, sanitizeCompanyName, sanitizeText } from '@/lib/utils/sanitize-text'
+import { DashboardAnimationWrapper, AnimatedSection } from '@/components/dashboard/dashboard-animation-wrapper'
 
 interface DashboardPageProps {
   searchParams: Promise<{ onboarding?: string }>
@@ -87,7 +88,9 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
   return (
     <PageContainer maxWidth="wide">
+      <DashboardAnimationWrapper>
       {/* Header */}
+      <AnimatedSection delay={0}>
       <GradientCard variant="primary" className="mb-8">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
@@ -107,6 +110,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           </div>
         </div>
       </GradientCard>
+      </AnimatedSection>
 
       {/* Onboarding Complete Banner */}
       {onboarding === 'complete' && (
@@ -217,6 +221,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       )}
 
       {/* Stats Cards */}
+      <AnimatedSection delay={0.1}>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         {/* Total Leads */}
         <GradientCard variant="accent" className="hover:shadow-md transition-shadow">
@@ -261,6 +266,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           </div>
         </GradientCard>
       </div>
+      </AnimatedSection>
 
       {/* Service Tier Upsell Banner */}
       {!activeSubscription && userProfile.plan === 'free' && (leadsCount ?? 0) > 0 && (
@@ -430,6 +436,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           </GradientCard>
         </Link>
       </div>
+      </DashboardAnimationWrapper>
     </PageContainer>
   )
 }

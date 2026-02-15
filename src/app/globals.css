@@ -797,6 +797,27 @@
   .scroll-touch {
     -webkit-overflow-scrolling: touch;
   }
+
+  /* Shimmer animation for loading skeletons */
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+
+  .animate-shimmer {
+    animation: shimmer 2s infinite linear;
+    background: linear-gradient(
+      90deg,
+      hsl(var(--muted)) 0%,
+      hsl(var(--background)) 50%,
+      hsl(var(--muted)) 100%
+    );
+    background-size: 200% 100%;
+  }
 }
 
 /* Mobile-specific styles */
