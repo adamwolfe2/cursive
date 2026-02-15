@@ -3,27 +3,26 @@ export const runtime = 'edge'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { isAdmin } from '@/lib/auth/roles'
+import { requireAdmin } from '@/lib/auth/admin'
 
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Check admin authentication
+    const { id } = await params
+
+    // Verify admin using centralized helper
+    await requireAdmin()
+
     const supabase = await createClient()
+
+    // Get user for audit trail
     const { data: { user } } = await supabase.auth.getUser()
 
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
-
-    const hasAdminAccess = await isAdmin(user)
-    if (!hasAdminAccess) {
-      return NextResponse.json({ error: 'Admin access required' }, { status: 403 })
-    }
-
-    const { id } = await params
     const body = await request.json()
     const { status, admin_notes } = body
 

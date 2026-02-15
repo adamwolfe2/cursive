@@ -6,6 +6,7 @@ export const runtime = 'edge'
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
+import { requireAdmin } from '@/lib/auth/admin'
 import { PartnerRepository } from '@/lib/repositories/partner.repository'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
@@ -19,26 +20,19 @@ export async function POST(
 ) {
   try {
     const { id } = await params
+
+    // Verify admin using centralized helper
+    const admin = await requireAdmin()
+
     const supabase = await createClient()
 
-    // Verify admin
+    // Get user for audit log
     const {
       data: { user },
     } = await supabase.auth.getUser()
 
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const { data: admin } = await supabase
-      .from('platform_admins')
-      .select('id')
-      .eq('email', user.email)
-      .eq('is_active', true)
-      .single()
-
-    if (!admin) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
     // Parse request body
@@ -61,7 +55,7 @@ export async function POST(
       resource_id: id,
       metadata: {
         reason: validated.reason,
-        suspended_by: user.email,
+        suspended_by: admin.email,
       },
     })
 
