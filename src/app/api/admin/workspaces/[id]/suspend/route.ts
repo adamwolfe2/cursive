@@ -13,12 +13,12 @@ const suspendSchema = z.object({
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Verify admin authorization
     const admin = await requireAdmin()
-    const workspaceId = params.id
+    const { id: workspaceId } = await params
 
     // Validate request body
     const body = await request.json()
