@@ -7,6 +7,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef, useMemo, memo } from 'react'
+import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/design-system'
 import type { Database } from '@/types/database.types'
@@ -286,7 +287,7 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
         setAssignments((prev) =>
           prev.map((a) => (a.id === assignmentId ? { ...a, status: previousStatus } : a))
         )
-        // TODO: Show error toast to user
+        toast.error('Failed to update lead status. Please try again.')
         return
       }
 
@@ -298,6 +299,7 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
       setAssignments((prev) =>
         prev.map((a) => (a.id === assignmentId ? { ...a, status: previousStatus } : a))
       )
+      toast.error('Something went wrong updating the status.')
     }
   }, [assignments, workspaceId, onLeadChange])
 

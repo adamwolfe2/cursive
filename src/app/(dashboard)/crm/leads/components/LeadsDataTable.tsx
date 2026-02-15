@@ -36,6 +36,7 @@ export interface LeadsDataTableProps {
   pageCount: number
   availableUsers?: WorkspaceUser[]
   commonTags?: string[]
+  onRefresh?: () => void
 }
 
 export function LeadsDataTable({
@@ -44,6 +45,7 @@ export function LeadsDataTable({
   pageCount,
   availableUsers = [],
   commonTags = [],
+  onRefresh,
 }: LeadsDataTableProps) {
   const {
     selectedLeadIds,
@@ -79,7 +81,7 @@ export function LeadsDataTable({
 
   const table = useReactTable({
     data,
-    columns: createLeadsTableColumns(availableUsers, commonTags),
+    columns: createLeadsTableColumns(availableUsers, commonTags, onRefresh),
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     onSortingChange: setSorting,

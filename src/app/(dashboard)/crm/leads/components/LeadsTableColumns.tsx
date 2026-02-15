@@ -6,6 +6,7 @@
 import { ColumnDef } from '@tanstack/react-table'
 import { MoreHorizontal, ArrowUpDown } from 'lucide-react'
 import { format, formatDistanceToNow } from 'date-fns'
+import { toast } from 'sonner'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Button } from '@/components/ui/button'
 import {
@@ -62,7 +63,8 @@ function formatPhone(phone: string | null): string {
 
 export function createLeadsTableColumns(
   availableUsers: WorkspaceUser[] = [],
-  commonTags: string[] = []
+  commonTags: string[] = [],
+  onRefresh?: () => void
 ): ColumnDef<LeadTableRow>[] {
   return [
   // Selection column
@@ -438,8 +440,16 @@ export function createLeadsTableColumns(
               onClick={() => {
                 if (confirm(`Are you sure you want to delete this lead?`)) {
                   fetch(`/api/leads/${lead.id}`, { method: 'DELETE' })
-                    .then(() => window.location.reload())
-                    .catch((err) => alert('Failed to delete lead'))
+                    .then((res) => {
+                      if (!res.ok) throw new Error('Delete failed')
+                      toast.success('Lead deleted')
+                      if (onRefresh) {
+                        onRefresh()
+                      } else {
+                        window.location.reload()
+                      }
+                    })
+                    .catch(() => toast.error('Failed to delete lead'))
                 }
               }}
             >
