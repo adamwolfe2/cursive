@@ -1,31 +1,15 @@
+"use client"
+
 import { Container } from "@/components/ui/container"
 import { Button } from "@/components/ui/button"
 import { DashboardCTA } from "@/components/dashboard-cta"
 import { Calendar, Clock, ArrowLeft, Check, X } from "lucide-react"
-import { generateMetadata } from "@/lib/seo/metadata"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateFAQSchema } from "@/lib/seo/faq-schema"
 import { generateBlogPostSchema } from "@/lib/seo/structured-data"
 import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
 import Link from "next/link"
-
-export const metadata = generateMetadata({
-  title: "Cursive vs Leadfeeder: Person-Level vs Company-Level ID (2026)",
-  description: "Leadfeeder identifies companies visiting your site. Cursive identifies the actual people. Compare these two fundamentally different approaches to website visitor identification and find out which delivers more pipeline.",
-  keywords: [
-    "cursive vs leadfeeder",
-    "leadfeeder alternative",
-    "leadfeeder competitor",
-    "person level identification",
-    "company level identification",
-    "website visitor identification",
-    "leadfeeder pricing",
-    "leadfeeder review",
-    "b2b visitor tracking",
-    "best leadfeeder alternative 2026"
-  ],
-  canonical: "https://www.meetcursive.com/blog/cursive-vs-leadfeeder",
-})
+import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
 
 const faqs = [
   {
@@ -68,6 +52,7 @@ export default function BlogPost() {
       <StructuredData data={generateFAQSchema({ faqs })} />
       <StructuredData data={generateBlogPostSchema({ title: "Cursive vs Leadfeeder: Person-Level vs Company-Level ID (2026)", description: "Leadfeeder identifies companies visiting your site. Cursive identifies the actual people. Compare these two fundamentally different approaches to website visitor identification and find out which delivers more pipeline.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://www.meetcursive.com/cursive-logo.png" })} />
 
+      <HumanView>
       {/* Header */}
       <section className="py-12 bg-white">
         <Container>
@@ -533,6 +518,54 @@ export default function BlogPost() {
           </div>
         </Container>
       </section>
+      </HumanView>
+
+      <MachineView>
+        <MachineContent>
+          <h1 className="text-2xl font-bold mb-4">Cursive vs Leadfeeder: Person-Level vs Company-Level ID (2026)</h1>
+
+          <p className="text-gray-700 mb-6">
+            Leadfeeder identifies companies visiting your site. Cursive identifies the actual people. Two fundamentally different approaches to website visitor identification. Published: February 7, 2026.
+          </p>
+
+          <MachineSection title="Quick Comparison">
+            <MachineList items={[
+              "Leadfeeder: company-level identification via reverse IP lookup, 30-40% match rate",
+              "Cursive: person-level identification via multi-source identity resolution, 70% match rate",
+              "Leadfeeder: $139/mo starting price, no outreach. Cursive: ~$1,000/mo all-in-one",
+              "Leadfeeder depends on Google Analytics. Cursive uses its own pixel-based tracking",
+              "Leadfeeder: suggests contacts at identified companies (not verified visitors). Cursive: identifies the actual person who visited",
+              "Outreach: Leadfeeder none. Cursive built-in AI SDR across email, LinkedIn, SMS, direct mail"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Identification Approach">
+            <MachineList items={[
+              "Company-level (Leadfeeder): tells you someone from Acme Corp visited. You must research who to contact",
+              "Person-level (Cursive): tells you Jane Smith, VP of Marketing at Acme Corp, visited pricing page",
+              "Leadfeeder uses reverse IP lookup which fails with VPNs, shared IPs, mobile networks",
+              "Cursive combines IP intelligence, device fingerprinting, cookie tracking, and identity graph partnerships",
+              "Person-level data is immediately actionable for direct outreach"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Total Cost to Match Capabilities">
+            <MachineList items={[
+              "Leadfeeder stack: Leadfeeder ($139/mo) + contact finder ($100-300/mo) + outreach tool ($100-150/user/mo) + intent data ($500+/mo) + enrichment ($100-300/mo) = $1,000-2,000+/mo",
+              "Cursive: single platform (~$1,000/mo) includes visitor ID, enrichment, intent, outreach, audience builder"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Related Resources">
+            <MachineList items={[
+              { label: "Visitor Identification", href: "/visitor-identification", description: "70% person-level identification" },
+              { label: "Cursive vs Clearbit", href: "/blog/cursive-vs-clearbit", description: "The best Clearbit replacement" },
+              { label: "Cursive vs RB2B", href: "/blog/cursive-vs-rb2b", description: "Two person-level ID tools compared" },
+              { label: "Free Audit", href: "/free-audit", description: "See who Cursive identifies on your site" }
+            ]} />
+          </MachineSection>
+        </MachineContent>
+      </MachineView>
     </main>
   )
 }

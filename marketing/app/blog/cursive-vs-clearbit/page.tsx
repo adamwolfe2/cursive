@@ -1,31 +1,15 @@
+"use client"
+
 import { Container } from "@/components/ui/container"
 import { Button } from "@/components/ui/button"
 import { DashboardCTA } from "@/components/dashboard-cta"
 import { Calendar, Clock, ArrowLeft, Check, X } from "lucide-react"
-import { generateMetadata } from "@/lib/seo/metadata"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateFAQSchema } from "@/lib/seo/faq-schema"
 import { generateBlogPostSchema } from "@/lib/seo/structured-data"
 import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
 import Link from "next/link"
-
-export const metadata = generateMetadata({
-  title: "Cursive vs Clearbit: The Best Clearbit Replacement (2026)",
-  description: "Clearbit was acquired by HubSpot and its standalone features are being sunset. Cursive is the modern replacement for teams that relied on Clearbit for visitor identification and enrichment. Full comparison inside.",
-  keywords: [
-    "cursive vs clearbit",
-    "clearbit alternative",
-    "clearbit replacement",
-    "clearbit hubspot acquisition",
-    "clearbit sunset",
-    "visitor identification",
-    "b2b data enrichment",
-    "clearbit pricing",
-    "clearbit review 2026",
-    "best clearbit alternative"
-  ],
-  canonical: "https://www.meetcursive.com/blog/cursive-vs-clearbit",
-})
+import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
 
 const faqs = [
   {
@@ -68,6 +52,7 @@ export default function BlogPost() {
       <StructuredData data={generateFAQSchema({ faqs })} />
       <StructuredData data={generateBlogPostSchema({ title: "Cursive vs Clearbit: The Best Clearbit Replacement (2026)", description: "Clearbit was acquired by HubSpot and its standalone features are being sunset. Cursive is the modern replacement for teams that relied on Clearbit for visitor identification and enrichment. Full comparison inside.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://www.meetcursive.com/cursive-logo.png" })} />
 
+      <HumanView>
       {/* Header */}
       <section className="py-12 bg-white">
         <Container>
@@ -543,6 +528,70 @@ export default function BlogPost() {
           </div>
         </Container>
       </section>
+      </HumanView>
+
+      <MachineView>
+        <MachineContent>
+          <h1 className="text-2xl font-bold mb-4">Cursive vs Clearbit: The Best Clearbit Replacement (2026)</h1>
+
+          <p className="text-gray-700 mb-6">
+            Clearbit was acquired by HubSpot in November 2023 and its standalone features are being sunset. Cursive is the modern replacement for visitor identification and enrichment. Published: February 7, 2026.
+          </p>
+
+          <MachineSection title="Quick Comparison">
+            <MachineList items={[
+              "Clearbit Status: Being absorbed into HubSpot. Cursive Status: Active, independent platform",
+              "Visitor ID: Clearbit company-level (30-40% match) vs Cursive person-level (70% match)",
+              "AI SDR / Outreach: Clearbit never offered vs Cursive built-in multi-channel",
+              "Intent Data: Clearbit not included vs Cursive native scoring + signals",
+              "CRM Dependency: Clearbit increasingly HubSpot-only vs Cursive CRM-agnostic",
+              "Pricing: Clearbit $12k-50k+/year (opaque) vs Cursive ~$1,000/mo (transparent)"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="What Happened to Clearbit">
+            <MachineList items={[
+              "HubSpot acquired Clearbit in November 2023",
+              "Clearbit Reveal absorbed into HubSpot Marketing Hub premium tiers",
+              "Existing customers report 30-50% price increases at renewal",
+              "Standalone Clearbit development has effectively stopped",
+              "Non-HubSpot integrations receiving reduced investment"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Feature-by-Feature">
+            <MachineList items={[
+              "Visitor Identification: Clearbit Reveal identified companies only. Cursive identifies actual people with name, email, phone, LinkedIn",
+              "Data Enrichment: Clearbit enriched known contacts via API. Cursive enriches at moment of visitor identification",
+              "Outreach: Clearbit had no outreach layer. Cursive includes AI SDR across email, LinkedIn, SMS, direct mail",
+              "Intent Data: Clearbit provided none. Cursive includes native intent scoring and behavioral tracking",
+              "Audience Segmentation: Clearbit had basic filters. Cursive has full dynamic audience builder"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Migration Guide">
+            <MachineList items={[
+              "Step 1: Audit current Clearbit usage (Reveal, Enrichment, API)",
+              "Step 2: Get a free Cursive audit to see additional visitor identification",
+              "Step 3: Install Cursive pixel alongside Clearbit for 1-2 weeks",
+              "Step 4: Configure audiences and outreach workflows",
+              "Step 5: Migrate CRM integrations",
+              "Step 6: Deprecate Clearbit (2-3 weeks total migration)"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Related Resources">
+            <MachineList items={[
+              { label: "Cursive Platform", href: "/platform", description: "Full-stack visitor identification and pipeline generation" },
+              { label: "Pricing", href: "/pricing", description: "Transparent pricing starting at ~$1,000/month" },
+              { label: "Visitor Identification", href: "/visitor-identification", description: "70% person-level match rate" },
+              { label: "Free Audit", href: "/free-audit", description: "See how many visitors Clearbit was missing" },
+              { label: "Clearbit Alternatives Comparison", href: "/blog/clearbit-alternatives-comparison", description: "10 tools compared" },
+              { label: "Cursive vs RB2B", href: "/blog/cursive-vs-rb2b", description: "Two person-level ID tools compared" }
+            ]} />
+          </MachineSection>
+        </MachineContent>
+      </MachineView>
     </main>
   )
 }

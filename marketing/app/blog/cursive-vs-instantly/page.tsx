@@ -1,33 +1,15 @@
+"use client"
+
 import { Container } from "@/components/ui/container"
 import { Button } from "@/components/ui/button"
 import { DashboardCTA } from "@/components/dashboard-cta"
 import { Calendar, Clock, ArrowLeft, Check, X } from "lucide-react"
-import { generateMetadata } from "@/lib/seo/metadata"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateFAQSchema } from "@/lib/seo/faq-schema"
 import { generateBlogPostSchema } from "@/lib/seo/structured-data"
 import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
 import Link from "next/link"
-
-export const metadata = generateMetadata({
-  title: "Cursive vs Instantly: Visitor ID + Email Outreach Combined (2026)",
-  description: "Compare Cursive and Instantly for B2B outreach automation. Instantly is email-only at $97/mo. Cursive combines visitor identification, AI email, LinkedIn, SMS, and direct mail to replace your entire outreach stack.",
-  keywords: [
-    "cursive vs instantly",
-    "instantly alternative",
-    "instantly.ai alternative",
-    "email outreach platform",
-    "visitor identification",
-    "multi-channel outreach",
-    "b2b email automation",
-    "instantly pricing",
-    "cursive pricing",
-    "cold email tool comparison",
-    "ai sdr platform",
-    "sales engagement platform"
-  ],
-  canonical: "https://www.meetcursive.com/blog/cursive-vs-instantly",
-})
+import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
 
 const faqs = [
   {
@@ -66,6 +48,7 @@ export default function BlogPost() {
       <StructuredData data={generateFAQSchema({ faqs })} />
       <StructuredData data={generateBlogPostSchema({ title: "Cursive vs Instantly: Visitor ID + Email Outreach Combined (2026)", description: "Compare Cursive and Instantly for B2B outreach automation. Instantly is email-only at $97/mo. Cursive combines visitor identification, AI email, LinkedIn, SMS, and direct mail to replace your entire outreach stack.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://www.meetcursive.com/cursive-logo.png" })} />
 
+      <HumanView>
       {/* Header */}
       <section className="py-12 bg-white">
         <Container>
@@ -937,6 +920,57 @@ export default function BlogPost() {
           </div>
         </Container>
       </section>
+      </HumanView>
+
+      <MachineView>
+        <MachineContent>
+          <h1 className="text-2xl font-bold mb-4">Cursive vs Instantly: Visitor ID + Email Outreach Combined (2026)</h1>
+
+          <p className="text-gray-700 mb-6">
+            Instantly is a dedicated cold email platform at $97/mo. Cursive combines visitor identification, AI email, LinkedIn, SMS, and direct mail to replace your entire outreach stack. Published: February 7, 2026.
+          </p>
+
+          <MachineSection title="Quick Comparison">
+            <MachineList items={[
+              "Instantly: email-only cold outreach at $97/mo. Cursive: full-stack warm + cold multi-channel at $499/mo",
+              "Visitor Identification: Instantly none. Cursive 70%+ person-level",
+              "Channels: Instantly email only. Cursive email + LinkedIn + SMS + direct mail",
+              "Lead Source: Instantly requires external lead lists. Cursive identifies visitors automatically",
+              "Response Rates: Instantly 1-3% cold. Cursive 20-30% warm visitor outreach",
+              "Deliverability: Instantly unlimited mailbox warmup. Cursive AI-powered send optimization"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Total Stack Cost Comparison">
+            <MachineList items={[
+              "Instantly approach: Instantly ($97/mo) + visitor ID tool ($200-500/mo) + intent data ($500-2,000/mo) + LinkedIn automation ($100-300/mo) = $1,100-3,400/month",
+              "Cursive approach: single platform ($499/mo) includes all capabilities",
+              "Cursive eliminates 3-4 separate tool subscriptions and integration overhead"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Key Differences">
+            <MachineList items={[
+              "Instantly excels at high-volume cold email with mailbox warmup and rotation",
+              "Cursive excels at warm outreach to identified website visitors with behavioral personalization",
+              "Instantly requires you to source and upload lead lists externally",
+              "Cursive generates leads automatically from website traffic via visitor identification",
+              "Cursive AI personalizes based on actual browsing behavior (pages viewed, time on site, return visits)",
+              "Some teams use both: Cursive for warm visitor outreach, Instantly for cold outbound"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Related Resources">
+            <MachineList items={[
+              { label: "Cursive Platform", href: "/platform", description: "Full-stack visitor identification and pipeline generation" },
+              { label: "AI SDR", href: "/what-is-ai-sdr", description: "AI-powered sales development representative" },
+              { label: "Cursive vs Apollo", href: "/blog/cursive-vs-apollo", description: "Visitor ID vs prospecting database" },
+              { label: "Cursive vs Demandbase", href: "/blog/cursive-vs-demandbase", description: "Affordable ABM alternative" },
+              { label: "Free Audit", href: "/free-audit", description: "See how many visitors Cursive identifies" }
+            ]} />
+          </MachineSection>
+        </MachineContent>
+      </MachineView>
     </main>
   )
 }

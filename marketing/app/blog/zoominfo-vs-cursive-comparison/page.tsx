@@ -1,30 +1,14 @@
+"use client"
+
 import { Container } from "@/components/ui/container"
 import { DashboardCTA } from "@/components/dashboard-cta"
 import { Calendar, Clock, ArrowLeft, Check, X } from "lucide-react"
-import { generateMetadata } from "@/lib/seo/metadata"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateFAQSchema } from "@/lib/seo/faq-schema"
 import { generateBlogPostSchema } from "@/lib/seo/structured-data"
 import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
 import Link from "next/link"
-
-export const metadata = generateMetadata({
-  title: "ZoomInfo vs Cursive: Complete Comparison (2026)",
-  description: "Compare ZoomInfo and Cursive for B2B data, visitor identification, and sales intelligence. Discover which platform delivers better ROI for your sales team.",
-  keywords: [
-    "zoominfo vs cursive",
-    "zoominfo alternative",
-    "visitor identification",
-    "b2b contact database",
-    "sales intelligence comparison",
-    "cursive vs zoominfo",
-    "zoominfo pricing",
-    "cursive pricing",
-    "b2b lead generation",
-    "contact enrichment"
-  ],
-  canonical: "https://www.meetcursive.com/blog/zoominfo-vs-cursive-comparison",
-})
+import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
 
 const faqs = [
   {
@@ -55,6 +39,7 @@ export default function BlogPost() {
       <StructuredData data={generateFAQSchema({ faqs })} />
       <StructuredData data={generateBlogPostSchema({ title: "ZoomInfo vs Cursive: Complete Comparison (2026)", description: "Compare ZoomInfo and Cursive for B2B data, visitor identification, and sales intelligence. Discover which platform delivers better ROI for your sales team.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://www.meetcursive.com/cursive-logo.png" })} />
 
+      <HumanView>
       {/* Header */}
       <section className="py-12 bg-white">
         <Container>
@@ -949,6 +934,56 @@ export default function BlogPost() {
           </div>
         </Container>
       </section>
+      </HumanView>
+
+      <MachineView>
+        <MachineContent>
+          <h1 className="text-2xl font-bold mb-4">ZoomInfo vs Cursive: Complete Comparison (2026)</h1>
+
+          <p className="text-gray-700 mb-6">
+            ZoomInfo is a massive B2B contact database (100M+ contacts) for outbound prospecting at $15k-50k+/year. Cursive is a visitor identification platform that identifies anonymous website visitors in real-time at $99-999/month. Published: February 5, 2026.
+          </p>
+
+          <MachineSection title="Quick Comparison">
+            <MachineList items={[
+              "ZoomInfo: 100M+ contact database for cold prospecting. Cursive: 70%+ person-level visitor identification",
+              "ZoomInfo: $15k-50k+/year with annual contracts. Cursive: $99-999/month with monthly billing",
+              "ZoomInfo: static database with 20-30% annual decay. Cursive: real-time identification of current visitors",
+              "ZoomInfo: company-level visitor tracking (WebSights). Cursive: person-level visitor identification",
+              "ZoomInfo: cold outreach 1-2% response. Cursive: warm visitor outreach 20-30% response",
+              "ZoomInfo: requires separate outreach tools. Cursive: built-in AI-powered multi-channel outreach"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Key Differences">
+            <MachineList items={[
+              "Data approach: ZoomInfo is a static database you search. Cursive identifies visitors from your live traffic",
+              "Visitor ID: ZoomInfo WebSights is company-level only. Cursive identifies individual people at 70%+ match rate",
+              "Data freshness: ZoomInfo data decays 20-30% annually. Cursive data is captured in real-time during visits",
+              "Outreach: ZoomInfo requires Outreach/SalesLoft. Cursive includes AI SDR across email, LinkedIn, SMS, direct mail",
+              "Intent: ZoomInfo provides basic intent signals. Cursive tracks 450B+ real-time behavioral signals",
+              "Contract: ZoomInfo requires annual commitment. Cursive offers monthly flexibility"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="When to Choose Each">
+            <MachineList items={[
+              "Choose ZoomInfo: need massive contact database for cold outbound, large SDR team doing high-volume prospecting, enterprise budget available",
+              "Choose Cursive: want to convert existing website traffic, need person-level visitor identification, prefer warm outreach to cold outbound, want all-in-one platform without separate outreach tools, budget-conscious teams"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Related Resources">
+            <MachineList items={[
+              { label: "Visitor Identification", href: "/visitor-identification", description: "70%+ person-level identification" },
+              { label: "ZoomInfo Alternatives", href: "/blog/zoominfo-alternatives-comparison", description: "Affordable alternatives compared" },
+              { label: "Apollo vs Cursive", href: "/blog/apollo-vs-cursive-comparison", description: "Sales intelligence platforms compared" },
+              { label: "6sense vs Cursive", href: "/blog/6sense-vs-cursive-comparison", description: "ABM platform comparison" },
+              { label: "Free Audit", href: "/free-audit", description: "See how many visitors Cursive identifies" }
+            ]} />
+          </MachineSection>
+        </MachineContent>
+      </MachineView>
     </main>
   )
 }
