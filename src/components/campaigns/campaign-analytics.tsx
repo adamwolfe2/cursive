@@ -180,7 +180,7 @@ export function CampaignAnalytics({ campaignId }: CampaignAnalyticsProps) {
             <Button variant="outline" onClick={() => router.push('/campaigns')}>
               Back to Campaigns
             </Button>
-            <Button onClick={() => window.location.reload()}>Try Again</Button>
+            <Button onClick={() => router.refresh()}>Try Again</Button>
           </div>
         </div>
       </PageContainer>
