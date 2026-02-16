@@ -865,7 +865,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <MachineSection topic="Website Visitor Identification Technical Guide">
+          <MachineSection title="Website Visitor Identification Technical Guide">
             <p>This technical guide covers the methods behind website visitor identification for B2B lead generation, including IP-based identification, reverse IP lookup, cookie-based tracking, first-party data collection, and privacy-compliant approaches.</p>
             <MachineList items={[
               "IP-based identification matches visitor IP addresses to company databases with 65-85% accuracy for enterprise traffic",
