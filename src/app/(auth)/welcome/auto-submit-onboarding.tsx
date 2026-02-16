@@ -44,16 +44,34 @@ export function AutoSubmitOnboarding({ isMarketplace }: AutoSubmitOnboardingProp
           console.log('[AutoSubmit] No sessionStorage - fetching user data from auth')
 
           const userResponse = await fetch('/api/auth/user')
+
+          // Check if response is actually JSON before parsing
+          const contentType = userResponse.headers.get('content-type')
+          if (!contentType?.includes('application/json')) {
+            console.error('[AutoSubmit] Non-JSON response from /api/auth/user:', {
+              status: userResponse.status,
+              contentType,
+            })
+            // Not JSON - likely an error page. Redirect to login.
+            window.location.href = '/login?reason=invalid_session'
+            return
+          }
+
           if (!userResponse.ok) {
-            throw new Error('Failed to fetch user data')
+            console.error('[AutoSubmit] Failed to fetch user:', userResponse.status)
+            window.location.href = '/login?reason=auth_failed'
+            return
           }
 
           const { user } = await userResponse.json()
           if (!user) {
             // No user session - redirect to login
+            console.log('[AutoSubmit] No user found in response')
             window.location.href = '/login?reason=no_session'
             return
           }
+
+          console.log('[AutoSubmit] User data fetched:', { email: user.email })
 
           // Create basic onboarding data from Google account
           onboardingData = {
@@ -78,6 +96,7 @@ export function AutoSubmitOnboarding({ isMarketplace }: AutoSubmitOnboardingProp
 
         for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
           if (attempt > 0) {
+            console.log(`[AutoSubmit] Retry attempt ${attempt}/${MAX_RETRIES}`)
             // Wait before retrying: 500ms, 1500ms, 3000ms
             await wait(500 * attempt)
           }
@@ -86,6 +105,11 @@ export function AutoSubmitOnboarding({ isMarketplace }: AutoSubmitOnboardingProp
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(onboardingData),
+          })
+
+          console.log(`[AutoSubmit] /api/onboarding/setup response:`, {
+            status: lastResponse.status,
+            attempt: attempt + 1,
           })
 
           // 401 = session not ready yet; retry
@@ -98,6 +122,7 @@ export function AutoSubmitOnboarding({ isMarketplace }: AutoSubmitOnboardingProp
         }
 
         if (!lastResponse) {
+          console.error('[AutoSubmit] No response from server')
           throw new Error('Failed to contact server')
         }
 
