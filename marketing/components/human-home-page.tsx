@@ -115,7 +115,7 @@ export function HumanHomePage() {
               transition={{ duration: 0.4, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
               className="lg:w-[40%] lg:flex-shrink-0 text-center lg:text-left mb-8 lg:mb-0"
             >
-              <h1 className="text-[1.65rem] sm:text-4xl lg:text-[2.5rem] xl:text-[2.75rem] font-light mb-4 leading-[1.15]">
+              <h1 className="text-[2.5rem] sm:text-4xl lg:text-[2.5rem] xl:text-[2.75rem] font-light mb-4 leading-[1.15]">
                 <span className="text-gray-900">Turn Website Visitors</span>
                 <br />
                 <span className="text-gray-400">Into Booked Meetings.</span>
