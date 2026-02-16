@@ -36,17 +36,39 @@ export function AutoSubmitOnboarding({ isMarketplace }: AutoSubmitOnboardingProp
     const submit = async () => {
       try {
         const stored = sessionStorage.getItem('cursive_onboarding')
-        if (!stored) {
-          // No stored data -- send them back to the quiz.
-          // Use window.location to force a full page load so the server
-          // component re-evaluates the session state.
-          window.location.href = '/welcome'
-          return
-        }
+        let onboardingData: any
 
-        const data = JSON.parse(stored)
-        // Remove the isMarketplace flag before sending to API
-        const { isMarketplace: _, ...onboardingData } = data
+        if (!stored) {
+          // No stored data means user came directly from OAuth (clicked "Sign in with Google")
+          // Fetch their Google account info and create a basic workspace
+          console.log('[AutoSubmit] No sessionStorage - fetching user data from auth')
+
+          const userResponse = await fetch('/api/auth/user')
+          if (!userResponse.ok) {
+            throw new Error('Failed to fetch user data')
+          }
+
+          const { user } = await userResponse.json()
+          if (!user) {
+            // No user session - redirect to login
+            window.location.href = '/login?reason=no_session'
+            return
+          }
+
+          // Create basic onboarding data from Google account
+          onboardingData = {
+            businessName: user.user_metadata?.full_name || user.email?.split('@')[0] || 'My Business',
+            fullName: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
+            email: user.email,
+            industry: 'Other', // Default industry
+            role: 'business', // Default to business role
+          }
+        } else {
+          const data = JSON.parse(stored)
+          // Remove the isMarketplace flag before sending to API
+          const { isMarketplace: _, ...rest } = data
+          onboardingData = rest
+        }
 
         // Retry logic: the auth callback sets cookies but they may not be
         // available to the API route on the very first request after redirect.
