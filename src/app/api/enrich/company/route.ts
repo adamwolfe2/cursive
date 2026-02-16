@@ -9,7 +9,7 @@ export const runtime = 'edge'
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { getCompanyEnrichmentService } from '@/lib/services/company-enrichment.service'
-import { checkRateLimit, RATE_LIMITS } from '@/lib/utils/rate-limit'
+import { checkRateLimit } from '@/lib/utils/rate-limit'
 import { z } from 'zod'
 
 // Domain validation schema
@@ -92,18 +92,17 @@ export async function GET(request: NextRequest) {
       || request.headers.get('x-real-ip')
       || 'unknown'
 
-    const rateLimitResult = checkRateLimit(clientIp, 'enrich-company', RATE_LIMITS.publicStrict)
-    if (!rateLimitResult.success) {
-      const resetInSecs = Math.max(0, Math.ceil((rateLimitResult.resetAt - Date.now()) / 1000))
+    const enrichRateConfig = { windowMs: 60 * 1000, max: 30 }
+    const rateLimitResult = checkRateLimit(`enrich-company:${clientIp}`, enrichRateConfig)
+    if (!rateLimitResult.allowed) {
       return NextResponse.json(
         { error: 'Rate limit exceeded. Please try again later.' },
         {
           status: 429,
           headers: {
-            'Retry-After': String(resetInSecs),
-            'X-RateLimit-Limit': String(RATE_LIMITS.publicStrict.limit),
-            'X-RateLimit-Remaining': '0',
-            'X-RateLimit-Reset': String(Math.ceil(rateLimitResult.resetAt / 1000)),
+            'Retry-After': String(rateLimitResult.retryAfter),
+            'X-RateLimit-Limit': String(enrichRateConfig.max),
+            'X-RateLimit-Remaining': String(rateLimitResult.remaining),
           },
         }
       )

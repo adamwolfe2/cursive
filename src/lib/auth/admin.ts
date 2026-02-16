@@ -63,12 +63,29 @@ export async function getCurrentAdminEmail(): Promise<string | null> {
 /**
  * Require admin authentication
  * Throws if not authenticated as admin
+ * Returns admin info (id, email) for audit logging
  */
-export async function requireAdmin(): Promise<void> {
-  const isAdminUser = await isAdmin()
-  if (!isAdminUser) {
+export async function requireAdmin(): Promise<{ id: string; email: string }> {
+  const supabase = await createClient()
+  const { data: { session } } = await supabase.auth.getSession()
+  const user = session?.user ?? null
+
+  if (!user?.email) {
     throw new Error('Unauthorized: Admin access required')
   }
+
+  const { data: admin } = await supabase
+    .from('platform_admins')
+    .select('id, email')
+    .eq('email', user.email)
+    .eq('is_active', true)
+    .single()
+
+  if (!admin) {
+    throw new Error('Unauthorized: Admin access required')
+  }
+
+  return { id: admin.id, email: admin.email ?? user.email }
 }
 
 /**

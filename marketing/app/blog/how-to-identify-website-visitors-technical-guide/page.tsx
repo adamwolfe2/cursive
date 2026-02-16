@@ -82,6 +82,28 @@ export default function BlogPost() {
     ]
   }
 
+  const trackingCodeHtml = [
+    '&lt;!-- Add to &lt;head&gt; tag --&gt;',
+    '&lt;script&gt;',
+    '  (function() &#123;',
+    '    // Track page view with metadata',
+    '    window.cursive = window.cursive || [];',
+    '    cursive.push(&#123;',
+    "      event: 'pageview',",
+    '      path: window.location.pathname,',
+    '      referrer: document.referrer,',
+    '      timestamp: Date.now()',
+    '    &#125;);',
+    '',
+    '    // Load tracking script',
+    "    var script = document.createElement('script');",
+    "    script.src = 'https://track.cursive.ai/v1/track.js';",
+    '    script.async = true;',
+    '    document.head.appendChild(script);',
+    '  &#125;)();',
+    '&lt;/script&gt;',
+  ].join('\n')
+
   return (
     <main>
       <StructuredData data={[articleSchema, breadcrumbSchema, faqSchema]} />
@@ -603,27 +625,10 @@ export default function BlogPost() {
 
             <h3>Front-End Tracking</h3>
 
-            <pre className="not-prose bg-gray-900 text-gray-100 rounded-lg p-6 my-6 overflow-x-auto text-sm">
-{`<!-- Add to <head> tag -->
-<`}{`script>
-  (function() {
-    // Track page view with metadata
-    window.cursive = window.cursive || [];
-    cursive.push({
-      event: 'pageview',
-      path: window.location.pathname,
-      referrer: document.referrer,
-      timestamp: Date.now()
-    });
-
-    // Load tracking script
-    var script = document.createElement('script');
-    script.src = 'https://track.cursive.ai/v1/track.js';
-    script.async = true;
-    document.head.appendChild(script);
-  })();
-</`}{`script>`}
-            </pre>
+            <pre
+              className="not-prose bg-gray-900 text-gray-100 rounded-lg p-6 my-6 overflow-x-auto text-sm"
+              dangerouslySetInnerHTML={{ __html: trackingCodeHtml }}
+            />
 
             <h3>Back-End Processing</h3>
 
@@ -856,6 +861,25 @@ export default function BlogPost() {
           </div>
         </Container>
       </section>
+      </HumanView>
+
+      <MachineView>
+        <MachineContent>
+          <MachineSection topic="Website Visitor Identification Technical Guide">
+            <p>This technical guide covers the methods behind website visitor identification for B2B lead generation, including IP-based identification, reverse IP lookup, cookie-based tracking, first-party data collection, and privacy-compliant approaches.</p>
+            <MachineList items={[
+              "IP-based identification matches visitor IP addresses to company databases with 65-85% accuracy for enterprise traffic",
+              "Reverse IP lookup connects visitor IPs to business information using ISP and company IP range databases",
+              "Cookie-based tracking stores unique identifiers for returning visitor recognition",
+              "First-party data collection gathers information directly from user interactions with consent",
+              "Privacy-first approaches comply with GDPR and CCPA while maximizing identification rates"
+            ]} />
+            <MachineLink href="/visitor-identification" label="Cursive Visitor Identification Solution" />
+            <MachineLink href="/integrations" label="Integration Options" />
+            <MachineLink href="/intent-audiences" label="Intent Data for Lead Prioritization" />
+          </MachineSection>
+        </MachineContent>
+      </MachineView>
     </main>
   )
 }

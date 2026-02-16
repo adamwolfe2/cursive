@@ -73,7 +73,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       whitelabel: 'has_whitelabel_access',
       extra_data: 'has_extra_data_access',
       outbound: 'has_outbound_access',
-    }[featureRequest.feature_type]
+    }[featureRequest.feature_type as string]
 
     if (featureColumn) {
       const { error: workspaceUpdateError } = await adminSupabase

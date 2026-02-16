@@ -8,7 +8,7 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
-import type { PremiumFeatureRequest } from '@/types/premium'
+import type { PremiumFeatureRequest, FeatureType } from '@/types/premium'
 import { PREMIUM_FEATURES } from '@/types/premium'
 
 interface PremiumRequestsClientProps {
@@ -108,7 +108,7 @@ export function PremiumRequestsClient({ initialRequests }: PremiumRequestsClient
     }
   }
 
-  const featureInfo = selectedRequest ? PREMIUM_FEATURES[selectedRequest.feature_type] : null
+  const featureInfo = selectedRequest ? PREMIUM_FEATURES[selectedRequest.feature_type as FeatureType] : null
 
   return (
     <div className="space-y-6">
@@ -174,7 +174,7 @@ export function PremiumRequestsClient({ initialRequests }: PremiumRequestsClient
               </tr>
             ) : (
               filteredRequests.map((request) => {
-                const featureInfo = PREMIUM_FEATURES[request.feature_type]
+                const featureInfo = PREMIUM_FEATURES[request.feature_type as FeatureType]
                 return (
                   <tr
                     key={request.id}

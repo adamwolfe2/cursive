@@ -36,13 +36,12 @@ function sanitizeRedirectPath(path: string): string {
 export async function loginAction(formData: FormData) {
   // Rate limit: 10 login attempts per minute per IP
   const clientIp = await getClientIpFromHeaders()
-  const rateLimitResult = checkRateLimit(clientIp, 'auth-login', {
-    limit: 10,
-    windowSecs: 60,
+  const rateLimitResult = checkRateLimit(`auth-login:${clientIp}`, {
+    windowMs: 60 * 1000,
+    max: 10,
   })
-  if (!rateLimitResult.success) {
-    const retryAfter = Math.ceil((rateLimitResult.resetAt - Date.now()) / 1000)
-    return { error: `Too many login attempts. Please try again in ${retryAfter} seconds.` }
+  if (!rateLimitResult.allowed) {
+    return { error: `Too many login attempts. Please try again in ${rateLimitResult.retryAfter} seconds.` }
   }
 
   const email = formData.get('email') as string
@@ -75,13 +74,12 @@ export async function loginAction(formData: FormData) {
 export async function googleLoginAction(redirectTo: string = '/dashboard') {
   // Rate limit: 10 Google login attempts per minute per IP
   const clientIp = await getClientIpFromHeaders()
-  const rateLimitResult = checkRateLimit(clientIp, 'auth-google-login', {
-    limit: 10,
-    windowSecs: 60,
+  const rateLimitResult = checkRateLimit(`auth-google-login:${clientIp}`, {
+    windowMs: 60 * 1000,
+    max: 10,
   })
-  if (!rateLimitResult.success) {
-    const retryAfter = Math.ceil((rateLimitResult.resetAt - Date.now()) / 1000)
-    return { error: `Too many login attempts. Please try again in ${retryAfter} seconds.` }
+  if (!rateLimitResult.allowed) {
+    return { error: `Too many login attempts. Please try again in ${rateLimitResult.retryAfter} seconds.` }
   }
 
   redirectTo = sanitizeRedirectPath(redirectTo)
