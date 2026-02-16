@@ -1,33 +1,15 @@
+"use client"
+
 import { Container } from "@/components/ui/container"
 import { Button } from "@/components/ui/button"
 import { DashboardCTA } from "@/components/dashboard-cta"
 import { Calendar, Clock, ArrowLeft, Check, X } from "lucide-react"
-import { generateMetadata } from "@/lib/seo/metadata"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateFAQSchema } from "@/lib/seo/faq-schema"
 import { generateBlogPostSchema } from "@/lib/seo/structured-data"
 import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
 import Link from "next/link"
-
-export const metadata = generateMetadata({
-  title: "Cursive vs Apollo: Visitor ID vs Prospecting Database (2026)",
-  description: "Compare Cursive and Apollo.io for B2B sales. Apollo is a 200M+ contact prospecting database for cold outreach. Cursive identifies YOUR website visitors and automates warm, personalized outreach. Different approaches, complementary tools.",
-  keywords: [
-    "cursive vs apollo",
-    "apollo alternative",
-    "apollo.io comparison",
-    "visitor identification vs prospecting",
-    "b2b sales tools",
-    "apollo pricing",
-    "cursive pricing",
-    "cold outreach vs warm outreach",
-    "website visitor identification",
-    "sales engagement platform",
-    "prospecting database alternative",
-    "intent-based outreach"
-  ],
-  canonical: "https://www.meetcursive.com/blog/cursive-vs-apollo",
-})
+import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
 
 const faqs = [
   {
@@ -70,6 +52,7 @@ export default function BlogPost() {
       <StructuredData data={generateFAQSchema({ faqs })} />
       <StructuredData data={generateBlogPostSchema({ title: "Cursive vs Apollo: Visitor ID vs Prospecting Database (2026)", description: "Compare Cursive and Apollo.io for B2B sales. Apollo is a 200M+ contact prospecting database for cold outreach. Cursive identifies YOUR website visitors and automates warm, personalized outreach. Different approaches, complementary tools.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://www.meetcursive.com/cursive-logo.png" })} />
 
+      <HumanView>
       {/* Header */}
       <section className="py-12 bg-white">
         <Container>
@@ -1048,6 +1031,69 @@ export default function BlogPost() {
           </div>
         </Container>
       </section>
+      </HumanView>
+
+      <MachineView>
+        <MachineContent>
+          <h1 className="text-2xl font-bold mb-4">Cursive vs Apollo: Visitor ID vs Prospecting Database (2026)</h1>
+
+          <p className="text-gray-700 mb-6">
+            Apollo.io is a 200M+ contact prospecting database for cold outreach. Cursive identifies anonymous website visitors in real-time and automates warm, personalized outreach. Published: February 7, 2026.
+          </p>
+
+          <MachineSection title="Quick Comparison">
+            <MachineList items={[
+              "Apollo: 200M+ contact database for cold outbound prospecting",
+              "Cursive: 70%+ person-level visitor identification + automated warm outreach",
+              "Apollo response rates: 1-3% (cold). Cursive response rates: 20-30% (warm)",
+              "Apollo: company-level visitor tracking only. Cursive: person-level identification",
+              "Apollo: template-based email sequences. Cursive: AI behavior-based personalization",
+              "Apollo starting price: Free/$49 per user/month. Cursive: $499/month all-in-one"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Key Differences">
+            <p className="text-gray-700 mb-3">
+              Apollo helps you find strangers who might be interested via cold outbound. Cursive identifies people who have already shown interest by visiting your website. Warm outreach to visitors converts at 10-15x higher rates than cold outbound.
+            </p>
+            <MachineList items={[
+              "Contact Database: Apollo 200M+ contacts vs Cursive 360M+ profiles (enrichment)",
+              "Visitor Identification: Apollo company-level only vs Cursive 70%+ person-level",
+              "Intent Data: Apollo job change + hiring signals vs Cursive 450B+ behavioral signals",
+              "Outreach: Apollo cold sequences (email + phone) vs Cursive warm multi-channel (email + LinkedIn + SMS + mail)",
+              "Personalization: Apollo template merge fields vs Cursive AI behavior-based",
+              "Built-in Dialer: Apollo yes vs Cursive no"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="ROI Comparison">
+            <MachineList items={[
+              "Apollo cold outbound: 5,000 contacts/mo, 2% response, 25 meetings, 4 deals/month",
+              "Cursive warm visitors: 1,500 identified/mo, 25% response, 131 meetings, 26 deals/month",
+              "Cursive generates 6.5x more deals from 70% fewer contacts with minimal manual effort"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Best Used Together">
+            <MachineList items={[
+              "Cursive as primary channel (70% of pipeline): Identify and convert warm website visitors",
+              "Apollo as secondary channel (30% of pipeline): Cold outbound to accounts not visiting your site",
+              "Creates virtuous cycle: Apollo drives awareness, visitors come to site, Cursive converts them"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Related Resources">
+            <MachineList items={[
+              { label: "Cursive Platform", href: "/platform", description: "Visitor identification, intent data, AI outreach" },
+              { label: "Pricing", href: "/pricing", description: "Transparent pricing starting at $499/month" },
+              { label: "Visitor Identification", href: "/visitor-identification", description: "70% person-level identification rate" },
+              { label: "Free Audit", href: "/free-audit", description: "See how many visitors Cursive can identify on your site" },
+              { label: "Cursive vs Instantly", href: "/blog/cursive-vs-instantly", description: "Full-stack vs email-only outreach" },
+              { label: "Cursive vs Demandbase", href: "/blog/cursive-vs-demandbase", description: "Affordable ABM alternative" }
+            ]} />
+          </MachineSection>
+        </MachineContent>
+      </MachineView>
     </main>
   )
 }

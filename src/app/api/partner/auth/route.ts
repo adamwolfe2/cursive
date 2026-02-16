@@ -3,6 +3,13 @@ export const runtime = 'edge'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
+import {
+  rateLimit,
+  getClientIp,
+  rateLimitExceeded,
+  applyRateLimitHeaders,
+  RATE_LIMITS
+} from '@/lib/middleware/rate-limit'
 
 // Zod schema for API key validation
 const authSchema = z.object({
@@ -11,6 +18,17 @@ const authSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limit to prevent brute force attacks on API keys
+    const clientIp = getClientIp(request)
+    const rateLimitResult = await rateLimit(clientIp, {
+      ...RATE_LIMITS.strict,
+      keyPrefix: 'partner-auth',
+    })
+
+    if (!rateLimitResult.success) {
+      return rateLimitExceeded(rateLimitResult)
+    }
+
     const body = await request.json()
     const parseResult = authSchema.safeParse(body)
 
@@ -51,7 +69,7 @@ export async function POST(request: NextRequest) {
     // Calculate this month's earnings
     const thisMonthEarnings = (thisMonthLeads || 0) * Number(partner.payout_rate)
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       partner_name: partner.name,
       stats: {
@@ -61,6 +79,9 @@ export async function POST(request: NextRequest) {
         this_month_earnings: thisMonthEarnings,
       },
     })
+
+    // Apply rate limit headers to successful response
+    return applyRateLimitHeaders(response, rateLimitResult)
   } catch (error: any) {
     console.error('Partner auth error:', error)
     return NextResponse.json({ error: 'Authentication failed' }, { status: 500 })

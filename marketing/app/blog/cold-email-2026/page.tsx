@@ -1,55 +1,26 @@
+"use client"
+
 import { Container } from "@/components/ui/container"
-import { Button } from "@/components/ui/button"
 import { DashboardCTA } from "@/components/dashboard-cta"
-import { Calendar, Clock, ArrowLeft, ArrowRight, CheckCircle, XCircle } from "lucide-react"
-import { Metadata } from "next"
+import { Calendar, Clock, ArrowLeft, CheckCircle, XCircle } from "lucide-react"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateBlogPostSchema } from "@/lib/seo/structured-data"
 import Link from "next/link"
-
-export const metadata: Metadata = {
-  title: "Cold Email Best Practices for 2026: What Actually Works | Cursive",
-  description: "Master cold email in 2026 with proven strategies for deliverability, personalization, and compliance. Get higher open rates and more meetings.",
-  keywords: "cold email 2026, email deliverability, cold outreach, B2B email marketing, email best practices, cold email strategy",
-
-  openGraph: {
-    title: "Cold Email Best Practices for 2026: What Actually Works | Cursive",
-    description: "Master cold email in 2026 with proven strategies for deliverability, personalization, and compliance. Get higher open rates and more meetings.",
-    type: "article",
-    url: "https://www.meetcursive.com/blog/cold-email-2026",
-    siteName: "Cursive",
-    images: [{
-      url: "https://www.meetcursive.com/og-image.png",
-      width: 1200,
-      height: 630,
-    }],
-    locale: "en_US",
-  },
-
-  twitter: {
-    card: "summary_large_image",
-    title: "Cold Email Best Practices for 2026: What Actually Works | Cursive",
-    description: "Master cold email in 2026 with proven strategies for deliverability, personalization, and compliance. Get higher open rates and more meetings.",
-    images: ["https://www.meetcursive.com/og-image.png"],
-    creator: "@meetcursive",
-  },
-
-  alternates: {
-    canonical: "https://www.meetcursive.com/blog/cold-email-2026",
-  },
-
-  robots: {
-    index: true,
-    follow: true,
-  },
-}
+import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
 
 export default function BlogPost() {
   return (
     <main>
-      <StructuredData data={generateBlogPostSchema({ title: "Cold Email Best Practices for 2026: What Actually Works", description: "Master cold email in 2026 with proven strategies for deliverability, personalization, and compliance. Get higher open rates and more meetings.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://www.meetcursive.com/cursive-logo.png" })} />
+      <StructuredData data={generateBlogPostSchema({
+        title: "Cold Email Best Practices for 2026: What Actually Works",
+        description: "Master cold email in 2026 with proven strategies for deliverability, personalization, and compliance. Get higher open rates and more meetings.",
+        author: "Cursive Team",
+        publishDate: "2026-02-01",
+        image: "https://www.meetcursive.com/cursive-logo.png"
+      })} />
 
-      {/* Header */}
+      <HumanView>
+        {/* Header */}
       <section className="py-12 bg-white">
         <Container>
           <Link href="/blog" className="inline-flex items-center gap-2 text-primary hover:underline mb-8">
@@ -475,6 +446,229 @@ export default function BlogPost() {
           </div>
         </Container>
       </section>
+      </HumanView>
+
+      <MachineView>
+        <MachineContent>
+          <h1 className="text-2xl font-bold mb-4">Cold Email in 2026</h1>
+
+          <p className="text-gray-700 mb-6">
+            Comprehensive guide to cold email best practices for 2026, based on analysis of 2.5M emails. Published: January 28, 2026. Reading time: 12 minutes.
+          </p>
+
+          <MachineSection title="Key Takeaways">
+            <MachineList items={[
+              "Average reply rates dropped from 5.1% (2023) to 2.3% (2025) - competition is fierce",
+              "Spam filter accuracy improved 47% across major providers - deliverability is critical",
+              "B2B decision makers now receive 121 cold emails/week (up from 78 in 2024)",
+              "Top performers achieve 14-18% reply rates with hyper-personalization + AI",
+              "Multi-channel sequences (email + LinkedIn) drive 3x higher meeting rates vs email alone"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="What Changed in 2025-2026">
+            <div className="space-y-4">
+              <div>
+                <p className="font-bold text-gray-900 mb-2">Gmail/Outlook Spam Filters Got Smarter:</p>
+                <MachineList items={[
+                  "AI-based spam detection analyzes sending patterns, engagement signals, domain reputation in real-time",
+                  "Gmail February 2024 sender requirements now strictly enforced (SPF, DKIM, DMARC mandatory)",
+                  "Fake Re:/Fwd: subject lines automatically flagged and damage sender reputation",
+                  "'Quick question...' subject lines dropped from 28% to 9% open rates in 2025"
+                ]} />
+              </div>
+              <div>
+                <p className="font-bold text-gray-900 mb-2">Buyer Behavior Shifted:</p>
+                <MachineList items={[
+                  "Generic 'We help companies like yours' templates hit 80% delete rates",
+                  "Buyers expect specific, timely, relevant outreach tied to trigger events",
+                  "Value-first approaches (sharing insights before asking) get 18% reply rates vs 3% for direct asks"
+                ]} />
+              </div>
+            </div>
+          </MachineSection>
+
+          <MachineSection title="What's Dead (Stop Doing These)">
+            <MachineList items={[
+              "Mass blasting 5,000+ identical emails - gets you blacklisted, deliverability tanks after ~200/day per domain",
+              "'Quick question...' subject lines - now recognized as spam patterns (9% open rate vs 28% in 2024)",
+              "Fake Re: and Fwd: subject lines - Gmail flags these, damages sender reputation significantly",
+              "Generic 'We help companies like yours' copy - 80% delete rate, zero differentiation",
+              "Buying email lists - average 15-20% bounce rates, anything >3% destroys deliverability"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="What Still Works (Best Practices)">
+            <MachineList items={[
+              "Hyper-personalization at scale - reference LinkedIn activity, company news, tech stack, job postings (14% reply rate vs 3% generic)",
+              "Multi-channel sequences - Email → LinkedIn view → Email → LinkedIn message (3x higher meeting rates)",
+              "Value-first approaches - share relevant insight/resource/intro before asking (18% reply rate)",
+              "Plain text emails - no logos, images, fancy formatting; looks personal, bypasses spam filters",
+              "Strategic timing - Tuesday-Thursday, 8-10am or 2-4pm local time (weekend emails: 41% higher delete rates)",
+              "Trigger-based outreach - emails within 72 hours of trigger event get 3x response rate of non-triggered outreach"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="The Winning 2026 Cold Email Formula">
+            <div className="bg-gray-50 rounded-lg p-4 mb-4 border border-gray-200">
+              <p className="text-gray-700 mb-2"><strong>Subject:</strong> [Specific trigger event]</p>
+              <p className="text-gray-700 mb-2"><strong>Line 1:</strong> Hi [First Name], Saw [Company] just [specific recent event—funding, product launch, hire]</p>
+              <p className="text-gray-700 mb-2"><strong>Line 2:</strong> We helped [Similar Company] with [specific outcome] after their [similar event]</p>
+              <p className="text-gray-700 mb-2"><strong>Line 3:</strong> [One sentence about what you do in plain English]</p>
+              <p className="text-gray-700 mb-2"><strong>Line 4:</strong> Worth a 15-min chat?</p>
+              <p className="text-gray-700 mt-3 text-sm"><strong>Length:</strong> 50-100 words ideal (each sentence {'>'} 120 words drops reply rate ~10%)</p>
+            </div>
+            <p className="text-gray-700 mb-3">
+              Why this works: Specific subject (2.4x higher open vs generic), timely trigger (shows you're paying attention), social proof (similar company/situation builds credibility), clear low-friction ask (15-min chat easier than 30-min demo), plain text format (3x less likely to land in spam vs HTML templates).
+            </p>
+          </MachineSection>
+
+          <MachineSection title="Deliverability Requirements (Non-Negotiable)">
+            <div className="space-y-4">
+              <div>
+                <p className="font-bold text-gray-900 mb-2">Technical Setup:</p>
+                <MachineList items={[
+                  "SPF, DKIM, DMARC - all three properly configured (without them, up to 30% of emails never reach inbox)",
+                  "Dedicated sending domains - use subdomains (mail.yourcompany.com) not primary domain",
+                  "Warm up new domains - start 20-50 emails/day, ramp over 4-6 weeks with high engagement",
+                  "Monitor bounce rates - keep under 2% (above 3% = dirty list signal, throttles deliverability)",
+                  "Verify all emails before sending - use ZeroBounce/NeverBounce, re-verify lists >30 days old"
+                ]} />
+              </div>
+              <div>
+                <p className="font-bold text-gray-900 mb-2">Sending Volume:</p>
+                <MachineList items={[
+                  "Magic number: 150-200 emails per domain per day max",
+                  "For higher volume, add more domains (not more emails per domain)",
+                  "Rule of thumb: 1,000 emails/day requires 5-7 fully warmed domains"
+                ]} />
+              </div>
+              <div>
+                <p className="font-bold text-gray-900 mb-2">Engagement Signals:</p>
+                <MachineList items={[
+                  "Replies = strongest positive signal (tells Gmail people want to hear from you)",
+                  "Deletes without opening = negative signal (damages sender reputation)",
+                  "Spam marks (even one) = significant reputation damage",
+                  "Better targeting → higher engagement → better sender reputation → more emails in inbox (virtuous cycle)"
+                ]} />
+              </div>
+            </div>
+          </MachineSection>
+
+          <MachineSection title="The AI Advantage">
+            <p className="text-gray-700 mb-3">
+              AI doesn't replace humans - it enables personalization at scale that humans can't match. The key is feeding AI specific, real-time context about each prospect:
+            </p>
+            <MachineList items={[
+              "Recent LinkedIn posts - what topics prospect engages with, what they posted last week",
+              "Company news/funding - product launches, funding rounds, office expansions, partnerships (trigger-based outreach outperforms generic by 3-4x)",
+              "Tech stack data - reveals maturity level, budget, pain points (Salesforce+Outreach vs HubSpot+spreadsheets)",
+              "Job postings - hiring 5 SDRs = investing in outbound; hiring VP Marketing = open to demand gen tools",
+              "Competitive intel - recent tool switches, public pain points with competitors"
+            ]} />
+            <p className="text-gray-700 mt-3">
+              Result: Reply rates jump from 9% (human-written generic) to 14% (AI-written with deep personalization). AI handles research + personalization at scale, humans close deals. Best-in-class teams use this hybrid approach.
+            </p>
+          </MachineSection>
+
+          <MachineSection title="The 5-Touch Sequence That Works">
+            <MachineList items={[
+              "Day 1 - Email: Value-first intro with specific trigger",
+              "Day 3 - LinkedIn: View their profile (sends notification)",
+              "Day 5 - Email: Follow-up with additional insight",
+              "Day 8 - LinkedIn: Connection request with personal note",
+              "Day 12 - Email: Final follow-up with case study"
+            ]} />
+            <p className="text-gray-700 mt-3">
+              Why this works: 44% of salespeople give up after one email, but 80% of deals require 5+ touches. Multi-channel approach combines email + LinkedIn for 3x higher meeting rates than email alone.
+            </p>
+          </MachineSection>
+
+          <MachineSection title="2026 Benchmarks">
+            <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+              <p className="font-bold text-gray-900 mb-3">What "Good" Looks Like:</p>
+              <ul className="space-y-2 ml-4 text-sm">
+                <li className="text-gray-700"><strong>Open Rate:</strong> Good: 40-50% | Great: 50-65% | World-Class: 65%+</li>
+                <li className="text-gray-700"><strong>Reply Rate:</strong> Good: 8-12% | Great: 12-18% | World-Class: 18%+</li>
+                <li className="text-gray-700"><strong>Positive Reply Rate:</strong> Good: 3-5% | Great: 5-8% | World-Class: 8%+</li>
+                <li className="text-gray-700"><strong>Meeting Booked Rate:</strong> Good: 1-2% | Great: 2-4% | World-Class: 4%+</li>
+              </ul>
+            </div>
+          </MachineSection>
+
+          <MachineSection title="Essential Tech Stack for 2026">
+            <MachineList items={[
+              "Visitor identification - identify website visitors, prioritize outreach to people showing intent (10x more effective than random lists)",
+              "Data enrichment - accurate, up-to-date contact data (verified emails, job titles, company details, technographic data)",
+              "Email infrastructure - multiple sending domains, proper authentication, warm-up tools, deliverability monitoring",
+              "Sequencing and automation - multi-step, multi-channel sequences with smart delays, reply detection, automatic follow-up",
+              "Analytics - real-time visibility into open rates, reply rates, bounce rates, meeting conversion rates at campaign/sequence/email level"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Common Mistakes That Kill Reply Rates">
+            <MachineList items={[
+              "Writing too much - ideal: 50-100 words; every sentence >120 words drops reply rate ~10%",
+              "Talking about yourself - emails starting 'We are a...' get ignored; best emails: 80% prospect, 20% you",
+              "Weak CTAs - 'Let me know if interested' (easy to ignore) vs 'Thursday at 2pm work for quick chat?' (specific, easy to respond)",
+              "No follow-up plan - 44% give up after one email, but 80% of deals need 5+ touches; build complete sequences"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="How Cursive Helps">
+            <p className="text-gray-700 mb-3">
+              Cursive combines visitor identification, data enrichment, AI-powered personalization, email infrastructure, and analytics into one platform. Instead of stitching together 5-6 tools, get everything needed for effective cold email campaigns in one place.
+            </p>
+            <MachineList items={[
+              "Visitor identification - see who's on your site in real-time, reach out to prospects showing active intent",
+              "AI personalization at scale - deep context on each prospect (LinkedIn activity, company news, tech stack, job postings)",
+              "Multi-channel sequences - automated email + LinkedIn touchpoints with smart timing",
+              "Deliverability infrastructure - managed sending domains, proper authentication, automatic warm-up",
+              "Real-time analytics - track opens, replies, meetings at every level"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Bottom Line: What Winners Are Doing">
+            <MachineList items={[
+              "Sending fewer, better-targeted emails to prospects showing real intent (quality over quantity)",
+              "Personalizing at scale with AI that has deep context on each prospect",
+              "Using multi-channel sequences combining email + LinkedIn + other touchpoints",
+              "Protecting deliverability religiously with proper infrastructure and list hygiene",
+              "Providing value before asking for anything in return (value-first approach)",
+              "Measuring everything and optimizing continuously based on real data"
+            ]} />
+            <p className="text-gray-700 mt-3">
+              Gap between best and rest is widening every quarter. Teams investing in doing cold email right build massive competitive advantage. Teams blasting generic templates see emails land in spam and pipeline dry up.
+            </p>
+          </MachineSection>
+
+          <MachineSection title="Related Resources">
+            <MachineList items={[
+              { label: "AI SDR vs. Human BDR", href: "/blog/ai-sdr-vs-human-bdr", description: "90-day head-to-head comparison" },
+              { label: "Perfect ICP Targeting", href: "/blog/icp-targeting-guide", description: "5-step framework for better leads" },
+              { label: "Scaling Outbound", href: "/blog/scaling-outbound", description: "10 to 200+ emails without killing quality" }
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Get Started with Cursive">
+            <p className="text-gray-700 mb-3">
+              Cursive handles everything: list building, copywriting, sending, and meeting booking. See how we help you scale cold email that actually works in 2026.
+            </p>
+            <MachineList items={[
+              { label: "Platform Overview", href: "/platform", description: "Visitor identification, intent data, AI outreach" },
+              { label: "Pricing", href: "/pricing", description: "Self-serve marketplace + done-for-you services" },
+              { label: "Visitor Identification", href: "/visitor-identification", description: "70% identification rate for B2B traffic" },
+              { label: "Book a Demo", href: "/book", description: "See Cursive in real-time" }
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="About the Author">
+            <p className="text-gray-700">
+              Adam Wolfe is the founder of Cursive. He's run 500+ cold email campaigns generating $50M+ in pipeline for B2B companies. This guide is based on analysis of 2.5M cold emails sent in 2025 across 40+ industries.
+            </p>
+          </MachineSection>
+        </MachineContent>
+      </MachineView>
     </main>
   )
 }

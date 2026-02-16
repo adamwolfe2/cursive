@@ -283,6 +283,46 @@ Contact for custom pricing: https://cal.com/cursive/30min
 
 ---
 
+## WebMCP (AI Agent Tools)
+
+Cursive implements the WebMCP (Web Model Context Protocol) standard, exposing structured tools that AI agents can call directly via `navigator.modelContext` in Chrome 146+. Instead of scraping UI, agents get clean JSON responses.
+
+### Available Tools
+
+- **getCursivePricing** — Get detailed pricing for self-serve marketplace (credits from $0.60/lead) and managed services (Data $1,000/mo, Outbound $2,500/mo, Pipeline $5,000/mo)
+- **compareCursiveToCompetitor** — Compare Cursive against ZoomInfo, Apollo, Clearbit, 6sense, Warmly, RB2B, Leadfeeder, Demandbase, Instantly, Smartlead
+- **getCursiveCapabilities** — Structured overview of platform capabilities: visitor ID, intent data, AI outreach, audience builder, direct mail, integrations
+- **bookCursiveDemo** — Get the booking URL for a free 30-minute demo (https://cal.com/cursive/30min)
+- **getCursiveResults** — Customer results and case studies filtered by metric (revenue, ROAS, pipeline)
+- **getCursiveIndustries** — Industry-specific use cases and landing pages for 9 verticals
+
+### Declarative Forms (WebMCP)
+
+- **contactCursive** — Contact form on /contact
+- **requestFreeAudit** — Free visitor audit form on /free-audit
+- **requestCustomAudience** — Custom audience request form on /custom-audiences
+- **requestVisitorReport** — Free visitor report popup (exit-intent)
+- **subscribeNewsletter** — Newsletter subscription popup (blog scroll)
+- **getPricingTier** — Pricing tier selector on /pricing
+
+---
+
+## API
+
+- **Structured product info (JSON)**: https://meetcursive.com/api/ai-info
+- This endpoint returns all products, services, pricing, stats, and available WebMCP tools as structured JSON. Cached for 1 hour.
+
+## Structured Data
+
+This site includes JSON-LD structured data on all key pages:
+- **Homepage**: Organization, WebSite, SoftwareApplication, FAQPage schemas
+- **Pricing**: Product offers with AggregateOffer, FAQPage schema
+- **Services**: Service schema for each tier (Data, Outbound, Pipeline)
+- **Custom Audiences**: Service schema with BreadcrumbList
+- **Blog Posts**: BlogPosting schema with author, date, and description
+
+---
+
 ## Contact Information
 
 - **Website**: https://meetcursive.com
@@ -294,6 +334,6 @@ Contact for custom pricing: https://cal.com/cursive/30min
 
 ---
 
-**Last Updated**: 2026-02-06
+**Last Updated**: 2026-02-15
 **Format**: llms.txt (optimized for AI discovery and citation)
 **Learn more about llms.txt**: https://llmstxt.org

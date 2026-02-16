@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
 import Image from 'next/image'
+import { toast } from 'sonner'
 
 interface ZapierIntegrationProps {
   user: any
@@ -47,7 +48,7 @@ export function ZapierIntegration({ user, isPro }: ZapierIntegrationProps) {
 
   const handleGenerate = () => {
     if (!isPro) {
-      alert('Zapier integration requires a Pro plan. Please upgrade to continue.')
+      toast.error('Zapier integration requires a Pro plan. Please upgrade to continue.')
       return
     }
 
@@ -55,15 +56,22 @@ export function ZapierIntegration({ user, isPro }: ZapierIntegrationProps) {
   }
 
   const handleRevoke = () => {
-    if (confirm('Are you sure you want to revoke this webhook URL?')) {
-      revokeWebhookMutation.mutate()
-    }
+    toast.warning('Are you sure you want to revoke this webhook URL?', {
+      action: {
+        label: 'Revoke',
+        onClick: () => revokeWebhookMutation.mutate(),
+      },
+      cancel: {
+        label: 'Cancel',
+        onClick: () => {},
+      },
+    })
   }
 
   const copyWebhookUrl = () => {
     if (user?.zapier_webhook_url) {
       navigator.clipboard.writeText(user.zapier_webhook_url)
-      alert('Webhook URL copied to clipboard!')
+      toast.success('Webhook URL copied to clipboard!')
     }
   }
 

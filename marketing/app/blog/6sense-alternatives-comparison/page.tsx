@@ -1,30 +1,15 @@
+"use client"
+
 import { Container } from "@/components/ui/container"
 import { Button } from "@/components/ui/button"
 import { DashboardCTA } from "@/components/dashboard-cta"
 import { Calendar, Clock, ArrowLeft, Check, X } from "lucide-react"
-import { generateMetadata } from "@/lib/seo/metadata"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateFAQSchema } from "@/lib/seo/faq-schema"
+import { generateBlogPostSchema } from "@/lib/seo/structured-data"
 import { ArticleSchema, BreadcrumbSchema } from "@/components/schema/SchemaMarkup"
+import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
 import Link from "next/link"
-
-export const metadata = generateMetadata({
-  title: "7 Best 6sense Alternatives & Competitors in 2026",
-  description: "Compare the 7 best 6sense alternatives for intent data, account identification, and predictive analytics. Find affordable ABM tools that deliver results without enterprise contracts starting at $50k+/yr.",
-  keywords: [
-    "6sense alternatives",
-    "6sense competitors",
-    "intent data platforms",
-    "account based marketing tools",
-    "predictive analytics alternatives",
-    "6sense vs competitors",
-    "affordable abm platforms",
-    "b2b intent data tools",
-    "buyer intent software",
-    "revenue intelligence platforms"
-  ],
-  canonical: "https://www.meetcursive.com/blog/6sense-alternatives-comparison",
-})
 
 const faqs = [
   {
@@ -57,6 +42,13 @@ export default function BlogPost() {
   return (
     <main>
       <StructuredData data={generateFAQSchema({ faqs })} />
+      <StructuredData data={generateBlogPostSchema({
+        title: "7 Best 6sense Alternatives & Competitors in 2026",
+        description: "Compare the 7 best 6sense alternatives for intent data, account identification, and predictive analytics. Find affordable ABM tools that deliver results without enterprise contracts starting at $50k+/yr.",
+        author: "Adam Wolfe",
+        publishDate: "2026-02-06",
+        image: "https://www.meetcursive.com/cursive-logo.png",
+      })} />
       <ArticleSchema
         title="7 Best 6sense Alternatives & Competitors in 2026"
         description="Compare the 7 best 6sense alternatives for intent data, account identification, and predictive analytics."
@@ -71,7 +63,8 @@ export default function BlogPost() {
         ]}
       />
 
-      {/* Header */}
+      <HumanView>
+        {/* Header */}
       <section className="py-12 bg-white">
         <Container>
           <Link href="/blog" className="inline-flex items-center gap-2 text-primary hover:underline mb-8">
@@ -1128,6 +1121,402 @@ export default function BlogPost() {
           </div>
         </Container>
       </section>
+      </HumanView>
+
+      <MachineView>
+        <MachineContent>
+          <h1 className="text-2xl font-bold mb-4">7 Best 6sense Alternatives & Competitors in 2026</h1>
+
+          <p className="text-gray-700 mb-6">
+            Comparison of affordable 6sense alternatives for intent data, visitor identification, and ABM without enterprise contracts ($50k-$100k+/year). Published: February 6, 2026. Author: Adam Wolfe.
+          </p>
+
+          <MachineSection title="Key Takeaways">
+            <MachineList items={[
+              "6sense enterprise pricing: $50k-$100k+ annually with 6-12 week implementation",
+              "Top alternative: Cursive ($99 credits / $1k/mo managed) for person-level ID + AI outreach",
+              "Demandbase: Enterprise ABM with strong display advertising ($50k-$150k+/year)",
+              "Bombora: Pure third-party intent data source ($25k-$80k+/year)",
+              "ZoomInfo: Contact database + buyer intent add-on ($15k-$50k+/year)",
+              "Clearbit (Breeze): HubSpot-native enrichment and company-level visitor ID",
+              "RB2B: Simple person-level visitor ID via Slack ($99-$349+/mo)",
+              "Leadfeeder: Affordable company-level visitor tracking ($99-$299+/mo)"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Quick Comparison Table">
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs border-collapse">
+                <thead>
+                  <tr className="bg-gray-100">
+                    <th className="border border-gray-300 p-2 text-left">Tool</th>
+                    <th className="border border-gray-300 p-2 text-left">Intent Data</th>
+                    <th className="border border-gray-300 p-2 text-left">Account ID</th>
+                    <th className="border border-gray-300 p-2 text-left">Pricing</th>
+                    <th className="border border-gray-300 p-2 text-left">Best For</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="bg-blue-50">
+                    <td className="border border-gray-300 p-2 font-bold">Cursive</td>
+                    <td className="border border-gray-300 p-2">First-party + AI</td>
+                    <td className="border border-gray-300 p-2">Person-level (70%)</td>
+                    <td className="border border-gray-300 p-2">From $99 credits</td>
+                    <td className="border border-gray-300 p-2">SMB/Mid-market</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-300 p-2 font-bold">Demandbase</td>
+                    <td className="border border-gray-300 p-2">Third-party + first-party</td>
+                    <td className="border border-gray-300 p-2">Company-level</td>
+                    <td className="border border-gray-300 p-2">$50k+/yr</td>
+                    <td className="border border-gray-300 p-2">Enterprise ABM</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-300 p-2 font-bold">Bombora</td>
+                    <td className="border border-gray-300 p-2">Company Surge</td>
+                    <td className="border border-gray-300 p-2">Via partners</td>
+                    <td className="border border-gray-300 p-2">$25k+/yr</td>
+                    <td className="border border-gray-300 p-2">Intent data source</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-300 p-2 font-bold">ZoomInfo</td>
+                    <td className="border border-gray-300 p-2">Buyer intent add-on</td>
+                    <td className="border border-gray-300 p-2">Company-level</td>
+                    <td className="border border-gray-300 p-2">$15k+/yr</td>
+                    <td className="border border-gray-300 p-2">Sales intelligence</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-300 p-2 font-bold">Clearbit (Breeze)</td>
+                    <td className="border border-gray-300 p-2">Basic signals</td>
+                    <td className="border border-gray-300 p-2">Company-level</td>
+                    <td className="border border-gray-300 p-2">HubSpot bundled</td>
+                    <td className="border border-gray-300 p-2">HubSpot users</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-300 p-2 font-bold">RB2B</td>
+                    <td className="border border-gray-300 p-2">Page-view based</td>
+                    <td className="border border-gray-300 p-2">Person-level</td>
+                    <td className="border border-gray-300 p-2">From $99/mo</td>
+                    <td className="border border-gray-300 p-2">Visitor ID only</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-300 p-2 font-bold">Leadfeeder</td>
+                    <td className="border border-gray-300 p-2">Visit-based</td>
+                    <td className="border border-gray-300 p-2">Company-level</td>
+                    <td className="border border-gray-300 p-2">From $99/mo</td>
+                    <td className="border border-gray-300 p-2">SMB visitor tracking</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </MachineSection>
+
+          <MachineSection title="Why Companies Look for 6sense Alternatives">
+            <p className="text-gray-700 mb-3">
+              5 main pain points driving teams to seek alternatives:
+            </p>
+            <MachineList items={[
+              "Enterprise-only pricing: $50k-$100k+ annually (massive budget allocation for growth-stage companies)",
+              "Complex implementation: 6-12 weeks to operational (CRM integration, pixel deployment, model training)",
+              "Long time to value: Predictive models need months of data to perform accurately",
+              "Feature overkill: Built for enterprise ABM programs with thousands of accounts; smaller teams use <20% of features",
+              "Predictive accuracy concerns: Models can be inaccurate for niche industries or smaller market segments"
+            ]} />
+            <p className="text-gray-700 mt-3">
+              Result: Many mid-market companies realize simpler tools deliver 80% of the value at 20% of the cost.
+            </p>
+          </MachineSection>
+
+          <MachineSection title="Detailed Alternative Summaries">
+            <div className="space-y-6">
+              <div>
+                <h3 className="font-bold text-gray-900 mb-2">1. Cursive (Recommended for SMB/Mid-market)</h3>
+                <p className="text-gray-700 mb-2">
+                  <strong>What it does:</strong> Person-level visitor identification (70% match rate) + real-time intent scoring + AI-powered multi-channel outreach (email, LinkedIn, direct mail).
+                </p>
+                <p className="text-gray-700 mb-2">
+                  <strong>Key differentiator:</strong> Identifies specific people (not just companies) visiting your website and automatically engages them with personalized sequences. No enterprise contract required.
+                </p>
+                <p className="text-gray-700 mb-2">
+                  <strong>Pricing:</strong> Self-serve credits from $99 / Done-for-you managed campaigns from $1,000/mo
+                </p>
+                <p className="text-gray-700 mb-2">
+                  <strong>Best for:</strong> B2B companies wanting identify-and-engage workflow without $50k+ enterprise contracts
+                </p>
+                <p className="text-gray-700 mb-2">
+                  <strong>Strengths:</strong> Person-level ID, AI SDR automation, real-time first-party intent, same-day setup, no annual contract
+                </p>
+                <p className="text-gray-700 mb-2">
+                  <strong>Limitations:</strong> No predictive buying stage models, no third-party intent aggregation, no display advertising
+                </p>
+              </div>
+
+              <div>
+                <h3 className="font-bold text-gray-900 mb-2">2. Demandbase (Enterprise ABM Platform)</h3>
+                <p className="text-gray-700 mb-2">
+                  <strong>What it does:</strong> Full enterprise ABM suite with account-based display advertising, website personalization, account identification, and sales intelligence.
+                </p>
+                <p className="text-gray-700 mb-2">
+                  <strong>Key differentiator:</strong> Industry-leading ABM display advertising network for account-based awareness campaigns.
+                </p>
+                <p className="text-gray-700 mb-2">
+                  <strong>Pricing:</strong> $50k-$150k+/year
+                </p>
+                <p className="text-gray-700 mb-2">
+                  <strong>Best for:</strong> Enterprise marketing teams whose ABM strategy centers on display advertising
+                </p>
+                <p className="text-gray-700 mb-2">
+                  <strong>Strengths:</strong> Display advertising, website personalization, comprehensive ABM features, strong Salesforce integration
+                </p>
+                <p className="text-gray-700 mb-2">
+                  <strong>Limitations:</strong> Enterprise pricing, 4-8 week implementation, weaker predictive analytics vs 6sense, company-level ID only
+                </p>
+              </div>
+
+              <div>
+                <h3 className="font-bold text-gray-900 mb-2">3. Bombora (Pure Intent Data Provider)</h3>
+                <p className="text-gray-700 mb-2">
+                  <strong>What it does:</strong> Third-party B2B intent data via Company Surge methodology (tracks content consumption across 5,000+ B2B websites).
+                </p>
+                <p className="text-gray-700 mb-2">
+                  <strong>Key differentiator:</strong> Gold standard for third-party intent data as standalone product (no platform lock-in).
+                </p>
+                <p className="text-gray-700 mb-2">
+                  <strong>Pricing:</strong> $25k-$80k+/year
+                </p>
+                <p className="text-gray-700 mb-2">
+                  <strong>Best for:</strong> Teams needing high-quality third-party intent data to feed into existing tools
+                </p>
+                <p className="text-gray-700 mb-2">
+                  <strong>Strengths:</strong> Industry-leading intent data, 5,000+ publisher network, integrates with most CRMs, standalone data product
+                </p>
+                <p className="text-gray-700 mb-2">
+                  <strong>Limitations:</strong> Company-level only (no person ID), no outreach tools, still expensive, topic-based intent can be noisy
+                </p>
+              </div>
+
+              <div>
+                <h3 className="font-bold text-gray-900 mb-2">4. ZoomInfo (Contact Database + Intent Add-on)</h3>
+                <p className="text-gray-700 mb-2">
+                  <strong>What it does:</strong> B2B contact database (100M+ profiles) with buyer intent data in higher-tier plans.
+                </p>
+                <p className="text-gray-700 mb-2">
+                  <strong>Key differentiator:</strong> Combines intent signals with largest contact database for find-and-contact workflow.
+                </p>
+                <p className="text-gray-700 mb-2">
+                  <strong>Pricing:</strong> $15k-$50k+/year
+                </p>
+                <p className="text-gray-700 mb-2">
+                  <strong>Best for:</strong> Sales-led teams needing contact database with intent as secondary feature
+                </p>
+                <p className="text-gray-700 mb-2">
+                  <strong>Strengths:</strong> Largest B2B database, buyer intent add-on, WebSights visitor tracking, strong North America data
+                </p>
+                <p className="text-gray-700 mb-2">
+                  <strong>Limitations:</strong> Intent less sophisticated than 6sense, requires higher-tier plans, no predictive models, credit-based pricing scales expensively
+                </p>
+              </div>
+
+              <div>
+                <h3 className="font-bold text-gray-900 mb-2">5. Clearbit (Breeze by HubSpot)</h3>
+                <p className="text-gray-700 mb-2">
+                  <strong>What it does:</strong> Data enrichment and company-level visitor identification (Reveal) native to HubSpot CRM.
+                </p>
+                <p className="text-gray-700 mb-2">
+                  <strong>Key differentiator:</strong> Seamless HubSpot integration with automatic contact/company enrichment.
+                </p>
+                <p className="text-gray-700 mb-2">
+                  <strong>Pricing:</strong> Bundled with HubSpot plans (no standalone option post-acquisition)
+                </p>
+                <p className="text-gray-700 mb-2">
+                  <strong>Best for:</strong> HubSpot users wanting native enrichment and basic visitor identification
+                </p>
+                <p className="text-gray-700 mb-2">
+                  <strong>Strengths:</strong> Native HubSpot workflows, automatic enrichment, company visitor ID, fit scoring
+                </p>
+                <p className="text-gray-700 mb-2">
+                  <strong>Limitations:</strong> Requires HubSpot, company-level ID only, no third-party intent, not a full ABM platform
+                </p>
+              </div>
+
+              <div>
+                <h3 className="font-bold text-gray-900 mb-2">6. RB2B (Simple Visitor ID)</h3>
+                <p className="text-gray-700 mb-2">
+                  <strong>What it does:</strong> Person-level website visitor identification with real-time Slack notifications.
+                </p>
+                <p className="text-gray-700 mb-2">
+                  <strong>Key differentiator:</strong> Dead-simple setup with person-level ID delivered to Slack (no complexity).
+                </p>
+                <p className="text-gray-700 mb-2">
+                  <strong>Pricing:</strong> Free tier / $99-$349+/mo
+                </p>
+                <p className="text-gray-700 mb-2">
+                  <strong>Best for:</strong> Small sales teams wanting person-level visitor ID with minimal setup
+                </p>
+                <p className="text-gray-700 mb-2">
+                  <strong>Strengths:</strong> Person-level ID, real-time Slack alerts, minutes to set up, free tier available
+                </p>
+                <p className="text-gray-700 mb-2">
+                  <strong>Limitations:</strong> No intent scoring, no outreach automation, US traffic only, Slack-centric (limited CRM integration)
+                </p>
+              </div>
+
+              <div>
+                <h3 className="font-bold text-gray-900 mb-2">7. Leadfeeder (Dealfront)</h3>
+                <p className="text-gray-700 mb-2">
+                  <strong>What it does:</strong> Company-level website visitor identification with firmographic enrichment and basic lead scoring.
+                </p>
+                <p className="text-gray-700 mb-2">
+                  <strong>Key differentiator:</strong> Affordable entry point for company-level visitor tracking with strong European coverage.
+                </p>
+                <p className="text-gray-700 mb-2">
+                  <strong>Pricing:</strong> Free tier / $99-$299+/mo
+                </p>
+                <p className="text-gray-700 mb-2">
+                  <strong>Best for:</strong> SMBs wanting to know which companies visit their website at accessible price point
+                </p>
+                <p className="text-gray-700 mb-2">
+                  <strong>Strengths:</strong> Affordable, strong CRM integrations (Salesforce, HubSpot, Pipedrive), Google Analytics integration, European data coverage
+                </p>
+                <p className="text-gray-700 mb-2">
+                  <strong>Limitations:</strong> Company-level only, no third-party intent, no outreach tools, basic scoring vs 6sense
+                </p>
+              </div>
+            </div>
+          </MachineSection>
+
+          <MachineSection title="Feature Comparison: Cursive vs 6sense">
+            <p className="text-gray-700 mb-3">
+              For SMB/mid-market companies evaluating 6sense, here's how Cursive compares on core capabilities:
+            </p>
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs border-collapse">
+                <thead>
+                  <tr className="bg-gray-100">
+                    <th className="border border-gray-300 p-2 text-left">Feature</th>
+                    <th className="border border-gray-300 p-2 text-center">6sense</th>
+                    <th className="border border-gray-300 p-2 text-center">Cursive</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="border border-gray-300 p-2">Person-level visitor ID</td>
+                    <td className="border border-gray-300 p-2 text-center">No (company-level)</td>
+                    <td className="border border-gray-300 p-2 text-center">Yes (70% match rate)</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-300 p-2">First-party intent signals</td>
+                    <td className="border border-gray-300 p-2 text-center">Yes</td>
+                    <td className="border border-gray-300 p-2 text-center">Yes (real-time)</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-300 p-2">Third-party intent data</td>
+                    <td className="border border-gray-300 p-2 text-center">Yes (aggregated)</td>
+                    <td className="border border-gray-300 p-2 text-center">No</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-300 p-2">Predictive buying stages</td>
+                    <td className="border border-gray-300 p-2 text-center">Yes (AI-powered)</td>
+                    <td className="border border-gray-300 p-2 text-center">No</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-300 p-2">AI-powered outreach</td>
+                    <td className="border border-gray-300 p-2 text-center">No</td>
+                    <td className="border border-gray-300 p-2 text-center">Yes (AI SDR)</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-300 p-2">Multi-channel engagement</td>
+                    <td className="border border-gray-300 p-2 text-center">No</td>
+                    <td className="border border-gray-300 p-2 text-center">Yes (email, LinkedIn, direct mail)</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-300 p-2">Display advertising</td>
+                    <td className="border border-gray-300 p-2 text-center">Yes</td>
+                    <td className="border border-gray-300 p-2 text-center">No</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-300 p-2">Pricing</td>
+                    <td className="border border-gray-300 p-2 text-center">$50k-$100k+/yr</td>
+                    <td className="border border-gray-300 p-2 text-center">From $99 credits / $1k/mo managed</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-300 p-2">Implementation time</td>
+                    <td className="border border-gray-300 p-2 text-center">6-12 weeks</td>
+                    <td className="border border-gray-300 p-2 text-center">Same day</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-300 p-2">Contract required</td>
+                    <td className="border border-gray-300 p-2 text-center">Yes (annual)</td>
+                    <td className="border border-gray-300 p-2 text-center">No</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p className="text-gray-700 mt-3">
+              <strong>Bottom line:</strong> Cursive delivers the identify-and-engage workflow (visitor ID + intent + outreach) that drives pipeline for most mid-market companies, without 6sense's enterprise complexity or price tag. 6sense stronger for: enterprise-scale predictive analytics, third-party intent aggregation, display advertising.
+            </p>
+          </MachineSection>
+
+          <MachineSection title="Decision Framework">
+            <p className="text-gray-700 mb-3">
+              Choose the right alternative based on your primary need:
+            </p>
+            <MachineList items={[
+              { label: "Want visitor ID + automatic engagement", description: "Choose Cursive. Person-level identification with AI-powered multi-channel outreach. From $99 credits or $1k/mo managed." },
+              { label: "Need full enterprise ABM with advertising", description: "Choose Demandbase. Closest equivalent to 6sense with stronger display ad capabilities. $50k+ enterprise pricing." },
+              { label: "Need pure third-party intent data source", description: "Choose Bombora. Industry standard Company Surge data to feed into existing tools. $25k+/year." },
+              { label: "Primarily need contact database + intent", description: "Choose ZoomInfo. 100M+ contacts with buyer intent add-on. $15k-$50k+/year." },
+              { label: "HubSpot shop wanting native enrichment", description: "Choose Clearbit (Breeze). Native HubSpot enrichment and company visitor ID. Bundled with HubSpot plans." },
+              { label: "Want simplest visitor identification", description: "Choose RB2B. Person-level visitor ID to Slack with zero complexity. $99-$349+/mo or free tier." },
+              { label: "Tight budget, basic visitor tracking", description: "Choose Leadfeeder. Affordable company-level identification with solid CRM integrations. $99-$299+/mo." }
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Related Resources">
+            <MachineList items={[
+              { label: "Cursive Platform Overview", href: "/platform", description: "Visitor identification, intent data, AI outreach" },
+              { label: "Cursive Pricing", href: "/pricing", description: "Self-serve credits and managed campaigns" },
+              { label: "Visitor Identification", href: "/visitor-identification", description: "70% person-level match rates for B2B traffic" },
+              { label: "What is B2B Intent Data", href: "/what-is-b2b-intent-data", description: "Complete guide to intent data types and use cases" },
+              { label: "Apollo Alternatives", href: "/blog/apollo-alternatives-comparison", description: "7 best Apollo.io alternatives for B2B prospecting" },
+              { label: "ZoomInfo Alternatives", href: "/blog/zoominfo-alternatives-comparison", description: "8 cheaper ZoomInfo alternatives for B2B data" },
+              { label: "Clearbit Alternatives", href: "/blog/clearbit-alternatives-comparison", description: "10 data enrichment and identification tools compared" },
+              { label: "Demandbase Alternatives", href: "/blog/demandbase-alternative", description: "Affordable ABM platforms compared for 2026" },
+              { label: "RB2B Alternatives", href: "/blog/rb2b-alternative", description: "7 visitor identification tools with higher match rates" },
+              { label: "Warmly Alternatives", href: "/blog/warmly-alternatives-comparison", description: "7 visitor identification and intent platforms compared" }
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Get Started">
+            <p className="text-gray-700 mb-3">
+              Ready to replace 6sense with an affordable alternative that delivers results?
+            </p>
+            <MachineList items={[
+              { label: "Book a Demo", href: "https://cal.com/cursive/30min", description: "See Cursive in action (30-minute call)" },
+              { label: "Get Free AI Audit", href: "/free-audit", description: "Analyze your current setup and see what's missing" },
+              { label: "View Pricing", href: "/pricing", description: "Self-serve credits from $99 or managed campaigns from $1k/mo" },
+              { label: "Try Cursive Platform", href: "/platform", description: "Person-level visitor ID + intent scoring + AI SDR outreach" }
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="About the Author">
+            <p className="text-gray-700">
+              Adam Wolfe is the founder of Cursive. After watching mid-market companies overpay for enterprise intent data platforms they barely used, he built Cursive to deliver identification and engagement capabilities that actually drive pipeline, without enterprise complexity or price tags.
+            </p>
+          </MachineSection>
+
+          <MachineSection title="FAQs">
+            <div className="space-y-4">
+              {faqs.map((faq, i) => (
+                <div key={i}>
+                  <p className="font-bold text-gray-900 mb-1">Q: {faq.question}</p>
+                  <p className="text-gray-700 text-xs">A: {faq.answer}</p>
+                </div>
+              ))}
+            </div>
+          </MachineSection>
+        </MachineContent>
+      </MachineView>
     </main>
   )
 }

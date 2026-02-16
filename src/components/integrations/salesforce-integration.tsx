@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
 import Image from 'next/image'
+import { toast } from 'sonner'
 
 interface CrmConnectionStatus {
   connected: boolean
@@ -58,7 +59,7 @@ export function SalesforceIntegration({ workspaceId, isPro }: SalesforceIntegrat
 
   const handleConnect = () => {
     if (!isPro) {
-      alert('Salesforce integration requires a Pro plan. Please upgrade to continue.')
+      toast.error('Salesforce integration requires a Pro plan. Please upgrade to continue.')
       return
     }
     setConnecting(true)
@@ -66,9 +67,16 @@ export function SalesforceIntegration({ workspaceId, isPro }: SalesforceIntegrat
   }
 
   const handleDisconnect = () => {
-    if (confirm('Are you sure you want to disconnect Salesforce? Your sync configuration will be removed.')) {
-      disconnectMutation.mutate()
-    }
+    toast.warning('Are you sure you want to disconnect Salesforce? Your sync configuration will be removed.', {
+      action: {
+        label: 'Disconnect',
+        onClick: () => disconnectMutation.mutate(),
+      },
+      cancel: {
+        label: 'Cancel',
+        onClick: () => {},
+      },
+    })
   }
 
   // Format connected date

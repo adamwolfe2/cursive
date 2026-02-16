@@ -1,56 +1,28 @@
+"use client"
+
 import { Container } from "@/components/ui/container"
-import { Button } from "@/components/ui/button"
 import { DashboardCTA } from "@/components/dashboard-cta"
-import { Calendar, Clock, ArrowLeft, ArrowRight } from "lucide-react"
-import { Metadata } from "next"
+import { Calendar, Clock, ArrowLeft } from "lucide-react"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateBlogPostSchema } from "@/lib/seo/structured-data"
 import Link from "next/link"
-
-export const metadata: Metadata = {
-  title: "AI SDR vs Human BDR: When to Use Each for B2B Sales | Cursive",
-  description: "Compare AI SDRs and human BDRs for outbound sales. Learn when to use automation vs human touch, cost analysis, and hybrid strategies for maximum ROI.",
-  keywords: "AI SDR, human BDR, sales automation, AI sales agents, outbound sales, SDR vs BDR, sales technology",
-
-  openGraph: {
-    title: "AI SDR vs Human BDR: When to Use Each for B2B Sales | Cursive",
-    description: "Compare AI SDRs and human BDRs for outbound sales. Learn when to use automation vs human touch, cost analysis, and hybrid strategies for maximum ROI.",
-    type: "article",
-    url: "https://www.meetcursive.com/blog/ai-sdr-vs-human-bdr",
-    siteName: "Cursive",
-    images: [{
-      url: "https://www.meetcursive.com/og-image.png",
-      width: 1200,
-      height: 630,
-    }],
-    locale: "en_US",
-  },
-
-  twitter: {
-    card: "summary_large_image",
-    title: "AI SDR vs Human BDR: When to Use Each for B2B Sales | Cursive",
-    description: "Compare AI SDRs and human BDRs for outbound sales. Learn when to use automation vs human touch, cost analysis, and hybrid strategies for maximum ROI.",
-    images: ["https://www.meetcursive.com/og-image.png"],
-    creator: "@meetcursive",
-  },
-
-  alternates: {
-    canonical: "https://www.meetcursive.com/blog/ai-sdr-vs-human-bdr",
-  },
-
-  robots: {
-    index: true,
-    follow: true,
-  },
-}
+import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
 
 export default function BlogPost() {
   return (
     <main>
-      <StructuredData data={generateBlogPostSchema({ title: "AI SDR vs Human BDR: When to Use Each for B2B Sales", description: "Compare AI SDRs and human BDRs for outbound sales. Learn when to use automation vs human touch, cost analysis, and hybrid strategies for maximum ROI.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://www.meetcursive.com/cursive-logo.png" })} />
+      <StructuredData data={generateBlogPostSchema({
+        title: "AI SDR vs Human BDR: When to Use Each for B2B Sales",
+        description: "Compare AI SDRs and human BDRs for outbound sales. Learn when to use automation vs human touch, cost analysis, and hybrid strategies for maximum ROI.",
+        author: "Cursive Team",
+        publishDate: "2026-02-01",
+        image: "https://www.meetcursive.com/cursive-logo.png"
+      })} />
 
-      {/* Header */}
-      <section className="py-12 bg-white">
+      <HumanView>
+
+        {/* Header */}
+        <section className="py-12 bg-white">
         <Container>
           <Link href="/blog" className="inline-flex items-center gap-2 text-primary hover:underline mb-8">
             <ArrowLeft className="w-4 h-4" />
@@ -82,8 +54,8 @@ export default function BlogPost() {
         </Container>
       </section>
 
-      {/* Article Content */}
-      <section className="py-16 bg-white">
+        {/* Article Content */}
+        <section className="py-16 bg-white">
         <Container>
           <article className="max-w-3xl mx-auto prose prose-lg prose-blue">
             <h2>The Setup</h2>
@@ -332,15 +304,15 @@ export default function BlogPost() {
         </Container>
       </section>
 
-      {/* CTA Section */}
-      <DashboardCTA
+        {/* CTA Section */}
+        <DashboardCTA
         headline="Want to Put This"
         subheadline="Into Practice?"
         description="See how Cursive's AI SDR can help you scale outbound without hiring more BDRs. Book a 30-day pilot to test the results yourself."
       />
 
-      {/* Related Posts */}
-      <section className="py-16 bg-gradient-to-br from-gray-50 to-blue-50">
+        {/* Related Posts */}
+        <section className="py-16 bg-gradient-to-br from-gray-50 to-blue-50">
         <Container>
           <h2 className="text-3xl font-bold mb-8 text-center">Read Next</h2>
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
@@ -359,6 +331,179 @@ export default function BlogPost() {
           </div>
         </Container>
       </section>
+      </HumanView>
+
+      <MachineView>
+        <MachineContent>
+          <h1 className="text-2xl font-bold mb-4">AI SDR vs Human BDR: When to Use Each for B2B Sales</h1>
+
+          <p className="text-gray-700 mb-6">
+            90-day controlled experiment comparing AI SDR against 3 experienced human BDRs. Same ICP, same messaging, same time period. Published: February 1, 2026.
+          </p>
+
+          <MachineSection title="Key Takeaways: AI vs Human">
+            <MachineList items={[
+              "AI SDR sent 4.2x more emails (18,000 vs 4,320) over 90 days",
+              "AI reply rate: 14% vs Human reply rate: 9%",
+              "AI booked 10x more meetings: 360 vs 36",
+              "Cost per meeting: AI $83 vs Human $1,875 (22x difference)",
+              "AI advantage: volume, consistency, speed, cost efficiency",
+              "Human advantage: complex conversations, relationship building, creativity, emotional intelligence"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="When to Use AI SDR">
+            <p className="text-gray-700 mb-3">
+              AI SDRs excel at high-volume, top-of-funnel prospecting where consistency and scale matter more than nuance.
+            </p>
+            <MachineList items={[
+              "Top-of-funnel outbound prospecting (first touch, follow-ups)",
+              "High-volume email campaigns across large TAMs",
+              "24/7 operation without downtime, PTO, or sick days",
+              "Data-heavy research and personalization at scale",
+              "Automated meeting booking and calendar management",
+              "CRM hygiene and data enrichment",
+              "Consistent output for predictable pipeline forecasting"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="When to Use Human BDR">
+            <p className="text-gray-700 mb-3">
+              Human BDRs deliver value where judgment, creativity, and relationship depth are required.
+            </p>
+            <MachineList items={[
+              "Complex, nuanced conversations requiring contextual judgment",
+              "Strategic account planning for high-value targets",
+              "Multi-threaded outreach engaging multiple stakeholders",
+              "Relationship building that generates warm referrals",
+              "Creative plays for strategic accounts (personalized videos, social engagement)",
+              "Discovery calls and deal progression conversations",
+              "Situations requiring emotional intelligence and tone adaptation"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Cost Comparison (90 Days)">
+            <div className="space-y-4">
+              <div>
+                <p className="font-bold text-gray-900 mb-2">Human BDR Team (3 reps):</p>
+                <MachineList items={[
+                  "Salary + benefits: $60k each + $20k benefits/tools = $240k annual / $60k per quarter",
+                  "90-day cost: $67,500 (includes management time, tool subscriptions)",
+                  "Emails sent: 4,320 (48 per rep per day)",
+                  "Meetings booked: 36",
+                  "Cost per meeting: $1,875",
+                  "Ramp time: 8 weeks before full productivity"
+                ]} />
+              </div>
+              <div>
+                <p className="font-bold text-gray-900 mb-2">AI SDR (Cursive Pipeline):</p>
+                <MachineList items={[
+                  "Subscription: $10k/month = $30k per quarter",
+                  "Emails sent: 18,000 (200 per day, consistent)",
+                  "Meetings booked: 360",
+                  "Cost per meeting: $83",
+                  "Ramp time: 2 weeks (domain warm-up + configuration)",
+                  "Zero downtime, consistent 5% variance in output"
+                ]} />
+              </div>
+            </div>
+          </MachineSection>
+
+          <MachineSection title="Effectiveness Metrics">
+            <div className="space-y-4">
+              <div>
+                <p className="font-bold text-gray-900 mb-2">AI Advantages:</p>
+                <MachineList items={[
+                  "Reply rate: 14% (vs 9% human) - better personalization via data analysis",
+                  "Volume: 4.2x more emails sent with consistent quality",
+                  "Personalization quality: 7.8/10 avg score (vs 6.4/10 human in blind review)",
+                  "Zero performance variance due to motivation/personal issues",
+                  "References more specific, recent data points in every email",
+                  "Processing speed: 2 seconds per prospect research vs 3-5 minutes human"
+                ]} />
+              </div>
+              <div>
+                <p className="font-bold text-gray-900 mb-2">Human Advantages:</p>
+                <MachineList items={[
+                  "Generated 3 warm referrals from relationship building",
+                  "Creative plays converted at 3x rate of standard outreach",
+                  "Handled complex, nuanced objections significantly better",
+                  "Successfully navigated emotionally sensitive conversations",
+                  "Developed multi-threaded strategies for high-value accounts"
+                ]} />
+              </div>
+            </div>
+          </MachineSection>
+
+          <MachineSection title="Cursive's Hybrid Approach">
+            <p className="text-gray-700 mb-3">
+              The optimal model combines AI scale with human judgment. Companies running this hybrid model report 3-5x more pipeline per BDR.
+            </p>
+            <div className="space-y-4">
+              <div>
+                <p className="font-bold text-gray-900 mb-2">AI Handles:</p>
+                <MachineList items={[
+                  "High-volume prospecting and initial outreach",
+                  "Automated follow-up sequences (never drop a lead)",
+                  "Meeting booking and calendar management",
+                  "Lead research, data enrichment, and CRM hygiene",
+                  "Simple reply routing and qualification"
+                ]} />
+              </div>
+              <div>
+                <p className="font-bold text-gray-900 mb-2">Humans Handle:</p>
+                <MachineList items={[
+                  "Discovery calls and deal progression",
+                  "Complex accounts requiring strategic planning",
+                  "Relationship management and referral generation",
+                  "Warm replies with nuanced questions or objections",
+                  "Top 50-100 target accounts with creative, multi-threaded plays"
+                ]} />
+              </div>
+              <div>
+                <p className="font-bold text-gray-900 mb-2">Hybrid Implementation:</p>
+                <MachineList items={[
+                  "Step 1: AI owns top-of-funnel (prospecting, first-touch, automated follow-up)",
+                  "Step 2: Route warm replies to humans in real-time (<5 min response)",
+                  "Step 3: Humans own strategic accounts (top 50-100 targets)",
+                  "Step 4: Use AI data to coach humans (subject lines, value props, messaging)",
+                  "Result: 80% of BDR time spent on conversations instead of prospecting"
+                ]} />
+              </div>
+            </div>
+          </MachineSection>
+
+          <MachineSection title="Real-World Results">
+            <p className="text-gray-700 mb-3">
+              Case study: Series B SaaS company cut BDR team from 8 to 3, deployed AI for top-of-funnel, saw 40% pipeline increase while reducing sales costs by $350,000 annually.
+            </p>
+            <p className="text-gray-700">
+              Recommendation: Hire fewer BDRs, pay them more, invest in their development as strategic sellers, and pair them with AI to handle scale.
+            </p>
+          </MachineSection>
+
+          <MachineSection title="Related Resources">
+            <MachineList items={[
+              { label: "Cold Email in 2026", href: "/blog/cold-email-2026", description: "What's still working and what's not" },
+              { label: "Perfect ICP Targeting", href: "/blog/icp-targeting-guide", description: "5-step framework for better leads" },
+              { label: "Scaling Outbound", href: "/blog/scaling-outbound", description: "10 to 200+ emails without killing quality" },
+              { label: "Platform Overview", href: "/platform", description: "Cursive's visitor identification, intent data, AI outreach" },
+              { label: "Pricing", href: "/pricing", description: "Self-serve marketplace + done-for-you services" }
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Get Started with Cursive">
+            <p className="text-gray-700 mb-3">
+              Cursive's AI SDR platform handles high-volume prospecting, research, and personalization at scale. Book a 30-day pilot to test the results yourself.
+            </p>
+            <MachineList items={[
+              { label: "Book a Demo", href: "/book", description: "See Cursive's AI SDR in action" },
+              { label: "Visitor Identification", href: "/visitor-identification", description: "70% identification rate for B2B traffic" },
+              { label: "AI Outreach", href: "/ai-outreach", description: "360M+ contact profiles for hyper-personalization" }
+            ]} />
+          </MachineSection>
+        </MachineContent>
+      </MachineView>
     </main>
   )
 }

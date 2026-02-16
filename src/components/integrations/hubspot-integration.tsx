@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
 import Image from 'next/image'
+import { toast } from 'sonner'
 
 interface CrmConnectionStatus {
   connected: boolean
@@ -58,7 +59,7 @@ export function HubSpotIntegration({ workspaceId, isPro }: HubSpotIntegrationPro
 
   const handleConnect = () => {
     if (!isPro) {
-      alert('HubSpot integration requires a Pro plan. Please upgrade to continue.')
+      toast.error('HubSpot integration requires a Pro plan. Please upgrade to continue.')
       return
     }
     setConnecting(true)

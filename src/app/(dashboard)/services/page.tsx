@@ -1,5 +1,6 @@
 'use client'
 
+import { motion } from 'framer-motion'
 import { getServiceLink } from '@/lib/stripe/payment-links'
 
 const SERVICE_TIERS = [
@@ -88,9 +89,14 @@ export default function ServicesPage() {
 
       {/* Service Tier Cards */}
       <div className="grid gap-6 lg:grid-cols-3">
-        {SERVICE_TIERS.map((tier) => (
-          <div
+        {SERVICE_TIERS.map((tier, index) => (
+          <motion.div
             key={tier.key}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
+            whileHover={{ scale: 1.02, y: -4 }}
+            whileTap={{ scale: 0.98 }}
             className={`relative flex flex-col border rounded-xl p-6 transition-all hover:shadow-lg ${
               tier.popular
                 ? 'border-primary/40 bg-gradient-to-b from-primary/5 to-background shadow-md'
@@ -159,7 +165,7 @@ export default function ServicesPage() {
             >
               Get Started
             </a>
-          </div>
+          </motion.div>
         ))}
       </div>
 

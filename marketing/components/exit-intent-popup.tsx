@@ -300,10 +300,16 @@ export function ExitIntentPopup() {
                     </p>
                   </div>
 
-                  <form onSubmit={handleSubmit} className="space-y-4">
+                  <form
+                    onSubmit={handleSubmit}
+                    className="space-y-4"
+                    toolname="requestFreeAuditPopup"
+                    tooldescription="Request a free AI or visitor audit from Cursive. Enter your email to receive personalized insights or a report of your last 100 website visitors."
+                  >
                     <div>
                       <input
                         type="email"
+                        name="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="Enter your work email"
@@ -311,6 +317,7 @@ export function ExitIntentPopup() {
                         required
                         disabled={isSubmitting}
                         autoFocus
+                        toolparamdescription="Work email to receive the free audit report"
                       />
                     </div>
 

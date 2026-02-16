@@ -1,31 +1,15 @@
+"use client"
+
 import { Container } from "@/components/ui/container"
 import { Button } from "@/components/ui/button"
 import { DashboardCTA } from "@/components/dashboard-cta"
 import { Calendar, Clock, ArrowLeft, ArrowRight, Check, X } from "lucide-react"
-import { generateMetadata } from "@/lib/seo/metadata"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateFAQSchema } from "@/lib/seo/faq-schema"
 import { generateBlogPostSchema } from "@/lib/seo/structured-data"
 import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
 import Link from "next/link"
-
-export const metadata = generateMetadata({
-  title: "Clearbit Alternatives: 10 Tools Compared (2026)",
-  description: "Compare the top 10 Clearbit alternatives for B2B data enrichment, visitor identification, and lead intelligence. Find the best fit for your sales team with our detailed comparison.",
-  keywords: [
-    "clearbit alternatives",
-    "clearbit competitors",
-    "b2b data enrichment",
-    "visitor identification tools",
-    "lead intelligence software",
-    "company data api",
-    "intent data platforms",
-    "clearbit vs competitors",
-    "b2b prospecting tools",
-    "contact enrichment software"
-  ],
-  canonical: "https://www.meetcursive.com/blog/clearbit-alternatives-comparison",
-})
+import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
 
 const faqs = [
   {
@@ -56,8 +40,9 @@ export default function BlogPost() {
       <StructuredData data={generateFAQSchema({ faqs })} />
       <StructuredData data={generateBlogPostSchema({ title: "Clearbit Alternatives: 10 Tools Compared (2026)", description: "Compare the top 10 Clearbit alternatives for B2B data enrichment, visitor identification, and lead intelligence. Find the best fit for your sales team with our detailed comparison.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://www.meetcursive.com/cursive-logo.png" })} />
 
-      {/* Header */}
-      <section className="py-12 bg-white">
+      <HumanView>
+        {/* Header */}
+        <section className="py-12 bg-white">
         <Container>
           <Link href="/blog" className="inline-flex items-center gap-2 text-primary hover:underline mb-8">
             <ArrowLeft className="w-4 h-4" />
@@ -978,6 +963,337 @@ export default function BlogPost() {
           </div>
         </Container>
       </section>
+      </HumanView>
+
+      <MachineView>
+        <MachineContent>
+          <h1 className="text-2xl font-bold mb-4">Clearbit Alternatives: 10 Tools Compared (2026)</h1>
+
+          <p className="text-gray-700 mb-6">
+            Compare the top 10 Clearbit alternatives for B2B data enrichment, visitor identification, and lead intelligence. Find the best fit for your sales team with our detailed comparison. Published: February 4, 2026.
+          </p>
+
+          <MachineSection title="Key Takeaways">
+            <MachineList items={[
+              "Cursive - Best for real-time visitor identification & intent-based outreach ($99-$999/mo)",
+              "ZoomInfo - Largest proprietary database (100M+ contacts) with enterprise pricing ($15k-$50k+/year)",
+              "Apollo.io - All-in-one platform with generous free tier (Free-$149/user/mo)",
+              "Lusha - Specializes in phone numbers with 70%+ connect rate ($29-$79/user/mo)",
+              "6sense - ABM platform with predictive AI and intent data ($60k+/year)",
+              "Hunter.io - Budget-friendly email finding & verification (Free-$49/mo)",
+              "Cognism - Best European/international coverage with GDPR compliance ($15k-$40k/year)",
+              "LeadIQ - CRM-first workflows for Salesforce/HubSpot ($75-$150/user/mo)",
+              "Bombora - Intent data network tracking 8,000+ topics ($25k+/year)",
+              "RocketReach - 700M+ profiles with social media data ($39-$249/mo)"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Comparison Criteria">
+            <p className="text-gray-700 mb-3">
+              When evaluating Clearbit alternatives, consider:
+            </p>
+            <MachineList items={[
+              "Pricing: Ranges from free tiers (Hunter.io, Apollo.io) to $60k+/year (6sense)",
+              "Features: Data enrichment, visitor identification, intent data, contact finding, technographics",
+              "Best for: Enterprise vs SMB, specific use cases (visitor ID, ABM, phone numbers, etc.)",
+              "Data coverage: Database size, geographic coverage, accuracy rates",
+              "Integrations: CRM (Salesforce, HubSpot), marketing automation, sales engagement"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="1. Cursive - Real-Time Visitor Identification">
+            <p className="text-gray-700 mb-3">
+              <strong>Pricing:</strong> $99-$999/mo | <strong>Best for:</strong> B2B SaaS converting website traffic into pipeline
+            </p>
+            <div className="space-y-4">
+              <div>
+                <p className="font-bold text-gray-900 mb-2">Key Features:</p>
+                <MachineList items={[
+                  "Real-time visitor identification (85%+ match rate)",
+                  "Intent signal tracking and scoring",
+                  "Automated outreach workflows",
+                  "Transparent pricing starting at $99/mo"
+                ]} />
+              </div>
+              <div>
+                <p className="font-bold text-gray-900 mb-2">Best Use Case:</p>
+                <p className="text-gray-700">Ideal replacement if you're using Clearbit Reveal + manual follow-up. Specializes in identifying anonymous website visitors and automating personalized outreach based on behavior and intent signals.</p>
+              </div>
+            </div>
+          </MachineSection>
+
+          <MachineSection title="2. ZoomInfo - Enterprise Data Platform">
+            <p className="text-gray-700 mb-3">
+              <strong>Pricing:</strong> $15k-$50k+/year | <strong>Best for:</strong> Enterprise sales teams needing comprehensive account intelligence
+            </p>
+            <div className="space-y-4">
+              <div>
+                <p className="font-bold text-gray-900 mb-2">Key Features:</p>
+                <MachineList items={[
+                  "Largest proprietary database (100M+ contacts, 14M+ companies)",
+                  "Detailed technographic data and org charts",
+                  "Buying committee identification",
+                  "Intent data via Bombora partnership"
+                ]} />
+              </div>
+              <div>
+                <p className="font-bold text-gray-900 mb-2">Best Use Case:</p>
+                <p className="text-gray-700">Enterprise sales teams with budget for premium data. Overkill for most SMBs. Complex platform with steep learning curve and annual contracts required.</p>
+              </div>
+            </div>
+          </MachineSection>
+
+          <MachineSection title="3. Apollo.io - All-in-One Sales Platform">
+            <p className="text-gray-700 mb-3">
+              <strong>Pricing:</strong> Free-$149/user/mo | <strong>Best for:</strong> Small to mid-size teams wanting affordable all-in-one solution
+            </p>
+            <div className="space-y-4">
+              <div>
+                <p className="font-bold text-gray-900 mb-2">Key Features:</p>
+                <MachineList items={[
+                  "275M contacts, 73M companies database",
+                  "Built-in email sequencing and dialing",
+                  "Generous free tier (60 credits/month)",
+                  "Chrome extension for LinkedIn enrichment"
+                ]} />
+              </div>
+              <div>
+                <p className="font-bold text-gray-900 mb-2">Best Use Case:</p>
+                <p className="text-gray-700">Great for teams replacing Clearbit + Outreach/SalesLoft. Combines data + sequencing + dialing in one platform. Data accuracy varies by region.</p>
+              </div>
+            </div>
+          </MachineSection>
+
+          <MachineSection title="4. Lusha - Contact Enrichment with Phone Numbers">
+            <p className="text-gray-700 mb-3">
+              <strong>Pricing:</strong> $29-$79/user/mo | <strong>Best for:</strong> SDR teams focused on high-volume outbound calling
+            </p>
+            <div className="space-y-4">
+              <div>
+                <p className="font-bold text-gray-900 mb-2">Key Features:</p>
+                <MachineList items={[
+                  "High accuracy for phone numbers (70%+ connect rate)",
+                  "Excellent Chrome extension UX",
+                  "GDPR and CCPA compliant",
+                  "Good coverage in North America and Europe"
+                ]} />
+              </div>
+              <div>
+                <p className="font-bold text-gray-900 mb-2">Best Use Case:</p>
+                <p className="text-gray-700">Specializes in direct dial phone numbers and email addresses. Not a full Clearbit replacement but excellent for contact enrichment. Limited firmographic data.</p>
+              </div>
+            </div>
+          </MachineSection>
+
+          <MachineSection title="5. 6sense - ABM with Predictive Analytics">
+            <p className="text-gray-700 mb-3">
+              <strong>Pricing:</strong> $60k+/year | <strong>Best for:</strong> Enterprise marketing teams running sophisticated ABM programs
+            </p>
+            <div className="space-y-4">
+              <div>
+                <p className="font-bold text-gray-900 mb-2">Key Features:</p>
+                <MachineList items={[
+                  "Industry-leading intent data",
+                  "Predictive AI for account scoring",
+                  "Strong advertising integrations",
+                  "Anonymous visitor identification"
+                ]} />
+              </div>
+              <div>
+                <p className="font-bold text-gray-900 mb-2">Best Use Case:</p>
+                <p className="text-gray-700">Uses AI to predict which accounts are in-market based on intent signals across the web. Best for 6+ figure deal sizes. Complex setup requiring dedicated resources.</p>
+              </div>
+            </div>
+          </MachineSection>
+
+          <MachineSection title="6. Hunter.io - Email Finding on a Budget">
+            <p className="text-gray-700 mb-3">
+              <strong>Pricing:</strong> Free-$49/mo | <strong>Best for:</strong> Startups and small teams needing only email finding/verification
+            </p>
+            <div className="space-y-4">
+              <div>
+                <p className="font-bold text-gray-900 mb-2">Key Features:</p>
+                <MachineList items={[
+                  "Most affordable option (free tier available)",
+                  "Simple, focused feature set",
+                  "Good email verification accuracy",
+                  "Bulk processing capabilities"
+                ]} />
+              </div>
+              <div>
+                <p className="font-bold text-gray-900 mb-2">Best Use Case:</p>
+                <p className="text-gray-700">Focuses exclusively on finding and verifying email addresses. Not a full Clearbit replacement but great for specific email-only use cases. No company or contact data.</p>
+              </div>
+            </div>
+          </MachineSection>
+
+          <MachineSection title="7. Cognism - European & International Data">
+            <p className="text-gray-700 mb-3">
+              <strong>Pricing:</strong> $15k-$40k/year | <strong>Best for:</strong> Mid-market to enterprise teams selling internationally, especially in Europe
+            </p>
+            <div className="space-y-4">
+              <div>
+                <p className="font-bold text-gray-900 mb-2">Key Features:</p>
+                <MachineList items={[
+                  "Best-in-class European data coverage (400M+ contacts)",
+                  "GDPR-compliant data sourcing",
+                  "Diamond Data verified mobile numbers",
+                  "Intent data capabilities"
+                ]} />
+              </div>
+              <div>
+                <p className="font-bold text-gray-900 mb-2">Best Use Case:</p>
+                <p className="text-gray-700">Superior data coverage in Europe, APAC, and international markets. Essential for GDPR-compliant prospecting. Smaller database than US-centric alternatives.</p>
+              </div>
+            </div>
+          </MachineSection>
+
+          <MachineSection title="8. LeadIQ - CRM-First Workflows">
+            <p className="text-gray-700 mb-3">
+              <strong>Pricing:</strong> $75-$150/user/mo | <strong>Best for:</strong> SDR teams deeply integrated with Salesforce or HubSpot
+            </p>
+            <div className="space-y-4">
+              <div>
+                <p className="font-bold text-gray-900 mb-2">Key Features:</p>
+                <MachineList items={[
+                  "Seamless CRM integration (Salesforce, HubSpot)",
+                  "Real-time data capture from LinkedIn",
+                  "Track job changes and warm intros",
+                  "Affordable mid-market pricing"
+                ]} />
+              </div>
+              <div>
+                <p className="font-bold text-gray-900 mb-2">Best Use Case:</p>
+                <p className="text-gray-700">Streamlines workflow from prospecting to CRM to outreach. Great workflow tool but limited as standalone enrichment. Smaller database than competitors.</p>
+              </div>
+            </div>
+          </MachineSection>
+
+          <MachineSection title="9. Bombora - Intent Data Network">
+            <p className="text-gray-700 mb-3">
+              <strong>Pricing:</strong> $25k+/year | <strong>Best for:</strong> Enterprise teams with existing data sources wanting to add intent layer
+            </p>
+            <div className="space-y-4">
+              <div>
+                <p className="font-bold text-gray-900 mb-2">Key Features:</p>
+                <MachineList items={[
+                  "Largest intent data network (Company Surge)",
+                  "8,000+ intent topics to track",
+                  "4,000+ B2B website network",
+                  "Powers intent for many other tools (ZoomInfo, etc.)"
+                ]} />
+              </div>
+              <div>
+                <p className="font-bold text-gray-900 mb-2">Best Use Case:</p>
+                <p className="text-gray-700">Specializes in intent signals based on content consumption. Doesn't provide contact data - must pair with another tool for outreach. Not a Clearbit replacement, a complement.</p>
+              </div>
+            </div>
+          </MachineSection>
+
+          <MachineSection title="10. RocketReach - Social Profile Data">
+            <p className="text-gray-700 mb-3">
+              <strong>Pricing:</strong> $39-$249/mo | <strong>Best for:</strong> Recruiters and sales teams doing multi-channel outreach
+            </p>
+            <div className="space-y-4">
+              <div>
+                <p className="font-bold text-gray-900 mb-2">Key Features:</p>
+                <MachineList items={[
+                  "Large contact database (700M+ profiles)",
+                  "Social profile links included (LinkedIn, Twitter, etc.)",
+                  "Bulk lookup and API access",
+                  "Reasonable pricing for mid-market"
+                ]} />
+              </div>
+              <div>
+                <p className="font-bold text-gray-900 mb-2">Best Use Case:</p>
+                <p className="text-gray-700">Offers contact data with unique social media profile information. Good for contact enrichment but limited company data. Data accuracy varies (70-80% range).</p>
+              </div>
+            </div>
+          </MachineSection>
+
+          <MachineSection title="Why Consider Alternatives to Clearbit">
+            <p className="text-gray-700 mb-3">
+              Based on 200+ B2B sales and marketing teams surveyed in 2025, three main reasons companies explore Clearbit alternatives:
+            </p>
+            <MachineList items={[
+              "Cost: Enterprise pricing starts at $50k+ annually, pricing out smaller teams and startups",
+              "Feature gaps: Limited real-time visitor identification and intent signals compared to specialized tools",
+              "Data accuracy: Declining match rates for SMB and international companies, especially outside North America"
+            ]} />
+            <p className="text-gray-700 mt-4">
+              The B2B data landscape has expanded significantly. Specialized tools now offer better pricing, more accurate data, or features like visitor identification and intent data that Clearbit doesn't provide.
+            </p>
+          </MachineSection>
+
+          <MachineSection title="Cursive vs Clearbit">
+            <p className="text-gray-700 mb-3">
+              While Clearbit focuses on enriching known contacts, Cursive specializes in:
+            </p>
+            <MachineList items={[
+              "Real-time visitor identification: 85%+ match rate for anonymous website visitors",
+              "Intent signal tracking: Behavioral scoring based on page views, time on site, and content engagement",
+              "Automated outreach: Trigger personalized campaigns based on visitor behavior and intent",
+              "Transparent pricing: $99-$999/mo vs Clearbit's $50k+ annual enterprise contracts",
+              "Use case focus: Converting website traffic into pipeline vs broad contact enrichment"
+            ]} />
+            <p className="text-gray-700 mt-4">
+              Cursive is ideal for B2B SaaS companies that want to convert website traffic into qualified pipeline through automated, intent-based outreach. It's the best replacement if you're currently using Clearbit Reveal + manual follow-up workflows.
+            </p>
+          </MachineSection>
+
+          <MachineSection title="Decision Framework: Choosing the Right Alternative">
+            <div className="space-y-4">
+              <div>
+                <p className="font-bold text-gray-900 mb-2">For Visitor Identification & Intent:</p>
+                <p className="text-gray-700">Choose Cursive for real-time visitor ID with automated outreach, or 6sense if you have enterprise budget and want full ABM platform.</p>
+              </div>
+              <div>
+                <p className="font-bold text-gray-900 mb-2">For Largest Database:</p>
+                <p className="text-gray-700">Choose ZoomInfo for enterprise-grade coverage (100M+ contacts) or Apollo.io for affordable option with solid coverage (275M contacts).</p>
+              </div>
+              <div>
+                <p className="font-bold text-gray-900 mb-2">For Phone Numbers:</p>
+                <p className="text-gray-700">Choose Lusha for North American markets (70%+ connect rate) or Cognism for international/European coverage with GDPR compliance.</p>
+              </div>
+              <div>
+                <p className="font-bold text-gray-900 mb-2">For Budget-Conscious Teams:</p>
+                <p className="text-gray-700">Start with Hunter.io for email-only needs (free tier), Apollo.io for all-in-one on a budget (free-$149/mo), or Cursive at $99/mo for visitor identification.</p>
+              </div>
+              <div>
+                <p className="font-bold text-gray-900 mb-2">For Intent Data:</p>
+                <p className="text-gray-700">Choose Cursive for website-level intent data, Bombora for topic-based intent across the web (8,000+ topics), or 6sense for predictive intent scoring.</p>
+              </div>
+            </div>
+          </MachineSection>
+
+          <MachineSection title="Related Resources">
+            <MachineList items={[
+              { label: "Apollo.io Alternatives: 7 Competitors Compared", href: "/blog/apollo-alternatives-comparison", description: "Find the best Apollo.io alternative for your sales team in 2026" },
+              { label: "ZoomInfo Alternatives: 8 Cheaper Options", href: "/blog/zoominfo-alternatives-comparison", description: "Affordable alternatives to ZoomInfo for B2B prospecting" },
+              { label: "6sense Alternatives: 7 Competitors Compared", href: "/blog/6sense-alternatives-comparison", description: "Intent data and ABM platforms compared for 2026" },
+              { label: "Warmly Alternatives: 7 Competitors Compared", href: "/blog/warmly-alternatives-comparison", description: "Visitor identification and intent platforms compared" },
+              { label: "Cursive vs Clearbit: Head-to-Head", href: "/blog/cursive-vs-clearbit", description: "Detailed side-by-side comparison of Cursive and Clearbit" },
+              { label: "How to Identify Website Visitors", href: "/blog/how-to-identify-website-visitors-technical-guide", description: "Technical guide to visitor identification methods" }
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Get Started with Cursive">
+            <p className="text-gray-700 mb-3">
+              Cursive helps B2B SaaS companies convert website traffic into qualified pipeline through real-time visitor identification and intent-based outreach.
+            </p>
+            <MachineList items={[
+              { label: "Platform Overview", href: "/platform", description: "Visitor identification, intent data, and AI-powered outreach" },
+              { label: "Pricing", href: "/pricing", description: "Transparent pricing starting at $99/month" },
+              { label: "Visitor Identification", href: "/visitor-identification", description: "85%+ identification rate for B2B traffic" },
+              { label: "Intent Audiences", href: "/intent-audiences", description: "Behavioral scoring and segmentation" },
+              { label: "Audience Builder", href: "/audience-builder", description: "Segment and target your ideal customers" },
+              { label: "Direct Mail Campaigns", href: "/direct-mail", description: "Combine intent data with offline outreach" },
+              { label: "Integrations", href: "/integrations", description: "Connect to your existing tech stack" },
+              { label: "Book a Demo", href: "/book", description: "See Cursive in real-time" }
+            ]} />
+          </MachineSection>
+        </MachineContent>
+      </MachineView>
     </main>
   )
 }

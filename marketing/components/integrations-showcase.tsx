@@ -1,6 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
+import Image from "next/image"
 
 // Exactly 36 items = 3 rows of 12 on desktop
 const integrations = [
@@ -83,9 +84,11 @@ export function IntegrationsShowcase({
             whileHover={{ scale: 1.05, transition: { duration: 0.15 } }}
             className="bg-white rounded-lg p-2.5 border border-gray-200 hover:border-[#007AFF] hover:shadow-md transition-all duration-150 cursor-pointer flex items-center justify-center aspect-square"
           >
-            <img
+            <Image
               src={integration.logo}
               alt={`${integration.name} integration`}
+              width={28}
+              height={28}
               className="w-7 h-7 object-contain"
               loading="lazy"
             />

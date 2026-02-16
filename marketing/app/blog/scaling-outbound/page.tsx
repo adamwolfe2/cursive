@@ -1,53 +1,20 @@
+"use client"
+
 import { Container } from "@/components/ui/container"
 import { Button } from "@/components/ui/button"
 import { DashboardCTA } from "@/components/dashboard-cta"
 import { Calendar, Clock, ArrowLeft, ArrowRight, AlertTriangle } from "lucide-react"
-import { Metadata } from "next"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateBlogPostSchema } from "@/lib/seo/structured-data"
 import Link from "next/link"
-
-export const metadata: Metadata = {
-  title: "How to Scale Outbound Sales Without Hiring More SDRs | Cursive",
-  description: "Scale B2B outbound sales with automation, data, and technology. Proven strategies to 3x pipeline without increasing headcount or budget.",
-  keywords: "scale outbound sales, sales automation, SDR productivity, outbound scaling, sales operations, pipeline growth",
-
-  openGraph: {
-    title: "How to Scale Outbound Sales Without Hiring More SDRs | Cursive",
-    description: "Scale B2B outbound sales with automation, data, and technology. Proven strategies to 3x pipeline without increasing headcount or budget.",
-    type: "article",
-    url: "https://www.meetcursive.com/blog/scaling-outbound",
-    siteName: "Cursive",
-    images: [{
-      url: "https://www.meetcursive.com/og-image.png",
-      width: 1200,
-      height: 630,
-    }],
-    locale: "en_US",
-  },
-
-  twitter: {
-    card: "summary_large_image",
-    title: "How to Scale Outbound Sales Without Hiring More SDRs | Cursive",
-    description: "Scale B2B outbound sales with automation, data, and technology. Proven strategies to 3x pipeline without increasing headcount or budget.",
-    images: ["https://www.meetcursive.com/og-image.png"],
-    creator: "@meetcursive",
-  },
-
-  alternates: {
-    canonical: "https://www.meetcursive.com/blog/scaling-outbound",
-  },
-
-  robots: {
-    index: true,
-    follow: true,
-  },
-}
+import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
 
 export default function BlogPost() {
   return (
     <main>
       <StructuredData data={generateBlogPostSchema({ title: "How to Scale Outbound Sales Without Hiring More SDRs", description: "Scale B2B outbound sales with automation, data, and technology. Proven strategies to 3x pipeline without increasing headcount or budget.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://www.meetcursive.com/cursive-logo.png" })} />
+
+      <HumanView>
 
       {/* Header */}
       <section className="py-12 bg-white">
@@ -606,6 +573,174 @@ export default function BlogPost() {
           </div>
         </Container>
       </section>
+      </HumanView>
+
+      <MachineView>
+        <MachineContent>
+          <h1 className="text-2xl font-bold mb-4">How to Scale Outbound Sales Without Hiring More SDRs</h1>
+
+          <p className="text-gray-700 mb-6">
+            Comprehensive guide to scaling B2B outbound from 10 to 200+ emails/day without sacrificing quality, deliverability, or personalization. Based on 500+ outbound programs managed at Cursive. Published: January 14, 2026.
+          </p>
+
+          <MachineSection title="Core Thesis">
+            <p className="text-gray-700 mb-3">
+              Most companies fail at scaling outbound because they try to do more of the same. Successful scaling requires different infrastructure, tools, and processes. The key: automate repetitive work, maintain personalization quality, and build systems that scale independently of headcount.
+            </p>
+          </MachineSection>
+
+          <MachineSection title="The Scaling Trap - Why Volume-First Approaches Fail">
+            <MachineList items={[
+              "Quality drops: BDRs can personalize 40-60 emails/day max. At 100+ they resort to templates. Result: reply rates drop from 14% (deep personalization) to 3% (templates).",
+              "Deliverability suffers: 500+ emails/day from one domain = spam flags within a week. Recovery takes 4-6 weeks of reduced volume.",
+              "Lead quality degrades: Companies run out of high-fit leads, broaden ICP, end up targeting C-tier prospects who never close.",
+              "Operations break: No tracking, duplicate outreach, missed follow-ups, messy CRM data.",
+              "Breaking point: Most companies hit the wall within 4-8 weeks of aggressive scaling."
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="The 4 Pillars of Successful Scaling">
+            <div className="space-y-4">
+              <div>
+                <p className="font-bold text-gray-900 mb-2">1. Infrastructure (Build the Foundation First):</p>
+                <MachineList items={[
+                  "Email domains: Max 150-200 emails/day per domain. For 1,000 emails/day need 5-7 fully warmed domains.",
+                  "Ramp-up period: 4-6 weeks per new domain. No shortcuts.",
+                  "Domain naming: Use subdomains (mail1.yourcompany.com, mail2.yourcompany.com) to protect primary domain.",
+                  "Email infrastructure: SPF/DKIM/DMARC configured, dedicated IPs, automated warm-up, bounce handling, reply routing.",
+                  "Data quality: 95%+ email verification, duplicate removal, suppression lists, data enrichment (job titles, company info, intent signals)."
+                ]} />
+              </div>
+              <div>
+                <p className="font-bold text-gray-900 mb-2">2. Automation (Remove Manual Bottlenecks):</p>
+                <MachineList items={[
+                  "What to automate: Lead sourcing (auto-pull from data sources), email personalization (AI-generated), sending schedules (timezone-optimized), follow-up sequences (trigger-based), meeting booking (calendar links), CRM updates (automatic logging).",
+                  "What NOT to automate: Reply handling (human response within 5 min = 21x more likely to book meeting vs. 30 min), discovery calls, deal progression, strategic account plays.",
+                  "Goal: Each BDR handles 3-5x more pipeline because they focus on conversations, not data entry."
+                ]} />
+              </div>
+              <div>
+                <p className="font-bold text-gray-900 mb-2">3. Process (Standardize What Works):</p>
+                <MachineList items={[
+                  "Campaign structure: 7-step repeatable framework (define ICP → build list → create messaging → set up sequence → launch → monitor → optimize).",
+                  "Messaging framework: 3-5 core value props, 10-15 use cases, customer stories/metrics, personalization tokens. AI/humans assemble these building blocks.",
+                  "Response playbooks: Interested → book meeting, Not now → nurture sequence, Wrong person → ask for referral, Unsubscribe → immediate suppression."
+                ]} />
+              </div>
+              <div>
+                <p className="font-bold text-gray-900 mb-2">4. Quality Control (Monitor and Optimize):</p>
+                <MachineList items={[
+                  "Daily metrics dashboard: Deliverability (>95%), Open rate (40-60%), Reply rate (8-15%), Positive reply rate (3-6%), Meeting booked rate (1-3%).",
+                  "Weekly reviews: Campaign performance, message variations, ICP segments, rep performance.",
+                  "Monthly deep dives: Conversion funnel, sales cycle length, win/loss analysis, ICP refinement."
+                ]} />
+              </div>
+            </div>
+          </MachineSection>
+
+          <MachineSection title="Scaling Roadmap (10 to 200+ emails/day)">
+            <div className="space-y-3">
+              <div>
+                <p className="font-bold text-gray-900 mb-1">Month 1-2: Foundation</p>
+                <p className="text-sm text-gray-700">Set up 3-5 sending domains, configure email infrastructure, build data pipeline, create messaging framework. Volume: 10-30 emails/day.</p>
+              </div>
+              <div>
+                <p className="font-bold text-gray-900 mb-1">Month 3-4: Ramp</p>
+                <p className="text-sm text-gray-700">Launch automated campaigns, test messaging variations, refine ICP based on data, build reply handling process. Volume: 50-100 emails/day.</p>
+              </div>
+              <div>
+                <p className="font-bold text-gray-900 mb-1">Month 5-6: Scale</p>
+                <p className="text-sm text-gray-700">Add more domains as needed, launch multi-channel sequences, hire/train BDRs, implement quality monitoring. Volume: 150-200+ emails/day.</p>
+              </div>
+            </div>
+          </MachineSection>
+
+          <MachineSection title="Key Metrics and Benchmarks">
+            <MachineList items={[
+              "Max safe volume per domain: 150-200 emails/day (conservative operators use 100/day).",
+              "Domain warm-up period: 4-6 weeks minimum.",
+              "Deep personalization reply rate: 14%.",
+              "Template email reply rate: 3% (4.7x worse than deep personalization).",
+              "Email timing impact: Sending 8-10am or 2-4pm local timezone = 23% higher open rates.",
+              "Response speed: Replying within 5 min = 21x more likely to book meeting vs. 30 min.",
+              "Computational overhead reduction: 67% vs. visual scraping methods (per VentureBeat).",
+              "Safe volume increase: Max 20-30% per week. 50 emails/day → 200/day = 6-8 weeks minimum."
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="The Role of AI in Scaling">
+            <div className="space-y-3">
+              <div>
+                <p className="font-bold text-gray-900 mb-2">What AI Does Well:</p>
+                <MachineList items={[
+                  "Research: Analyze LinkedIn, company news, tech stack at scale.",
+                  "Personalization: Write custom intros processing thousands of data points per prospect.",
+                  "Optimization: Test variations, learn patterns.",
+                  "Follow-ups: Generate contextual follow-ups based on behavior."
+                ]} />
+              </div>
+              <div>
+                <p className="font-bold text-gray-900 mb-2">What Humans Still Do Better:</p>
+                <MachineList items={[
+                  "Strategy: Define ICP, value props, positioning.",
+                  "Conversations: Handle replies, objections, complex questions.",
+                  "Judgment: Prioritize accounts, escalate hot leads, creative approaches for strategic accounts."
+                ]} />
+              </div>
+            </div>
+          </MachineSection>
+
+          <MachineSection title="Common Scaling Mistakes to Avoid">
+            <MachineList items={[
+              "Scaling too fast: Don't jump from 50 to 500 emails/day overnight. Increase max 20-30%/week. Plan 6-8 weeks to go from 50 to 200/day.",
+              "Ignoring deliverability: Monitor bounce rates, spam complaints, inbox placement daily. Alert if any domain drops below 95%.",
+              "Losing personalization: 'Hi [First Name]' or 'I see you're in software' isn't real personalization. Use AI to maintain quality, don't accept degradation.",
+              "Forgetting quality control: Review metrics daily, optimize weekly, audit random email samples weekly.",
+              "Lowering data quality standards: Clean list of 500 high-fit prospects outperforms dirty list of 5,000 marginal ones every time."
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Success Profile - What Works">
+            <p className="text-gray-700 mb-3">
+              Companies that successfully scale outbound implement these principles systematically:
+            </p>
+            <MachineList items={[
+              "Build infrastructure before scaling volume (domains, authentication, warm-up).",
+              "Automate repetitive work, not conversations.",
+              "Standardize processes and messaging with documented frameworks.",
+              "Monitor quality religiously with daily metrics reviews.",
+              "Use AI to personalize at scale without sacrificing relevance.",
+              "Maintain strict data quality standards even under pressure to grow.",
+              "Teams on Cursive platform: 200+ emails/day within 90 days, 10%+ reply rates maintained."
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="About Cursive">
+            <p className="text-gray-700 mb-3">
+              Cursive is a B2B lead generation platform that handles the entire outbound operation: infrastructure, automation, and execution. Built for scaling from 10 to 200+ emails/day without sacrificing quality.
+            </p>
+            <MachineList items={[
+              { label: "Platform Overview", href: "/platform", description: "Visitor identification, intent data, AI outreach" },
+              { label: "Pricing", href: "/pricing", description: "Self-serve marketplace + done-for-you services" },
+              { label: "Book a Demo", href: "/book", description: "See Cursive in real-time" }
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Related Resources">
+            <MachineList items={[
+              { label: "Cold Email in 2026", href: "/blog/cold-email-2026", description: "What's still working and what's not" },
+              { label: "Perfect ICP Targeting", href: "/blog/icp-targeting-guide", description: "5-step framework for better leads" },
+              { label: "AI SDR vs. Human BDR", href: "/blog/ai-sdr-vs-human-bdr", description: "90-day head-to-head comparison" }
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Author">
+            <p className="text-gray-700">
+              Adam Wolfe, founder of Cursive. Scaled outbound programs from zero to 10,000+ emails/day for B2B companies.
+            </p>
+          </MachineSection>
+        </MachineContent>
+      </MachineView>
     </main>
   )
 }

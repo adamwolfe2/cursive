@@ -74,7 +74,7 @@ export function FAQSection() {
     <>
       <StructuredData data={faqSchema} />
 
-      <section className="py-20 bg-white">
+      <section id="faq" className="py-20 bg-white">
         <Container>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -100,9 +100,9 @@ export function FAQSection() {
                   key={index}
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}
-                  viewport={{ once: true, margin: "-100px" }}
+                  viewport={{ once: true, margin: "-50px" }}
                   transition={{
-                    delay: index * 0.03,
+                    delay: index * 0.05,
                     duration: 0.3,
                     ease: [0.22, 1, 0.36, 1]
                   }}
@@ -130,17 +130,14 @@ export function FAQSection() {
                     {isOpen && (
                       <motion.div
                         id={`faq-answer-${index}`}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
                         transition={{
-                          duration: 0.2,
+                          duration: 0.3,
                           ease: [0.22, 1, 0.36, 1]
                         }}
                         className="overflow-hidden"
-                        style={{
-                          display: isOpen ? 'block' : 'none'
-                        }}
                       >
                         <div className="px-6 pb-5 pt-2 bg-gray-50">
                           <p className="text-gray-700 leading-relaxed">

@@ -22,7 +22,7 @@ export function CustomerLogos() {
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: true, margin: "-50px" }}
           transition={{ duration: 0.3 }}
           className="text-center"
         >
@@ -37,13 +37,14 @@ export function CustomerLogos() {
                 key={company.name}
                 className="flex items-center justify-center h-12"
               >
-                <div className="relative w-8 h-8 hover:scale-110 transition-all duration-300">
+                <div className="hover:scale-110 transition-all duration-300">
                   <Image
                     src={company.logo}
                     alt={`${company.name} logo`}
-                    fill
-                    className="object-contain"
-                    sizes="32px"
+                    width={32}
+                    height={32}
+                    className="object-contain w-8 h-8"
+                    priority={index < 4}
                   />
                 </div>
               </div>

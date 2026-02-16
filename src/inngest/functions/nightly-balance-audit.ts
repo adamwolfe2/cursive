@@ -5,6 +5,7 @@
 import { inngest } from '@/inngest/client'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
+import { sendSlackAlert } from '@/lib/monitoring/alerts'
 
 interface BalanceDiscrepancy {
   partner_id: string
@@ -76,17 +77,18 @@ export const nightlyBalanceAudit = inngest.createFunction(
           },
         })
 
-        // TODO: Send email/Slack notification to admin
-        // await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/emails/send`, {
-        //   method: 'POST',
-        //   headers: { 'Content-Type': 'application/json' },
-        //   body: JSON.stringify({
-        //     to: process.env.ADMIN_EMAIL,
-        //     subject: `⚠️ Balance Discrepancies Detected - ${discrepancies.length} Partners`,
-        //     template: 'admin_balance_alert',
-        //     data: { discrepancies },
-        //   }),
-        // })
+        // Send Slack notification to admin
+        await sendSlackAlert({
+          type: 'system_health',
+          severity: 'critical',
+          message: `Balance Discrepancies Detected - ${discrepancies.length} Partners`,
+          metadata: {
+            discrepancy_count: discrepancies.length,
+            partners: discrepancies.map((d: BalanceDiscrepancy) => d.partner_name).join(', '),
+            action_required: 'Review in admin dashboard and reconcile manually',
+            audit_timestamp: new Date().toISOString(),
+          },
+        })
       })
 
       // Step 3: Auto-fix discrepancies (optional - can be manually triggered instead)

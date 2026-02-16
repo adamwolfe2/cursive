@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   ArrowLeft,
@@ -39,6 +39,8 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { EditLeadDialog } from './EditLeadDialog'
+import { LeadActivityTimeline } from './LeadActivityTimeline'
+import { LeadNotes } from './LeadNotes'
 import { StatusBadge } from '@/app/(dashboard)/crm/components/StatusBadge'
 import { LeadAvatar } from '@/app/(dashboard)/crm/components/LeadAvatar'
 import { CompanyFavicon } from '@/app/(dashboard)/crm/components/CompanyFavicon'
@@ -53,10 +55,18 @@ interface LeadDetailClientProps {
 
 export function LeadDetailClient({ initialLead }: LeadDetailClientProps) {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const toast = useToast()
   const queryClient = useQueryClient()
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [showEditDialog, setShowEditDialog] = useState(false)
+
+  // Auto-open edit dialog when navigated with ?edit=true
+  useEffect(() => {
+    if (searchParams.get('edit') === 'true') {
+      setShowEditDialog(true)
+    }
+  }, [searchParams])
 
   // Fetch lead data with React Query
   const { data: lead, refetch } = useQuery({
@@ -293,17 +303,11 @@ export function LeadDetailClient({ initialLead }: LeadDetailClientProps) {
                 </TabsContent>
 
                 <TabsContent value="activity" className="p-6">
-                  <div className="text-center py-8 text-gray-500">
-                    <Calendar className="h-12 w-12 mx-auto mb-3 opacity-20" />
-                    <p>Activity tracking coming soon</p>
-                  </div>
+                  <LeadActivityTimeline leadId={lead.id} />
                 </TabsContent>
 
                 <TabsContent value="notes" className="p-6">
-                  <div className="text-center py-8 text-gray-500">
-                    <Edit2 className="h-12 w-12 mx-auto mb-3 opacity-20" />
-                    <p>Notes feature coming soon</p>
-                  </div>
+                  <LeadNotes leadId={lead.id} />
                 </TabsContent>
               </Tabs>
             </div>

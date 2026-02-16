@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
@@ -91,6 +92,7 @@ export const EnhancedLeadsTable = React.forwardRef<EnhancedLeadsTableHandle, Enh
   const [editDialogOpen, setEditDialogOpen] = React.useState(false)
   const [editingLead, setEditingLead] = React.useState<LeadTableRow | null>(null)
   const [selectedLeadIds, setSelectedLeadIds] = React.useState<Set<string>>(new Set())
+  const router = useRouter()
 
   // Expose clearSelection to parent via ref
   React.useImperativeHandle(ref, () => ({
@@ -513,7 +515,7 @@ export const EnhancedLeadsTable = React.forwardRef<EnhancedLeadsTableHandle, Enh
                                     method: 'DELETE',
                                   })
                                   if (response.ok) {
-                                    window.location.reload()
+                                    router.refresh()
                                   } else {
                                     alert('Failed to delete lead')
                                   }
@@ -655,7 +657,7 @@ export const EnhancedLeadsTable = React.forwardRef<EnhancedLeadsTableHandle, Enh
         open={importDialogOpen}
         onOpenChange={setImportDialogOpen}
         onSuccess={() => {
-          window.location.reload()
+          router.refresh()
         }}
       />
 
@@ -664,7 +666,7 @@ export const EnhancedLeadsTable = React.forwardRef<EnhancedLeadsTableHandle, Enh
         open={createDialogOpen}
         onOpenChange={setCreateDialogOpen}
         onSuccess={() => {
-          window.location.reload()
+          router.refresh()
         }}
       />
 
@@ -674,7 +676,7 @@ export const EnhancedLeadsTable = React.forwardRef<EnhancedLeadsTableHandle, Enh
         onOpenChange={setEditDialogOpen}
         lead={editingLead}
         onSuccess={() => {
-          window.location.reload()
+          router.refresh()
         }}
       />
     </div>

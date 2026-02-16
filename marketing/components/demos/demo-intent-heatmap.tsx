@@ -80,10 +80,10 @@ export function DemoIntentHeatmap() {
           <div className="text-xs text-gray-600 mb-1">Live Signals</div>
           <motion.div
             key={totalSignals}
-            initial={{ scale: 1.2, color: "#007AFF" }}
-            animate={{ scale: 1, color: "#111827" }}
-            transition={{ duration: 0.3 }}
-            className="text-2xl text-gray-900 font-light"
+            initial={{ color: "#007AFF" }}
+            animate={{ color: "#111827" }}
+            transition={{ duration: 0.4 }}
+            className="text-2xl text-gray-900 font-light tabular-nums"
           >
             {totalSignals.toLocaleString()}
           </motion.div>

@@ -12,6 +12,7 @@ import { GradientCard, GradientBadge } from '@/components/ui/gradient-card'
 import { PageContainer, PageHeader, PageSection } from '@/components/layout/page-container'
 import { PageLoading } from '@/components/ui/loading-states'
 import { EmptyState } from '@/components/ui/empty-states'
+import { CreateOfferDialog } from '@/components/ai-studio/create-offer-dialog'
 import { ArrowLeft, ArrowRight, Package, Plus, Tag } from 'lucide-react'
 
 interface Offer {
@@ -31,6 +32,7 @@ export default function OffersPage() {
 
   const [offers, setOffers] = useState<Offer[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
 
   useEffect(() => {
     if (!workspaceId) {
@@ -96,10 +98,10 @@ export default function OffersPage() {
         <EmptyState
           icon={Package}
           title="No offers yet"
-          description="Offers are automatically extracted during brand analysis. Try extracting a new brand to see products and services."
+          description="Offers are automatically extracted during brand analysis, or you can add them manually."
           action={{
-            label: 'Add Manual Offer (Coming Soon)',
-            onClick: () => {}
+            label: 'Add Manual Offer',
+            onClick: () => setIsCreateDialogOpen(true)
           }}
         />
       ) : (
@@ -146,12 +148,26 @@ export default function OffersPage() {
 
           {/* Add Offer Button */}
           <div className="flex justify-center pt-6">
-            <Button variant="outline" className="gap-2" disabled title="Coming soon">
+            <Button
+              variant="outline"
+              className="gap-2"
+              onClick={() => setIsCreateDialogOpen(true)}
+            >
               <Plus className="h-4 w-4" />
-              Add Manual Offer (Coming Soon)
+              Add Manual Offer
             </Button>
           </div>
         </>
+      )}
+
+      {/* Create Offer Dialog */}
+      {workspaceId && (
+        <CreateOfferDialog
+          workspaceId={workspaceId}
+          open={isCreateDialogOpen}
+          onOpenChange={setIsCreateDialogOpen}
+          onSuccess={fetchOffers}
+        />
       )}
     </PageContainer>
   )

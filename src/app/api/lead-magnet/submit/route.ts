@@ -89,8 +89,52 @@ export async function POST(request: NextRequest) {
       safeError('[Lead Magnet] Slack notification failed:', error)
     })
 
-    // TODO: Send email with link to onboarding form
-    // For now, we'll just log and notify via Slack
+    // Send confirmation email with next steps
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://leads.meetcursive.com'
+    const onboardingUrl = `${baseUrl}/onboarding?email=${encodeURIComponent(email)}&type=${audit_type}`
+
+    try {
+      const { sendEmail, EMAIL_CONFIG } = await import('@/lib/email/resend-client')
+      await sendEmail({
+        to: email,
+        subject: audit_type === 'ai_audit'
+          ? 'Your AI Audit is Ready - Next Steps'
+          : 'Set Up Your Free Visitor Tracking',
+        html: `
+          <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto;">
+            <div style="text-align: center; padding: 32px 0 24px;">
+              <img src="${EMAIL_CONFIG.logoUrl}" alt="Cursive" width="120" style="display: inline-block;" />
+            </div>
+            <div style="background: #fff; border: 1px solid #e4e4e7; border-radius: 12px; padding: 32px;">
+              <h1 style="font-size: 24px; font-weight: 600; color: #000; margin: 0 0 16px;">
+                ${audit_type === 'ai_audit' ? 'Your AI Audit Awaits' : 'Start Tracking Visitors'}
+              </h1>
+              <p style="font-size: 16px; color: #71717a; line-height: 1.6; margin: 0 0 24px;">
+                ${audit_type === 'ai_audit'
+                  ? 'We\'re preparing your personalized AI-powered audit. Complete the quick onboarding form below so we can tailor the results to your business.'
+                  : 'You\'re one step away from seeing who visits your website. Complete the setup below to start identifying your anonymous visitors.'}
+              </p>
+              <div style="text-align: center; margin: 32px 0;">
+                <a href="${onboardingUrl}" style="display: inline-block; background: #2563eb; color: #fff; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 16px;">
+                  ${audit_type === 'ai_audit' ? 'Complete Your Audit Setup' : 'Set Up Visitor Tracking'}
+                </a>
+              </div>
+              <p style="font-size: 14px; color: #a1a1aa; margin: 24px 0 0; text-align: center;">
+                Questions? Reply to this email - we're here to help.
+              </p>
+            </div>
+            <div style="text-align: center; padding: 24px 0; color: #a1a1aa; font-size: 12px;">
+              <p>Cursive &middot; Your Growth Engine</p>
+            </div>
+          </div>
+        `,
+      })
+      safeLog('[Lead Magnet] Confirmation email sent to:', email)
+    } catch (emailError) {
+      // Don't fail the submission if email fails - Slack notification is the fallback
+      safeError('[Lead Magnet] Failed to send confirmation email:', emailError)
+    }
+
     safeLog('[Lead Magnet] Submission stored:', {
       email,
       audit_type,

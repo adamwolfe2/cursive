@@ -1,33 +1,13 @@
-import { Metadata } from "next"
+"use client"
+
 import { Container } from "@/components/ui/container"
 import { Button } from "@/components/ui/button"
 import { DashboardCTA } from "@/components/dashboard-cta"
 import { Calendar, Clock, ArrowLeft, ArrowRight, Shield, Zap, Eye, Database } from "lucide-react"
 import Link from "next/link"
-import { generateMetadata } from "@/lib/seo/metadata"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateFAQSchema } from "@/lib/seo/faq-schema"
-import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
-
-export const metadata: Metadata = generateMetadata({
-  title: "How to Identify Website Visitors: Technical Guide",
-  description: "Learn the technical methods behind website visitor identification including IP tracking, reverse lookup, cookie-based tracking, and privacy-compliant approaches for B2B lead generation.",
-  keywords: [
-    "website visitor identification",
-    "visitor tracking technology",
-    "IP-based identification",
-    "reverse IP lookup",
-    "cookie tracking",
-    "first-party data",
-    "visitor identification methods",
-    "B2B visitor tracking",
-    "anonymous visitor identification",
-    "GDPR compliant tracking",
-    "privacy-safe visitor tracking",
-    "visitor identification software"
-  ],
-  canonical: "https://www.meetcursive.com/blog/how-to-identify-website-visitors-technical-guide",
-})
+import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
 
 export default function BlogPost() {
   const faqs = [
@@ -106,6 +86,7 @@ export default function BlogPost() {
     <main>
       <StructuredData data={[articleSchema, breadcrumbSchema, faqSchema]} />
 
+      <HumanView>
       {/* Header */}
       <section className="py-12 bg-white">
         <Container>
@@ -624,7 +605,7 @@ export default function BlogPost() {
 
             <pre className="not-prose bg-gray-900 text-gray-100 rounded-lg p-6 my-6 overflow-x-auto text-sm">
 {`<!-- Add to <head> tag -->
-<script>
+<`}{`script>
   (function() {
     // Track page view with metadata
     window.cursive = window.cursive || [];
@@ -641,7 +622,7 @@ export default function BlogPost() {
     script.async = true;
     document.head.appendChild(script);
   })();
-</script>`}
+</`}{`script>`}
             </pre>
 
             <h3>Back-End Processing</h3>

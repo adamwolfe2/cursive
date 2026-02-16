@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
 import Image from 'next/image'
+import { toast } from 'sonner'
 
 interface SlackIntegrationProps {
   user: any
@@ -32,7 +33,7 @@ export function SlackIntegration({ user, isPro }: SlackIntegrationProps) {
 
   const handleConnect = () => {
     if (!isPro) {
-      alert('Slack integration requires a Pro plan. Please upgrade to continue.')
+      toast.error('Slack integration requires a Pro plan. Please upgrade to continue.')
       return
     }
 
@@ -42,9 +43,16 @@ export function SlackIntegration({ user, isPro }: SlackIntegrationProps) {
   }
 
   const handleDisconnect = () => {
-    if (confirm('Are you sure you want to disconnect Slack?')) {
-      disconnectMutation.mutate()
-    }
+    toast.warning('Are you sure you want to disconnect Slack?', {
+      action: {
+        label: 'Disconnect',
+        onClick: () => disconnectMutation.mutate(),
+      },
+      cancel: {
+        label: 'Cancel',
+        onClick: () => {},
+      },
+    })
   }
 
   return (
@@ -129,12 +137,12 @@ export function SlackIntegration({ user, isPro }: SlackIntegrationProps) {
                     try {
                       const res = await fetch('/api/integrations/slack/test', { method: 'POST' })
                       if (res.ok) {
-                        alert('Test notification sent to Slack!')
+                        toast.success('Test notification sent to Slack!')
                       } else {
-                        alert('Failed to send test notification. Please reconnect Slack.')
+                        toast.error('Failed to send test notification. Please reconnect Slack.')
                       }
                     } catch {
-                      alert('Failed to send test notification.')
+                      toast.error('Failed to send test notification.')
                     }
                   }}
                   className="rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 transition-colors"

@@ -5,6 +5,7 @@
  * Display and manage steps within a sequence
  */
 
+import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -17,6 +18,7 @@ import {
 } from '@/components/ui/card'
 import { Mail, Clock, Trash2, Edit, ArrowDown } from 'lucide-react'
 import { toast } from 'sonner'
+import { EditStepDialog } from './edit-step-dialog'
 
 interface Step {
   id: string
@@ -51,6 +53,7 @@ export function SequenceStepsList({
   sequenceStatus,
 }: SequenceStepsListProps) {
   const queryClient = useQueryClient()
+  const [editingStep, setEditingStep] = useState<Step | null>(null)
 
   const deleteStepMutation = useMutation({
     mutationFn: async (stepId: string) => {
@@ -135,10 +138,8 @@ export function SequenceStepsList({
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => {
-                      // TODO: Open edit modal
-                      toast.info('Edit functionality coming soon')
-                    }}
+                    onClick={() => setEditingStep(step)}
+                    disabled={sequenceStatus === 'active'}
                   >
                     <Edit className="h-4 w-4" />
                   </Button>
@@ -189,6 +190,18 @@ export function SequenceStepsList({
           </Card>
         </div>
       ))}
+
+      {/* Edit Step Dialog */}
+      {editingStep && (
+        <EditStepDialog
+          open={!!editingStep}
+          onOpenChange={(open) => {
+            if (!open) setEditingStep(null)
+          }}
+          step={editingStep}
+          sequenceId={sequenceId}
+        />
+      )}
     </div>
   )
 }

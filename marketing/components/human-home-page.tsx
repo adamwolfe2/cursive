@@ -38,36 +38,66 @@ const heroFeatures: Array<{
   label: string
   shortLabel: string
   icon: LucideIcon
-  component: React.ReactNode
 }> = [
-  { id: "visitor-tracking", label: "Visitor Tracking", shortLabel: "Visitors", icon: Eye, component: <DemoVisitorTracking /> },
-  { id: "intent-heatmap", label: "Intent Heatmap", shortLabel: "Intent", icon: Flame, component: <DemoIntentHeatmap /> },
-  { id: "audience-builder", label: "Audience Builder", shortLabel: "Audiences", icon: Users, component: <DemoAudienceBuilder /> },
-  { id: "enrichment", label: "Data Enrichment", shortLabel: "Enrichment", icon: Database, component: <DemoEnrichmentWaterfall /> },
-  { id: "sequences", label: "Lead Sequences", shortLabel: "Sequences", icon: Mail, component: <DemoLeadSequence /> },
-  { id: "ai-studio", label: "AI Studio", shortLabel: "AI Studio", icon: Sparkles, component: <DemoAIStudio /> },
-  { id: "email-validator", label: "Email Validator", shortLabel: "Validator", icon: ShieldCheck, component: <DemoEmailValidator /> },
-  { id: "pipeline", label: "Pipeline Dashboard", shortLabel: "Pipeline", icon: BarChart3, component: <DemoPipelineDashboard /> },
-  { id: "attribution", label: "Attribution Flow", shortLabel: "Attribution", icon: GitBranch, component: <DemoAttributionFlow /> },
-  { id: "account-intel", label: "Account Intelligence", shortLabel: "Accounts", icon: Building2, component: <DemoAccountIntelligence /> },
-  { id: "people-search", label: "People Search", shortLabel: "People", icon: Search, component: <DemoPeopleSearch /> },
-  { id: "marketplace", label: "Marketplace", shortLabel: "Marketplace", icon: ShoppingCart, component: <DemoMarketplace /> },
+  { id: "visitor-tracking", label: "Visitor Tracking", shortLabel: "Visitors", icon: Eye },
+  { id: "intent-heatmap", label: "Intent Heatmap", shortLabel: "Intent", icon: Flame },
+  { id: "audience-builder", label: "Audience Builder", shortLabel: "Audiences", icon: Users },
+  { id: "enrichment", label: "Data Enrichment", shortLabel: "Enrichment", icon: Database },
+  { id: "sequences", label: "Lead Sequences", shortLabel: "Sequences", icon: Mail },
+  { id: "ai-studio", label: "AI Studio", shortLabel: "AI Studio", icon: Sparkles },
+  { id: "email-validator", label: "Email Validator", shortLabel: "Validator", icon: ShieldCheck },
+  { id: "pipeline", label: "Pipeline Dashboard", shortLabel: "Pipeline", icon: BarChart3 },
+  { id: "attribution", label: "Attribution Flow", shortLabel: "Attribution", icon: GitBranch },
+  { id: "account-intel", label: "Account Intelligence", shortLabel: "Accounts", icon: Building2 },
+  { id: "people-search", label: "People Search", shortLabel: "People", icon: Search },
+  { id: "marketplace", label: "Marketplace", shortLabel: "Marketplace", icon: ShoppingCart },
 ]
+
+// Render the active demo component lazily
+const renderDemoComponent = (activeFeatureId: string) => {
+  switch (activeFeatureId) {
+    case "visitor-tracking":
+      return <DemoVisitorTracking />
+    case "intent-heatmap":
+      return <DemoIntentHeatmap />
+    case "audience-builder":
+      return <DemoAudienceBuilder />
+    case "enrichment":
+      return <DemoEnrichmentWaterfall />
+    case "sequences":
+      return <DemoLeadSequence />
+    case "ai-studio":
+      return <DemoAIStudio />
+    case "email-validator":
+      return <DemoEmailValidator />
+    case "pipeline":
+      return <DemoPipelineDashboard />
+    case "attribution":
+      return <DemoAttributionFlow />
+    case "account-intel":
+      return <DemoAccountIntelligence />
+    case "people-search":
+      return <DemoPeopleSearch />
+    case "marketplace":
+      return <DemoMarketplace />
+    default:
+      return <DemoVisitorTracking />
+  }
+}
 
 export function HumanHomePage() {
   const [activeFeature, setActiveFeature] = useState("visitor-tracking")
-  const active = heroFeatures.find(f => f.id === activeFeature)
 
   return (
     <main className="bg-white">
       {/* ===== HERO SECTION ===== */}
-      <section className="pt-14 pb-6 bg-white lg:min-h-[90vh] lg:flex lg:flex-col lg:justify-center">
+      <section id="hero" className="pt-14 pb-6 bg-white lg:min-h-[90vh] lg:flex lg:flex-col lg:justify-center">
         <Container className="max-w-[1440px] lg:px-12">
           {/* Eyebrow Badge */}
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
             className="text-center lg:text-left mb-4"
           >
             <span className="inline-flex items-center gap-2 px-3 py-1 bg-gray-50 border border-gray-200 rounded-full text-xs text-gray-600">
@@ -82,7 +112,7 @@ export function HumanHomePage() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.4, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
               className="lg:w-[40%] lg:flex-shrink-0 text-center lg:text-left mb-8 lg:mb-0"
             >
               <h1 className="text-[1.65rem] sm:text-4xl lg:text-[2.5rem] xl:text-[2.75rem] font-light mb-4 leading-[1.15]">
@@ -158,7 +188,7 @@ export function HumanHomePage() {
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.4, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
               className="lg:flex-1 lg:min-w-0"
             >
               {/* Mobile Feature Grid (ClickUp-style 4x3 icon grid) */}
@@ -193,16 +223,16 @@ export function HumanHomePage() {
                     <div className="w-2 h-2 rounded-full bg-gray-300" />
                     <div className="w-2 h-2 rounded-full bg-gray-300" />
                   </div>
-                  <div className="p-3 md:p-4">
+                  <div className="p-3 md:p-4 min-h-[400px]">
                     <AnimatePresence mode="wait">
                       <motion.div
                         key={activeFeature}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.15 }}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                       >
-                        {active?.component}
+                        {renderDemoComponent(activeFeature)}
                       </motion.div>
                     </AnimatePresence>
                   </div>
@@ -217,7 +247,7 @@ export function HumanHomePage() {
       <CustomerLogos />
 
       {/* Two Ways to Get Started */}
-      <section className="py-20 bg-[#F7F9FB]">
+      <section id="pricing" className="py-20 bg-[#F7F9FB]">
         <Container>
           <div className="text-center mb-12">
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
@@ -300,7 +330,7 @@ export function HumanHomePage() {
       </section>
 
       {/* Problem → Solution (Benefit-Led) */}
-      <section className="py-20 bg-white">
+      <section id="products" className="py-20 bg-white">
         <Container>
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
@@ -339,7 +369,7 @@ export function HumanHomePage() {
       <CompetitiveAdvantagesSection />
 
       {/* Core Features Grid */}
-      <section className="py-20 bg-[#F7F9FB]">
+      <section id="features" className="py-20 bg-[#F7F9FB]">
         <Container>
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-2">
@@ -391,7 +421,7 @@ export function HumanHomePage() {
       <HowItWorksSection />
 
       {/* Integrations Showcase */}
-      <section className="py-20 bg-[#F7F9FB]">
+      <section id="integrations" className="py-20 bg-[#F7F9FB]">
         <Container>
           <IntegrationsShowcase
             title="Works With Your Existing Stack"
@@ -401,7 +431,7 @@ export function HumanHomePage() {
       </section>
 
       {/* Proven Results */}
-      <section className="py-20 bg-white">
+      <section id="case-studies" className="py-20 bg-white">
         <Container>
           <div className="text-center mb-12">
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
@@ -444,7 +474,7 @@ export function HumanHomePage() {
       <FAQSection />
 
       {/* Explore by Industry */}
-      <section className="py-20 bg-white">
+      <section id="industries" className="py-20 bg-white">
         <Container>
           <div className="text-center mb-12">
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">

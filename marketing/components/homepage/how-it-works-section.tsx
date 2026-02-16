@@ -102,7 +102,7 @@ export function HowItWorksSection() {
 
     autoPlayRef.current = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % processSteps.length)
-    }, 5000) // Change slide every 5 seconds
+    }, 6000) // Change slide every 6 seconds
 
     return () => {
       if (autoPlayRef.current) {
@@ -155,9 +155,9 @@ export function HowItWorksSection() {
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentIndex}
-                initial={{ opacity: 0, x: 100 }}
+                initial={{ opacity: 0.3, x: 40 }}
                 animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -100 }}
+                exit={{ opacity: 0.3, x: -40 }}
                 transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
                 className="w-full"
               >

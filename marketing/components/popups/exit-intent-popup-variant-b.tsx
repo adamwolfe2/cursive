@@ -171,7 +171,12 @@ export function ExitIntentPopupVariantB({
                       Get a personalized report with 20+ company names in the next 5 minutes.
                     </p>
 
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                    <form
+                      onSubmit={handleSubmit}
+                      className="space-y-4"
+                      toolname="requestVisitorReportB"
+                      tooldescription="Request a free personalized report with 20+ company names currently visiting your website. Delivered in 5 minutes."
+                    >
                       <div>
                         <label htmlFor="popup-email-b" className="sr-only">
                           Work Email
@@ -179,6 +184,7 @@ export function ExitIntentPopupVariantB({
                         <input
                           ref={emailInputRef}
                           id="popup-email-b"
+                          name="email"
                           type="email"
                           required
                           placeholder="Enter your work email"
@@ -186,6 +192,7 @@ export function ExitIntentPopupVariantB({
                           onChange={(e) => setEmail(e.target.value)}
                           onFocus={() => analytics.trackInteraction()}
                           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007AFF] focus:border-transparent outline-none transition-all text-base"
+                          toolparamdescription="Work email to receive the free visitor report"
                         />
                       </div>
 
@@ -195,6 +202,7 @@ export function ExitIntentPopupVariantB({
                         </label>
                         <input
                           id="popup-company-b"
+                          name="company"
                           type="text"
                           placeholder="Company name (optional)"
                           value={company}

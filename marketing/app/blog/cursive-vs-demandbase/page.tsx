@@ -1,33 +1,15 @@
+"use client"
+
 import { Container } from "@/components/ui/container"
 import { Button } from "@/components/ui/button"
 import { DashboardCTA } from "@/components/dashboard-cta"
 import { Calendar, Clock, ArrowLeft, Check, X } from "lucide-react"
-import { generateMetadata } from "@/lib/seo/metadata"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateFAQSchema } from "@/lib/seo/faq-schema"
 import { generateBlogPostSchema } from "@/lib/seo/structured-data"
 import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
 import Link from "next/link"
-
-export const metadata = generateMetadata({
-  title: "Cursive vs Demandbase: Affordable ABM Alternative (2026)",
-  description: "Compare Cursive and Demandbase for account-based marketing. Demandbase costs $50k+/year with long implementation. Cursive delivers ABM-like capabilities at $1k/mo with 5-minute setup.",
-  keywords: [
-    "cursive vs demandbase",
-    "demandbase alternative",
-    "demandbase pricing",
-    "affordable abm platform",
-    "account based marketing tools",
-    "abm for smb",
-    "visitor identification",
-    "intent data platform",
-    "demandbase competitor",
-    "b2b marketing platform",
-    "abm software comparison",
-    "mid-market abm"
-  ],
-  canonical: "https://www.meetcursive.com/blog/cursive-vs-demandbase",
-})
+import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
 
 const faqs = [
   {
@@ -70,6 +52,7 @@ export default function BlogPost() {
       <StructuredData data={generateFAQSchema({ faqs })} />
       <StructuredData data={generateBlogPostSchema({ title: "Cursive vs Demandbase: Affordable ABM Alternative (2026)", description: "Compare Cursive and Demandbase for account-based marketing. Demandbase costs $50k+/year with long implementation. Cursive delivers ABM-like capabilities at $1k/mo with 5-minute setup.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://www.meetcursive.com/cursive-logo.png" })} />
 
+      <HumanView>
       {/* Header */}
       <section className="py-12 bg-white">
         <Container>
@@ -956,6 +939,57 @@ export default function BlogPost() {
           </div>
         </Container>
       </section>
+      </HumanView>
+
+      <MachineView>
+        <MachineContent>
+          <h1 className="text-2xl font-bold mb-4">Cursive vs Demandbase: Affordable ABM Alternative (2026)</h1>
+
+          <p className="text-gray-700 mb-6">
+            Demandbase is an enterprise ABM platform costing $50k+/year with 3-6 month implementation. Cursive delivers ABM-like capabilities at $1k/mo with 5-minute setup. Published: February 7, 2026.
+          </p>
+
+          <MachineSection title="Quick Comparison">
+            <MachineList items={[
+              "Demandbase: $50k-150k+/year, annual contracts. Cursive: ~$1,000/mo, no annual commitment",
+              "Setup: Demandbase 3-6 months. Cursive 5 minutes",
+              "Visitor ID: Demandbase account-level. Cursive 70%+ person-level",
+              "Intent Data: Demandbase Bombora + DemandGraph. Cursive 450B+ first-party + third-party signals",
+              "Outreach: Demandbase requires separate tools. Cursive built-in AI SDR multi-channel",
+              "Advertising: Demandbase strong programmatic ABM ads. Cursive direct outreach focused",
+              "Best For: Demandbase enterprise with dedicated ABM teams. Cursive SMB and mid-market growth teams"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Core Capability Differences">
+            <MachineList items={[
+              "Visitor Identification: Demandbase account-level via IP + cookies. Cursive person-level at 70% match rate",
+              "Intent Data: Demandbase third-party Bombora intent + proprietary DemandGraph. Cursive first-party behavioral + third-party signals",
+              "Outreach: Demandbase programmatic advertising + requires Outreach/SalesLoft. Cursive built-in AI email, LinkedIn, SMS, direct mail",
+              "Audience Building: Demandbase account lists with firmographic + intent filters. Cursive dynamic person-level audiences with behavioral triggers",
+              "CRM Integration: Demandbase deep Salesforce ABM integration. Cursive bidirectional sync with Salesforce, HubSpot, others",
+              "Implementation: Demandbase needs dedicated admin, 3-6 months. Cursive self-serve, same-day results"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="When to Choose Each">
+            <MachineList items={[
+              "Choose Demandbase: $100M+ revenue enterprise, dedicated ABM team, programmatic ad orchestration needed, 6+ month sales cycles",
+              "Choose Cursive: SMB/mid-market company, want immediate ROI, prefer direct outreach over ads, need person-level identification, budget-conscious"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Related Resources">
+            <MachineList items={[
+              { label: "Cursive Platform", href: "/platform", description: "Full-stack visitor identification and pipeline generation" },
+              { label: "Pricing", href: "/pricing", description: "Transparent pricing starting at ~$1,000/month" },
+              { label: "6sense vs Cursive", href: "/blog/6sense-vs-cursive-comparison", description: "Another enterprise ABM alternative" },
+              { label: "Cursive vs Apollo", href: "/blog/cursive-vs-apollo", description: "Visitor ID vs prospecting database" },
+              { label: "Free Audit", href: "/free-audit", description: "See what Cursive identifies on your site" }
+            ]} />
+          </MachineSection>
+        </MachineContent>
+      </MachineView>
     </main>
   )
 }

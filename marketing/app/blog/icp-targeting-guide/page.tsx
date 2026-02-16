@@ -1,53 +1,25 @@
+"use client"
+
 import { Container } from "@/components/ui/container"
-import { Button } from "@/components/ui/button"
 import { DashboardCTA } from "@/components/dashboard-cta"
-import { Calendar, Clock, ArrowLeft, ArrowRight, Target } from "lucide-react"
-import { Metadata } from "next"
+import { Calendar, Clock, ArrowLeft } from "lucide-react"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateBlogPostSchema } from "@/lib/seo/structured-data"
 import Link from "next/link"
-
-export const metadata: Metadata = {
-  title: "Complete ICP Targeting Guide for B2B Marketers | Cursive",
-  description: "Build and target your ideal customer profile (ICP) with data-driven strategies. Define firmographics, behaviors, and intent signals for better conversions.",
-  keywords: "ICP targeting, ideal customer profile, B2B targeting, customer segmentation, firmographic targeting, ICP definition",
-
-  openGraph: {
-    title: "Complete ICP Targeting Guide for B2B Marketers | Cursive",
-    description: "Build and target your ideal customer profile (ICP) with data-driven strategies. Define firmographics, behaviors, and intent signals for better conversions.",
-    type: "article",
-    url: "https://www.meetcursive.com/blog/icp-targeting-guide",
-    siteName: "Cursive",
-    images: [{
-      url: "https://www.meetcursive.com/og-image.png",
-      width: 1200,
-      height: 630,
-    }],
-    locale: "en_US",
-  },
-
-  twitter: {
-    card: "summary_large_image",
-    title: "Complete ICP Targeting Guide for B2B Marketers | Cursive",
-    description: "Build and target your ideal customer profile (ICP) with data-driven strategies. Define firmographics, behaviors, and intent signals for better conversions.",
-    images: ["https://www.meetcursive.com/og-image.png"],
-    creator: "@meetcursive",
-  },
-
-  alternates: {
-    canonical: "https://www.meetcursive.com/blog/icp-targeting-guide",
-  },
-
-  robots: {
-    index: true,
-    follow: true,
-  },
-}
+import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
 
 export default function BlogPost() {
   return (
     <main>
-      <StructuredData data={generateBlogPostSchema({ title: "Complete ICP Targeting Guide for B2B Marketers", description: "Build and target your ideal customer profile (ICP) with data-driven strategies. Define firmographics, behaviors, and intent signals for better conversions.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://www.meetcursive.com/cursive-logo.png" })} />
+      <StructuredData data={generateBlogPostSchema({
+        title: "The 5-Step Framework for Perfect ICP Targeting",
+        description: "Build and target your ideal customer profile (ICP) with data-driven strategies. Define firmographics, behaviors, and intent signals for better conversions.",
+        author: "Adam Wolfe",
+        publishDate: "2026-01-21",
+        image: "https://www.meetcursive.com/cursive-logo.png",
+      })} />
+
+      <HumanView>
 
       {/* Header */}
       <section className="py-12 bg-white">
@@ -587,6 +559,291 @@ export default function BlogPost() {
           </div>
         </Container>
       </section>
+      </HumanView>
+
+      <MachineView>
+        <MachineContent>
+          <h1 className="text-2xl font-bold mb-4">The 5-Step Framework for Perfect ICP Targeting</h1>
+
+          <p className="text-gray-700 mb-6">
+            A practical guide for B2B marketers to define, target, and refine their Ideal Customer Profile (ICP) using data-driven strategies. Published: January 21, 2026. Author: Adam Wolfe, Founder of Cursive.
+          </p>
+
+          <MachineSection title="Key Takeaways">
+            <MachineList items={[
+              "Most B2B companies waste 60-70% of outbound budget targeting wrong prospects",
+              "ICP = type of company that gets most value, has budget/authority, easy to sell to",
+              "ICP ≠ buyer persona (ICP is company-level, persona is individual-level)",
+              "Companies with tight ICP see 2-3x improvement in pipeline efficiency",
+              "ICP should be narrow, specific, data-driven, and regularly updated"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="What is an ICP?">
+            <p className="text-gray-700 mb-3">
+              Ideal Customer Profile (ICP) is the type of company that:
+            </p>
+            <MachineList items={[
+              "Gets the most value from your product",
+              "Has budget and authority to buy",
+              "Experiences efficient, repeatable sales motion",
+              "Is a focused subset of TAM, not the entire addressable market",
+              "Should be narrow and specific to increase conversion rates"
+            ]} />
+            <p className="text-gray-700 mt-3">
+              ICP is NOT: a buyer persona (individual level), your total addressable market, "any company that could use our product", or a static document.
+            </p>
+          </MachineSection>
+
+          <MachineSection title="Why ICP Matters: Impact Metrics">
+            <p className="text-gray-700 mb-3">
+              When you nail your ICP, every sales funnel metric improves:
+            </p>
+            <MachineList items={[
+              "Reply rates: 2-3x improvement (generic → specific pain points)",
+              "Sales cycles: 40-60% shorter (right budget, authority, urgency)",
+              "Close rates: 2-3x improvement (obvious product-market fit)",
+              "Churn: 30-50% reduction (right customers stick around)",
+              "Marketing effectiveness: Higher conversion rates (resonant messaging)",
+              "Sales morale: Reps close more, earn more, stay longer",
+              "Pipeline efficiency: 2-3x more revenue with same headcount/effort"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="5-Step ICP Framework">
+            <div className="space-y-4">
+              <div>
+                <p className="font-bold text-gray-900 mb-2">Step 1: Analyze Your Best Customers</p>
+                <p className="text-gray-700 mb-2">
+                  Pull top 10-20 customers from CRM who: closed quickly, pay full price, use product actively, expand over time, refer others, generate low support volume.
+                </p>
+                <MachineList items={[
+                  "Look for patterns: industries, revenue range, employee count, location, growth stage, tech stack, acquisition channel",
+                  "Also analyze WORST customers (churned quickly, heavy discounts, high support) to build negative filters",
+                  "Create spreadsheet with top 20 + bottom 20 customers, fill in all attributes"
+                ]} />
+              </div>
+
+              <div>
+                <p className="font-bold text-gray-900 mb-2">Step 2: Define Firmographic Criteria</p>
+                <p className="text-gray-700 mb-2">
+                  Quantitative attributes used to build lead lists. Be specific, not vague.
+                </p>
+                <MachineList items={[
+                  "Industry: Specific verticals (e.g., 'B2B SaaS' not 'technology')",
+                  "Revenue: Exact range (e.g., '$5M-$50M ARR' not 'small to mid-size')",
+                  "Employees: Number range (e.g., '50-500')",
+                  "Location: Countries/regions (e.g., 'United States, Canada, UK')",
+                  "Funding Stage: Series A-C, bootstrapped, etc.",
+                  "Growth Signals: Hiring patterns (e.g., '3+ open sales roles')"
+                ]} />
+                <p className="text-gray-700 mt-2">
+                  Example ICP: B2B SaaS companies, $5M-$50M ARR, 50-500 employees, US/Canada/UK, Series A-C, hiring 3+ sales reps.
+                </p>
+              </div>
+
+              <div>
+                <p className="font-bold text-gray-900 mb-2">Step 3: Identify Qualifying Attributes</p>
+                <p className="text-gray-700 mb-2">
+                  Qualitative signals that indicate fit (harder to filter programmatically but differentiate good from great leads).
+                </p>
+                <MachineList items={[
+                  "Tech stack: Uses Salesforce, HubSpot, or similar CRM",
+                  "Business model: Sells to enterprises with ACV > $50k",
+                  "Pain indicators: Just hired VP of Sales (needs process)",
+                  "Buying triggers: Recent funding round, new market expansion",
+                  "Culture fit: Growth-focused, data-driven, fast-moving"
+                ]} />
+              </div>
+
+              <div>
+                <p className="font-bold text-gray-900 mb-2">Step 4: Map the Buying Committee</p>
+                <p className="text-gray-700 mb-2">
+                  Define WHO to reach within ICP companies. Most B2B deals require engaging 3-5 stakeholders:
+                </p>
+                <MachineList items={[
+                  "Champion: Feels the pain, drives the deal internally",
+                  "Economic Buyer: Has budget authority to approve purchase",
+                  "Decision Maker: Final sign-off authority",
+                  "Influencers: Provide input (legal, IT, finance, security)",
+                  "End Users: Will actually use the product day-to-day"
+                ]} />
+                <p className="text-gray-700 mt-2">
+                  Example: Champion = Director of Sales Ops (manual processes pain), Economic Buyer = VP Sales (missing targets), Decision Maker = CRO (pipeline predictability). Start outbound with champion.
+                </p>
+              </div>
+
+              <div>
+                <p className="font-bold text-gray-900 mb-2">Step 5: Test and Refine</p>
+                <p className="text-gray-700 mb-2">
+                  ICP is a hypothesis until tested with real campaigns. Run small campaign (200-500 leads) and track:
+                </p>
+                <MachineList items={[
+                  "Reply rate: 8-15% target on cold outreach to ICP-fit leads",
+                  "Positive reply rate: 3-6% expressing genuine interest",
+                  "Meeting booked rate: 1-3% of total outreach",
+                  "Sales cycle length: Should meet target timeline",
+                  "Close rate: % of meetings converting to deals"
+                ]} />
+                <p className="text-gray-700 mt-2">
+                  If below benchmarks, refine: analyze which industries/sizes/titles respond better, identify correlating attributes, find disqualifying signals. Iterate 2-3 times over 60-90 days using campaign data.
+                </p>
+              </div>
+            </div>
+          </MachineSection>
+
+          <MachineSection title="Bonus: Using Website Visitor Data">
+            <p className="text-gray-700 mb-3">
+              Underutilized ICP refinement data source: your own website traffic. Tools like Cursive identify visitors (name, company, title, pages viewed).
+            </p>
+            <MachineList items={[
+              "Analyze high-intent visitors (pricing pages, product pages, case studies)",
+              "Compare their attributes to current ICP definition",
+              "May discover untargeted segments with high intent",
+              "Example: One Cursive customer found CFOs at healthcare companies visiting pricing 3x more than other titles → added to ICP → 35% pipeline increase"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="ICP vs Buyer Persona">
+            <div className="space-y-3">
+              <p className="font-bold text-gray-900">ICP (Company Level):</p>
+              <MachineList items={[
+                "B2B SaaS industry",
+                "$5M-$50M ARR",
+                "50-500 employees",
+                "Series A-C funded",
+                "Uses Salesforce"
+              ]} />
+
+              <p className="font-bold text-gray-900 mt-4">Buyer Persona (Individual Level):</p>
+              <MachineList items={[
+                "Director of Sales Ops title",
+                "5-10 years experience",
+                "Wants process automation",
+                "Frustrated by manual work",
+                "Data-driven decision maker"
+              ]} />
+
+              <p className="text-gray-700 mt-3">
+                You need BOTH. ICP tells you which companies. Persona tells you who to reach and how to message.
+              </p>
+            </div>
+          </MachineSection>
+
+          <MachineSection title="Common ICP Mistakes">
+            <MachineList items={[
+              "Too Broad: 'Any company with sales teams' wastes money on non-converting leads",
+              "Too Narrow: 'Series B SaaS in SF with 100-150 employees' exhausts leads in a month. Aim for 10,000-50,000 target companies.",
+              "Based on Wishful Thinking: 'We want Fortune 500' is aspirational. ICP should reflect who you ACTUALLY close, not who you wish to close.",
+              "Never Updated: ICP should evolve as product/business matures. Review quarterly based on new data."
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="How to Use Your ICP">
+            <p className="text-gray-700 mb-3">
+              ICP should be the central organizing principle for entire go-to-market motion. Not a document in Google Drive, but actively driving daily decisions:
+            </p>
+            <MachineList items={[
+              "Lead list building: Use firmographic filters to match ICP criteria precisely",
+              "Messaging: Craft copy for ICP's specific pain points in their language",
+              "Sales prioritization: Score/rank leads by ICP fit, best reps on highest-fit opps",
+              "Product roadmap: Build features ICP needs, not random prospect requests",
+              "Marketing content: Create resources addressing ICP pain points specifically",
+              "Hiring: Hire salespeople with experience selling to your ICP",
+              "Partnership decisions: Choose partners serving same ICP (shared audience)"
+            ]} />
+            <p className="text-gray-700 mt-3">
+              Everyone in company (CEO to newest SDR) should know ICP cold. Answer to "who is our ideal customer?" should be specific, consistent, immediate.
+            </p>
+          </MachineSection>
+
+          <MachineSection title="ICP Template">
+            <div className="bg-gray-50 rounded-lg p-4 space-y-4">
+              <p className="font-bold">ICP: [Name]</p>
+
+              <div>
+                <p className="font-bold text-sm mb-1">Firmographics:</p>
+                <MachineList items={[
+                  "Industry: _______",
+                  "Revenue: _______",
+                  "Employees: _______",
+                  "Location: _______",
+                  "Funding Stage: _______"
+                ]} />
+              </div>
+
+              <div>
+                <p className="font-bold text-sm mb-1">Qualifying Attributes:</p>
+                <MachineList items={[
+                  "Tech Stack: _______",
+                  "Business Model: _______",
+                  "Pain Indicators: _______",
+                  "Buying Triggers: _______"
+                ]} />
+              </div>
+
+              <div>
+                <p className="font-bold text-sm mb-1">Buying Committee:</p>
+                <MachineList items={[
+                  "Champion (Title): _______",
+                  "Economic Buyer (Title): _______",
+                  "Decision Maker (Title): _______"
+                ]} />
+              </div>
+
+              <div>
+                <p className="font-bold text-sm mb-1">Success Metrics:</p>
+                <MachineList items={[
+                  "Target Reply Rate: _______",
+                  "Target Meeting Rate: _______",
+                  "Target Close Rate: _______",
+                  "Average Deal Size: _______",
+                  "Sales Cycle Length: _______"
+                ]} />
+              </div>
+            </div>
+          </MachineSection>
+
+          <MachineSection title="Implementation with Cursive">
+            <p className="text-gray-700 mb-3">
+              Cursive helps define and refine ICP through:
+            </p>
+            <MachineList items={[
+              "Visitor identification: See which companies/titles visit your site in real-time",
+              "Intent data: Identify high-intent visitors (pricing pages, product pages, case studies)",
+              "Pattern analysis: Compare visitor attributes to current ICP, discover new segments",
+              "Done-for-you outreach: From ICP definition to booked meetings in weeks",
+              "Free ICP workshop: Crystal clear definition of who you're built for"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Related Resources">
+            <MachineList items={[
+              { label: "Cold Email in 2026", href: "/blog/cold-email-2026", description: "What's still working and what's not in modern cold outreach" },
+              { label: "AI SDR vs. Human BDR", href: "/blog/ai-sdr-vs-human-bdr", description: "90-day head-to-head comparison of AI and human outbound" },
+              { label: "Scaling Outbound", href: "/blog/scaling-outbound", description: "How to scale from 10 to 200+ emails without killing quality" }
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Get Started with Cursive">
+            <p className="text-gray-700 mb-3">
+              Cursive provides visitor identification, intent data, and done-for-you outbound services to help B2B companies define their ICP and convert high-fit prospects.
+            </p>
+            <MachineList items={[
+              { label: "Platform Overview", href: "/platform", description: "Visitor identification, intent data, AI outreach" },
+              { label: "Pricing", href: "/pricing", description: "Self-serve marketplace + done-for-you services" },
+              { label: "Visitor Identification", href: "/visitor-identification", description: "70% identification rate for B2B traffic" },
+              { label: "Book a Demo", href: "/book", description: "Free ICP workshop and targeted list building" }
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="About the Author">
+            <p className="text-gray-700">
+              Adam Wolfe is the founder of Cursive. He has helped 500+ B2B companies refine their ICPs and build better pipelines through data-driven targeting and personalized outbound strategies.
+            </p>
+          </MachineSection>
+        </MachineContent>
+      </MachineView>
     </main>
   )
 }

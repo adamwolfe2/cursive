@@ -175,7 +175,12 @@ export function ExitIntentPopup({ enabled = true, onSubmit }: ExitIntentPopupPro
                     </p>
 
                     {/* Form */}
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                    <form
+                      onSubmit={handleSubmit}
+                      className="space-y-4"
+                      toolname="requestVisitorReport"
+                      tooldescription="Request a free report showing 20 companies that visited your website in the last 7 days. No credit card required."
+                    >
                       {/* Email Field */}
                       <div>
                         <label htmlFor="popup-email" className="sr-only">
@@ -184,6 +189,7 @@ export function ExitIntentPopup({ enabled = true, onSubmit }: ExitIntentPopupPro
                         <input
                           ref={emailInputRef}
                           id="popup-email"
+                          name="email"
                           type="email"
                           required
                           placeholder="Enter your work email"
@@ -191,6 +197,7 @@ export function ExitIntentPopup({ enabled = true, onSubmit }: ExitIntentPopupPro
                           onChange={(e) => setEmail(e.target.value)}
                           onFocus={() => analytics.trackInteraction()}
                           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007AFF] focus:border-transparent outline-none transition-all text-base"
+                          toolparamdescription="Work email to receive the free visitor report"
                         />
                       </div>
 
@@ -201,6 +208,7 @@ export function ExitIntentPopup({ enabled = true, onSubmit }: ExitIntentPopupPro
                         </label>
                         <input
                           id="popup-company"
+                          name="company"
                           type="text"
                           placeholder="Company name (optional)"
                           value={company}

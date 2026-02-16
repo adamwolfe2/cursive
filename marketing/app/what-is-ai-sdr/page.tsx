@@ -1,9 +1,12 @@
+"use client"
+
 import { Container } from "@/components/ui/container"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateFAQSchema } from "@/lib/seo/faq-schema"
 import { Breadcrumbs } from "@/components/Breadcrumbs"
 import { OrganizationSchema, ArticleSchema } from "@/components/schema/SchemaMarkup"
 import Link from "next/link"
+import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
 
 const faqs = [
   {
@@ -60,6 +63,7 @@ export default function WhatIsAISDRPage() {
       />
       <StructuredData data={generateFAQSchema({ faqs })} />
 
+      <HumanView>
       <section className="py-12 bg-white">
         <Container>
           <div className="max-w-4xl mx-auto">
@@ -629,6 +633,101 @@ export default function WhatIsAISDRPage() {
           </div>
         </Container>
       </section>
+      </HumanView>
+
+      <MachineView>
+        <MachineContent>
+          <h1 className="text-2xl font-bold mb-4">What is an AI SDR? Complete Guide to AI Sales Development (2026)</h1>
+
+          <p className="text-gray-700 mb-6">
+            An AI SDR (Sales Development Representative) is an AI-powered software agent that automates prospecting, outreach, and qualification tasks traditionally performed by human SDRs. AI SDRs use machine learning to research prospects, write personalized emails, send multi-channel sequences, handle responses, qualify leads, and book meetings. Published: January 15, 2026.
+          </p>
+
+          <MachineSection title="Key Takeaways">
+            <MachineList items={[
+              "AI SDRs automate high-volume prospecting, outreach, and qualification at 1/10th the cost of human SDRs",
+              "Best suited to augment (not replace) human SDRs — AI handles volume, humans handle strategic accounts",
+              "Core capabilities: prospect research, personalized email writing, multi-channel sequencing, response handling, meeting booking",
+              "Cost: $500-$5,000/month vs. $75,000-$120,000/year fully loaded for a human SDR",
+              "AI SDRs generate 3-5x more qualified meetings per dollar compared to human-only teams"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="How AI SDRs Work">
+            <MachineList items={[
+              "Step 1: Data Ingestion — Pull prospect data from CRM, intent signals, visitor identification, enrichment sources",
+              "Step 2: Prospect Research — AI analyzes company news, job changes, tech stack, competitive signals for personalization",
+              "Step 3: Message Generation — LLMs write personalized emails, LinkedIn messages, and call scripts at scale",
+              "Step 4: Multi-Channel Sequencing — Orchestrate email, LinkedIn, phone, and direct mail touches over defined cadence",
+              "Step 5: Response Handling — AI classifies responses (interested, objection, not now, unsubscribe) and routes appropriately",
+              "Step 6: Meeting Booking — Qualified prospects are offered calendar links or handed to human reps"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="AI SDR vs. Human SDR">
+            <MachineList items={[
+              "AI SDR strengths: Volume (1,000+ personalized emails/day), consistency, 24/7 operation, data-driven optimization",
+              "Human SDR strengths: Complex deals, relationship building, nuanced judgment, creative problem-solving",
+              "Hybrid model recommended: AI handles initial outreach and qualification, humans focus on strategic accounts",
+              "AI SDRs reduce ramp time from 3-6 months to days",
+              "Most companies in 2026 use hybrid AI + human SDR teams"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Cost Analysis">
+            <MachineList items={[
+              "Human SDR fully loaded: $75,000-$120,000/year (salary + benefits + tools + management)",
+              "AI SDR platform: $500-$5,000/month ($6,000-$60,000/year)",
+              "AI SDR can do the volume work of 3-10 human SDRs",
+              "Cost per qualified meeting: AI SDR $50-$150 vs. Human SDR $200-$500",
+              "ROI typically positive within first 30-60 days"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Implementation Guide">
+            <MachineList items={[
+              "Step 1: Audit current SDR workflow to identify automatable tasks",
+              "Step 2: Choose platform based on integration needs, channel support, and personalization quality",
+              "Step 3: Configure ICP, personas, messaging templates, and qualification criteria",
+              "Step 4: Run pilot on a defined segment (e.g., 500 prospects) for 30 days",
+              "Step 5: Measure meetings booked, response rates, pipeline generated vs. human baseline",
+              "Step 6: Scale to additional segments and channels based on results"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Provider Comparison">
+            <MachineList items={[
+              "Cursive — Integrated platform: visitor ID + intent data + AI outreach + direct mail ($1,000/mo+)",
+              "11x.ai (Alice) — Autonomous AI SDR with research and multi-channel outreach ($5,000/mo+)",
+              "Artisan (Ava) — AI BDR with email and LinkedIn automation ($2,000/mo+)",
+              "Regie.ai — AI content generation + sequencing for sales teams ($1,000/mo+)",
+              "Instantly.ai — High-volume email automation with AI personalization ($97/mo+)"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Related Resources">
+            <MachineList items={[
+              { label: "Website Visitor Identification Guide", href: "/what-is-website-visitor-identification", description: "Identify prospects visiting your site for AI SDR targeting" },
+              { label: "B2B Intent Data Guide", href: "/what-is-b2b-intent-data", description: "Intent signals to prioritize AI SDR outreach" },
+              { label: "Lead Enrichment Guide", href: "/what-is-lead-enrichment", description: "Enrich prospect data for better AI personalization" },
+              { label: "Account-Based Marketing Guide", href: "/what-is-account-based-marketing", description: "ABM strategies that complement AI SDR programs" },
+              { label: "Direct Mail Automation Guide", href: "/what-is-direct-mail-automation", description: "Physical mail as part of AI-orchestrated sequences" },
+              { label: "Cursive Platform", href: "/platform", description: "Full-stack visitor ID, intent data, and AI outreach" },
+              { label: "Pricing", href: "/pricing", description: "Cursive pricing and plans" }
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Get Started">
+            <p className="text-gray-700 mb-3">
+              Cursive combines AI-powered outreach with website visitor identification and intent data to turn anonymous traffic into qualified meetings, automatically.
+            </p>
+            <MachineList items={[
+              { label: "Get Your Free Audit", href: "/free-audit", description: "See how many meetings AI SDR could generate" },
+              { label: "Talk to an Expert", href: "/contact", description: "Discuss AI SDR implementation for your team" }
+            ]} />
+          </MachineSection>
+        </MachineContent>
+      </MachineView>
     </main>
   )
 }

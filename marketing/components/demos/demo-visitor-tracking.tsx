@@ -81,50 +81,58 @@ export function DemoVisitorTracking() {
     setVisitors(initial)
   }, [])
 
-  // Add new visitors fast — every 1.8s
+  // Consolidated animation timer - single interval for all animations
   useEffect(() => {
+    let tickCount = 0
+    let visitorTickCount = 0
+    let enrichmentTickCount = 0
+    let counterTickCount = 0
+
+    // Single interval at 200ms (fastest common divisor)
     const interval = setInterval(() => {
-      const v = generateVisitor()
-      const newVisitor: Visitor = {
-        ...v,
-        id: `v-${Date.now()}-${Math.random()}`,
-        enrichmentStep: 0,
+      tickCount++
+
+      // Add new visitors every 1800ms (every 9 ticks)
+      visitorTickCount++
+      if (visitorTickCount >= 9) {
+        visitorTickCount = 0
+        const v = generateVisitor()
+        const newVisitor: Visitor = {
+          ...v,
+          id: `v-${Date.now()}-${Math.random()}`,
+          enrichmentStep: 0,
+        }
+        setVisitors(prev => [newVisitor, ...prev].slice(0, 5))
+        setTotalToday(prev => prev + Math.floor(Math.random() * 3) + 1)
+        setLiveCount(prev => prev + Math.floor(Math.random() * 3) + 1)
       }
 
-      setVisitors(prev => [newVisitor, ...prev].slice(0, 5))
-      setTotalToday(prev => prev + Math.floor(Math.random() * 3) + 1)
-      setLiveCount(prev => prev + Math.floor(Math.random() * 3) + 1)
-    }, 1800)
-
-    return () => clearInterval(interval)
-  }, [])
-
-  // Enrich new visitors quickly
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setVisitors(prev =>
-        prev.map(visitor =>
-          visitor.enrichmentStep < 4
-            ? { ...visitor, enrichmentStep: visitor.enrichmentStep + 1 }
-            : visitor
+      // Enrich visitors every 400ms (every 2 ticks)
+      enrichmentTickCount++
+      if (enrichmentTickCount >= 2) {
+        enrichmentTickCount = 0
+        setVisitors(prev =>
+          prev.map(visitor =>
+            visitor.enrichmentStep < 4
+              ? { ...visitor, enrichmentStep: visitor.enrichmentStep + 1 }
+              : visitor
+          )
         )
-      )
-    }, 400)
-
-    return () => clearInterval(interval)
-  }, [])
-
-  // Steadily tick up counters between visitor adds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      tickRef.current++
-      if (tickRef.current % 2 === 0) {
-        setTotalToday(prev => prev + 1)
       }
-      if (tickRef.current % 3 === 0) {
-        setLiveCount(prev => prev + (Math.random() > 0.3 ? 1 : 0))
+
+      // Tick counters every 600ms (every 3 ticks)
+      counterTickCount++
+      if (counterTickCount >= 3) {
+        counterTickCount = 0
+        tickRef.current++
+        if (tickRef.current % 2 === 0) {
+          setTotalToday(prev => prev + 1)
+        }
+        if (tickRef.current % 3 === 0) {
+          setLiveCount(prev => prev + (Math.random() > 0.3 ? 1 : 0))
+        }
       }
-    }, 600)
+    }, 200)
 
     return () => clearInterval(interval)
   }, [])
@@ -146,10 +154,10 @@ export function DemoVisitorTracking() {
         >
           <motion.div
             key={totalToday}
-            initial={{ scale: 1.1, color: "#007AFF" }}
-            animate={{ scale: 1, color: "#111827" }}
-            transition={{ duration: 0.3 }}
-            className="text-xl text-gray-900 font-light"
+            initial={{ color: "#007AFF" }}
+            animate={{ color: "#111827" }}
+            transition={{ duration: 0.4 }}
+            className="text-xl text-gray-900 font-light tabular-nums"
           >
             {formatCount(totalToday)}
           </motion.div>
@@ -163,10 +171,10 @@ export function DemoVisitorTracking() {
         >
           <motion.div
             key={liveCount}
-            initial={{ scale: 1.1, color: "#10B981" }}
-            animate={{ scale: 1, color: "#111827" }}
-            transition={{ duration: 0.3 }}
-            className="text-xl text-gray-900 font-light"
+            initial={{ color: "#10B981" }}
+            animate={{ color: "#111827" }}
+            transition={{ duration: 0.4 }}
+            className="text-xl text-gray-900 font-light tabular-nums"
           >
             {formatCount(liveCount)}
           </motion.div>

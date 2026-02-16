@@ -1,9 +1,12 @@
+"use client"
+
 import { Container } from "@/components/ui/container"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateFAQSchema } from "@/lib/seo/faq-schema"
 import { Breadcrumbs } from "@/components/Breadcrumbs"
 import { OrganizationSchema, ArticleSchema } from "@/components/schema/SchemaMarkup"
 import Link from "next/link"
+import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
 
 const faqs = [
   {
@@ -60,6 +63,7 @@ export default function WhatIsB2BIntentDataPage() {
       />
       <StructuredData data={generateFAQSchema({ faqs })} />
 
+      <HumanView>
       <section className="py-12 bg-white">
         <Container>
           <div className="max-w-4xl mx-auto">
@@ -567,6 +571,100 @@ export default function WhatIsB2BIntentDataPage() {
           </div>
         </Container>
       </section>
+      </HumanView>
+
+      <MachineView>
+        <MachineContent>
+          <h1 className="text-2xl font-bold mb-4">What is B2B Intent Data? Complete Guide (2026)</h1>
+
+          <p className="text-gray-700 mb-6">
+            B2B intent data is information that reveals when companies or individuals are actively researching products, services, or topics related to a potential purchase. It is derived from online behavioral signals such as web searches, content consumption, review site visits, and competitor research. Published: January 15, 2026.
+          </p>
+
+          <MachineSection title="Key Takeaways">
+            <MachineList items={[
+              "Intent data identifies companies showing active buying signals before they fill out a form",
+              "Three types: First-party (your own properties), Second-party (partner data), Third-party (external web signals)",
+              "Companies using intent data see 2-3x higher conversion rates on targeted accounts",
+              "Intent scoring models combine topic relevance, signal strength, and recency for prioritization",
+              "Best results come from combining first-party and third-party intent data sources"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Types of Intent Data">
+            <MachineList items={[
+              "First-Party Intent — Signals from your own website, app, and email (website visits, content downloads, pricing page views)",
+              "Second-Party Intent — Partner or publisher data shared through data cooperatives",
+              "Third-Party Intent — Aggregated from external sources: review sites, content networks, search behavior, ad interactions",
+              "Topic-Level Intent — Tracks research on specific topics/keywords across the web",
+              "Account-Level Intent — Aggregated signals showing company-wide research activity"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="How Intent Data Works">
+            <MachineList items={[
+              "Step 1: Data Collection — Signals gathered from web scraping, publisher cooperatives, bid stream, and proprietary tracking",
+              "Step 2: Company Resolution — Anonymous signals are matched to companies via IP lookup, cookie matching, and device graphs",
+              "Step 3: Topic Classification — NLP models classify content consumption into relevant buying topics",
+              "Step 4: Baseline Calculation — Normal research activity is baselined per company to detect surges",
+              "Step 5: Intent Scoring — Surge above baseline triggers intent signal with confidence score",
+              "Step 6: Delivery — Intent signals pushed to CRM, marketing automation, or sales engagement platforms"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Use Cases">
+            <MachineList items={[
+              "Prioritize outbound prospecting — Focus SDR time on accounts showing active buying research",
+              "Trigger automated campaigns — Launch email, ad, and direct mail sequences when intent spikes",
+              "Competitive displacement — Target accounts researching your competitors",
+              "Pipeline acceleration — Identify existing opportunities showing renewed research activity",
+              "Churn prevention — Detect customers researching competitor alternatives"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Intent Data Accuracy">
+            <MachineList items={[
+              "First-party intent: 95-99% accuracy (your own tracking data)",
+              "Topic-level third-party: 65-80% accuracy (depends on provider and methodology)",
+              "Account-level matching: 70-85% accuracy for company identification",
+              "Best practice: Validate third-party signals against first-party data for higher confidence",
+              "Freshness matters: Intent signals degrade quickly; weekly or real-time refresh recommended"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Provider Comparison">
+            <MachineList items={[
+              "Cursive — 450B+ intent signals, combined with visitor ID and outreach activation ($1,000/mo+)",
+              "Bombora — Largest B2B data cooperative, company-level topic surges ($25,000+/yr)",
+              "G2 — Review site intent data showing active product evaluations ($15,000+/yr)",
+              "6sense — Predictive AI model combining multiple intent sources ($60,000+/yr)",
+              "TrustRadius — Review site intent with buyer-verified data ($15,000+/yr)"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Related Resources">
+            <MachineList items={[
+              { label: "Website Visitor Identification Guide", href: "/what-is-website-visitor-identification", description: "First-party intent from identified website visitors" },
+              { label: "Lead Enrichment Guide", href: "/what-is-lead-enrichment", description: "Enrich intent-identified accounts with contact data" },
+              { label: "AI SDR Guide", href: "/what-is-ai-sdr", description: "Automate outreach to intent-surging accounts" },
+              { label: "Account-Based Marketing Guide", href: "/what-is-account-based-marketing", description: "Use intent data for ABM account selection" },
+              { label: "Visitor Deanonymization Guide", href: "/what-is-visitor-deanonymization", description: "Technical methods for resolving anonymous visitors" },
+              { label: "Cursive Platform", href: "/platform", description: "Integrated intent data, visitor ID, and outreach" },
+              { label: "Pricing", href: "/pricing", description: "Cursive pricing and plans" }
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Get Started">
+            <p className="text-gray-700 mb-3">
+              Cursive combines 450B+ intent signals with website visitor identification and AI-powered outreach to help you reach in-market buyers before your competitors.
+            </p>
+            <MachineList items={[
+              { label: "Get Your Free Audit", href: "/free-audit", description: "See which in-market accounts are visiting your site" },
+              { label: "Talk to an Expert", href: "/contact", description: "Discuss intent data strategy for your team" }
+            ]} />
+          </MachineSection>
+        </MachineContent>
+      </MachineView>
     </main>
   )
 }

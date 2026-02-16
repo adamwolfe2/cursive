@@ -179,14 +179,18 @@ export class MatchingEngineService {
   }
 
   /**
-   * Get lead with company associations
+   * Get lead with company associations (eager loading to avoid N+1)
    */
   private async getLeadWithCompanies(leadId: string): Promise<LeadData | null> {
     const supabase = await createClient()
 
+    // Use Supabase relations for eager loading in single query
     const { data: lead, error: leadError } = await supabase
       .from('leads')
-      .select('*')
+      .select(`
+        *,
+        lead_companies(sic_code, sic_description, company_name, job_title)
+      `)
       .eq('id', leadId)
       .eq('workspace_id', this.workspaceId)
       .single()
@@ -195,15 +199,9 @@ export class MatchingEngineService {
       return null
     }
 
-    // Get company associations
-    const { data: companies } = await supabase
-      .from('lead_companies')
-      .select('sic_code, sic_description, company_name, job_title')
-      .eq('lead_id', leadId)
-
     return {
       ...lead,
-      companies: companies || [],
+      companies: lead.lead_companies || [],
     } as LeadData
   }
 

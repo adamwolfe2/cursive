@@ -1,32 +1,14 @@
+"use client"
+
 import { Container } from "@/components/ui/container"
 import { DashboardCTA } from "@/components/dashboard-cta"
 import { ArrowLeft, ArrowRight, Calendar, Clock, Zap, CheckCircle } from "lucide-react"
-import { generateMetadata } from "@/lib/seo/metadata"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateFAQSchema } from "@/lib/seo/faq-schema"
 import { generateBlogPostSchema } from "@/lib/seo/structured-data"
 import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
+import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
 import Link from "next/link"
-
-export const metadata = generateMetadata({
-  title: "Website Visitor Tracking: How It Works and How to Implement It (2026 Guide)",
-  description: "Learn how website visitor tracking works for B2B companies. Covers IP-based identification, cookie tracking, privacy-compliant methods, and step-by-step implementation for turning anonymous traffic into qualified leads.",
-  keywords: [
-    "visitor tracking",
-    "website visitor identification",
-    "anonymous visitor tracking",
-    "B2B visitor tracking",
-    "visitor identification software",
-    "website analytics",
-    "visitor intelligence",
-    "IP-based tracking",
-    "cookie tracking",
-    "privacy-compliant tracking",
-    "website visitor identification tools",
-    "deanonymization",
-  ],
-  canonical: "https://www.meetcursive.com/blog/visitor-tracking",
-})
 
 const faqs = [
   {

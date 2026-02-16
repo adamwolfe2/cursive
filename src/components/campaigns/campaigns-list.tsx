@@ -236,7 +236,7 @@ export function CampaignsList() {
               <h3 className="mt-4 text-sm font-medium text-red-900">Failed to load campaigns</h3>
               <p className="mt-2 text-sm text-red-700">{error}</p>
               <Button
-                onClick={() => window.location.reload()}
+                onClick={() => router.refresh()}
                 variant="outline"
                 className="mt-4"
               >

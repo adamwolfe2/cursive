@@ -1,31 +1,14 @@
+"use client"
+
 import { Container } from "@/components/ui/container"
-import { Button } from "@/components/ui/button"
 import { DashboardCTA } from "@/components/dashboard-cta"
-import { Calendar, Clock, ArrowLeft, ArrowRight, TrendingUp, Check, X } from "lucide-react"
-import { generateMetadata } from "@/lib/seo/metadata"
+import { Calendar, Clock, ArrowLeft, TrendingUp, Check } from "lucide-react"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateFAQSchema } from "@/lib/seo/faq-schema"
 import { generateBlogPostSchema } from "@/lib/seo/structured-data"
 import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
 import Link from "next/link"
-
-export const metadata = generateMetadata({
-  title: "B2B Lead Generation: Intent-Based Strategies That Build Pipeline (2026)",
-  description: "Proven B2B lead generation strategies that prioritize intent over volume. Learn how to build predictable pipeline using visitor identification, intent data, and multi-channel outreach.",
-  keywords: [
-    "B2B lead generation",
-    "lead generation strategies",
-    "intent-based lead generation",
-    "pipeline generation",
-    "outbound lead generation",
-    "qualified leads",
-    "B2B sales leads",
-    "lead gen tactics",
-    "visitor identification leads",
-    "demand generation",
-  ],
-  canonical: "https://www.meetcursive.com/blog/lead-generation",
-})
+import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
 
 const faqs = [
   {
@@ -54,10 +37,11 @@ export default function LeadGenerationPage() {
   return (
     <main>
       <StructuredData data={generateFAQSchema({ faqs })} />
-      <StructuredData data={generateBlogPostSchema({ title: "B2B Lead Generation: Intent-Based Strategies That Build Pipeline (2026)", description: "Proven B2B lead generation strategies that prioritize intent over volume. Learn how to build predictable pipeline using visitor identification, intent data, and multi-channel outreach.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://www.meetcursive.com/cursive-logo.png" })} />
+      <StructuredData data={generateBlogPostSchema({ title: "B2B Lead Generation: Intent-Based Strategies That Build Pipeline (2026)", description: "Proven B2B lead generation strategies that prioritize intent over volume. Learn how to build predictable pipeline using visitor identification, intent data, and multi-channel outreach.", author: "Cursive Team", publishDate: "2026-02-05", image: "https://www.meetcursive.com/cursive-logo.png" })} />
 
-      {/* Breadcrumb */}
-      <section className="py-6 bg-gray-50 border-b border-gray-200">
+      <HumanView>
+        {/* Breadcrumb */}
+        <section className="py-6 bg-gray-50 border-b border-gray-200">
         <Container>
           <nav className="flex items-center gap-2 text-sm text-gray-600">
             <Link href="/blog" className="hover:text-primary">
@@ -724,6 +708,215 @@ export default function LeadGenerationPage() {
           </div>
         </Container>
       </section>
+      </HumanView>
+
+      <MachineView>
+        <MachineContent>
+          <h1 className="text-2xl font-bold mb-4">B2B Lead Generation: Intent-Based Strategies That Build Pipeline</h1>
+
+          <p className="text-gray-700 mb-6">
+            Proven B2B lead generation strategies that prioritize intent over volume. Build predictable pipeline using visitor identification, intent data, and multi-channel outreach. Published: February 5, 2026.
+          </p>
+
+          <MachineSection title="Key Takeaways">
+            <MachineList items={[
+              "Intent-based lead gen achieves 8-25% response rates vs 1-2% for cold outreach",
+              "Visitor identification converts 70% of anonymous website traffic into qualified leads",
+              "Multi-channel sequences (email + LinkedIn + ads + direct mail) generate 3-4x more meetings",
+              "Lead scoring model combining ICP fit + intent signals prioritizes sales-ready prospects",
+              "Cost per opportunity should be <10% of average deal size for sustainable ROI"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Evolution of B2B Lead Generation">
+            <p className="text-gray-700 mb-3">
+              <strong>Era 1 (2005-2015): The List Era.</strong> Buy lists, cold call/email at scale. 2% response rates acceptable. Eventually commoditized.
+            </p>
+            <p className="text-gray-700 mb-3">
+              <strong>Era 2 (2015-2023): Content/Inbound Era.</strong> Gated content, email nurture. Form conversion rates dropped from 5% to under 1% as saturation increased. MQL inflation.
+            </p>
+            <p className="text-gray-700 mb-3">
+              <strong>Era 3 (2023-present): Intent Era.</strong> Identify companies showing active buying signals, reach them with personalized timely outreach. Combines proactive nature of outbound with relevance of inbound.
+            </p>
+          </MachineSection>
+
+          <MachineSection title="Intent-Based vs Cold Outreach Comparison">
+            <div className="space-y-2 text-sm">
+              <p className="font-bold">Intent-Based Outreach:</p>
+              <MachineList items={[
+                "Response rate: 8-25%",
+                "Targets companies with buying signals (pricing page visits, 3+ site visits, case study views)",
+                "Sales cycle: 2-4 months",
+                "Lower cost per opportunity",
+                "Requires high personalization based on behavior"
+              ]} />
+              <p className="font-bold mt-4">Cold Outreach:</p>
+              <MachineList items={[
+                "Response rate: 1-3%",
+                "Targets ICP-match companies without intent signals",
+                "Sales cycle: 6-12 months",
+                "Higher cost per opportunity",
+                "Large addressable market"
+              ]} />
+              <p className="text-gray-700 mt-3">
+                <strong>Winning formula:</strong> Allocate 70% of outreach resources to intent-based, 30% to cold.
+              </p>
+            </div>
+          </MachineSection>
+
+          <MachineSection title="Visitor Identification for Lead Generation">
+            <p className="text-gray-700 mb-3">
+              98% of website visitors leave without identifying themselves. Visitor identification turns anonymous traffic into qualified leads by:
+            </p>
+            <MachineList items={[
+              "Identifying company using IP intelligence and device fingerprinting (70% identification rate)",
+              "Enriching with firmographic data (industry, size, revenue), technographic data (tech stack), contact info",
+              "Scoring leads based on pages viewed, visit frequency, session duration, ICP fit",
+              "Routing to right rep based on territory/account ownership",
+              "Triggering automated personalized sequences across email, LinkedIn, direct mail"
+            ]} />
+            <p className="text-gray-700 mt-3">
+              <strong>Results:</strong> 3-5x more qualified pipeline, 62% lower cost per opportunity, 2.1x faster deal velocity.
+            </p>
+          </MachineSection>
+
+          <MachineSection title="Building Predictable Pipeline Framework">
+            <MachineList items={[
+              "Step 1: Define precise ICP - industry vertical, company size range, growth stage, tech requirements, budget authority, geography",
+              "Step 2: Establish multiple lead sources - Visitor ID (30-40%), Content/SEO (20-30%), Outbound (20-25%), Paid ads (10-15%), Referrals (5-10%)",
+              "Step 3: Build lead scoring model - ICP fit + intent signals. Score tiers: 80+ = Sales-ready, 50-79 = Marketing-qualified, 20-49 = Monitoring, <20 = Low priority",
+              "Step 4: Set up automated workflows - Instant rep notification, auto-enroll in sequences, retargeting, direct mail triggers, CRM task creation",
+              "Step 5: Measure weekly - Leads by source, conversion rate by source, pipeline vs target, cost per qualified opportunity, speed-to-lead"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Multi-Channel Lead Generation">
+            <p className="text-gray-700 mb-3">
+              <strong>Proven 7-day multi-channel sequence for high-intent visitors:</strong>
+            </p>
+            <MachineList items={[
+              "Day 0: Visitor identified on pricing page. Alert to rep. Added to retargeting.",
+              "Day 1: Personalized email referencing research behavior + case study.",
+              "Day 2: LinkedIn connection request with value-oriented note.",
+              "Day 3: Retargeting ads begin on LinkedIn and Google Display.",
+              "Day 4: Follow-up email with different angle (ROI calculator, testimonial).",
+              "Day 5: Direct mail piece arrives (enterprise accounts only).",
+              "Day 7: Phone call with full context from all prior touches."
+            ]} />
+            <p className="text-gray-700 mt-3">
+              This coordinated approach achieves 3-4x the meeting rate of single-channel outreach.
+            </p>
+          </MachineSection>
+
+          <MachineSection title="Lead Scoring Model">
+            <p className="text-gray-700 mb-3">
+              Assign numerical scores to each qualification criterion:
+            </p>
+            <div className="space-y-2 text-sm">
+              <p><strong>ICP Fit:</strong></p>
+              <MachineList items={[
+                "Perfect ICP match (size + industry + tech): +30 points",
+                "Partial ICP match: +15 points"
+              ]} />
+              <p className="mt-3"><strong>Intent Signals:</strong></p>
+              <MachineList items={[
+                "Visited pricing page: +25 points",
+                "Visited demo/trial page: +25 points",
+                "3+ visits in one week: +20 points",
+                "Third-party intent signals: +20 points",
+                "Visited case study/comparison: +15 points",
+                "Recent funding/hiring trigger: +10 points",
+                "Single blog visit only: +5 points"
+              ]} />
+              <p className="mt-3"><strong>Score Tiers:</strong></p>
+              <MachineList items={[
+                "80+ points = Sales-ready (immediate rep outreach)",
+                "50-79 points = Marketing-qualified (nurture + retargeting)",
+                "20-49 points = Monitoring (retargeting only, no outreach)",
+                "Under 20 = Low priority (organic nurture)"
+              ]} />
+            </div>
+          </MachineSection>
+
+          <MachineSection title="Scaling Lead Gen Without Sacrificing Quality">
+            <MachineList items={[
+              "Automate lead identification, scoring, routing, sequence enrollment. Personalize the critical moments: first email line, LinkedIn request, discovery prep.",
+              "Expand ICP tiers gradually - test adjacent segments, measure conversion rates separately, only scale tiers producing quality pipeline",
+              "Create content around keywords best customers searched before buying - comparison pages, ROI calculators, technical guides attract late-stage buyers",
+              "Use AI to scale personalization - analyze company website, news, job postings, tech stack to generate personalized outreach at scale",
+              "Speed-to-lead critical - leads contacted within 5 minutes are 21x more likely to convert than those contacted after 30 minutes"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Cost Per Qualified Lead Benchmarks">
+            <MachineList items={[
+              "B2B SaaS ($25k-$100k deals): $200-$500 per qualified lead typical",
+              "Enterprise deals ($100k+): $500-$2,000 per qualified lead acceptable",
+              "Key metric: Cost per opportunity (not cost per lead)",
+              "Target: Cost per opportunity <10% of average deal size"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Implementation Checklist">
+            <MachineList items={[
+              "Visitor identification deployed and synced to CRM",
+              "Lead scoring model built and calibrated",
+              "Automated routing and sequence enrollment active",
+              "Multi-channel sequences running (email + LinkedIn + ads)",
+              "Content attracting high-intent organic traffic",
+              "Weekly pipeline review with conversion rate analysis",
+              "Direct mail activated for enterprise-tier accounts",
+              "Retargeting audiences synced and campaigns running"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="FAQ">
+            <div className="space-y-4">
+              <div>
+                <p className="font-bold text-gray-900 mb-2">What is the difference between lead generation and demand generation?</p>
+                <p className="text-gray-700 text-sm">Lead generation captures contact info through forms, gated content, outbound. Demand generation creates awareness/interest through ungated content, brand marketing, community. Most effective strategies combine both: demand gen creates interest, lead gen captures and qualifies it into pipeline.</p>
+              </div>
+              <div>
+                <p className="font-bold text-gray-900 mb-2">How does intent-based lead generation work?</p>
+                <p className="text-gray-700 text-sm">Identifies companies actively researching your category, targets with personalized outreach. Intent signals: first-party (pricing visits, site frequency) and third-party (web research). Prioritizing intent achieves 3-5x higher conversion than cold outreach.</p>
+              </div>
+              <div>
+                <p className="font-bold text-gray-900 mb-2">Is cold outreach still effective in 2026?</p>
+                <p className="text-gray-700 text-sm">Yes but requires different approach. Generic mass emails get &lt;1% response. Warm outreach to companies showing intent signals, personalized based on behavior/business context, achieves 8-15% response rates.</p>
+              </div>
+              <div>
+                <p className="font-bold text-gray-900 mb-2">How many leads should a B2B company generate per month?</p>
+                <p className="text-gray-700 text-sm">Work backward from revenue target. If you need $1M pipeline/quarter with $50k average deal = 20 opportunities. If 20% lead-to-opportunity conversion = 100 qualified leads/quarter = 33/month. Focus on enough high-quality leads to keep sales fully utilized without creating backlog.</p>
+              </div>
+            </div>
+          </MachineSection>
+
+          <MachineSection title="Related Resources">
+            <MachineList items={[
+              { label: "Visitor Identification Platform", href: "/visitor-identification", description: "Turn anonymous traffic into qualified leads" },
+              { label: "Cold Email Guide 2026", href: "/blog/cold-email-2026", description: "What still works in cold outreach" },
+              { label: "ICP Targeting Framework", href: "/blog/icp-targeting-guide", description: "5-step framework for precise targeting" },
+              { label: "AI SDR vs Human BDR", href: "/blog/ai-sdr-vs-human-bdr", description: "90-day pipeline generation experiment" },
+              { label: "Direct Mail for B2B", href: "/direct-mail", description: "Physical outreach for enterprise accounts" },
+              { label: "Retargeting Guide", href: "/blog/retargeting", description: "Multi-channel retargeting strategies" },
+              { label: "CRM Integration", href: "/blog/crm-integration", description: "Lead scoring sync to sales tools" },
+              { label: "Marketing Analytics", href: "/blog/analytics", description: "Dashboard best practices" },
+              { label: "Scaling Outbound", href: "/blog/scaling-outbound", description: "Tactical frameworks for scaling" }
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="About Cursive">
+            <p className="text-gray-700 mb-3">
+              Cursive helps B2B companies generate pipeline from companies already showing buying intent. The platform identifies anonymous website visitors, enriches their data, and triggers multi-channel outreach automatically.
+            </p>
+            <MachineList items={[
+              { label: "Platform Overview", href: "/platform", description: "Complete lead generation engine" },
+              { label: "Pricing", href: "/pricing", description: "Self-serve + done-for-you options" },
+              { label: "Book Demo", href: "/book", description: "See Cursive in real-time" }
+            ]} />
+          </MachineSection>
+        </MachineContent>
+      </MachineView>
     </main>
   )
 }

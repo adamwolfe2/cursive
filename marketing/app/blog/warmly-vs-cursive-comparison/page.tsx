@@ -1,32 +1,15 @@
-import { Metadata } from 'next'
+"use client"
+
 import { Container } from "@/components/ui/container"
 import { Button } from "@/components/ui/button"
 import { DashboardCTA } from "@/components/dashboard-cta"
 import { Calendar, Clock, ArrowLeft, ArrowRight, Check, X } from "lucide-react"
-import { generateMetadata } from '@/lib/seo/metadata'
 import { StructuredData } from '@/components/seo/structured-data'
 import { generateFAQSchema } from '@/lib/seo/faq-schema'
 import { generateBlogPostSchema } from "@/lib/seo/structured-data"
 import { SimpleRelatedPosts } from '@/components/blog/simple-related-posts'
 import Link from "next/link"
-
-export const metadata: Metadata = generateMetadata({
-  title: 'Warmly vs Cursive Comparison: Which Intent Platform is Right for You?',
-  description: 'Compare Warmly and Cursive side-by-side. See how these two intent-based platforms differ in features, pricing, use cases, and ROI. Detailed analysis for B2B teams.',
-  keywords: [
-    'warmly vs cursive',
-    'cursive vs warmly',
-    'intent platform comparison',
-    'website visitor identification',
-    'B2B intent data',
-    'sales intelligence platform',
-    'warmly alternative',
-    'cursive alternative',
-    'account-based marketing tools',
-    'buyer intent platforms',
-  ],
-  canonical: 'https://www.meetcursive.com/blog/warmly-vs-cursive-comparison',
-})
+import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
 
 const faqs = [
   {
@@ -70,6 +53,7 @@ export default function WarmlyVsCursiveComparison() {
       <StructuredData data={generateFAQSchema({ faqs })} />
       <StructuredData data={generateBlogPostSchema({ title: "Warmly vs Cursive Comparison: Which Intent Platform is Right for You?", description: "Compare Warmly and Cursive side-by-side. See how these two intent-based platforms differ in features, pricing, use cases, and ROI. Detailed analysis for B2B teams.", author: "Cursive Team", publishDate: "2026-02-01", image: "https://www.meetcursive.com/cursive-logo.png" })} />
 
+      <HumanView>
       {/* Header */}
       <section className="py-12 bg-white">
         <Container>
@@ -840,6 +824,56 @@ export default function WarmlyVsCursiveComparison() {
           </div>
         </Container>
       </section>
+      </HumanView>
+
+      <MachineView>
+        <MachineContent>
+          <h1 className="text-2xl font-bold mb-4">Warmly vs Cursive Comparison: Which Intent Platform is Right for You?</h1>
+
+          <p className="text-gray-700 mb-6">
+            Warmly focuses on real-time website visitor engagement and warm outreach to active visitors. Cursive specializes in identifying companies researching topics across the web and automating outreach at scale. Published: February 1, 2026.
+          </p>
+
+          <MachineSection title="Quick Comparison">
+            <MachineList items={[
+              "Warmly: real-time visitor engagement + chat + video. Cursive: visitor identification + automated multi-channel outreach",
+              "Warmly: 15-20% visitor identification rate. Cursive: 70%+ person-level identification rate",
+              "Warmly: best for engaging active visitors immediately. Cursive: best for proactive prospecting at scale",
+              "Warmly: pricing scales with traffic (can get expensive). Cursive: flat monthly subscription starting at $50/mo",
+              "Warmly: requires team monitoring. Cursive: AI SDR handles outreach automatically",
+              "Both integrate with Salesforce, HubSpot, and Pipedrive"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Key Differences">
+            <MachineList items={[
+              "Approach: Warmly is inbound-focused (engage visitors on your site). Cursive is outbound-focused (reach visitors after they leave)",
+              "Channels: Warmly includes live chat and video. Cursive includes email, LinkedIn, SMS, and direct mail",
+              "Automation: Warmly requires active monitoring for real-time engagement. Cursive AI SDR works autonomously",
+              "Data: Warmly identifies visitors on your website only. Cursive identifies visitors + researching companies across the web",
+              "Team size: Warmly better for teams with SDRs to engage in real-time. Cursive better for lean teams wanting automation"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="When to Choose Each">
+            <MachineList items={[
+              "Choose Warmly: high website traffic, have SDRs for real-time engagement, want live chat + video engagement, inbound-focused strategy",
+              "Choose Cursive: want automated outbound at scale, lean team without dedicated SDRs, need higher identification rates, want multi-channel outreach beyond your website",
+              "Use both together: Warmly for real-time inbound engagement, Cursive for proactive outbound to visitors who leave without converting"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Related Resources">
+            <MachineList items={[
+              { label: "Visitor Identification", href: "/visitor-identification", description: "70%+ person-level identification" },
+              { label: "AI SDR", href: "/what-is-ai-sdr", description: "Automated sales development" },
+              { label: "Warmly Alternatives", href: "/blog/warmly-alternatives-comparison", description: "Full roundup of alternatives" },
+              { label: "6sense vs Cursive", href: "/blog/6sense-vs-cursive-comparison", description: "ABM platform comparison" },
+              { label: "How to Identify Website Visitors", href: "/blog/how-to-identify-website-visitors-technical-guide", description: "Technical guide" }
+            ]} />
+          </MachineSection>
+        </MachineContent>
+      </MachineView>
     </main>
   )
 }

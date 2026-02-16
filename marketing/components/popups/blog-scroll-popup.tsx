@@ -207,7 +207,12 @@ export function BlogScrollPopup({
                     </p>
 
                     {/* Form */}
-                    <form onSubmit={handleSubmit} className="space-y-3">
+                    <form
+                      onSubmit={handleSubmit}
+                      className="space-y-3"
+                      toolname="subscribeNewsletter"
+                      tooldescription="Subscribe to Cursive's B2B Growth Insights newsletter. Weekly tips on visitor tracking, lead generation, and conversion optimization. Join 5,000+ marketers."
+                    >
                       {/* Email Field */}
                       <div>
                         <label htmlFor="blog-popup-email" className="sr-only">
@@ -216,6 +221,7 @@ export function BlogScrollPopup({
                         <input
                           ref={emailInputRef}
                           id="blog-popup-email"
+                          name="email"
                           type="email"
                           required
                           placeholder="Enter your email"
@@ -223,6 +229,7 @@ export function BlogScrollPopup({
                           onChange={(e) => setEmail(e.target.value)}
                           onFocus={() => analytics.trackInteraction()}
                           className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007AFF] focus:border-transparent outline-none transition-all text-sm"
+                          toolparamdescription="Email address to receive weekly B2B growth insights"
                         />
                       </div>
 

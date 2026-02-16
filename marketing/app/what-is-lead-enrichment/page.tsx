@@ -1,9 +1,12 @@
+"use client"
+
 import { Container } from "@/components/ui/container"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateFAQSchema } from "@/lib/seo/faq-schema"
 import { Breadcrumbs } from "@/components/Breadcrumbs"
 import { OrganizationSchema, ArticleSchema } from "@/components/schema/SchemaMarkup"
 import Link from "next/link"
+import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
 
 const faqs = [
   {
@@ -52,6 +55,7 @@ export default function WhatIsLeadEnrichment() {
       />
       <StructuredData data={generateFAQSchema({ faqs })} />
 
+      <HumanView>
       <section className="py-12 bg-white">
         <Container>
           <div className="max-w-4xl mx-auto">
@@ -684,6 +688,120 @@ export default function WhatIsLeadEnrichment() {
           </div>
         </Container>
       </section>
+      </HumanView>
+
+      <MachineView>
+        <MachineContent>
+          <h1 className="text-2xl font-bold mb-4">What is Lead Enrichment? Complete Guide (2026)</h1>
+
+          <p className="text-gray-700 mb-6">
+            Lead enrichment is the process of enhancing existing lead records with additional data points from third-party sources, including contact details, company information, technographic data, and behavioral signals. By filling gaps in CRM data, enrichment enables sales and marketing teams to prioritize, personalize, and convert more prospects. Published: January 15, 2026.
+          </p>
+
+          <MachineSection title="Key Takeaways">
+            <MachineList items={[
+              "Average B2B lead record is missing 30-50% of data points needed for effective outreach",
+              "Enrichment adds contact data, firmographics, technographics, demographics, behavioral data, and intent signals",
+              "Companies implementing enrichment see 30-50% improvement in lead-to-opportunity conversion",
+              "Sales reps save 250+ hours per year through automated enrichment vs. manual research",
+              "CRM data degrades at 25-30% per year; regular enrichment maintains database health"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="How Lead Enrichment Works">
+            <MachineList items={[
+              "Step 1: Data Matching — Match lead records against provider databases using email, domain, LinkedIn URL",
+              "Step 2: API Calls & Data Retrieval — Query multiple data sources in parallel (waterfall approach)",
+              "Step 3: Record Updates & Merging — Merge enriched data back to CRM with configurable rules and deduplication",
+              "Step 4: Validation & QA — Verify emails via SMTP, validate phones against carriers, cross-reference company data"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Types of Enrichment Data">
+            <MachineList items={[
+              "Contact Data — Verified email (92-97% accuracy), direct phone (70-85%), mobile numbers",
+              "Firmographic Data — Company size, revenue, industry, HQ location, founding year (90-95% accuracy)",
+              "Technographic Data — Software tools, tech stack, CRM, cloud providers (80-90% accuracy)",
+              "Demographic Data — Job title, seniority level, department, reporting structure (85-92% accuracy)",
+              "Behavioral Data — Website visits, content downloads, email engagement (95-99% first-party accuracy)",
+              "Intent Data — Topic research signals, competitor comparison activity, review site visits (65-80% accuracy)"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Enrichment Methods">
+            <MachineList items={[
+              "Real-Time API — 200-500ms response, enriches individual records on form submission (best for inbound leads)",
+              "Batch Enrichment — Processes thousands-millions of records on schedule (best for database cleanup)",
+              "Progressive Enrichment — Builds profiles over time with each interaction (reduces form friction)",
+              "Reverse Enrichment (Visitor ID) — Resolves anonymous website visitors to identified companies/contacts"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Benefits">
+            <MachineList items={[
+              "Improved Lead Scoring — 35-45% better MQL accuracy with enriched firmographic and technographic data",
+              "Better Personalization — 2-3x higher response rates with data-driven personalized messaging",
+              "Higher Conversion — 30-50% improvement in MQL-to-SQL conversion, 15-25% higher close rates",
+              "Reduced Research Time — 250+ hours per rep per year returned to selling activities",
+              "Better Data Hygiene — Continuous enrichment maintains CRM accuracy against 25-30% annual decay"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Use Cases">
+            <MachineList items={[
+              "CRM Enrichment — Monthly/quarterly batch enrichment to maintain clean, complete database",
+              "Form Shortening — Reduce forms to 1-2 fields, enrich rest via API (20-40% conversion increase)",
+              "Intelligent Lead Routing — Route by company size, industry, geography, or tech stack",
+              "Lead Scoring — Multi-dimensional scoring combining firmographic, technographic, and intent signals",
+              "ABM Targeting — Build target account lists and map 5-10 buying committee contacts per account"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Data Quality Benchmarks">
+            <MachineList items={[
+              "Business Email: Top-tier 95-97% accuracy, 25-30% annual decay rate",
+              "Direct Phone: Top-tier 80-85% accuracy, 30-40% annual decay rate",
+              "Job Title: Top-tier 88-92% accuracy, 30-35% annual decay rate",
+              "Company Size: Top-tier 92-95% accuracy, 10-15% annual decay rate",
+              "Technology Stack: Top-tier 85-90% accuracy, 20-25% annual decay rate",
+              "North American tech companies: 80-90% coverage; European manufacturing: 50-60%"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Provider Comparison">
+            <MachineList items={[
+              "Cursive — Multi-source waterfall + reverse enrichment, integrated with visitor ID + outreach ($1,000/mo)",
+              "Clearbit (HubSpot) — API-first, deep HubSpot integration, strong firmographic data (included in HubSpot plans)",
+              "ZoomInfo — Largest B2B contact database, strong phone data, WebSights visitor ID ($15,000+/yr)",
+              "Apollo.io — Large free tier, crowdsourced data, integrated sequencing ($49/mo+)",
+              "Clay — Multi-provider waterfall orchestration, 50+ data providers ($149/mo)"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Related Resources">
+            <MachineList items={[
+              { label: "Website Visitor Identification Guide", href: "/what-is-website-visitor-identification", description: "Reverse enrichment from anonymous website visitors" },
+              { label: "B2B Intent Data Guide", href: "/what-is-b2b-intent-data", description: "Intent signals as enrichment data layer" },
+              { label: "AI SDR Guide", href: "/what-is-ai-sdr", description: "Use enriched data for AI-powered outreach" },
+              { label: "Clearbit Alternatives", href: "/blog/clearbit-alternatives-comparison", description: "Compare enrichment providers" },
+              { label: "Apollo vs Cursive", href: "/blog/apollo-vs-cursive-comparison", description: "Detailed platform comparison" },
+              { label: "ZoomInfo vs Cursive", href: "/blog/zoominfo-vs-cursive-comparison", description: "Detailed platform comparison" },
+              { label: "Cursive Platform", href: "/platform", description: "Integrated enrichment, visitor ID, and outreach" },
+              { label: "Pricing", href: "/pricing", description: "Cursive pricing and plans" }
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Get Started">
+            <p className="text-gray-700 mb-3">
+              Cursive combines lead enrichment, website visitor identification, audience building, and multi-channel outreach in one platform. Stop juggling multiple tools and start converting more leads with complete, accurate data.
+            </p>
+            <MachineList items={[
+              { label: "Get a Free Data Audit", href: "/free-audit", description: "Identify gaps in your current enrichment strategy" },
+              { label: "Talk to Sales", href: "/contact", description: "Discuss enrichment implementation for your team" }
+            ]} />
+          </MachineSection>
+        </MachineContent>
+      </MachineView>
     </main>
   )
 }

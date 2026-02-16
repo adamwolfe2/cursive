@@ -3,8 +3,8 @@
 
 'use client'
 
-import { useRef } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useRef, useCallback } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useLeads } from '@/lib/hooks/use-leads'
 import { useCRMStore } from '@/lib/crm/crm-state'
 import { LeadsDataTable } from './LeadsDataTable'
@@ -17,6 +17,11 @@ import type { WorkspaceUser } from './LeadsTableColumns'
 export function LeadsTableClient() {
   const { filters } = useCRMStore()
   const filterBarRef = useRef<LeadsFilterBarRef>(null)
+  const queryClient = useQueryClient()
+
+  const handleRefresh = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ['leads'] })
+  }, [queryClient])
 
   // Setup keyboard shortcuts
   useKeyboardShortcuts({
@@ -74,6 +79,7 @@ export function LeadsTableClient() {
           pageCount={data?.pageCount || 0}
           availableUsers={usersData?.users || []}
           commonTags={tagsData?.tags || []}
+          onRefresh={handleRefresh}
         />
       )}
 

@@ -8,6 +8,7 @@ import { generateMetadata } from "@/lib/seo/metadata";
 import { ClientLayout } from "@/components/client-layout";
 import { ExitIntentPopup } from "@/components/exit-intent-popup";
 import { CookieConsent } from "@/components/cookie-consent";
+import { WebMCPProvider } from "@/components/webmcp-provider";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -104,6 +105,7 @@ export default function RootLayout({
           <Footer />
           <ExitIntentPopup />
           <CookieConsent />
+          <WebMCPProvider />
         </ClientLayout>
       </body>
     </html>

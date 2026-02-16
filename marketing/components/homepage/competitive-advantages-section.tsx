@@ -88,7 +88,7 @@ export function CompetitiveAdvantagesSection() {
                 key={advantage.title}
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
-                viewport={{ once: true, margin: "-100px" }}
+                viewport={{ once: true, margin: "-50px" }}
                 transition={{
                   delay: index * 0.05,
                   duration: 0.3,

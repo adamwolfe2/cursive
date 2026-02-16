@@ -209,7 +209,12 @@ export default function CustomAudiencesPage() {
                     The more detail you provide, the better we can match your needs.
                   </p>
 
-                  <form onSubmit={handleSubmit} className="space-y-6 bg-white rounded-2xl p-8 border border-gray-200">
+                  <form
+                    onSubmit={handleSubmit}
+                    className="space-y-6 bg-white rounded-2xl p-8 border border-gray-200"
+                    toolname="requestCustomAudience"
+                    tooldescription="Request a custom B2B audience list built to exact specifications. Free 25-lead sample delivered in 48 hours. Starts at $0.50/lead with volume discounts."
+                  >
                     {/* Industry */}
                     <div>
                       <label htmlFor="industry" className="block text-sm font-medium text-gray-700 mb-2">
@@ -217,10 +222,12 @@ export default function CustomAudiencesPage() {
                       </label>
                       <select
                         id="industry"
+                        name="industry"
                         required
                         value={formData.industry}
                         onChange={(e) => setFormData({ ...formData, industry: e.target.value })}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007AFF] focus:border-transparent bg-white"
+                        toolparamdescription="Target industry for the custom audience"
                       >
                         <option value="">Select an industry</option>
                         {industries.map((ind) => (
@@ -237,11 +244,13 @@ export default function CustomAudiencesPage() {
                       <input
                         type="text"
                         id="geography"
+                        name="geography"
                         required
                         value={formData.geography}
                         onChange={(e) => setFormData({ ...formData, geography: e.target.value })}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007AFF] focus:border-transparent"
                         placeholder="e.g., US, UK, DACH region"
+                        toolparamdescription="Geographic region to target (e.g., US, UK, DACH, APAC)"
                       />
                     </div>
 
@@ -252,10 +261,12 @@ export default function CustomAudiencesPage() {
                       </label>
                       <select
                         id="companySize"
+                        name="companySize"
                         required
                         value={formData.companySize}
                         onChange={(e) => setFormData({ ...formData, companySize: e.target.value })}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007AFF] focus:border-transparent bg-white"
+                        toolparamdescription="Target company size by employee count"
                       >
                         <option value="">Select company size</option>
                         {companySizes.map((size) => (
@@ -281,9 +292,12 @@ export default function CustomAudiencesPage() {
                           >
                             <input
                               type="checkbox"
+                              name="seniorityLevels"
+                              value={level}
                               checked={formData.seniorityLevels.includes(level)}
                               onChange={() => handleSeniorityToggle(level)}
                               className="sr-only"
+                              toolparamdescription="Target seniority levels (C-Suite, VP, Director, Manager, Individual Contributor)"
                             />
                             <span className="text-sm">{level}</span>
                           </label>
@@ -298,11 +312,13 @@ export default function CustomAudiencesPage() {
                       </label>
                       <textarea
                         id="intentSignals"
+                        name="intentSignals"
                         value={formData.intentSignals}
                         onChange={(e) => setFormData({ ...formData, intentSignals: e.target.value })}
                         rows={3}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007AFF] focus:border-transparent resize-none"
                         placeholder="e.g., Actively researching CRM solutions, evaluating marketing automation tools"
+                        toolparamdescription="Specific purchase intent signals to target (e.g., researching CRM solutions)"
                       />
                     </div>
 
@@ -314,10 +330,12 @@ export default function CustomAudiencesPage() {
                         </label>
                         <select
                           id="desiredVolume"
+                          name="desiredVolume"
                           required
                           value={formData.desiredVolume}
                           onChange={(e) => setFormData({ ...formData, desiredVolume: e.target.value })}
                           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007AFF] focus:border-transparent bg-white"
+                          toolparamdescription="Number of leads desired"
                         >
                           <option value="">Select volume</option>
                           {desiredVolumes.map((vol) => (
@@ -331,10 +349,12 @@ export default function CustomAudiencesPage() {
                         </label>
                         <select
                           id="budgetRange"
+                          name="budgetRange"
                           required
                           value={formData.budgetRange}
                           onChange={(e) => setFormData({ ...formData, budgetRange: e.target.value })}
                           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007AFF] focus:border-transparent bg-white"
+                          toolparamdescription="Monthly budget range for lead generation"
                         >
                           <option value="">Select budget</option>
                           {budgetRanges.map((budget) => (
@@ -353,11 +373,13 @@ export default function CustomAudiencesPage() {
                         <input
                           type="email"
                           id="email"
+                          name="email"
                           required
                           value={formData.email}
                           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007AFF] focus:border-transparent"
                           placeholder="you@company.com"
+                          toolparamdescription="Work email to receive the custom audience sample"
                         />
                       </div>
                       <div>
@@ -367,6 +389,7 @@ export default function CustomAudiencesPage() {
                         <input
                           type="text"
                           id="companyName"
+                          name="companyName"
                           value={formData.companyName}
                           onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
                           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007AFF] focus:border-transparent"

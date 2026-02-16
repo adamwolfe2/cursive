@@ -136,11 +136,28 @@ export default function PricingPage() {
     },
   ]
 
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqs.map(faq => ({
+      "@type": "Question",
+      "name": faq.question,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": faq.answer,
+      },
+    })),
+  }
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
 
       {/* Human View */}
@@ -1270,6 +1287,38 @@ export default function PricingPage() {
             description: "Yes. Many customers use the marketplace for ad-hoc prospecting and done-for-you services for ongoing campaigns."
           }
         ]} />
+      </MachineSection>
+
+      {/* WebMCP Declarative Pricing Tool */}
+      <MachineSection title="Get Pricing Details">
+        <form
+          toolname="getPricingTier"
+          tooldescription="Get detailed pricing and feature information for a specific Cursive plan tier"
+          action="/pricing"
+          method="get"
+          className="space-y-4"
+        >
+          <div>
+            <label htmlFor="tier" className="block text-sm text-gray-700 mb-1">
+              Select a plan to view details:
+            </label>
+            <select
+              id="tier"
+              name="tier"
+              required
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+              toolparamdescription="The pricing plan to get details for"
+            >
+              <option value="marketplace">Lead Marketplace (Self-Serve from $99)</option>
+              <option value="data">Cursive Data ($1,000/mo)</option>
+              <option value="outbound">Cursive Outbound ($2,500/mo) - Most Popular</option>
+              <option value="pipeline">Cursive Pipeline ($5,000/mo)</option>
+            </select>
+          </div>
+          <button type="submit" className="px-4 py-2 bg-[#007AFF] text-white rounded-lg">
+            Get Details
+          </button>
+        </form>
       </MachineSection>
 
       {/* Getting Started */}

@@ -22,24 +22,43 @@ const statsData: Stat[] = [
 export function DemoPipelineDashboard() {
   const [animatedStats, setAnimatedStats] = useState(statsData.map(() => 0))
 
-  // Animate number counters
+  // Animate number counters - consolidated single interval
   useEffect(() => {
-    statsData.forEach((stat, index) => {
-      let current = 0
-      const increment = stat.value / 50
-      const interval = setInterval(() => {
-        current += increment
-        if (current >= stat.value) {
-          current = stat.value
-          clearInterval(interval)
+    const targetValues = statsData.map(stat => stat.value)
+    const currentValues = [0, 0, 0, 0]
+    const increments = statsData.map(stat => stat.value / 50)
+    let completedCount = 0
+
+    const interval = setInterval(() => {
+      let hasUpdate = false
+
+      // Update all stats in a single batch
+      const newValues = currentValues.map((current, index) => {
+        if (current >= targetValues[index]) {
+          return targetValues[index]
         }
-        setAnimatedStats(prev => {
-          const updated = [...prev]
-          updated[index] = current
-          return updated
-        })
-      }, 30)
-    })
+        hasUpdate = true
+        const newValue = current + increments[index]
+        return newValue >= targetValues[index] ? targetValues[index] : newValue
+      })
+
+      // Track which animations completed
+      newValues.forEach((val, idx) => {
+        if (val >= targetValues[idx] && currentValues[idx] < targetValues[idx]) {
+          completedCount++
+        }
+        currentValues[idx] = val
+      })
+
+      setAnimatedStats([...newValues])
+
+      // Clear interval when all animations complete
+      if (completedCount >= statsData.length) {
+        clearInterval(interval)
+      }
+    }, 30)
+
+    return () => clearInterval(interval)
   }, [])
 
   const formatValue = (value: number, stat: Stat) => {
