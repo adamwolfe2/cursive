@@ -4,8 +4,6 @@
  * Extracts brand DNA from a website URL using Firecrawl
  */
 
-export const runtime = 'edge'
-
 // NOTE: Cannot use Edge runtime — firecrawl-js depends on undici which requires Node.js APIs.
 // This route will hang on Vercel's Node.js serverless (known platform issue).
 
