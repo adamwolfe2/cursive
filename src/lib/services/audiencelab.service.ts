@@ -77,22 +77,45 @@ export async function fetchLeadsFromSegment(
       },
     })
 
+    console.log('[AudienceLab] API response:', {
+      status: response.status,
+      statusText: response.statusText,
+    })
+
     if (!response.ok) {
       const error = await response.text()
       console.error('[AudienceLab] API error:', {
         status: response.status,
+        statusText: response.statusText,
         error,
+        segmentId,
       })
+
+      // If 404, the segment doesn't exist - return empty array to prevent cron failures
+      if (response.status === 404) {
+        console.warn('[AudienceLab] Segment not found - returning empty array:', segmentId)
+        return []
+      }
+
       throw new Error(`Audience Labs API error: ${response.status} - ${error}`)
     }
 
     const data = await response.json()
-    console.log('[AudienceLab] Fetched leads:', { count: data.length })
 
-    return data
+    // Handle different response formats (array vs object with data property)
+    const leads = Array.isArray(data) ? data : (data.data || data.leads || [])
+
+    console.log('[AudienceLab] Successfully fetched leads:', {
+      segmentId,
+      count: leads.length,
+      sampleFields: leads[0] ? Object.keys(leads[0]).join(', ') : 'none',
+    })
+
+    return leads
   } catch (error) {
     console.error('[AudienceLab] Failed to fetch leads:', error)
-    throw error
+    // Return empty array instead of throwing to prevent cron job failures
+    return []
   }
 }
 
