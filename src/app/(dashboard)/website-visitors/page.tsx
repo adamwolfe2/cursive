@@ -14,7 +14,7 @@ import {
   Eye, Zap, TrendingUp, Users, Clock, ArrowRight,
   Building2, MapPin, Mail, Phone, Linkedin, ExternalLink,
   RefreshCw, SlidersHorizontal, Calendar, Sparkles,
-  AlertTriangle, CheckCircle2, Circle,
+  AlertTriangle, CheckCircle2, Circle, Download,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -378,6 +378,32 @@ function EmptyState({ hasPixel }: { hasPixel: boolean }) {
   )
 }
 
+// ─── CSV Export ────────────────────────────────────────────
+
+function exportVisitorsCSV(visitors: VisitorLead[], dateRange: string) {
+  const headers = ['Name', 'Email', 'Phone', 'Company', 'Job Title', 'City', 'State', 'Intent Score', 'Enrichment', 'Visited']
+  const rows = visitors.map((v) => [
+    v.full_name || [v.first_name, v.last_name].filter(Boolean).join(' ') || '',
+    v.email || '',
+    v.phone || '',
+    v.company_name || '',
+    v.job_title || '',
+    v.city || '',
+    v.state || '',
+    v.intent_score_calculated ?? '',
+    v.enrichment_status || '',
+    v.created_at ? new Date(v.created_at).toLocaleDateString() : '',
+  ])
+  const csv = [headers, ...rows].map((r) => r.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n')
+  const blob = new Blob([csv], { type: 'text/csv' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `cursive-visitors-${dateRange}days-${new Date().toISOString().split('T')[0]}.csv`
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
 // ─── Main Page ─────────────────────────────────────────────
 
 export default function WebsiteVisitorsPage() {
@@ -454,6 +480,14 @@ export default function WebsiteVisitorsPage() {
         </div>
 
         <div className="flex items-center gap-2">
+          <button
+            onClick={() => visitors.length && exportVisitorsCSV(visitors, dateRange)}
+            disabled={!visitors.length}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-40"
+          >
+            <Download className="h-3.5 w-3.5" />
+            Export CSV
+          </button>
           <Button
             variant="outline"
             size="sm"

@@ -9,6 +9,7 @@ import { inngest } from '../client'
 import { createClient } from '@/lib/supabase/server'
 import { fetchLeadsFromSegment, type AudienceLabLead } from '@/lib/services/audiencelab.service'
 import { syncLeadsToGHL } from '@/lib/services/ghl.service'
+import { sendEmail } from '@/lib/email/service'
 
 export const distributeDailyLeads = inngest.createFunction(
   {
@@ -160,19 +161,49 @@ export const distributeDailyLeads = inngest.createFunction(
 
           // Send email notification
           await step.run(`send-notification-${user.id}`, async () => {
-            // TODO: Implement email sending via Resend or Email Bison
-            console.log('[DailyLeads] Would send email notification to:', user.email)
-            // Example:
-            // await sendEmail({
-            //   to: user.email,
-            //   subject: `Your ${leads.length} leads are ready!`,
-            //   template: 'daily-leads',
-            //   data: {
-            //     leadCount: leads.length,
-            //     userName: user.full_name,
-            //     dashboardUrl: 'https://leads.meetcursive.com/leads'
-            //   }
-            // })
+            const firstName = user.full_name?.split(' ')[0] || 'there'
+            const dashboardUrl = 'https://leads.meetcursive.com/leads'
+            const previewLeads = leads.slice(0, 3)
+            const previewList = previewLeads
+              .map((l: AudienceLabLead) => `<li style="padding:6px 0;border-bottom:1px solid #f0f0f0;">${[l.FIRST_NAME, l.LAST_NAME].filter(Boolean).join(' ') || 'New Lead'}${l.COMPANY_NAME ? ` · <span style="color:#6b7280">${l.COMPANY_NAME}</span>` : ''}</li>`)
+              .join('')
+
+            await sendEmail({
+              to: user.email,
+              subject: `⭐ ${leads.length} new lead${leads.length === 1 ? '' : 's'} delivered — ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`,
+              html: `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f9fafb;padding:0;margin:0;">
+<div style="max-width:560px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;">
+  <div style="background:linear-gradient(135deg,#7c3aed,#6366f1);padding:28px 32px;">
+    <h1 style="color:#fff;margin:0;font-size:22px;font-weight:700;">⭐ ${leads.length} fresh lead${leads.length === 1 ? '' : 's'} ready, ${firstName}!</h1>
+    <p style="color:rgba(255,255,255,0.85);margin:6px 0 0;font-size:14px;">Your daily Audience Labs batch just landed — high-intent, scored, and waiting.</p>
+  </div>
+  <div style="padding:24px 32px;">
+    ${previewLeads.length > 0 ? `
+    <p style="font-size:13px;color:#6b7280;margin:0 0 10px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Today's leads include</p>
+    <ul style="list-style:none;margin:0 0 20px;padding:0;font-size:14px;color:#374151;">
+      ${previewList}
+      ${leads.length > 3 ? `<li style="padding:6px 0;color:#7c3aed;font-size:13px;">+ ${leads.length - 3} more lead${leads.length - 3 === 1 ? '' : 's'}...</li>` : ''}
+    </ul>
+    ` : ''}
+    <a href="${dashboardUrl}" style="display:inline-block;background:linear-gradient(135deg,#7c3aed,#6366f1);color:#fff;text-decoration:none;padding:12px 28px;border-radius:8px;font-weight:600;font-size:14px;">View My Leads →</a>
+    <p style="font-size:12px;color:#9ca3af;margin:20px 0 0;">Each lead can be enriched with phone, email, and LinkedIn for 1 credit. Enriching takes 10 seconds and dramatically improves contact rates.</p>
+  </div>
+  <div style="background:#f9fafb;padding:16px 32px;border-top:1px solid #e5e7eb;">
+    <p style="font-size:12px;color:#9ca3af;margin:0;">You receive ${leads.length} leads daily based on your industry and location targeting.</p>
+    <p style="font-size:12px;color:#9ca3af;margin:4px 0 0;"><a href="https://leads.meetcursive.com/my-leads/preferences" style="color:#7c3aed;">Update preferences</a> · <a href="https://leads.meetcursive.com/activate" style="color:#7c3aed;">Activate a campaign</a></p>
+  </div>
+</div>
+</body>
+</html>`,
+              text: `${leads.length} fresh leads delivered, ${firstName}!\n\nView them at: ${dashboardUrl}\n\n${previewLeads.map((l: AudienceLabLead) => `- ${[l.FIRST_NAME, l.LAST_NAME].filter(Boolean).join(' ')}${l.COMPANY_NAME ? ` (${l.COMPANY_NAME})` : ''}`).join('\n')}\n\nEach lead can be enriched with full contact details for 1 credit.`,
+              tags: [{ name: 'type', value: 'daily-leads' }],
+            })
+
+            console.log('[DailyLeads] Email sent to:', user.email)
           })
 
           // Sync to GHL if user has CRM enabled
