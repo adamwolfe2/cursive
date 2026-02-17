@@ -144,6 +144,33 @@ function StatCard({
   )
 }
 
+// ─── Copy Button ─────────────────────────────────────────
+
+function CopyBtn({ value }: { value: string }) {
+  const [copied, setCopied] = useState(false)
+  return (
+    <button
+      onClick={(e) => {
+        e.stopPropagation()
+        navigator.clipboard.writeText(value).then(() => {
+          setCopied(true)
+          setTimeout(() => setCopied(false), 1500)
+        })
+      }}
+      className="ml-1 text-gray-400 hover:text-primary transition-colors"
+      title="Copy"
+    >
+      {copied ? (
+        <CheckCircle2 className="h-3 w-3 text-green-500" />
+      ) : (
+        <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+        </svg>
+      )}
+    </button>
+  )
+}
+
 // ─── Visitor Card ──────────────────────────────────────────
 
 function VisitorCard({
@@ -204,29 +231,59 @@ function VisitorCard({
             )}
           </div>
 
-          {/* Data pills */}
-          <div className="flex flex-wrap gap-1.5 mt-3">
-            {hasEmail && (
-              <span className="inline-flex items-center gap-1 text-xs bg-green-50 text-green-700 border border-green-200 rounded-full px-2.5 py-1">
-                <Mail className="h-3 w-3" /> Email
+          {/* Contact details (enriched) or data pills (not enriched) */}
+          {isEnriched ? (
+            <div className="mt-3 space-y-1">
+              {hasEmail && (
+                <div className="flex items-center gap-1.5 text-xs text-gray-600">
+                  <Mail className="h-3 w-3 text-gray-400 shrink-0" />
+                  <span className="truncate flex-1">{lead.email}</span>
+                  <CopyBtn value={lead.email!} />
+                </div>
+              )}
+              {hasPhone && (
+                <div className="flex items-center gap-1.5 text-xs text-gray-600">
+                  <Phone className="h-3 w-3 text-gray-400 shrink-0" />
+                  <span className="flex-1">{lead.phone}</span>
+                  <CopyBtn value={lead.phone!} />
+                </div>
+              )}
+              {hasLinkedIn && (
+                <a
+                  href={lead.linkedin_url!}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 text-xs text-blue-600 hover:text-blue-700"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Linkedin className="h-3 w-3 shrink-0" />
+                  LinkedIn Profile
+                  <ExternalLink className="h-2.5 w-2.5 shrink-0" />
+                </a>
+              )}
+              <span className="inline-flex items-center gap-1 text-[10px] bg-violet-50 text-violet-700 border border-violet-200 rounded-full px-2 py-0.5 mt-0.5">
+                <Zap className="h-2.5 w-2.5" /> Enriched
               </span>
-            )}
-            {hasPhone && (
-              <span className="inline-flex items-center gap-1 text-xs bg-blue-50 text-blue-700 border border-blue-200 rounded-full px-2.5 py-1">
-                <Phone className="h-3 w-3" /> Phone
-              </span>
-            )}
-            {hasLinkedIn && (
-              <span className="inline-flex items-center gap-1 text-xs bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-full px-2.5 py-1">
-                <Linkedin className="h-3 w-3" /> LinkedIn
-              </span>
-            )}
-            {isEnriched && (
-              <span className="inline-flex items-center gap-1 text-xs bg-violet-50 text-violet-700 border border-violet-200 rounded-full px-2.5 py-1">
-                <Zap className="h-3 w-3" /> Enriched
-              </span>
-            )}
-          </div>
+            </div>
+          ) : (
+            <div className="flex flex-wrap gap-1.5 mt-3">
+              {hasEmail && (
+                <span className="inline-flex items-center gap-1 text-xs bg-green-50 text-green-700 border border-green-200 rounded-full px-2.5 py-1">
+                  <Mail className="h-3 w-3" /> Email
+                </span>
+              )}
+              {hasPhone && (
+                <span className="inline-flex items-center gap-1 text-xs bg-blue-50 text-blue-700 border border-blue-200 rounded-full px-2.5 py-1">
+                  <Phone className="h-3 w-3" /> Phone
+                </span>
+              )}
+              {hasLinkedIn && (
+                <span className="inline-flex items-center gap-1 text-xs bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-full px-2.5 py-1">
+                  <Linkedin className="h-3 w-3" /> LinkedIn
+                </span>
+              )}
+            </div>
+          )}
 
           {/* Footer: timestamp + actions */}
           <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
