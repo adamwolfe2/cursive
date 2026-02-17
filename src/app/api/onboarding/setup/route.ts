@@ -273,6 +273,11 @@ export async function POST(request: NextRequest) {
           daily_credit_limit: 3,
           daily_credits_used: 0,
           is_partner: false,
+          // Daily lead distribution segments
+          industry_segment: validated.industry?.toLowerCase().replace(/\s+/g, '_'),
+          location_segment: validated.targetLocations?.toLowerCase().replace(/\s+/g, '_').split(',')[0] || 'us',
+          daily_lead_limit: 10, // Free tier gets 10 daily leads
+          is_active: true,
         }
       : {
           auth_user_id: authUser.id,
