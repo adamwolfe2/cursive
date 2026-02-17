@@ -10,12 +10,12 @@ import { DailyLeadsView } from '@/components/leads/daily-leads-view'
 export default async function DailyLeadsPage() {
   const supabase = await createClient()
 
-  // Get authenticated user
+  // Get authenticated user (getUser validates the JWT server-side, more reliable than getSession)
   const {
-    data: { session },
-  } = await supabase.auth.getSession()
+    data: { user },
+  } = await supabase.auth.getUser()
 
-  if (!session?.user) {
+  if (!user) {
     redirect('/login')
   }
 
@@ -23,7 +23,7 @@ export default async function DailyLeadsPage() {
   const { data: userProfile } = await supabase
     .from('users')
     .select('id, workspace_id, industry_segment, location_segment, daily_lead_limit, plan')
-    .eq('auth_user_id', session.user.id)
+    .eq('auth_user_id', user.id)
     .single()
 
   if (!userProfile?.workspace_id) {

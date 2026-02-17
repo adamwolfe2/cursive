@@ -22,9 +22,8 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   const { onboarding } = await searchParams
   const supabase = await createClient()
 
-  // Layout already verified auth — get session for user ID only (no network call)
-  const { data: { session } } = await supabase.auth.getSession()
-  const user = session?.user
+  // Layout already verified auth — use getUser for reliable server-side validation
+  const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
     // Layout should have caught this, but safety fallback
@@ -73,7 +72,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       .maybeSingle(),
     supabase
       .from('leads')
-      .select('id, company_name, full_name, first_name, last_name, company_industry, status, created_at, intent_score_calculated, source')
+      .select('id, company_name, full_name, first_name, last_name, email, phone, company_industry, status, created_at, intent_score_calculated, source')
       .eq('workspace_id', userProfile.workspace_id)
       .order('created_at', { ascending: false })
       .limit(5),
@@ -309,7 +308,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg font-semibold text-foreground">Recent Leads</h2>
           <Link
-            href="/my-leads"
+            href="/leads"
             className="flex items-center gap-1 text-sm font-medium text-primary hover:underline"
           >
             View all
@@ -321,13 +320,15 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           <div className="space-y-3">
             {recentLeads.map((lead: any) => {
               // SECURITY: Sanitize all user-generated content to prevent XSS
-              const displayName = sanitizeCompanyName(lead.company_name) ||
-                sanitizeName(lead.full_name) ||
+              const displayName = sanitizeName(lead.full_name) ||
                 sanitizeName([lead.first_name, lead.last_name].filter(Boolean).join(' ')) ||
+                sanitizeCompanyName(lead.company_name) ||
                 'Unknown'
 
-              const displayDetails = sanitizeText(lead.company_industry) ||
-                sanitizeText(lead.source) ||
+              const displayDetails = sanitizeText(lead.email) ||
+                sanitizeText(lead.phone) ||
+                sanitizeCompanyName(lead.company_name) ||
+                sanitizeText(lead.company_industry) ||
                 'No details'
 
               const displayStatus = sanitizeText(lead.status) || 'new'
