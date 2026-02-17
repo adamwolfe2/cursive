@@ -102,11 +102,74 @@ export async function listAllAudiences(): Promise<AudienceLabAudience[]> {
 }
 
 /**
- * Fetch leads from an Audience Labs audience
+ * Score a lead's data completeness on a 0-100 scale.
+ * Higher score = more enriched = higher priority for delivery.
+ *
+ * Scoring weights reflect the real-world value of each field for outreach:
+ *   - Verified email is king (deliverable + GDPR-safe)
+ *   - Mobile phone is next (direct dial / SMS)
+ *   - Full name enables personalization
+ *   - LinkedIn enables research before outreach
+ *   - Company details provide context for the pitch
+ */
+export function scoreLeadCompleteness(lead: AudienceLabLead): number {
+  let score = 0
+
+  // === EMAIL (up to 30 pts) ===
+  // Verified emails are deliverable — worth far more than raw/unverified
+  if (lead.BUSINESS_VERIFIED_EMAILS && lead.BUSINESS_VERIFIED_EMAILS.length > 0) score += 30
+  else if (lead.PERSONAL_VERIFIED_EMAILS && lead.PERSONAL_VERIFIED_EMAILS.length > 0) score += 25
+  else if (lead.BUSINESS_EMAIL) score += 12
+
+  // === NAME (up to 15 pts) ===
+  if (lead.FIRST_NAME && lead.LAST_NAME) score += 15
+  else if (lead.FIRST_NAME || lead.LAST_NAME) score += 5
+
+  // === PHONE (up to 12 pts) ===
+  // Mobile/direct lines are most valuable for outreach
+  if (lead.MOBILE_PHONE) score += 12
+  else if (lead.DIRECT_NUMBER) score += 10
+  else if (lead.PERSONAL_PHONE) score += 8
+  else if (lead.COMPANY_PHONE) score += 4
+
+  // === COMPANY (up to 8 pts) ===
+  if (lead.COMPANY_NAME) score += 8
+
+  // === JOB TITLE (up to 7 pts) ===
+  if (lead.JOB_TITLE) score += 7
+  else if (lead.HEADLINE) score += 4
+
+  // === LINKEDIN (up to 8 pts) ===
+  // LinkedIn enables research, enrichment, and multi-channel outreach
+  if (lead.LINKEDIN_URL) score += 8
+
+  // === LOCATION (up to 5 pts) ===
+  if (lead.COMPANY_CITY && lead.COMPANY_STATE) score += 5
+  else if (lead.PERSONAL_CITY && lead.PERSONAL_STATE) score += 4
+  else if (lead.COMPANY_STATE || lead.PERSONAL_STATE) score += 2
+
+  // === COMPANY ENRICHMENT (up to 11 pts) ===
+  if (lead.COMPANY_DOMAIN) score += 5
+  if (lead.COMPANY_EMPLOYEE_COUNT) score += 3
+  if (lead.COMPANY_REVENUE) score += 3
+
+  return score  // max ~104, effectively 0-100
+}
+
+/**
+ * Minimum completeness score for a lead to be delivered.
+ * Score of 20 means at minimum: has an email OR (name + phone), etc.
+ * Leads below this threshold are incomplete and not worth sending.
+ */
+const MIN_LEAD_SCORE = 20
+
+/**
+ * Fetch leads from an Audience Labs audience.
+ * Automatically fetches a larger pool and returns the most enriched leads first.
  *
  * @param audienceId - The audience ID from Audience Labs
  * @param options - Pagination and filtering options
- * @returns Array of leads from the audience
+ * @returns Array of leads, sorted best-data-first, trimmed to pageSize
  */
 export async function fetchLeadsFromSegment(
   audienceId: string,
@@ -121,16 +184,20 @@ export async function fetchLeadsFromSegment(
     pageSize = 50,
   } = options
 
+  // Fetch 3x the requested amount so we can score and pick the best ones.
+  // Capped at 500 to keep response times reasonable.
+  const fetchSize = Math.min(pageSize * 3, 500)
+
   try {
-    // Use /audiences endpoint instead of /segments
     const url = new URL(`${AUDIENCELAB_API_BASE}/audiences/${audienceId}`)
     url.searchParams.set('page', page.toString())
-    url.searchParams.set('page_size', pageSize.toString())
+    url.searchParams.set('page_size', fetchSize.toString())
 
-    console.log('[AudienceLab] Fetching leads:', {
+    console.log('[AudienceLab] Fetching leads for quality sort:', {
       audienceId,
       page,
-      pageSize,
+      requested: pageSize,
+      fetching: fetchSize,
     })
 
     const response = await fetch(url.toString(), {
@@ -139,11 +206,6 @@ export async function fetchLeadsFromSegment(
         'X-API-Key': API_KEY!,
         'Content-Type': 'application/json',
       },
-    })
-
-    console.log('[AudienceLab] API response:', {
-      status: response.status,
-      statusText: response.statusText,
     })
 
     if (!response.ok) {
@@ -155,9 +217,8 @@ export async function fetchLeadsFromSegment(
         audienceId,
       })
 
-      // If 404, the audience doesn't exist - return empty array to prevent cron failures
       if (response.status === 404) {
-        console.warn('[AudienceLab] Audience not found - returning empty array:', audienceId)
+        console.warn('[AudienceLab] Audience not found:', audienceId)
         return []
       }
 
@@ -165,20 +226,32 @@ export async function fetchLeadsFromSegment(
     }
 
     const data = await response.json()
+    const rawLeads: AudienceLabLead[] = Array.isArray(data) ? data : (data.data || data.leads || [])
 
-    // Handle different response formats (array vs object with data property)
-    const leads = Array.isArray(data) ? data : (data.data || data.leads || [])
+    // Score every lead and sort best-first
+    const scoredLeads = rawLeads
+      .map(lead => ({ lead, score: scoreLeadCompleteness(lead) }))
+      .filter(({ score }) => score >= MIN_LEAD_SCORE)       // drop low-quality records
+      .sort((a, b) => b.score - a.score)                   // best data first
 
-    console.log('[AudienceLab] Successfully fetched leads:', {
+    const topLeads = scoredLeads.slice(0, pageSize).map(({ lead }) => lead)
+
+    const avgScore = scoredLeads.length > 0
+      ? Math.round(scoredLeads.reduce((sum, { score }) => sum + score, 0) / scoredLeads.length)
+      : 0
+
+    console.log('[AudienceLab] Quality sort complete:', {
       audienceId,
-      count: leads.length,
-      sampleFields: leads[0] ? Object.keys(leads[0]).join(', ') : 'none',
+      fetched: rawLeads.length,
+      qualified: scoredLeads.length,
+      returning: topLeads.length,
+      avgScore,
+      topScore: scoredLeads[0]?.score ?? 0,
     })
 
-    return leads
+    return topLeads
   } catch (error) {
     console.error('[AudienceLab] Failed to fetch leads:', error)
-    // Return empty array instead of throwing to prevent cron job failures
     return []
   }
 }

@@ -7,7 +7,7 @@
 
 import { inngest } from '../client'
 import { createClient } from '@/lib/supabase/server'
-import { fetchDailyLeadsForUser, type AudienceLabLead } from '@/lib/services/audiencelab.service'
+import { fetchLeadsFromSegment, type AudienceLabLead } from '@/lib/services/audiencelab.service'
 import { syncLeadsToGHL } from '@/lib/services/ghl.service'
 
 export const distributeDailyLeads = inngest.createFunction(
@@ -66,24 +66,48 @@ export const distributeDailyLeads = inngest.createFunction(
           // Determine daily lead limit based on plan
           const dailyLimit = user.daily_lead_limit || (user.plan === 'free' ? 10 : 100)
 
-          // Fetch leads already received to avoid duplicates
-          const { data: existingLeads } = await supabase
+          // Check if user already received their full daily allocation today
+          const today = new Date().toISOString().split('T')[0]
+          const { count: todayCount } = await supabase
             .from('leads')
-            .select('email')
+            .select('*', { count: 'exact', head: true })
             .eq('workspace_id', user.workspace_id)
+            .gte('delivered_at', `${today}T00:00:00`)
+            .lte('delivered_at', `${today}T23:59:59`)
 
-          const excludeEmails = existingLeads?.map(l => l.email).filter(Boolean) || []
+          if (todayCount && todayCount >= dailyLimit) {
+            console.log('[DailyLeads] User already received daily limit today:', {
+              userId: user.id,
+              todayCount,
+              dailyLimit,
+            })
+            return
+          }
 
-          // Fetch fresh leads from Audience Labs
-          const leads = await fetchDailyLeadsForUser(
-            user.id,
-            {
+          const remainingForToday = dailyLimit - (todayCount || 0)
+
+          // Look up the real audience segment from DB (industry + location → segment_id)
+          const { data: segmentMapping, error: mappingError } = await supabase
+            .from('audience_lab_segments')
+            .select('segment_id, segment_name')
+            .eq('industry', user.industry_segment)
+            .eq('location', user.location_segment)
+            .single()
+
+          if (mappingError || !segmentMapping) {
+            console.warn('[DailyLeads] No audience mapping for user:', {
+              userId: user.id,
               industry: user.industry_segment,
               location: user.location_segment,
-            },
-            dailyLimit,
-            excludeEmails
-          )
+            })
+            return
+          }
+
+          // Fetch best-quality leads from Audience Labs (auto-sorted by completeness score)
+          const leads = await fetchLeadsFromSegment(segmentMapping.segment_id, {
+            page: 1,
+            pageSize: remainingForToday,
+          })
 
           if (leads.length === 0) {
             console.log('[DailyLeads] No new leads for user:', user.id)
