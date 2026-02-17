@@ -146,24 +146,41 @@ export function AutoSubmitOnboarding({ isMarketplace }: AutoSubmitOnboardingProp
           throw new Error(body.error || 'Failed to create workspace')
         }
 
-        // Success! Now immediately populate leads from Audience Labs
-        console.log('[AutoSubmit] Onboarding complete - fetching initial leads...')
-        try {
-          const populateResponse = await fetch('/api/leads/populate-initial', {
-            method: 'POST',
-          })
+        // Fire both post-onboarding tasks in parallel (non-blocking):
+        // 1. Populate initial leads from Audience Labs immediately
+        // 2. Auto-provision their SuperPixel so website visitor tracking is ready
+        console.log('[AutoSubmit] Onboarding complete — launching background setup...')
+        const email = onboardingData.email || ''
+        const emailDomain = email.includes('@') ? email.split('@')[1] : null
+        const businessName = onboardingData.businessName || onboardingData.fullName || 'My Business'
 
-          if (populateResponse.ok) {
-            const result = await populateResponse.json()
-            console.log('[AutoSubmit] Initial leads populated:', result.count, 'leads')
-          } else {
-            // Log error but don't block - they'll get leads tomorrow
-            console.warn('[AutoSubmit] Failed to populate initial leads (non-critical)')
-          }
-        } catch (populateError) {
-          // Non-critical error - leads will come tomorrow via cron
-          console.warn('[AutoSubmit] Error populating initial leads:', populateError)
-        }
+        await Promise.allSettled([
+          // Populate leads immediately (don't wait for 8am cron)
+          fetch('/api/leads/populate-initial', { method: 'POST' })
+            .then(r => r.ok ? r.json() : null)
+            .then(result => {
+              if (result) console.log('[AutoSubmit] Initial leads populated:', result.count, 'leads')
+            })
+            .catch(err => console.warn('[AutoSubmit] Lead population failed (non-critical):', err)),
+
+          // Auto-provision SuperPixel using email domain as the website URL
+          // If no valid domain, skip silently — user can do it from /settings/pixel
+          emailDomain && !emailDomain.includes('gmail') && !emailDomain.includes('yahoo') && !emailDomain.includes('hotmail')
+            ? fetch('/api/pixel/provision', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  website_url: `https://${emailDomain}`,
+                  website_name: businessName,
+                }),
+              })
+              .then(r => r.ok ? r.json() : null)
+              .then(result => {
+                if (result?.pixel_id) console.log('[AutoSubmit] Pixel provisioned:', result.pixel_id)
+              })
+              .catch(err => console.warn('[AutoSubmit] Pixel provision failed (non-critical):', err))
+            : Promise.resolve(),
+        ])
 
         // Clear storage and redirect to dashboard
         sessionStorage.removeItem('cursive_onboarding')

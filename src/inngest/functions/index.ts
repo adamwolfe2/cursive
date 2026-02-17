@@ -201,3 +201,6 @@ export { audienceLabSegmentPuller } from './audiencelab-segment-puller'
 
 // Daily Lead Distribution (cron — distributes daily leads to users)
 export { distributeDailyLeads } from './distribute-daily-leads'
+
+// Stale Lead Cleanup (nightly — removes AL-sourced leads older than 45 days)
+export { cleanupStaleLeads } from './cleanup-stale-leads'

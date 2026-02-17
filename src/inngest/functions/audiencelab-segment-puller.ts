@@ -29,6 +29,57 @@ import {
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 
+// ─── Lead Quality Scoring ─────────────────────────────────────────────────────
+// Minimum completeness score — leads below this are not worth storing.
+const MIN_QUALITY_SCORE = 20
+
+/**
+ * Score an ALEnrichedProfile's completeness (0–100).
+ * Mirrors scoreLeadCompleteness() in audiencelab.service.ts but handles
+ * ALEnrichedProfile types where multi-value fields are comma-separated strings.
+ */
+function scoreALProfile(record: ALEnrichedProfile): number {
+  let score = 0
+
+  // Verified emails are highest value
+  const bve = record.BUSINESS_VERIFIED_EMAILS
+  const pve = record.PERSONAL_VERIFIED_EMAILS
+  if ((typeof bve === 'string' && bve.length > 0) || (Array.isArray(bve) && bve.length > 0)) score += 30
+  else if ((typeof pve === 'string' && pve.length > 0) || (Array.isArray(pve) && pve.length > 0)) score += 25
+  else if (record.BUSINESS_EMAIL) score += 12
+  else if (record.PERSONAL_EMAILS) score += 8
+
+  // Full name
+  if (record.FIRST_NAME && record.LAST_NAME) score += 15
+  else if (record.FIRST_NAME || record.LAST_NAME) score += 5
+
+  // Phone
+  if (record.MOBILE_PHONE) score += 12
+  else if (record.DIRECT_NUMBER) score += 10
+  else if (record.PERSONAL_PHONE) score += 8
+  else if (record.COMPANY_PHONE) score += 4
+
+  // Company
+  if (record.COMPANY_NAME) score += 8
+
+  // Job title
+  if (record.JOB_TITLE) score += 7
+
+  // LinkedIn
+  if (record.COMPANY_LINKEDIN_URL) score += 8
+
+  // Location
+  if ((record.COMPANY_CITY || record.PERSONAL_CITY) && (record.COMPANY_STATE || record.PERSONAL_STATE)) score += 5
+  else if (record.COMPANY_STATE || record.PERSONAL_STATE) score += 2
+
+  // Company enrichment
+  if (record.COMPANY_DOMAIN) score += 5
+  if (record.COMPANY_EMPLOYEE_COUNT) score += 3
+  if (record.COMPANY_REVENUE) score += 3
+
+  return score
+}
+
 const LOG_PREFIX = '[AL Segment Puller]'
 const MAX_RECORDS_PER_RUN = 500 // Safety cap per run
 const MAX_PAGES = 5 // Max pages to fetch per audience
@@ -354,6 +405,10 @@ async function insertLeadFromALRecord(
   workspaceId: string,
   combo: TargetingCombo
 ): Promise<'inserted' | 'skipped'> {
+  // Quality gate — skip records that are too sparse to be useful
+  const qualityScore = scoreALProfile(record)
+  if (qualityScore < MIN_QUALITY_SCORE) return 'skipped'
+
   // AL records use UPPER_CASE: PERSONAL_EMAILS, BUSINESS_EMAIL (comma-separated strings)
   const personalEmails = parseCSV(record.PERSONAL_EMAILS)
   const businessEmails = parseCSV(record.BUSINESS_EMAIL)
@@ -402,9 +457,9 @@ async function insertLeadFromALRecord(
       country_code: 'US',
       postal_code: record.PERSONAL_ZIP || record.COMPANY_ZIP || null,
       job_title: record.JOB_TITLE || null,
-      lead_score: 60,
-      intent_score_calculated: 50,
-      freshness_score: 100,
+      lead_score: Math.min(qualityScore, 100),
+      intent_score_calculated: Math.round(qualityScore * 0.8), // Intent = 80% of completeness
+      freshness_score: 100, // Always 100 at insert — decays over time via freshness cron
       has_email: true,
       has_phone: phones.length > 0,
       validated: false,
