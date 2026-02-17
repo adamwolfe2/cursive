@@ -1,27 +1,52 @@
 'use client'
 
 /**
- * Daily Leads View Component
- * Displays daily delivered leads with stats and upgrade prompts
+ * Daily Leads View
+ *
+ * Rebuilt with modern card layout, tabs (Today/Week/Archive),
+ * per-lead Enrich button, CSV export, enrichment filter,
+ * intent score badges, and upgrade upsell hooks.
  */
 
-import { useState } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+import { useState, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import {
+  Calendar, TrendingUp, Zap, Download, Search,
+  Mail, Phone, Building2, MapPin, ArrowRight,
+  Crown, Sparkles, Star, Clock, CheckCircle2,
+  SlidersHorizontal, RefreshCw, ChevronRight,
+  Target, Users,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { TrendingUp, Mail, Phone, Building, MapPin, Calendar, Crown, Zap } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
+import { cn } from '@/lib/design-system'
+import { formatDistanceToNow } from 'date-fns'
+import { EnrichLeadPanel } from '@/components/leads/EnrichLeadPanel'
+
+// ─── Types ─────────────────────────────────────────────────
 
 interface Lead {
   id: string
+  first_name: string | null
+  last_name: string | null
   full_name: string | null
   email: string | null
   phone: string | null
   company_name: string | null
+  company_domain: string | null
   job_title: string | null
+  city: string | null
+  state: string | null
+  country: string | null
   delivered_at: string | null
-  metadata: Record<string, any>
+  intent_score_calculated: number | null
+  freshness_score: number | null
+  enrichment_status: string | null
+  verification_status: string | null
+  status: string | null
+  tags: string[] | null
+  source: string | null
 }
 
 interface DailyLeadsViewProps {
@@ -35,8 +60,342 @@ interface DailyLeadsViewProps {
   locationSegment?: string | null
 }
 
+// ─── Helpers ───────────────────────────────────────────────
+
+type TabKey = 'today' | 'week' | 'archive'
+
+const ENRICHMENT_FILTERS = [
+  { label: 'All', value: '' },
+  { label: 'Enriched', value: 'enriched' },
+  { label: 'Pending', value: 'pending' },
+]
+
+function intentColor(score: number | null) {
+  if (!score) return { bg: 'bg-gray-100', text: 'text-gray-500' }
+  if (score >= 70) return { bg: 'bg-green-50 border border-green-200', text: 'text-green-700' }
+  if (score >= 40) return { bg: 'bg-amber-50 border border-amber-200', text: 'text-amber-700' }
+  return { bg: 'bg-red-50 border border-red-200', text: 'text-red-600' }
+}
+
+function intentLabel(score: number | null) {
+  if (!score) return null
+  if (score >= 70) return 'Hot'
+  if (score >= 40) return 'Warm'
+  return 'Cold'
+}
+
+function getInitials(lead: Lead) {
+  const n = lead.full_name || [lead.first_name, lead.last_name].filter(Boolean).join(' ')
+  return n.split(' ').slice(0, 2).map((w) => w[0]?.toUpperCase() ?? '').join('') || '?'
+}
+
+const AVATAR_COLORS = [
+  'bg-violet-100 text-violet-700',
+  'bg-blue-100 text-blue-700',
+  'bg-emerald-100 text-emerald-700',
+  'bg-orange-100 text-orange-700',
+  'bg-pink-100 text-pink-700',
+  'bg-cyan-100 text-cyan-700',
+]
+
+function avatarColor(id: string) {
+  return AVATAR_COLORS[id.charCodeAt(0) % AVATAR_COLORS.length]
+}
+
+// ─── CSV Export ────────────────────────────────────────────
+
+function exportToCSV(leads: Lead[], filename: string) {
+  const headers = ['Name', 'Email', 'Phone', 'Company', 'Job Title', 'City', 'State', 'Intent Score', 'Enrichment', 'Delivered']
+  const rows = leads.map((l) => [
+    l.full_name || [l.first_name, l.last_name].filter(Boolean).join(' ') || '',
+    l.email || '',
+    l.phone || '',
+    l.company_name || '',
+    l.job_title || '',
+    l.city || '',
+    l.state || '',
+    l.intent_score_calculated ?? '',
+    l.enrichment_status || '',
+    l.delivered_at ? new Date(l.delivered_at).toLocaleDateString() : '',
+  ])
+  const csv = [headers, ...rows].map((r) => r.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n')
+  const blob = new Blob([csv], { type: 'text/csv' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
+// ─── Lead Card ─────────────────────────────────────────────
+
+function LeadCard({
+  lead,
+  onEnrich,
+  onView,
+}: {
+  lead: Lead
+  onEnrich: (lead: Lead) => void
+  onView: (id: string) => void
+}) {
+  const name = lead.full_name || [lead.first_name, lead.last_name].filter(Boolean).join(' ') || 'Unknown Lead'
+  const isEnriched = lead.enrichment_status === 'enriched'
+  const { bg, text } = intentColor(lead.intent_score_calculated)
+  const label = intentLabel(lead.intent_score_calculated)
+
+  return (
+    <div className="group bg-white rounded-xl border border-gray-200 p-5 hover:border-gray-300 hover:shadow-sm transition-all">
+      <div className="flex items-start gap-3">
+        {/* Avatar */}
+        <div className={cn('h-9 w-9 rounded-full flex items-center justify-center text-sm font-bold shrink-0', avatarColor(lead.id))}>
+          {getInitials(lead)}
+        </div>
+
+        {/* Body */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start gap-2 justify-between">
+            <div className="min-w-0">
+              <button
+                onClick={() => onView(lead.id)}
+                className="font-semibold text-gray-900 hover:text-primary transition-colors text-sm text-left block truncate"
+              >
+                {name}
+              </button>
+              {(lead.job_title || lead.company_name) && (
+                <p className="text-xs text-gray-500 truncate mt-0.5">
+                  {[lead.job_title, lead.company_name].filter(Boolean).join(' · ')}
+                </p>
+              )}
+            </div>
+
+            {/* Intent badge */}
+            {label && (
+              <span className={cn('shrink-0 text-xs font-semibold rounded-full px-2.5 py-1', bg, text)}>
+                {label} {lead.intent_score_calculated}
+              </span>
+            )}
+          </div>
+
+          {/* Contact + location */}
+          <div className="mt-2 space-y-1">
+            {lead.email && (
+              <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                <Mail className="h-3 w-3 text-gray-400 shrink-0" />
+                <span className="truncate">{lead.email}</span>
+                {lead.verification_status === 'valid' && (
+                  <CheckCircle2 className="h-3 w-3 text-green-500 shrink-0" />
+                )}
+              </div>
+            )}
+            {lead.phone && (
+              <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                <Phone className="h-3 w-3 text-gray-400 shrink-0" />
+                {lead.phone}
+              </div>
+            )}
+            {(lead.city || lead.state) && (
+              <div className="flex items-center gap-1.5 text-xs text-gray-400">
+                <MapPin className="h-3 w-3 shrink-0" />
+                {[lead.city, lead.state].filter(Boolean).join(', ')}
+              </div>
+            )}
+          </div>
+
+          {/* Tags */}
+          {lead.tags && lead.tags.length > 0 && (
+            <div className="flex flex-wrap gap-1 mt-2">
+              {lead.tags.slice(0, 3).map((t) => (
+                <span key={t} className="text-[10px] bg-gray-100 text-gray-500 rounded-full px-2 py-0.5">{t}</span>
+              ))}
+            </div>
+          )}
+
+          {/* Footer */}
+          <div className="flex items-center justify-between mt-3 pt-2.5 border-t border-gray-100">
+            <div className="flex items-center gap-2">
+              {isEnriched ? (
+                <span className="inline-flex items-center gap-1 text-[10px] bg-violet-50 text-violet-600 border border-violet-200 rounded-full px-2 py-0.5 font-medium">
+                  <Zap className="h-2.5 w-2.5" /> Enriched
+                </span>
+              ) : (
+                <span className="text-[10px] text-gray-400">
+                  {lead.delivered_at ? formatDistanceToNow(new Date(lead.delivered_at), { addSuffix: true }) : ''}
+                </span>
+              )}
+            </div>
+
+            <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+              {!isEnriched && (
+                <button
+                  onClick={() => onEnrich(lead)}
+                  className="inline-flex items-center gap-1 text-xs bg-gradient-to-r from-violet-500 to-primary text-white rounded-full px-2.5 py-1 font-medium hover:opacity-90 transition-opacity"
+                >
+                  <Zap className="h-2.5 w-2.5" /> Enrich
+                </button>
+              )}
+              <button
+                onClick={() => onView(lead.id)}
+                className="inline-flex items-center gap-1 text-xs text-gray-600 border border-gray-200 rounded-full px-2.5 py-1 hover:border-primary hover:text-primary transition-colors"
+              >
+                View <ChevronRight className="h-3 w-3" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─── Stat Card ─────────────────────────────────────────────
+
+function StatCard({
+  icon: Icon,
+  label,
+  value,
+  sub,
+  progress,
+  accent = false,
+  href,
+}: {
+  icon: React.ElementType
+  label: string
+  value: string | number
+  sub?: string
+  progress?: number
+  accent?: boolean
+  href?: string
+}) {
+  const content = (
+    <div className={cn(
+      'bg-white rounded-xl border p-5 transition-all',
+      accent ? 'border-primary/30 bg-primary/5 hover:border-primary/50' : 'border-gray-200 hover:border-gray-300',
+      href && 'cursor-pointer'
+    )}>
+      <div className="flex items-center gap-2 mb-3">
+        <div className={cn('p-1.5 rounded-lg', accent ? 'bg-primary/15' : 'bg-gray-100')}>
+          <Icon className={cn('h-4 w-4', accent ? 'text-primary' : 'text-gray-600')} />
+        </div>
+        <span className="text-sm text-gray-500">{label}</span>
+      </div>
+      <div className={cn('text-2xl font-bold', accent ? 'text-primary' : 'text-gray-900')}>{value}</div>
+      {progress !== undefined && (
+        <div className="mt-2 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+          <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${Math.min(progress, 100)}%` }} />
+        </div>
+      )}
+      {sub && <p className="text-xs text-gray-400 mt-1.5">{sub}</p>}
+    </div>
+  )
+  return href ? <a href={href}>{content}</a> : content
+}
+
+// ─── Archive tab (client-side paginated fetch) ──────────────
+
+function ArchiveTab({
+  workspaceId,
+  onEnrich,
+  onView,
+  creditsRemaining,
+}: {
+  workspaceId?: string
+  onEnrich: (lead: Lead) => void
+  onView: (id: string) => void
+  creditsRemaining: number
+}) {
+  const [page, setPage] = useState(1)
+  const [enrichFilter, setEnrichFilter] = useState('')
+  const [search, setSearch] = useState('')
+
+  const { data, isLoading, isFetching } = useQuery({
+    queryKey: ['leads-archive', page, enrichFilter],
+    queryFn: async () => {
+      const params = new URLSearchParams({ page: String(page), per_page: '24' })
+      if (enrichFilter) params.set('enrichment_status', enrichFilter)
+      const res = await fetch(`/api/leads?${params}`)
+      if (!res.ok) throw new Error('Failed to load')
+      return res.json()
+    },
+    staleTime: 60_000,
+  })
+
+  const leads: Lead[] = (data?.data ?? []).filter((l: Lead) =>
+    !search || [l.full_name, l.email, l.company_name].some((v) => v?.toLowerCase().includes(search.toLowerCase()))
+  )
+
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+        <div className="relative flex-1 max-w-xs">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <input
+            type="search"
+            placeholder="Search name, email, company..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+          />
+        </div>
+        <div className="flex items-center gap-1 bg-white border border-gray-200 rounded-lg p-1">
+          {ENRICHMENT_FILTERS.map((f) => (
+            <button
+              key={f.value}
+              onClick={() => { setEnrichFilter(f.value); setPage(1) }}
+              className={cn(
+                'px-3 py-1.5 text-sm rounded-md transition-colors',
+                enrichFilter === f.value ? 'bg-primary text-white font-medium' : 'text-gray-600 hover:bg-gray-100'
+              )}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+        <button
+          onClick={() => exportToCSV(data?.data ?? [], `cursive-leads-archive-p${page}.csv`)}
+          disabled={!data?.data?.length}
+          className="inline-flex items-center gap-1.5 text-sm text-gray-600 border border-gray-200 rounded-lg px-3 py-2 hover:bg-gray-50 transition-colors disabled:opacity-40"
+        >
+          <Download className="h-3.5 w-3.5" /> Export CSV
+        </button>
+      </div>
+
+      {isLoading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="bg-white rounded-xl border border-gray-200 p-5 animate-pulse h-36" />
+          ))}
+        </div>
+      ) : leads.length === 0 ? (
+        <div className="text-center py-12 bg-white rounded-xl border border-dashed border-gray-200">
+          <Users className="h-10 w-10 text-gray-300 mx-auto mb-3" />
+          <p className="text-gray-500 font-medium">No leads found</p>
+          <p className="text-sm text-gray-400 mt-1">Try adjusting your filters</p>
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            {leads.map((l) => (
+              <LeadCard key={l.id} lead={l} onEnrich={onEnrich} onView={onView} />
+            ))}
+          </div>
+          {data?.pagination && data.pagination.total_pages > 1 && (
+            <div className="flex items-center justify-center gap-2">
+              <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>Previous</Button>
+              <span className="text-sm text-gray-500">Page {page} of {data.pagination.total_pages}</span>
+              <Button variant="outline" size="sm" disabled={page >= data.pagination.total_pages} onClick={() => setPage((p) => p + 1)}>Next</Button>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  )
+}
+
+// ─── Main Component ────────────────────────────────────────
+
 export function DailyLeadsView({
-  leads,
+  leads: initialLeads,
   todayCount,
   weekCount,
   monthCount,
@@ -45,285 +404,330 @@ export function DailyLeadsView({
   industrySegment,
   locationSegment,
 }: DailyLeadsViewProps) {
+  const router = useRouter()
+  const queryClient = useQueryClient()
+  const [tab, setTab] = useState<TabKey>('today')
+  const [enrichFilter, setEnrichFilter] = useState('')
   const [search, setSearch] = useState('')
+  const [enrichTarget, setEnrichTarget] = useState<Lead | null>(null)
+  const [creditsRemaining, setCreditsRemaining] = useState(0)
 
-  const filteredLeads = leads.filter(lead => {
-    if (!search) return true
-    const searchLower = search.toLowerCase()
-    return (
-      lead.full_name?.toLowerCase().includes(searchLower) ||
-      lead.email?.toLowerCase().includes(searchLower) ||
-      lead.company_name?.toLowerCase().includes(searchLower)
-    )
+  // Fetch credits
+  useQuery({
+    queryKey: ['user-credits'],
+    queryFn: async () => {
+      const res = await fetch('/api/credits/status')
+      if (!res.ok) return null
+      const data = await res.json()
+      setCreditsRemaining(data.credits?.remaining ?? 0)
+      return data
+    },
+    staleTime: 30_000,
   })
 
-  const isFree = plan === 'free'
-  const progressPercent = (todayCount / dailyLimit) * 100
+  // Week leads
+  const { data: weekData, isLoading: weekLoading } = useQuery({
+    queryKey: ['leads-week'],
+    queryFn: async () => {
+      const since = new Date(Date.now() - 7 * 86_400_000).toISOString()
+      const res = await fetch(`/api/leads?date_from=${encodeURIComponent(since)}&per_page=50`)
+      if (!res.ok) throw new Error('Failed')
+      return res.json()
+    },
+    enabled: tab === 'week',
+    staleTime: 60_000,
+  })
+
+  const isFree = plan === 'free' || plan === 'starter'
+  const progressPct = (todayCount / Math.max(dailyLimit, 1)) * 100
+
+  // Filter today's leads
+  const filteredToday = initialLeads.filter((l) => {
+    if (search) {
+      const q = search.toLowerCase()
+      if (![l.full_name, l.email, l.company_name].some((v) => v?.toLowerCase().includes(q))) return false
+    }
+    if (enrichFilter === 'enriched') return l.enrichment_status === 'enriched'
+    if (enrichFilter === 'pending') return l.enrichment_status === 'pending' || l.enrichment_status === null
+    return true
+  })
+
+  const weekLeads: Lead[] = weekData?.data ?? []
+
+  function handleView(id: string) {
+    router.push(`/crm/leads/${id}`)
+  }
+
+  function handleEnrich(lead: Lead) {
+    setEnrichTarget(lead)
+  }
+
+  function handleEnrichClose() {
+    setEnrichTarget(null)
+  }
+
+  function handleEnrichSuccess() {
+    queryClient.invalidateQueries({ queryKey: ['leads-week'] })
+    queryClient.invalidateQueries({ queryKey: ['leads-archive'] })
+    queryClient.invalidateQueries({ queryKey: ['user-credits'] })
+    setEnrichTarget(null)
+  }
+
+  const unenrichedToday = initialLeads.filter((l) => l.enrichment_status !== 'enriched').length
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Your Daily Leads</h1>
-        <p className="text-muted-foreground mt-2">
-          Fresh leads delivered every morning at 8am CT
-          {industrySegment && locationSegment && (
-            <span className="ml-2">
-              • <Badge variant="outline" className="ml-1">{industrySegment}</Badge>
-              <Badge variant="outline" className="ml-1">{locationSegment}</Badge>
-            </span>
-          )}
-        </p>
-      </div>
-
-      {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Today&apos;s Leads</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{todayCount}</div>
-            <div className="mt-2 h-2 bg-muted rounded-full overflow-hidden">
-              <div
-                className="h-full bg-primary transition-all"
-                style={{ width: `${Math.min(progressPercent, 100)}%` }}
-              />
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              {todayCount} of {dailyLimit} delivered
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">This Week</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{weekCount}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              +{Math.round((weekCount / 7) * 10) / 10} avg/day
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">This Month</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{monthCount}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              {isFree ? `${dailyLimit * 30}/mo limit` : 'Unlimited'}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className={isFree ? 'border-primary/50 bg-primary/5' : ''}>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Your Plan</CardTitle>
-            <Crown className="h-4 w-4 text-primary" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold capitalize">{plan}</div>
-            {isFree ? (
-              <Button size="sm" className="mt-2 w-full" asChild>
-                <a href="/pricing">
-                  <Zap className="h-3 w-3 mr-1" />
-                  Upgrade to Pro
-                </a>
-              </Button>
-            ) : (
-              <p className="text-xs text-muted-foreground mt-2">
-                {dailyLimit} leads/day
-              </p>
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+            <Star className="h-6 w-6 text-amber-400 fill-amber-400" />
+            Your Daily Leads
+          </h1>
+          <p className="text-sm text-gray-500 mt-1">
+            Fresh, scored leads delivered every morning at 8am CT
+            {industrySegment && (
+              <span className="ml-2 inline-flex items-center gap-1 text-xs text-primary bg-primary/10 rounded-full px-2 py-0.5">
+                <Target className="h-3 w-3" />
+                {industrySegment}
+                {locationSegment && ` · ${locationSegment}`}
+              </span>
             )}
-          </CardContent>
-        </Card>
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <a
+            href="/leads/preferences"
+            className="inline-flex items-center gap-1.5 text-sm border border-gray-200 rounded-lg px-3 py-2 text-gray-600 hover:bg-gray-50 transition-colors"
+          >
+            <SlidersHorizontal className="h-3.5 w-3.5" />
+            Targeting
+          </a>
+          <button
+            onClick={() => exportToCSV(initialLeads, `cursive-leads-${new Date().toISOString().split('T')[0]}.csv`)}
+            disabled={initialLeads.length === 0}
+            className="inline-flex items-center gap-1.5 text-sm border border-gray-200 rounded-lg px-3 py-2 text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-40"
+          >
+            <Download className="h-3.5 w-3.5" />
+            Export
+          </button>
+        </div>
       </div>
 
-      {/* Upgrade Banner (Free tier only) */}
-      {isFree && todayCount >= dailyLimit * 0.8 && (
-        <Card className="border-primary bg-gradient-to-r from-primary/10 to-primary/5">
-          <CardContent className="flex items-center justify-between p-6">
-            <div>
-              <h3 className="font-semibold mb-1">Running low on daily leads?</h3>
-              <p className="text-sm text-muted-foreground">
-                Upgrade to Lead Boost and get 100 leads per day instead of {dailyLimit}
-              </p>
+      {/* Stats row */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard
+          icon={Calendar}
+          label="Today"
+          value={todayCount}
+          sub={`${todayCount} of ${dailyLimit} delivered`}
+          progress={progressPct}
+        />
+        <StatCard
+          icon={TrendingUp}
+          label="This Week"
+          value={weekCount}
+          sub={`${(weekCount / 7).toFixed(1)} avg/day`}
+        />
+        <StatCard
+          icon={TrendingUp}
+          label="This Month"
+          value={monthCount}
+          sub={isFree ? `${dailyLimit * 30}/mo limit` : 'Unlimited'}
+        />
+        <StatCard
+          icon={Crown}
+          label="Your Plan"
+          value={plan.charAt(0).toUpperCase() + plan.slice(1)}
+          sub={isFree ? undefined : `${dailyLimit} leads/day`}
+          accent={isFree}
+          href={isFree ? '/settings/billing' : undefined}
+        />
+      </div>
+
+      {/* Upgrade banner */}
+      {isFree && (
+        <div className="rounded-xl border border-primary/20 bg-gradient-to-r from-primary/5 to-violet-50 p-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-primary/10">
+                <Sparkles className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <p className="font-semibold text-gray-900 text-sm">You&apos;re on the free plan</p>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  Upgrade to Pro for up to 100 leads/day, 1,000 enrichments, and unlimited CSV export.
+                </p>
+              </div>
             </div>
-            <Button asChild>
-              <a href="/pricing">Upgrade Now</a>
-            </Button>
-          </CardContent>
-        </Card>
+            <a
+              href="/settings/billing"
+              className="shrink-0 inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary/90 transition-colors"
+            >
+              <Zap className="h-4 w-4" />
+              Upgrade to Pro
+            </a>
+          </div>
+        </div>
       )}
 
-      {/* Search */}
-      <div className="flex items-center gap-4">
-        <Input
-          placeholder="Search leads..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="max-w-sm"
-        />
-        <Badge variant="secondary">{filteredLeads.length} leads</Badge>
+      {/* Unenriched call to action */}
+      {unenrichedToday > 0 && !isFree && (
+        <div className="rounded-xl border border-violet-100 bg-violet-50/60 px-5 py-3.5 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-2.5">
+            <Zap className="h-4 w-4 text-violet-600 shrink-0" />
+            <p className="text-sm text-violet-800">
+              <strong>{unenrichedToday} leads</strong> today haven&apos;t been enriched — fill in their email, phone, and LinkedIn. <span className="text-violet-600">1 credit each.</span>
+            </p>
+          </div>
+          {creditsRemaining <= 3 && (
+            <a
+              href="/settings/billing"
+              className="shrink-0 text-xs font-semibold text-violet-700 border border-violet-300 rounded-lg px-3 py-1.5 hover:bg-violet-100 transition-colors"
+            >
+              Get Credits
+            </a>
+          )}
+        </div>
+      )}
+
+      {/* Tabs */}
+      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center border-b border-gray-200 pb-0">
+        <div className="flex gap-0">
+          {([
+            { key: 'today', label: `Today (${todayCount})` },
+            { key: 'week', label: `This Week (${weekCount})` },
+            { key: 'archive', label: 'All Leads' },
+          ] as { key: TabKey; label: string }[]).map((t) => (
+            <button
+              key={t.key}
+              onClick={() => setTab(t.key)}
+              className={cn(
+                'px-4 py-3 text-sm font-medium border-b-2 transition-colors',
+                tab === t.key
+                  ? 'border-primary text-primary'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              )}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Filters (Today + Week tabs only) */}
+        {(tab === 'today' || tab === 'week') && (
+          <div className="flex items-center gap-3 sm:ml-auto">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400" />
+              <input
+                type="search"
+                placeholder="Search..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="pl-8 pr-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 w-44"
+              />
+            </div>
+            <div className="flex items-center gap-1 bg-white border border-gray-200 rounded-lg p-1">
+              {ENRICHMENT_FILTERS.map((f) => (
+                <button
+                  key={f.value}
+                  onClick={() => setEnrichFilter(f.value)}
+                  className={cn(
+                    'px-2.5 py-1 text-xs rounded-md transition-colors',
+                    enrichFilter === f.value ? 'bg-primary text-white font-medium' : 'text-gray-600 hover:bg-gray-100'
+                  )}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Leads Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Today&apos;s Leads</CardTitle>
-          <CardDescription>
-            Delivered {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {filteredLeads.length === 0 ? (
-            <div className="text-center py-12">
-              <Calendar className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="font-semibold mb-2">
-                {todayCount === 0 ? "Today's leads will arrive soon!" : 'No leads match your search'}
-              </h3>
-              <p className="text-sm text-muted-foreground max-w-sm mx-auto">
-                {todayCount === 0
-                  ? `Your daily batch of ${dailyLimit} leads is delivered every morning at 8am CT. Check back then!`
-                  : 'Try adjusting your search terms'}
-              </p>
+      {/* Tab content */}
+      {tab === 'today' && (
+        filteredToday.length === 0 ? (
+          <div className="text-center py-14 bg-white rounded-xl border border-dashed border-gray-200">
+            <Calendar className="h-12 w-12 text-gray-200 mx-auto mb-3" />
+            <h3 className="font-semibold text-gray-700 mb-1">
+              {todayCount === 0 ? "Today's leads arrive at 8am CT" : 'No leads match your filters'}
+            </h3>
+            <p className="text-sm text-gray-400 max-w-xs mx-auto">
+              {todayCount === 0
+                ? `Your daily batch of ${dailyLimit} scored leads from Audience Labs will be ready soon.`
+                : 'Try clearing your search or filter.'}
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            {filteredToday.map((lead) => (
+              <LeadCard key={lead.id} lead={lead} onEnrich={handleEnrich} onView={handleView} />
+            ))}
+          </div>
+        )
+      )}
+
+      {tab === 'week' && (
+        weekLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="bg-white rounded-xl border border-gray-200 p-5 animate-pulse h-36" />
+            ))}
+          </div>
+        ) : weekLeads.length === 0 ? (
+          <div className="text-center py-12 bg-white rounded-xl border border-dashed border-gray-200">
+            <TrendingUp className="h-10 w-10 text-gray-200 mx-auto mb-3" />
+            <p className="text-gray-500">No leads this week yet</p>
+          </div>
+        ) : (
+          <>
+            <div className="flex justify-end mb-2">
+              <button
+                onClick={() => exportToCSV(weekLeads, `cursive-leads-week.csv`)}
+                className="inline-flex items-center gap-1.5 text-sm text-gray-600 border border-gray-200 rounded-lg px-3 py-2 hover:bg-gray-50 transition-colors"
+              >
+                <Download className="h-3.5 w-3.5" /> Export CSV
+              </button>
             </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Company</TableHead>
-                    <TableHead>Title</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Phone</TableHead>
-                    <TableHead>Location</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredLeads.map((lead) => (
-                    <TableRow key={lead.id}>
-                      <TableCell className="font-medium">
-                        {lead.full_name || '—'}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Building className="h-4 w-4 text-muted-foreground" />
-                          {lead.company_name || '—'}
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {lead.job_title || '—'}
-                      </TableCell>
-                      <TableCell>
-                        {lead.email ? (
-                          <a
-                            href={`mailto:${lead.email}`}
-                            className="flex items-center gap-2 text-primary hover:underline"
-                          >
-                            <Mail className="h-4 w-4" />
-                            {lead.email}
-                          </a>
-                        ) : (
-                          '—'
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {lead.phone ? (
-                          <a
-                            href={`tel:${lead.phone}`}
-                            className="flex items-center gap-2 text-primary hover:underline"
-                          >
-                            <Phone className="h-4 w-4" />
-                            {lead.phone}
-                          </a>
-                        ) : (
-                          '—'
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {lead.metadata?.city || lead.metadata?.state ? (
-                          <div className="flex items-center gap-2 text-muted-foreground">
-                            <MapPin className="h-4 w-4" />
-                            {[lead.metadata?.city, lead.metadata?.state]
-                              .filter(Boolean)
-                              .join(', ')}
-                          </div>
-                        ) : (
-                          '—'
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              {weekLeads.map((lead: Lead) => (
+                <LeadCard key={lead.id} lead={lead} onEnrich={handleEnrich} onView={handleView} />
+              ))}
             </div>
-          )}
-        </CardContent>
-      </Card>
+          </>
+        )
+      )}
 
-      {/* Feature Upsells */}
-      {isFree && (
-        <div className="grid gap-4 md:grid-cols-3">
-          <Card className="border-dashed">
-            <CardHeader>
-              <CardTitle className="text-lg">🎯 Pixel Tracking</CardTitle>
-              <CardDescription>
-                Track YOUR website visitors in real-time
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm mb-4">
-                Identify companies visiting your site and get their contact info automatically.
-              </p>
-              <Button variant="outline" className="w-full" asChild>
-                <a href="/features/pixel">Learn More</a>
-              </Button>
-            </CardContent>
-          </Card>
+      {tab === 'archive' && (
+        <ArchiveTab
+          onEnrich={handleEnrich}
+          onView={handleView}
+          creditsRemaining={creditsRemaining}
+        />
+      )}
 
-          <Card className="border-dashed">
-            <CardHeader>
-              <CardTitle className="text-lg">📧 Email Campaigns</CardTitle>
-              <CardDescription>
-                Automated outreach sequences
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm mb-4">
-                Send personalized email campaigns to your leads with high deliverability.
-              </p>
-              <Button variant="outline" className="w-full" asChild>
-                <a href="/features/email">Learn More</a>
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card className="border-dashed">
-            <CardHeader>
-              <CardTitle className="text-lg">🎨 Custom Audiences</CardTitle>
-              <CardDescription>
-                Target your exact ICP
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm mb-4">
-                Get leads matching your specific criteria beyond industry and location.
-              </p>
-              <Button variant="outline" className="w-full" asChild>
-                <a href="/features/audiences">Learn More</a>
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
+      {/* Enrich Panel */}
+      {enrichTarget && (
+        <EnrichLeadPanel
+          leadId={enrichTarget.id}
+          lead={{
+            email: enrichTarget.email,
+            phone: enrichTarget.phone,
+            company_name: enrichTarget.company_name,
+            company_domain: enrichTarget.company_domain,
+            job_title: enrichTarget.job_title,
+            city: enrichTarget.city,
+            state: enrichTarget.state,
+            linkedin_url: null,
+            full_name: enrichTarget.full_name || [enrichTarget.first_name, enrichTarget.last_name].filter(Boolean).join(' ') || null,
+          }}
+          creditsRemaining={creditsRemaining}
+          open={!!enrichTarget}
+          onClose={handleEnrichClose}
+          onEnriched={handleEnrichSuccess}
+        />
       )}
     </div>
   )

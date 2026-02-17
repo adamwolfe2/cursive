@@ -9,7 +9,7 @@ import type { LeadWithRelations, LeadStatus } from '@/types/crm.types'
 
 export interface LeadFilters {
   query_id?: string
-  enrichment_status?: 'pending' | 'completed' | 'failed'
+  enrichment_status?: 'pending' | 'enriching' | 'enriched' | 'failed'
   delivery_status?: 'pending' | 'delivered' | 'failed'
   intent_score?: 'hot' | 'warm' | 'cold'
   date_from?: string
@@ -40,7 +40,7 @@ export class LeadRepository {
     // Reduces data transfer from ~250KB to ~20KB per page
     let query = supabase
       .from('leads')
-      .select('id, contact_name, contact_email, company_name, company_domain, industry, status, intent_score_calculated, enrichment_status, delivery_status, source, created_at, updated_at, query_id, queries(name)', {
+      .select('id, first_name, last_name, full_name, email, phone, company_name, company_domain, job_title, city, state, country, source, status, intent_score_calculated, freshness_score, enrichment_status, verification_status, delivery_status, delivered_at, tags, created_at, updated_at, query_id, queries(name)', {
         count: 'estimated',  // Faster than 'exact' for large tables
       })
       .eq('workspace_id', workspaceId)
