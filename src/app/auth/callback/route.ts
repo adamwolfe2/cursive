@@ -19,80 +19,39 @@ const LOADING_PAGE = `
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Signing you in...</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: linear-gradient(135deg, #007AFF 0%, #0056CC 100%);
+      background: #fafafa;
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: white;
+      color: #18181b;
     }
-    .container {
-      text-align: center;
-      padding: 2rem;
-    }
-    .logo {
-      width: 80px;
-      height: 80px;
-      margin: 0 auto 2rem;
-      background: white;
-      border-radius: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2.5rem;
-      font-weight: bold;
-      background: linear-gradient(135deg, #007AFF 0%, #0056CC 100%);
-      color: white;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-      animation: pulse 2s ease-in-out infinite;
-    }
-    h1 {
-      font-size: 1.5rem;
-      margin-bottom: 0.5rem;
-      font-weight: 600;
-    }
-    p {
-      font-size: 1rem;
-      opacity: 0.9;
-      margin-bottom: 2rem;
-    }
+    .container { text-align: center; padding: 2rem; }
     .spinner {
-      width: 50px;
-      height: 50px;
-      margin: 0 auto;
-      border: 4px solid rgba(255,255,255,0.3);
-      border-top-color: white;
+      width: 32px;
+      height: 32px;
+      margin: 0 auto 1.5rem;
+      border: 3px solid #e4e4e7;
+      border-top-color: #007AFF;
       border-radius: 50%;
-      animation: spin 1s linear infinite;
+      animation: spin 0.8s linear infinite;
     }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-    }
+    h1 { font-size: 1.125rem; font-weight: 500; margin-bottom: 0.25rem; }
+    p { font-size: 0.875rem; color: #71717a; }
+    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="logo">C</div>
-    <h1>Signing you in...</h1>
-    <p>Setting up your account</p>
     <div class="spinner"></div>
+    <h1>Signing you in</h1>
+    <p>Just a moment...</p>
   </div>
   <script>
-    // Auto-redirect after showing loading (in case meta refresh fails)
-    setTimeout(() => {
-      window.location.href = '{{REDIRECT_URL}}';
-    }, 1500);
+    setTimeout(() => { window.location.href = '{{REDIRECT_URL}}'; }, 1500);
   </script>
 </body>
 </html>
