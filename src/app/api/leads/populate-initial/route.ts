@@ -57,6 +57,25 @@ export async function POST(req: NextRequest) {
       limit: userProfile.daily_lead_limit,
     })
 
+    // Check if user already received leads today (prevent multiple calls)
+    const today = new Date().toISOString().split('T')[0]
+    const { count: todayLeadsCount } = await supabase
+      .from('leads')
+      .select('*', { count: 'exact', head: true })
+      .eq('workspace_id', userProfile.workspace_id)
+      .gte('delivered_at', `${today}T00:00:00`)
+      .lte('delivered_at', `${today}T23:59:59`)
+
+    if (todayLeadsCount && todayLeadsCount >= userProfile.daily_lead_limit) {
+      console.log('[PopulateInitialLeads] User already received daily limit:', todayLeadsCount)
+      return NextResponse.json({
+        success: true,
+        message: 'You have already received your daily leads',
+        count: todayLeadsCount,
+        alreadyDelivered: true,
+      })
+    }
+
     // Get audience mapping for user's industry/location
     const { data: segmentMapping, error: mappingError } = await supabase
       .from('audience_lab_segments')

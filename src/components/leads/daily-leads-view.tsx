@@ -80,7 +80,7 @@ export function DailyLeadsView({
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Today's Leads</CardTitle>
+            <CardTitle className="text-sm font-medium">Today&apos;s Leads</CardTitle>
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -177,7 +177,7 @@ export function DailyLeadsView({
       {/* Leads Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Today's Leads</CardTitle>
+          <CardTitle>Today&apos;s Leads</CardTitle>
           <CardDescription>
             Delivered {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
           </CardDescription>
