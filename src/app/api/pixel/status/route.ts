@@ -29,7 +29,7 @@ export async function GET() {
     // Get pixel for this workspace (RLS will enforce workspace isolation)
     const { data: pixel, error: pixelError } = await supabase
       .from('audiencelab_pixels')
-      .select('pixel_id, domain, is_active, snippet, install_url, created_at, label')
+      .select('pixel_id, domain, is_active, snippet, install_url, created_at, label, trial_ends_at, trial_status, visitor_count_total, visitor_count_identified')
       .eq('workspace_id', userData.workspace_id)
       .maybeSingle()
 
@@ -67,6 +67,10 @@ export async function GET() {
         install_url: pixel.install_url,
         label: pixel.label,
         created_at: pixel.created_at,
+        trial_ends_at: pixel.trial_ends_at ?? null,
+        trial_status: pixel.trial_status ?? null,
+        visitor_count_total: pixel.visitor_count_total ?? null,
+        visitor_count_identified: pixel.visitor_count_identified ?? null,
       } : null,
       recent_events: recentEvents,
     })

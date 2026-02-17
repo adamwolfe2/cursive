@@ -15,6 +15,10 @@ interface PixelStatus {
     install_url: string | null
     label: string | null
     created_at: string
+    trial_ends_at: string | null
+    trial_status: 'trial' | 'expired' | 'active' | 'cancelled' | null
+    visitor_count_total: number | null
+    visitor_count_identified: number | null
   } | null
   recent_events: number
 }
@@ -157,9 +161,68 @@ export default function PixelSettingsPage() {
   if (data?.has_pixel && data.pixel) {
     const hasSnippet = !!data.pixel.snippet
     const hasInstallUrl = !!data.pixel.install_url
+    const isTrialExpired = data.pixel.trial_status === 'expired'
+    const isTrialActive = data.pixel.trial_status === 'trial'
+    const trialEndsAt = data.pixel.trial_ends_at ? new Date(data.pixel.trial_ends_at) : null
+    const daysLeft = trialEndsAt ? Math.max(0, Math.ceil((trialEndsAt.getTime() - Date.now()) / 86_400_000)) : null
 
     return (
       <div className="space-y-6">
+
+        {/* Trial Expired Banner */}
+        {isTrialExpired && (
+          <div className="rounded-xl border border-red-200 bg-red-50 p-5">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div>
+                <p className="font-semibold text-red-900 text-base">Your pixel trial has ended 🔒</p>
+                <p className="text-sm text-red-700 mt-1">
+                  Your pixel on <strong>{data.pixel.domain}</strong> is paused. Upgrade to Pro to reactivate it and keep identifying visitors forever.
+                </p>
+              </div>
+              <a
+                href="/settings/billing"
+                className="shrink-0 inline-flex items-center gap-2 rounded-lg bg-red-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-red-700 transition-colors"
+              >
+                Reactivate Pixel
+              </a>
+            </div>
+          </div>
+        )}
+
+        {/* Trial Active Countdown */}
+        {isTrialActive && daysLeft !== null && (
+          <div className={`rounded-xl border p-5 ${
+            daysLeft <= 3
+              ? 'border-red-200 bg-red-50'
+              : daysLeft <= 7
+              ? 'border-amber-200 bg-amber-50'
+              : 'border-blue-200 bg-blue-50'
+          }`}>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div>
+                <p className={`font-semibold text-base ${
+                  daysLeft <= 3 ? 'text-red-900' : daysLeft <= 7 ? 'text-amber-900' : 'text-blue-900'
+                }`}>
+                  {daysLeft === 0 ? '⚠️ Trial ends today' : daysLeft === 1 ? '⚠️ 1 day left in trial' : `⏱ ${daysLeft} days left in your free trial`}
+                </p>
+                <p className={`text-sm mt-1 ${
+                  daysLeft <= 3 ? 'text-red-700' : daysLeft <= 7 ? 'text-amber-700' : 'text-blue-700'
+                }`}>
+                  After {trialEndsAt?.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}, your pixel stops identifying visitors unless you upgrade.
+                </p>
+              </div>
+              <a
+                href="/settings/billing"
+                className={`shrink-0 inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold text-white transition-colors ${
+                  daysLeft <= 3 ? 'bg-red-600 hover:bg-red-700' : 'bg-amber-500 hover:bg-amber-600'
+                }`}
+              >
+                Upgrade to Pro
+              </a>
+            </div>
+          </div>
+        )}
+
         {/* Pixel Status Card */}
         <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between mb-4">

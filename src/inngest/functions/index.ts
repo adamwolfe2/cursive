@@ -204,3 +204,6 @@ export { distributeDailyLeads } from './distribute-daily-leads'
 
 // Stale Lead Cleanup (nightly — removes AL-sourced leads older than 45 days)
 export { cleanupStaleLeads } from './cleanup-stale-leads'
+
+// Pixel Trial Drip (event-triggered 6-email series) + daily trial expiry check
+export { pixelTrialDrip, checkPixelTrialExpiry } from './pixel-trial-drip'

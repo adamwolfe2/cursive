@@ -6,7 +6,27 @@ import { provisionCustomerPixel } from '@/lib/audiencelab/api-client'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
-export const runtime = 'edge'
+// Note: edge runtime — fire Inngest events via HTTP API, not SDK
+
+/** Fire a pixel/provisioned event to Inngest (edge-safe, non-blocking) */
+async function firePixelProvisionedEvent(data: {
+  workspace_id: string
+  pixel_id: string
+  domain: string
+  trial_ends_at: string
+}) {
+  const eventKey = process.env.INNGEST_EVENT_KEY
+  if (!eventKey) return
+
+  fetch('https://inn.gs/e/' + eventKey, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      name: 'pixel/provisioned',
+      data,
+    }),
+  }).catch(() => {}) // fire-and-forget, never surface errors
+}
 
 const provisionSchema = z.object({
   website_url: z.string().url().refine((url) => {
@@ -92,6 +112,9 @@ export async function POST(request: NextRequest) {
     const snippet = result.script ||
       (installUrl ? `<script src="${installUrl}" async></script>` : null)
 
+    // Trial ends 14 days from now
+    const trialEndsAt = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
+
     // Store in audiencelab_pixels (install_url is primary, snippet is derived/optional)
     const { error: insertError } = await adminSupabase
       .from('audiencelab_pixels')
@@ -103,6 +126,8 @@ export async function POST(request: NextRequest) {
         label: websiteName,
         install_url: installUrl,
         snippet,
+        trial_ends_at: trialEndsAt,
+        trial_status: 'trial',
       })
 
     if (insertError) {
@@ -148,11 +173,19 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Fire pixel drip email sequence (non-blocking)
+    firePixelProvisionedEvent({
+      workspace_id: userData.workspace_id,
+      pixel_id: result.pixel_id,
+      domain,
+      trial_ends_at: trialEndsAt,
+    })
+
     // Fire-and-forget Slack notification
     sendSlackAlert({
       type: 'pipeline_update',
       severity: 'info',
-      message: `New pixel provisioned for ${domain}`,
+      message: `New pixel provisioned for ${domain} — trial ends ${trialEndsAt.split('T')[0]}`,
       metadata: {
         workspace_id: userData.workspace_id,
         user: userData.full_name || user.email,

@@ -13,3 +13,13 @@ export { newLeadAlertEmail, type NewLeadAlertData, type IntentLevel } from './ne
 export { dailyLeadSummaryEmail, type DailyLeadSummaryData, type LeadSummaryItem } from './daily-lead-summary'
 export { lowCreditsWarningEmail, type LowCreditsWarningData } from './low-credits-warning'
 export { serviceRequestConfirmationEmail, type ServiceRequestConfirmationData } from './service-request-confirmation'
+export {
+  pixelTrialWelcomeEmail,
+  pixelTrialDay3Email,
+  pixelTrialDay7Email,
+  pixelTrialDay10Email,
+  pixelTrialDay13Email,
+  pixelTrialExpiredEmail,
+  type PixelTrialEmailData,
+  type VisitorPreview,
+} from './pixel-trial'
