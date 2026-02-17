@@ -2,7 +2,7 @@
  * Lead Enrichment API
  * POST /api/leads/[id]/enrich
  *
- * Enriches a single lead using Audience Labs /enrich endpoint.
+ * Enriches a single lead using the enrichment API.
  * Costs 1 credit per call. Fills in any missing contact/company fields.
  * Returns before/after field comparison so the UI can animate the reveal.
  */
@@ -62,13 +62,25 @@ export async function POST(
     // Fetch the lead — must belong to user's workspace
     const { data: lead } = await supabase
       .from('leads')
-      .select('id, workspace_id, first_name, last_name, full_name, email, phone, company_name, company_domain, job_title, city, state, linkedin_url, metadata')
+      .select('id, workspace_id, first_name, last_name, full_name, email, phone, company_name, company_domain, job_title, city, state, linkedin_url, metadata, enrichment_status')
       .eq('id', leadId)
       .eq('workspace_id', userProfile.workspace_id)
       .single()
 
     if (!lead) {
       return NextResponse.json({ error: 'Lead not found' }, { status: 404 })
+    }
+
+    // Prevent double-charge: if already enriched, return existing data without charging
+    if (lead.enrichment_status === 'enriched') {
+      return NextResponse.json({
+        success: true,
+        message: 'Lead is already enriched',
+        fields_added: [],
+        already_enriched: true,
+        credits_used: 0,
+        credits_remaining: creditsRemaining,
+      })
     }
 
     // Build the enrichment filter — use whatever identifiers we have
@@ -93,11 +105,11 @@ export async function POST(
     const enrichResult = await enrich({ filter: enrichFilter })
 
     if (!enrichResult.found || !enrichResult.result?.length) {
-      // Still deduct a credit — the API was called
-      await adminSupabase
-        .from('users')
-        .update({ daily_credits_used: creditsUsed + ENRICH_CREDIT_COST })
-        .eq('id', userProfile.id)
+      // Still deduct a credit atomically — the API was called
+      await adminSupabase.rpc('increment_credits', {
+        user_id: userProfile.id,
+        amount: ENRICH_CREDIT_COST,
+      })
 
       return NextResponse.json({
         success: false,
@@ -168,11 +180,11 @@ export async function POST(
       }
     }
 
-    // Deduct credit regardless of whether fields were added (API was called)
-    await adminSupabase
-      .from('users')
-      .update({ daily_credits_used: creditsUsed + ENRICH_CREDIT_COST })
-      .eq('id', userProfile.id)
+    // Deduct credit atomically regardless of whether fields were added (API was called)
+    await adminSupabase.rpc('increment_credits', {
+      user_id: userProfile.id,
+      amount: ENRICH_CREDIT_COST,
+    })
 
     const after = { ...before, ...updates }
 
