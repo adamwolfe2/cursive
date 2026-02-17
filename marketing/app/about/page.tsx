@@ -32,7 +32,7 @@ export default function AboutPage() {
           >
             <h1 className="text-5xl lg:text-7xl font-light text-gray-900 mb-6">
               We Got Tired of Bad Lead Data
-              <span className="block font-cursive text-4xl lg:text-5xl text-gray-500 mt-2">
+              <span className="block font-cursive text-5xl lg:text-6xl text-gray-500 mt-2">
                 So We Built Something Better
               </span>
             </h1>

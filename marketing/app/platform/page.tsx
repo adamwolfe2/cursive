@@ -32,7 +32,7 @@ export default function PlatformPage() {
           >
             <h1 className="text-5xl lg:text-7xl font-light text-gray-900 mb-6">
               The Tools Behind
-              <span className="block font-cursive text-4xl lg:text-5xl text-gray-500 mt-2">
+              <span className="block font-cursive text-5xl lg:text-6xl text-gray-500 mt-2">
                 The Results
               </span>
             </h1>
@@ -67,7 +67,7 @@ export default function PlatformPage() {
               </div>
               <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
                 AI Studio
-                <span className="block font-cursive text-4xl lg:text-5xl text-gray-500 mt-2">
+                <span className="block font-cursive text-5xl lg:text-6xl text-gray-500 mt-2">
                   Build Your Brand Voice
                 </span>
               </h2>
@@ -235,7 +235,7 @@ export default function PlatformPage() {
               </div>
               <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
                 People Search
-                <span className="block font-cursive text-4xl lg:text-5xl text-gray-500 mt-2">
+                <span className="block font-cursive text-5xl lg:text-6xl text-gray-500 mt-2">
                   Find Anyone, Anywhere
                 </span>
               </h2>
@@ -290,7 +290,7 @@ export default function PlatformPage() {
               </div>
               <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
                 Lead Marketplace
-                <span className="block font-cursive text-4xl lg:text-5xl text-gray-500 mt-2">
+                <span className="block font-cursive text-5xl lg:text-6xl text-gray-500 mt-2">
                   Buy Leads On Demand
                 </span>
               </h2>
@@ -447,7 +447,7 @@ export default function PlatformPage() {
               </div>
               <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
                 Campaign Manager
-                <span className="block font-cursive text-4xl lg:text-5xl text-gray-500 mt-2">
+                <span className="block font-cursive text-5xl lg:text-6xl text-gray-500 mt-2">
                   Multi-Channel Outbound
                 </span>
               </h2>
@@ -502,7 +502,7 @@ export default function PlatformPage() {
               </div>
               <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
                 Visitor Intelligence
-                <span className="block font-cursive text-4xl lg:text-5xl text-gray-500 mt-2">
+                <span className="block font-cursive text-5xl lg:text-6xl text-gray-500 mt-2">
                   See Who's on Your Site
                 </span>
               </h2>

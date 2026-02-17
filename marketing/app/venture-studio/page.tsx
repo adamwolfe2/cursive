@@ -128,7 +128,7 @@ export default function VentureStudioPage() {
                 <span className="text-sm text-[#007AFF] mb-4 block font-medium tracking-wide">VENTURE STUDIO</span>
                 <h1 className="text-5xl lg:text-7xl font-light text-gray-900 mb-6">
                   We Build Your{" "}
-                  <span className="block font-cursive text-4xl lg:text-5xl text-gray-500 mt-2">Revenue Engine</span>
+                  <span className="block font-cursive text-5xl lg:text-6xl text-gray-500 mt-2">Revenue Engine</span>
                 </h1>
                 <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
                   White-glove partnership for ambitious companies. We embed a dedicated team to build, launch, and scale your entire go-to-market.
@@ -304,7 +304,7 @@ export default function VentureStudioPage() {
                 <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
                   Ready to Build Your
                 </h2>
-                <p className="font-cursive text-4xl lg:text-5xl text-gray-500 mb-6">
+                <p className="font-cursive text-5xl lg:text-6xl text-gray-500 mb-6">
                   Revenue Engine?
                 </p>
                 <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">

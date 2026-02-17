@@ -536,7 +536,7 @@ export default function AudienceBuilderPage() {
               <h2 className="text-5xl lg:text-7xl font-light text-gray-900 mb-4 leading-tight">
                 Ready to Build Unlimited
               </h2>
-              <p className="font-cursive text-4xl lg:text-5xl text-gray-500 mb-6">
+              <p className="font-cursive text-5xl lg:text-6xl text-gray-500 mb-6">
                 Audiences?
               </p>
               <p className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto">

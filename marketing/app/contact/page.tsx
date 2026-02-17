@@ -150,7 +150,7 @@ export default function ContactPage() {
           >
             <h1 className="text-5xl lg:text-6xl font-light text-gray-900 mb-6">
               Let's Talk About
-              <span className="block font-cursive text-4xl lg:text-5xl text-gray-500 mt-2">
+              <span className="block font-cursive text-5xl lg:text-6xl text-gray-500 mt-2">
                 Your Growth
               </span>
             </h1>
@@ -411,7 +411,7 @@ export default function ContactPage() {
           <div className="text-center mb-12">
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
               Who We
-              <span className="block font-cursive text-4xl lg:text-5xl text-gray-500 mt-2">
+              <span className="block font-cursive text-5xl lg:text-6xl text-gray-500 mt-2">
                 Help
               </span>
             </h2>
@@ -455,7 +455,7 @@ export default function ContactPage() {
           <div className="text-center mb-12">
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
               What to
-              <span className="block font-cursive text-4xl lg:text-5xl text-gray-500 mt-2">
+              <span className="block font-cursive text-5xl lg:text-6xl text-gray-500 mt-2">
                 Expect
               </span>
             </h2>
@@ -503,7 +503,7 @@ export default function ContactPage() {
           <div className="text-center mb-12">
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
               Frequently Asked
-              <span className="block font-cursive text-4xl lg:text-5xl text-gray-500 mt-2">
+              <span className="block font-cursive text-5xl lg:text-6xl text-gray-500 mt-2">
                 Questions
               </span>
             </h2>
@@ -557,7 +557,7 @@ export default function ContactPage() {
           <div className="text-center mb-12">
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
               Additional
-              <span className="block font-cursive text-4xl lg:text-5xl text-gray-500 mt-2">
+              <span className="block font-cursive text-5xl lg:text-6xl text-gray-500 mt-2">
                 Contact Options
               </span>
             </h2>

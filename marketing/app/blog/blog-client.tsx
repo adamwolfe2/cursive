@@ -31,7 +31,7 @@ export function BlogClient() {
             >
               <h1 className="text-5xl lg:text-6xl font-bold mb-6">
                 Visitor Identification &
-                <span className="block font-cursive text-4xl lg:text-5xl text-gray-500 mt-2">
+                <span className="block font-cursive text-5xl lg:text-6xl text-gray-500 mt-2">
                   Lead Generation Blog
                 </span>
               </h1>

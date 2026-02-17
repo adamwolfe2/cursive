@@ -170,7 +170,7 @@ export default function CustomAudiencesPage() {
                 <span className="text-sm text-[#007AFF] mb-4 block font-medium tracking-wide">CUSTOM AUDIENCES</span>
                 <h1 className="text-5xl lg:text-7xl font-light text-gray-900 mb-6">
                   Need a Specific Audience?{" "}
-                  <span className="block font-cursive text-4xl lg:text-5xl text-gray-500 mt-2">We'll Build It.</span>
+                  <span className="block font-cursive text-5xl lg:text-6xl text-gray-500 mt-2">We'll Build It.</span>
                 </h1>
                 <p className="text-xl text-gray-600 mb-6 max-w-3xl mx-auto leading-relaxed">
                   Tell us exactly who you need to reach. We'll deliver a verified, custom-built list -- starting with a free 25-lead sample.
