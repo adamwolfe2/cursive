@@ -50,6 +50,20 @@ const navigationItems: NavItemConfig[] = [
     ],
   },
   {
+    name: 'Daily Leads',
+    href: '/leads',
+    icon: (
+      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
+        />
+      </svg>
+    ),
+  },
+  {
     name: 'My Leads',
     href: '/my-leads',
     icon: (
@@ -66,6 +80,26 @@ const navigationItems: NavItemConfig[] = [
       { name: 'Assigned Leads', href: '/my-leads' },
       { name: 'Targeting Preferences', href: '/my-leads/preferences' },
     ],
+  },
+  {
+    name: 'Website Visitors',
+    href: '/analytics',
+    icon: (
+      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+        />
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+        />
+      </svg>
+    ),
   },
   {
     name: 'CRM',
@@ -96,8 +130,8 @@ const navigationItems: NavItemConfig[] = [
     ),
   },
   {
-    name: 'Leads',
-    href: '/leads',
+    name: 'Lead Data',
+    href: '/data',
     adminOnly: true,
     icon: (
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -105,14 +139,14 @@ const navigationItems: NavItemConfig[] = [
           strokeLinecap="round"
           strokeLinejoin="round"
           strokeWidth={2}
-          d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"
+          d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"
         />
       </svg>
     ),
     children: [
       { name: 'All Leads', href: '/leads' },
       { name: 'Discover', href: '/leads/discover' },
-      { name: 'Lead Data', href: '/data' },
+      { name: 'Raw Data', href: '/data' },
     ],
   },
   {
@@ -275,6 +309,7 @@ const navigationItems: NavItemConfig[] = [
     children: [
       { name: 'Profile', href: '/settings' },
       { name: 'Billing', href: '/settings/billing' },
+      { name: 'Pixel & Tracking', href: '/settings/pixel' },
       { name: 'Notifications', href: '/settings/notifications' },
       { name: 'Security', href: '/settings/security' },
     ],
