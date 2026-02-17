@@ -109,10 +109,12 @@ export async function POST(request: NextRequest) {
       websiteUrl: validated.website_url,
     })
 
-    // Build snippet from AL response: prefer script if provided, else derive from install_url
+    // Build snippet from AL response: prefer script if provided, else derive from install_url,
+    // else fallback to V3 SuperPixel CDN format using pixel_id
     const installUrl = result.install_url
     const snippet = result.script ||
-      (installUrl ? `<script src="${installUrl}" async></script>` : null)
+      (installUrl ? `<script src="${installUrl}" defer></script>` :
+        `<script src="https://cdn.v3.identitypxl.app/pixels/${result.pixel_id}/p.js" defer></script>`)
 
     // Trial ends 14 days from now
     const trialEndsAt = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()

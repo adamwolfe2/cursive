@@ -1,8 +1,11 @@
 // Auth Callback Route
 // Handles OAuth redirects from Supabase
 // Shows loading page while processing to improve UX
-
-export const runtime = 'edge'
+//
+// IMPORTANT: This route MUST use Node.js runtime (the default), NOT Edge.
+// The middleware uses Node.js runtime for Supabase session validation.
+// Edge↔Node.js cookie handling mismatch causes login redirect loops.
+// See middleware.ts comments for details.
 
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
@@ -90,8 +93,10 @@ export async function GET(request: NextRequest) {
   const next = sanitizeRedirectPath(requestUrl.searchParams.get('next') || '/dashboard')
 
   if (code) {
-    // Create supabase client
-    const cookieStore: { name: string; value: string; options?: any }[] = []
+    // Use a Map to accumulate cookies — prevents accidental overwrites if the
+    // SDK calls setAll multiple times (e.g., during exchangeCodeForSession + getUser).
+    // The last value for each cookie name wins.
+    const cookieMap = new Map<string, { name: string; value: string; options?: any }>()
 
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -102,7 +107,7 @@ export async function GET(request: NextRequest) {
             return request.cookies.getAll()
           },
           setAll(cookiesToSet: any[]) {
-            cookieStore.push(...cookiesToSet)
+            cookiesToSet.forEach((cookie) => cookieMap.set(cookie.name, cookie))
           },
         },
       }
@@ -111,10 +116,18 @@ export async function GET(request: NextRequest) {
     const { error } = await supabase.auth.exchangeCodeForSession(code)
 
     if (error) {
-      safeError('Error exchanging code for session:', error)
+      safeError('[Auth Callback] Code exchange failed:', error.message)
       return NextResponse.redirect(
         new URL('/login?error=auth_callback_error', requestUrl.origin)
       )
+    }
+
+    // Verify we actually got session cookies from the exchange
+    const hasSessionCookies = Array.from(cookieMap.keys()).some(
+      name => name.includes('auth-token')
+    )
+    if (!hasSessionCookies) {
+      safeError('[Auth Callback] No session cookies set after code exchange')
     }
 
     // Get user and check if they have a workspace
@@ -152,8 +165,8 @@ export async function GET(request: NextRequest) {
       },
     })
 
-    // Set cookies
-    cookieStore.forEach(({ name, value, options }) => {
+    // Set all accumulated cookies on the response
+    cookieMap.forEach(({ name, value, options }) => {
       response.cookies.set(name, value, options)
     })
 

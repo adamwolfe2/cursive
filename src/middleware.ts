@@ -181,38 +181,12 @@ export async function middleware(req: NextRequest) {
     }
 
     // Protected routes require authentication.
-    // If getSession() returned null but auth cookies exist in the request,
-    // clear corrupted cookies and redirect to login.
+    // If no valid session, redirect to login. Do NOT clear cookies here —
+    // aggressive cookie clearing can worsen redirect loops. Let the fresh
+    // login flow overwrite any stale cookies naturally.
     if (!isPublicRoute && !user) {
-      const authCookies = req.cookies.getAll().filter(
-        c => c.name.startsWith('sb-') && c.name.includes('auth-token')
-      )
-      const hasAuthCookies = authCookies.length > 0
+      console.log('[Middleware] No session for protected route:', pathname)
 
-      console.log('[Middleware] No user found, checking cookies:', { hasAuthCookies, pathname })
-
-      if (hasAuthCookies) {
-        // Auth cookies exist but getSession() failed — they're corrupted
-        // Clear all Supabase auth cookies to force fresh login
-        console.log('[Middleware] Clearing corrupted auth cookies')
-        const redirectUrl = new URL('/login', req.url)
-        redirectUrl.searchParams.set('redirect', pathname)
-        const redirectResponse = NextResponse.redirect(redirectUrl)
-
-        // Clear all sb-* cookies
-        authCookies.forEach(cookie => {
-          redirectResponse.cookies.delete(cookie.name)
-          redirectResponse.cookies.set(cookie.name, '', {
-            maxAge: 0,
-            path: '/',
-          })
-        })
-
-        return redirectResponse
-      }
-
-      // No auth cookies at all — user is definitely not logged in
-      console.log('[Middleware] No auth cookies - redirecting to login')
       if (isApiRoute) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
       }
@@ -221,48 +195,24 @@ export async function middleware(req: NextRequest) {
       return redirectWithCookies(redirectUrl)
     }
 
-    // API routes require authentication (no auth cookies = definitely unauthorized)
-    if (isApiRoute && !user) {
-      const hasAuthCookies = req.cookies.getAll().some(
-        c => c.name.startsWith('sb-') && c.name.includes('auth-token')
-      )
-      if (!hasAuthCookies) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-      }
-    }
+    // Admin routes require admin/owner role (user is guaranteed non-null here —
+    // the auth check above already redirects unauthenticated users)
+    if (isAdminRoute && user) {
+      const { data: userRecord } = await supabase
+        .from('users')
+        .select('role')
+        .eq('auth_user_id', user.id)
+        .single()
 
-    // Admin routes require admin role verification
-    if (isAdminRoute) {
-      if (!user) {
-        const hasAuthCookies = req.cookies.getAll().some(
-          c => c.name.startsWith('sb-') && c.name.includes('auth-token')
-        )
-        if (!hasAuthCookies) {
+      if (!userRecord || (userRecord.role !== 'admin' && userRecord.role !== 'owner')) {
+        if (pathname.startsWith('/api/admin')) {
           return NextResponse.json(
-            { error: 'Admin access required' },
+            { error: 'Admin role required' },
             { status: 403 }
           )
         }
-      } else {
-        // User is authenticated - verify admin/owner role
-        // Use Edge-compatible client (RLS policies allow users to query their own record)
-        const { data: userRecord } = await supabase
-          .from('users')
-          .select('role')
-          .eq('auth_user_id', user.id)
-          .single()
-
-        if (!userRecord || (userRecord.role !== 'admin' && userRecord.role !== 'owner')) {
-          // Not an admin - redirect to dashboard
-          if (pathname.startsWith('/api/admin')) {
-            return NextResponse.json(
-              { error: 'Admin role required' },
-              { status: 403 }
-            )
-          }
-          const dashboardUrl = new URL('/dashboard', req.url)
-          return redirectWithCookies(dashboardUrl)
-        }
+        const dashboardUrl = new URL('/dashboard', req.url)
+        return redirectWithCookies(dashboardUrl)
       }
     }
 

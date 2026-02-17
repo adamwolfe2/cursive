@@ -55,7 +55,11 @@ export default function SignupPage() {
     })
 
     if (signUpError) {
-      setError(getErrorMessage(signUpError))
+      console.error('[Signup] Supabase error:', signUpError.message, signUpError.status)
+      // Show the actual Supabase error message — these are user-safe auth messages
+      // (e.g., "User already registered", "Password should be at least 6 characters")
+      // Only fall back to generic message if no message is available
+      setError(signUpError.message || getErrorMessage(signUpError))
       setLoading(false)
       return
     }
@@ -84,7 +88,8 @@ export default function SignupPage() {
     })
 
     if (signInError) {
-      setError(getErrorMessage(signInError))
+      console.error('[Signup] Google OAuth error:', signInError.message)
+      setError(signInError.message || getErrorMessage(signInError))
       setLoading(false)
     }
   }

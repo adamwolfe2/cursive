@@ -14,8 +14,17 @@ function LoginForm() {
   const searchParams = useSearchParams()
   const redirect = searchParams.get('redirect') || '/dashboard'
 
+  // Read error params from URL (set by auth callback or middleware on failure)
+  const urlError = searchParams.get('error')
+  const urlReason = searchParams.get('reason')
+  const initialError = urlError === 'auth_callback_error'
+    ? 'Sign-in failed. Please try again.'
+    : urlReason === 'middleware_error'
+    ? 'A session error occurred. Please sign in again.'
+    : null
+
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(initialError)
 
   const {
     register,
