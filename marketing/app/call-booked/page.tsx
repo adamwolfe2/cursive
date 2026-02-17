@@ -75,7 +75,7 @@ export default function CallBookedPage() {
                 <h1 className="text-5xl lg:text-7xl font-light text-gray-900 mb-4">
                   You&apos;re In.
                 </h1>
-                <p className="font-cursive text-4xl lg:text-6xl text-gray-900 mb-10">
+                <p className="font-cursive text-4xl lg:text-5xl text-gray-500 mb-10">
                   Your Call is Booked.
                 </p>
 
@@ -164,7 +164,7 @@ export default function CallBookedPage() {
               >
                 <span className="text-sm text-[#007AFF] mb-4 block font-medium tracking-wide">THE PLATFORM</span>
                 <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-6">
-                  What is <span className="font-cursive text-4xl lg:text-5xl">Cursive</span>?
+                  What is <span className="font-cursive text-4xl lg:text-5xl text-gray-500">Cursive</span>?
                 </h2>
                 <p className="text-xl text-gray-600 leading-relaxed max-w-3xl mx-auto mb-6">
                   Cursive is the all-in-one growth platform that identifies your website visitors, builds targeted audiences from 360M+ verified contacts, and runs automated outbound campaigns — so you can turn anonymous traffic into revenue.
@@ -215,7 +215,7 @@ export default function CallBookedPage() {
                   <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
                     Why We Built Cursive:
                   </h2>
-                  <p className="font-cursive text-3xl lg:text-4xl text-gray-900 mb-6">
+                  <p className="font-cursive text-3xl lg:text-4xl text-gray-500 mb-6">
                     Recursive Intelligence
                   </p>
                   <div className="inline-block bg-white rounded-xl px-8 py-4 border border-gray-200 shadow-sm">
@@ -1218,7 +1218,7 @@ export default function CallBookedPage() {
                   <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
                     Your Free Gift
                   </h2>
-                  <p className="font-cursive text-2xl lg:text-3xl text-gray-900 mb-6">
+                  <p className="font-cursive text-2xl lg:text-3xl text-gray-500 mb-6">
                     As promised.
                   </p>
                   <p className="text-lg text-gray-600 leading-relaxed max-w-2xl mx-auto mb-8">

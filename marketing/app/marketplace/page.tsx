@@ -115,7 +115,7 @@ export default function MarketplacePage() {
                 <span className="text-sm text-[#007AFF] mb-4 block font-medium tracking-wide">LEAD MARKETPLACE</span>
                 <h1 className="text-5xl lg:text-7xl font-light text-gray-900 mb-6">
                   Browse & Buy Verified
-                  <span className="block font-cursive text-6xl lg:text-8xl text-gray-900 mt-2">
+                  <span className="block font-cursive text-4xl lg:text-5xl text-gray-500 mt-2">
                     B2B Leads Instantly
                   </span>
                 </h1>
@@ -270,7 +270,7 @@ export default function MarketplacePage() {
                 <div>
                   <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
                     Preview Before
-                    <span className="block font-cursive text-5xl lg:text-6xl text-gray-900 mt-2">
+                    <span className="block font-cursive text-4xl lg:text-5xl text-gray-500 mt-2">
                       You Buy
                     </span>
                   </h2>
@@ -335,7 +335,7 @@ export default function MarketplacePage() {
               <div className="text-center mb-16">
                 <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
                   Find Exactly Who
-                  <span className="block font-cursive text-5xl lg:text-6xl text-gray-900 mt-2">
+                  <span className="block font-cursive text-4xl lg:text-5xl text-gray-500 mt-2">
                     You Need
                   </span>
                 </h2>
@@ -381,7 +381,7 @@ export default function MarketplacePage() {
               >
                 <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-6">
                   Ready to Start
-                  <span className="block font-cursive text-5xl lg:text-6xl text-gray-900 mt-2">
+                  <span className="block font-cursive text-4xl lg:text-5xl text-gray-500 mt-2">
                     Browsing Leads?
                   </span>
                 </h2>

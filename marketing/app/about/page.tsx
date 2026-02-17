@@ -32,12 +32,12 @@ export default function AboutPage() {
           >
             <h1 className="text-5xl lg:text-7xl font-light text-gray-900 mb-6">
               We Got Tired of Bad Lead Data
-              <span className="block font-cursive text-6xl lg:text-7xl text-gray-900 mt-2">
+              <span className="block font-cursive text-4xl lg:text-5xl text-gray-500 mt-2">
                 So We Built Something Better
               </span>
             </h1>
             <p className="text-xl text-gray-600 leading-relaxed">
-              <span className="font-cursive text-2xl text-gray-900">Cursive</span> started because we were tired of paying for lead lists that didn't convert.
+              <span className="font-cursive text-2xl text-gray-500">Cursive</span> started because we were tired of paying for lead lists that didn't convert.
               Outdated contacts. Generic emails. No personalization. No results.
             </p>
           </motion.div>
@@ -59,7 +59,7 @@ export default function AboutPage() {
               </p>
 
               <p className="text-xl text-gray-700 leading-relaxed">
-                Today, <span className="font-cursive text-2xl text-gray-900">Cursive</span> powers pipeline for hundreds of B2B companies—from bootstrapped startups
+                Today, <span className="font-cursive text-2xl text-gray-500">Cursive</span> powers pipeline for hundreds of B2B companies—from bootstrapped startups
                 to growth-stage companies scaling fast.
               </p>
 
@@ -357,7 +357,7 @@ export default function AboutPage() {
           <div className="bg-white rounded-2xl shadow-sm p-12 max-w-4xl mx-auto border border-gray-200 text-center">
             <p className="text-xl text-gray-700 leading-relaxed mb-8">
               Started by founders who were tired of wasting money on bad data and ineffective outbound tools.
-              We built <span className="font-cursive text-2xl text-gray-900">Cursive</span> to solve our own problem—then realized every B2B company faces the same challenges.
+              We built <span className="font-cursive text-2xl text-gray-500">Cursive</span> to solve our own problem—then realized every B2B company faces the same challenges.
             </p>
             <p className="text-xl text-gray-700 leading-relaxed">
               Now we're on a mission to make high-quality lead generation accessible to every company,

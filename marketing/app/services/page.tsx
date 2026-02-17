@@ -90,12 +90,12 @@ export default function ServicesPage() {
           >
             <h1 className="text-5xl lg:text-6xl font-light text-gray-900 mb-6">
               Pick Your
-              <span className="block font-cursive text-6xl lg:text-7xl text-gray-900 mt-2">
+              <span className="block font-cursive text-4xl lg:text-5xl text-gray-500 mt-2">
                 Growth Model
               </span>
             </h1>
             <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-              From self-service lead lists to fully managed pipelines -- <span className="font-cursive text-2xl text-gray-900">Cursive</span> scales with you.
+              From self-service lead lists to fully managed pipelines -- <span className="font-cursive text-2xl text-gray-500">Cursive</span> scales with you.
               Not sure where to start? Book a call and we'll build a custom plan.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -128,7 +128,7 @@ export default function ServicesPage() {
                   Perfect for teams with existing outbound
                 </div>
                 <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
-                  <span className="font-cursive text-5xl lg:text-6xl text-gray-900">Cursive</span> Data
+                  <span className="font-cursive text-5xl lg:text-6xl text-gray-500">Cursive</span> Data
                   <span className="block font-cursive text-5xl lg:text-6xl text-gray-500 mt-2">
                     Monthly Lead Lists
                   </span>
@@ -263,7 +263,7 @@ export default function ServicesPage() {
                   Most Popular
                 </div>
                 <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
-                  <span className="font-cursive text-5xl lg:text-6xl text-gray-900">Cursive</span> Outbound
+                  <span className="font-cursive text-5xl lg:text-6xl text-gray-500">Cursive</span> Outbound
                   <span className="block font-cursive text-5xl lg:text-6xl text-gray-500 mt-2">
                     Done-For-You Campaigns
                   </span>
@@ -338,7 +338,7 @@ export default function ServicesPage() {
                   Full-stack solution
                 </div>
                 <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
-                  <span className="font-cursive text-5xl lg:text-6xl text-gray-900">Cursive</span> Pipeline
+                  <span className="font-cursive text-5xl lg:text-6xl text-gray-500">Cursive</span> Pipeline
                   <span className="block font-cursive text-5xl lg:text-6xl text-gray-500 mt-2">
                     AI SDR + Pipeline Management
                   </span>
@@ -533,7 +533,7 @@ export default function ServicesPage() {
             >
               <h3 className="text-2xl font-light text-gray-900 mb-3">White Label Platform</h3>
               <p className="text-gray-600 mb-6">
-                Get your own branded version of <span className="font-cursive text-xl text-gray-900">Cursive</span> for your team or clients.
+                Get your own branded version of <span className="font-cursive text-xl text-gray-500">Cursive</span> for your team or clients.
               </p>
               <ul className="space-y-2 mb-6 text-sm">
                 <li className="flex items-center gap-2">

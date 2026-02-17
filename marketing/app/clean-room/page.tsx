@@ -23,7 +23,7 @@ export default function CleanRoomPage() {
             <span className="text-sm text-[#007AFF] mb-4 block">DATA CLEAN ROOM</span>
             <h1 className="text-5xl lg:text-7xl font-light text-gray-900 mb-6">
               Secure Data Sharing
-              <span className="block font-cursive text-6xl lg:text-8xl text-gray-900 mt-2">
+              <span className="block font-cursive text-4xl lg:text-5xl text-gray-500 mt-2">
                 Without Exposure
               </span>
             </h1>

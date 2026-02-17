@@ -92,7 +92,7 @@ export default function PixelPage() {
                 <span className="text-sm text-[#007AFF] mb-4 block font-medium tracking-wide">CURSIVE PIXEL</span>
                 <h1 className="text-5xl lg:text-7xl font-light text-gray-900 mb-6">
                   See Who's Visiting
-                  <span className="block font-cursive text-6xl lg:text-8xl text-gray-900 mt-2">
+                  <span className="block font-cursive text-4xl lg:text-5xl text-gray-500 mt-2">
                     Your Website
                   </span>
                 </h1>
@@ -312,7 +312,7 @@ export default function PixelPage() {
                 <div className="text-center mb-12">
                   <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
                     Predictable Costs,
-                    <span className="block font-cursive text-5xl lg:text-6xl text-gray-900 mt-2">
+                    <span className="block font-cursive text-4xl lg:text-5xl text-gray-500 mt-2">
                       Unlimited Upside
                     </span>
                   </h2>
@@ -470,7 +470,7 @@ export default function PixelPage() {
               >
                 <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-6">
                   Ready to See Who's
-                  <span className="block font-cursive text-5xl lg:text-6xl text-gray-900 mt-2">
+                  <span className="block font-cursive text-4xl lg:text-5xl text-gray-500 mt-2">
                     On Your Site?
                   </span>
                 </h2>

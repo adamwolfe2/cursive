@@ -122,7 +122,7 @@ export function HumanHomePage() {
               </h1>
 
               <p className="text-base text-gray-600 mb-4 leading-relaxed max-w-lg mx-auto lg:mx-0">
-                98% of visitors leave your site without converting. <span className="font-cursive text-gray-900 text-lg">Cursive</span> tracks leads with pixels, enriches leads against 220M verified contacts, and automates personalized outreach so you can make sales in your sleep.
+                98% of visitors leave your site without converting. <span className="font-cursive text-gray-500 text-lg">Cursive</span> tracks leads with pixels, enriches leads against 220M verified contacts, and automates personalized outreach so you can make sales in your sleep.
               </p>
 
               {/* Stats */}

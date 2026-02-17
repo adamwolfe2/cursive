@@ -71,7 +71,7 @@ export default function DataAccessPage() {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="text-center max-w-5xl mx-auto">
             <h1 className="text-5xl lg:text-7xl font-light text-gray-900 mb-6">
               Direct Data Access,
-              <span className="block font-cursive text-6xl lg:text-8xl text-gray-900 mt-2">On Demand</span>
+              <span className="block font-cursive text-4xl lg:text-5xl text-gray-500 mt-2">On Demand</span>
             </h1>
             <p className="text-lg text-gray-600 mb-8">220M+ Consumer Profiles • 140M+ Business Profiles • 30,000+ Intent Categories</p>
             <Button size="lg" href="https://cal.com/cursive/30min">Get Started</Button>

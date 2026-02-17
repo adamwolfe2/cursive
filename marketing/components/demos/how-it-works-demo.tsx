@@ -175,7 +175,7 @@ function VisitorIdentificationDemo() {
         transition={{ duration: 0.5 }}
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-white rounded-2xl shadow-2xl flex items-center justify-center z-20 border border-gray-200"
       >
-        <div className="font-cursive text-2xl text-gray-900">C</div>
+        <div className="font-cursive text-2xl text-gray-500">C</div>
       </motion.div>
 
       {/* Integration Logos in Hub-and-Spoke */}
@@ -521,7 +521,7 @@ function CampaignDemo() {
         transition={{ duration: 0.5 }}
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-white rounded-2xl shadow-2xl flex items-center justify-center z-20 border border-gray-200"
       >
-        <div className="font-cursive text-2xl text-gray-900">C</div>
+        <div className="font-cursive text-2xl text-gray-500">C</div>
       </motion.div>
 
       {/* Channel Cards in Hub-and-Spoke */}

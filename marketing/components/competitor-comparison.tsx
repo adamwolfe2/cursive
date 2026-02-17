@@ -140,7 +140,7 @@ export function ComparisonPage({ competitorName, competitorLogo, benefits, featu
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-4xl lg:text-5xl font-light text-gray-900 text-center mb-16">
-            Why choose <span className="font-cursive text-5xl lg:text-6xl text-gray-900">Cursive</span> over {competitorName}?
+            Why choose <span className="font-cursive text-4xl lg:text-5xl text-gray-500">Cursive</span> over {competitorName}?
           </h2>
 
           <div className="grid md:grid-cols-3 gap-8">
@@ -236,7 +236,7 @@ export function ComparisonPage({ competitorName, competitorLogo, benefits, featu
       <section className="py-20 bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
-            Ready to switch to <span className="font-cursive text-5xl lg:text-6xl">Cursive</span>?
+            Ready to switch to <span className="font-cursive text-4xl lg:text-5xl text-gray-500">Cursive</span>?
           </h2>
           <p className="text-xl text-gray-600 mb-8">
             See how Cursive can help you identify more visitors, build better lists, and close more deals.

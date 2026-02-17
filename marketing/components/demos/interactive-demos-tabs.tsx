@@ -40,7 +40,7 @@ export function InteractiveDemosTabs() {
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-12">
           <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
-            How <span className="font-cursive text-gray-600">Cursive</span> Works
+            How <span className="font-cursive text-gray-500">Cursive</span> Works
           </h2>
           <p className="text-xl text-gray-600">Get started in minutes, not weeks</p>
         </div>
