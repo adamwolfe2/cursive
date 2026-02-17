@@ -5,11 +5,12 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import {
   Users, TrendingUp, Crown, ArrowRight, Sparkles,
-  Zap, Star, Target, Activity, CheckCircle2, Circle,
-  Calendar, Eye, Rocket, Settings2, BarChart3,
+  Zap, Star, Target, CheckCircle2, Circle,
+  Calendar, Eye, Rocket, Settings2, Clock,
 } from 'lucide-react'
 import { sanitizeName, sanitizeCompanyName, sanitizeText } from '@/lib/utils/sanitize-text'
 import { DashboardAnimationWrapper, AnimatedSection } from '@/components/dashboard/dashboard-animation-wrapper'
+import { formatDistanceToNow } from 'date-fns'
 
 export const metadata: Metadata = {
   title: 'Dashboard | Cursive',
@@ -71,6 +72,7 @@ export default async function DashboardPage({
     userTargetingResult,
     enrichedLeadsResult,
     creditsData,
+    recentEnrichmentsResult,
   ] = await Promise.all([
     // Today's lead count
     supabase
@@ -119,6 +121,14 @@ export default async function DashboardPage({
       .eq('enrichment_status', 'enriched'),
     // Credits
     CreditService.getRemainingCredits(userProfile.id).catch(() => null),
+    // Recent enriched leads for activity log
+    supabase
+      .from('leads')
+      .select('id, full_name, first_name, last_name, company_name, updated_at, source')
+      .eq('workspace_id', userProfile.workspace_id)
+      .eq('enrichment_status', 'enriched')
+      .order('updated_at', { ascending: false })
+      .limit(5),
   ])
 
   const todayCount = todayLeadsResult.count ?? 0
@@ -135,6 +145,27 @@ export default async function DashboardPage({
   const creditsRemaining = credits?.remaining ?? 0
   const creditLimit = credits?.limit ?? 10
   const isFree = !userProfile.plan || userProfile.plan === 'free'
+  const recentEnrichments = (recentEnrichmentsResult.data ?? []) as Array<{
+    id: string
+    full_name: string | null
+    first_name: string | null
+    last_name: string | null
+    company_name: string | null
+    updated_at: string | null
+    source: string | null
+  }>
+
+  // Build activity log: lead deliveries + enrichments merged and sorted by time
+  type ActivityEvent = { type: 'delivery'; count: number; time: string } | { type: 'enrich'; leadName: string; company: string | null; time: string }
+  const activityLog: ActivityEvent[] = []
+  if (todayCount > 0) {
+    activityLog.push({ type: 'delivery', count: todayCount, time: new Date().toISOString() })
+  }
+  for (const e of recentEnrichments) {
+    const name = e.full_name || [e.first_name, e.last_name].filter(Boolean).join(' ') || 'Lead'
+    activityLog.push({ type: 'enrich', leadName: name, company: e.company_name, time: e.updated_at ?? new Date().toISOString() })
+  }
+  activityLog.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime())
 
   // Pixel trial info
   const isOnTrial = pixel?.trial_status === 'trial'
@@ -468,6 +499,47 @@ export default async function DashboardPage({
               </div>
             </div>
           </AnimatedSection>
+
+          {/* Activity log */}
+          {activityLog.length > 0 && (
+            <AnimatedSection delay={0.22}>
+              <div className="bg-white rounded-xl border border-gray-200 p-5">
+                <h3 className="font-semibold text-gray-900 text-sm mb-3 flex items-center gap-2">
+                  <Clock className="h-3.5 w-3.5 text-gray-400" />
+                  Recent Activity
+                </h3>
+                <div className="space-y-3">
+                  {activityLog.slice(0, 6).map((event, i) => (
+                    <div key={i} className="flex items-start gap-2.5">
+                      <div className="mt-0.5 h-5 w-5 shrink-0 flex items-center justify-center">
+                        {event.type === 'delivery' ? (
+                          <div className="h-2 w-2 rounded-full bg-primary" />
+                        ) : (
+                          <div className="h-2 w-2 rounded-full bg-violet-400" />
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        {event.type === 'delivery' ? (
+                          <p className="text-xs text-gray-700">
+                            <span className="font-medium">{event.count} leads</span> delivered today
+                          </p>
+                        ) : (
+                          <p className="text-xs text-gray-700 truncate">
+                            <span className="font-medium">{event.leadName}</span>
+                            {event.company && <span className="text-gray-400"> · {event.company}</span>}
+                            <span className="text-violet-600 ml-1">enriched</span>
+                          </p>
+                        )}
+                        <p className="text-[10px] text-gray-400 mt-0.5">
+                          {formatDistanceToNow(new Date(event.time), { addSuffix: true })}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </AnimatedSection>
+          )}
 
           {/* Plan + upgrade CTA */}
           {isFree && (
