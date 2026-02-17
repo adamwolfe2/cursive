@@ -10,6 +10,7 @@ interface SidebarItem {
   name: string
   href: string
   icon: React.ReactNode
+  badge?: number
   children?: { name: string; href: string }[]
 }
 
@@ -166,6 +167,11 @@ export function Sidebar({ items, workspace, className }: SidebarProps) {
                     {item.icon}
                   </span>
                   <span className="flex-1">{item.name}</span>
+                  {item.badge && item.badge > 0 && (
+                    <span className="ml-auto min-w-[1.25rem] rounded-full bg-primary px-1.5 py-0.5 text-center text-[10px] font-semibold leading-none text-white">
+                      {item.badge > 99 ? '99+' : item.badge}
+                    </span>
+                  )}
                 </Link>
 
                 {/* Children */}

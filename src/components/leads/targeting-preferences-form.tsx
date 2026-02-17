@@ -32,6 +32,7 @@ export function TargetingPreferencesForm({
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
+  const [segmentName, setSegmentName] = useState<string | null>(null)
 
   // Form state
   const [industries, setIndustries] = useState<string[]>(
@@ -112,6 +113,7 @@ export function TargetingPreferencesForm({
         throw new Error(result.error || 'Failed to save preferences')
       }
 
+      setSegmentName(result.segment_name ?? null)
       setSuccess(true)
       router.refresh()
     } catch (err) {
@@ -373,10 +375,19 @@ export function TargetingPreferencesForm({
       )}
 
       {success && (
-        <div className="rounded-lg border border-green-200 bg-green-50 p-4">
-          <p className="text-sm text-green-700">
-            Preferences saved successfully!
+        <div className="rounded-lg border border-green-200 bg-green-50 p-4 space-y-1">
+          <p className="text-sm font-medium text-green-700">
+            Preferences saved! Your daily leads will update starting tomorrow.
           </p>
+          {segmentName ? (
+            <p className="text-xs text-green-600">
+              Matched audience: <span className="font-medium">{segmentName}</span>
+            </p>
+          ) : industries.length > 0 && states.length > 0 ? (
+            <p className="text-xs text-amber-600">
+              No exact audience segment found for {industries[0]} in {states[0]} yet — our team will set one up.
+            </p>
+          ) : null}
         </div>
       )}
 

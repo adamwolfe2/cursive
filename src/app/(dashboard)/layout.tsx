@@ -127,16 +127,27 @@ export default async function DashboardLayout({
     redirect('/welcome')
   }
 
-  // Fetch workspace credits separately (RLS doesn't support join through workspaces)
+  // Fetch workspace credits + today's lead count in parallel
   let creditBalance = 0
+  let todayLeadCount = 0
   if (userProfile.workspace_id) {
-    const { data: credits } = await supabase
-      .from('workspace_credits')
-      .select('balance')
-      .eq('workspace_id', userProfile.workspace_id)
-      .maybeSingle()
+    const today = new Date().toISOString().split('T')[0]
+    const [creditsResult, leadsResult] = await Promise.all([
+      supabase
+        .from('workspace_credits')
+        .select('balance')
+        .eq('workspace_id', userProfile.workspace_id)
+        .maybeSingle(),
+      supabase
+        .from('leads')
+        .select('*', { count: 'exact', head: true })
+        .eq('workspace_id', userProfile.workspace_id)
+        .gte('delivered_at', `${today}T00:00:00`)
+        .lte('delivered_at', `${today}T23:59:59`),
+    ])
 
-    creditBalance = credits?.balance ?? 0
+    creditBalance = creditsResult.data?.balance ?? 0
+    todayLeadCount = leadsResult.count ?? 0
   }
 
   const workspace = userProfile.workspaces as {
@@ -174,6 +185,7 @@ export default async function DashboardLayout({
                 }
               : undefined
           }
+          todayLeadCount={todayLeadCount}
         >
           {children}
         </AppShell>

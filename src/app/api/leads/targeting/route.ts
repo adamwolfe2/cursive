@@ -153,6 +153,8 @@ export async function POST(request: NextRequest) {
       updated_at: new Date().toISOString(),
     }
 
+    let savedData: unknown
+
     if (existing) {
       // Update existing record
       const { data, error } = await supabase
@@ -172,7 +174,7 @@ export async function POST(request: NextRequest) {
         )
       }
 
-      return NextResponse.json({ success: true, data })
+      savedData = data
     } else {
       // Create new record
       const { data, error } = await supabase
@@ -189,8 +191,55 @@ export async function POST(request: NextRequest) {
         )
       }
 
-      return NextResponse.json({ success: true, data }, { status: 201 })
+      savedData = data
     }
+
+    // Sync users.industry_segment and users.location_segment so the daily
+    // distribution job picks up the updated targeting immediately.
+    const primaryIndustry = validatedData.target_industries[0]
+    const primaryState = validatedData.target_states[0]
+
+    if (primaryIndustry || primaryState) {
+      const segmentUpdate: Record<string, string> = {}
+      if (primaryIndustry) {
+        segmentUpdate.industry_segment = primaryIndustry.toLowerCase().replace(/\s+/g, '_')
+      }
+      if (primaryState) {
+        segmentUpdate.location_segment = primaryState.toLowerCase()
+      }
+
+      const { error: userUpdateError } = await supabase
+        .from('users')
+        .update(segmentUpdate)
+        .eq('id', userProfile.id)
+
+      if (userUpdateError) {
+        // Non-fatal: log but don't fail the whole request
+        safeError('Failed to sync user segment fields:', userUpdateError)
+      }
+    }
+
+    // Look up the matching AudienceLab segment so we can confirm coverage
+    let segmentName: string | null = null
+    if (primaryIndustry && primaryState) {
+      const industryKey = primaryIndustry.toLowerCase().replace(/\s+/g, '_')
+      const locationKey = primaryState.toLowerCase()
+
+      const { data: segmentMapping } = await supabase
+        .from('audience_lab_segments')
+        .select('segment_name')
+        .eq('industry', industryKey)
+        .eq('location', locationKey)
+        .maybeSingle()
+
+      segmentName = segmentMapping?.segment_name ?? null
+    }
+
+    const statusCode = existing ? 200 : 201
+    return NextResponse.json(
+      { success: true, data: savedData, segment_name: segmentName },
+      { status: statusCode }
+    )
   } catch (error: any) {
     safeError('Save targeting preferences error:', error)
     return NextResponse.json(

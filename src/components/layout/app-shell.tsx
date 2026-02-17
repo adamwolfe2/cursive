@@ -12,6 +12,7 @@ interface NavItemConfig {
   href: string
   icon: React.ReactNode
   adminOnly?: boolean
+  badge?: number
   children?: { name: string; href: string }[]
 }
 
@@ -341,20 +342,29 @@ interface AppShellProps {
     name: string
     logoUrl?: string | null
   }
+  todayLeadCount?: number
 }
 
-export function AppShell({ children, user, workspace }: AppShellProps) {
+export function AppShell({ children, user, workspace, todayLeadCount }: AppShellProps) {
   const [sidebarOpen, setSidebarOpen] = React.useState(false)
 
   // Filter navigation items based on user role
   // Admin and owner can see all items, regular members can't see admin-only items
   const isAdmin = user?.role === 'admin' || user?.role === 'owner'
-  const filteredNavItems = navigationItems.filter((item) => {
-    if ('adminOnly' in item && item.adminOnly) {
-      return isAdmin
-    }
-    return true
-  })
+  const filteredNavItems = navigationItems
+    .filter((item) => {
+      if ('adminOnly' in item && item.adminOnly) {
+        return isAdmin
+      }
+      return true
+    })
+    .map((item) => {
+      // Attach today's lead count badge to the Daily Leads nav item
+      if (item.href === '/leads' && todayLeadCount && todayLeadCount > 0) {
+        return { ...item, badge: todayLeadCount }
+      }
+      return item
+    })
 
   return (
     <div className="flex min-h-screen bg-muted/30">
