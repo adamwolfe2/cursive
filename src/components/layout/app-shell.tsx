@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import Link from 'next/link'
 import { cn } from '@/lib/design-system'
 import { Sidebar, SidebarMobile } from './sidebar'
 import { Header } from './header'
@@ -376,6 +377,32 @@ export function AppShell({ children, user, workspace }: AppShellProps) {
           workspace={workspace}
           onMenuClick={() => setSidebarOpen(!sidebarOpen)}
         />
+        {/* Credits low persistent banner */}
+        {user && typeof user.creditsRemaining === 'number' && user.creditsRemaining <= 3 && (
+          <div className={cn(
+            'flex items-center justify-between gap-4 px-4 py-2.5 sm:px-6 lg:px-8 text-sm',
+            user.creditsRemaining === 0
+              ? 'bg-red-600 text-white'
+              : 'bg-amber-500 text-white'
+          )}>
+            <div className="flex items-center gap-2">
+              <svg className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              <span>
+                {user.creditsRemaining === 0
+                  ? 'You\'re out of enrichment credits — leads can\'t be enriched until you top up.'
+                  : `Only ${user.creditsRemaining} enrichment credit${user.creditsRemaining === 1 ? '' : 's'} remaining.`}
+              </span>
+            </div>
+            <Link
+              href="/settings/billing"
+              className="shrink-0 rounded-md border border-white/40 px-3 py-1 text-xs font-semibold hover:bg-white/10 transition-colors"
+            >
+              Buy Credits
+            </Link>
+          </div>
+        )}
         <main id="main-content" className="flex-1 px-4 py-6 sm:px-6 lg:px-8" tabIndex={-1}>
           {children}
         </main>

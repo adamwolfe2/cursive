@@ -1,43 +1,45 @@
 import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
+import { CreditService } from '@/lib/services/credit.service'
+import { redirect } from 'next/navigation'
+import Link from 'next/link'
+import {
+  Users, TrendingUp, Crown, ArrowRight, Sparkles,
+  Zap, Star, Target, Activity, CheckCircle2, Circle,
+  Calendar, Eye, Rocket, Settings2, BarChart3,
+} from 'lucide-react'
+import { sanitizeName, sanitizeCompanyName, sanitizeText } from '@/lib/utils/sanitize-text'
+import { DashboardAnimationWrapper, AnimatedSection } from '@/components/dashboard/dashboard-animation-wrapper'
 
 export const metadata: Metadata = {
   title: 'Dashboard | Cursive',
 }
-import { redirect } from 'next/navigation'
-import Link from 'next/link'
-import { GradientCard, GradientBadge } from '@/components/ui/gradient-card'
-import { PageContainer, PageHeader } from '@/components/layout/page-container'
-import { Users, TrendingUp, Crown, ArrowRight, Sparkles, Package, CheckCircle } from 'lucide-react'
-import { serviceTierRepository } from '@/lib/repositories/service-tier.repository'
-import { RequestMoreLeadsBanner } from '@/components/dashboard/RequestMoreLeadsBanner'
-import { sanitizeName, sanitizeCompanyName, sanitizeText } from '@/lib/utils/sanitize-text'
-import { DashboardAnimationWrapper, AnimatedSection } from '@/components/dashboard/dashboard-animation-wrapper'
 
-interface DashboardPageProps {
-  searchParams: Promise<{ onboarding?: string }>
+function intentLabel(score: number | null) {
+  if (!score) return null
+  if (score >= 70) return { label: 'Hot', color: 'text-red-600 bg-red-50 border-red-200' }
+  if (score >= 40) return { label: 'Warm', color: 'text-amber-600 bg-amber-50 border-amber-200' }
+  return { label: 'Cold', color: 'text-blue-600 bg-blue-50 border-blue-200' }
 }
 
-export default async function DashboardPage({ searchParams }: DashboardPageProps) {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ onboarding?: string }>
+}) {
   const { onboarding } = await searchParams
   const supabase = await createClient()
 
-  // Layout already verified auth — use getUser for reliable server-side validation
   const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
 
-  if (!user) {
-    // Layout should have caught this, but safety fallback
-    redirect('/login')
-  }
-
-  // Get user profile (lightweight — layout already fetches full profile for sidebar)
+  // Get user profile
   const { data: userData, error: userError } = await supabase
     .from('users')
-    .select('id, auth_user_id, workspace_id, email, full_name, plan, role, workspaces(id, name, industry_vertical)')
+    .select('id, auth_user_id, workspace_id, email, full_name, plan, role, daily_lead_limit, industry_segment, location_segment, workspaces(id, name, industry_vertical)')
     .eq('auth_user_id', user.id)
     .single()
 
-  // Type the user data
   const userProfile = userData as {
     id: string
     auth_user_id: string
@@ -46,398 +48,452 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     full_name: string | null
     plan: string | null
     role: string
-    workspaces: {
-      id: string
-      name: string
-      industry_vertical: string | null
-    } | null
+    daily_lead_limit: number | null
+    industry_segment: string | null
+    location_segment: string | null
+    workspaces: { id: string; name: string; industry_vertical: string | null } | null
   } | null
 
-  // If no user profile exists, redirect to onboarding
-  if (userError || !userProfile || !userProfile.workspace_id) {
-    redirect('/welcome')
-  }
+  if (userError || !userProfile?.workspace_id) redirect('/welcome')
 
-  // Parallelize all dashboard queries — they all depend only on workspace_id
-  const [leadsCountResult, pixelResult, recentLeadsResult, activeSubscription] = await Promise.all([
+  // Parallelize all data fetches
+  const today = new Date().toISOString().split('T')[0]
+  const startOfWeek = new Date()
+  startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay())
+  const weekStart = startOfWeek.toISOString().split('T')[0]
+
+  const [
+    todayLeadsResult,
+    weekLeadsResult,
+    totalLeadsResult,
+    recentLeadsResult,
+    pixelResult,
+    userTargetingResult,
+    enrichedLeadsResult,
+    creditsData,
+  ] = await Promise.all([
+    // Today's lead count
+    supabase
+      .from('leads')
+      .select('*', { count: 'exact', head: true })
+      .eq('workspace_id', userProfile.workspace_id)
+      .gte('delivered_at', `${today}T00:00:00`),
+    // This week's leads
+    supabase
+      .from('leads')
+      .select('*', { count: 'exact', head: true })
+      .eq('workspace_id', userProfile.workspace_id)
+      .gte('delivered_at', `${weekStart}T00:00:00`),
+    // Total leads ever
     supabase
       .from('leads')
       .select('*', { count: 'exact', head: true })
       .eq('workspace_id', userProfile.workspace_id),
+    // Recent 6 leads
+    supabase
+      .from('leads')
+      .select('id, full_name, first_name, last_name, email, phone, company_name, company_industry, status, created_at, delivered_at, intent_score_calculated, enrichment_status, source')
+      .eq('workspace_id', userProfile.workspace_id)
+      .order('delivered_at', { ascending: false, nullsFirst: false })
+      .order('created_at', { ascending: false })
+      .limit(6),
+    // Pixel (trial status)
     supabase
       .from('audiencelab_pixels')
-      .select('pixel_id')
+      .select('pixel_id, trial_status, trial_ends_at, visitor_count_total')
       .eq('workspace_id', userProfile.workspace_id)
       .eq('is_active', true)
       .maybeSingle(),
+    // User targeting preferences
+    supabase
+      .from('user_targeting')
+      .select('is_active, target_industries, target_states')
+      .eq('user_id', userProfile.id)
+      .eq('workspace_id', userProfile.workspace_id)
+      .maybeSingle(),
+    // Enriched leads count (for checklist)
     supabase
       .from('leads')
-      .select('id, company_name, full_name, first_name, last_name, email, phone, company_industry, status, created_at, intent_score_calculated, source')
+      .select('*', { count: 'exact', head: true })
       .eq('workspace_id', userProfile.workspace_id)
-      .order('created_at', { ascending: false })
-      .limit(5),
-    serviceTierRepository.getWorkspaceActiveSubscription(userProfile.workspace_id),
+      .eq('enrichment_status', 'enriched'),
+    // Credits
+    CreditService.getRemainingCredits(userProfile.id).catch(() => null),
   ])
 
-  const leadsCount = leadsCountResult.count
-  const hasPixel = !!pixelResult.data
-  const recentLeads = recentLeadsResult.data
+  const todayCount = todayLeadsResult.count ?? 0
+  const weekCount = weekLeadsResult.count ?? 0
+  const totalCount = totalLeadsResult.count ?? 0
+  const recentLeads = recentLeadsResult.data ?? []
+  const pixel = pixelResult.data
+  const hasPixel = !!pixel
+  const targeting = userTargetingResult.data
+  const hasPreferences = !!(targeting?.target_industries?.length || targeting?.target_states?.length)
+  const enrichedCount = enrichedLeadsResult.count ?? 0
+  const hasEnriched = enrichedCount > 0
+  const credits = creditsData
+  const creditsRemaining = credits?.remaining ?? 0
+  const creditLimit = credits?.limit ?? 10
+  const isFree = !userProfile.plan || userProfile.plan === 'free'
 
-  const workspace = userProfile.workspaces
+  // Pixel trial info
+  const isOnTrial = pixel?.trial_status === 'trial'
+  const trialEndsAt = pixel?.trial_ends_at ? new Date(pixel.trial_ends_at) : null
+  const trialDaysLeft = trialEndsAt ? Math.max(0, Math.ceil((trialEndsAt.getTime() - Date.now()) / 86_400_000)) : null
+
+  // Onboarding checklist
+  const checklistItems = [
+    { id: 'account', label: 'Create your account', done: true, href: null },
+    { id: 'pixel', label: 'Install tracking pixel', done: hasPixel, href: '/settings/pixel' },
+    { id: 'prefs', label: 'Set lead preferences', done: hasPreferences, href: '/my-leads/preferences' },
+    { id: 'enrich', label: 'Enrich your first lead', done: hasEnriched, href: '/leads' },
+    { id: 'activate', label: 'Activate — run a campaign', done: false, href: '/activate' },
+  ]
+  const checklistProgress = checklistItems.filter((i) => i.done).length
+  const checklistTotal = checklistItems.length
+  const showChecklist = checklistProgress < checklistTotal
+
+  const dailyLimit = userProfile.daily_lead_limit ?? 10
 
   return (
-    <PageContainer maxWidth="wide">
+    <div className="space-y-6 p-6">
       <DashboardAnimationWrapper>
+
       {/* Header */}
       <AnimatedSection delay={0}>
-      <GradientCard variant="primary" className="mb-8">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-semibold text-foreground mb-1">
+            <h1 className="text-2xl font-bold text-gray-900">
               Welcome back, {userProfile.full_name?.split(' ')[0] || 'there'}!
             </h1>
-            <p className="text-sm text-muted-foreground">{workspace?.name || 'Your Workspace'}</p>
+            <p className="text-sm text-gray-500 mt-0.5">
+              {userProfile.workspaces?.name || 'Your Workspace'}
+              {userProfile.industry_segment && (
+                <span className="ml-2 text-xs text-primary">· {userProfile.industry_segment}</span>
+              )}
+            </p>
           </div>
-          <div className="flex items-center gap-3">
-            <span className="hidden sm:inline text-sm text-muted-foreground">{userProfile.email}</span>
+          <div className="flex items-center gap-2">
             <Link
-              href="/auth/signout"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              href="/leads"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary/90 transition-colors"
             >
-              Sign out
+              <Star className="h-4 w-4 fill-white" />
+              Today&apos;s Leads
             </Link>
           </div>
         </div>
-      </GradientCard>
       </AnimatedSection>
 
-      {/* Onboarding Complete Banner */}
+      {/* Onboarding complete banner */}
       {onboarding === 'complete' && (
-        <div className="mb-8 p-4 bg-green-50 border border-green-200 rounded-xl flex items-start gap-3">
-          <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+        <div className="rounded-xl bg-green-50 border border-green-200 p-4 flex items-start gap-3">
+          <CheckCircle2 className="h-5 w-5 text-green-600 shrink-0 mt-0.5" />
           <div>
-            <p className="font-semibold text-green-900">Onboarding complete!</p>
-            <p className="text-sm text-green-700">We&apos;re setting up your tracking pixel and campaigns now. You&apos;ll get an email when everything is live.</p>
+            <p className="font-semibold text-green-900">Setup complete!</p>
+            <p className="text-sm text-green-700">We&apos;re setting up your tracking pixel and delivering your first leads now.</p>
           </div>
         </div>
       )}
 
-      {/* Request More Leads Banner - shows when approaching or at limit */}
-      <RequestMoreLeadsBanner
-        currentLeads={leadsCount || 0}
-        leadLimit={100}
-        workspaceName={workspace?.name}
-      />
-
-      {/* Getting Started Guide for New Users */}
-      {leadsCount === 0 && (
-        <div className="mb-8 rounded-xl border border-border bg-background p-8">
-          <h2 className="text-xl font-bold text-foreground mb-2">Getting Started</h2>
-          <p className="text-sm text-muted-foreground mb-6">
-            Complete these steps to start receiving leads.
-          </p>
-          <div className="space-y-4">
-            {/* Step 1: Account Created - always done */}
-            <div className="flex items-start gap-3">
-              <div className="flex-shrink-0 mt-0.5">
-                <div className="h-6 w-6 rounded-full bg-green-100 flex items-center justify-center">
-                  <CheckCircle className="h-4 w-4 text-green-600" />
-                </div>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-foreground line-through text-muted-foreground">Create your account</p>
-                <p className="text-xs text-muted-foreground">Done!</p>
-              </div>
-            </div>
-            {/* Step 2: Install pixel */}
-            <div className="flex items-start gap-3">
-              <div className="flex-shrink-0 mt-0.5">
-                {hasPixel ? (
-                  <div className="h-6 w-6 rounded-full bg-green-100 flex items-center justify-center">
-                    <CheckCircle className="h-4 w-4 text-green-600" />
-                  </div>
-                ) : (
-                  <div className="h-6 w-6 rounded-full border-2 border-primary flex items-center justify-center">
-                    <span className="text-xs font-bold text-primary">2</span>
-                  </div>
-                )}
-              </div>
-              <div>
-                <p className={`text-sm font-medium ${hasPixel ? 'text-muted-foreground line-through' : 'text-foreground'}`}>
-                  Install pixel on your site
-                </p>
-                {hasPixel ? (
-                  <p className="text-xs text-muted-foreground">Done!</p>
-                ) : (
-                  <>
-                    <p className="text-xs text-muted-foreground mb-2">Add a tracking snippet to identify website visitors</p>
-                    <Link
-                      href="/settings/pixel"
-                      className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:text-primary/80"
-                    >
-                      Set up pixel
-                      <ArrowRight className="h-3 w-3" />
-                    </Link>
-                  </>
-                )}
-              </div>
-            </div>
-            {/* Step 3: Set up targeting */}
-            <div className="flex items-start gap-3">
-              <div className="flex-shrink-0 mt-0.5">
-                <div className={`h-6 w-6 rounded-full border-2 ${hasPixel ? 'border-primary' : 'border-muted-foreground/30'} flex items-center justify-center`}>
-                  <span className={`text-xs font-bold ${hasPixel ? 'text-primary' : 'text-muted-foreground/50'}`}>3</span>
-                </div>
-              </div>
-              <div>
-                <p className={`text-sm font-medium ${hasPixel ? 'text-foreground' : 'text-muted-foreground/70'}`}>Set up your lead preferences</p>
-                <p className="text-xs text-muted-foreground mb-2">Tell us what industries and locations you serve</p>
-                {hasPixel && (
-                  <Link
-                    href="/my-leads/preferences"
-                    className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:text-primary/80"
-                  >
-                    Set preferences
-                    <ArrowRight className="h-3 w-3" />
-                  </Link>
-                )}
-              </div>
-            </div>
-            {/* Step 4: Leads arrive */}
-            <div className="flex items-start gap-3">
-              <div className="flex-shrink-0 mt-0.5">
-                <div className="h-6 w-6 rounded-full border-2 border-muted-foreground/30 flex items-center justify-center">
-                  <span className="text-xs font-bold text-muted-foreground/50">4</span>
-                </div>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-muted-foreground/70">Leads start arriving</p>
-                <p className="text-xs text-muted-foreground">Matched leads will appear in My Leads automatically</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Stats Cards */}
-      <AnimatedSection delay={0.1}>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-        {/* Total Leads */}
-        <GradientCard variant="accent" className="hover:shadow-md transition-shadow">
-          <div className="flex items-start justify-between">
+      {/* Credits low banner */}
+      {creditsRemaining <= 3 && !isFree && (
+        <div className="rounded-xl bg-amber-50 border border-amber-200 p-4 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <Zap className="h-5 w-5 text-amber-600 shrink-0" />
             <div>
-              <p className="text-sm font-medium text-muted-foreground mb-1">Total Leads</p>
-              <p className="text-3xl sm:text-4xl font-bold text-foreground">{leadsCount || 0}</p>
-            </div>
-            <div className="p-3 rounded-lg bg-primary/10">
-              <Users className="h-6 w-6 text-primary" />
-            </div>
-          </div>
-        </GradientCard>
-
-        {/* Industry */}
-        <GradientCard variant="subtle" className="hover:shadow-md transition-shadow">
-          <div className="flex items-start justify-between">
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-muted-foreground mb-1">Industry</p>
-              <p className="text-2xl sm:text-3xl font-bold text-foreground truncate">
-                {workspace?.industry_vertical || 'Not set'}
+              <p className="font-semibold text-amber-900 text-sm">
+                {creditsRemaining === 0 ? 'You\'re out of enrichment credits' : `Only ${creditsRemaining} enrichment credit${creditsRemaining === 1 ? '' : 's'} left`}
               </p>
-            </div>
-            <div className="p-3 rounded-lg bg-primary/10 flex-shrink-0">
-              <TrendingUp className="h-6 w-6 text-primary" />
+              <p className="text-xs text-amber-700">Each lead enrichment (phone, email, LinkedIn) costs 1 credit.</p>
             </div>
           </div>
-        </GradientCard>
-
-        {/* Plan */}
-        <GradientCard variant="subtle" className="hover:shadow-md transition-shadow">
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-sm font-medium text-muted-foreground mb-1">Current Plan</p>
-              <p className="text-3xl sm:text-4xl font-bold text-foreground capitalize">
-                {userProfile.plan || 'Free'}
-              </p>
-            </div>
-            <div className="p-3 rounded-lg bg-primary/10">
-              <Crown className="h-6 w-6 text-primary" />
-            </div>
-          </div>
-        </GradientCard>
-      </div>
-      </AnimatedSection>
-
-      {/* Service Tier Upsell Banner */}
-      {!activeSubscription && userProfile.plan === 'free' && (leadsCount ?? 0) > 0 && (
-        <GradientCard variant="prominent" className="mb-8">
-          <div className="flex flex-col sm:flex-row items-start gap-4">
-            <div className="p-3 rounded-lg bg-white/20">
-              <Sparkles className="h-8 w-8 text-white" />
-            </div>
-            <div className="flex-1">
-              <h3 className="text-xl font-bold text-white mb-2">
-                Want More Leads?
-              </h3>
-              <p className="text-white/90 mb-4">
-                Get 500+ fresh, verified leads delivered every month with Cursive Data. Starting at $1k/mo.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Link
-                  href="/services"
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white hover:bg-zinc-50 text-primary font-medium rounded-lg transition-colors"
-                >
-                  View Services
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-                <a
-                  href="https://cal.com/adamwolfe/cursive-ai-audit"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3 border-2 border-white hover:bg-white/10 text-white font-medium rounded-lg transition-colors"
-                >
-                  Book Call
-                </a>
-              </div>
-            </div>
-          </div>
-        </GradientCard>
-      )}
-
-      {/* Recent Leads Section */}
-      <GradientCard variant="subtle" className="mb-8">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold text-foreground">Recent Leads</h2>
           <Link
-            href="/leads"
-            className="flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+            href="/settings/billing"
+            className="shrink-0 text-sm font-semibold bg-amber-600 text-white rounded-lg px-3 py-1.5 hover:bg-amber-700 transition-colors"
           >
-            View all
-            <ArrowRight className="h-4 w-4" />
+            Buy Credits
           </Link>
         </div>
+      )}
 
-        {recentLeads && recentLeads.length > 0 ? (
-          <div className="space-y-3">
-            {recentLeads.map((lead: any) => {
-              // SECURITY: Sanitize all user-generated content to prevent XSS
-              const displayName = sanitizeName(lead.full_name) ||
-                sanitizeName([lead.first_name, lead.last_name].filter(Boolean).join(' ')) ||
-                sanitizeCompanyName(lead.company_name) ||
-                'Unknown'
+      {/* Pixel trial banner */}
+      {isOnTrial && trialDaysLeft !== null && (
+        <div className={`rounded-xl border p-4 flex items-center justify-between gap-4 ${
+          trialDaysLeft <= 3 ? 'bg-red-50 border-red-200' : trialDaysLeft <= 7 ? 'bg-amber-50 border-amber-200' : 'bg-blue-50 border-blue-200'
+        }`}>
+          <div className="flex items-center gap-3">
+            <Target className={`h-5 w-5 shrink-0 ${trialDaysLeft <= 3 ? 'text-red-600' : trialDaysLeft <= 7 ? 'text-amber-600' : 'text-blue-600'}`} />
+            <div>
+              <p className={`font-semibold text-sm ${trialDaysLeft <= 3 ? 'text-red-900' : trialDaysLeft <= 7 ? 'text-amber-900' : 'text-blue-900'}`}>
+                {trialDaysLeft === 0 ? 'Pixel trial expires today!' : `Pixel trial: ${trialDaysLeft} day${trialDaysLeft === 1 ? '' : 's'} left`}
+              </p>
+              <p className={`text-xs ${trialDaysLeft <= 3 ? 'text-red-700' : trialDaysLeft <= 7 ? 'text-amber-700' : 'text-blue-700'}`}>
+                {pixel?.visitor_count_total ? `${pixel.visitor_count_total} visitors identified so far · ` : ''}
+                Upgrade to keep website visitor identification active.
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/settings/billing"
+            className={`shrink-0 text-sm font-semibold rounded-lg px-3 py-1.5 transition-colors text-white ${
+              trialDaysLeft <= 3 ? 'bg-red-600 hover:bg-red-700' : trialDaysLeft <= 7 ? 'bg-amber-600 hover:bg-amber-700' : 'bg-blue-600 hover:bg-blue-700'
+            }`}
+          >
+            Upgrade Now
+          </Link>
+        </div>
+      )}
 
-              const displayDetails = sanitizeText(lead.email) ||
-                sanitizeText(lead.phone) ||
-                sanitizeCompanyName(lead.company_name) ||
-                sanitizeText(lead.company_industry) ||
-                'No details'
+      {/* Stats row */}
+      <AnimatedSection delay={0.05}>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Today's leads */}
+          <Link href="/leads" className="group">
+            <div className="bg-white rounded-xl border border-primary/30 bg-primary/5 p-5 hover:border-primary/50 transition-all h-full">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="p-1.5 rounded-lg bg-primary/15">
+                  <Calendar className="h-4 w-4 text-primary" />
+                </div>
+                <span className="text-sm text-gray-500">Today&apos;s Leads</span>
+              </div>
+              <div className="text-3xl font-bold text-primary">{todayCount}</div>
+              <div className="mt-1.5 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                <div className="h-full bg-primary rounded-full" style={{ width: `${Math.min((todayCount / Math.max(dailyLimit, 1)) * 100, 100)}%` }} />
+              </div>
+              <p className="text-xs text-gray-400 mt-1">{todayCount} of {dailyLimit} delivered</p>
+            </div>
+          </Link>
 
-              const displayStatus = sanitizeText(lead.status) || 'new'
+          {/* This week */}
+          <div className="bg-white rounded-xl border border-gray-200 p-5">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="p-1.5 rounded-lg bg-gray-100">
+                <TrendingUp className="h-4 w-4 text-gray-600" />
+              </div>
+              <span className="text-sm text-gray-500">This Week</span>
+            </div>
+            <div className="text-3xl font-bold text-gray-900">{weekCount}</div>
+            <p className="text-xs text-gray-400 mt-1">{(weekCount / 7).toFixed(1)} avg/day</p>
+          </div>
 
-              return (
-                <div
-                  key={lead.id}
-                  className="flex items-center justify-between gap-4 p-4 rounded-lg bg-background border border-border hover:border-primary/50 transition-colors"
-                >
+          {/* Credits */}
+          <Link href="/settings/billing" className="group">
+            <div className={`bg-white rounded-xl border p-5 h-full transition-all ${creditsRemaining <= 3 ? 'border-amber-200 bg-amber-50/40' : 'border-gray-200 hover:border-gray-300'}`}>
+              <div className="flex items-center gap-2 mb-2">
+                <div className={`p-1.5 rounded-lg ${creditsRemaining <= 3 ? 'bg-amber-100' : 'bg-gray-100'}`}>
+                  <Zap className={`h-4 w-4 ${creditsRemaining <= 3 ? 'text-amber-600' : 'text-gray-600'}`} />
+                </div>
+                <span className="text-sm text-gray-500">Credits Left</span>
+              </div>
+              <div className={`text-3xl font-bold ${creditsRemaining <= 3 ? 'text-amber-600' : 'text-gray-900'}`}>{creditsRemaining}</div>
+              <p className="text-xs text-gray-400 mt-1">of {creditLimit} daily · 1/enrichment</p>
+            </div>
+          </Link>
+
+          {/* Total leads */}
+          <div className="bg-white rounded-xl border border-gray-200 p-5">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="p-1.5 rounded-lg bg-gray-100">
+                <Users className="h-4 w-4 text-gray-600" />
+              </div>
+              <span className="text-sm text-gray-500">Total Leads</span>
+            </div>
+            <div className="text-3xl font-bold text-gray-900">{totalCount}</div>
+            <p className="text-xs text-gray-400 mt-1">{enrichedCount} enriched</p>
+          </div>
+        </div>
+      </AnimatedSection>
+
+      {/* Main content grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        {/* Recent Leads (2/3 width) */}
+        <AnimatedSection delay={0.1} className="lg:col-span-2">
+          <div className="bg-white rounded-xl border border-gray-200 p-5">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-semibold text-gray-900 flex items-center gap-2">
+                <Star className="h-4 w-4 text-amber-400 fill-amber-400" />
+                Recent Leads
+              </h2>
+              <Link href="/leads" className="text-sm text-primary hover:underline flex items-center gap-1">
+                View all <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            </div>
+
+            {recentLeads.length > 0 ? (
+              <div className="space-y-2">
+                {recentLeads.map((lead: any) => {
+                  const displayName = sanitizeName(lead.full_name)
+                    || sanitizeName([lead.first_name, lead.last_name].filter(Boolean).join(' '))
+                    || sanitizeCompanyName(lead.company_name)
+                    || 'Unknown'
+                  const displaySub = sanitizeText(lead.email)
+                    || sanitizeText(lead.phone)
+                    || sanitizeCompanyName(lead.company_name)
+                    || ''
+                  const intent = intentLabel(lead.intent_score_calculated)
+                  const isEnriched = lead.enrichment_status === 'enriched'
+
+                  return (
+                    <Link
+                      key={lead.id}
+                      href={`/crm/leads/${lead.id}`}
+                      className="flex items-center gap-3 p-3 rounded-lg border border-transparent hover:border-gray-200 hover:bg-gray-50 transition-all group"
+                    >
+                      <div className="h-8 w-8 rounded-full bg-violet-100 flex items-center justify-center text-xs font-bold text-violet-700 shrink-0">
+                        {displayName.charAt(0).toUpperCase()}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-900 truncate group-hover:text-primary transition-colors">{displayName}</p>
+                        {displaySub && <p className="text-xs text-gray-400 truncate">{displaySub}</p>}
+                      </div>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        {isEnriched && (
+                          <span className="text-[10px] bg-violet-50 text-violet-600 border border-violet-200 rounded-full px-1.5 py-0.5 font-medium">
+                            Enriched
+                          </span>
+                        )}
+                        {intent && (
+                          <span className={`text-[10px] border rounded-full px-1.5 py-0.5 font-medium ${intent.color}`}>
+                            {intent.label}
+                          </span>
+                        )}
+                      </div>
+                    </Link>
+                  )
+                })}
+              </div>
+            ) : (
+              <div className="text-center py-10">
+                <Calendar className="h-10 w-10 text-gray-200 mx-auto mb-3" />
+                <p className="text-sm font-medium text-gray-600">Leads arrive every morning at 8am CT</p>
+                <p className="text-xs text-gray-400 mt-1">Your first batch will appear here automatically</p>
+              </div>
+            )}
+          </div>
+        </AnimatedSection>
+
+        {/* Right column: Checklist + Quick Actions */}
+        <div className="space-y-4">
+
+          {/* Onboarding checklist */}
+          {showChecklist && (
+            <AnimatedSection delay={0.15}>
+              <div className="bg-white rounded-xl border border-gray-200 p-5">
+                <div className="flex items-center justify-between mb-1">
+                  <h3 className="font-semibold text-gray-900 text-sm">Setup Checklist</h3>
+                  <span className="text-xs text-gray-400">{checklistProgress}/{checklistTotal}</span>
+                </div>
+                <div className="mt-1 h-1.5 bg-gray-100 rounded-full overflow-hidden mb-4">
+                  <div
+                    className="h-full bg-gradient-to-r from-violet-500 to-primary rounded-full transition-all"
+                    style={{ width: `${(checklistProgress / checklistTotal) * 100}%` }}
+                  />
+                </div>
+                <div className="space-y-3">
+                  {checklistItems.map((item) => (
+                    <div key={item.id} className="flex items-center gap-2.5">
+                      {item.done ? (
+                        <CheckCircle2 className="h-4 w-4 text-green-500 shrink-0" />
+                      ) : (
+                        <Circle className="h-4 w-4 text-gray-300 shrink-0" />
+                      )}
+                      {item.href && !item.done ? (
+                        <Link href={item.href} className="text-sm text-gray-700 hover:text-primary transition-colors">
+                          {item.label}
+                        </Link>
+                      ) : (
+                        <span className={`text-sm ${item.done ? 'text-gray-400 line-through' : 'text-gray-700'}`}>
+                          {item.label}
+                        </span>
+                      )}
+                      {!item.done && item.href && (
+                        <ArrowRight className="h-3 w-3 text-gray-300 ml-auto" />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </AnimatedSection>
+          )}
+
+          {/* Quick actions */}
+          <AnimatedSection delay={0.2}>
+            <div className="bg-white rounded-xl border border-gray-200 p-5">
+              <h3 className="font-semibold text-gray-900 text-sm mb-3">Quick Actions</h3>
+              <div className="space-y-2">
+                <Link href="/leads" className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-gray-50 transition-colors group">
+                  <div className="p-1.5 rounded-lg bg-amber-50 group-hover:bg-amber-100 transition-colors">
+                    <Star className="h-3.5 w-3.5 text-amber-500" />
+                  </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-foreground truncate">
-                      {displayName}
-                    </p>
-                    <p className="text-sm text-muted-foreground truncate">
-                      {displayDetails}
+                    <p className="text-sm font-medium text-gray-800">Daily Leads</p>
+                    <p className="text-xs text-gray-400">{todayCount} new today</p>
+                  </div>
+                  <ArrowRight className="h-3.5 w-3.5 text-gray-300 group-hover:text-primary transition-colors" />
+                </Link>
+                <Link href="/website-visitors" className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-gray-50 transition-colors group">
+                  <div className="p-1.5 rounded-lg bg-blue-50 group-hover:bg-blue-100 transition-colors">
+                    <Eye className="h-3.5 w-3.5 text-blue-500" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-800">Website Visitors</p>
+                    <p className="text-xs text-gray-400">
+                      {pixel?.visitor_count_total ? `${pixel.visitor_count_total} identified` : hasPixel ? 'Pixel active' : 'Setup pixel'}
                     </p>
                   </div>
-                  <GradientBadge
-                    className={`flex-shrink-0 ${
-                      lead.status === 'new'
-                        ? 'bg-primary/10 text-primary border-primary/20'
-                        : lead.status === 'contacted'
-                          ? 'bg-yellow-500/10 text-yellow-600 border-yellow-500/20'
-                          : lead.status === 'qualified'
-                            ? 'bg-green-500/10 text-green-600 border-green-500/20'
-                            : ''
-                    }`}
-                  >
-                    {displayStatus}
-                  </GradientBadge>
+                  <ArrowRight className="h-3.5 w-3.5 text-gray-300 group-hover:text-primary transition-colors" />
+                </Link>
+                <Link href="/activate" className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-violet-50 transition-colors group border border-violet-100">
+                  <div className="p-1.5 rounded-lg bg-violet-100 group-hover:bg-violet-200 transition-colors">
+                    <Rocket className="h-3.5 w-3.5 text-violet-600" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-violet-700">Activate</p>
+                    <p className="text-xs text-violet-500">Audiences + campaigns</p>
+                  </div>
+                  <ArrowRight className="h-3.5 w-3.5 text-violet-300 group-hover:text-violet-600 transition-colors" />
+                </Link>
+                <Link href="/my-leads/preferences" className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-gray-50 transition-colors group">
+                  <div className="p-1.5 rounded-lg bg-gray-100 group-hover:bg-gray-200 transition-colors">
+                    <Settings2 className="h-3.5 w-3.5 text-gray-500" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-800">Preferences</p>
+                    <p className="text-xs text-gray-400">Industry + location</p>
+                  </div>
+                  <ArrowRight className="h-3.5 w-3.5 text-gray-300 group-hover:text-primary transition-colors" />
+                </Link>
+              </div>
+            </div>
+          </AnimatedSection>
+
+          {/* Plan + upgrade CTA */}
+          {isFree && (
+            <AnimatedSection delay={0.25}>
+              <div className="rounded-xl bg-gradient-to-br from-violet-50 to-primary/5 border border-primary/20 p-5">
+                <div className="flex items-center gap-2 mb-2">
+                  <Crown className="h-4 w-4 text-primary" />
+                  <span className="text-sm font-semibold text-gray-900">Free Plan</span>
                 </div>
-              )
-            })}
-          </div>
-        ) : (
-          <div className="text-center py-12">
-            <div className="flex justify-center mb-4">
-              <div className="p-3 rounded-full bg-muted">
-                <Users className="h-8 w-8 text-muted-foreground" />
-              </div>
-            </div>
-            <p className="text-foreground font-medium mb-2">No leads yet</p>
-            <p className="text-sm text-muted-foreground">
-              Leads will appear here once they are added to your workspace
-            </p>
-          </div>
-        )}
-      </GradientCard>
-
-      {/* Quick Actions */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Link href="/my-leads" className="group">
-          <GradientCard variant="subtle" className="hover:shadow-lg transition-all duration-200">
-            <div className="flex items-start gap-4">
-              <div className="p-3 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                <Users className="h-6 w-6 text-primary" />
-              </div>
-              <div className="flex-1">
-                <h3 className="font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
-                  My Leads
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  View and manage your matched leads
+                <p className="text-xs text-gray-500 mb-3">
+                  Upgrade to Pro for 100 leads/day, unlimited enrichments, and priority data.
                 </p>
+                <Link
+                  href="/settings/billing"
+                  className="w-full inline-flex items-center justify-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-sm font-semibold text-white hover:bg-primary/90 transition-colors"
+                >
+                  <Sparkles className="h-3.5 w-3.5" />
+                  Upgrade to Pro
+                </Link>
               </div>
-              <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
-            </div>
-          </GradientCard>
-        </Link>
-
-        <Link href="/settings/billing" className="group">
-          <GradientCard variant="subtle" className="hover:shadow-lg transition-all duration-200">
-            <div className="flex items-start gap-4">
-              <div className="p-3 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                <Crown className="h-6 w-6 text-primary" />
-              </div>
-              <div className="flex-1">
-                <h3 className="font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
-                  Buy Credits
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  Purchase credits for lead access
-                </p>
-              </div>
-              <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
-            </div>
-          </GradientCard>
-        </Link>
-
-        <Link href="/services" className="group">
-          <GradientCard variant="prominent" className="hover:shadow-lg transition-all duration-200">
-            <div className="flex items-start gap-4">
-              <div className="p-3 rounded-lg bg-white/20 group-hover:bg-white/30 transition-colors">
-                <Package className="h-6 w-6 text-white" />
-              </div>
-              <div className="flex-1">
-                <h3 className="font-semibold text-white mb-1 group-hover:text-white/90 transition-colors">
-                  Services
-                </h3>
-                <p className="text-sm text-white/80">
-                  Explore done-for-you options
-                </p>
-              </div>
-              <ArrowRight className="h-5 w-5 text-white/80 group-hover:text-white group-hover:translate-x-1 transition-all" />
-            </div>
-          </GradientCard>
-        </Link>
+            </AnimatedSection>
+          )}
+        </div>
       </div>
+
       </DashboardAnimationWrapper>
-    </PageContainer>
+    </div>
   )
 }
