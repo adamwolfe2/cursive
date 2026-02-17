@@ -131,6 +131,45 @@ export default function BillingClient() {
 
   return (
     <div className="space-y-6">
+
+      {/* Value prop strip for free users */}
+      {!isPro && (
+        <div className="rounded-xl bg-gradient-to-r from-violet-50 via-primary/5 to-blue-50 border border-primary/20 p-5">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+            <div className="flex-1">
+              <h2 className="text-base font-bold text-gray-900 mb-1">
+                One enriched lead can close a $10k deal.
+              </h2>
+              <p className="text-sm text-gray-600 max-w-xl">
+                You&apos;re getting free leads every day from Audience Labs. Upgrading adds phone numbers, emails, LinkedIn profiles, and 100 leads/day — so your team can close, not just browse.
+              </p>
+              <div className="flex flex-wrap gap-3 mt-3">
+                <div className="flex items-center gap-1.5 text-xs text-gray-700 bg-white border border-gray-200 rounded-lg px-2.5 py-1.5">
+                  <svg className="h-3.5 w-3.5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                  100 leads/day (vs 10 free)
+                </div>
+                <div className="flex items-center gap-1.5 text-xs text-gray-700 bg-white border border-gray-200 rounded-lg px-2.5 py-1.5">
+                  <svg className="h-3.5 w-3.5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                  1,000 enrichments/day
+                </div>
+                <div className="flex items-center gap-1.5 text-xs text-gray-700 bg-white border border-gray-200 rounded-lg px-2.5 py-1.5">
+                  <svg className="h-3.5 w-3.5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                  Website visitor ID (unlimited)
+                </div>
+                <div className="flex items-center gap-1.5 text-xs text-gray-700 bg-white border border-gray-200 rounded-lg px-2.5 py-1.5">
+                  <svg className="h-3.5 w-3.5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                  CSV export + integrations
+                </div>
+              </div>
+            </div>
+            <div className="shrink-0">
+              <UpgradeButton billingPeriod="monthly" variant="primary" />
+              <p className="text-xs text-center text-gray-400 mt-1">Cancel anytime · 30-day guarantee</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Current Plan Card */}
       <Card>
         <CardContent className="pt-6">
@@ -542,9 +581,17 @@ export default function BillingClient() {
           </div>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground mb-6">
-            Purchase additional credits for lead discovery and marketplace purchases. Credits never expire.
-          </p>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+            <div>
+              <p className="text-sm text-muted-foreground">
+                Each credit enriches one lead with phone, email, LinkedIn, and company intel.{' '}
+                <span className="text-foreground font-medium">Credits never expire.</span>
+              </p>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                💡 One enriched lead with a direct phone number can be worth 10-100x the cost.
+              </p>
+            </div>
+          </div>
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {CREDIT_PACKAGES.map((pkg) => (
