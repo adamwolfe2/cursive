@@ -17,7 +17,9 @@ import {
   Edit2,
   Trash2,
   ExternalLink,
+  Zap,
 } from 'lucide-react'
+import { EnrichLeadPanel } from '@/components/leads/EnrichLeadPanel'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -60,6 +62,19 @@ export function LeadDetailClient({ initialLead }: LeadDetailClientProps) {
   const queryClient = useQueryClient()
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [showEditDialog, setShowEditDialog] = useState(false)
+  const [showEnrichPanel, setShowEnrichPanel] = useState(false)
+
+  // Fetch user's credit balance
+  const { data: creditsData, refetch: refetchCredits } = useQuery({
+    queryKey: ['user-credits'],
+    queryFn: async () => {
+      const res = await fetch('/api/credits/status')
+      if (!res.ok) return { creditsRemaining: 0 }
+      const data = await res.json()
+      return { creditsRemaining: data.credits?.remaining ?? 0 }
+    },
+    staleTime: 30_000,
+  })
 
   // Auto-open edit dialog when navigated with ?edit=true
   useEffect(() => {
@@ -138,6 +153,14 @@ export function LeadDetailClient({ initialLead }: LeadDetailClientProps) {
 
           <div className="flex items-center gap-2">
             <StatusBadge status={lead.status} />
+
+            <Button
+              className="gap-2 bg-gradient-to-r from-violet-500 to-primary hover:opacity-90 text-white shadow-sm"
+              onClick={() => setShowEnrichPanel(true)}
+            >
+              <Zap className="h-4 w-4" />
+              Enrich Lead
+            </Button>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -405,6 +428,29 @@ export function LeadDetailClient({ initialLead }: LeadDetailClientProps) {
           </div>
         </div>
       </div>
+
+      {/* Enrich Lead Panel */}
+      <EnrichLeadPanel
+        leadId={lead.id}
+        lead={{
+          email: lead.email,
+          phone: lead.phone,
+          company_name: lead.company_name,
+          company_domain: lead.company_domain,
+          job_title: lead.job_title ?? lead.title,
+          city: lead.city,
+          state: lead.state,
+          linkedin_url: (lead as any).linkedin_url,
+          full_name: fullName,
+        }}
+        creditsRemaining={creditsData?.creditsRemaining ?? 0}
+        open={showEnrichPanel}
+        onClose={() => setShowEnrichPanel(false)}
+        onEnriched={() => {
+          refetch()
+          refetchCredits()
+        }}
+      />
 
       {/* Edit Lead Dialog */}
       <EditLeadDialog
