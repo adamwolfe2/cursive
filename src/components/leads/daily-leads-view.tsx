@@ -130,6 +130,31 @@ function exportToCSV(leads: Lead[], filename: string) {
 
 // ─── Lead Card ─────────────────────────────────────────────
 
+function CopyButton({ value }: { value: string }) {
+  const [copied, setCopied] = useState(false)
+  return (
+    <button
+      onClick={(e) => {
+        e.stopPropagation()
+        navigator.clipboard.writeText(value).then(() => {
+          setCopied(true)
+          setTimeout(() => setCopied(false), 1500)
+        })
+      }}
+      className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity text-gray-400 hover:text-primary"
+      title="Copy to clipboard"
+    >
+      {copied ? (
+        <CheckCircle2 className="h-3 w-3 text-green-500" />
+      ) : (
+        <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+        </svg>
+      )}
+    </button>
+  )
+}
+
 function LeadCard({
   lead,
   onEnrich,
@@ -182,16 +207,18 @@ function LeadCard({
             {lead.email && (
               <div className="flex items-center gap-1.5 text-xs text-gray-500">
                 <Mail className="h-3 w-3 text-gray-400 shrink-0" />
-                <span className="truncate">{lead.email}</span>
+                <span className="truncate flex-1">{lead.email}</span>
                 {lead.verification_status === 'valid' && (
                   <CheckCircle2 className="h-3 w-3 text-green-500 shrink-0" />
                 )}
+                <CopyButton value={lead.email} />
               </div>
             )}
             {lead.phone && (
               <div className="flex items-center gap-1.5 text-xs text-gray-500">
                 <Phone className="h-3 w-3 text-gray-400 shrink-0" />
-                {lead.phone}
+                <span className="flex-1">{lead.phone}</span>
+                <CopyButton value={lead.phone} />
               </div>
             )}
             {(lead.city || lead.state) && (
