@@ -13,20 +13,49 @@ if (!API_KEY) {
 }
 
 /**
+ * Available audience from Audience Labs
+ */
+export interface AudienceLabAudience {
+  id: string
+  name: string
+  next_scheduled_refresh: string | null
+  refresh_interval: string | null
+  scheduled_refresh: boolean
+  webhook_url: string | null
+}
+
+/**
  * Lead data structure returned from Audience Labs
+ * Note: Field names are in UPPERCASE as returned by the API
  */
 export interface AudienceLabLead {
-  first_name?: string
-  last_name?: string
-  business_verified_email?: string
-  mobile?: string
-  company_name?: string
-  domain?: string
-  title?: string
-  city?: string
-  state?: string
-  country?: string
-  industry?: string
+  FIRST_NAME?: string
+  LAST_NAME?: string
+  BUSINESS_VERIFIED_EMAILS?: string[]
+  PERSONAL_VERIFIED_EMAILS?: string[]
+  BUSINESS_EMAIL?: string
+  PERSONAL_EMAILS?: string[]
+  MOBILE_PHONE?: string
+  DIRECT_NUMBER?: string
+  PERSONAL_PHONE?: string
+  COMPANY_PHONE?: string
+  COMPANY_NAME?: string
+  COMPANY_DOMAIN?: string
+  JOB_TITLE?: string
+  HEADLINE?: string
+  COMPANY_CITY?: string
+  COMPANY_STATE?: string
+  COMPANY_ZIP?: string
+  PERSONAL_CITY?: string
+  PERSONAL_STATE?: string
+  PERSONAL_ZIP?: string
+  COMPANY_INDUSTRY?: string
+  COMPANY_EMPLOYEE_COUNT?: string
+  COMPANY_REVENUE?: string
+  LINKEDIN_URL?: string
+  COMPANY_LINKEDIN_URL?: string
+  UUID?: string
+  // ... many more fields available, these are the most commonly used
 }
 
 /**
@@ -39,14 +68,48 @@ export interface SegmentCriteria {
 }
 
 /**
- * Fetch leads from an Audience Labs segment
+ * List all available audiences from Audience Labs account
  *
- * @param segmentId - The segment ID from Audience Labs Studio
+ * @returns Array of all audiences available to this account
+ */
+export async function listAllAudiences(): Promise<AudienceLabAudience[]> {
+  try {
+    console.log('[AudienceLab] Fetching all audiences')
+
+    const response = await fetch(`${AUDIENCELAB_API_BASE}/audiences`, {
+      method: 'GET',
+      headers: {
+        'X-API-Key': API_KEY!,
+        'Content-Type': 'application/json',
+      },
+    })
+
+    if (!response.ok) {
+      const error = await response.text()
+      console.error('[AudienceLab] Failed to list audiences:', error)
+      return []
+    }
+
+    const result = await response.json()
+    const audiences = result.data || result
+
+    console.log('[AudienceLab] Found audiences:', audiences.length)
+    return audiences
+  } catch (error) {
+    console.error('[AudienceLab] Error listing audiences:', error)
+    return []
+  }
+}
+
+/**
+ * Fetch leads from an Audience Labs audience
+ *
+ * @param audienceId - The audience ID from Audience Labs
  * @param options - Pagination and filtering options
- * @returns Array of leads from the segment
+ * @returns Array of leads from the audience
  */
 export async function fetchLeadsFromSegment(
-  segmentId: string,
+  audienceId: string,
   options: {
     page?: number
     pageSize?: number
@@ -59,12 +122,13 @@ export async function fetchLeadsFromSegment(
   } = options
 
   try {
-    const url = new URL(`${AUDIENCELAB_API_BASE}/segments/${segmentId}`)
+    // Use /audiences endpoint instead of /segments
+    const url = new URL(`${AUDIENCELAB_API_BASE}/audiences/${audienceId}`)
     url.searchParams.set('page', page.toString())
     url.searchParams.set('page_size', pageSize.toString())
 
     console.log('[AudienceLab] Fetching leads:', {
-      segmentId,
+      audienceId,
       page,
       pageSize,
     })
@@ -88,12 +152,12 @@ export async function fetchLeadsFromSegment(
         status: response.status,
         statusText: response.statusText,
         error,
-        segmentId,
+        audienceId,
       })
 
-      // If 404, the segment doesn't exist - return empty array to prevent cron failures
+      // If 404, the audience doesn't exist - return empty array to prevent cron failures
       if (response.status === 404) {
-        console.warn('[AudienceLab] Segment not found - returning empty array:', segmentId)
+        console.warn('[AudienceLab] Audience not found - returning empty array:', audienceId)
         return []
       }
 
@@ -106,7 +170,7 @@ export async function fetchLeadsFromSegment(
     const leads = Array.isArray(data) ? data : (data.data || data.leads || [])
 
     console.log('[AudienceLab] Successfully fetched leads:', {
-      segmentId,
+      audienceId,
       count: leads.length,
       sampleFields: leads[0] ? Object.keys(leads[0]).join(', ') : 'none',
     })
@@ -193,7 +257,9 @@ export async function fetchDailyLeadsForUser(
   // Filter out leads already received and limit to requested amount
   const filteredLeads = leads
     .filter(lead => {
-      const leadId = lead.business_verified_email || lead.domain || ''
+      // Use the first verified email or domain as unique identifier
+      const email = lead.BUSINESS_VERIFIED_EMAILS?.[0] || lead.BUSINESS_EMAIL
+      const leadId = email || lead.COMPANY_DOMAIN || lead.UUID || ''
       return !excludeIds.includes(leadId)
     })
     .slice(0, limit)

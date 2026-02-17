@@ -95,24 +95,28 @@ export const distributeDailyLeads = inngest.createFunction(
             count: leads.length,
           })
 
-          // Save leads to database
+          // Save leads to database (map UPPERCASE fields to lowercase)
           const leadsToInsert = leads.map((lead: AudienceLabLead) => ({
             workspace_id: user.workspace_id,
-            first_name: lead.first_name || '',
-            last_name: lead.last_name || '',
-            email: lead.business_verified_email || '',
-            phone: lead.mobile || '',
-            company: lead.company_name || '',
-            title: lead.title || '',
+            full_name: `${lead.FIRST_NAME || ''} ${lead.LAST_NAME || ''}`.trim(),
+            email: lead.BUSINESS_VERIFIED_EMAILS?.[0] || lead.BUSINESS_EMAIL || lead.PERSONAL_VERIFIED_EMAILS?.[0] || '',
+            phone: lead.MOBILE_PHONE || lead.DIRECT_NUMBER || lead.PERSONAL_PHONE || lead.COMPANY_PHONE || '',
+            company_name: lead.COMPANY_NAME || '',
+            job_title: lead.JOB_TITLE || lead.HEADLINE || '',
             source: 'audience_labs_daily',
             status: 'new',
             delivered_at: new Date().toISOString(),
             metadata: {
-              city: lead.city,
-              state: lead.state,
-              country: lead.country,
-              domain: lead.domain,
-              industry: lead.industry,
+              city: lead.COMPANY_CITY || lead.PERSONAL_CITY,
+              state: lead.COMPANY_STATE || lead.PERSONAL_STATE,
+              zip: lead.COMPANY_ZIP || lead.PERSONAL_ZIP,
+              domain: lead.COMPANY_DOMAIN,
+              industry: lead.COMPANY_INDUSTRY,
+              employee_count: lead.COMPANY_EMPLOYEE_COUNT,
+              revenue: lead.COMPANY_REVENUE,
+              linkedin: lead.LINKEDIN_URL,
+              company_linkedin: lead.COMPANY_LINKEDIN_URL,
+              uuid: lead.UUID,
             },
           }))
 
@@ -151,12 +155,12 @@ export const distributeDailyLeads = inngest.createFunction(
           if (user.ghl_sub_account_id) {
             await step.run(`sync-to-ghl-${user.id}`, async () => {
               const ghlLeads = leads.map((lead: AudienceLabLead) => ({
-                firstName: lead.first_name,
-                lastName: lead.last_name,
-                email: lead.business_verified_email,
-                phone: lead.mobile,
-                companyName: lead.company_name,
-                title: lead.title,
+                firstName: lead.FIRST_NAME,
+                lastName: lead.LAST_NAME,
+                email: lead.BUSINESS_VERIFIED_EMAILS?.[0] || lead.BUSINESS_EMAIL,
+                phone: lead.MOBILE_PHONE || lead.DIRECT_NUMBER,
+                companyName: lead.COMPANY_NAME,
+                title: lead.JOB_TITLE || lead.HEADLINE,
               }))
 
               const synced = await syncLeadsToGHL(
