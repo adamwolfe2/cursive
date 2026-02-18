@@ -3,6 +3,7 @@
   "buildCommand": "rm -rf .next && pnpm run build",
   "framework": "nextjs",
   "installCommand": "pnpm install",
+  "regions": ["pdx1"],
   "crons": [
     {
       "path": "/api/cron/reset-lead-counts",

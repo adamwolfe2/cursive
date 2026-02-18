@@ -47,6 +47,8 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: '2mb',
     },
+    // Tree-shake icon libraries — prevents loading all icons in the bundle
+    optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
   },
 
   // ============================================
@@ -64,6 +66,16 @@ const nextConfig = {
   // ============================================
   async headers() {
     return [
+      {
+        // Cache Next.js built assets (hashed filenames — safe to cache forever)
+        source: '/_next/static/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
       {
         // Cache static assets
         source: '/static/:path*',
