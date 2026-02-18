@@ -611,9 +611,14 @@ export function DailyLeadsView({
       try {
         const res = await fetch(`/api/leads/${lead.id}/enrich`, { method: 'POST' })
         if (res.ok) {
-          // Optimistically update this lead in local state
+          const data = await res.json()
+          // Update lead with enriched fields so card reflects new data immediately
           setTodayLeads((prev) =>
-            prev.map((l) => l.id === lead.id ? { ...l, enrichment_status: 'enriched' } : l)
+            prev.map((l) =>
+              l.id === lead.id
+                ? { ...l, enrichment_status: 'enriched', ...(data.after ?? {}) }
+                : l
+            )
           )
         }
       } catch {

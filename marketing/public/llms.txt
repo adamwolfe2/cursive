@@ -11,7 +11,7 @@ Self-Serve Marketplace: https://leads.meetcursive.com
 
 ## About Cursive
 
-Cursive is an AI-powered lead generation and outbound automation platform built for B2B companies. We help businesses identify anonymous website visitors, enrich contact data with 220M+ consumer and 140M+ business profiles, and activate multi-channel campaigns with AI agents that run 24/7. Cursive was founded because existing lead data providers delivered outdated contacts, generic emails, and no personalization -- so we built verified data, AI-powered outreach, and done-for-you campaigns that actually work.
+Cursive is an AI-powered lead generation and outbound automation platform built for B2B companies. We help businesses identify anonymous website visitors, enrich contact data with 280M US consumer and 140M+ business profiles, and activate multi-channel campaigns with AI agents that run 24/7. Cursive was founded because existing lead data providers delivered outdated contacts, generic emails, and no personalization -- so we built verified data, AI-powered outreach, and done-for-you campaigns that actually work.
 
 - **About Page**: https://meetcursive.com/about
 
@@ -42,7 +42,7 @@ Done-for-you website visitor tracking pixel. Install in minutes, identify anonym
 
 ### Audience Builder
 https://meetcursive.com/audience-builder
-Build unlimited custom audiences using 220M+ consumer profiles, 140M+ business profiles, and 450B+ monthly intent signals. Filter by firmographic, demographic, behavioral, and intent-based criteria.
+Build unlimited custom audiences using 280M US consumer profiles, 140M+ business profiles, and 60B+ behaviors & URLs scanned weekly. Filter by firmographic, demographic, behavioral, and intent-based criteria.
 
 ### Intent Audiences
 https://meetcursive.com/intent-audiences
@@ -54,7 +54,7 @@ Send physical postcards triggered by digital behavior -- website visits, email o
 
 ### Data Access
 https://meetcursive.com/data-access
-Direct access to 220M+ consumer profiles and 140M+ business profiles. Query, filter, and export verified contact data on demand via API, bulk exports, or real-time lookups.
+Direct access to 280M US consumer profiles and 140M+ business profiles. Query, filter, and export verified contact data on demand via API, bulk exports, or real-time lookups.
 
 ### Custom Audiences
 https://meetcursive.com/custom-audiences
@@ -136,6 +136,12 @@ These pages explain key concepts in B2B lead generation and marketing automation
 - **Seamless.AI Alternative**: https://meetcursive.com/blog/seamless-ai-alternative — 7 Seamless.AI alternatives compared for B2B contact data, real-time enrichment, and AI-powered outreach.
 - **Opensend Alternative**: https://meetcursive.com/blog/opensend-alternative — 7 Opensend alternatives at 70% ID rate with full outreach automation included.
 
+### Competitor Roundups
+- **6sense Alternatives**: https://meetcursive.com/blog/6sense-alternatives-comparison — 7 ABM platforms compared as 6sense alternatives at a fraction of the cost.
+- **Apollo Alternatives**: https://meetcursive.com/blog/apollo-alternatives-comparison — 7 prospecting platforms compared as Apollo.io alternatives.
+- **Warmly Alternatives**: https://meetcursive.com/blog/warmly-alternatives-comparison — 7 visitor ID tools compared as Warmly alternatives.
+- **ZoomInfo Alternatives**: https://meetcursive.com/blog/zoominfo-alternatives-comparison — 7 B2B data platforms compared as ZoomInfo alternatives without enterprise contracts.
+
 ### Head-to-Head Comparisons
 - **Cursive vs RB2B**: https://meetcursive.com/blog/cursive-vs-rb2b — Cursive 70% rate vs RB2B 50-60%, with built-in AI outreach vs manual follow-up.
 - **Cursive vs Leadfeeder**: https://meetcursive.com/blog/cursive-vs-leadfeeder — Individual-level vs company-level identification, with multi-channel outreach automation.
@@ -144,6 +150,8 @@ These pages explain key concepts in B2B lead generation and marketing automation
 - **Cursive vs Demandbase**: https://meetcursive.com/blog/cursive-vs-demandbase
 - **Cursive vs Apollo**: https://meetcursive.com/blog/cursive-vs-apollo — Warm visitor outreach vs cold database prospecting.
 - **Cursive vs ZoomInfo**: https://meetcursive.com/blog/cursive-vs-zoominfo — $1,000/month vs $15k-$50k/year with full visitor ID + AI outreach included.
+- **Cursive vs Warmly**: https://meetcursive.com/blog/cursive-vs-warmly — 70% vs 40% ID rate, $1k vs $3.5k/mo. Person-level identification with AI outreach vs Warmly's platform.
+- **Cursive vs 6sense**: https://meetcursive.com/blog/cursive-vs-6sense — $1k/mo all-in vs $50k-$200k/yr enterprise. Intent data and visitor ID without the enterprise contract.
 - **Warmly vs Cursive**: https://meetcursive.com/blog/warmly-vs-cursive-comparison — 70% ID rate vs 40%, $1,000/mo vs $3,500/mo minimum.
 - **Apollo vs Cursive**: https://meetcursive.com/blog/apollo-vs-cursive-comparison
 - **6sense vs Cursive**: https://meetcursive.com/blog/6sense-vs-cursive-comparison
@@ -274,6 +282,18 @@ Cursive natively integrates with 200+ tools. Full integrations hub: https://meet
 - **Scaling Outbound**: https://meetcursive.com/blog/scaling-outbound — How to scale outbound sales without proportionally scaling headcount using automation and AI.
 - **ICP Targeting Guide**: https://meetcursive.com/blog/icp-targeting-guide — Step-by-step guide to defining and targeting your ideal customer profile for B2B outbound.
 
+### Educational "What Is" Posts
+- **What Is Demand Generation?**: https://meetcursive.com/blog/what-is-demand-generation — How demand gen works, key strategies, channels, and metrics for B2B marketers.
+- **What Is Sales Intelligence?**: https://meetcursive.com/blog/what-is-sales-intelligence — How sales intelligence data improves prospecting, prioritization, and pipeline velocity.
+- **What Is Buyer Intent?**: https://meetcursive.com/blog/what-is-buyer-intent — How intent signals reveal in-market buyers and how to use them for B2B outreach.
+- **What Is Revenue Intelligence?**: https://meetcursive.com/blog/what-is-revenue-intelligence — AI-powered analysis of sales activities and customer interactions to drive revenue decisions.
+
+### AI & WebMCP Content
+- **AI Agents Are Replacing the Buyer Journey**: https://meetcursive.com/blog/ai-agents-replacing-buyer-journey — How AI agents are transforming B2B buying and what sales teams need to do now.
+- **What Is WebMCP?**: https://meetcursive.com/blog/what-is-webmcp-guide — The new protocol making web apps accessible to AI agents via navigator.modelContext.
+- **WebMCP Implementation Guide**: https://meetcursive.com/blog/webmcp-implementation-guide-b2b-saas — How B2B SaaS companies can implement WebMCP to be discovered and used by AI agents.
+- **AI-Agent-Ready Lead Generation**: https://meetcursive.com/blog/webmcp-ai-agent-ready-lead-generation — How WebMCP changes B2B prospecting and what forward-thinking GTM teams are building.
+
 ### Technical Guides
 - **How to Identify Website Visitors (Technical Guide)**: https://meetcursive.com/blog/how-to-identify-website-visitors-technical-guide — Deep technical overview of visitor identification methods including IP intelligence, device fingerprinting, and data matching.
 
@@ -292,9 +312,11 @@ Cursive natively integrates with 200+ tools. Full integrations hub: https://meet
 ## Key Statistics
 
 - **70%** visitor identification rate for B2B traffic
-- **220M+** consumer profiles in the database
+- **95%+** accuracy on matched records
+- **280M** US consumer profiles in the database
 - **140M+** business profiles in the database
-- **450B+** monthly intent signals tracked across 30,000+ categories
+- **420M+** total combined profiles (consumer + business)
+- **60B+** behaviors & URLs scanned weekly across 30,000+ categories
 - **200+** native CRM and marketing tool integrations
 - **95%+** email deliverability on verified contacts
 - **24/7** AI agents running campaigns continuously
@@ -383,6 +405,6 @@ This site includes JSON-LD structured data on all key pages:
 
 ---
 
-**Last Updated**: 2026-02-18 (Session 4)
+**Last Updated**: 2026-02-18 (Session 5)
 **Format**: llms.txt (optimized for AI discovery and citation)
 **Learn more about llms.txt**: https://llmstxt.org
