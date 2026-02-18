@@ -9,6 +9,7 @@ import { ClientLayout } from "@/components/client-layout";
 import { ExitIntentPopup } from "@/components/exit-intent-popup";
 import { CookieConsent } from "@/components/cookie-consent";
 import { WebMCPProvider } from "@/components/webmcp-provider";
+import { Analytics } from "@vercel/analytics/next";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -109,6 +110,7 @@ export default function RootLayout({
           <CookieConsent />
           <WebMCPProvider />
         </ClientLayout>
+        <Analytics />
       </body>
     </html>
   );
