@@ -1,5 +1,6 @@
 // AI Agents List Page
 
+import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
@@ -10,6 +11,8 @@ import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { EmptyState } from '@/components/ui/empty-state'
 import { AgentsListWrapper } from '@/components/agents/agents-list-wrapper'
+
+export const metadata: Metadata = { title: 'AI Agents | Cursive' }
 
 export default async function AgentsPage() {
   // Layout already verified auth — get session for workspace lookup

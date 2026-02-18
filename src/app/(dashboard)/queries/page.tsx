@@ -1,5 +1,6 @@
 // Queries List Page
 
+import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
@@ -11,6 +12,8 @@ import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { EmptyState } from '@/components/ui/empty-states'
 import { Plus, Search } from 'lucide-react'
+
+export const metadata: Metadata = { title: 'Queries | Cursive' }
 
 export default async function QueriesPage() {
   // Layout already verified auth — get session + profile for this page's needs

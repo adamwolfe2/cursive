@@ -3,9 +3,12 @@
  * Shows leads delivered daily
  */
 
+import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { DailyLeadsView } from '@/components/leads/daily-leads-view'
+
+export const metadata: Metadata = { title: 'Daily Leads | Cursive' }
 
 export default async function DailyLeadsPage() {
   const supabase = await createClient()

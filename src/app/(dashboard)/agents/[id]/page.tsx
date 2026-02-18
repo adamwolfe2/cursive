@@ -1,6 +1,9 @@
 // Agent Detail Page
 
+import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
+
+export const metadata: Metadata = { title: 'Agent Details | Cursive' }
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import { AgentRepository } from '@/lib/repositories/agent.repository'

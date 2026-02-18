@@ -322,7 +322,7 @@ export default async function DashboardPage({
               <div className="mt-1.5 h-1.5 bg-gray-100 rounded-full overflow-hidden">
                 <div className="h-full bg-primary rounded-full" style={{ width: `${Math.min((todayCount / Math.max(dailyLimit, 1)) * 100, 100)}%` }} />
               </div>
-              <p className="text-xs text-gray-400 mt-1">{todayCount} of {dailyLimit} delivered</p>
+              <p className="text-xs text-gray-500 mt-1">{todayCount} of {dailyLimit} delivered</p>
             </div>
           </Link>
 
@@ -335,7 +335,7 @@ export default async function DashboardPage({
               <span className="text-sm text-gray-500">This Week</span>
             </div>
             <div className="text-3xl font-bold text-gray-900">{weekCount}</div>
-            <p className="text-xs text-gray-400 mt-1">{(weekCount / 7).toFixed(1)} avg/day</p>
+            <p className="text-xs text-gray-500 mt-1">{(weekCount / 7).toFixed(1)} avg/day</p>
           </div>
 
           {/* Credits */}
@@ -348,7 +348,7 @@ export default async function DashboardPage({
                 <span className="text-sm text-gray-500">Enrichment Credits</span>
               </div>
               <div className={`text-3xl font-bold ${creditsRemaining <= 3 ? 'text-amber-600' : 'text-gray-900'}`}>{creditsRemaining}</div>
-              <p className="text-xs text-gray-400 mt-1">of {creditLimit} daily · 1/enrichment</p>
+              <p className="text-xs text-gray-500 mt-1">of {creditLimit} daily · 1/enrichment</p>
             </div>
           </Link>
 
@@ -361,7 +361,7 @@ export default async function DashboardPage({
               <span className="text-sm text-gray-500">Total Leads</span>
             </div>
             <div className="text-3xl font-bold text-gray-900">{totalCount}</div>
-            <p className="text-xs text-gray-400 mt-1">{enrichedCount} enriched</p>
+            <p className="text-xs text-gray-500 mt-1">{enrichedCount} enriched</p>
           </div>
         </div>
       </AnimatedSection>
@@ -410,7 +410,7 @@ export default async function DashboardPage({
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-gray-900 truncate group-hover:text-primary transition-colors">{displayName}</p>
-                        {displaySub && <p className="text-xs text-gray-400 truncate">{displaySub}</p>}
+                        {displaySub && <p className="text-xs text-gray-500 truncate">{displaySub}</p>}
                       </div>
                       <div className="flex items-center gap-1.5 shrink-0">
                         {isEnriched && (
@@ -432,7 +432,7 @@ export default async function DashboardPage({
               <div className="text-center py-10">
                 <Calendar className="h-10 w-10 text-gray-200 mx-auto mb-3" />
                 <p className="text-sm font-medium text-gray-600">No leads yet today</p>
-                <p className="text-xs text-gray-400 mt-1">Leads arrive every morning at 8am CT based on your targeting preferences.</p>
+                <p className="text-xs text-gray-500 mt-1">Leads arrive every morning at 8am CT based on your targeting preferences.</p>
                 {!hasPreferences && (
                   <Link href="/my-leads/preferences" className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
                     Set preferences <ArrowRight className="h-3.5 w-3.5" />
@@ -452,7 +452,7 @@ export default async function DashboardPage({
               <div className="bg-white rounded-xl border border-gray-200 p-5">
                 <div className="flex items-center justify-between mb-1">
                   <h3 className="font-semibold text-gray-900 text-sm">Setup Checklist</h3>
-                  <span className="text-xs text-gray-400">{checklistProgress}/{checklistTotal}</span>
+                  <span className="text-xs text-gray-500">{checklistProgress}/{checklistTotal}</span>
                 </div>
                 <div className="mt-1 h-1.5 bg-gray-100 rounded-full overflow-hidden mb-4">
                   <div
@@ -466,19 +466,19 @@ export default async function DashboardPage({
                       {item.done ? (
                         <CheckCircle2 className="h-4 w-4 text-green-500 shrink-0" />
                       ) : (
-                        <Circle className="h-4 w-4 text-gray-300 shrink-0" />
+                        <Circle className="h-4 w-4 text-gray-400 shrink-0" />
                       )}
                       {item.href && !item.done ? (
                         <Link href={item.href} className="text-sm text-gray-700 hover:text-primary transition-colors">
                           {item.label}
                         </Link>
                       ) : (
-                        <span className={`text-sm ${item.done ? 'text-gray-400 line-through' : 'text-gray-700'}`}>
+                        <span className={`text-sm ${item.done ? 'text-gray-500 line-through' : 'text-gray-700'}`}>
                           {item.label}
                         </span>
                       )}
                       {!item.done && item.href && (
-                        <ArrowRight className="h-3 w-3 text-gray-300 ml-auto" />
+                        <ArrowRight className="h-3 w-3 text-gray-400 ml-auto" />
                       )}
                     </div>
                   ))}
@@ -540,9 +540,9 @@ export default async function DashboardPage({
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-gray-800">Daily Leads</p>
-                    <p className="text-xs text-gray-400">{todayCount} new today</p>
+                    <p className="text-xs text-gray-500">{todayCount} new today</p>
                   </div>
-                  <ArrowRight className="h-3.5 w-3.5 text-gray-300 group-hover:text-primary transition-colors" />
+                  <ArrowRight className="h-3.5 w-3.5 text-gray-400 group-hover:text-primary transition-colors" />
                 </Link>
                 <Link href="/website-visitors" className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-gray-50 transition-colors group">
                   <div className="p-1.5 rounded-lg bg-blue-50 group-hover:bg-blue-100 transition-colors">
@@ -550,11 +550,11 @@ export default async function DashboardPage({
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-gray-800">Website Visitors</p>
-                    <p className="text-xs text-gray-400">
+                    <p className="text-xs text-gray-500">
                       {pixel?.visitor_count_total ? `${pixel.visitor_count_total} identified` : hasPixel ? 'Pixel active' : 'Setup pixel'}
                     </p>
                   </div>
-                  <ArrowRight className="h-3.5 w-3.5 text-gray-300 group-hover:text-primary transition-colors" />
+                  <ArrowRight className="h-3.5 w-3.5 text-gray-400 group-hover:text-primary transition-colors" />
                 </Link>
                 <Link href="/activate" className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-blue-50 transition-colors group border border-blue-100">
                   <div className="p-1.5 rounded-lg bg-blue-100 group-hover:bg-blue-200 transition-colors">
@@ -575,7 +575,7 @@ export default async function DashboardPage({
             <AnimatedSection delay={0.22}>
               <div className="bg-white rounded-xl border border-gray-200 p-5">
                 <h3 className="font-semibold text-gray-900 text-sm mb-3 flex items-center gap-2">
-                  <Clock className="h-3.5 w-3.5 text-gray-400" />
+                  <Clock className="h-3.5 w-3.5 text-gray-500" />
                   Recent Activity
                 </h3>
                 <div className="space-y-3">
@@ -596,11 +596,11 @@ export default async function DashboardPage({
                         ) : (
                           <p className="text-xs text-gray-700 truncate">
                             <span className="font-medium">{event.leadName}</span>
-                            {event.company && <span className="text-gray-400"> · {event.company}</span>}
+                            {event.company && <span className="text-gray-500"> · {event.company}</span>}
                             <span className="text-blue-600 ml-1">enriched</span>
                           </p>
                         )}
-                        <p className="text-[10px] text-gray-400 mt-0.5">
+                        <p className="text-[10px] text-gray-500 mt-0.5">
                           {formatDistanceToNow(new Date(event.time), { addSuffix: true })}
                         </p>
                       </div>

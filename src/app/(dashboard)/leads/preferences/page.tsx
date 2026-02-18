@@ -1,4 +1,7 @@
+import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
+
+export const metadata: Metadata = { title: 'Lead Preferences | Cursive' }
 
 /**
  * Legacy lead preferences page — redirects to the active targeting system.

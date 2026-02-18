@@ -1,6 +1,9 @@
 // Campaign Detail Page
 
+import type { Metadata } from 'next'
 import { CampaignDetail } from '@/components/campaigns/campaign-detail'
+
+export const metadata: Metadata = { title: 'Campaign | Cursive' }
 
 interface PageProps {
   params: Promise<{ id: string }>

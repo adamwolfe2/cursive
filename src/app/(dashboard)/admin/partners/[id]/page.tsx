@@ -1,6 +1,9 @@
+import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { PartnerRepository } from '@/lib/repositories/partner.repository'
+
+export const metadata: Metadata = { title: 'Partner Details | Cursive' }
 import { PartnerDetailClient } from './components/PartnerDetailClient'
 
 export default async function AdminPartnerDetailPage({

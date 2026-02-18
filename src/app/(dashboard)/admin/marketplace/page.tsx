@@ -1,6 +1,9 @@
+import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+
+export const metadata: Metadata = { title: 'Marketplace Admin | Cursive' }
 import { DollarSign, Users, ShoppingCart, Package } from 'lucide-react'
 import { format } from 'date-fns'
 

@@ -1,6 +1,9 @@
+import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+
+export const metadata: Metadata = { title: 'Partners Admin | Cursive' }
 import { PartnerTable } from '@/components/admin/partner-table'
 
 export default async function AdminPartnersPage() {

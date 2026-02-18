@@ -126,7 +126,7 @@ function LoginForm() {
 
         {/* Error Message */}
         {error && (
-          <div className="rounded-md bg-red-50 p-4">
+          <div className="rounded-md bg-red-50 p-4" role="alert">
             <div className="flex">
               <div className="ml-3">
                 <h3 className="text-sm font-medium text-red-800">{error}</h3>
@@ -236,6 +236,7 @@ function LoginForm() {
             type="button"
             onClick={handleGoogleLogin}
             disabled={loading}
+            aria-label="Sign in with Google"
             className="flex w-full min-h-[44px] items-center justify-center gap-3 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:ring-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
             {loading ? (
@@ -248,7 +249,7 @@ function LoginForm() {
               </>
             ) : (
               <>
-                <svg className="h-5 w-5" viewBox="0 0 24 24">
+                <svg className="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
               <path
                 fill="#4285F4"
                 d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"

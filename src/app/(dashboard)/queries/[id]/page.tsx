@@ -1,6 +1,9 @@
 // Query Detail Page
 
+import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
+
+export const metadata: Metadata = { title: 'Query Details | Cursive' }
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import { QueryRepository } from '@/lib/repositories/query.repository'

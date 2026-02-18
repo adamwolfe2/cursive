@@ -107,7 +107,7 @@ export default function VerifyEmailPage() {
 
         {/* Error Message */}
         {error && (
-          <div className="rounded-lg bg-red-50 p-4">
+          <div className="rounded-lg bg-red-50 p-4" role="alert">
             <div className="flex">
               <div className="ml-3">
                 <h3 className="text-[13px] font-medium text-red-700">{error}</h3>

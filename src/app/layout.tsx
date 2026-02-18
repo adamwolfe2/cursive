@@ -73,7 +73,9 @@ export default function RootLayout({
       <body className="font-sans antialiased">
         <SkipLink href="#main-content">Skip to main content</SkipLink>
         <Providers>
-          {children}
+          <main id="main-content">
+            {children}
+          </main>
         </Providers>
         <CrispChat />
         <SpeedInsights />
