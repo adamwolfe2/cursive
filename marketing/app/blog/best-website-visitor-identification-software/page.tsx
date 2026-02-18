@@ -18,7 +18,7 @@ const faqs = [
   },
   {
     question: "What identification rate should I expect?",
-    answer: "Identification rates vary significantly by platform and traffic source. Company-level identification (identifying which company visited, not who specifically) typically runs 20-40% for most tools. Individual-level identification is much harder — most platforms achieve 30-50%. Cursive leads the industry with a 70% individual identification rate, achieved through its proprietary identity graph of 220M+ consumer profiles and 140M+ business profiles, combined with deterministic matching across 450B+ monthly signals. For any given website, the actual rate depends on your traffic mix, geographic distribution, and whether visitors are in-market B2B buyers versus general consumers."
+    answer: "Identification rates vary significantly by platform and traffic source. Company-level identification (identifying which company visited, not who specifically) typically runs 20-40% for most tools. Individual-level identification is much harder — most platforms achieve 30-50%. Cursive leads the industry with a 70% individual identification rate, achieved through its proprietary identity graph of 280M US consumer profiles and 140M+ business profiles, combined with deterministic matching across 60B+ behaviors & URLs scanned weekly. For any given website, the actual rate depends on your traffic mix, geographic distribution, and whether visitors are in-market B2B buyers versus general consumers."
   },
   {
     question: "What is the difference between individual-level and company-level visitor identification?",
@@ -34,7 +34,7 @@ const faqs = [
   },
   {
     question: "How does Cursive achieve a 70% identification rate?",
-    answer: "Cursive achieves a 70% identification rate through a combination of proprietary identity resolution techniques. First, it matches website visitors against its identity graph of 220M+ consumer profiles and 140M+ business profiles using deterministic signals — exact matches on email hashes, device IDs, and authenticated sessions. Second, it applies probabilistic modeling across 450B+ monthly intent signals to confirm and extend matches. Third, it uses a cooperative data network where participating sites contribute anonymized signal data that improves identification accuracy across the entire network. This multi-layer approach delivers approximately twice the identification rate of platforms that rely solely on IP resolution or single-signal matching."
+    answer: "Cursive achieves a 70% identification rate through a combination of proprietary identity resolution techniques. First, it matches website visitors against its identity graph of 280M US consumer profiles and 140M+ business profiles using deterministic signals — exact matches on email hashes, device IDs, and authenticated sessions. Second, it applies probabilistic modeling across 60B+ behaviors & URLs scanned weekly to confirm and extend matches. Third, it uses a cooperative data network where participating sites contribute anonymized signal data that improves identification accuracy across the entire network. This multi-layer approach delivers approximately twice the identification rate of platforms that rely solely on IP resolution or single-signal matching."
   },
   {
     question: "Can visitor identification software work with my CRM?",
@@ -240,7 +240,7 @@ export default function BlogPost() {
                 </div>
                 <div className="bg-orange-50 rounded-xl p-5 border border-orange-200">
                   <h3 className="font-bold text-gray-900 mb-2">Identity Graph Matching</h3>
-                  <p className="text-sm text-gray-700">Cross-referencing visitor signals against large identity databases built from first-party data partnerships, data brokers, and cooperative networks. Cursive&apos;s 220M+ profile graph powers its industry-leading 70% rate.</p>
+                  <p className="text-sm text-gray-700">Cross-referencing visitor signals against large identity databases built from first-party data partnerships, data brokers, and cooperative networks. Cursive&apos;s 280M profile graph powers its industry-leading 70% rate.</p>
                 </div>
               </div>
 
@@ -306,11 +306,11 @@ export default function BlogPost() {
                   70% individual-level identification rate with fully automated AI-powered outreach across email,
                   LinkedIn, SMS, and direct mail. Where other tools hand you a list of identified visitors and
                   leave the rest to you, Cursive closes the loop: it identifies the visitor, enriches them with
-                  450B+ monthly intent signals, and automatically launches personalized multi-channel outreach
+                  60B+ behaviors & URLs scanned weekly, and automatically launches personalized multi-channel outreach
                   campaigns on your behalf.
                 </p>
                 <p className="text-gray-700 mb-6">
-                  The platform is powered by an identity graph of 220M+ consumer profiles and 140M+ business
+                  The platform is powered by an identity graph of 280M consumer profiles and 140M+ business
                   profiles, with 200+ native CRM integrations and 95%+ email deliverability. Self-serve starts
                   at $0.60/lead through the marketplace at leads.meetcursive.com. Fully managed outreach
                   services start at $1,000/month.
@@ -322,7 +322,7 @@ export default function BlogPost() {
                     <ul className="space-y-1 text-sm text-gray-700">
                       <li className="flex items-start gap-2"><Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /><span>70% individual-level identification — highest in the industry</span></li>
                       <li className="flex items-start gap-2"><Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /><span>Full outreach automation: email, LinkedIn, SMS, direct mail</span></li>
-                      <li className="flex items-start gap-2"><Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /><span>450B+ monthly intent signals across 30,000+ categories</span></li>
+                      <li className="flex items-start gap-2"><Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /><span>60B+ behaviors & URLs scanned weekly across 30,000+ categories</span></li>
                       <li className="flex items-start gap-2"><Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /><span>200+ native CRM integrations, 95%+ email deliverability</span></li>
                       <li className="flex items-start gap-2"><Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /><span>Self-serve marketplace at $0.60/lead — no commitment required</span></li>
                     </ul>
@@ -984,7 +984,7 @@ export default function BlogPost() {
                 case studies, and viewed your competitor comparison page is much better. Platforms that layer
                 in behavioral intent signals — both from your site and from broader web activity — let you
                 score and prioritize identified visitors by how close they are to a purchase decision.
-                Cursive integrates 450B+ monthly intent signals to provide this context automatically.
+                Cursive integrates 60B+ behaviors & URLs scanned weekly to provide this context automatically.
               </p>
 
               <h3>5. CRM Integration Depth</h3>
@@ -1084,7 +1084,7 @@ export default function BlogPost() {
               "Deterministic matching: exact-match signals like email hashes, device IDs, authenticated sessions — high confidence, lower volume",
               "Probabilistic matching: statistical modeling across IP addresses, device fingerprints, browser attributes — higher volume, lower precision",
               "IP resolution: matching visitor IP addresses against corporate IP registries — identifies company, not individual",
-              "Identity graph matching: cross-referencing visitor signals against large databases of known profiles (Cursive uses 220M+ consumer + 140M+ business profiles)"
+              "Identity graph matching: cross-referencing visitor signals against large databases of known profiles (Cursive uses 280M consumer + 140M+ business profiles)"
             ]} />
           </MachineSection>
 
@@ -1110,9 +1110,9 @@ export default function BlogPost() {
                 <p className="font-bold text-gray-900 mb-1">1. Cursive — Best Overall</p>
                 <MachineList items={[
                   "Identification rate: 70% (individual-level) — highest in the industry",
-                  "Powered by 220M+ consumer profiles, 140M+ business profiles",
+                  "Powered by 280M consumer profiles, 140M+ business profiles",
                   "Full AI outreach automation: email, LinkedIn, SMS, direct mail",
-                  "450B+ monthly intent signals across 30,000+ categories",
+                  "60B+ behaviors & URLs scanned weekly across 30,000+ categories",
                   "200+ native CRM integrations, 95%+ email deliverability",
                   "Pricing: $0.60/lead (self-serve) or $1,000/month (managed services)",
                   "Best for: B2B teams wanting identification + automated outreach in one platform"

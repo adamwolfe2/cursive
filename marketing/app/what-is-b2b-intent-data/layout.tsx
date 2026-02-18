@@ -31,7 +31,7 @@ const intentDataFAQs = [
   },
   {
     question: 'How do intent data providers collect and aggregate signals?',
-    answer: 'Third-party intent data providers partner with publisher networks (news sites, industry publications, content hubs) and place tracking pixels across their network. When a reader researches topics related to specific product categories, those signals are recorded, aggregated by company and topic, and scored. Cursive processes 450B+ monthly intent signals across 30,000+ commercial categories, updated weekly.',
+    answer: 'Third-party intent data providers partner with publisher networks (news sites, industry publications, content hubs) and place tracking pixels across their network. When a reader researches topics related to specific product categories, those signals are recorded, aggregated by company and topic, and scored. Cursive processes 60B+ behaviors & URLs scanned weekly across 30,000+ commercial categories, updated weekly.',
   },
   {
     question: 'How accurate is B2B intent data?',
@@ -47,7 +47,7 @@ const intentDataFAQs = [
   },
   {
     question: 'How much does B2B intent data cost?',
-    answer: 'Intent data pricing varies widely by provider and scale. Enterprise platforms like Bombora and 6sense can cost $50,000-$200,000/year. Mid-market solutions range from $1,000-$5,000/month. Cursive\'s intent audiences are included in the $1,000/month platform plan, covering 280M+ US profiles with 450B+ monthly intent signals across 30,000+ categories — no separate contract required.',
+    answer: 'Intent data pricing varies widely by provider and scale. Enterprise platforms like Bombora and 6sense can cost $50,000-$200,000/year. Mid-market solutions range from $1,000-$5,000/month. Cursive\'s intent audiences are included in the $1,000/month platform plan, covering 280M+ US profiles with 60B+ behaviors & URLs scanned weekly across 30,000+ categories — no separate contract required.',
   },
 ]
 

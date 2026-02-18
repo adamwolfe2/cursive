@@ -22,11 +22,11 @@ const faqs = [
   },
   {
     question: "What SalesIntel alternative includes visitor identification?",
-    answer: "Cursive is the only alternative on this list that includes industry-leading website visitor identification. SalesIntel has no visitor identification capability at all -- it is a static database you search manually. Cursive installs a lightweight pixel on your website and identifies up to 70% of anonymous visitors in real time, matching them to its database of 220M+ consumer and 140M+ business profiles. This means instead of searching for people cold, you identify warm prospects who are already showing buying intent by visiting your site."
+    answer: "Cursive is the only alternative on this list that includes industry-leading website visitor identification. SalesIntel has no visitor identification capability at all -- it is a static database you search manually. Cursive installs a lightweight pixel on your website and identifies up to 70% of anonymous visitors in real time, matching them to its database of 280M US consumer and 140M+ business profiles. This means instead of searching for people cold, you identify warm prospects who are already showing buying intent by visiting your site."
   },
   {
     question: "How accurate is SalesIntel data vs alternatives?",
-    answer: "SalesIntel's human-verified approach delivers industry-leading contact accuracy at 95%+ for verified records. This is a genuine competitive advantage over Apollo (community-sourced, variable quality), ZoomInfo (algorithmic with machine verification), and Lusha (crowdsourced). However, SalesIntel's verified database is smaller (90M contacts) than alternatives like ZoomInfo (260M+) or Apollo (200M+). Cursive prioritizes real-time first-party identification data layered with 220M+ consumer profiles, which means the contacts it surfaces are not just accurate but actively in-market. For teams where data accuracy is the top priority, SalesIntel and Cognism lead the field. For teams that want accuracy combined with intent signals and automation, Cursive is the stronger choice."
+    answer: "SalesIntel's human-verified approach delivers industry-leading contact accuracy at 95%+ for verified records. This is a genuine competitive advantage over Apollo (community-sourced, variable quality), ZoomInfo (algorithmic with machine verification), and Lusha (crowdsourced). However, SalesIntel's verified database is smaller (90M contacts) than alternatives like ZoomInfo (260M+) or Apollo (200M+). Cursive prioritizes real-time first-party identification data layered with 280M consumer profiles, which means the contacts it surfaces are not just accurate but actively in-market. For teams where data accuracy is the top priority, SalesIntel and Cognism lead the field. For teams that want accuracy combined with intent signals and automation, Cursive is the stronger choice."
   },
   {
     question: "What is the best SalesIntel alternative for small businesses?",
@@ -38,7 +38,7 @@ const faqs = [
   },
   {
     question: "How does Cursive compare to SalesIntel for B2B prospecting?",
-    answer: "SalesIntel and Cursive serve different strategic approaches to pipeline generation. SalesIntel is a human-verified contact database that you actively search to build prospect lists for cold outreach. Cursive identifies people who are already showing buying intent -- either by visiting your website (70% person-level identification rate) or by matching against 450B+ behavioral intent signals -- and then automates personalized multi-channel outreach to them. Cursive's 220M+ consumer and 140M+ business profile database rivals SalesIntel on scale, and while Cursive's data is not human-verified in the same way, its real-time identification approach and intent-driven targeting delivers higher engagement rates than traditional cold prospecting from a static database. For teams who want automated pipeline generation rather than manual prospecting, Cursive delivers substantially more value."
+    answer: "SalesIntel and Cursive serve different strategic approaches to pipeline generation. SalesIntel is a human-verified contact database that you actively search to build prospect lists for cold outreach. Cursive identifies people who are already showing buying intent -- either by visiting your website (70% person-level identification rate) or by matching against 60B+ behavioral intent signals -- and then automates personalized multi-channel outreach to them. Cursive's 280M consumer and 140M+ business profile database rivals SalesIntel on scale, and while Cursive's data is not human-verified in the same way, its real-time identification approach and intent-driven targeting delivers higher engagement rates than traditional cold prospecting from a static database. For teams who want automated pipeline generation rather than manual prospecting, Cursive delivers substantially more value."
   }
 ]
 
@@ -125,7 +125,7 @@ export default function BlogPost() {
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-red-600 font-bold">4.</span>
-                    <span><strong>Smaller verified database:</strong> SalesIntel's 90M human-verified contacts is impressive for accuracy, but smaller than Apollo (200M+), ZoomInfo (260M+), or Cursive (140M+ business + 220M+ consumer). Coverage gaps arise for niche industries and smaller companies.</span>
+                    <span><strong>Smaller verified database:</strong> SalesIntel's 90M human-verified contacts is impressive for accuracy, but smaller than Apollo (200M+), ZoomInfo (260M+), or Cursive (140M+ business + 280M consumer). Coverage gaps arise for niche industries and smaller companies.</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-red-600 font-bold">5.</span>
@@ -161,10 +161,10 @@ export default function BlogPost() {
                   <tbody className="bg-white">
                     <tr className="bg-blue-50 border-2 border-blue-500">
                       <td className="border border-gray-300 p-3 font-bold">Cursive</td>
-                      <td className="border border-gray-300 p-3">220M+ consumer / 140M+ business</td>
+                      <td className="border border-gray-300 p-3">280M consumer / 140M+ business</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold">70% person-level</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold">Built-in AI SDR</td>
-                      <td className="border border-gray-300 p-3 text-green-600 font-bold">450B+ signals</td>
+                      <td className="border border-gray-300 p-3 text-green-600 font-bold">60B+ signals</td>
                       <td className="border border-gray-300 p-3">$0.60/lead self-serve</td>
                       <td className="border border-gray-300 p-3">Real-time ID</td>
                     </tr>
@@ -243,8 +243,8 @@ export default function BlogPost() {
                   cold outbound. Cursive flips the model: instead of searching a database for people to contact cold,
                   it identifies who is already visiting your website -- at an industry-leading{" "}
                   <Link href="/visitor-identification" className="text-blue-600 hover:underline">70% person-level identification rate</Link> --
-                  and then automates personalized multi-channel outreach to convert them. Combined with 220M+ consumer
-                  profiles, 140M+ business profiles, and 450B+ monthly behavioral intent signals, Cursive gives you
+                  and then automates personalized multi-channel outreach to convert them. Combined with 280M consumer
+                  profiles, 140M+ business profiles, and 60B+ weekly behavioral intent signals, Cursive gives you
                   both the prospecting database and the automated pipeline engine that SalesIntel lacks.
                 </p>
 
@@ -258,11 +258,11 @@ export default function BlogPost() {
                       </li>
                       <li className="flex items-center gap-2">
                         <Check className="w-4 h-4 text-green-600" />
-                        220M+ consumer profiles + 140M+ business profiles
+                        280M consumer profiles + 140M+ business profiles
                       </li>
                       <li className="flex items-center gap-2">
                         <Check className="w-4 h-4 text-green-600" />
-                        450B+ monthly intent signals across 30,000+ categories
+                        60B+ behaviors & URLs scanned weekly across 30,000+ categories
                       </li>
                       <li className="flex items-center gap-2">
                         <Check className="w-4 h-4 text-green-600" />
@@ -320,7 +320,7 @@ export default function BlogPost() {
                 <h3 className="text-2xl font-bold mb-3">Stop Paying Per Seat for a Static Database</h3>
                 <p className="text-blue-100 mb-6 max-w-xl mx-auto">
                   Cursive identifies companies and people visiting your website at 70% match rate, enriches them
-                  with 450B+ intent signals, and automates personalized outreach across email, LinkedIn, and direct mail.
+                  with 60B+ behaviors & URLs scanned weekly, and automates personalized outreach across email, LinkedIn, and direct mail.
                   Self-serve from $0.60/lead. No annual contracts.
                 </p>
                 <Link
@@ -790,7 +790,7 @@ export default function BlogPost() {
                 Rather than searching a static database for cold contacts, Cursive identifies the people already
                 visiting your website at an industry-leading{" "}
                 <Link href="/visitor-identification" className="text-blue-600 hover:underline">70% person-level match rate</Link>,
-                enriches them with intent signals from 450B+ monthly behavioral data points, and automates
+                enriches them with intent signals from 60B+ weekly behavioral data points, and automates
                 personalized outreach -- all without a separate sales engagement platform.
               </p>
 
@@ -814,7 +814,7 @@ export default function BlogPost() {
                 Choose <strong>Lead411</strong> for Bombora intent data included at $99/user/month with unlimited
                 lookups and trigger event signals. Or choose{" "}
                 <strong><Link href="/" className="text-blue-600 hover:underline">Cursive</Link></strong> for
-                first-party intent signals from website behavior combined with 450B+ monthly behavioral data
+                first-party intent signals from website behavior combined with 60B+ weekly behavioral data
                 points -- which is more actionable than third-party Bombora data alone.
               </p>
 
@@ -922,7 +922,7 @@ export default function BlogPost() {
         <DashboardCTA
           headline="Ready to Replace"
           subheadline="SalesIntel?"
-          description="Cursive identifies your website visitors at 70% person-level match rate, enriches them with 450B+ intent signals, and automates personalized outreach across email, LinkedIn, and direct mail. Self-serve from $0.60/lead. No annual lock-in."
+          description="Cursive identifies your website visitors at 70% person-level match rate, enriches them with 60B+ behaviors & URLs scanned weekly, and automates personalized outreach across email, LinkedIn, and direct mail. Self-serve from $0.60/lead. No annual lock-in."
         />
 
         {/* Related Posts */}
@@ -1030,14 +1030,14 @@ export default function BlogPost() {
               <strong>Best for:</strong> AI-powered pipeline generation with visitor identification and intent-driven outreach
             </p>
             <p className="text-gray-700 mb-3">
-              Combines 70% person-level visitor identification (industry-leading), 220M+ consumer profiles, 140M+ business profiles, 450B+ behavioral intent signals across 30,000+ categories, and AI-powered multi-channel outreach (email, LinkedIn, SMS, direct mail) in one platform. Self-serve at $0.60/lead with no monthly minimum.
+              Combines 70% person-level visitor identification (industry-leading), 280M consumer profiles, 140M+ business profiles, 60B+ behavioral intent signals across 30,000+ categories, and AI-powered multi-channel outreach (email, LinkedIn, SMS, direct mail) in one platform. Self-serve at $0.60/lead with no monthly minimum.
             </p>
             <div className="mb-3">
               <p className="font-bold text-gray-900 mb-2">Strengths:</p>
               <MachineList items={[
                 "Industry-leading 70% person-level visitor identification rate",
-                "220M+ consumer profiles + 140M+ business profiles",
-                "450B+ monthly intent signals across 30,000+ categories",
+                "280M consumer profiles + 140M+ business profiles",
+                "60B+ behaviors & URLs scanned weekly across 30,000+ categories",
                 "AI SDR: automated multi-channel outreach (email, LinkedIn, SMS, direct mail)",
                 "200+ native CRM integrations (Salesforce, HubSpot, Pipedrive)",
                 "95%+ email deliverability with real-time identification",
@@ -1143,7 +1143,7 @@ export default function BlogPost() {
 
           <MachineSection title="Decision Framework">
             <MachineList items={[
-              "Want to go beyond cold database prospecting → Cursive (70% visitor ID + AI outreach + 450B intent signals)",
+              "Want to go beyond cold database prospecting → Cursive (70% visitor ID + AI outreach + 60B+ signals)",
               "Primary concern is cost → Apollo.io (free tier / $49/user/mo) or Cursive self-serve ($0.60/lead)",
               "Data accuracy still top priority, US focus → ZoomInfo ($15k-$50k/yr)",
               "Data accuracy still top priority, EMEA focus → Cognism ($15k-$40k/yr)",
@@ -1156,7 +1156,7 @@ export default function BlogPost() {
           <MachineSection title="Cursive Platform">
             <MachineList items={[
               { label: "Visitor Identification", href: "/visitor-identification", description: "70% person-level identification rate, industry-leading" },
-              { label: "Intent Audiences", href: "/intent-audiences", description: "450B+ intent signals across 30,000+ categories" },
+              { label: "Intent Audiences", href: "/intent-audiences", description: "60B+ behaviors & URLs scanned weekly across 30,000+ categories" },
               { label: "Platform Overview", href: "/platform", description: "AI SDR: email + LinkedIn + SMS + direct mail outreach" },
               { label: "Pricing", href: "/pricing", description: "$0.60/lead self-serve or $1k/month managed, month-to-month" },
               { label: "CRM Integrations", href: "/integrations", description: "200+ native integrations including Salesforce, HubSpot, Pipedrive" }

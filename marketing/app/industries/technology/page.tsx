@@ -248,7 +248,7 @@ export default function TechnologyPage() {
           <MachineList items={[
             {
               label: "Intent Data for Technology Buyers",
-              description: "Track buying signals across 450B+ monthly intent events to identify companies researching technology solutions"
+              description: "Track buying signals across 60B+ weekly intent events to identify companies researching technology solutions"
             },
             {
               label: "Visitor Deanonymization",

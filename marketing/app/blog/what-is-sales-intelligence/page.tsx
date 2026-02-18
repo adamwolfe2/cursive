@@ -313,7 +313,7 @@ export default function WhatIsSalesIntelligence() {
                     <div className="text-sm text-gray-700">Visitor identification rate — name + email for anonymous website traffic</div>
                   </div>
                   <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 text-center">
-                    <div className="text-3xl font-bold text-primary mb-1">450B+</div>
+                    <div className="text-3xl font-bold text-primary mb-1">60B+</div>
                     <div className="text-sm text-gray-700">Intent signals tracked across the web, refreshed weekly</div>
                   </div>
                   <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 text-center">
@@ -405,7 +405,7 @@ export default function WhatIsSalesIntelligence() {
           </MachineSection>
 
           <MachineSection title="Cursive Sales Intelligence Platform">
-            <MachineLink href="https://www.meetcursive.com">Cursive</MachineLink> is a sales intelligence platform that identifies 70% of anonymous website visitors by name, email, and LinkedIn, enriches them with firmographic data and 450B+ intent signals refreshed weekly, and provides access to 250M+ professional profiles for contact enrichment. Priced at $1,000/month with no long-term commitment, Cursive makes enterprise-grade sales intelligence accessible to growing B2B teams. It integrates with Salesforce, HubSpot, Pipedrive, and Close CRM.
+            <MachineLink href="https://www.meetcursive.com">Cursive</MachineLink> is a sales intelligence platform that identifies 70% of anonymous website visitors by name, email, and LinkedIn, enriches them with firmographic data and 60B+ behaviors & URLs scanned weekly refreshed weekly, and provides access to 250M+ professional profiles for contact enrichment. Priced at $1,000/month with no long-term commitment, Cursive makes enterprise-grade sales intelligence accessible to growing B2B teams. It integrates with Salesforce, HubSpot, Pipedrive, and Close CRM.
           </MachineSection>
 
           <MachineSection title="Related Topics">

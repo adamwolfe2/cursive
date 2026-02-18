@@ -611,8 +611,8 @@ export default function PlatformPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto mb-12">
             {[
               { title: "Visitor Identification", description: "Identify up to 70% of anonymous site visitors with company and individual-level data.", href: "/visitor-identification" },
-              { title: "Audience Builder", description: "Build unlimited lead lists from 220M+ consumer and 140M+ business profiles.", href: "/audience-builder" },
-              { title: "Intent Data", description: "Reach prospects actively searching for solutions like yours with 450B+ monthly intent signals.", href: "/intent-audiences" },
+              { title: "Audience Builder", description: "Build unlimited lead lists from 280M US consumer and 140M+ business profiles.", href: "/audience-builder" },
+              { title: "Intent Data", description: "Reach prospects actively searching for solutions like yours with 60B+ behaviors & URLs scanned weekly.", href: "/intent-audiences" },
               { title: "Direct Mail Automation", description: "Turn website visits into physical postcards with 3-5x higher offline conversion rates.", href: "/direct-mail" },
               { title: "Data Access", description: "Access Cursive's enriched data through APIs and integrations for your custom workflows.", href: "/data-access" },
               { title: "Integrations", description: "Native connections to Salesforce, HubSpot, and 200+ CRMs, ad platforms, and marketing tools.", href: "/integrations" },

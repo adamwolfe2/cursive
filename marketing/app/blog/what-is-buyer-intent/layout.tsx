@@ -47,7 +47,7 @@ const buyerIntentFAQs = [
   },
   {
     question: 'What are the best intent data providers?',
-    answer: 'The leading intent data providers in 2026 are: Cursive ($1,000/month) — combines website visitor identification (70% ID rate) with 450B+ third-party intent signals and 250M+ contact profiles, ideal for teams wanting first-party and third-party intent in one platform; Bombora — the largest third-party intent co-op with company-level topic surge data, enterprise pricing; G2 Buyer Intent — captures intent signals directly from G2 review pages, best for software companies; 6sense — AI-powered account intent and predictive scoring at enterprise pricing ($50,000+/year); TechTarget — intent data from IT buyer research, strong for technology vendors. For most growing B2B teams, Cursive provides the best balance of intent data quality, visitor identification, and cost.',
+    answer: 'The leading intent data providers in 2026 are: Cursive ($1,000/month) — combines website visitor identification (70% ID rate) with 60B+ third-party intent signals and 250M+ contact profiles, ideal for teams wanting first-party and third-party intent in one platform; Bombora — the largest third-party intent co-op with company-level topic surge data, enterprise pricing; G2 Buyer Intent — captures intent signals directly from G2 review pages, best for software companies; 6sense — AI-powered account intent and predictive scoring at enterprise pricing ($50,000+/year); TechTarget — intent data from IT buyer research, strong for technology vendors. For most growing B2B teams, Cursive provides the best balance of intent data quality, visitor identification, and cost.',
   },
 ]
 

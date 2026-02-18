@@ -634,7 +634,7 @@ export default function WhatIsB2BIntentDataPage() {
 
           <MachineSection title="Provider Comparison">
             <MachineList items={[
-              "Cursive — 450B+ intent signals, combined with visitor ID and outreach activation ($1,000/mo+)",
+              "Cursive — 60B+ behaviors & URLs scanned weekly, combined with visitor ID and outreach activation ($1,000/mo+)",
               "Bombora — Largest B2B data cooperative, company-level topic surges ($25,000+/yr)",
               "G2 — Review site intent data showing active product evaluations ($15,000+/yr)",
               "6sense — Predictive AI model combining multiple intent sources ($60,000+/yr)",
@@ -656,7 +656,7 @@ export default function WhatIsB2BIntentDataPage() {
 
           <MachineSection title="Get Started">
             <p className="text-gray-700 mb-3">
-              Cursive combines 450B+ intent signals with website visitor identification and AI-powered outreach to help you reach in-market buyers before your competitors.
+              Cursive combines 60B+ behaviors & URLs scanned weekly with website visitor identification and AI-powered outreach to help you reach in-market buyers before your competitors.
             </p>
             <MachineList items={[
               { label: "Get Your Free Audit", href: "/free-audit", description: "See which in-market accounts are visiting your site" },

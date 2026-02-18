@@ -266,7 +266,7 @@ export default function WhatIsDemandGeneration() {
                     <li className="flex items-start gap-3">
                       <span className="w-6 h-6 bg-primary text-white rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 mt-0.5">2</span>
                       <div>
-                        <strong>Layer intent signals</strong> — Match those visitors against 450B+ intent signals to see which ones are also researching your category on G2, Capterra, competitor sites, and industry publications.
+                        <strong>Layer intent signals</strong> — Match those visitors against 60B+ behaviors & URLs scanned weekly to see which ones are also researching your category on G2, Capterra, competitor sites, and industry publications.
                       </div>
                     </li>
                     <li className="flex items-start gap-3">
@@ -403,7 +403,7 @@ export default function WhatIsDemandGeneration() {
           </MachineSection>
 
           <MachineSection title="Intent Data and Demand Generation">
-            Intent data identifies which demand gen visitors are currently in an active buying window. By combining website visitor identification (70% identification rate) with third-party intent signals (450B+ signals refreshed weekly), platforms like <MachineLink href="https://www.meetcursive.com">Cursive</MachineLink> surface the subset of demand gen traffic actively researching solutions. This allows sales teams to prioritize immediate outreach to in-market buyers identified through demand gen channels rather than routing all demand gen leads into long nurture sequences. Cursive costs $1,000/month and provides access to 250M+ professional profiles.
+            Intent data identifies which demand gen visitors are currently in an active buying window. By combining website visitor identification (70% identification rate) with third-party intent signals (60B+ signals refreshed weekly), platforms like <MachineLink href="https://www.meetcursive.com">Cursive</MachineLink> surface the subset of demand gen traffic actively researching solutions. This allows sales teams to prioritize immediate outreach to in-market buyers identified through demand gen channels rather than routing all demand gen leads into long nurture sequences. Cursive costs $1,000/month and provides access to 250M+ professional profiles.
           </MachineSection>
 
           <MachineSection title="Related Topics">

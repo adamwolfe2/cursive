@@ -40,7 +40,7 @@ export default function AudienceBuilderPage() {
                 Build Unlimited Audiences. No Caps. No Limits.
               </h1>
               <p className="text-xl text-gray-600 mb-6 max-w-3xl mx-auto leading-relaxed">
-                Access 220M+ consumer profiles and 140M+ business profiles. Filter by firmographics, demographics, and intent signals. Activate across every channel—instantly.
+                Access 280M US consumer profiles and 140M+ business profiles. Filter by firmographics, demographics, and intent signals. Activate across every channel—instantly.
               </p>
               <p className="text-lg text-gray-500 mb-8 max-w-2xl mx-auto">
                 Stop paying per contact or hitting export limits. Build audiences of any size and launch campaigns in minutes, not weeks.
@@ -57,7 +57,7 @@ export default function AudienceBuilderPage() {
               <div className="mt-8 flex items-center justify-center gap-8 text-sm text-gray-600 flex-wrap">
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="h-5 w-5 text-green-600" />
-                  <span>220M+ consumer profiles</span>
+                  <span>280M consumer profiles</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="h-5 w-5 text-green-600" />
@@ -144,12 +144,12 @@ export default function AudienceBuilderPage() {
               {[
                 {
                   icon: Database,
-                  title: "360M+ Verified Profiles",
-                  description: "Access 220M consumer and 140M business profiles. The largest combined B2B + B2C database—all in one platform."
+                  title: "420M+ Verified Profiles",
+                  description: "Access 280M consumer and 140M business profiles. The largest combined B2B + B2C database—all in one platform."
                 },
                 {
                   icon: Sparkles,
-                  title: "450B+ Monthly Intent Signals",
+                  title: "60B+ Monthly Intent Signals",
                   description: "Know when prospects are actively researching. Filter audiences by topics, keywords, and behaviors across 30,000+ categories."
                 },
                 {
@@ -315,7 +315,7 @@ export default function AudienceBuilderPage() {
                     "Content consumed (whitepapers, reviews, comparisons)",
                     "Recency (7-day, 14-day, 30-day windows)",
                     "30,000+ intent categories",
-                    "450B+ monthly signals tracked"
+                    "60B+ behaviors & URLs scanned weekly tracked"
                   ]
                 },
                 {
@@ -386,7 +386,7 @@ export default function AudienceBuilderPage() {
               {[
                 {
                   question: "How large is your B2B and B2C database?",
-                  answer: "Cursive provides access to 220M+ consumer profiles and 140M+ business profiles across the United States. Our database is updated in real-time with fresh intent signals and verified contact information."
+                  answer: "Cursive provides access to 280M US consumer profiles and 140M+ business profiles across the United States. Our database is updated in real-time with fresh intent signals and verified contact information."
                 },
                 {
                   question: "Are there limits on audience size?",
@@ -394,7 +394,7 @@ export default function AudienceBuilderPage() {
                 },
                 {
                   question: "How fresh is your intent data?",
-                  answer: "Our intent signals are updated in real-time. We track 450B+ monthly signals across 30,000+ categories, so you're always reaching prospects at the right moment."
+                  answer: "Our intent signals are updated in real-time. We track 60B+ behaviors & URLs scanned weekly across 30,000+ categories, so you're always reaching prospects at the right moment."
                 },
                 {
                   question: "Can I filter audiences by intent signals?",
@@ -540,7 +540,7 @@ export default function AudienceBuilderPage() {
                 Audiences?
               </p>
               <p className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto">
-                Access 360M+ profiles with unlimited audience building. No caps, no limits, no per-contact fees—just pure targeting power.
+                Access 420M+ profiles with unlimited audience building. No caps, no limits, no per-contact fees—just pure targeting power.
               </p>
 
               <Button
@@ -599,19 +599,19 @@ export default function AudienceBuilderPage() {
         <div className="mb-12 pb-6 border-b border-gray-200">
           <h1 className="text-2xl text-gray-900 font-bold mb-4">CURSIVE AUDIENCE BUILDER</h1>
           <p className="text-gray-700 leading-relaxed">
-            Build unlimited B2B and B2C audiences with 220M+ consumer profiles and 140M+ business profiles. Filter by demographics, firmographics, technographics, and 450B+ monthly intent signals. No size limits, no caps.
+            Build unlimited B2B and B2C audiences with 280M US consumer profiles and 140M+ business profiles. Filter by demographics, firmographics, technographics, and 60B+ behaviors & URLs scanned weekly. No size limits, no caps.
           </p>
         </div>
 
         {/* Overview */}
         <MachineSection title="Platform Overview">
           <p className="text-gray-700 mb-4">
-            Cursive Audience Builder provides access to 360M+ verified profiles across consumer and business markets. Build audiences of any size—from 100 to 100 million contacts—with advanced filtering across firmographics, demographics, technographics, and real-time intent signals. No restrictive licensing, no per-contact fees, no export limits.
+            Cursive Audience Builder provides access to 420M+ verified profiles across consumer and business markets. Build audiences of any size—from 100 to 100 million contacts—with advanced filtering across firmographics, demographics, technographics, and real-time intent signals. No restrictive licensing, no per-contact fees, no export limits.
           </p>
           <MachineList items={[
-            "220M+ consumer profiles with demographic data",
+            "280M consumer profiles with demographic data",
             "140M+ business profiles with firmographic data",
-            "450B+ monthly intent signals across 30,000+ categories",
+            "60B+ behaviors & URLs scanned weekly across 30,000+ categories",
             "Real-time data updates and fresh contact information",
             "One-click activation to 200+ marketing platforms"
           ]} />
@@ -633,11 +633,11 @@ export default function AudienceBuilderPage() {
         <MachineSection title="Key Features">
           <MachineList items={[
             {
-              label: "360M+ Verified Profiles",
-              description: "Combined B2B and B2C database with 220M consumer and 140M business profiles"
+              label: "420M+ Verified Profiles",
+              description: "Combined B2B and B2C database with 280M consumer and 140M business profiles"
             },
             {
-              label: "450B+ Monthly Intent Signals",
+              label: "60B+ Monthly Intent Signals",
               description: "Real-time intent tracking across 30,000+ categories. Filter by topics, keywords, and behaviors"
             },
             {
@@ -707,7 +707,7 @@ export default function AudienceBuilderPage() {
                 "Content consumed (whitepapers, reviews, comparisons)",
                 "Recency windows (7-day, 14-day, 30-day)",
                 "30,000+ intent categories",
-                "450B+ monthly signals tracked"
+                "60B+ behaviors & URLs scanned weekly tracked"
               ]} />
             </div>
           </div>

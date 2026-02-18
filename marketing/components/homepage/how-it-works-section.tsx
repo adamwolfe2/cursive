@@ -36,7 +36,7 @@ const processSteps: ProcessStep[] = [
     details: [
       "IP address resolved to company location",
       "Device fingerprinting for cross-session tracking",
-      "Identity graph matches across 220M+ profiles",
+      "Identity graph matches across 280M profiles",
       "Appends verified email and phone data"
     ],
     color: "#007AFF" // blue
@@ -58,7 +58,7 @@ const processSteps: ProcessStep[] = [
     title: "Real-time Scoring",
     description: "Intent signals, fit analysis, buying stage",
     details: [
-      "Intent signals from 450B+ monthly data points",
+      "Intent signals from 60B+ behaviors & URLs scanned weekly",
       "ICP fit score based on your criteria",
       "Buying stage detection (research, evaluation, decision)",
       "Prioritization by likelihood to convert"

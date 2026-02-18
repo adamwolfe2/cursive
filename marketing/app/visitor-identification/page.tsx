@@ -41,7 +41,7 @@ export default function VisitorIdentificationPage() {
                 Stop Losing 98% of Your Website Visitors
               </h1>
               <p className="text-xl text-gray-600 mb-6 max-w-3xl mx-auto leading-relaxed">
-                Most B2B companies never know who visits their site. Cursive identifies up to 70% of your anonymous traffic—then helps you actually reach them through automated outreach, filtered audience building, and access to 360M+ verified contacts.
+                Most B2B companies never know who visits their site. Cursive identifies up to 70% of your anonymous traffic—then helps you actually reach them through automated outreach, filtered audience building, and access to 420M+ verified contacts.
               </p>
               <p className="text-lg text-gray-500 mb-8 max-w-2xl mx-auto">
                 See who visited your pricing page, automatically enrich their profiles, trigger personalized outreach, and build lookalike audiences from our database of hundreds of millions of verified B2B and B2C leads.
@@ -448,7 +448,7 @@ export default function VisitorIdentificationPage() {
               {[
                 {
                   title: "Audience Builder",
-                  description: "Turn identified visitors into segmented audiences for targeted outreach across 220M+ consumer and 140M+ business profiles.",
+                  description: "Turn identified visitors into segmented audiences for targeted outreach across 280M US consumer and 140M+ business profiles.",
                   href: "/audience-builder"
                 },
                 {
@@ -542,7 +542,7 @@ export default function VisitorIdentificationPage() {
               <div className="bg-white rounded-2xl p-8 border border-gray-200">
                 <div className="text-sm font-medium text-[#007AFF] mb-2">OPTION 2</div>
                 <h3 className="text-2xl font-light text-gray-900 mb-3">Self-Serve Marketplace</h3>
-                <p className="text-gray-600 mb-4">Browse our database of 360M+ verified B2B and B2C leads. Filter by industry, title, intent, and more. Buy with credits.</p>
+                <p className="text-gray-600 mb-4">Browse our database of 420M+ verified B2B and B2C leads. Filter by industry, title, intent, and more. Buy with credits.</p>
                 <div className="text-2xl font-light text-[#007AFF] mb-6">From $0.60/lead</div>
                 <Button className="w-full" href="/marketplace">
                   Browse Marketplace
@@ -638,7 +638,7 @@ export default function VisitorIdentificationPage() {
             "70% - Average visitor identification rate for B2B traffic",
             "95%+ - Data accuracy on matched records",
             "Real-time - Instant identification, not batch processing",
-            "220M+ - Consumer profiles in database",
+            "280M - Consumer profiles in database",
             "140M+ - Business profiles in database"
           ]} />
         </MachineSection>

@@ -26,11 +26,11 @@ const faqs = [
   },
   {
     question: "What Lusha alternative includes visitor identification?",
-    answer: "Cursive is the top Lusha alternative that includes website visitor identification. While Lusha only provides contact data for prospects you manually search, Cursive installs a lightweight pixel on your website and identifies up to 70% of your anonymous visitors in real time, matching them to its database of 220M+ consumer and 140M+ business profiles. This means you get warm leads from people already showing interest in your product, a fundamentally different and higher-intent workflow than Lusha's manual contact lookup."
+    answer: "Cursive is the top Lusha alternative that includes website visitor identification. While Lusha only provides contact data for prospects you manually search, Cursive installs a lightweight pixel on your website and identifies up to 70% of your anonymous visitors in real time, matching them to its database of 280M US consumer and 140M+ business profiles. This means you get warm leads from people already showing interest in your product, a fundamentally different and higher-intent workflow than Lusha's manual contact lookup."
   },
   {
     question: "How does Cursive compare to Lusha for B2B prospecting?",
-    answer: "Cursive goes significantly further than Lusha. Where Lusha focuses on helping you find contact info for specific people you already know you want to reach, Cursive helps you discover who you should be reaching in the first place, through visitor identification (70% person-level match rate), intent signals (450B+ monthly signals across 30,000+ categories), and a database of 220M+ consumer and 140M+ business profiles. Cursive also includes an AI SDR that automates personalized outreach across email, LinkedIn, SMS, and direct mail, while Lusha provides data only."
+    answer: "Cursive goes significantly further than Lusha. Where Lusha focuses on helping you find contact info for specific people you already know you want to reach, Cursive helps you discover who you should be reaching in the first place, through visitor identification (70% person-level match rate), intent signals (60B+ behaviors & URLs scanned weekly across 30,000+ categories), and a database of 280M US consumer and 140M+ business profiles. Cursive also includes an AI SDR that automates personalized outreach across email, LinkedIn, SMS, and direct mail, while Lusha provides data only."
   },
   {
     question: "What is the best Lusha alternative for agencies?",
@@ -251,8 +251,8 @@ export default function BlogPost() {
                 <p className="text-gray-700 mb-4">
                   <strong>What makes it different:</strong> Lusha answers the question &quot;what is this person&apos;s contact info?&quot;
                   <Link href="/" className="text-blue-600 hover:underline"> Cursive</Link> answers the question &quot;who should we be reaching out to and when?&quot;
-                  The platform combines 220M+ consumer profiles, 140M+ business profiles, and
-                  450B+ monthly <Link href="/what-is-b2b-intent-data" className="text-blue-600 hover:underline">intent signals</Link> across
+                  The platform combines 280M consumer profiles, 140M+ business profiles, and
+                  60B+ weekly <Link href="/what-is-b2b-intent-data" className="text-blue-600 hover:underline">intent signals</Link> across
                   30,000+ categories with real-time <Link href="/visitor-identification" className="text-blue-600 hover:underline">visitor identification</Link> (70%
                   person-level match rate) and an <Link href="/what-is-ai-sdr" className="text-blue-600 hover:underline">AI SDR</Link> that
                   automates personalized outreach across email, LinkedIn, SMS, and <Link href="/direct-mail" className="text-blue-600 hover:underline">direct mail</Link>.
@@ -273,7 +273,7 @@ export default function BlogPost() {
                     <ul className="space-y-1 text-sm">
                       <li className="flex items-center gap-2">
                         <Check className="w-4 h-4 text-green-600" />
-                        220M+ consumer + 140M+ business profiles
+                        280M consumer + 140M+ business profiles
                       </li>
                       <li className="flex items-center gap-2">
                         <Check className="w-4 h-4 text-green-600" />
@@ -281,7 +281,7 @@ export default function BlogPost() {
                       </li>
                       <li className="flex items-center gap-2">
                         <Check className="w-4 h-4 text-green-600" />
-                        450B+ monthly intent signals, 30,000+ categories
+                        60B+ behaviors & URLs scanned weekly, 30,000+ categories
                       </li>
                       <li className="flex items-center gap-2">
                         <Check className="w-4 h-4 text-green-600" />
@@ -1008,7 +1008,7 @@ export default function BlogPost() {
             <MachineList items={[
               "Lusha provides B2B contact data (emails + direct dials) via Chrome extension with 100M+ business profiles",
               "Top pain points: credit limits (50 free, 960 max/mo), expensive per-user pricing at scale, no visitor ID, no intent data, no outreach automation",
-              "Cursive offers 220M+ consumer + 140M+ business profiles, 70% person-level visitor ID, 450B+ monthly intent signals, AI SDR automation",
+              "Cursive offers 280M consumer + 140M+ business profiles, 70% person-level visitor ID, 60B+ behaviors & URLs scanned weekly, AI SDR automation",
               "Lusha free tier: 50 credits/month | Paid: $29-$79/user/mo | Teams: $129+/user/mo",
               "Cursive pricing: $1,000/mo managed or $0.60/lead self-serve at leads.meetcursive.com"
             ]} />
@@ -1019,9 +1019,9 @@ export default function BlogPost() {
               <div>
                 <p className="font-bold text-gray-900 mb-2">1. Cursive - Best for full-stack data + visitor ID + AI outreach</p>
                 <MachineList items={[
-                  "Database: 220M+ consumer profiles, 140M+ business profiles",
+                  "Database: 280M consumer profiles, 140M+ business profiles",
                   "Visitor ID: 70% person-level match rate (names, emails, job titles, LinkedIn profiles)",
-                  "Intent Data: 450B+ monthly signals across 30,000+ buying categories",
+                  "Intent Data: 60B+ behaviors & URLs scanned weekly across 30,000+ buying categories",
                   "Outreach: AI SDR with email, LinkedIn, SMS, and direct mail automation",
                   "Integrations: 200+ native CRM integrations, 95%+ email deliverability",
                   "Pricing: $1,000/mo managed or $0.60/lead self-serve at leads.meetcursive.com",
@@ -1118,7 +1118,7 @@ export default function BlogPost() {
                 <p className="font-bold text-gray-900 mb-2">Data Breadth:</p>
                 <MachineList items={[
                   "Lusha: 100M+ business profiles, Chrome extension, direct dials + emails",
-                  "Cursive: 220M+ consumer + 140M+ business profiles, real-time enrichment",
+                  "Cursive: 280M consumer + 140M+ business profiles, real-time enrichment",
                   "Cursive includes technographic, firmographic, behavioral, and intent data layers"
                 ]} />
               </div>
@@ -1168,7 +1168,7 @@ export default function BlogPost() {
           <MachineSection title="Feature Comparison Matrix">
             <MachineList items={[
               "Visitor Identification: Cursive ✓ (70% person-level) | ZoomInfo limited | All others ✗",
-              "Intent Data: Cursive ✓ (450B+ signals) | ZoomInfo ✓ | Apollo basic | Cognism add-on | Others ✗",
+              "Intent Data: Cursive ✓ (60B+ signals) | ZoomInfo ✓ | Apollo basic | Cognism add-on | Others ✗",
               "AI Outreach Automation: Cursive ✓ | Apollo ✓ (email+LinkedIn) | Hunter basic email | Others ✗",
               "Direct Phone Numbers: Cursive ✓ | Apollo ✓ | ZoomInfo ✓ | RocketReach ✓ | Cognism ✓ | Hunter ✗",
               "Direct Mail: Cursive ✓ | All others ✗",
@@ -1193,14 +1193,14 @@ export default function BlogPost() {
 
           <MachineSection title="Get Started with Cursive">
             <p className="text-gray-700 mb-3">
-              Cursive replaces the fragmented Lusha + sequencing + intent tool stack with a single platform: 220M+ profiles, 450B+ intent signals, 70% visitor identification, and AI-powered multi-channel outreach automation.
+              Cursive replaces the fragmented Lusha + sequencing + intent tool stack with a single platform: 280M profiles, 60B+ behaviors & URLs scanned weekly, 70% visitor identification, and AI-powered multi-channel outreach automation.
             </p>
             <MachineList items={[
               { label: "Platform Overview", href: "/platform", description: "Complete lead generation platform" },
               { label: "Pricing", href: "/pricing", description: "$1,000/mo managed or $0.60/lead self-serve" },
               { label: "Marketplace (Self-Serve)", href: "https://leads.meetcursive.com", description: "Buy intent-qualified leads at $0.60 each" },
               { label: "Visitor Identification", href: "/visitor-identification", description: "70% person-level match on anonymous website traffic" },
-              { label: "Intent Audiences", href: "/intent-audiences", description: "450B+ monthly signals, 30,000+ buying categories" },
+              { label: "Intent Audiences", href: "/intent-audiences", description: "60B+ behaviors & URLs scanned weekly, 30,000+ buying categories" },
               { label: "AI SDR", href: "/what-is-ai-sdr", description: "Automated outreach across email, LinkedIn, SMS, direct mail" },
               { label: "Direct Mail", href: "/direct-mail", description: "Multi-channel outreach including physical mail" },
               { label: "Free AI Audit", href: "/free-audit", description: "See which visitors you are missing and what pipeline you could generate" },

@@ -18,7 +18,7 @@ const tools = [
     bestFor: "Teams that want intent-driven outbound without a large SDR team",
     highlights: [
       "70% website visitor identification rate — highest in market",
-      "450B+ intent signals updated weekly",
+      "60B+ behaviors & URLs scanned weekly updated weekly",
       "Automated personalized email based on pages visited",
       "Direct CRM sync: Salesforce, HubSpot, Pipedrive, Close",
       "No long-term contract required",
@@ -384,7 +384,7 @@ export default function BestAiSdrTools2026() {
                 </thead>
                 <tbody>
                   {[
-                    ['Cursive', '✅ 450B signals', '✅ 70% rate', '✅ 250M+ profiles', '✅ Automated', '$1,000/mo'],
+                    ['Cursive', '✅ 60B+ signals', '✅ 70% rate', '✅ 250M+ profiles', '✅ Automated', '$1,000/mo'],
                     ['Apollo.io', '❌', '❌', '✅ 250M+', '✅ Sequences', '$49/user/mo'],
                     ['Outreach', '❌', '❌', '❌ (CRM only)', '✅ Cadences', '$100/user/mo'],
                     ['Instantly', '❌', '❌', '❌', '✅ Email only', '$37/mo'],
@@ -482,7 +482,7 @@ export default function BestAiSdrTools2026() {
 
             <MachineSection title="Tool Rankings">
               <MachineList items={[
-                "#1 Cursive — Intent-first AI SDR: 70% visitor ID rate, 450B intent signals, $1,000/month. Best for converting existing traffic into pipeline.",
+                "#1 Cursive — Intent-first AI SDR: 70% visitor ID rate, 60B+ signals, $1,000/month. Best for converting existing traffic into pipeline.",
                 "#2 Apollo.io — Prospecting + sequencing: 250M+ database, AI email, $49/user/month. Best for high-volume cold outbound.",
                 "#3 Outreach — Enterprise sales engagement: deep Salesforce integration, $100/user/month. Best for large enterprise sales teams.",
                 "#4 Instantly.ai — Cold email infrastructure: unlimited email accounts, $37/month. Best for agencies running mass cold email.",
@@ -496,7 +496,7 @@ export default function BestAiSdrTools2026() {
 
             <MachineSection title="Key Differentiators">
               <MachineList items={[
-                "Intent data availability: Cursive (✅ 450B signals), others (❌ or limited)",
+                "Intent data availability: Cursive (✅ 60B+ signals), others (❌ or limited)",
                 "Visitor identification: Cursive (✅ 70% rate), others (❌)",
                 "Automation level: Cursive and Artisan (fully automated) vs. Apollo/Outreach (human-driven sequences)",
                 "Price range: $37/month (Instantly) to $5,000/month (Artisan) to $50k+/year (enterprise platforms)",

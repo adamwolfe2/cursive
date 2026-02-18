@@ -34,7 +34,7 @@ const faqs = [
   },
   {
     question: "Which platform has better intent data?",
-    answer: "Both platforms offer strong intent data but from different angles. Demandbase provides broad third-party intent from Bombora partnerships and its own DemandGraph. Cursive tracks 450B+ intent signals with a focus on first-party website behavior combined with third-party intent. For understanding what specific visitors do on your website, Cursive provides more granular person-level data. For broad market-level intent trends, Demandbase has wider coverage."
+    answer: "Both platforms offer strong intent data but from different angles. Demandbase provides broad third-party intent from Bombora partnerships and its own DemandGraph. Cursive tracks 60B+ behaviors & URLs scanned weekly with a focus on first-party website behavior combined with third-party intent. For understanding what specific visitors do on your website, Cursive provides more granular person-level data. For broad market-level intent trends, Demandbase has wider coverage."
   },
   {
     question: "Is Cursive suitable for enterprise companies currently using Demandbase?",
@@ -176,7 +176,7 @@ export default function BlogPost() {
                   <tr className="bg-gray-50">
                     <td className="border border-gray-300 p-3 font-bold">Intent Data</td>
                     <td className="border border-gray-300 p-3 text-green-600">Broad third-party + first-party</td>
-                    <td className="border border-gray-300 p-3 text-green-600 font-bold">450B+ signals</td>
+                    <td className="border border-gray-300 p-3 text-green-600 font-bold">60B+ signals</td>
                   </tr>
                   <tr>
                     <td className="border border-gray-300 p-3 font-bold">Outreach Automation</td>
@@ -269,7 +269,7 @@ export default function BlogPost() {
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-green-600 mt-1 flex-shrink-0" />
-                    <span>360M+ B2B and B2C profiles</span>
+                    <span>420M+ B2B and B2C profiles</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-green-600 mt-1 flex-shrink-0" />
@@ -298,7 +298,7 @@ export default function BlogPost() {
               valuable for enterprise ABM programs.
             </p>
             <p>
-              Cursive tracks <Link href="/what-is-b2b-intent-data">450B+ intent signals</Link> with a focus on
+              Cursive tracks <Link href="/what-is-b2b-intent-data">60B+ behaviors & URLs scanned weekly</Link> with a focus on
               first-party behavioral data from your website combined with third-party intent. Where Demandbase
               provides account-level intent (the company is researching your category), Cursive provides person-level
               intent (this specific person viewed your pricing page three times and spent 8 minutes on your features
@@ -790,7 +790,7 @@ export default function BlogPost() {
                   <tr className="bg-gray-50">
                     <td className="border border-gray-300 p-3 font-bold">Profile Database</td>
                     <td className="border border-gray-300 p-3 text-green-600">80M+ companies</td>
-                    <td className="border border-gray-300 p-3 text-green-600 font-bold">360M+ profiles</td>
+                    <td className="border border-gray-300 p-3 text-green-600 font-bold">420M+ profiles</td>
                   </tr>
                   <tr>
                     <td className="border border-gray-300 p-3 font-bold">Intent Coverage</td>
@@ -954,7 +954,7 @@ export default function BlogPost() {
               "Demandbase: $50k-150k+/year, annual contracts. Cursive: ~$1,000/mo, no annual commitment",
               "Setup: Demandbase 3-6 months. Cursive 5 minutes",
               "Visitor ID: Demandbase account-level. Cursive 70%+ person-level",
-              "Intent Data: Demandbase Bombora + DemandGraph. Cursive 450B+ first-party + third-party signals",
+              "Intent Data: Demandbase Bombora + DemandGraph. Cursive 60B+ first-party + third-party signals",
               "Outreach: Demandbase requires separate tools. Cursive built-in AI SDR multi-channel",
               "Advertising: Demandbase strong programmatic ABM ads. Cursive direct outreach focused",
               "Best For: Demandbase enterprise with dedicated ABM teams. Cursive SMB and mid-market growth teams"

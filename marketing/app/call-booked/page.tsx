@@ -167,7 +167,7 @@ export default function CallBookedPage() {
                   What is <span className="font-cursive text-6xl lg:text-7xl text-gray-500">Cursive</span>?
                 </h2>
                 <p className="text-xl text-gray-600 leading-relaxed max-w-3xl mx-auto mb-6">
-                  Cursive is the all-in-one growth platform that identifies your website visitors, builds targeted audiences from 360M+ verified contacts, and runs automated outbound campaigns — so you can turn anonymous traffic into revenue.
+                  Cursive is the all-in-one growth platform that identifies your website visitors, builds targeted audiences from 420M+ verified contacts, and runs automated outbound campaigns — so you can turn anonymous traffic into revenue.
                 </p>
                 <p className="text-lg text-gray-500 leading-relaxed max-w-3xl mx-auto">
                   Tools like ZoomInfo, Apollo, and RB2B are great for simple, single-channel solutions. But they only give you one piece of the pie. You deserve the whole thing when it comes to growth and driving revenue for your business. Cursive replaces your entire stack with one platform that compounds — every channel, every signal, every interaction feeding the next.
@@ -177,7 +177,7 @@ export default function CallBookedPage() {
               {/* 4 Key Stats */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
                 {[
-                  { stat: "360M+", label: "Verified Contacts", icon: Database },
+                  { stat: "420M+", label: "Verified Contacts", icon: Database },
                   { stat: "70%", label: "Visitor Identification Rate", icon: Eye },
                   { stat: "200+", label: "Integrations", icon: Link2 },
                   { stat: "95%+", label: "Email Deliverability", icon: Mail },
@@ -347,13 +347,13 @@ export default function CallBookedPage() {
                   {
                     icon: Users,
                     title: "Audience Builder",
-                    description: "Build unlimited custom audiences from 220M+ consumer and 140M+ business profiles. Filter by intent, firmographics, technographics, and more.",
+                    description: "Build unlimited custom audiences from 280M US consumer and 140M+ business profiles. Filter by intent, firmographics, technographics, and more.",
                     href: "/audience-builder",
                   },
                   {
                     icon: Target,
                     title: "Intent Data",
-                    description: "Track 450B+ monthly intent signals. Know who's actively researching solutions like yours before they fill out a form.",
+                    description: "Track 60B+ behaviors & URLs scanned weekly. Know who's actively researching solutions like yours before they fill out a form.",
                     href: "/intent-audiences",
                   },
                   {
@@ -726,7 +726,7 @@ export default function CallBookedPage() {
                     {
                       step: "01",
                       title: "We Learn Your ICP",
-                      description: "Share your ideal customer profile. We map it against our database of 360M+ contacts to find your best-fit prospects.",
+                      description: "Share your ideal customer profile. We map it against our database of 420M+ contacts to find your best-fit prospects.",
                       icon: Search,
                     },
                     {
@@ -931,7 +931,7 @@ export default function CallBookedPage() {
                     {[
                       {
                         question: "What exactly is Cursive?",
-                        answer: "Cursive is an all-in-one growth platform that combines website visitor identification, audience building from 360M+ verified contacts, and automated multi-channel outbound campaigns. Instead of juggling 5-10 different tools, Cursive gives you everything in one platform — from identifying who's on your website to putting meetings on your calendar.",
+                        answer: "Cursive is an all-in-one growth platform that combines website visitor identification, audience building from 420M+ verified contacts, and automated multi-channel outbound campaigns. Instead of juggling 5-10 different tools, Cursive gives you everything in one platform — from identifying who's on your website to putting meetings on your calendar.",
                       },
                       {
                         question: "How is Cursive different from other lead gen tools?",
@@ -1031,7 +1031,7 @@ export default function CallBookedPage() {
                     {[
                       {
                         question: "How big is your database?",
-                        answer: "Our database includes 220M+ consumer profiles, 140M+ business profiles, and we track 450B+ monthly intent signals. Combined, that's 360M+ verified contacts across virtually every industry, geography, and company size. It's one of the largest B2B and B2C contact databases available.",
+                        answer: "Our database includes 280M consumer profiles, 140M+ business profiles, and we track 60B+ behaviors & URLs scanned weekly. Combined, that's 420M+ verified contacts across virtually every industry, geography, and company size. It's one of the largest B2B and B2C contact databases available.",
                       },
                       {
                         question: "What filters can I use to build audiences?",
@@ -1272,7 +1272,7 @@ export default function CallBookedPage() {
           <div className="mb-12 pb-6 border-b border-gray-200">
             <h1 className="text-2xl text-gray-900 font-bold mb-4">CALL BOOKED - CURSIVE GROWTH PLATFORM OVERVIEW</h1>
             <p className="text-gray-700 leading-relaxed">
-              Comprehensive overview of the Cursive growth platform. Cursive is an all-in-one system for website visitor identification, audience building from 360M+ verified contacts, and automated multi-channel outbound campaigns. Designed for B2B companies, agencies, and e-commerce brands seeking predictable pipeline growth.
+              Comprehensive overview of the Cursive growth platform. Cursive is an all-in-one system for website visitor identification, audience building from 420M+ verified contacts, and automated multi-channel outbound campaigns. Designed for B2B companies, agencies, and e-commerce brands seeking predictable pipeline growth.
             </p>
           </div>
 
@@ -1281,19 +1281,19 @@ export default function CallBookedPage() {
               Cursive combines visitor identification, audience building, and outbound automation into a single recursive intelligence platform. Every interaction makes the system smarter through feedback loops: identify visitors, enrich data, reach prospects, convert leads, learn from outcomes, and optimize targeting. Unlike point solutions like ZoomInfo, Apollo, or RB2B that only handle one piece of the growth puzzle, Cursive replaces your entire stack with one compounding platform.
             </p>
             <MachineList items={[
-              "360M+ verified contacts (220M+ consumer, 140M+ business)",
+              "420M+ verified contacts (280M consumer, 140M+ business)",
               "70% average visitor identification rate for B2B traffic",
               "200+ native integrations (Salesforce, HubSpot, Pipedrive, Slack, and more)",
               "95%+ email deliverability on verified contacts",
-              "450B+ monthly intent signals tracked",
+              "60B+ behaviors & URLs scanned weekly tracked",
             ]} />
           </MachineSection>
 
           <MachineSection title="Core Solutions">
             <MachineList items={[
               { label: "Visitor Identification", href: "https://www.meetcursive.com/visitor-identification", description: "Identify up to 70% of anonymous B2B website traffic with company + individual data" },
-              { label: "Audience Builder", href: "https://www.meetcursive.com/audience-builder", description: "Build custom audiences from 220M+ consumer and 140M+ business profiles" },
-              { label: "Intent Data", href: "https://www.meetcursive.com/intent-audiences", description: "Track 450B+ monthly intent signals to find active buyers" },
+              { label: "Audience Builder", href: "https://www.meetcursive.com/audience-builder", description: "Build custom audiences from 280M US consumer and 140M+ business profiles" },
+              { label: "Intent Data", href: "https://www.meetcursive.com/intent-audiences", description: "Track 60B+ behaviors & URLs scanned weekly to find active buyers" },
               { label: "Outbound Campaigns", href: "https://www.meetcursive.com/services", description: "AI-powered email campaigns with domain setup, warmup, and optimization" },
               { label: "Direct Mail", href: "https://www.meetcursive.com/direct-mail", description: "Automated postcards and letters to high-intent prospects" },
               { label: "Custom Audiences", href: "https://www.meetcursive.com/custom-audiences", description: "Custom audience building by any criteria" },
@@ -1346,7 +1346,7 @@ export default function CallBookedPage() {
 
           <MachineSection title="How It Works">
             <MachineList items={[
-              "Step 1: Share your ideal customer profile (ICP). We map it against 360M+ contacts.",
+              "Step 1: Share your ideal customer profile (ICP). We map it against 420M+ contacts.",
               "Step 2: Identify website visitors, build targeted audiences, surface leads with buying intent.",
               "Step 3: Launch automated multi-channel outreach: email, LinkedIn, direct mail. Personalized at scale.",
               "Step 4: Qualified meetings land on your calendar. CRM stays updated. Pipeline grows predictably.",
@@ -1357,7 +1357,7 @@ export default function CallBookedPage() {
             <div className="space-y-4">
               <div>
                 <p className="text-gray-900 font-medium mb-1">What is Cursive?</p>
-                <p className="text-gray-700">All-in-one growth platform combining visitor identification, audience building from 360M+ contacts, and automated outbound campaigns.</p>
+                <p className="text-gray-700">All-in-one growth platform combining visitor identification, audience building from 420M+ contacts, and automated outbound campaigns.</p>
               </div>
               <div>
                 <p className="text-gray-900 font-medium mb-1">How is Cursive different from other lead gen tools?</p>

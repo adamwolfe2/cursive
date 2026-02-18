@@ -11,7 +11,7 @@ import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
 
 const relatedPosts = [
   { title: "Best B2B Data Providers in 2026", description: "10 platforms compared for data coverage, pricing, and use cases.", href: "/blog/best-b2b-data-providers-2026" },
-  { title: "Audience Builder", description: "Build custom B2B audiences from 220M+ profiles and 450B+ intent signals.", href: "/audience-builder" },
+  { title: "Audience Builder", description: "Build custom B2B audiences from 280M profiles and 60B+ behaviors & URLs scanned weekly.", href: "/audience-builder" },
   { title: "Visitor Identification Platform", description: "Identify the companies and individuals visiting your site.", href: "/visitor-identification" },
 ]
 

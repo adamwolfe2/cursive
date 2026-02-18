@@ -4,8 +4,8 @@ import { StructuredData } from '@/components/seo/structured-data'
 import { generateBreadcrumbSchema, generateFAQSchema } from '@/lib/seo/structured-data'
 
 export const metadata: Metadata = generateMetadata({
-  title: 'B2B Audience Builder - 220M+ Profiles & Intent Signals',
-  description: 'Build custom B2B audiences from 220M+ consumer profiles, 140M+ business profiles, and 450B+ monthly intent signals. Filter by firmographic, demographic, and behavioral criteria.',
+  title: 'B2B Audience Builder - 280M Profiles & Intent Signals',
+  description: 'Build custom B2B audiences from 280M consumer profiles, 140M+ business profiles, and 60B+ behaviors & URLs scanned weekly. Filter by firmographic, demographic, and behavioral criteria.',
   keywords: [
     'B2B audience builder',
     'intent data audiences',
@@ -24,7 +24,7 @@ const softwareSchema = {
   "@type": "SoftwareApplication",
   "@id": "https://www.meetcursive.com/audience-builder#product",
   "name": "Cursive Audience Builder",
-  "description": "Build unlimited B2B and B2C audiences with 220M+ consumer profiles and 140M+ business profiles. Filter by demographics, firmographics, and 450B+ monthly intent signals.",
+  "description": "Build unlimited B2B and B2C audiences with 280M US consumer profiles and 140M+ business profiles. Filter by demographics, firmographics, and 60B+ behaviors & URLs scanned weekly.",
   "applicationCategory": "BusinessApplication",
   "operatingSystem": "Web",
   "brand": { "@type": "Brand", "name": "Cursive" },
@@ -37,9 +37,9 @@ const softwareSchema = {
 }
 
 const audienceBuilderFAQs = [
-  { question: 'How large is your B2B and B2C database?', answer: 'Cursive provides access to 220M+ consumer profiles and 140M+ business profiles across the United States. Our database is updated in real-time with fresh intent signals and verified contact information.' },
+  { question: 'How large is your B2B and B2C database?', answer: 'Cursive provides access to 280M US consumer profiles and 140M+ business profiles across the United States. Our database is updated in real-time with fresh intent signals and verified contact information.' },
   { question: 'Are there limits on audience size?', answer: 'No. Unlike other data providers, Cursive has no caps on audience size, exports, or activations. Build audiences as large or as targeted as you need for your campaigns.' },
-  { question: 'How fresh is your intent data?', answer: 'Our intent signals are updated in real-time. We track 450B+ monthly signals across 30,000+ categories, so you\'re always reaching prospects at the right moment.' },
+  { question: 'How fresh is your intent data?', answer: 'Our intent signals are updated in real-time. We track 60B+ behaviors & URLs scanned weekly across 30,000+ categories, so you\'re always reaching prospects at the right moment.' },
   { question: 'Can I filter audiences by intent signals?', answer: 'Yes. Cursive lets you filter audiences by specific topics, keywords, and behaviors. Build segments of people actively researching solutions like yours.' },
   { question: 'How do I activate audiences once I build them?', answer: 'One-click activation to 200+ platforms including Facebook Ads, Google Ads, LinkedIn Ads, email platforms, and CRMs. Audiences sync automatically to your connected tools.' },
   { question: 'Is the data GDPR and CCPA compliant?', answer: 'Yes. All data honors opt-outs and complies with GDPR, CCPA, and regional privacy regulations. We use consent-aware activation and hashed identifiers.' },

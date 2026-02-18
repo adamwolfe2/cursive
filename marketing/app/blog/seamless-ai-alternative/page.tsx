@@ -30,7 +30,7 @@ const faqs = [
   },
   {
     question: "What Seamless.AI alternative has the best data quality?",
-    answer: "For data quality and deliverability, Cursive and Apollo.io consistently outperform Seamless.AI. Cursive guarantees 95%+ email deliverability with real-time verification, sourcing from 450B+ behavioral intent signals. Apollo.io maintains a large 200M+ contact database with strong verification. ZoomInfo has the deepest data coverage but charges $15k-$50k/year. Lusha focuses on LinkedIn-sourced contacts with strong accuracy. Seamless.AI's large claimed database size does not translate to higher quality -- verified accounts regularly report 15-25% bounce rates."
+    answer: "For data quality and deliverability, Cursive and Apollo.io consistently outperform Seamless.AI. Cursive guarantees 95%+ email deliverability with real-time verification, sourcing from 60B+ behavioral intent signals. Apollo.io maintains a large 200M+ contact database with strong verification. ZoomInfo has the deepest data coverage but charges $15k-$50k/year. Lusha focuses on LinkedIn-sourced contacts with strong accuracy. Seamless.AI's large claimed database size does not translate to higher quality -- verified accounts regularly report 15-25% bounce rates."
   },
   {
     question: "What is the best Seamless.AI alternative for small businesses?",
@@ -38,7 +38,7 @@ const faqs = [
   },
   {
     question: "How does Cursive compare to Seamless.AI?",
-    answer: "Seamless.AI is a contact database where you search for and export prospect lists. Cursive is a complete pipeline generation platform that combines website visitor identification (70% person-level match rate), 220M+ consumer profiles, 140M+ business profiles, 450B+ intent signals, and AI-powered multi-channel outreach (email, LinkedIn, SMS, direct mail) -- all in one platform. Where Seamless.AI struggles with data quality and high bounce rates, Cursive guarantees 95%+ email deliverability and starts automated, personalized outreach the moment a prospect visits your site."
+    answer: "Seamless.AI is a contact database where you search for and export prospect lists. Cursive is a complete pipeline generation platform that combines website visitor identification (70% person-level match rate), 280M consumer profiles, 140M+ business profiles, 60B+ behaviors & URLs scanned weekly, and AI-powered multi-channel outreach (email, LinkedIn, SMS, direct mail) -- all in one platform. Where Seamless.AI struggles with data quality and high bounce rates, Cursive guarantees 95%+ email deliverability and starts automated, personalized outreach the moment a prospect visits your site."
   }
 ]
 
@@ -150,10 +150,10 @@ export default function BlogPost() {
                   <tbody className="bg-white">
                     <tr className="bg-blue-50 border-2 border-blue-500">
                       <td className="border border-gray-300 p-3 font-bold">Cursive</td>
-                      <td className="border border-gray-300 p-3">220M+ consumer / 140M+ business</td>
+                      <td className="border border-gray-300 p-3">280M consumer / 140M+ business</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold">70% person-level</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold">Built-in AI SDR</td>
-                      <td className="border border-gray-300 p-3 text-green-600 font-bold">450B+ signals</td>
+                      <td className="border border-gray-300 p-3 text-green-600 font-bold">60B+ signals</td>
                       <td className="border border-gray-300 p-3">$1k/mo managed</td>
                       <td className="border border-gray-300 p-3 text-green-600">Month-to-month</td>
                     </tr>
@@ -232,7 +232,7 @@ export default function BlogPost() {
                   data quality problems, Cursive is a complete pipeline generation platform built around data accuracy
                   and automation. Cursive combines{" "}
                   <Link href="/visitor-identification" className="text-blue-600 hover:underline">industry-leading 70% person-level visitor identification</Link>,
-                  220M+ consumer profiles, 140M+ business profiles, 450B+ behavioral intent signals, and AI-powered
+                  280M consumer profiles, 140M+ business profiles, 60B+ behavioral intent signals, and AI-powered
                   multi-channel outreach -- all with a 95%+ email deliverability guarantee. Instead of exporting
                   stale lists and hoping for delivery, Cursive identifies the real people visiting your site right
                   now and engages them instantly with personalized outreach.
@@ -252,11 +252,11 @@ export default function BlogPost() {
                       </li>
                       <li className="flex items-center gap-2">
                         <Check className="w-4 h-4 text-green-600" />
-                        220M+ consumer profiles + 140M+ business profiles
+                        280M consumer profiles + 140M+ business profiles
                       </li>
                       <li className="flex items-center gap-2">
                         <Check className="w-4 h-4 text-green-600" />
-                        450B+ monthly intent signals across 30,000+ categories
+                        60B+ behaviors & URLs scanned weekly across 30,000+ categories
                       </li>
                       <li className="flex items-center gap-2">
                         <Check className="w-4 h-4 text-green-600" />
@@ -819,8 +819,8 @@ export default function BlogPost() {
             <MachineList items={[
               "70% person-level visitor identification rate (industry-leading)",
               "95%+ email deliverability vs Seamless.AI 15-30% bounce rates",
-              "220M+ consumer profiles + 140M+ business profiles",
-              "450B+ monthly intent signals across 30,000+ categories",
+              "280M consumer profiles + 140M+ business profiles",
+              "60B+ behaviors & URLs scanned weekly across 30,000+ categories",
               "AI SDR: email, LinkedIn, SMS, and direct mail outreach",
               "200+ CRM integrations including Salesforce, HubSpot, Pipedrive",
               "Month-to-month billing -- no annual lock-in",

@@ -22,26 +22,26 @@ const faqs = [
   },
   {
     question: "Does Datashopper include visitor identification?",
-    answer: "No. Datashopper is a traditional B2B data provider focused on selling pre-built contact lists and company databases. It does not include website visitor identification, which reveals who from your existing web traffic is a potential buyer. Platforms like Cursive combine both capabilities: a database of 220M+ consumer profiles and 140B+ business profiles plus real-time visitor identification at 70% person-level match rates."
+    answer: "No. Datashopper is a traditional B2B data provider focused on selling pre-built contact lists and company databases. It does not include website visitor identification, which reveals who from your existing web traffic is a potential buyer. Platforms like Cursive combine both capabilities: a database of 280M consumer profiles and 140B+ business profiles plus real-time visitor identification at 70% person-level match rates."
   },
   {
     question: "What is the best Datashopper alternative for B2B SaaS companies?",
-    answer: "For B2B SaaS companies, Cursive is the top-rated Datashopper alternative because it goes beyond static contact lists. Cursive combines a massive database (220M+ profiles, 450B+ monthly intent signals) with real-time visitor identification, AI-powered outreach automation across email, LinkedIn, and direct mail, and 30,000+ intent categories to help you reach prospects who are actively researching your solution."
+    answer: "For B2B SaaS companies, Cursive is the top-rated Datashopper alternative because it goes beyond static contact lists. Cursive combines a massive database (280M profiles, 60B+ behaviors & URLs scanned weekly) with real-time visitor identification, AI-powered outreach automation across email, LinkedIn, and direct mail, and 30,000+ intent categories to help you reach prospects who are actively researching your solution."
   },
   {
     question: "Can I identify anonymous website visitors with a Datashopper alternative?",
-    answer: "Not with Datashopper itself, but yes with alternatives like Cursive. Cursive installs a lightweight tracking pixel on your website and identifies up to 70% of your anonymous visitors by matching them to profiles in its 220M+ consumer and 140M+ business profile database. This means you get warm leads from people already showing interest in your product, rather than cold outreach to purchased lists."
+    answer: "Not with Datashopper itself, but yes with alternatives like Cursive. Cursive installs a lightweight tracking pixel on your website and identifies up to 70% of your anonymous visitors by matching them to profiles in its 280M consumer and 140M+ business profile database. This means you get warm leads from people already showing interest in your product, rather than cold outreach to purchased lists."
   },
   {
     question: "How does Cursive compare to Datashopper for B2B data?",
-    answer: "Cursive goes significantly further than Datashopper. Where Datashopper provides static bulk contact lists, Cursive offers 220M+ consumer profiles and 140M+ business profiles with real-time updates, 450B+ monthly intent signals across 30,000+ categories to identify active buyers, website visitor identification at 70% person-level match rates, AI-powered multi-channel outreach (email, LinkedIn, SMS, direct mail), 200+ CRM integrations, and 95%+ email deliverability. Pricing starts at $1,000/month for managed services or $0.60/lead self-serve."
+    answer: "Cursive goes significantly further than Datashopper. Where Datashopper provides static bulk contact lists, Cursive offers 280M US consumer profiles and 140M+ business profiles with real-time updates, 60B+ behaviors & URLs scanned weekly across 30,000+ categories to identify active buyers, website visitor identification at 70% person-level match rates, AI-powered multi-channel outreach (email, LinkedIn, SMS, direct mail), 200+ CRM integrations, and 95%+ email deliverability. Pricing starts at $1,000/month for managed services or $0.60/lead self-serve."
   }
 ]
 
 const relatedPosts = [
   { title: "Best B2B Data Providers in 2026", description: "10 platforms compared for data coverage, pricing, and use cases.", href: "/blog/best-b2b-data-providers-2026" },
   { title: "Cursive vs Apollo: 70% Visitor ID vs Cold Contact Database", description: "Compare Cursive and Apollo for B2B prospecting and outreach.", href: "/blog/cursive-vs-apollo" },
-  { title: "Audience Builder", description: "Build custom B2B audiences from 220M+ profiles and 450B+ intent signals.", href: "/audience-builder" },
+  { title: "Audience Builder", description: "Build custom B2B audiences from 280M profiles and 60B+ behaviors & URLs scanned weekly.", href: "/audience-builder" },
 ]
 
 export default function BlogPost() {
@@ -127,7 +127,7 @@ export default function BlogPost() {
                       <td className="border border-gray-300 p-3 font-bold">Cursive</td>
                       <td className="border border-gray-300 p-3">Full-stack data + visitor ID + AI outreach</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold"><Check className="w-4 h-4 inline" /> 70% person-level</td>
-                      <td className="border border-gray-300 p-3 text-green-600 font-bold"><Check className="w-4 h-4 inline" /> 450B+ signals</td>
+                      <td className="border border-gray-300 p-3 text-green-600 font-bold"><Check className="w-4 h-4 inline" /> 60B+ signals</td>
                       <td className="border border-gray-300 p-3">$1,000/mo or $0.60/lead</td>
                     </tr>
                     <tr>
@@ -197,7 +197,7 @@ export default function BlogPost() {
                   <li className="flex items-start gap-3">
                     <span className="text-red-600 font-bold text-lg leading-none mt-0.5">2.</span>
                     <span><strong>No intent signals:</strong> A static contact database has no way to tell you which
-                    companies are actively researching your category right now. Intent data platforms track 450B+ monthly
+                    companies are actively researching your category right now. Intent data platforms track 60B+ weekly
                     signals across 30,000+ categories, surfacing prospects who are in active buying mode before your
                     competitors reach them.</span>
                   </li>
@@ -238,7 +238,7 @@ export default function BlogPost() {
                 <p className="text-gray-700 mb-4">
                   <strong>What makes it different:</strong> While Datashopper sells static contact lists, <Link href="/" className="text-blue-600 hover:underline">Cursive</Link> is
                   a full-stack <Link href="/what-is-b2b-intent-data" className="text-blue-600 hover:underline">intent-driven</Link> lead generation
-                  platform. Cursive combines 220M+ consumer profiles, 140M+ business profiles, and 450B+ monthly intent signals
+                  platform. Cursive combines 280M consumer profiles, 140M+ business profiles, and 60B+ behaviors & URLs scanned weekly
                   with real-time <Link href="/visitor-identification" className="text-blue-600 hover:underline">website visitor identification</Link> (70%
                   person-level match rate) and an <Link href="/what-is-ai-sdr" className="text-blue-600 hover:underline">AI SDR</Link> that automates
                   personalized outreach across email, LinkedIn, SMS, and <Link href="/direct-mail" className="text-blue-600 hover:underline">direct mail</Link>.
@@ -259,11 +259,11 @@ export default function BlogPost() {
                     <ul className="space-y-1 text-sm">
                       <li className="flex items-center gap-2">
                         <Check className="w-4 h-4 text-green-600" />
-                        220M+ consumer + 140M+ business profiles
+                        280M consumer + 140M+ business profiles
                       </li>
                       <li className="flex items-center gap-2">
                         <Check className="w-4 h-4 text-green-600" />
-                        450B+ monthly intent signals, 30,000+ categories
+                        60B+ behaviors & URLs scanned weekly, 30,000+ categories
                       </li>
                       <li className="flex items-center gap-2">
                         <Check className="w-4 h-4 text-green-600" />
@@ -961,7 +961,7 @@ export default function BlogPost() {
             <div className="max-w-3xl mx-auto text-center">
               <h2 className="text-3xl font-bold mb-4">Ready to Replace Datashopper with Something Better?</h2>
               <p className="text-xl mb-8 text-white/90">
-                See how Cursive combines 220M+ profiles, 450B+ intent signals, and 70% visitor identification to build pipeline that Datashopper cannot match.
+                See how Cursive combines 280M profiles, 60B+ behaviors & URLs scanned weekly, and 70% visitor identification to build pipeline that Datashopper cannot match.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button size="lg" variant="default" asChild>
@@ -989,7 +989,7 @@ export default function BlogPost() {
             <MachineList items={[
               "Datashopper provides static bulk B2B contact lists with no visitor identification or intent data",
               "Top pain points: no visitor ID, no intent signals, data freshness decay, no outreach automation",
-              "Cursive combines 220M+ consumer profiles, 140M+ business profiles, 450B+ monthly intent signals, and 70% person-level visitor ID",
+              "Cursive combines 280M consumer profiles, 140M+ business profiles, 60B+ behaviors & URLs scanned weekly, and 70% person-level visitor ID",
               "Cursive includes AI SDR with email, LinkedIn, SMS, direct mail automation and 200+ CRM integrations",
               "Pricing: Cursive starts at $1,000/mo managed or $0.60/lead self-serve via leads.meetcursive.com"
             ]} />
@@ -1000,8 +1000,8 @@ export default function BlogPost() {
               <div>
                 <p className="font-bold text-gray-900 mb-2">1. Cursive - Best full-stack data + visitor ID + AI outreach</p>
                 <MachineList items={[
-                  "Database: 220M+ consumer profiles, 140M+ business profiles",
-                  "Intent Data: 450B+ monthly signals, 30,000+ categories",
+                  "Database: 280M consumer profiles, 140M+ business profiles",
+                  "Intent Data: 60B+ behaviors & URLs scanned weekly, 30,000+ categories",
                   "Visitor ID: 70% person-level match rate (names, emails, LinkedIn profiles)",
                   "Outreach: AI SDR with email, LinkedIn, SMS, direct mail automation",
                   "Integrations: 200+ native CRM integrations, 95%+ email deliverability",
@@ -1091,7 +1091,7 @@ export default function BlogPost() {
                 <p className="font-bold text-gray-900 mb-2">Data Breadth:</p>
                 <MachineList items={[
                   "Datashopper: Static bulk contact lists (B2B contacts, firmographics)",
-                  "Cursive: 220M+ consumer profiles + 140M+ business profiles with real-time enrichment",
+                  "Cursive: 280M consumer profiles + 140M+ business profiles with real-time enrichment",
                   "Cursive includes technographic, firmographic, behavioral, and intent data layers"
                 ]} />
               </div>
@@ -1100,7 +1100,7 @@ export default function BlogPost() {
                 <p className="font-bold text-gray-900 mb-2">Intent Signals:</p>
                 <MachineList items={[
                   "Datashopper: No intent data (static database only)",
-                  "Cursive: 450B+ monthly intent signals across 30,000+ buying categories",
+                  "Cursive: 60B+ behaviors & URLs scanned weekly across 30,000+ buying categories",
                   "Cursive surfaces prospects who are actively researching your category right now"
                 ]} />
               </div>
@@ -1148,7 +1148,7 @@ export default function BlogPost() {
           <MachineSection title="Feature Comparison Matrix">
             <MachineList items={[
               "Visitor Identification: Cursive ✓ (70% person-level) | ZoomInfo limited | All others ✗",
-              "Intent Data: Cursive ✓ (450B+ signals) | ZoomInfo ✓ | Apollo basic | Cognism Bombora add-on | Others ✗",
+              "Intent Data: Cursive ✓ (60B+ signals) | ZoomInfo ✓ | Apollo basic | Cognism Bombora add-on | Others ✗",
               "AI Outreach Automation: Cursive ✓ | Apollo ✓ (basic) | ZoomInfo Engage add-on | Others ✗",
               "Multi-Channel (Email+LinkedIn+SMS): Cursive ✓ | Apollo email+LinkedIn only | All others ✗",
               "Direct Mail: Cursive ✓ | All others ✗",
@@ -1172,7 +1172,7 @@ export default function BlogPost() {
 
           <MachineSection title="Get Started with Cursive">
             <p className="text-gray-700 mb-3">
-              Cursive replaces Datashopper and your entire fragmented data stack with a single platform: 220M+ profiles, 450B+ intent signals, 70% visitor identification, and AI-powered outreach across email, LinkedIn, SMS, and direct mail.
+              Cursive replaces Datashopper and your entire fragmented data stack with a single platform: 280M profiles, 60B+ behaviors & URLs scanned weekly, 70% visitor identification, and AI-powered outreach across email, LinkedIn, SMS, and direct mail.
             </p>
             <MachineList items={[
               { label: "Platform Overview", href: "/platform", description: "Complete lead generation platform" },

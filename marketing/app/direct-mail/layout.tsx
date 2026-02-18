@@ -31,7 +31,7 @@ const directMailFAQs = [
   },
   {
     question: 'How do you find physical addresses for B2B targets?',
-    answer: 'Cursive matches visitors to our database of 220M+ verified profiles which includes business and home addresses. For B2B targeting, we use verified business addresses. Address accuracy is guaranteed — we only send mail to verified deliverable addresses.',
+    answer: 'Cursive matches visitors to our database of 280M verified profiles which includes business and home addresses. For B2B targeting, we use verified business addresses. Address accuracy is guaranteed — we only send mail to verified deliverable addresses.',
   },
   {
     question: 'What triggers can I use to send direct mail?',

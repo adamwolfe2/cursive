@@ -30,7 +30,7 @@ const faqs = [
   },
   {
     question: "Which platform has better data quality?",
-    answer: "Apollo has a larger raw contact database (200M+ contacts) which is excellent for broad prospecting. Cursive has a 360M+ profile database with deeper enrichment (50+ data fields) and real-time behavioral data from website visitors. For contact volume, Apollo has a slight edge. For data depth, accuracy on identified visitors, and actionable intent data, Cursive is stronger."
+    answer: "Apollo has a larger raw contact database (200M+ contacts) which is excellent for broad prospecting. Cursive has a 420M+ profile database with deeper enrichment (50+ data fields) and real-time behavioral data from website visitors. For contact volume, Apollo has a slight edge. For data depth, accuracy on identified visitors, and actionable intent data, Cursive is stronger."
   },
   {
     question: "What response rates can I expect from each platform?",
@@ -42,7 +42,7 @@ const faqs = [
   },
   {
     question: "Does Cursive have a contact database like Apollo?",
-    answer: "Cursive has a 360M+ profile database used for enrichment, but it is not designed for cold prospecting the way Apollo is. Cursive's database is used to identify and enrich website visitors in real-time. If you need to search for contacts who have never visited your site, Apollo's database is better suited. If you need to identify and engage people already showing interest, Cursive's approach is more effective."
+    answer: "Cursive has a 420M+ profile database used for enrichment, but it is not designed for cold prospecting the way Apollo is. Cursive's database is used to identify and enrich website visitors in real-time. If you need to search for contacts who have never visited your site, Apollo's database is better suited. If you need to identify and engage people already showing interest, Cursive's approach is more effective."
   }
 ]
 
@@ -162,7 +162,7 @@ export default function BlogPost() {
                   <tr className="bg-gray-50">
                     <td className="border border-gray-300 p-3 font-bold">Contact Database</td>
                     <td className="border border-gray-300 p-3 text-green-600">200M+ contacts</td>
-                    <td className="border border-gray-300 p-3 text-green-600 font-bold">360M+ profiles (enrichment)</td>
+                    <td className="border border-gray-300 p-3 text-green-600 font-bold">420M+ profiles (enrichment)</td>
                   </tr>
                   <tr>
                     <td className="border border-gray-300 p-3 font-bold">Visitor Identification</td>
@@ -172,7 +172,7 @@ export default function BlogPost() {
                   <tr className="bg-gray-50">
                     <td className="border border-gray-300 p-3 font-bold">Intent Data</td>
                     <td className="border border-gray-300 p-3">Job change + hiring signals</td>
-                    <td className="border border-gray-300 p-3 text-green-600 font-bold">450B+ behavioral signals</td>
+                    <td className="border border-gray-300 p-3 text-green-600 font-bold">60B+ behavioral signals</td>
                   </tr>
                   <tr>
                     <td className="border border-gray-300 p-3 font-bold">Outreach Type</td>
@@ -278,7 +278,7 @@ export default function BlogPost() {
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-green-600 mt-1 flex-shrink-0" />
-                    <span>360M+ profiles for enrichment</span>
+                    <span>420M+ profiles for enrichment</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-green-600 mt-1 flex-shrink-0" />
@@ -290,7 +290,7 @@ export default function BlogPost() {
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-green-600 mt-1 flex-shrink-0" />
-                    <span>450B+ behavioral intent signals</span>
+                    <span>60B+ behavioral intent signals</span>
                   </li>
                 </ul>
               </div>
@@ -310,7 +310,7 @@ export default function BlogPost() {
               but not whether anyone there is actively researching your specific category.
             </p>
             <p>
-              Cursive tracks <Link href="/what-is-b2b-intent-data">450B+ intent signals</Link> that are far more
+              Cursive tracks <Link href="/what-is-b2b-intent-data">60B+ behaviors & URLs scanned weekly</Link> that are far more
               granular and actionable. Every page view, every return visit, every minute spent on your features page
               or pricing page is captured and scored. Cursive builds a complete intent profile for every identified
               visitor, scoring them based on depth of engagement, frequency of visits, specific content consumed, and
@@ -361,7 +361,7 @@ export default function BlogPost() {
                 <ul className="space-y-3 text-sm">
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-green-600 mt-1 flex-shrink-0" />
-                    <span><strong>450B+ real-time behavioral signals</strong></span>
+                    <span><strong>60B+ real-time behavioral signals</strong></span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-green-600 mt-1 flex-shrink-0" />
@@ -488,7 +488,7 @@ export default function BlogPost() {
               also enrich your existing CRM contacts through Apollo&apos;s enrichment feature.
             </p>
             <p>
-              Cursive offers <Link href="/what-is-lead-enrichment">deep enrichment</Link> with 360M+ profiles and 50+
+              Cursive offers <Link href="/what-is-lead-enrichment">deep enrichment</Link> with 420M+ profiles and 50+
               data fields per contact, including firmographics (revenue, employee count, industry, location),
               technographics (technology stack, tools used), demographics (job function, seniority, department),
               and behavioral data (pages visited, content consumed, intent score). The enrichment happens in
@@ -592,7 +592,7 @@ export default function BlogPost() {
                       <span className="font-bold">Included</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Intent data (450B+ signals):</span>
+                      <span>Intent data (60B+ signals):</span>
                       <span className="font-bold">Included</span>
                     </div>
                     <div className="flex justify-between">
@@ -842,7 +842,7 @@ export default function BlogPost() {
                   <tr>
                     <td className="border border-gray-300 p-3 font-bold">Database Size</td>
                     <td className="border border-gray-300 p-3 text-green-600">200M+ contacts</td>
-                    <td className="border border-gray-300 p-3 text-green-600 font-bold">360M+ profiles</td>
+                    <td className="border border-gray-300 p-3 text-green-600 font-bold">420M+ profiles</td>
                   </tr>
                   <tr className="bg-gray-50">
                     <td className="border border-gray-300 p-3 font-bold">Primary Use</td>
@@ -935,7 +935,7 @@ export default function BlogPost() {
             <p>
               Cursive solves a different problem: converting the people who already know about you. With
               <Link href="/visitor-identification"> 70%+ person-level identification</Link>,
-              <Link href="/what-is-b2b-intent-data"> 450B+ intent signals</Link>,
+              <Link href="/what-is-b2b-intent-data"> 60B+ behaviors & URLs scanned weekly</Link>,
               <Link href="/what-is-ai-sdr"> AI-powered personalization</Link>, and multi-channel outreach across
               email, LinkedIn, SMS, and <Link href="/direct-mail">direct mail</Link>, Cursive turns anonymous website
               traffic into booked meetings at response rates 10-15x higher than cold outbound.
@@ -1057,9 +1057,9 @@ export default function BlogPost() {
               Apollo helps you find strangers who might be interested via cold outbound. Cursive identifies people who have already shown interest by visiting your website. Warm outreach to visitors converts at 10-15x higher rates than cold outbound.
             </p>
             <MachineList items={[
-              "Contact Database: Apollo 200M+ contacts vs Cursive 360M+ profiles (enrichment)",
+              "Contact Database: Apollo 200M+ contacts vs Cursive 420M+ profiles (enrichment)",
               "Visitor Identification: Apollo company-level only vs Cursive 70%+ person-level",
-              "Intent Data: Apollo job change + hiring signals vs Cursive 450B+ behavioral signals",
+              "Intent Data: Apollo job change + hiring signals vs Cursive 60B+ behavioral signals",
               "Outreach: Apollo cold sequences (email + phone) vs Cursive warm multi-channel (email + LinkedIn + SMS + mail)",
               "Personalization: Apollo template merge fields vs Cursive AI behavior-based",
               "Built-in Dialer: Apollo yes vs Cursive no"

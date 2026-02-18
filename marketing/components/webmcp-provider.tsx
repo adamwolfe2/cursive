@@ -169,10 +169,10 @@ export function WebMCPProvider() {
       execute: async (params) => {
         const cursiveStats = {
           visitor_id_rate: "70%",
-          database_size: "220M+ consumer, 140M+ business profiles",
+          database_size: "280M US consumer, 140M+ business profiles",
           real_time: true,
           starting_price: "$1,000/mo (managed) or $0.60/lead (self-serve)",
-          intent_signals: "450B+ monthly across 30,000+ categories",
+          intent_signals: "60B+ weekly across 30,000+ categories",
           ai_outreach_included: true,
           channels: ["email", "LinkedIn", "SMS", "direct mail"],
           contracts: "No minimum commitment",
@@ -321,7 +321,7 @@ export function WebMCPProvider() {
             description:
               "Pre-built segments with verified purchase intent signals across 30,000+ categories",
             key_stats: [
-              "450B+ monthly signals",
+              "60B+ behaviors & URLs scanned weekly",
               "3 intent levels: Hot (7d), Warm (14d), Scale (30d)",
               "Weekly refreshes",
               "8 high-value verticals",
@@ -343,11 +343,11 @@ export function WebMCPProvider() {
           "audience-builder": {
             name: "Audience Builder",
             description:
-              "Build unlimited custom audiences from 220M+ consumer and 140M+ business profiles",
+              "Build unlimited custom audiences from 280M US consumer and 140M+ business profiles",
             key_stats: [
               "No caps on audience size",
               "Firmographic + demographic + behavioral filters",
-              "220M+ consumer profiles",
+              "280M consumer profiles",
               "140M+ business profiles",
             ],
             url: "https://www.meetcursive.com/audience-builder",

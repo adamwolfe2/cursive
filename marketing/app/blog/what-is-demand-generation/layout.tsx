@@ -43,7 +43,7 @@ const demandGenFAQs = [
   },
   {
     question: 'How does intent data help demand generation?',
-    answer: 'Intent data supercharges demand generation by telling you which of your demand gen visitors are actually in-market right now. Without intent data, you send the same nurture sequence to everyone who downloads a whitepaper — whether they are casually browsing or actively evaluating vendors. With intent data, you can identify the 20% of demand gen touches that come from buyers who are also researching competitors and solutions — and prioritize immediate sales follow-up on those accounts. Cursive combines website visitor identification (70% identification rate) with 450B+ intent signals refreshed weekly, so you know not just who visited your demand gen content but what else they are actively researching.',
+    answer: 'Intent data supercharges demand generation by telling you which of your demand gen visitors are actually in-market right now. Without intent data, you send the same nurture sequence to everyone who downloads a whitepaper — whether they are casually browsing or actively evaluating vendors. With intent data, you can identify the 20% of demand gen touches that come from buyers who are also researching competitors and solutions — and prioritize immediate sales follow-up on those accounts. Cursive combines website visitor identification (70% identification rate) with 60B+ behaviors & URLs scanned weekly refreshed weekly, so you know not just who visited your demand gen content but what else they are actively researching.',
   },
   {
     question: 'What is a demand generation funnel?',

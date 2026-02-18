@@ -181,7 +181,7 @@ export default function DataPlatformsPage() {
               <p>
                 A newer category that combines multiple data types (contact data, firmographics, technographics, intent
                 signals, and <Link href="/blog/visitor-tracking">visitor identification</Link>) into a single platform.
-                Cursive falls into this category, combining 220M+ consumer and 140M+ business profiles with 450B+ monthly
+                Cursive falls into this category, combining 280M US consumer and 140M+ business profiles with 60B+ weekly
                 intent signals and real-time visitor identification.
               </p>
               <ul>
@@ -616,7 +616,7 @@ export default function DataPlatformsPage() {
               </p>
 
               <p>
-                Cursive combines 220M+ consumer and 140M+ business profiles with real-time enrichment, 450B+ monthly
+                Cursive combines 280M US consumer and 140M+ business profiles with real-time enrichment, 60B+ weekly
                 intent signals, and 200+ native integrations. Instead of juggling multiple data providers, you get
                 everything in one unified platform that stays fresh and actionable. <Link href="/data-access">Explore Cursive&apos;s data access</Link> to
                 see how it compares to your current stack.
@@ -637,7 +637,7 @@ export default function DataPlatformsPage() {
         <DashboardCTA
           headline="Your Complete B2B"
           subheadline="Data Platform"
-          description="220M+ consumer profiles. 140M+ business profiles. Real-time enrichment. 450B+ monthly intent signals. All in one unified platform with 200+ native integrations."
+          description="280M consumer profiles. 140M+ business profiles. Real-time enrichment. 60B+ behaviors & URLs scanned weekly. All in one unified platform with 200+ native integrations."
         />
 
         {/* Related Posts */}
@@ -729,13 +729,13 @@ export default function DataPlatformsPage() {
               { label: "ICP Targeting Guide", href: "/blog/icp-targeting-guide", description: "5-step framework for defining and targeting your ideal customer profile" },
               { label: "Visitor Identification", href: "/blog/how-to-identify-website-visitors-technical-guide", description: "Technical guide to identifying anonymous website visitors" },
               { label: "200+ Integrations", href: "/integrations", description: "Native integrations covering the most common B2B tech stacks" },
-              { label: "Data Access", href: "/data-access", description: "Explore Cursive's 220M+ consumer and 140M+ business profiles" },
+              { label: "Data Access", href: "/data-access", description: "Explore Cursive's 280M US consumer and 140M+ business profiles" },
             ]} />
           </MachineSection>
 
           <MachineSection title="Get Started with Cursive">
             <p className="text-gray-700">
-              Cursive combines 220M+ consumer and 140M+ business profiles with real-time enrichment, 450B+ monthly intent signals, and 200+ native integrations. One unified platform instead of multiple data vendors.
+              Cursive combines 280M US consumer and 140M+ business profiles with real-time enrichment, 60B+ behaviors & URLs scanned weekly, and 200+ native integrations. One unified platform instead of multiple data vendors.
             </p>
             <p className="mt-2">
               <MachineLink href="/data-access">Explore data access</MachineLink> | <MachineLink href="/platform">See the platform</MachineLink>

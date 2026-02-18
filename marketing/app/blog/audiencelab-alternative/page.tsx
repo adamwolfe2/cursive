@@ -22,11 +22,11 @@ const faqs = [
   },
   {
     question: "Is Cursive built on AudienceLab data?",
-    answer: "Yes -- Cursive uses AudienceLab as one of its primary data infrastructure providers, which is what allows Cursive to deliver industry-leading 70% visitor identification rates and 95%+ email deliverability. Rather than replacing AudienceLab, Cursive builds a complete go-to-market platform on top of it: adding real-time visitor identification, 450B+ intent signals, AI-powered multi-channel outreach (email, LinkedIn, SMS, direct mail), and CRM integrations. Teams that currently work with AudienceLab directly can get significantly more value by using Cursive as their full pipeline layer."
+    answer: "Yes -- Cursive uses AudienceLab as one of its primary data infrastructure providers, which is what allows Cursive to deliver industry-leading 70% visitor identification rates and 95%+ email deliverability. Rather than replacing AudienceLab, Cursive builds a complete go-to-market platform on top of it: adding real-time visitor identification, 60B+ behaviors & URLs scanned weekly, AI-powered multi-channel outreach (email, LinkedIn, SMS, direct mail), and CRM integrations. Teams that currently work with AudienceLab directly can get significantly more value by using Cursive as their full pipeline layer."
   },
   {
     question: "What does Cursive offer that AudienceLab does not?",
-    answer: "Cursive adds four key capabilities on top of data infrastructure: (1) Real-time website visitor identification at 70% person-level match rate -- identifying the specific individuals on your site right now. (2) 450B+ behavioral intent signals showing which prospects are actively researching your category. (3) AI SDR that automatically generates and sends personalized, multi-channel outreach (email, LinkedIn, SMS, direct mail) to identified visitors. (4) Full CRM integration and attribution so you can measure pipeline generated from visitor ID. AudienceLab provides great data; Cursive turns that data into pipeline."
+    answer: "Cursive adds four key capabilities on top of data infrastructure: (1) Real-time website visitor identification at 70% person-level match rate -- identifying the specific individuals on your site right now. (2) 60B+ behavioral intent signals showing which prospects are actively researching your category. (3) AI SDR that automatically generates and sends personalized, multi-channel outreach (email, LinkedIn, SMS, direct mail) to identified visitors. (4) Full CRM integration and attribution so you can measure pipeline generated from visitor ID. AudienceLab provides great data; Cursive turns that data into pipeline."
   },
   {
     question: "How much does AudienceLab cost compared to Cursive?",
@@ -34,7 +34,7 @@ const faqs = [
   },
   {
     question: "What are the best AudienceLab alternatives for a complete go-to-market stack?",
-    answer: "For a complete pipeline -- data plus outreach plus visitor identification -- Cursive is the strongest alternative because it combines AudienceLab-quality data infrastructure with real-time visitor ID (70% match rate), 450B+ intent signals, and AI-powered multi-channel outreach in one platform. Apollo.io is the best alternative for teams that want a large contact database with built-in sequencing at a transparent price. ZoomInfo is the deepest enterprise data option. Warmly and RB2B focus on visitor identification for teams that already have outreach covered."
+    answer: "For a complete pipeline -- data plus outreach plus visitor identification -- Cursive is the strongest alternative because it combines AudienceLab-quality data infrastructure with real-time visitor ID (70% match rate), 60B+ behaviors & URLs scanned weekly, and AI-powered multi-channel outreach in one platform. Apollo.io is the best alternative for teams that want a large contact database with built-in sequencing at a transparent price. ZoomInfo is the deepest enterprise data option. Warmly and RB2B focus on visitor identification for teams that already have outreach covered."
   },
   {
     question: "Should I use AudienceLab directly or through a platform like Cursive?",
@@ -181,7 +181,7 @@ export default function BlogPost() {
                       <td className="border border-gray-300 p-3 text-green-600 font-bold">AudienceLab-powered</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold">70% person-level</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold">Built-in AI SDR</td>
-                      <td className="border border-gray-300 p-3 text-green-600 font-bold">450B+ signals</td>
+                      <td className="border border-gray-300 p-3 text-green-600 font-bold">60B+ signals</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold">Yes</td>
                       <td className="border border-gray-300 p-3">$1k/mo managed</td>
                     </tr>
@@ -261,7 +261,7 @@ export default function BlogPost() {
                   in a complete go-to-market platform. Rather than working with raw data APIs and building your own
                   pipeline tooling, Cursive gives you{" "}
                   <Link href="/visitor-identification" className="text-blue-600 hover:underline">real-time visitor identification at 70% person-level match rate</Link>,
-                  450B+ behavioral intent signals, AI-powered multi-channel outreach (email, LinkedIn, SMS, and
+                  60B+ behavioral intent signals, AI-powered multi-channel outreach (email, LinkedIn, SMS, and
                   direct mail), and 200+ CRM integrations -- all ready to generate pipeline from day one.
                 </p>
                 <p className="text-gray-700 mb-4">
@@ -283,7 +283,7 @@ export default function BlogPost() {
                       </li>
                       <li className="flex items-center gap-2">
                         <Check className="w-4 h-4 text-green-600" />
-                        450B+ intent signals across 30,000+ behavioral categories
+                        60B+ behaviors & URLs scanned weekly across 30,000+ behavioral categories
                       </li>
                       <li className="flex items-center gap-2">
                         <Check className="w-4 h-4 text-green-600" />
@@ -808,7 +808,7 @@ export default function BlogPost() {
               "Adds full pipeline layer: visitor ID + intent + AI outreach + direct mail",
               "70% person-level visitor identification rate (industry-leading)",
               "95%+ email deliverability guaranteed",
-              "450B+ intent signals across 30,000+ behavioral categories",
+              "60B+ behaviors & URLs scanned weekly across 30,000+ behavioral categories",
               "Month-to-month billing: $0.60/lead self-serve or $1,000/month managed",
             ]} />
           </MachineSection>

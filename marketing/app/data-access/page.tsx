@@ -17,7 +17,7 @@ export default function DataAccessPage() {
         "@type": "Product",
         "@id": "https://www.meetcursive.com/data-access#product",
         "name": "Cursive Data Access",
-        "description": "Direct access to 220M+ consumer profiles and 140M+ business profiles. Query, filter, and export verified contact data on demand via API, bulk exports, or real-time lookups.",
+        "description": "Direct access to 280M US consumer profiles and 140M+ business profiles. Query, filter, and export verified contact data on demand via API, bulk exports, or real-time lookups.",
         "brand": {
           "@type": "Brand",
           "name": "Cursive"
@@ -73,12 +73,12 @@ export default function DataAccessPage() {
               Direct Data Access,
               <span className="block font-cursive text-6xl lg:text-7xl text-gray-500 mt-2">On Demand</span>
             </h1>
-            <p className="text-lg text-gray-600 mb-8">220M+ Consumer Profiles • 140M+ Business Profiles • 30,000+ Intent Categories</p>
+            <p className="text-lg text-gray-600 mb-8">280M US Consumer Profiles • 140M+ Business Profiles • 30,000+ Intent Categories</p>
             <Button size="lg" href="https://cal.com/cursive/30min">Get Started</Button>
           </motion.div>
           <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto mt-16">
             {[
-              { value: '220M+', label: 'Consumer Profiles' },
+              { value: '280M', label: 'Consumer Profiles' },
               { value: '140M+', label: 'Business Profiles' },
               { value: '30,000+', label: 'Intent Categories' },
             ].map((stat, i) => (
@@ -103,7 +103,7 @@ export default function DataAccessPage() {
             <div className="grid md:grid-cols-2 gap-8">
               <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="bg-white rounded-xl p-8 border border-gray-200">
                 <Database className="w-10 h-10 text-[#007AFF] mb-4" />
-                <h3 className="text-xl font-light text-gray-900 mb-3">220M+ Consumer Profiles</h3>
+                <h3 className="text-xl font-light text-gray-900 mb-3">280M Consumer Profiles</h3>
                 <p className="text-gray-600 text-sm mb-4">Our consumer database covers over 220 million individuals across the United States with detailed demographic, lifestyle, and behavioral data points.</p>
                 <ul className="space-y-2">
                   <li className="flex items-start gap-2 text-gray-600 text-sm"><Check className="w-4 h-4 text-[#007AFF] flex-shrink-0 mt-0.5" /> Verified email addresses and phone numbers</li>
@@ -251,7 +251,7 @@ export default function DataAccessPage() {
       <div className="mb-12 pb-6 border-b border-gray-200">
         <h1 className="text-2xl text-gray-900 font-bold mb-4">CURSIVE DATA ACCESS</h1>
         <p className="text-gray-700 leading-relaxed">
-          Direct access to 220M+ consumer profiles and 140M+ business profiles. Query, filter, and export verified contact data on demand via API, bulk exports, or real-time lookups.
+          Direct access to 280M US consumer profiles and 140M+ business profiles. Query, filter, and export verified contact data on demand via API, bulk exports, or real-time lookups.
         </p>
       </div>
 
@@ -261,7 +261,7 @@ export default function DataAccessPage() {
           Cursive provides direct access to the largest combined B2B and B2C database. Query and export verified contact data, firmographics, demographics, technographics, and intent signals programmatically or through our interface.
         </p>
         <MachineList items={[
-          "220M+ consumer profiles with demographic data",
+          "280M consumer profiles with demographic data",
           "140M+ business profiles with firmographic data",
           "30,000+ intent categories tracked in real-time",
           "API access for programmatic queries",

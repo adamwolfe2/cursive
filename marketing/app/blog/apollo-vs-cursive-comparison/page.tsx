@@ -134,7 +134,7 @@ export default function BlogPost() {
                   <tr>
                     <td className="border border-gray-300 p-3 font-bold">Database Size</td>
                     <td className="border border-gray-300 p-3 text-green-600">275M contacts</td>
-                    <td className="border border-gray-300 p-3 text-green-600 font-bold">360M+ profiles</td>
+                    <td className="border border-gray-300 p-3 text-green-600 font-bold">420M+ profiles</td>
                   </tr>
                   <tr className="bg-gray-50">
                     <td className="border border-gray-300 p-3 font-bold">Visitor Identification</td>
@@ -144,7 +144,7 @@ export default function BlogPost() {
                   <tr>
                     <td className="border border-gray-300 p-3 font-bold">Intent Signals</td>
                     <td className="border border-gray-300 p-3">Limited</td>
-                    <td className="border border-gray-300 p-3 text-green-600 font-bold">450B+ data points</td>
+                    <td className="border border-gray-300 p-3 text-green-600 font-bold">60B+ data points</td>
                   </tr>
                   <tr className="bg-gray-50">
                     <td className="border border-gray-300 p-3 font-bold">Outreach Type</td>
@@ -228,11 +228,11 @@ export default function BlogPost() {
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-green-600 mt-1 flex-shrink-0" />
-                    <span>360M+ combined B2B + B2C profiles</span>
+                    <span>420M+ combined B2B + B2C profiles</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-green-600 mt-1 flex-shrink-0" />
-                    <span>450B+ intent data points</span>
+                    <span>60B+ intent data points</span>
                   </li>
                 </ul>
               </div>
@@ -348,7 +348,7 @@ export default function BlogPost() {
                 <ul className="space-y-3 text-sm">
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-green-600 mt-1 flex-shrink-0" />
-                    <span><strong>450B+ real-time intent signals</strong></span>
+                    <span><strong>60B+ real-time intent signals</strong></span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-green-600 mt-1 flex-shrink-0" />
@@ -864,7 +864,7 @@ export default function BlogPost() {
             <p>
               Cursive specializes in a different problem: identifying and converting the people already visiting your
               website. With <Link href="/visitor-identification">70%+ person-level identification</Link>,
-              <Link href="/intent-audiences">450B+ behavioral signals</Link>, and AI-powered automation, Cursive delivers
+              <Link href="/intent-audiences">60B+ behavioral signals</Link>, and AI-powered automation, Cursive delivers
               20-30% response rates on warm prospects—10x better than cold outbound.
             </p>
 
@@ -940,7 +940,7 @@ export default function BlogPost() {
             <MachineList items={[
               "Contact Data: Apollo massive static database for cold outreach. Cursive identifies visitors from your traffic in real-time",
               "Visitor ID: Apollo company-level only. Cursive person-level at 70%+ match rate with name, email, LinkedIn",
-              "Intent: Apollo basic job change + hiring signals. Cursive 450B+ real-time behavioral signals from website visits",
+              "Intent: Apollo basic job change + hiring signals. Cursive 60B+ real-time behavioral signals from website visits",
               "Outreach Personalization: Apollo merge-field templates. Cursive AI-generated based on browsing behavior",
               "Built-in Dialer: Apollo yes. Cursive no",
               "Best complementary strategy: use both together for warm + cold coverage"

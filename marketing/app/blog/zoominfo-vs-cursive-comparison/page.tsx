@@ -135,7 +135,7 @@ export default function BlogPost() {
                   <tr>
                     <td className="border border-gray-300 p-3 font-bold">Database Size</td>
                     <td className="border border-gray-300 p-3 text-green-600">100M+ contacts</td>
-                    <td className="border border-gray-300 p-3 text-green-600 font-bold">360M+ profiles</td>
+                    <td className="border border-gray-300 p-3 text-green-600 font-bold">420M+ profiles</td>
                   </tr>
                   <tr className="bg-gray-50">
                     <td className="border border-gray-300 p-3 font-bold">Real-Time ID</td>
@@ -145,7 +145,7 @@ export default function BlogPost() {
                   <tr>
                     <td className="border border-gray-300 p-3 font-bold">Intent Data</td>
                     <td className="border border-gray-300 p-3">Via Bombora (extra cost)</td>
-                    <td className="border border-gray-300 p-3 text-green-600 font-bold">Built-in (450B+ signals)</td>
+                    <td className="border border-gray-300 p-3 text-green-600 font-bold">Built-in (60B+ signals)</td>
                   </tr>
                   <tr className="bg-gray-50">
                     <td className="border border-gray-300 p-3 font-bold">Outreach Automation</td>
@@ -207,7 +207,7 @@ export default function BlogPost() {
                 <ul className="space-y-3 text-sm">
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-green-600 mt-1 flex-shrink-0" />
-                    <span><strong>360M+ B2B + B2C profiles</strong></span>
+                    <span><strong>420M+ B2B + B2C profiles</strong></span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-green-600 mt-1 flex-shrink-0" />
@@ -342,7 +342,7 @@ export default function BlogPost() {
                 <ul className="space-y-3 text-sm">
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-green-600 mt-1 flex-shrink-0" />
-                    <span><strong>450B+ real-time intent signals</strong></span>
+                    <span><strong>60B+ real-time intent signals</strong></span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-green-600 mt-1 flex-shrink-0" />
@@ -883,7 +883,7 @@ export default function BlogPost() {
             <p>
               Cursive identifies people already visiting your website and automates personalized outreach while they're
               actively interested. With <Link href="/visitor-identification">70%+ identification rates</Link>,
-              <Link href="/intent-audiences">450B+ intent signals</Link>, and AI-powered automation—all at $99-$999/month—
+              <Link href="/intent-audiences">60B+ behaviors & URLs scanned weekly</Link>, and AI-powered automation—all at $99-$999/month—
               Cursive delivers 20-30% response rates at a fraction of ZoomInfo's cost.
             </p>
 
@@ -961,7 +961,7 @@ export default function BlogPost() {
               "Visitor ID: ZoomInfo WebSights is company-level only. Cursive identifies individual people at 70%+ match rate",
               "Data freshness: ZoomInfo data decays 20-30% annually. Cursive data is captured in real-time during visits",
               "Outreach: ZoomInfo requires Outreach/SalesLoft. Cursive includes AI SDR across email, LinkedIn, SMS, direct mail",
-              "Intent: ZoomInfo provides basic intent signals. Cursive tracks 450B+ real-time behavioral signals",
+              "Intent: ZoomInfo provides basic intent signals. Cursive tracks 60B+ real-time behavioral signals",
               "Contract: ZoomInfo requires annual commitment. Cursive offers monthly flexibility"
             ]} />
           </MachineSection>

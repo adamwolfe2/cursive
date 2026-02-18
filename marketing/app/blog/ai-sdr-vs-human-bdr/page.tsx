@@ -98,7 +98,7 @@ export default function BlogPost() {
             <ul>
               <li>AI SDR agents (no salary, $10k/month subscription covering all infrastructure)</li>
               <li>24/7 operation (no breaks, no weekends, no sick days)</li>
-              <li>Automated prospecting, research, and personalization powered by 360M+ contact profiles</li>
+              <li>Automated prospecting, research, and personalization powered by 420M+ contact profiles</li>
               <li>Built-in CRM, data enrichment, email infrastructure, and domain warm-up</li>
               <li>Same target: VP of Sales at $1M-$10M SaaS companies</li>
               <li>AI trained on top-performing email sequences from 500+ B2B campaigns</li>
@@ -507,7 +507,7 @@ export default function BlogPost() {
             <MachineList items={[
               { label: "Book a Demo", href: "/book", description: "See Cursive's AI SDR in action" },
               { label: "Visitor Identification", href: "/visitor-identification", description: "70% identification rate for B2B traffic" },
-              { label: "AI Outreach", href: "/ai-outreach", description: "360M+ contact profiles for hyper-personalization" }
+              { label: "AI Outreach", href: "/ai-outreach", description: "420M+ contact profiles for hyper-personalization" }
             ]} />
           </MachineSection>
         </MachineContent>

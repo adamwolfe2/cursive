@@ -139,7 +139,7 @@ export default function BlogPostExample() {
         <p>
           Here's how it works: When someone visits your website, identification
           software matches their IP address, device fingerprint, and browsing
-          behavior against a database of 220M+ profiles.
+          behavior against a database of 280M profiles.
         </p>
 
         {/* Inline CTA #2 */}

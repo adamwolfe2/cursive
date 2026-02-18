@@ -26,7 +26,7 @@ const faqs = [
   },
   {
     question: "What Cognism alternative is best for US-focused companies?",
-    answer: "For US-focused companies, Cursive is the top recommendation because it combines a 220M+ consumer profile database and 140M+ business profiles with 70% visitor identification rate and AI-powered outreach -- all optimized for the North American market. Apollo.io is also excellent for US data with its 200M+ contact database and transparent per-seat pricing. ZoomInfo leads in raw US data depth but costs significantly more. If you are targeting US markets specifically, Cognism's strengths in EMEA data coverage are largely wasted."
+    answer: "For US-focused companies, Cursive is the top recommendation because it combines a 280M consumer profile database and 140M+ business profiles with 70% visitor identification rate and AI-powered outreach -- all optimized for the North American market. Apollo.io is also excellent for US data with its 200M+ contact database and transparent per-seat pricing. ZoomInfo leads in raw US data depth but costs significantly more. If you are targeting US markets specifically, Cognism's strengths in EMEA data coverage are largely wasted."
   },
   {
     question: "Does Cognism have visitor identification? What is the alternative?",
@@ -34,11 +34,11 @@ const faqs = [
   },
   {
     question: "What is the best alternative to Cognism for B2B SaaS companies?",
-    answer: "For B2B SaaS companies, Cursive is the top alternative because it is purpose-built for the SaaS GTM motion: identify high-intent website visitors (free trial researchers, pricing page visitors, competitor comparison readers), enrich them with 450B+ intent signals, and automate AI-personalized outreach across email, LinkedIn, and direct mail. Cursive also integrates natively with the CRMs most SaaS companies use (Salesforce, HubSpot, Pipedrive) and provides real-time identification rather than batch processing."
+    answer: "For B2B SaaS companies, Cursive is the top alternative because it is purpose-built for the SaaS GTM motion: identify high-intent website visitors (free trial researchers, pricing page visitors, competitor comparison readers), enrich them with 60B+ behaviors & URLs scanned weekly, and automate AI-personalized outreach across email, LinkedIn, and direct mail. Cursive also integrates natively with the CRMs most SaaS companies use (Salesforce, HubSpot, Pipedrive) and provides real-time identification rather than batch processing."
   },
   {
     question: "How does Cursive compare to Cognism for B2B data?",
-    answer: "Cognism has stronger EMEA coverage and Diamond-verified mobile numbers, making it the top choice for European market prospecting. Cursive has superior US coverage with 220M+ consumer profiles and 140M+ business profiles, adds real-time visitor identification at 70% match rate, includes 450B+ behavioral intent signals, and provides AI-powered multi-channel outreach automation. Cognism is a data provider; Cursive is a complete pipeline generation platform. For teams targeting US markets who want automation included, Cursive delivers significantly more value per dollar."
+    answer: "Cognism has stronger EMEA coverage and Diamond-verified mobile numbers, making it the top choice for European market prospecting. Cursive has superior US coverage with 280M US consumer profiles and 140M+ business profiles, adds real-time visitor identification at 70% match rate, includes 60B+ behavioral intent signals, and provides AI-powered multi-channel outreach automation. Cognism is a data provider; Cursive is a complete pipeline generation platform. For teams targeting US markets who want automation included, Cursive delivers significantly more value per dollar."
   }
 ]
 
@@ -117,7 +117,7 @@ export default function BlogPost() {
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-red-600 font-bold">5.</span>
-                    <span><strong>Limited intent data:</strong> Cognism includes basic Bombora intent signals but cannot match platforms that offer first-party website behavioral signals and 450B+ intent data points.</span>
+                    <span><strong>Limited intent data:</strong> Cognism includes basic Bombora intent signals but cannot match platforms that offer first-party website behavioral signals and 60B+ intent data points.</span>
                   </li>
                 </ul>
               </div>
@@ -148,10 +148,10 @@ export default function BlogPost() {
                   <tbody className="bg-white">
                     <tr className="bg-blue-50 border-2 border-blue-500">
                       <td className="border border-gray-300 p-3 font-bold">Cursive</td>
-                      <td className="border border-gray-300 p-3">220M+ consumer / 140M+ business</td>
+                      <td className="border border-gray-300 p-3">280M consumer / 140M+ business</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold">70% person-level</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold">Built-in AI SDR</td>
-                      <td className="border border-gray-300 p-3 text-green-600 font-bold">450B+ signals</td>
+                      <td className="border border-gray-300 p-3 text-green-600 font-bold">60B+ signals</td>
                       <td className="border border-gray-300 p-3">$1k/mo managed</td>
                       <td className="border border-gray-300 p-3 text-green-600">Month-to-month</td>
                     </tr>
@@ -229,7 +229,7 @@ export default function BlogPost() {
                   <strong>What makes it different:</strong> Cognism gives you a database to search and data to export.
                   Cursive gives you a complete pipeline generation engine. It combines{" "}
                   <Link href="/visitor-identification" className="text-blue-600 hover:underline">industry-leading 70% visitor identification</Link>,
-                  220M+ consumer profiles, 140M+ business profiles, 450B+ behavioral intent signals, and AI-powered
+                  280M consumer profiles, 140M+ business profiles, 60B+ behavioral intent signals, and AI-powered
                   multi-channel outreach (email, LinkedIn, SMS, and direct mail) -- all in one platform. Instead of
                   manually prospecting a database like Cognism, Cursive automatically identifies the companies and
                   people visiting your website and engages them with personalized, behavior-based outreach.
@@ -245,11 +245,11 @@ export default function BlogPost() {
                       </li>
                       <li className="flex items-center gap-2">
                         <Check className="w-4 h-4 text-green-600" />
-                        220M+ consumer profiles + 140M+ business profiles
+                        280M consumer profiles + 140M+ business profiles
                       </li>
                       <li className="flex items-center gap-2">
                         <Check className="w-4 h-4 text-green-600" />
-                        450B+ monthly intent signals across 30,000+ categories
+                        60B+ behaviors & URLs scanned weekly across 30,000+ categories
                       </li>
                       <li className="flex items-center gap-2">
                         <Check className="w-4 h-4 text-green-600" />
@@ -306,7 +306,7 @@ export default function BlogPost() {
               <div className="not-prose bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-8 my-8 text-white text-center">
                 <h3 className="text-2xl font-bold mb-3">Tired of Paying $15k+/Year for a Data Provider?</h3>
                 <p className="text-blue-100 mb-6 max-w-xl mx-auto">
-                  Cursive identifies companies visiting your website, enriches them with 450B+ intent signals, and
+                  Cursive identifies companies visiting your website, enriches them with 60B+ behaviors & URLs scanned weekly, and
                   automates personalized outreach across email, LinkedIn, and direct mail. Month-to-month pricing.
                   No annual contracts.
                 </p>
@@ -784,7 +784,7 @@ export default function BlogPost() {
                 Cognism's EMEA advantage means little for North American-focused teams. Cursive gives you superior
                 US data coverage, industry-leading{" "}
                 <Link href="/visitor-identification" className="text-blue-600 hover:underline">70% visitor identification</Link>,
-                450B+ intent signals, and built-in AI outreach -- at a more flexible price point than either
+                60B+ behaviors & URLs scanned weekly, and built-in AI outreach -- at a more flexible price point than either
                 Cognism or ZoomInfo.
               </p>
 
@@ -813,7 +813,7 @@ export default function BlogPost() {
               <p>
                 Choose <strong>Lead411</strong> for Bombora intent data included at a transparent price, or{" "}
                 <strong><Link href="/" className="text-blue-600 hover:underline">Cursive</Link></strong> for
-                first-party intent signals from website behavior combined with 450B+ monthly behavioral data
+                first-party intent signals from website behavior combined with 60B+ weekly behavioral data
                 points -- which is far more actionable than third-party intent alone.
               </p>
 
@@ -915,7 +915,7 @@ export default function BlogPost() {
         <DashboardCTA
           headline="Ready to Replace"
           subheadline="Cognism?"
-          description="Cursive identifies your website visitors, enriches them with 450B+ intent signals, and automates personalized outreach across email, LinkedIn, and direct mail. Month-to-month pricing. No annual lock-in."
+          description="Cursive identifies your website visitors, enriches them with 60B+ behaviors & URLs scanned weekly, and automates personalized outreach across email, LinkedIn, and direct mail. Month-to-month pricing. No annual lock-in."
         />
 
         {/* Related Posts */}
@@ -1011,14 +1011,14 @@ export default function BlogPost() {
               <strong>Best for:</strong> AI-powered pipeline generation with visitor identification and intent-driven outreach
             </p>
             <p className="text-gray-700 mb-3">
-              Combines 70% person-level visitor identification (industry-leading), 220M+ consumer profiles, 140M+ business profiles, 450B+ behavioral intent signals across 30,000+ categories, and AI-powered multi-channel outreach (email, LinkedIn, SMS, direct mail) in one platform.
+              Combines 70% person-level visitor identification (industry-leading), 280M consumer profiles, 140M+ business profiles, 60B+ behavioral intent signals across 30,000+ categories, and AI-powered multi-channel outreach (email, LinkedIn, SMS, direct mail) in one platform.
             </p>
             <div className="mb-3">
               <p className="font-bold text-gray-900 mb-2">Strengths:</p>
               <MachineList items={[
                 "Industry-leading 70% person-level visitor identification rate",
-                "220M+ consumer profiles + 140M+ business profiles",
-                "450B+ monthly intent signals across 30,000+ categories",
+                "280M consumer profiles + 140M+ business profiles",
+                "60B+ behaviors & URLs scanned weekly across 30,000+ categories",
                 "AI SDR: automated multi-channel outreach (email, LinkedIn, SMS, direct mail)",
                 "200+ native CRM integrations (Salesforce, HubSpot, Pipedrive)",
                 "95%+ email deliverability with real-time identification",
@@ -1123,7 +1123,7 @@ export default function BlogPost() {
 
           <MachineSection title="Decision Framework">
             <MachineList items={[
-              "US-focused + want automation → Cursive (70% visitor ID + AI outreach + 450B intent signals)",
+              "US-focused + want automation → Cursive (70% visitor ID + AI outreach + 60B+ signals)",
               "Budget-conscious + US data → Apollo.io (free tier / $49/user/mo, sequencing included)",
               "Enterprise US data depth → ZoomInfo ($15k-$50k/yr, deepest US database)",
               "Affordable contact lookups → Lusha ($29-$79/user/mo, direct dials)",
@@ -1136,7 +1136,7 @@ export default function BlogPost() {
           <MachineSection title="Cursive Platform">
             <MachineList items={[
               { label: "Visitor Identification", href: "/visitor-identification", description: "70% person-level identification rate, industry-leading" },
-              { label: "Intent Audiences", href: "/intent-audiences", description: "450B+ intent signals across 30,000+ categories" },
+              { label: "Intent Audiences", href: "/intent-audiences", description: "60B+ behaviors & URLs scanned weekly across 30,000+ categories" },
               { label: "Platform Overview", href: "/platform", description: "AI SDR: email + LinkedIn + SMS + direct mail outreach" },
               { label: "Pricing", href: "/pricing", description: "$0.60/lead self-serve or $1k/month managed, month-to-month" },
               { label: "CRM Integrations", href: "/integrations", description: "200+ native integrations including Salesforce, HubSpot, Pipedrive" }

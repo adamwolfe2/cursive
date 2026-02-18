@@ -14,7 +14,7 @@ export async function GET() {
       url: "https://meetcursive.com",
       tagline: "Turn Website Visitors Into Booked Meetings",
       description:
-        "AI-powered visitor identification and outbound automation for B2B companies. Identifies 70% of anonymous website visitors, enriches them against 220M+ verified contacts, and automates personalized outreach across email, LinkedIn, and SMS.",
+        "AI-powered visitor identification and outbound automation for B2B companies. Identifies 70% of anonymous website visitors, enriches them against 280M verified contacts, and automates personalized outreach across email, LinkedIn, and SMS.",
       products: [
         {
           name: "Visitor Identification",
@@ -33,13 +33,13 @@ export async function GET() {
           name: "Intent Data Audiences",
           url: "/intent-audiences",
           description:
-            "450B+ monthly intent signals across 30,000+ categories. Pre-built segments with verified purchase intent.",
+            "60B+ behaviors & URLs scanned weekly across 30,000+ categories. Pre-built segments with verified purchase intent.",
         },
         {
           name: "Audience Builder",
           url: "/audience-builder",
           description:
-            "Build unlimited audiences from 220M+ consumer and 140M+ business profiles. No caps or restrictive licensing.",
+            "Build unlimited audiences from 280M US consumer and 140M+ business profiles. No caps or restrictive licensing.",
         },
         {
           name: "AI Studio",
@@ -90,9 +90,9 @@ export async function GET() {
       ],
       stats: {
         visitor_id_rate: "70%",
-        consumer_profiles: "220M+",
+        consumer_profiles: "280M",
         business_profiles: "140M+",
-        intent_signals_monthly: "450B+",
+        intent_signals_monthly: "60B+",
         intent_categories: "30,000+",
         integrations: "200+",
         data_accuracy: "95%+",

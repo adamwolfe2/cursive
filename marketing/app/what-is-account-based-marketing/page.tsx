@@ -483,7 +483,7 @@ export default function WhatIsAccountBasedMarketing() {
                 <Link href="/visitor-identification" className="text-[#007AFF] hover:underline">visitor identification</Link>{" "}
                 (resolving anonymous visitors to companies and contacts) and{" "}
                 <Link href="/intent-audiences" className="text-[#007AFF] hover:underline">intent data</Link>{" "}
-                (tracking research behavior across 450B+ monthly signals). Other tools in this layer include 6sense (predictive intent and account intelligence) and Bombora (B2B intent data from content consumption patterns).
+                (tracking research behavior across 60B+ behaviors & URLs scanned weekly). Other tools in this layer include 6sense (predictive intent and account intelligence) and Bombora (B2B intent data from content consumption patterns).
               </p>
 
               <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">Orchestration Layer</h3>
@@ -686,7 +686,7 @@ export default function WhatIsAccountBasedMarketing() {
                     </tr>
                     <tr className="bg-gray-50">
                       <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700 font-medium">Intent Data</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">450B+ signals (built-in)</td>
+                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">60B+ signals (built-in)</td>
                       <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Bombora partnership</td>
                       <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Proprietary AI model</td>
                       <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Bombora partnership</td>
@@ -866,7 +866,7 @@ export default function WhatIsAccountBasedMarketing() {
           <MachineSection title="ABM Technology Stack">
             <MachineList items={[
               "Visitor Identification — Identify target accounts on your website (Cursive provides individual + company-level ID)",
-              "Intent Data — 450B+ signals to detect active buying research (built into Cursive)",
+              "Intent Data — 60B+ signals to detect active buying research (built into Cursive)",
               "Contact Data — 200M+ verified contacts for buying committee mapping",
               "Multi-Channel Activation — Email, display ads, direct mail, LinkedIn, SDR outreach",
               "Analytics — Account-level engagement scoring and pipeline attribution"
@@ -906,7 +906,7 @@ export default function WhatIsAccountBasedMarketing() {
 
           <MachineSection title="Provider Comparison">
             <MachineList items={[
-              "Cursive — Individual + company visitor ID, 450B+ intent signals, multi-channel activation, direct mail built-in ($12K-$60K/yr)",
+              "Cursive — Individual + company visitor ID, 60B+ behaviors & URLs scanned weekly, multi-channel activation, direct mail built-in ($12K-$60K/yr)",
               "Demandbase — Company-level ID, Bombora intent, display ads + web personalization ($50K-$250K/yr)",
               "6sense — Company-level ID, proprietary AI intent model, display ads + email orchestration ($60K-$300K/yr)",
               "Terminus — Company-level ID, Bombora intent, display ads + email + chat ($30K-$150K/yr)",

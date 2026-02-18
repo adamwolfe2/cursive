@@ -309,7 +309,7 @@ export default function B2BSoftwarePage() {
         {/* Features */}
         <MachineSection title="Key Features">
           <MachineList items={[
-            "Intent Data - Track 450B+ monthly signals to identify active software buyers",
+            "Intent Data - Track 60B+ behaviors & URLs scanned weekly to identify active software buyers",
             "Technographic Data - Filter by current tech stack and tool usage",
             "Verified Contacts - Access emails and phone numbers for decision-makers",
             "CRM Integration - Sync data to Salesforce, HubSpot, and other platforms",

@@ -487,7 +487,7 @@ export default function WhatIsVisitorDeanonymization() {
                     </tr>
                     <tr className="bg-gray-50">
                       <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700 font-medium">Intent Data</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Built-in (450B+ signals)</td>
+                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Built-in (60B+ signals)</td>
                       <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Page-level only</td>
                       <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Bombora integration</td>
                       <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Basic page tracking</td>

@@ -23,8 +23,8 @@ const advantages: Advantage[] = [
   {
     icon: Database,
     title: "Largest Data Universe",
-    description: "Access 220M+ consumer profiles and 140M+ business profiles with verified contact information. Build unlimited audiences without size caps or restrictive licensing.",
-    metric: "360M+",
+    description: "Access 280M US consumer profiles and 140M+ business profiles with verified contact information. Build unlimited audiences without size caps or restrictive licensing.",
+    metric: "420M+",
     metricLabel: "total profiles"
   },
   {

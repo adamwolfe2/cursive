@@ -35,7 +35,7 @@ const salesIntelligenceFAQs = [
   },
   {
     question: 'What are the best sales intelligence tools?',
-    answer: 'The leading sales intelligence tools in 2026 are: Cursive ($1,000/month) — combines website visitor identification (70% ID rate), 450B+ intent signals, and 250M+ contact profiles in one platform; ZoomInfo ($15,000-$50,000/year) — largest contact database with technographic data, best for large enterprise teams; Apollo.io ($99-$499/month) — affordable contact database with email sequences, popular with SMB sales teams; Demandbase — intent data and ABM platform for enterprise accounts; 6sense — AI-powered intent and account engagement platform at enterprise pricing. The right tool depends on team size, budget, and whether you need person-level or account-level intelligence.',
+    answer: 'The leading sales intelligence tools in 2026 are: Cursive ($1,000/month) — combines website visitor identification (70% ID rate), 60B+ behaviors & URLs scanned weekly, and 250M+ contact profiles in one platform; ZoomInfo ($15,000-$50,000/year) — largest contact database with technographic data, best for large enterprise teams; Apollo.io ($99-$499/month) — affordable contact database with email sequences, popular with SMB sales teams; Demandbase — intent data and ABM platform for enterprise accounts; 6sense — AI-powered intent and account engagement platform at enterprise pricing. The right tool depends on team size, budget, and whether you need person-level or account-level intelligence.',
   },
   {
     question: 'How much does sales intelligence cost?',

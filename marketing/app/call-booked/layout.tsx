@@ -2,7 +2,7 @@ import { generateMetadata } from '@/lib/seo/metadata'
 
 export const metadata = generateMetadata({
   title: 'Your Call is Booked | Cursive',
-  description: 'Thanks for booking a call with Cursive. Learn everything about our all-in-one growth platform: visitor identification, audience building, outbound automation, and 360M+ verified contacts.',
+  description: 'Thanks for booking a call with Cursive. Learn everything about our all-in-one growth platform: visitor identification, audience building, outbound automation, and 420M+ verified contacts.',
   keywords: [
     'Cursive platform',
     'B2B lead generation',

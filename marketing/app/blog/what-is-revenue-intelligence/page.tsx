@@ -244,7 +244,7 @@ export default function WhatIsRevenueIntelligencePage() {
                     <li className="flex items-start gap-2"><Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> Score visitor intent based on pages visited, time on site, and return visits</li>
                     <li className="flex items-start gap-2"><Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> Push high-intent signals to your CRM alongside Gong and Clari data</li>
                     <li className="flex items-start gap-2"><Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> Automatically trigger outreach when intent thresholds are hit</li>
-                    <li className="flex items-start gap-2"><Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> Access 450B+ monthly intent signals across 30,000+ categories</li>
+                    <li className="flex items-start gap-2"><Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> Access 60B+ behaviors & URLs scanned weekly across 30,000+ categories</li>
                   </ul>
                 </div>
               </div>

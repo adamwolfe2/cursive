@@ -162,7 +162,7 @@ export default function BlogPost() {
                   <tr>
                     <td className="border border-gray-300 p-3 font-bold">Intent Data</td>
                     <td className="border border-gray-300 p-3"><X className="w-4 h-4 text-red-400 inline" /> None</td>
-                    <td className="border border-gray-300 p-3 text-green-600 font-bold"><Check className="w-4 h-4 text-green-600 inline" /> 450B+ signals</td>
+                    <td className="border border-gray-300 p-3 text-green-600 font-bold"><Check className="w-4 h-4 text-green-600 inline" /> 60B+ signals</td>
                   </tr>
                   <tr className="bg-gray-50">
                     <td className="border border-gray-300 p-3 font-bold">Email Outreach</td>
@@ -267,7 +267,7 @@ export default function BlogPost() {
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-green-600 mt-1 flex-shrink-0" />
-                    <span>360M+ B2B and B2C profile database</span>
+                    <span>420M+ B2B and B2C profile database</span>
                   </li>
                 </ul>
               </div>
@@ -286,7 +286,7 @@ export default function BlogPost() {
               responsible for deciding who to email and when.
             </p>
             <p>
-              Cursive tracks <Link href="/what-is-b2b-intent-data">450B+ intent signals</Link> to tell you not just
+              Cursive tracks <Link href="/what-is-b2b-intent-data">60B+ behaviors & URLs scanned weekly</Link> to tell you not just
               who is visiting your site, but what they are interested in and how ready they are to buy. It monitors
               page views, time on site, content consumed, return visits, pricing page views, feature page interest,
               and dozens of other behavioral indicators to generate an intent score for every identified visitor.
@@ -402,7 +402,7 @@ export default function BlogPost() {
               with established providers.
             </p>
             <p>
-              Cursive draws from 360M+ B2B and B2C profiles with <Link href="/what-is-lead-enrichment">deep
+              Cursive draws from 420M+ B2B and B2C profiles with <Link href="/what-is-lead-enrichment">deep
               enrichment</Link> including firmographics, technographics, job function, seniority, revenue, employee
               count, industry, and more. Because Cursive enriches visitors who are already on your website, the data
               is immediately actionable. You are not searching a database hoping to find good contacts; you are
@@ -512,7 +512,7 @@ export default function BlogPost() {
                       <span className="font-bold">Included</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Intent data (450B+ signals):</span>
+                      <span>Intent data (60B+ signals):</span>
                       <span className="font-bold">Included</span>
                     </div>
                     <div className="flex justify-between">
@@ -528,7 +528,7 @@ export default function BlogPost() {
                       <span className="font-bold">Included</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Data enrichment (360M+):</span>
+                      <span>Data enrichment (420M+):</span>
                       <span className="font-bold">Included</span>
                     </div>
                     <div className="border-t pt-3 flex justify-between text-lg">
@@ -765,7 +765,7 @@ export default function BlogPost() {
                   <tr>
                     <td className="border border-gray-300 p-3 font-bold">Database Size</td>
                     <td className="border border-gray-300 p-3">160M+ contacts</td>
-                    <td className="border border-gray-300 p-3 text-green-600 font-bold">360M+ profiles</td>
+                    <td className="border border-gray-300 p-3 text-green-600 font-bold">420M+ profiles</td>
                   </tr>
                   <tr className="bg-gray-50">
                     <td className="border border-gray-300 p-3 font-bold">Email Accuracy</td>

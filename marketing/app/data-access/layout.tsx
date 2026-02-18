@@ -3,8 +3,8 @@ import { StructuredData } from '@/components/seo/structured-data'
 import { generateBreadcrumbSchema } from '@/lib/seo/structured-data'
 
 export const metadata = generateMetadata({
-  title: 'B2B Data Access - 220M+ Consumer & 140M+ Business Profiles',
-  description: 'Direct access to 220M+ consumer profiles and 140M+ business profiles. Query, filter, and export verified contact data on demand via API, bulk exports, or real-time lookups.',
+  title: 'B2B Data Access - 280M Consumer & 140M+ Business Profiles',
+  description: 'Direct access to 280M US consumer profiles and 140M+ business profiles. Query, filter, and export verified contact data on demand via API, bulk exports, or real-time lookups.',
   keywords: [
     'B2B data access',
     'contact data API',

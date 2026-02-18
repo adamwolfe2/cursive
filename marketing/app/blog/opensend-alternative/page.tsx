@@ -22,7 +22,7 @@ const faqs = [
   },
   {
     question: "How does Cursive compare to Opensend on identification rates?",
-    answer: "Cursive achieves a 70% person-level visitor identification rate, which is industry-leading. Opensend's identification rates vary but are generally lower than Cursive's benchmarks. Higher identification rates mean more visitors converted to known prospects, directly translating to more pipeline opportunities. Cursive also adds 450B+ behavioral intent signals on top of identification, so you can prioritize outreach to the highest-intent visitors first."
+    answer: "Cursive achieves a 70% person-level visitor identification rate, which is industry-leading. Opensend's identification rates vary but are generally lower than Cursive's benchmarks. Higher identification rates mean more visitors converted to known prospects, directly translating to more pipeline opportunities. Cursive also adds 60B+ behavioral intent signals on top of identification, so you can prioritize outreach to the highest-intent visitors first."
   },
   {
     question: "Does Opensend have AI-powered outreach automation?",
@@ -34,11 +34,11 @@ const faqs = [
   },
   {
     question: "What is the best Opensend alternative for B2B SaaS companies?",
-    answer: "For B2B SaaS companies, Cursive is the top Opensend alternative because it is purpose-built for the SaaS GTM motion: identify high-intent website visitors (pricing page visitors, feature comparison readers, free trial researchers), enrich them with 450B+ intent signals, and automatically engage them with AI-personalized multi-channel outreach across email, LinkedIn, SMS, and direct mail. Cursive's 70% identification rate and automated outreach mean your best-fit prospects are contacted within minutes of visiting your site -- not days later after a rep manually reviews a list."
+    answer: "For B2B SaaS companies, Cursive is the top Opensend alternative because it is purpose-built for the SaaS GTM motion: identify high-intent website visitors (pricing page visitors, feature comparison readers, free trial researchers), enrich them with 60B+ behaviors & URLs scanned weekly, and automatically engage them with AI-personalized multi-channel outreach across email, LinkedIn, SMS, and direct mail. Cursive's 70% identification rate and automated outreach mean your best-fit prospects are contacted within minutes of visiting your site -- not days later after a rep manually reviews a list."
   },
   {
     question: "How does Cursive's visitor identification work compared to Opensend?",
-    answer: "Both Cursive and Opensend use identity graph technology to match anonymous website visitors to known contact records. Cursive's identity graph is powered by AudienceLab infrastructure with 220M+ consumer profiles and 140M+ business profiles, achieving a 70% person-level match rate -- consistently higher than alternatives in independent benchmarks. Critically, Cursive goes beyond identification: once a visitor is identified, it automatically overlays their behavioral intent signals, scores them by likelihood to convert, and triggers personalized AI-generated outreach across email, LinkedIn, SMS, and direct mail within minutes."
+    answer: "Both Cursive and Opensend use identity graph technology to match anonymous website visitors to known contact records. Cursive's identity graph is powered by AudienceLab infrastructure with 280M US consumer profiles and 140M+ business profiles, achieving a 70% person-level match rate -- consistently higher than alternatives in independent benchmarks. Critically, Cursive goes beyond identification: once a visitor is identified, it automatically overlays their behavioral intent signals, scores them by likelihood to convert, and triggers personalized AI-generated outreach across email, LinkedIn, SMS, and direct mail within minutes."
   }
 ]
 
@@ -151,9 +151,9 @@ export default function BlogPost() {
                       <td className="border border-gray-300 p-3 font-bold">Cursive</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold">70% person-level</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold">Built-in AI SDR</td>
-                      <td className="border border-gray-300 p-3 text-green-600 font-bold">450B+ signals</td>
+                      <td className="border border-gray-300 p-3 text-green-600 font-bold">60B+ signals</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold">Yes</td>
-                      <td className="border border-gray-300 p-3 text-green-600">220M+ consumer / 140M+ biz</td>
+                      <td className="border border-gray-300 p-3 text-green-600">280M consumer / 140M+ biz</td>
                       <td className="border border-gray-300 p-3">$1k/mo managed</td>
                     </tr>
                     <tr>
@@ -232,7 +232,7 @@ export default function BlogPost() {
                   off to your team, Cursive identifies visitors at a{" "}
                   <Link href="/visitor-identification" className="text-blue-600 hover:underline">70% person-level match rate</Link>{" "}
                   -- the highest in the industry -- then immediately enriches each identified visitor with
-                  450B+ behavioral intent signals to score their purchase readiness, and automatically triggers
+                  60B+ behavioral intent signals to score their purchase readiness, and automatically triggers
                   personalized AI-generated outreach across email, LinkedIn, SMS, and direct mail. The entire
                   process from visit to first outreach happens in minutes, not days.
                 </p>
@@ -247,7 +247,7 @@ export default function BlogPost() {
                       </li>
                       <li className="flex items-center gap-2">
                         <Check className="w-4 h-4 text-green-600" />
-                        450B+ intent signals to prioritize highest-value visitors
+                        60B+ behaviors & URLs scanned weekly to prioritize highest-value visitors
                       </li>
                       <li className="flex items-center gap-2">
                         <Check className="w-4 h-4 text-green-600" />
@@ -259,7 +259,7 @@ export default function BlogPost() {
                       </li>
                       <li className="flex items-center gap-2">
                         <Check className="w-4 h-4 text-green-600" />
-                        220M+ consumer + 140M+ business profiles for enrichment
+                        280M consumer + 140M+ business profiles for enrichment
                       </li>
                       <li className="flex items-center gap-2">
                         <Check className="w-4 h-4 text-green-600" />
@@ -786,7 +786,7 @@ export default function BlogPost() {
 
           <MachineSection title="Alternatives Compared">
             <MachineList items={[
-              "1. Cursive -- 70% visitor ID, 450B+ intent signals, AI SDR, direct mail, $0.60/lead or $1k/mo",
+              "1. Cursive -- 70% visitor ID, 60B+ behaviors & URLs scanned weekly, AI SDR, direct mail, $0.60/lead or $1k/mo",
               "2. Warmly -- ~40% visitor ID, real-time CRM alerts, $3,500/mo minimum (annual)",
               "3. RB2B -- 50-60% visitor ID, LinkedIn-focused, free tier available",
               "4. Apollo.io -- company-level visitor ID, 200M+ contacts, $49-$99/user/mo",
@@ -800,10 +800,10 @@ export default function BlogPost() {
             <MachineList items={[
               "70% person-level identification rate -- industry-leading vs Opensend",
               "Automated AI SDR triggered on visitor identification -- no manual work",
-              "450B+ behavioral intent signals to prioritize highest-value visitors",
+              "60B+ behavioral intent signals to prioritize highest-value visitors",
               "Direct mail channel -- unique among visitor ID platforms",
               "95%+ email deliverability guaranteed",
-              "220M+ consumer + 140M+ business profiles for full enrichment",
+              "280M consumer + 140M+ business profiles for full enrichment",
               "Month-to-month pricing: $0.60/lead or $1,000/month managed",
             ]} />
           </MachineSection>

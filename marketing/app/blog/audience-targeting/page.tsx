@@ -21,7 +21,7 @@ const faqs = [
   },
   {
     question: "What data sources are best for B2B audience segmentation?",
-    answer: "The most effective B2B segmentation combines four data layers: firmographic data (company size, industry, revenue), technographic data (technology stack, tools used), intent data (content consumption, search behavior, website visits), and behavioral data (engagement history, email opens, page views). Platforms like Cursive unify 220M+ consumer and 140M+ business profiles with 450B+ monthly intent signals for comprehensive segmentation.",
+    answer: "The most effective B2B segmentation combines four data layers: firmographic data (company size, industry, revenue), technographic data (technology stack, tools used), intent data (content consumption, search behavior, website visits), and behavioral data (engagement history, email opens, page views). Platforms like Cursive unify 280M US consumer and 140M+ business profiles with 60B+ behaviors & URLs scanned weekly for comprehensive segmentation.",
   },
   {
     question: "How is intent-based targeting different from firmographic targeting?",
@@ -398,7 +398,7 @@ export default function AudienceTargetingPage() {
               <p>
                 Third-party intent data tracks content consumption across thousands of B2B websites. When a target account
                 starts reading articles about topics related to your solution, they&apos;re likely entering a buying cycle.
-                Cursive tracks <strong>450B+ monthly intent signals</strong> across 30,000+ behavioral categories to
+                Cursive tracks <strong>60B+ behaviors & URLs scanned weekly</strong> across 30,000+ behavioral categories to
                 surface accounts showing research behavior relevant to your product.
               </p>
 
@@ -789,7 +789,7 @@ export default function AudienceTargetingPage() {
               </p>
 
               <p>
-                Cursive gives you access to 220M+ consumer and 140M+ business profiles with unlimited segmentation.
+                Cursive gives you access to 280M US consumer and 140M+ business profiles with unlimited segmentation.
                 Build audiences based on company size, industry, technology stack, intent signals, and 30,000+ behavioral
                 categories. No size caps, no restrictive licensing. <Link href="/audience-builder">Try the audience builder</Link> and
                 see how precise your targeting can get.
@@ -810,7 +810,7 @@ export default function AudienceTargetingPage() {
         <DashboardCTA
           headline="Build Your Perfect"
           subheadline="Audience in Minutes"
-          description="Access 220M+ consumer and 140M+ business profiles. Build unlimited audiences with no size caps. Filter by firmographic, demographic, behavioral, and intent data."
+          description="Access 280M US consumer and 140M+ business profiles. Build unlimited audiences with no size caps. Filter by firmographic, demographic, behavioral, and intent data."
         />
 
         {/* Related Posts */}
@@ -912,13 +912,13 @@ export default function AudienceTargetingPage() {
               { label: "Visitor Identification Guide", href: "/blog/how-to-identify-website-visitors-technical-guide", description: "Turn anonymous traffic into identified accounts" },
               { label: "Scaling Outbound", href: "/blog/scaling-outbound", description: "Go from 10 emails/day to 200+ without killing quality" },
               { label: "Data Platforms Guide", href: "/blog/data-platforms", description: "Choose the right B2B data platform for your team" },
-              { label: "Audience Builder", href: "/audience-builder", description: "Build unlimited audiences with 220M+ profiles" },
+              { label: "Audience Builder", href: "/audience-builder", description: "Build unlimited audiences with 280M profiles" },
             ]} />
           </MachineSection>
 
           <MachineSection title="Get Started with Cursive">
             <p className="text-gray-700 mb-3">
-              Cursive provides 220M+ consumer and 140M+ business profiles with 450B+ monthly intent signals for comprehensive audience targeting. Build unlimited segments with no size caps.
+              Cursive provides 280M US consumer and 140M+ business profiles with 60B+ behaviors & URLs scanned weekly for comprehensive audience targeting. Build unlimited segments with no size caps.
             </p>
             <MachineList items={[
               { label: "Audience Builder", href: "/audience-builder", description: "Build precise audience segments with firmographic, intent, and behavioral data" },

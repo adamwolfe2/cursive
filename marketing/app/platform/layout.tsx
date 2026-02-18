@@ -7,11 +7,11 @@ export { metadata }
 const platformFAQs = [
   {
     question: 'What is the Cursive platform?',
-    answer: 'Cursive is an AI-powered B2B lead generation and outreach platform that identifies anonymous website visitors, enriches them with data from 220M+ profiles, and automates personalized multi-channel outreach across email, LinkedIn, SMS, and direct mail. It combines visitor identification, intent data, audience building, and AI-driven campaigns in one unified platform.',
+    answer: 'Cursive is an AI-powered B2B lead generation and outreach platform that identifies anonymous website visitors, enriches them with data from 280M profiles, and automates personalized multi-channel outreach across email, LinkedIn, SMS, and direct mail. It combines visitor identification, intent data, audience building, and AI-driven campaigns in one unified platform.',
   },
   {
     question: 'How does Cursive identify anonymous website visitors?',
-    answer: 'Cursive uses a JavaScript pixel placed on your website that captures visitor signals. Our system matches those signals against our database of 220M+ consumer and 140M+ business profiles using IP intelligence, device fingerprinting, and behavioral analysis to identify up to 70% of B2B visitors in real-time.',
+    answer: 'Cursive uses a JavaScript pixel placed on your website that captures visitor signals. Our system matches those signals against our database of 280M US consumer and 140M+ business profiles using IP intelligence, device fingerprinting, and behavioral analysis to identify up to 70% of B2B visitors in real-time.',
   },
   {
     question: 'What is an AI SDR and how does Cursive use it?',
@@ -27,7 +27,7 @@ const platformFAQs = [
   },
   {
     question: 'What is intent data and how does Cursive use it?',
-    answer: 'Intent data tracks online research behavior to predict purchase readiness. Cursive tracks 450B+ monthly intent signals across 30,000+ commercial categories. When someone researches topics related to your product, Cursive surfaces them as high-intent prospects. Audiences update weekly with three intent tiers: Hot (7-day activity), Warm (14-day), and Scale (30-day).',
+    answer: 'Intent data tracks online research behavior to predict purchase readiness. Cursive tracks 60B+ behaviors & URLs scanned weekly across 30,000+ commercial categories. When someone researches topics related to your product, Cursive surfaces them as high-intent prospects. Audiences update weekly with three intent tiers: Hot (7-day activity), Warm (14-day), and Scale (30-day).',
   },
   {
     question: 'Can Cursive replace my existing sales tools?',

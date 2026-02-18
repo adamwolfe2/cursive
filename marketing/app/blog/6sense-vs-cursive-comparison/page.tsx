@@ -25,7 +25,7 @@ const faqs = [
   },
   {
     question: "How accurate is Cursive compared to 6sense for visitor identification?",
-    answer: "Cursive achieves 70%+ identification rates at the person level, while 6sense focuses primarily on company-level identification. Cursive identifies individual visitors in real-time with 360M+ B2B and B2C profiles, whereas 6sense excels at predictive account scoring across your entire TAM. For actual visitor identification, Cursive provides more granular data."
+    answer: "Cursive achieves 70%+ identification rates at the person level, while 6sense focuses primarily on company-level identification. Cursive identifies individual visitors in real-time with 420M+ B2B and B2C profiles, whereas 6sense excels at predictive account scoring across your entire TAM. For actual visitor identification, Cursive provides more granular data."
   },
   {
     question: "Which platform is better for startups and SMBs?",
@@ -210,7 +210,7 @@ export default function BlogPost() {
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-green-600 mt-1 flex-shrink-0" />
-                    <span>360M+ B2B and B2C profile database</span>
+                    <span>420M+ B2B and B2C profile database</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-green-600 mt-1 flex-shrink-0" />
@@ -271,7 +271,7 @@ export default function BlogPost() {
                 <ul className="space-y-3 text-sm">
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-green-600 mt-1 flex-shrink-0" />
-                    <span><strong>450B+ real-time intent signals</strong></span>
+                    <span><strong>60B+ real-time intent signals</strong></span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-green-600 mt-1 flex-shrink-0" />
@@ -388,7 +388,7 @@ export default function BlogPost() {
             </p>
 
             <p>
-              Cursive draws from a database of 360M+ B2B and B2C profiles with 450B+ behavioral signals. Because it focuses on first-party data from your own website, the signals are inherently higher quality—you know with certainty that someone visited your site and what pages they viewed. This first-party data advantage means Cursive's insights are more accurate and more immediately actionable than third-party intent signals that may be days or weeks old.
+              Cursive draws from a database of 420M+ B2B and B2C profiles with 60B+ behavioral signals. Because it focuses on first-party data from your own website, the signals are inherently higher quality—you know with certainty that someone visited your site and what pages they viewed. This first-party data advantage means Cursive's insights are more accurate and more immediately actionable than third-party intent signals that may be days or weeks old.
             </p>
 
             <h3>Pricing & ROI</h3>
@@ -754,7 +754,7 @@ export default function BlogPost() {
           <MachineSection title="Visitor Identification">
             <MachineList items={[
               "6sense: account-level identification across TAM, anonymous company tracking, batch processing",
-              "Cursive: 70%+ person-level identification, real-time (sub-second), 360M+ B2B and B2C profiles, name + email + LinkedIn + company",
+              "Cursive: 70%+ person-level identification, real-time (sub-second), 420M+ B2B and B2C profiles, name + email + LinkedIn + company",
               "Winner: Cursive for teams needing individual contact details for outreach"
             ]} />
           </MachineSection>
@@ -762,7 +762,7 @@ export default function BlogPost() {
           <MachineSection title="Intent Data">
             <MachineList items={[
               "6sense: predictive account scoring across TAM, third-party intent from 4,000+ sites, buyer stage predictions, requires large TAM (5,000+ accounts)",
-              "Cursive: 450B+ real-time intent signals, person-level behavior tracking, page views + time on site + content consumed, buying intent scoring per visitor",
+              "Cursive: 60B+ real-time intent signals, person-level behavior tracking, page views + time on site + content consumed, buying intent scoring per visitor",
               "6sense better for broad market trends. Cursive better for converting inbound traffic"
             ]} />
           </MachineSection>

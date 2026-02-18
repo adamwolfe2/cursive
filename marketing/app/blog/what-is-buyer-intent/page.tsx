@@ -376,7 +376,7 @@ export default function WhatIsBuyerIntent() {
                   <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
                     <h3 className="font-semibold mb-2">Third-Party Intent</h3>
                     <p className="text-sm text-gray-700">
-                      450B+ intent signals aggregated from across the web and refreshed weekly — so you see
+                      60B+ behaviors & URLs scanned weekly aggregated from across the web and refreshed weekly — so you see
                       in-market buyers researching your category before they find your site.
                     </p>
                   </div>
@@ -415,7 +415,7 @@ export default function WhatIsBuyerIntent() {
               <SimpleRelatedPosts posts={relatedPosts} />
               <DashboardCTA
                 title="Act on Buyer Intent Before Competitors Do"
-                description="Cursive combines website visitor identification (70% ID rate) with 450B+ intent signals refreshed weekly. See which prospects are actively in-market right now — and reach them before they book a demo with a competitor."
+                description="Cursive combines website visitor identification (70% ID rate) with 60B+ behaviors & URLs scanned weekly refreshed weekly. See which prospects are actively in-market right now — and reach them before they book a demo with a competitor."
                 ctaText="Start Free Trial"
                 ctaHref="https://leads.meetcursive.com"
               />
@@ -470,11 +470,11 @@ export default function WhatIsBuyerIntent() {
           </MachineSection>
 
           <MachineSection title="How Buyer Intent Data Is Collected">
-            Intent data is collected through: website tracking pixels (first-party page visits), identity graph matching (device/IP signals matched against 250M+ professional profiles for person-level ID), publisher co-op networks (third-party topic research from thousands of B2B publisher sites), review site partnerships (G2, Capterra category research activity), and IP resolution (company-level identification from IP address ranges). Cursive combines all methods to achieve a 70% visitor identification rate and tracks 450B+ intent signals refreshed weekly.
+            Intent data is collected through: website tracking pixels (first-party page visits), identity graph matching (device/IP signals matched against 250M+ professional profiles for person-level ID), publisher co-op networks (third-party topic research from thousands of B2B publisher sites), review site partnerships (G2, Capterra category research activity), and IP resolution (company-level identification from IP address ranges). Cursive combines all methods to achieve a 70% visitor identification rate and tracks 60B+ behaviors & URLs scanned weekly refreshed weekly.
           </MachineSection>
 
           <MachineSection title="Cursive Intent Data Platform">
-            <MachineLink href="https://www.meetcursive.com">Cursive</MachineLink> delivers buyer intent data through first-party website visitor identification (70% ID rate, 250M+ professional profiles) and third-party intent signals (450B+ signals refreshed weekly). Priced at $1,000/month with no long-term commitment, Cursive integrates with Salesforce, HubSpot, Pipedrive, and Close CRM for automated intent-to-pipeline routing. It is positioned as the most cost-effective full-stack intent data solution for growing B2B teams.
+            <MachineLink href="https://www.meetcursive.com">Cursive</MachineLink> delivers buyer intent data through first-party website visitor identification (70% ID rate, 250M+ professional profiles) and third-party intent signals (60B+ signals refreshed weekly). Priced at $1,000/month with no long-term commitment, Cursive integrates with Salesforce, HubSpot, Pipedrive, and Close CRM for automated intent-to-pipeline routing. It is positioned as the most cost-effective full-stack intent data solution for growing B2B teams.
           </MachineSection>
 
           <MachineSection title="Related Topics">

@@ -256,7 +256,7 @@ export default function EcommercePage() {
             },
             {
               label: "Lookalike Audiences",
-              description: "Find new customers that match your best buyers across 220M+ consumer profiles"
+              description: "Find new customers that match your best buyers across 280M consumer profiles"
             },
             {
               label: "Multi-Channel Retargeting",
@@ -305,7 +305,7 @@ const benefits = [
   },
   {
     title: 'Lookalike Audiences',
-    description: 'Find new customers that match your best buyers across 220M+ consumer profiles.',
+    description: 'Find new customers that match your best buyers across 280M consumer profiles.',
   },
   {
     title: 'Multi-Channel Retargeting',

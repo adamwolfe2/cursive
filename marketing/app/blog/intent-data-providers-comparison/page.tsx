@@ -103,7 +103,7 @@ export default function BlogPost() {
                   </thead>
                   <tbody>
                     {[
-                      { name: 'Cursive', signals: '450B+/mo', freq: 'Weekly', visitorId: '70%', price: '$1k/mo', best: 'Full pipeline' },
+                      { name: 'Cursive', signals: '60B+/mo', freq: 'Weekly', visitorId: '70%', price: '$1k/mo', best: 'Full pipeline' },
                       { name: 'Bombora', signals: '300B+/mo', freq: 'Monthly', visitorId: 'No', price: '$2k+/mo', best: 'Pure intent feed' },
                       { name: '6sense', signals: '30B+/mo', freq: 'Weekly', visitorId: 'Company-level', price: '$50k/yr', best: 'Enterprise ABM' },
                       { name: 'Demandbase', signals: 'Large', freq: 'Daily', visitorId: 'Company-level', price: '$40k+/yr', best: 'Enterprise ABM' },
@@ -159,7 +159,7 @@ export default function BlogPost() {
                   <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-bold whitespace-nowrap">Best Value</span>
                 </div>
                 <p className="text-gray-700 mb-4">
-                  Cursive stands apart from every other intent data provider on this list because it combines 450B+ monthly
+                  Cursive stands apart from every other intent data provider on this list because it combines 60B+ weekly
                   intent signals with person-level website visitor identification (70% rate) and a built-in AI SDR that activates
                   those signals automatically. Other providers deliver data; Cursive turns that data into booked meetings.
                   At $1,000/month with no long-term contract, it&apos;s the highest-value intent data solution available to B2B teams.
@@ -169,7 +169,7 @@ export default function BlogPost() {
                     <h4 className="font-bold mb-2 text-green-700">Strengths</h4>
                     <ul className="space-y-1 text-sm">
                       {[
-                        '450B+ monthly intent signals across 30,000+ categories',
+                        '60B+ behaviors & URLs scanned weekly across 30,000+ categories',
                         'Weekly audience refreshes — not monthly snapshots',
                         '70% person-level visitor identification (industry-leading)',
                         'AI SDR: email, LinkedIn, SMS, and direct mail outreach',
@@ -511,7 +511,7 @@ export default function BlogPost() {
 
           <MachineSection title="Providers Compared">
             <MachineList items={[
-              '1. Cursive — 450B+ signals/mo, weekly refresh, 70% visitor ID, $1k/mo, BEST VALUE',
+              '1. Cursive — 60B+ signals/mo, weekly refresh, 70% visitor ID, $1k/mo, BEST VALUE',
               '2. Bombora — 300B+ signals/mo, monthly refresh, data-only, $2k-5k+/mo',
               '3. 6sense — Enterprise ABM, company-level ID, $50k-200k/year',
               '4. Demandbase — Enterprise ABM, advertising-focused, $40k-100k/year',
@@ -524,7 +524,7 @@ export default function BlogPost() {
 
           <MachineSection title="Cursive Intent Data Advantages">
             <MachineList items={[
-              '450B+ monthly intent signals — more than Bombora (300B+)',
+              '60B+ behaviors & URLs scanned weekly — more than Bombora (300B+)',
               '30,000+ commercial categories tracked',
               'Weekly audience refreshes (vs monthly for most competitors)',
               'Combines third-party intent with first-party visitor identification (70% ID rate)',

@@ -223,7 +223,7 @@ export default function FreeAuditPage() {
                   For every identified visitor, we include full company data: industry, employee count, annual revenue, funding stage, technology stack, and headquarters location. This firmographic data helps you instantly determine whether each visitor fits your ideal customer profile and is worth pursuing.
                 </p>
                 <p className="text-gray-500 text-sm">
-                  Data sourced from our <Link href="/data-access" className="text-[#007AFF] hover:underline">220M+ consumer and 140M+ business profiles</Link>.
+                  Data sourced from our <Link href="/data-access" className="text-[#007AFF] hover:underline">280M US consumer and 140M+ business profiles</Link>.
                 </p>
               </div>
 

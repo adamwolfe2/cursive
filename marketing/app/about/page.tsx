@@ -718,7 +718,7 @@ export default function AboutPage() {
           {
             label: "Data Access",
             href: "https://www.meetcursive.com/data-access",
-            description: "Learn about our 220M+ consumer profiles and 140M+ business profiles"
+            description: "Learn about our 280M US consumer profiles and 140M+ business profiles"
           },
           {
             label: "Pricing",

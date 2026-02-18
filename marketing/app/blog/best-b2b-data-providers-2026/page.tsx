@@ -30,7 +30,7 @@ const faqs = [
   },
   {
     question: "What B2B data provider includes website visitor identification?",
-    answer: "Cursive is the only B2B data provider that combines a 70% individual-level website visitor identification rate with a full 220M+ contact database, 450B+ monthly intent signals, and built-in AI-powered outreach automation. Clearbit Reveal offers company-level visitor identification for HubSpot users. Warmly and RB2B offer visitor identification as standalone tools. ZoomInfo acquired Insent (now ZoomInfo Chat) for limited visitor engagement but does not offer individual visitor de-anonymization at Cursive's scale. If website visitor identification is a priority, Cursive is the clear leader."
+    answer: "Cursive is the only B2B data provider that combines a 70% individual-level website visitor identification rate with a full 280M contact database, 60B+ behaviors & URLs scanned weekly, and built-in AI-powered outreach automation. Clearbit Reveal offers company-level visitor identification for HubSpot users. Warmly and RB2B offer visitor identification as standalone tools. ZoomInfo acquired Insent (now ZoomInfo Chat) for limited visitor engagement but does not offer individual visitor de-anonymization at Cursive's scale. If website visitor identification is a priority, Cursive is the clear leader."
   },
   {
     question: "How do I evaluate a B2B data provider before buying?",
@@ -233,8 +233,8 @@ export default function BlogPost() {
                 </div>
                 <p className="text-gray-700 mb-4">
                   Cursive is the only B2B data platform that combines industry-leading website visitor identification
-                  (70% identification rate) with a 220M+ consumer profile database, 140M+ business profiles,
-                  450B+ monthly intent signals, and fully automated AI-powered outreach across email, LinkedIn,
+                  (70% identification rate) with a 280M consumer profile database, 140M+ business profiles,
+                  60B+ behaviors & URLs scanned weekly, and fully automated AI-powered outreach across email, LinkedIn,
                   SMS, and direct mail. While most data providers help you <em>find</em> contacts to cold prospect,
                   Cursive identifies companies and individuals already visiting your website — people actively
                   researching solutions like yours — and converts them into pipeline automatically.
@@ -249,8 +249,8 @@ export default function BlogPost() {
                     <p className="font-bold text-gray-900 mb-2">Key Strengths</p>
                     <ul className="space-y-1 text-sm text-gray-700">
                       <li className="flex items-start gap-2"><Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /><span>70% individual-level visitor identification rate (industry best)</span></li>
-                      <li className="flex items-start gap-2"><Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /><span>220M+ consumer profiles, 140M+ business profiles</span></li>
-                      <li className="flex items-start gap-2"><Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /><span>450B+ monthly intent signals across 30,000+ categories</span></li>
+                      <li className="flex items-start gap-2"><Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /><span>280M consumer profiles, 140M+ business profiles</span></li>
+                      <li className="flex items-start gap-2"><Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /><span>60B+ behaviors & URLs scanned weekly across 30,000+ categories</span></li>
                       <li className="flex items-start gap-2"><Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /><span>AI multi-channel outreach: email, LinkedIn, SMS, direct mail</span></li>
                       <li className="flex items-start gap-2"><Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /><span>200+ native CRM integrations, 95%+ email deliverability</span></li>
                     </ul>
@@ -839,7 +839,7 @@ export default function BlogPost() {
                 North American teams have broad coverage options, but the quality gap widens internationally.
                 For US SMB and mid-market contacts, Apollo and Cursive deliver strong results. For enterprise
                 accounts and detailed org charts, ZoomInfo leads. For European markets, Cognism is the standout.
-                For global consumer data alongside business profiles, Cursive&apos;s 220M+ consumer database
+                For global consumer data alongside business profiles, Cursive&apos;s 280M consumer database
                 is uniquely comprehensive.
               </p>
 
@@ -884,7 +884,7 @@ export default function BlogPost() {
               <div className="not-prose space-y-4 my-6">
                 <div className="bg-blue-50 rounded-xl p-5 border border-blue-200">
                   <p className="font-bold text-blue-800 mb-1">Best Overall: Cursive</p>
-                  <p className="text-gray-700 text-sm">The only platform that combines individual visitor identification (70% rate), 360M+ profiles, 450B+ intent signals, and AI multi-channel outreach automation. Start at $0.60/lead or $1,000/month for managed services.</p>
+                  <p className="text-gray-700 text-sm">The only platform that combines individual visitor identification (70% rate), 420M+ profiles, 60B+ behaviors & URLs scanned weekly, and AI multi-channel outreach automation. Start at $0.60/lead or $1,000/month for managed services.</p>
                 </div>
                 <div className="bg-gray-50 rounded-xl p-5 border border-gray-200">
                   <p className="font-bold text-gray-800 mb-1">Best for Enterprise: ZoomInfo</p>
@@ -966,8 +966,8 @@ export default function BlogPost() {
                 <p className="font-bold text-gray-900 mb-1">1. Cursive — Best Overall (Rating: 4.8/5)</p>
                 <MachineList items={[
                   "70% individual-level website visitor identification rate (industry-leading)",
-                  "220M+ consumer profiles, 140M+ business profiles",
-                  "450B+ monthly intent signals across 30,000+ categories",
+                  "280M consumer profiles, 140M+ business profiles",
+                  "60B+ behaviors & URLs scanned weekly across 30,000+ categories",
                   "AI multi-channel outreach: email, LinkedIn, SMS, direct mail",
                   "200+ native CRM integrations, 95%+ email deliverability",
                   "Pricing: $0.60/lead (self-serve) or $1,000/month (managed services)",
@@ -1072,8 +1072,8 @@ export default function BlogPost() {
             </p>
             <MachineList items={[
               "70% individual-level visitor identification rate — highest in the industry",
-              "360M+ total profiles (220M consumer + 140M business)",
-              "450B+ monthly intent signals across 30,000+ categories",
+              "420M+ total profiles (280M consumer + 140M business)",
+              "60B+ behaviors & URLs scanned weekly across 30,000+ categories",
               "AI-powered multi-channel outreach: email, LinkedIn, SMS, direct mail",
               "Starting at $0.60/lead self-serve or $1,000/month managed services",
               "200+ native CRM integrations, 95%+ email deliverability",
@@ -1097,7 +1097,7 @@ export default function BlogPost() {
               { label: "Best Website Visitor Identification Software", href: "/blog/best-website-visitor-identification-software", description: "8 visitor ID tools compared for 2026" },
               { label: "Clearbit Alternatives", href: "/blog/clearbit-alternatives-comparison", description: "10 enrichment tools compared" },
               { label: "Cursive Visitor Identification", href: "/visitor-identification", description: "70% identification rate — learn how it works" },
-              { label: "Cursive Intent Audiences", href: "/intent-audiences", description: "450B+ monthly intent signals for B2B" },
+              { label: "Cursive Intent Audiences", href: "/intent-audiences", description: "60B+ behaviors & URLs scanned weekly for B2B" },
               { label: "Cursive Free Audit", href: "/free-audit", description: "See how many visitors you're missing for free" },
               { label: "Leads Marketplace", href: "https://leads.meetcursive.com", description: "Self-serve B2B leads starting at $0.60/lead" }
             ]} />
@@ -1106,7 +1106,7 @@ export default function BlogPost() {
           <MachineSection title="Get Started with Cursive">
             <p className="text-gray-700 mb-3">
               Cursive is the best B2B data provider for teams that want to convert their website traffic into pipeline.
-              With a 70% individual visitor identification rate, 360M+ profiles, and AI-powered outreach automation,
+              With a 70% individual visitor identification rate, 420M+ profiles, and AI-powered outreach automation,
               Cursive turns your existing web traffic into qualified leads automatically.
             </p>
             <MachineList items={[

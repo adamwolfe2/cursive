@@ -8,7 +8,7 @@ import { FAQSection } from "@/components/homepage/faq-section"
 const homepageFAQs = [
   {
     question: 'How does visitor identification work?',
-    answer: 'Cursive uses advanced IP intelligence, device fingerprinting, and behavioral analysis to identify up to 70% of your anonymous website visitors in real-time. When someone visits your site, we instantly match their digital footprint against our database of 220M+ consumer and 140M+ business profiles.',
+    answer: 'Cursive uses advanced IP intelligence, device fingerprinting, and behavioral analysis to identify up to 70% of your anonymous website visitors in real-time. When someone visits your site, we instantly match their digital footprint against our database of 280M US consumer and 140M+ business profiles.',
   },
   {
     question: 'How accurate is the data?',
@@ -24,7 +24,7 @@ const homepageFAQs = [
   },
   {
     question: 'How is Cursive different from competitors?',
-    answer: 'Unlike traditional visitor ID tools that just deliver data, Cursive combines identification with AI-powered activation. We include 450B+ intent signals, real-time identification, and multi-channel campaigns out of the box.',
+    answer: 'Unlike traditional visitor ID tools that just deliver data, Cursive combines identification with AI-powered activation. We include 60B+ behaviors & URLs scanned weekly, real-time identification, and multi-channel campaigns out of the box.',
   },
 ]
 
@@ -80,7 +80,7 @@ export default function HomePage() {
           <div className="mb-12 pb-6 border-b border-gray-200">
             <h1 className="text-2xl text-gray-900 font-bold mb-4">Turn Website Visitors Into Booked Meetings | Cursive</h1>
             <p className="text-gray-700 leading-relaxed">
-              98% of visitors leave without converting. Cursive identifies 70% of anonymous website visitors, enriches them against 220M+ verified contacts, and automates personalized outreach across email, LinkedIn, and SMS.
+              98% of visitors leave without converting. Cursive identifies 70% of anonymous website visitors, enriches them against 280M verified contacts, and automates personalized outreach across email, LinkedIn, and SMS.
             </p>
           </div>
 
@@ -88,9 +88,9 @@ export default function HomePage() {
           <MachineSection title="Key Stats">
             <MachineList items={[
               "70% - Visitor identification rate for B2B traffic",
-              "220M+ - Consumer profiles in our database",
+              "280M - US consumer profiles in our database",
               "140M+ - Business profiles in our database",
-              "450B+ - Monthly intent signals tracked across 30,000+ categories",
+              "60B+ - Behaviors & URLs scanned weekly across 30,000+ categories",
               "200+ - Native CRM and marketing tool integrations"
             ]} />
           </MachineSection>
@@ -111,12 +111,12 @@ export default function HomePage() {
               {
                 label: "Intent Data Audiences",
                 href: "https://www.meetcursive.com/intent-audiences",
-                description: "Pre-built segments across 8 high-value verticals with verified purchase intent signals. Updated weekly with 450B+ monthly intent signals."
+                description: "Pre-built segments across 8 high-value verticals with verified purchase intent signals. Updated weekly with 60B+ behaviors & URLs scanned weekly."
               },
               {
                 label: "Audience Builder",
                 href: "https://www.meetcursive.com/audience-builder",
-                description: "Build unlimited custom audiences using 220M+ consumer and 140M+ business profiles. No size limits or restrictive licensing."
+                description: "Build unlimited custom audiences using 280M US consumer and 140M+ business profiles. No size limits or restrictive licensing."
               },
               {
                 label: "Direct Mail Automation",
@@ -159,7 +159,7 @@ export default function HomePage() {
               <div>
                 <p className="text-gray-900 font-semibold mb-2">Intent Data:</p>
                 <MachineList items={[
-                  "450B+ monthly intent signals",
+                  "60B+ behaviors & URLs scanned weekly",
                   "30,000+ commercial categories",
                   "Real-time data (not monthly snapshots)",
                   "3 intent levels: Hot (7-day), Warm (14-day), Scale (30-day)",
@@ -302,7 +302,7 @@ export default function HomePage() {
                 <p className="text-gray-900 font-semibold mb-2">vs. Data Providers (Clearbit, ZoomInfo):</p>
                 <MachineList items={[
                   "Activation included with data delivery",
-                  "450B+ intent signals across 30,000+ categories",
+                  "60B+ behaviors & URLs scanned weekly across 30,000+ categories",
                   "Anonymous visitor identification built-in",
                   "Multi-channel campaigns included"
                 ]} />

@@ -122,14 +122,14 @@ export function HumanHomePage() {
               </h1>
 
               <p className="text-base text-gray-600 mb-4 leading-relaxed max-w-lg mx-auto lg:mx-0">
-                98% of visitors leave your site without converting. <span className="font-cursive text-gray-500 text-lg">Cursive</span> tracks leads with pixels, enriches leads against 220M verified contacts, and automates personalized outreach so you can make sales in your sleep.
+                98% of visitors leave your site without converting. <span className="font-cursive text-gray-500 text-lg">Cursive</span> tracks leads with pixels, enriches leads against 280M verified contacts, and automates personalized outreach so you can make sales in your sleep.
               </p>
 
               {/* Stats */}
               <div className="flex justify-center lg:justify-start gap-6 mb-4 py-3 border-y border-gray-100">
                 {[
                   { value: "70%", label: "Visitor ID Rate" },
-                  { value: "220M+", label: "Consumer Profiles" },
+                  { value: "280M", label: "Consumer Profiles" },
                   { value: "140M+", label: "Business Profiles" },
                 ].map((stat) => (
                   <div key={stat.label}>
@@ -595,7 +595,7 @@ const coreFeatures = [
     description: "Reach prospects actively searching for solutions like yours—right now",
     icon: "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z",
     items: [
-      "450B+ monthly intent signals",
+      "60B+ behaviors & URLs scanned weekly",
       "30,000+ commercial categories",
       "Real-time (not monthly snapshots)",
       "Know when prospects are in-market"
@@ -603,7 +603,7 @@ const coreFeatures = [
   },
   {
     title: "Audience Builder",
-    description: "Build unlimited lead lists with 220M+ consumer and 140M+ business profiles",
+    description: "Build unlimited lead lists with 280M US consumer and 140M+ business profiles",
     icon: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z",
     items: [
       "No caps on audience size",

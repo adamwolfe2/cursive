@@ -22,7 +22,7 @@ export default function IntentAudiencesPage() {
         "@type": "Product",
         "@id": "https://www.meetcursive.com/intent-audiences#product",
         "name": "Cursive Intent Audiences",
-        "description": "Pre-built intent audience segments across 8 high-value verticals. Access 280M+ US profiles with 450B+ monthly intent signals. Updated every 7 days.",
+        "description": "Pre-built intent audience segments across 8 high-value verticals. Access 280M+ US profiles with 60B+ behaviors & URLs scanned weekly. Updated every 7 days.",
         "brand": {
           "@type": "Brand",
           "name": "Cursive"
@@ -60,7 +60,7 @@ export default function IntentAudiencesPage() {
             "name": "What are intent audiences?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Intent audiences are pre-built segments of people actively researching specific products or services. We track 450B+ monthly intent signals to identify prospects showing purchase intent across 8 high-value verticals."
+              "text": "Intent audiences are pre-built segments of people actively researching specific products or services. We track 60B+ behaviors & URLs scanned weekly to identify prospects showing purchase intent across 8 high-value verticals."
             }
           },
           {
@@ -170,7 +170,7 @@ export default function IntentAudiencesPage() {
                 Reach Buyers When They're Ready to Purchase
               </h1>
               <p className="text-xl text-gray-600 mb-6 max-w-3xl mx-auto leading-relaxed">
-                Pre-built audience segments across 8 high-value verticals. 280M+ US profiles tracked with 450B+ monthly intent signals. Updated every 7 days with fresh, in-market prospects.
+                Pre-built audience segments across 8 high-value verticals. 280M+ US profiles tracked with 60B+ behaviors & URLs scanned weekly. Updated every 7 days with fresh, in-market prospects.
               </p>
               <p className="text-lg text-gray-500 mb-8 max-w-2xl mx-auto">
                 Skip the manual list building. Launch campaigns in minutes with audiences already showing purchase intent. No research, no guessing—just ready-to-convert prospects.
@@ -210,7 +210,7 @@ export default function IntentAudiencesPage() {
                 { value: '8', label: 'Verticals', icon: Layers },
                 { value: '46+', label: 'Segments', icon: Filter },
                 { value: '280M+', label: 'US Profiles', icon: Users },
-                { value: '450B+', label: 'Intent Signals/Month', icon: Sparkles },
+                { value: '60B+', label: 'Intent Signals/Month', icon: Sparkles },
               ].map((stat, i) => (
                 <motion.div
                   key={i}
@@ -599,7 +599,7 @@ export default function IntentAudiencesPage() {
               {[
                 {
                   question: "What are intent audiences?",
-                  answer: "Intent audiences are pre-built segments of people actively researching specific products or services. We track 450B+ monthly intent signals to identify prospects showing purchase intent across 8 high-value verticals."
+                  answer: "Intent audiences are pre-built segments of people actively researching specific products or services. We track 60B+ behaviors & URLs scanned weekly to identify prospects showing purchase intent across 8 high-value verticals."
                 },
                 {
                   question: "How fresh is the intent data?",
@@ -802,14 +802,14 @@ export default function IntentAudiencesPage() {
         <div className="mb-12 pb-6 border-b border-gray-200">
           <h1 className="text-2xl text-gray-900 font-bold mb-4">CURSIVE INTENT AUDIENCES</h1>
           <p className="text-gray-700 leading-relaxed">
-            Pre-built audience segments across 8 high-value verticals. Access 280M+ US profiles with 450B+ monthly intent signals. Updated every 7 days with fresh, in-market prospects.
+            Pre-built audience segments across 8 high-value verticals. Access 280M+ US profiles with 60B+ behaviors & URLs scanned weekly. Updated every 7 days with fresh, in-market prospects.
           </p>
         </div>
 
         {/* Overview */}
         <MachineSection title="Product Overview">
           <p className="text-gray-700 mb-4">
-            Intent audiences are pre-built segments of people actively researching specific products or services. We track 450B+ monthly intent signals to identify prospects showing purchase intent across 8 high-value verticals. Skip manual list building and launch campaigns in minutes with ready-to-convert prospects.
+            Intent audiences are pre-built segments of people actively researching specific products or services. We track 60B+ behaviors & URLs scanned weekly to identify prospects showing purchase intent across 8 high-value verticals. Skip manual list building and launch campaigns in minutes with ready-to-convert prospects.
           </p>
           <MachineList items={[
             "8 high-value verticals with 46+ specific segments",

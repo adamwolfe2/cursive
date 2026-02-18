@@ -47,7 +47,7 @@ const directMailFAQs = [
   },
   {
     question: 'How do I find physical addresses for B2B direct mail?',
-    answer: 'The biggest barrier to B2B direct mail is address data. Options: (1) Ask for address at the meeting request stage; (2) Use a visitor identification platform (Cursive matches visitors to 220M+ verified profiles including business and home addresses); (3) Purchase address data from a B2B data provider for your target list. Cursive\'s direct mail automation automatically resolves addresses from visitor identification — no manual address collection required.',
+    answer: 'The biggest barrier to B2B direct mail is address data. Options: (1) Ask for address at the meeting request stage; (2) Use a visitor identification platform (Cursive matches visitors to 280M verified profiles including business and home addresses); (3) Purchase address data from a B2B data provider for your target list. Cursive\'s direct mail automation automatically resolves addresses from visitor identification — no manual address collection required.',
   },
 ]
 

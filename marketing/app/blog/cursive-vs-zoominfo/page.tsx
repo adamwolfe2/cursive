@@ -26,7 +26,7 @@ const faqs = [
   },
   {
     question: "How does Cursive compare to ZoomInfo for intent data?",
-    answer: "ZoomInfo uses Bombora-powered buyer intent, which is a third-party data co-op tracking B2B content consumption across the web. Cursive tracks 450B+ monthly intent signals across 30,000+ categories, including both third-party signals and first-party signals from your own website -- such as specific pages visited, time spent on features vs. pricing pages, return visits, and content consumed. First-party website behavioral data is the most actionable form of intent because it reflects direct interest in your specific solution, not just the broader category."
+    answer: "ZoomInfo uses Bombora-powered buyer intent, which is a third-party data co-op tracking B2B content consumption across the web. Cursive tracks 60B+ behaviors & URLs scanned weekly across 30,000+ categories, including both third-party signals and first-party signals from your own website -- such as specific pages visited, time spent on features vs. pricing pages, return visits, and content consumed. First-party website behavioral data is the most actionable form of intent because it reflects direct interest in your specific solution, not just the broader category."
   },
   {
     question: "Can small businesses afford ZoomInfo? What is the alternative?",
@@ -142,7 +142,7 @@ export default function BlogPost() {
                     </tr>
                     <tr className="bg-gray-50">
                       <td className="border border-gray-300 p-3 font-bold">Consumer Profiles</td>
-                      <td className="border border-gray-300 p-3 text-green-600 font-bold">220M+ consumer profiles</td>
+                      <td className="border border-gray-300 p-3 text-green-600 font-bold">280M consumer profiles</td>
                       <td className="border border-gray-300 p-3">B2B only</td>
                     </tr>
                     <tr>
@@ -152,7 +152,7 @@ export default function BlogPost() {
                     </tr>
                     <tr className="bg-gray-50">
                       <td className="border border-gray-300 p-3 font-bold">Intent Data</td>
-                      <td className="border border-gray-300 p-3 text-green-600 font-bold">450B+ signals (1st + 3rd party)</td>
+                      <td className="border border-gray-300 p-3 text-green-600 font-bold">60B+ signals (1st + 3rd party)</td>
                       <td className="border border-gray-300 p-3">Bombora 3rd-party intent</td>
                     </tr>
                     <tr>
@@ -250,7 +250,7 @@ export default function BlogPost() {
                         <span className="font-bold">Included</span>
                       </div>
                       <div className="flex justify-between">
-                        <span>Intent data (450B+ signals):</span>
+                        <span>Intent data (60B+ signals):</span>
                         <span className="font-bold">Included</span>
                       </div>
                       <div className="flex justify-between">
@@ -377,7 +377,7 @@ export default function BlogPost() {
                 gold standard.
               </p>
               <p>
-                Cursive&apos;s database is structured differently. With 220M+ consumer profiles and 140M+ business
+                Cursive&apos;s database is structured differently. With 280M consumer profiles and 140M+ business
                 profiles, it covers both B2B and B2C identification, making it particularly powerful for companies
                 that sell across audiences or want to reach decision-makers across multiple data dimensions. The
                 business profile depth is strong for SMB through mid-market targets, though it does not match
@@ -396,7 +396,7 @@ export default function BlogPost() {
                   <tbody className="bg-white">
                     <tr>
                       <td className="border border-gray-300 p-3 font-bold">Consumer Profiles</td>
-                      <td className="border border-gray-300 p-3 text-green-600 font-bold">220M+ (industry-leading)</td>
+                      <td className="border border-gray-300 p-3 text-green-600 font-bold">280M (industry-leading)</td>
                       <td className="border border-gray-300 p-3 text-red-600">B2B only</td>
                     </tr>
                     <tr className="bg-gray-50">
@@ -450,7 +450,7 @@ export default function BlogPost() {
                 it is third-party data with inherent limitations in attribution, timeliness, and specificity.
               </p>
               <p>
-                Cursive tracks 450B+ monthly intent signals across 30,000+ categories. Critically, this includes
+                Cursive tracks 60B+ behaviors & URLs scanned weekly across 30,000+ categories. Critically, this includes
                 both third-party signals AND first-party behavioral signals from your own website -- the gold
                 standard in intent data. When someone visits your features page, spends time on your pricing
                 calculator, or returns for the third time in a week, those are direct indicators of purchase
@@ -493,7 +493,7 @@ export default function BlogPost() {
                   <ul className="space-y-3 text-sm">
                     <li className="flex items-start gap-2">
                       <Check className="w-4 h-4 text-green-600 mt-1 flex-shrink-0" />
-                      <span><strong>450B+ monthly intent signals across 30,000+ categories</strong></span>
+                      <span><strong>60B+ behaviors & URLs scanned weekly across 30,000+ categories</strong></span>
                     </li>
                     <li className="flex items-start gap-2">
                       <Check className="w-4 h-4 text-green-600 mt-1 flex-shrink-0" />
@@ -522,7 +522,7 @@ export default function BlogPost() {
               <p>
                 <strong>Winner: Cursive</strong> for actionable intent. First-party behavioral signals from your own
                 website are the most predictive intent data available because they reflect direct interest in your
-                specific product. The combination of first-party and third-party signals at 450B+ monthly data points
+                specific product. The combination of first-party and third-party signals at 60B+ behaviors & URLs scanned weekly
                 gives Cursive significantly more signal density than ZoomInfo&apos;s Bombora integration.
               </p>
 
@@ -789,7 +789,7 @@ export default function BlogPost() {
                 mid-market companies -- that want to stop spraying cold emails at purchased databases and
                 start converting the warm prospects already visiting their website. With{" "}
                 <Link href="/visitor-identification" className="text-blue-600 hover:underline">70% person-level identification</Link>,
-                450B+ intent signals,{" "}
+                60B+ behaviors & URLs scanned weekly,{" "}
                 <Link href="/platform" className="text-blue-600 hover:underline">AI-powered multi-channel outreach</Link>,
                 95%+ email deliverability, 200+ CRM integrations, and month-to-month pricing starting at
                 $1,000/month -- Cursive delivers more actionable pipeline per dollar than any database-first
@@ -877,12 +877,12 @@ export default function BlogPost() {
               "Cursive starting price: $0.60/lead (self-serve) or $1k/month managed. ZoomInfo: $15,000-$50,000+/year",
               "Cursive contract: Month-to-month. ZoomInfo: Annual (multi-year common)",
               "Cursive visitor ID: 70% person-level. ZoomInfo WebSights: Company-level only",
-              "Cursive intent data: 450B+ signals (1st party + 3rd party). ZoomInfo: Bombora 3rd-party only",
+              "Cursive intent data: 60B+ signals (1st party + 3rd party). ZoomInfo: Bombora 3rd-party only",
               "Cursive AI outreach: Built-in AI SDR. ZoomInfo: Engage add-on (paid separately)",
               "Cursive email deliverability: 95%+. ZoomInfo: ~80% (shared infrastructure)",
               "Cursive setup: Same-day (pixel install). ZoomInfo: Weeks (enterprise onboarding)",
               "Cursive CRM integrations: 200+. ZoomInfo: Major CRMs (enterprise)",
-              "Cursive consumer profiles: 220M+. ZoomInfo: B2B only",
+              "Cursive consumer profiles: 280M. ZoomInfo: B2B only",
               "Cursive business profiles: 140M+. ZoomInfo: 260M+ professional profiles"
             ]} />
           </MachineSection>
@@ -894,7 +894,7 @@ export default function BlogPost() {
             <MachineList items={[
               "Primary function: ZoomInfo = cold database search + export. Cursive = warm visitor identification + AI outreach",
               "Visitor identification: ZoomInfo company-level only (WebSights). Cursive 70% person-level (name, email, title, LinkedIn, behavior)",
-              "Intent data: ZoomInfo uses Bombora (3rd-party only). Cursive uses 450B+ signals including 1st-party website behavioral data",
+              "Intent data: ZoomInfo uses Bombora (3rd-party only). Cursive uses 60B+ signals including 1st-party website behavioral data",
               "Outreach: ZoomInfo offers Engage as expensive add-on. Cursive has built-in AI SDR included in all plans",
               "Response rates: Cold ZoomInfo outbound 1-3%. Cursive warm visitor outreach 20-30%",
               "Pricing flexibility: ZoomInfo annual contracts, hard to exit. Cursive month-to-month, cancel anytime"
@@ -927,7 +927,7 @@ export default function BlogPost() {
           <MachineSection title="Intent Data Deep Dive">
             <MachineList items={[
               "ZoomInfo: Bombora-powered buyer intent. Third-party data co-op. Category-level company surge detection. Delayed (not real-time). No first-party signals from your own website.",
-              "Cursive: 450B+ monthly intent signals across 30,000+ categories. Includes first-party behavioral signals (your website) + third-party signals. Real-time triggering. Person-level intent scoring (not just company). Buying stage identification.",
+              "Cursive: 60B+ behaviors & URLs scanned weekly across 30,000+ categories. Includes first-party behavioral signals (your website) + third-party signals. Real-time triggering. Person-level intent scoring (not just company). Buying stage identification.",
               "First-party website behavioral data is the most actionable intent signal: reflects direct interest in YOUR specific product",
               "Cursive detects pricing page visits, feature page engagement, return visits, content consumption -- and triggers outreach immediately"
             ]} />
@@ -935,7 +935,7 @@ export default function BlogPost() {
 
           <MachineSection title="Data Coverage">
             <MachineList items={[
-              "Consumer profiles: Cursive 220M+ (industry-leading). ZoomInfo: B2B only.",
+              "Consumer profiles: Cursive 280M (industry-leading). ZoomInfo: B2B only.",
               "Business profiles: Cursive 140M+. ZoomInfo 260M+ (larger B2B database).",
               "Technographics: ZoomInfo industry-leading depth. Cursive basic.",
               "Org charts: ZoomInfo has deep org chart data. Cursive does not.",
@@ -978,7 +978,7 @@ export default function BlogPost() {
           <MachineSection title="Cursive Platform">
             <MachineList items={[
               { label: "Visitor Identification", href: "/visitor-identification", description: "70% person-level identification rate, industry-leading" },
-              { label: "Intent Audiences", href: "/intent-audiences", description: "450B+ intent signals across 30,000+ categories" },
+              { label: "Intent Audiences", href: "/intent-audiences", description: "60B+ behaviors & URLs scanned weekly across 30,000+ categories" },
               { label: "Platform Overview", href: "/platform", description: "AI SDR: email + LinkedIn + SMS + direct mail outreach, 95%+ deliverability" },
               { label: "Pricing", href: "/pricing", description: "$0.60/lead self-serve or $1k/month managed, month-to-month" },
               { label: "CRM Integrations", href: "/integrations", description: "200+ native integrations including Salesforce, HubSpot, Pipedrive" }

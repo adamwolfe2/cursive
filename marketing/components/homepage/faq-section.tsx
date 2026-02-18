@@ -17,11 +17,11 @@ interface FAQ {
 const faqs: FAQ[] = [
   {
     question: "How does visitor identification work?",
-    answer: "Cursive uses advanced IP intelligence, device fingerprinting, and behavioral analysis to identify up to 70% of your anonymous website visitors in real-time. When someone visits your site, we instantly match their digital footprint against our database of 220M+ consumer and 140M+ business profiles to reveal who they are, which company they work for, and what pages they're viewing. Unlike batch processing tools, Cursive identifies visitors the moment they land on your site, so your sales team can reach out while they're still engaged."
+    answer: "Cursive uses advanced IP intelligence, device fingerprinting, and behavioral analysis to identify up to 70% of your anonymous website visitors in real-time. When someone visits your site, we instantly match their digital footprint against our database of 280M US consumer and 140M+ business profiles to reveal who they are, which company they work for, and what pages they're viewing. Unlike batch processing tools, Cursive identifies visitors the moment they land on your site, so your sales team can reach out while they're still engaged."
   },
   {
     question: "How accurate is the data?",
-    answer: "Cursive maintains a 70% identification rate for B2B traffic with 95%+ accuracy on matched records. Our data is verified and updated in real-time from multiple authoritative sources including business registries, public records, and verified professional networks. Each visitor record includes confidence scores, and we only surface leads that meet our quality thresholds. We track 450B+ monthly intent signals to ensure you're reaching prospects with current, verified information."
+    answer: "Cursive maintains a 70% identification rate for B2B traffic with 95%+ accuracy on matched records. Our data is verified and updated in real-time from multiple authoritative sources including business registries, public records, and verified professional networks. Each visitor record includes confidence scores, and we only surface leads that meet our quality thresholds. We track 60B+ behaviors & URLs scanned weekly to ensure you're reaching prospects with current, verified information."
   },
   {
     question: "What pricing plans are available?",
@@ -41,7 +41,7 @@ const faqs: FAQ[] = [
   },
   {
     question: "What data sources does Cursive use?",
-    answer: "Cursive aggregates data from multiple authoritative sources including business registries, public records, verified professional networks, and real-time intent signals. Our database includes 220M+ consumer profiles, 140M+ business profiles, and 450B+ monthly intent signals tracked across 30,000+ commercial categories. We continuously refresh data to maintain accuracy, with weekly updates to intent audiences and real-time enrichment for visitor identification. All data sources are vetted for compliance and quality."
+    answer: "Cursive aggregates data from multiple authoritative sources including business registries, public records, verified professional networks, and real-time intent signals. Our database includes 280M consumer profiles, 140M+ business profiles, and 60B+ behaviors & URLs scanned weekly tracked across 30,000+ commercial categories. We continuously refresh data to maintain accuracy, with weekly updates to intent audiences and real-time enrichment for visitor identification. All data sources are vetted for compliance and quality."
   },
   {
     question: "What support and onboarding is included?",
@@ -53,7 +53,7 @@ const faqs: FAQ[] = [
   },
   {
     question: "How is Cursive different from competitors?",
-    answer: "Unlike traditional visitor ID tools that just deliver data, Cursive combines identification with AI-powered activation—we don't just tell you who's visiting, we automatically reach out and book meetings. Compared to data providers like Clearbit or ZoomInfo, Cursive includes 450B+ intent signals, real-time identification, and multi-channel campaigns out of the box. Unlike marketing automation tools, Cursive works on anonymous traffic and uses AI agents instead of manual workflows. You get visitor identification, intent data, AI outreach, and CRM integration in one unified platform."
+    answer: "Unlike traditional visitor ID tools that just deliver data, Cursive combines identification with AI-powered activation—we don't just tell you who's visiting, we automatically reach out and book meetings. Compared to data providers like Clearbit or ZoomInfo, Cursive includes 60B+ behaviors & URLs scanned weekly, real-time identification, and multi-channel campaigns out of the box. Unlike marketing automation tools, Cursive works on anonymous traffic and uses AI agents instead of manual workflows. You get visitor identification, intent data, AI outreach, and CRM integration in one unified platform."
   }
 ]
 
