@@ -197,7 +197,7 @@ export default function BlogPost() {
               </p>
 
               <p>
-                If you want to see who&apos;s already visiting your site &mdash; human or AI agent &mdash; and start turning that traffic into pipeline, <a href="/book" target="_blank" rel="noopener noreferrer">book a demo</a> and we&apos;ll show you in real time. The agentic web rewards the companies that are ready for it. Don&apos;t be the one the agents skip.
+                If you want to see who&apos;s already visiting your site &mdash; human or AI agent &mdash; and start turning that traffic into pipeline, <a href="https://cal.com/cursive/30min" target="_blank" rel="noopener noreferrer">book a demo</a> and we&apos;ll show you in real time. The agentic web rewards the companies that are ready for it. Don&apos;t be the one the agents skip.
               </p>
 
             </article>

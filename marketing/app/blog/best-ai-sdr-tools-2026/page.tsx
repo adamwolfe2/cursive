@@ -515,7 +515,7 @@ export default function BestAiSdrTools2026() {
 
             <MachineSection title="Related Pages">
               <MachineList items={[
-                <MachineLink key="ai-sdr" href="/ai-sdr" label="Cursive AI SDR" />,
+                <MachineLink key="ai-sdr" href="/platform" label="Cursive AI SDR Platform" />,
                 <MachineLink key="what-is" href="/blog/what-is-ai-sdr" label="What Is an AI SDR?" />,
                 <MachineLink key="visitor" href="/visitor-identification" label="Visitor Identification" />,
                 <MachineLink key="apollo" href="/blog/apollo-vs-cursive-comparison" label="Apollo vs Cursive Comparison" />,

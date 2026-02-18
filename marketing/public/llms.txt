@@ -129,13 +129,11 @@ These pages explain key concepts in B2B lead generation and marketing automation
 - **Instantly Alternative**: https://meetcursive.com/blog/instantly-alternative
 - **Smartlead Alternative**: https://meetcursive.com/blog/smartlead-alternative
 - **Clay Alternative**: https://meetcursive.com/blog/clay-alternative
-- **Datashopper Alternative**: https://meetcursive.com/blog/datashopper-alternative — Cursive vs Datashopper: visitor identification, intent data, and AI outreach vs static database.
 - **Lusha Alternative**: https://meetcursive.com/blog/lusha-alternative — 7 Lusha alternatives with higher match rates, automation, and no per-user credit limits.
 - **Cognism Alternative**: https://meetcursive.com/blog/cognism-alternative — Best alternatives to Cognism for teams that need US data coverage and built-in outreach automation.
 - **SalesIntel Alternative**: https://meetcursive.com/blog/salesintel-alternative — 7 SalesIntel alternatives compared for B2B contact accuracy, human-verified data, and outreach automation.
 - **Hunter.io Alternative**: https://meetcursive.com/blog/hunter-io-alternative — Best alternatives to Hunter.io for teams that need phone numbers, visitor identification, and automated outreach beyond email finding.
 - **Seamless.AI Alternative**: https://meetcursive.com/blog/seamless-ai-alternative — 7 Seamless.AI alternatives compared for B2B contact data, real-time enrichment, and AI-powered outreach.
-- **AudienceLab Alternative**: https://meetcursive.com/blog/audiencelab-alternative — How Cursive compares to AudienceLab: visitor identification + activation vs raw data infrastructure.
 - **Opensend Alternative**: https://meetcursive.com/blog/opensend-alternative — 7 Opensend alternatives at 70% ID rate with full outreach automation included.
 
 ### Head-to-Head Comparisons
