@@ -2,7 +2,6 @@
 // GET /api/users/me - Get current user info including credits
 // PATCH /api/users/me - Update user profile
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'

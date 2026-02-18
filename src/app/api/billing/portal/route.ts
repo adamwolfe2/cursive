@@ -1,7 +1,6 @@
 // Billing Portal API Route
 // POST /api/billing/portal - Create Stripe Customer Portal session
 
-export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'

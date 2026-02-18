@@ -110,8 +110,16 @@ export async function handleSubscriptionCreated(subscription: Stripe.Subscriptio
     const workspaceId = subscription.metadata.workspace_id
     const serviceTierId = subscription.metadata.service_tier_id
 
-    if (!workspaceId || !serviceTierId) {
-      throw new Error('Missing workspace_id or service_tier_id in subscription metadata')
+    if (!workspaceId) {
+      throw new Error('Missing workspace_id in subscription metadata')
+    }
+
+    // Regular billing subscription (no service_tier_id) — just update users.plan
+    if (!serviceTierId) {
+      if (subscription.status === 'active' || subscription.status === 'trialing') {
+        await updateWorkspaceUserPlan(workspaceId, 'pro', 1000)
+      }
+      return
     }
 
     // Get tier info
@@ -352,15 +360,18 @@ export async function handleSubscriptionDeleted(subscription: Stripe.Subscriptio
     }
 
     // Downgrade all workspace users to free plan
-    // Look up workspace_id from the subscription record
-    const { data: cancelledSub } = await supabase
-      .from('service_subscriptions')
-      .select('workspace_id')
-      .eq('stripe_subscription_id', subscription.id)
-      .maybeSingle()
+    // Try subscription metadata first (works for all subscription types),
+    // then fall back to service_subscriptions record
+    const workspaceId = subscription.metadata.workspace_id
+      || (await supabase
+          .from('service_subscriptions')
+          .select('workspace_id')
+          .eq('stripe_subscription_id', subscription.id)
+          .maybeSingle()
+        ).data?.workspace_id
 
-    if (cancelledSub?.workspace_id) {
-      await updateWorkspaceUserPlan(cancelledSub.workspace_id, 'free', 3)
+    if (workspaceId) {
+      await updateWorkspaceUserPlan(workspaceId, 'free', 3)
     }
 
     // Send cancellation confirmation email

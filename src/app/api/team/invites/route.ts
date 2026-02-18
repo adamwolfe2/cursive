@@ -2,7 +2,6 @@
 // GET /api/team/invites - Get pending invites
 // POST /api/team/invites - Create a new invite
 
-export const runtime = 'edge'
 
 import { NextRequest } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'

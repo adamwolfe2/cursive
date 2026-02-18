@@ -3,7 +3,6 @@
  * Get and update workspace branding (colors, logo)
  */
 
-export const runtime = 'edge'
 
 import { type NextRequest } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
