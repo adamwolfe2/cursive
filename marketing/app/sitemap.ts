@@ -3,7 +3,7 @@ import { integrations } from '@/lib/integrations-data'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://www.meetcursive.com'
-  const lastModified = new Date('2026-02-07')
+  const lastModified = new Date() // Dynamic: always current build time for freshness signals
 
   // Core pages - highest priority
   const corePages = [
@@ -95,6 +95,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   // Comparison blog posts - all blog posts at 0.7
   const comparisonBlogPosts = [
+    // Existing competitor "alternative" pages
     '/blog/clearbit-alternatives-comparison',
     '/blog/rb2b-alternative',
     '/blog/leadfeeder-alternative',
@@ -102,16 +103,26 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/blog/instantly-alternative',
     '/blog/smartlead-alternative',
     '/blog/clay-alternative',
+    // New competitor alternative pages (created Feb 2026)
+    '/blog/datashopper-alternative',
+    '/blog/lusha-alternative',
+    '/blog/cognism-alternative',
+    '/blog/salesintel-alternative',
+    // Existing "cursive vs" pages
     '/blog/cursive-vs-rb2b',
     '/blog/cursive-vs-leadfeeder',
     '/blog/cursive-vs-clearbit',
     '/blog/cursive-vs-instantly',
     '/blog/cursive-vs-demandbase',
     '/blog/cursive-vs-apollo',
+    // New "cursive vs" pages (created Feb 2026)
+    '/blog/cursive-vs-zoominfo',
+    // Existing competitor "vs cursive" pages
     '/blog/warmly-vs-cursive-comparison',
     '/blog/apollo-vs-cursive-comparison',
     '/blog/6sense-vs-cursive-comparison',
     '/blog/zoominfo-vs-cursive-comparison',
+    // Existing alternative roundup pages
     '/blog/6sense-alternatives-comparison',
     '/blog/apollo-alternatives-comparison',
     '/blog/warmly-alternatives-comparison',
@@ -137,6 +148,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/blog/retargeting',
     '/blog/analytics',
     '/blog/lead-generation',
+    // New roundup/buying-intent posts (created Feb 2026)
+    '/blog/best-b2b-data-providers-2026',
+    '/blog/best-website-visitor-identification-software',
+    '/blog/intent-data-providers-comparison',
+    // AI/WebMCP posts
+    '/blog/ai-agents-replacing-buyer-journey',
+    '/blog/webmcp-ai-agent-ready-lead-generation',
+    '/blog/webmcp-implementation-guide-b2b-saas',
+    '/blog/what-is-webmcp-guide',
   ].map(url => ({
     url,
     priority: 0.7,

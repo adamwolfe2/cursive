@@ -1,13 +1,13 @@
 import { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Warmly vs Cursive Comparison: Which Intent Platform is Right for You? | Cursive",
-  description: "Compare Warmly and Cursive side-by-side. See how these two intent-based platforms differ in features, pricing, use cases, and ROI. Detailed analysis for B2B teams.",
-  keywords: "warmly vs cursive, cursive vs warmly, intent platform comparison, website visitor identification, B2B intent data, sales intelligence platform, warmly alternative, cursive alternative, account-based marketing tools, buyer intent platforms",
+  title: "Warmly vs Cursive: 70% ID Rate vs 40%, $1k vs $3.5k/mo (2026 Comparison) | Cursive",
+  description: "Warmly vs Cursive compared: Cursive identifies 70% of visitors vs Warmly's 40%, starting at $1,000/mo vs $3,500/mo. Includes AI outreach, intent data, and direct mail. See which wins.",
+  keywords: "warmly vs cursive, cursive vs warmly, warmly alternative, warmly pricing, cursive vs warmly comparison, website visitor identification comparison, intent platform comparison, warmly competitors 2026, B2B visitor tracking tools",
 
   openGraph: {
-    title: "Warmly vs Cursive Comparison: Which Intent Platform is Right for You? | Cursive",
-    description: "Compare Warmly and Cursive side-by-side. See how these two intent-based platforms differ in features, pricing, use cases, and ROI. Detailed analysis for B2B teams.",
+    title: "Warmly vs Cursive: 70% ID Rate vs 40%, $1k vs $3.5k/mo (2026) | Cursive",
+    description: "Warmly vs Cursive compared: Cursive identifies 70% of visitors vs Warmly's 40%, starting at $1,000/mo vs $3,500/mo. See which visitor identification platform wins in 2026.",
     type: "article",
     url: "https://www.meetcursive.com/blog/warmly-vs-cursive-comparison",
     siteName: "Cursive",
@@ -15,15 +15,15 @@ export const metadata: Metadata = {
       url: "https://www.meetcursive.com/og-image.png",
       width: 1200,
       height: 630,
-      alt: "Warmly vs Cursive Comparison: Which Intent Platform is Right for You?",
+      alt: "Warmly vs Cursive: Visitor Identification Platform Comparison 2026",
     }],
     locale: "en_US",
   },
 
   twitter: {
     card: "summary_large_image",
-    title: "Warmly vs Cursive Comparison: Which Intent Platform is Right for You? | Cursive",
-    description: "Compare Warmly and Cursive side-by-side. See how these two intent-based platforms differ in features, pricing, use cases, and ROI. Detailed analysis for B2B teams.",
+    title: "Warmly vs Cursive: 70% ID Rate vs 40%, $1k vs $3.5k/mo (2026) | Cursive",
+    description: "Warmly vs Cursive compared: Cursive identifies 70% of visitors vs Warmly's 40%, starting at $1,000/mo vs $3,500/mo. See which visitor identification platform wins.",
     images: ["https://www.meetcursive.com/og-image.png"],
     creator: "@meetcursive",
   },

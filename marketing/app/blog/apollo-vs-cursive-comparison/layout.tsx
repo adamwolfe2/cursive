@@ -1,13 +1,13 @@
 import { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Apollo vs Cursive: Complete Comparison (2026) | Cursive",
-  description: "Compare Apollo.io and Cursive for sales intelligence, visitor identification, and outreach automation. Discover which platform delivers better ROI for your B2B sales team.",
+  title: "Apollo vs Cursive: Cold Database vs Warm Visitor ID — Which Wins? (2026) | Cursive",
+  description: "Apollo gives you a 200M+ contact database for cold outreach. Cursive identifies YOUR visitors (70% rate) and automates warm outreach. Different tools, different outcomes. Compare here.",
   keywords: "apollo vs cursive, apollo.io alternative, visitor identification, sales engagement platform, b2b prospecting tools, cursive vs apollo, apollo pricing, cursive pricing, sales intelligence comparison, outreach automation",
 
   openGraph: {
-    title: "Apollo vs Cursive: Complete Comparison (2026) | Cursive",
-    description: "Compare Apollo.io and Cursive for sales intelligence, visitor identification, and outreach automation. Discover which platform delivers better ROI for your B2B sales team.",
+    title: "Apollo vs Cursive: Cold Database vs Warm Visitor ID — Which Wins? (2026) | Cursive",
+    description: "Apollo gives you a 200M+ contact database for cold outreach. Cursive identifies YOUR visitors (70% rate) and automates warm outreach. Different tools, different outcomes.",
     type: "article",
     url: "https://www.meetcursive.com/blog/apollo-vs-cursive-comparison",
     siteName: "Cursive",
@@ -22,8 +22,8 @@ export const metadata: Metadata = {
 
   twitter: {
     card: "summary_large_image",
-    title: "Apollo vs Cursive: Complete Comparison (2026) | Cursive",
-    description: "Compare Apollo.io and Cursive for sales intelligence, visitor identification, and outreach automation. Discover which platform delivers better ROI for your B2B sales team.",
+    title: "Apollo vs Cursive: Cold Database vs Warm Visitor ID — Which Wins? (2026) | Cursive",
+    description: "Apollo gives you a 200M+ contact database for cold outreach. Cursive identifies YOUR visitors (70% rate) and automates warm outreach. Different tools, different outcomes.",
     images: ["https://www.meetcursive.com/og-image.png"],
     creator: "@meetcursive",
   },
