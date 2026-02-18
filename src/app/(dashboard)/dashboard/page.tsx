@@ -73,6 +73,7 @@ export default async function DashboardPage({
     enrichedLeadsResult,
     creditsData,
     recentEnrichmentsResult,
+    activationResult,
   ] = await Promise.all([
     // Today's lead count
     supabase
@@ -129,6 +130,11 @@ export default async function DashboardPage({
       .eq('enrichment_status', 'enriched')
       .order('updated_at', { ascending: false })
       .limit(5),
+    // Check if user has submitted an activation request
+    supabase
+      .from('custom_audience_requests')
+      .select('id', { count: 'exact', head: true })
+      .eq('workspace_id', userProfile.workspace_id),
   ])
 
   const todayCount = todayLeadsResult.count ?? 0
@@ -141,6 +147,7 @@ export default async function DashboardPage({
   const hasPreferences = !!(targeting?.target_industries?.length || targeting?.target_states?.length)
   const enrichedCount = enrichedLeadsResult.count ?? 0
   const hasEnriched = enrichedCount > 0
+  const hasActivated = (activationResult.count ?? 0) > 0
   const credits = creditsData
   const creditsRemaining = credits?.remaining ?? 0
   const creditLimit = credits?.limit ?? 10
@@ -178,7 +185,7 @@ export default async function DashboardPage({
     { id: 'pixel', label: 'Install tracking pixel', done: hasPixel, href: '/settings/pixel' },
     { id: 'prefs', label: 'Set lead preferences', done: hasPreferences, href: '/my-leads/preferences' },
     { id: 'enrich', label: 'Enrich your first lead', done: hasEnriched, href: '/leads' },
-    { id: 'activate', label: 'Activate — run a campaign', done: false, href: '/activate' },
+    { id: 'activate', label: 'Activate — run a campaign', done: hasActivated, href: '/activate' },
   ]
   const checklistProgress = checklistItems.filter((i) => i.done).length
   const checklistTotal = checklistItems.length

@@ -7,12 +7,11 @@
  * Returns before/after field comparison so the UI can animate the reveal.
  */
 
-export const runtime = 'edge'
-
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { enrich } from '@/lib/audiencelab/api-client'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 const ENRICH_CREDIT_COST = 1
 
@@ -175,7 +174,7 @@ export async function POST(
         .eq('id', leadId)
 
       if (updateError) {
-        console.error('[Enrich] Failed to update lead:', updateError)
+        safeError('[Enrich] Failed to update lead:', updateError)
         return NextResponse.json({ error: 'Failed to save enrichment' }, { status: 500 })
       }
     }
@@ -197,7 +196,7 @@ export async function POST(
       credits_remaining: creditsRemaining - ENRICH_CREDIT_COST,
     })
   } catch (error: any) {
-    console.error('[Enrich] Unexpected error:', error)
-    return NextResponse.json({ error: 'Enrichment failed', details: error.message }, { status: 500 })
+    safeError('[Enrich] Unexpected error:', error)
+    return NextResponse.json({ error: 'Enrichment failed' }, { status: 500 })
   }
 }

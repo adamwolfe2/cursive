@@ -127,7 +127,7 @@ export default async function TargetingPreferencesPage() {
     .select('*')
     .eq('user_id', userProfile.id)
     .eq('workspace_id', userProfile.workspace_id)
-    .single()
+    .maybeSingle()
 
   const targeting = targetingData as UserTargeting | null
 

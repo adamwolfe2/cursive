@@ -206,44 +206,36 @@ export default function SecuritySettingsPage() {
         </CardContent>
       </Card>
 
-      {/* Active Sessions */}
+      {/* Current Session */}
       <Card>
         <CardHeader>
-          <CardTitle>Active Sessions</CardTitle>
+          <CardTitle>Current Session</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            <div className="flex items-start justify-between py-4 border-b border-border last:border-0">
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <p className="text-sm font-medium text-foreground">Current Session</p>
-                  <Badge variant="default">Active</Badge>
-                </div>
-                <p className="text-sm text-muted-foreground">Last activity: Just now</p>
-                <p className="text-sm text-muted-foreground">Email: {user?.email}</p>
+          <div className="flex items-start justify-between py-2">
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                <p className="text-sm font-medium text-foreground">Signed in as</p>
+                <Badge variant="default">Active</Badge>
               </div>
-              <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                <svg
-                  className="h-5 w-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                  />
-                </svg>
-                <span>This device</span>
-              </div>
+              <p className="text-sm text-muted-foreground">{user?.email}</p>
             </div>
-
-            <p className="text-sm text-muted-foreground">
-              This is the only active session for your account. Sign out other sessions to
-              revoke access from other devices.
-            </p>
+            <div className="flex items-center gap-3 text-sm text-muted-foreground">
+              <svg
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                />
+              </svg>
+              <span>This device</span>
+            </div>
           </div>
         </CardContent>
       </Card>

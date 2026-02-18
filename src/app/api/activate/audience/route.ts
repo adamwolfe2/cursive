@@ -7,8 +7,6 @@
  * confirmation email to the user.
  */
 
-export const runtime = 'edge'
-
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'

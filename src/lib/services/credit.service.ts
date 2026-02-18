@@ -93,7 +93,7 @@ export class CreditService {
       allowed,
       remaining: Math.max(0, remaining - (allowed ? cost : 0)),
       limit,
-      resetAt: shouldReset ? new Date(now.setHours(24, 0, 0, 0)) : resetAt,
+      resetAt: shouldReset ? (() => { const d = new Date(now); d.setHours(24, 0, 0, 0); return d; })() : resetAt,
       message: allowed
         ? undefined
         : `Insufficient credits. You need ${cost} credits but only have ${remaining} remaining. ${user.plan === 'free' ? 'Upgrade to Pro for more credits.' : 'Credits reset daily at midnight.'}`,
@@ -206,7 +206,7 @@ export class CreditService {
     return {
       remaining,
       limit,
-      resetAt: now > resetAt ? new Date(now.setHours(24, 0, 0, 0)) : resetAt,
+      resetAt: now > resetAt ? (() => { const d = new Date(now); d.setHours(24, 0, 0, 0); return d; })() : resetAt,
       plan: user.plan,
     }
   }

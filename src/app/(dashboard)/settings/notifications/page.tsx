@@ -50,7 +50,7 @@ export default function NotificationsSettingsPage() {
 
   // Update notifications mutation
   const updateNotificationsMutation = useMutation({
-    mutationFn: async (data: Record<string, boolean>) => {
+    mutationFn: async (data: Record<string, boolean | string>) => {
       const response = await fetch('/api/users/me', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -71,7 +71,7 @@ export default function NotificationsSettingsPage() {
     },
   })
 
-  const handleToggle = (setting: string, value: boolean) => {
+  const handleToggle = (setting: string, value: boolean | string) => {
     const currentPrefs = user?.notification_preferences || {}
     updateNotificationsMutation.mutate({
       ...currentPrefs,
@@ -291,7 +291,7 @@ export default function NotificationsSettingsPage() {
               </label>
               <select
                 value={prefs.digest_time || '09:00'}
-                onChange={(e) => handleToggle('digest_time', e.target.value as any)}
+                onChange={(e) => handleToggle('digest_time', e.target.value)}
                 className="flex h-10 w-full max-w-xs rounded-lg border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
               >
                 <option value="06:00">6:00 AM</option>
