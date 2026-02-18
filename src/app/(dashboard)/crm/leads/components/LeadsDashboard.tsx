@@ -1,7 +1,12 @@
 'use client'
 
 import { LeadStatsCards } from '@/components/dashboard-ui/lead-stats-cards'
-import { LeadGrowthChart } from '@/components/dashboard-ui/lead-growth-chart'
+import dynamic from 'next/dynamic'
+
+const LeadGrowthChart = dynamic(
+  () => import('@/components/dashboard-ui/lead-growth-chart').then(mod => ({ default: mod.LeadGrowthChart })),
+  { ssr: false, loading: () => <div className="h-[300px] bg-zinc-50 animate-pulse rounded-lg" /> }
+)
 import { LeadsByStatusChart } from '@/components/dashboard-ui/leads-by-status-chart'
 import {
   useLeadStatsCards,

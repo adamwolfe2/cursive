@@ -1,8 +1,20 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import Script from 'next/script'
 
 export function CrispChat() {
+  const [shouldLoad, setShouldLoad] = useState(false)
+
+  // Defer Crisp loading by 3 seconds after page becomes interactive
+  // to avoid blocking initial page rendering and TTI
+  useEffect(() => {
+    const timer = setTimeout(() => setShouldLoad(true), 3000)
+    return () => clearTimeout(timer)
+  }, [])
+
+  if (!shouldLoad) return null
+
   return (
     <Script
       id="crisp-chat"

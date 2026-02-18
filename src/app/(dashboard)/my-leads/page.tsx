@@ -30,7 +30,8 @@ export default async function MyLeadsPage() {
     redirect('/login')
   }
 
-  // Get user profile
+  // Get user profile + targeting preferences in parallel
+  // (user profile query is still needed for DB user id)
   const { data: userData } = await supabase
     .from('users')
     .select('id, workspace_id, full_name, email')
@@ -43,7 +44,7 @@ export default async function MyLeadsPage() {
 
   const userProfile = userData as Pick<User, 'id' | 'workspace_id' | 'full_name' | 'email'>
 
-  // Check if user has targeting preferences set up
+  // Now fetch targeting (depends on userProfile.id)
   const { data: targetingData } = await supabase
     .from('user_targeting')
     .select('id, target_industries, target_sic_codes, target_states, target_cities, is_active')

@@ -31,8 +31,10 @@ export default async function DashboardPage({
   const { onboarding } = await searchParams
   const supabase = await createClient()
 
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  // Layout already verified auth — use getSession() for fast local JWT check (no network call)
+  const { data: { session } } = await supabase.auth.getSession()
+  if (!session?.user) redirect('/login')
+  const user = session.user
 
   // Get user profile
   const { data: userData, error: userError } = await supabase

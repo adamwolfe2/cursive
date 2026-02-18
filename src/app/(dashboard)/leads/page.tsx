@@ -10,14 +10,10 @@ import { DailyLeadsView } from '@/components/leads/daily-leads-view'
 export default async function DailyLeadsPage() {
   const supabase = await createClient()
 
-  // Get authenticated user (getUser validates the JWT server-side, more reliable than getSession)
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    redirect('/login')
-  }
+  // Layout already verified auth — use getSession() for fast local JWT check (no network call)
+  const { data: { session } } = await supabase.auth.getSession()
+  if (!session?.user) redirect('/login')
+  const user = session.user
 
   // Get user profile with segment info
   const { data: userProfile } = await supabase

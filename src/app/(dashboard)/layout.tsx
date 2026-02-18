@@ -10,6 +10,7 @@ import { AppShell } from '@/components/layout'
 import { ImpersonationBanner } from '@/components/admin'
 import { TierProvider } from '@/lib/hooks/use-tier'
 import { BrandThemeWrapper } from '@/components/layout/brand-theme-wrapper'
+import { DashboardProvider } from '@/lib/contexts/dashboard-context'
 
 export default async function DashboardLayout({
   children,
@@ -80,11 +81,17 @@ export default async function DashboardLayout({
     redirect('/login')
   }
 
-  // Fetch user profile and admin status in parallel
-  const [userProfileResult, adminResult] = await Promise.all([
+  // Try to read cached workspace_id from middleware cookie to flatten all queries
+  // into a single Promise.all (avoids 2 sequential DB roundtrips on most navigations)
+  const cachedWorkspaceId = cookieStore.get('x-workspace-id')?.value
+  const today = new Date().toISOString().split('T')[0]
+
+  // When we have a cached workspace_id, run ALL queries in one parallel batch.
+  // Otherwise fall back to sequential (profile first, then workspace queries).
+  const [userProfileResult, adminResult, creditsResult, leadsResult] = await Promise.all([
     supabase
       .from('users')
-      .select('*, workspaces(*)')
+      .select('id, auth_user_id, full_name, email, plan, role, workspace_id, daily_credit_limit, daily_credits_used, workspaces(id, name, subdomain, website_url, branding)')
       .eq('auth_user_id', user.id)
       .single(),
     // Inline admin check to avoid redundant getSession() call in isAdmin()
@@ -97,6 +104,23 @@ export default async function DashboardLayout({
           .maybeSingle()
           .then(({ data }) => !!data)
       : Promise.resolve(false),
+    // Credits — only if we have a cached workspace_id
+    cachedWorkspaceId
+      ? supabase
+          .from('workspace_credits')
+          .select('balance')
+          .eq('workspace_id', cachedWorkspaceId)
+          .maybeSingle()
+      : Promise.resolve({ data: null }),
+    // Today's lead count — only if we have a cached workspace_id
+    cachedWorkspaceId
+      ? supabase
+          .from('leads')
+          .select('id', { count: 'exact', head: true })
+          .eq('workspace_id', cachedWorkspaceId)
+          .gte('delivered_at', `${today}T00:00:00`)
+          .lte('delivered_at', `${today}T23:59:59`)
+      : Promise.resolve({ count: null }),
   ])
 
   // Type the user data
@@ -127,12 +151,13 @@ export default async function DashboardLayout({
     redirect('/welcome')
   }
 
-  // Fetch workspace credits + today's lead count in parallel
-  let creditBalance = 0
-  let todayLeadCount = 0
-  if (userProfile.workspace_id) {
-    const today = new Date().toISOString().split('T')[0]
-    const [creditsResult, leadsResult] = await Promise.all([
+  // If we had a cache hit, use the parallel results. Otherwise do a sequential fallback.
+  let creditBalance = creditsResult?.data?.balance ?? 0
+  let todayLeadCount = (leadsResult as { count: number | null })?.count ?? 0
+
+  // Fallback: if no cached workspace_id but user has one, fetch now
+  if (!cachedWorkspaceId && userProfile.workspace_id) {
+    const [fallbackCredits, fallbackLeads] = await Promise.all([
       supabase
         .from('workspace_credits')
         .select('balance')
@@ -140,14 +165,13 @@ export default async function DashboardLayout({
         .maybeSingle(),
       supabase
         .from('leads')
-        .select('*', { count: 'exact', head: true })
+        .select('id', { count: 'exact', head: true })
         .eq('workspace_id', userProfile.workspace_id)
         .gte('delivered_at', `${today}T00:00:00`)
         .lte('delivered_at', `${today}T23:59:59`),
     ])
-
-    creditBalance = creditsResult.data?.balance ?? 0
-    todayLeadCount = leadsResult.count ?? 0
+    creditBalance = fallbackCredits.data?.balance ?? 0
+    todayLeadCount = fallbackLeads.count ?? 0
   }
 
   const workspace = userProfile.workspaces as {
@@ -187,7 +211,33 @@ export default async function DashboardLayout({
           }
           todayLeadCount={todayLeadCount}
         >
-          {children}
+          <DashboardProvider
+            value={{
+              userProfile: {
+                id: userProfile.id,
+                authUserId: user.id,
+                fullName: userProfile.full_name,
+                email: userProfile.email,
+                plan: userProfile.plan,
+                role: userProfile.role,
+                workspaceId: userProfile.workspace_id,
+                dailyCreditLimit: userProfile.daily_credit_limit,
+                dailyCreditsUsed: userProfile.daily_credits_used,
+              },
+              workspace: workspace
+                ? {
+                    name: workspace.name,
+                    subdomain: workspace.subdomain,
+                    websiteUrl: workspace.website_url,
+                    branding: workspace.branding,
+                  }
+                : null,
+              creditBalance,
+              todayLeadCount,
+            }}
+          >
+            {children}
+          </DashboardProvider>
         </AppShell>
       </BrandThemeWrapper>
     </TierProvider>
