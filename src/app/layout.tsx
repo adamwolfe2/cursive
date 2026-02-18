@@ -24,8 +24,8 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: 'Cursive' }],
   robots: {
-    index: true,
-    follow: true,
+    index: false,
+    follow: false,
   },
   icons: {
     icon: '/cursive-logo.png',
