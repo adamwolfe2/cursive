@@ -10,6 +10,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { leadDataProcessor } from '@/lib/services/lead-data-processor.service'
 import { fieldMapper } from '@/lib/services/field-mapper.service'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // ============================================
 // POST /api/leads/import/preview
@@ -89,7 +90,7 @@ export async function POST(req: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('Import preview error:', error)
+    safeError('Import preview error:', error)
     return NextResponse.json(
       { error: 'Failed to preview import' },
       { status: 500 }
@@ -128,7 +129,7 @@ export async function GET() {
       },
     })
   } catch (error) {
-    console.error('Get fields error:', error)
+    safeError('Get fields error:', error)
     return NextResponse.json(
       { error: 'Failed to get field definitions' },
       { status: 500 }

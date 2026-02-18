@@ -7,6 +7,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { getLeadProviderService } from '@/lib/services/lead-provider.service'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function GET(request: NextRequest) {
   try {
@@ -41,7 +42,7 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (error: any) {
-    console.error('[Lead Limits] Error:', error)
+    safeError('[Lead Limits] Error:', error)
     return NextResponse.json(
       { error: 'Failed to get lead limits' },
       { status: 500 }

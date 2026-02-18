@@ -154,7 +154,7 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      console.error('[API] Pixel insert error:', insertError)
+      safeError('[API] Pixel insert error:', insertError)
       // AL pixel was created but DB insert failed — log for recovery
       sendSlackAlert({
         type: 'webhook_failure',
@@ -213,7 +213,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.error('[API] Pixel provision error:', error)
+    safeError('[API] Pixel provision error:', error)
     return NextResponse.json(
       { error: 'Failed to provision pixel. Please try again.' },
       { status: 500 }

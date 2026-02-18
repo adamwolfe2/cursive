@@ -6,6 +6,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface RouteContext {
   params: Promise<{ id: string; emailId: string }>
@@ -78,13 +79,13 @@ export async function POST(request: NextRequest, context: RouteContext) {
       .eq('id', emailId)
 
     if (updateError) {
-      console.error('Failed to reject email:', updateError)
+      safeError('Failed to reject email:', updateError)
       return NextResponse.json({ error: 'Failed to reject email' }, { status: 500 })
     }
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Reject email error:', error)
+    safeError('Reject email error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

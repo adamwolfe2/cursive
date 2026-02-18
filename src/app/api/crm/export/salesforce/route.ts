@@ -9,6 +9,7 @@ import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized, badRequest } from '@/lib/utils/api-error-handler'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 const MAX_SYNC_LEADS = 500
 
@@ -93,7 +94,7 @@ export async function POST(request: NextRequest) {
       .eq('workspace_id', user.workspace_id)
 
     if (leadsError) {
-      console.error('[Salesforce Export] Failed to fetch leads:', leadsError.message)
+      safeError('[Salesforce Export] Failed to fetch leads:', leadsError.message)
       throw new Error('Failed to fetch leads for sync')
     }
 
@@ -128,7 +129,7 @@ export async function POST(request: NextRequest) {
         }
       } catch (syncError: any) {
         results.failed++
-        console.error('[Salesforce Export] Sync error for lead:', lead.id, syncError)
+        safeError('[Salesforce Export] Sync error for lead: ' + lead.id, syncError)
         results.errors.push(`Lead ${lead.email || lead.id}: Sync failed`)
       }
     }

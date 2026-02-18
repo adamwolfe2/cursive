@@ -16,6 +16,7 @@ import {
   endExperiment,
   applyWinner,
 } from '@/lib/services/campaign/ab-testing.service'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface RouteContext {
   params: Promise<{ id: string }>
@@ -84,7 +85,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
       .order('created_at', { ascending: false })
 
     if (error) {
-      console.error('[Campaign Experiments GET] Database error:', error)
+      safeError('[Campaign Experiments GET] Database error:', error)
       return badRequest('Failed to fetch experiments')
     }
 

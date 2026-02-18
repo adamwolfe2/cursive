@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // Use edge runtime
 
@@ -51,7 +52,7 @@ export async function PATCH(
 
     return NextResponse.json({ success: true, lead: data })
   } catch (error) {
-    console.error('[Update Lead] Error:', error)
+    safeError('[Update Lead] Error:', error)
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Invalid input', details: error.errors },
@@ -87,7 +88,7 @@ export async function DELETE(
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('[Delete Lead] Error:', error)
+    safeError('[Delete Lead] Error:', error)
     return NextResponse.json(
       { error: 'Failed to delete lead' },
       { status: 500 }

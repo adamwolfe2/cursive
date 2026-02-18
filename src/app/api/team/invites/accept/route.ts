@@ -6,6 +6,7 @@ import { NextRequest } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { handleApiError, unauthorized, success, badRequest } from '@/lib/utils/api-error-handler'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 const acceptInviteSchema = z.object({
   token: z.string().min(1, 'Token is required'),
@@ -44,7 +45,7 @@ export async function POST(request: NextRequest) {
       if (error.message.includes('Email mismatch')) {
         return badRequest('Please sign in with the email address that was invited')
       }
-      console.error('[Team Invite Accept] Database error:', error)
+      safeError('[Team Invite Accept] Database error:', error)
       throw new Error('Failed to accept invite')
     }
 

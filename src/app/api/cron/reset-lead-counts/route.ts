@@ -16,6 +16,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 
 export async function GET(request: NextRequest) {
@@ -88,7 +89,7 @@ export async function GET(request: NextRequest) {
       ...results,
     })
   } catch (error) {
-    console.error('[Lead Count Reset] Unhandled error:', error)
+    safeError('[Lead Count Reset] Unhandled error:', error)
     return NextResponse.json({ error: 'Reset failed' }, { status: 500 })
   }
 }

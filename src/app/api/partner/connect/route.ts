@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getStripeClient } from '@/lib/stripe/client'
 import { z } from 'zod'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 const connectSchema = z.object({
   partnerId: z.string().uuid('Invalid partner ID'),
@@ -89,7 +90,7 @@ export async function POST(request: NextRequest) {
       accountId,
     })
   } catch (error: any) {
-    console.error('[Stripe Connect] Error:', error)
+    safeError('[Stripe Connect] Error:', error)
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(

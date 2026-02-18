@@ -5,6 +5,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { createClient } from '@/lib/supabase/server'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 /**
  * Generate a secure API key with a recognizable prefix
@@ -46,7 +47,7 @@ export async function POST(request: NextRequest) {
       .eq('workspace_id', user.workspace_id)
 
     if (error) {
-      console.error('[API Key] Failed to store API key:', error)
+      safeError('[API Key] Failed to store API key:', error)
       return NextResponse.json(
         { error: 'Failed to generate API key' },
         { status: 500 }
@@ -59,7 +60,7 @@ export async function POST(request: NextRequest) {
       api_key: apiKey,
     })
   } catch (error) {
-    console.error('[API Key] Error generating API key:', error)
+    safeError('[API Key] Error generating API key:', error)
     return NextResponse.json(
       { error: 'Failed to generate API key' },
       { status: 500 }

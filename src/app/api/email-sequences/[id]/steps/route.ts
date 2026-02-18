@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 
 const createStepSchema = z.object({
@@ -100,7 +101,7 @@ export async function POST(
       .single()
 
     if (error) {
-      console.error('Failed to create email sequence step:', error)
+      safeError('Failed to create email sequence step:', error)
       return NextResponse.json(
         { error: 'Failed to create step' },
         { status: 500 }
@@ -116,7 +117,7 @@ export async function POST(
       )
     }
 
-    console.error('Email sequence steps POST error:', error)
+    safeError('Email sequence steps POST error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 
 const createTemplateSchema = z.object({
@@ -44,7 +45,7 @@ export async function GET(request: NextRequest) {
     const { data: templates, error } = await query
 
     if (error) {
-      console.error('Failed to fetch email templates:', error)
+      safeError('Failed to fetch email templates:', error)
       return NextResponse.json(
         { error: 'Failed to fetch templates' },
         { status: 500 }
@@ -53,7 +54,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ templates })
   } catch (error) {
-    console.error('Email templates GET error:', error)
+    safeError('Email templates GET error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -97,7 +98,7 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         )
       }
-      console.error('Failed to create email template:', error)
+      safeError('Failed to create email template:', error)
       return NextResponse.json(
         { error: 'Failed to create template' },
         { status: 500 }
@@ -113,7 +114,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.error('Email templates POST error:', error)
+    safeError('Email templates POST error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

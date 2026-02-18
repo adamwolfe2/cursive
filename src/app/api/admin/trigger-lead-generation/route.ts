@@ -3,6 +3,7 @@
 
 
 import { NextRequest, NextResponse } from 'next/server'
+import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,7 +17,7 @@ export async function POST(request: NextRequest) {
     if (query_id) {
       // Inngest disabled (Node.js runtime not available on this deployment)
       // Original: await inngest.send({ name: 'lead/generate', data: { query_id, workspace_id } })
-      console.log(`[Admin Trigger Lead Generation] Generation requested for query ${query_id} (Inngest disabled - Edge runtime)`)
+      safeLog(`[Admin Trigger Lead Generation] Generation requested for query ${query_id} (Inngest disabled - Edge runtime)`)
 
       return NextResponse.json({
         success: true,
@@ -33,7 +34,7 @@ export async function POST(request: NextRequest) {
       })
     }
   } catch (error: any) {
-    console.error('[Admin Trigger Lead Generation] Error:', error)
+    safeError('[Admin Trigger Lead Generation] Error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

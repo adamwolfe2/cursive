@@ -6,6 +6,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { retryFailedOperation } from '@/lib/monitoring/failed-operations'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 /**
  * POST /api/admin/failed-operations/[id]/retry
@@ -31,7 +32,7 @@ export async function POST(
 
     return NextResponse.json({ success: true, message: 'Operation queued for retry' })
   } catch (error) {
-    console.error('Failed to retry operation:', error)
+    safeError('Failed to retry operation:', error)
     return NextResponse.json({ error: 'Failed to retry operation' }, { status: 500 })
   }
 }

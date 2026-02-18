@@ -13,6 +13,7 @@ import {
   getGhlConnection,
   getGhlPipelines,
 } from '@/lib/services/integrations/gohighlevel.service'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 const syncSchema = z.object({
   lead_ids: z.array(z.string().uuid()).min(1).max(100),
@@ -94,7 +95,7 @@ export async function POST(req: NextRequest) {
     if (error.name === 'ZodError') {
       return NextResponse.json({ error: 'Invalid input', details: error.errors }, { status: 400 })
     }
-    console.error('GHL sync error:', error)
+    safeError('GHL sync error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
@@ -123,7 +124,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ pipelines })
   } catch (error: any) {
-    console.error('GHL pipelines fetch error:', error)
+    safeError('GHL pipelines fetch error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

@@ -2,6 +2,7 @@
 import { NextResponse } from 'next/server'
 import { WaitlistRepository } from '@/lib/repositories/waitlist.repository'
 import { requireAdmin } from '@/lib/auth/admin'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function GET() {
   try {
@@ -17,7 +18,7 @@ export async function GET() {
       total: result.total
     })
   } catch (error) {
-    console.error('[Admin] Waitlist fetch error:', error)
+    safeError('[Admin] Waitlist fetch error:', error)
     return NextResponse.json(
       { error: 'Failed to fetch waitlist' },
       { status: 500 }

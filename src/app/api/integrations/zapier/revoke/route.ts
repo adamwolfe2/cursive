@@ -12,6 +12,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function POST(request: NextRequest) {
   try {
@@ -30,7 +31,7 @@ export async function POST(request: NextRequest) {
       .eq('id', user.id)
 
     if (userUpdateError) {
-      console.error('[Zapier] Failed to clear user webhook URL:', userUpdateError)
+      safeError('[Zapier] Failed to clear user webhook URL:', userUpdateError)
       throw new Error('Failed to revoke webhook URL')
     }
 
@@ -46,7 +47,7 @@ export async function POST(request: NextRequest) {
       .eq('type', 'zapier')
 
     if (integrationError) {
-      console.error('[Zapier] Failed to update integration status:', integrationError)
+      safeError('[Zapier] Failed to update integration status:', integrationError)
     }
 
     // 4. Log to audit_logs

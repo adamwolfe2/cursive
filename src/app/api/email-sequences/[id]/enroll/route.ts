@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 
 const enrollLeadsSchema = z.object({
@@ -79,14 +80,14 @@ export async function POST(
             // Unique constraint violation - already enrolled
             results.already_enrolled++
           } else {
-            console.error('Failed to enroll lead:', error)
+            safeError('Failed to enroll lead:', error)
             results.failed++
           }
         } else {
           results.enrolled++
         }
       } catch (err) {
-        console.error('Error enrolling lead:', err)
+        safeError('Error enrolling lead:', err)
         results.failed++
       }
     }
@@ -104,7 +105,7 @@ export async function POST(
       )
     }
 
-    console.error('Email sequence enroll POST error:', error)
+    safeError('Email sequence enroll POST error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -180,7 +181,7 @@ export async function GET(
     const { data: enrollments, error } = await query
 
     if (error) {
-      console.error('Failed to fetch enrollments:', error)
+      safeError('Failed to fetch enrollments:', error)
       return NextResponse.json(
         { error: 'Failed to fetch enrollments' },
         { status: 500 }
@@ -189,7 +190,7 @@ export async function GET(
 
     return NextResponse.json({ enrollments })
   } catch (error) {
-    console.error('Email sequence enroll GET error:', error)
+    safeError('Email sequence enroll GET error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

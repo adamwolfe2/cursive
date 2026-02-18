@@ -13,6 +13,7 @@ import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { z } from 'zod'
 import { sanitizeSearchTerm } from '@/lib/utils/sanitize-search'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 const QuerySchema = z.object({
   start: z.string().optional(),
@@ -94,7 +95,7 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('[AL Events API] Error:', error)
+    safeError('[AL Events API] Error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

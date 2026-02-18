@@ -10,6 +10,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // Slack OAuth Configuration
 const SLACK_OAUTH_URL = 'https://slack.com/oauth/v2/authorize'
@@ -71,7 +72,7 @@ export async function GET(req: NextRequest) {
     // Validate Slack configuration
     const clientId = process.env.SLACK_CLIENT_ID
     if (!clientId) {
-      console.error('[Slack OAuth] Missing SLACK_CLIENT_ID')
+      safeError('[Slack OAuth] Missing SLACK_CLIENT_ID')
       return NextResponse.redirect(
         new URL('/settings/integrations?error=slack_not_configured', req.url)
       )
@@ -124,7 +125,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.redirect(oauthUrl.toString())
   } catch (error: any) {
-    console.error('[Slack OAuth] Authorization error:', error)
+    safeError('[Slack OAuth] Authorization error:', error)
     return NextResponse.redirect(
       new URL('/settings/integrations?error=slack_oauth_failed', req.url)
     )

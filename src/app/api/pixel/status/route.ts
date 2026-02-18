@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 
 export async function GET() {
@@ -33,7 +34,7 @@ export async function GET() {
       .maybeSingle()
 
     if (pixelError) {
-      console.error('[API] Failed to fetch pixel:', pixelError)
+      safeError('[API] Failed to fetch pixel:', pixelError)
       // Don't expose error details to client
     }
 
@@ -49,7 +50,7 @@ export async function GET() {
         .gte('received_at', twentyFourHoursAgo)
 
       if (eventsError) {
-        console.error('[API] Failed to fetch events count:', eventsError)
+        safeError('[API] Failed to fetch events count:', eventsError)
         // Continue with recentEvents = 0
       } else {
         recentEvents = count || 0
@@ -74,7 +75,7 @@ export async function GET() {
       recent_events: recentEvents,
     })
   } catch (error) {
-    console.error('[API] Pixel status error:', error)
+    safeError('[API] Pixel status error:', error)
     return NextResponse.json(
       { error: 'Failed to fetch pixel status' },
       { status: 500 }

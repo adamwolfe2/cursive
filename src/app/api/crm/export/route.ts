@@ -10,6 +10,7 @@ import { createClient } from '@/lib/supabase/server'
 import { logDataExport } from '@/lib/services/audit.service'
 import { z } from 'zod'
 import { sanitizeSearchTerm } from '@/lib/utils/sanitize-search'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 const MAX_EXPORT_ROWS = 10_000
 
@@ -133,7 +134,7 @@ export async function POST(request: NextRequest) {
     const { data: leads, error } = await query
 
     if (error) {
-      console.error('[CRM Export] Database error:', error.message)
+      safeError('[CRM Export] Database error:', error.message)
       throw new Error('Failed to fetch leads for export')
     }
 

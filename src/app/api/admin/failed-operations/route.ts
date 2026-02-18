@@ -8,6 +8,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getFailedOperations } from '@/lib/monitoring/failed-operations'
 import { safeParseInt } from '@/lib/utils/parse-number'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 /**
  * GET /api/admin/failed-operations
@@ -48,7 +49,7 @@ export async function GET(request: NextRequest) {
       count: operations.length,
     })
   } catch (error) {
-    console.error('Failed to get failed operations:', error)
+    safeError('Failed to get failed operations:', error)
     return NextResponse.json({ error: 'Failed to get operations' }, { status: 500 })
   }
 }

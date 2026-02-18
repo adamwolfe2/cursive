@@ -8,6 +8,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 const createSequenceSchema = z.object({
   name: z.string().min(1).max(100),
@@ -60,7 +61,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ sequences })
   } catch (error: any) {
-    console.error('Sequences fetch error:', error)
+    safeError('Sequences fetch error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
@@ -126,7 +127,7 @@ export async function POST(req: NextRequest) {
     if (error.name === 'ZodError') {
       return NextResponse.json({ error: 'Invalid input', details: error.errors }, { status: 400 })
     }
-    console.error('Sequence creation error:', error)
+    safeError('Sequence creation error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

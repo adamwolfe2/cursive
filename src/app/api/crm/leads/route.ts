@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { CRMLeadRepository } from '@/lib/repositories/crm-lead.repository'
 import { z } from 'zod'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // Use edge runtime
 
@@ -57,7 +58,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true, lead })
   } catch (error) {
-    console.error('[Create Lead] Error:', error)
+    safeError('[Create Lead] Error:', error)
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Invalid input', details: error.errors },

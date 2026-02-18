@@ -11,6 +11,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function POST(req: NextRequest) {
   try {
@@ -34,7 +35,7 @@ export async function POST(req: NextRequest) {
       .eq('provider', 'google_sheets')
 
     if (updateError) {
-      console.error('[Google Sheets OAuth] Failed to disconnect:', updateError)
+      safeError('[Google Sheets OAuth] Failed to disconnect:', updateError)
       throw new Error('Failed to disconnect Google Sheets')
     }
 

@@ -12,6 +12,7 @@ import {
   isValidTransition,
   type CampaignStatus,
 } from '@/lib/services/campaign/campaign-state-machine'
+import { safeLog } from '@/lib/utils/log-sanitizer'
 
 interface RouteContext {
   params: Promise<{ id: string }>
@@ -113,7 +114,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
 
       // Inngest disabled (Node.js runtime not available on this deployment)
       // Original: await inngest.send({ name: 'campaign/status-changed', data: { campaign_id, workspace_id, old_status, new_status, triggered_by } })
-      console.log(`[Campaign] Status changed ${currentStatus} → ${newStatus} for campaign ${id} (Inngest event skipped - Edge runtime)`)
+      safeLog(`[Campaign] Status changed ${currentStatus} → ${newStatus} for campaign ${id} (Inngest event skipped - Edge runtime)`)
 
       // Remove status from validatedData to avoid double update
       delete validatedData.status

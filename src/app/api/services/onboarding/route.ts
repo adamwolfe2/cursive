@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 const onboardingSchema = z.object({
   subscription_id: z.string().uuid(),
@@ -111,7 +112,7 @@ export async function POST(request: NextRequest) {
         },
       })
     } catch (inngestError) {
-      console.error('[Service Onboarding] Failed to trigger post-onboarding:', inngestError)
+      safeError('[Service Onboarding] Failed to trigger post-onboarding:', inngestError)
       // Don't block - onboarding data is saved
     }
 
@@ -127,7 +128,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.error('[Service Onboarding] Error:', error)
+    safeError('[Service Onboarding] Error:', error)
     return NextResponse.json(
       { error: 'Failed to save onboarding' },
       { status: 500 }

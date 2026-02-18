@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 
 const createSequenceSchema = z.object({
@@ -61,7 +62,7 @@ export async function GET(request: NextRequest) {
     const { data: sequences, error } = await query
 
     if (error) {
-      console.error('Failed to fetch email sequences:', error)
+      safeError('Failed to fetch email sequences:', error)
       return NextResponse.json(
         { error: 'Failed to fetch sequences' },
         { status: 500 }
@@ -70,7 +71,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ sequences })
   } catch (error) {
-    console.error('Email sequences GET error:', error)
+    safeError('Email sequences GET error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -112,7 +113,7 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         )
       }
-      console.error('Failed to create email sequence:', error)
+      safeError('Failed to create email sequence:', error)
       return NextResponse.json(
         { error: 'Failed to create sequence' },
         { status: 500 }
@@ -128,7 +129,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.error('Email sequences POST error:', error)
+    safeError('Email sequences POST error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

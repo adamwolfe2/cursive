@@ -11,6 +11,7 @@ import { NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function POST() {
   try {
@@ -49,7 +50,7 @@ export async function POST() {
       .eq('id', existingConnection.id)
 
     if (updateError) {
-      console.error('[Salesforce OAuth] Failed to disconnect:', updateError)
+      safeError('[Salesforce OAuth] Failed to disconnect:', updateError)
       return NextResponse.json(
         { error: 'Failed to disconnect Salesforce' },
         { status: 500 }

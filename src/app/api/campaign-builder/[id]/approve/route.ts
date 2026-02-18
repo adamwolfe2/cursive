@@ -7,6 +7,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { CampaignBuilderRepository } from '@/lib/repositories/campaign-builder.repository'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 /**
  * POST /api/campaign-builder/[id]/approve
@@ -64,7 +65,7 @@ export async function POST(
       draft: updatedDraft,
     })
   } catch (error) {
-    console.error('[Campaign Builder] Approve error:', error)
+    safeError('[Campaign Builder] Approve error:', error)
     return NextResponse.json(
       { error: 'Failed to approve campaign' },
       { status: 500 }

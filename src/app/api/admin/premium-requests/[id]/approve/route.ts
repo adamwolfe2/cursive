@@ -9,6 +9,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { requireAdmin } from '@/lib/auth/admin'
 import { handleApiError, unauthorized, forbidden, badRequest } from '@/lib/utils/api-error-handler'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface RouteParams {
   params: Promise<{ id: string }>
@@ -59,7 +60,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       .eq('id', id)
 
     if (requestUpdateError) {
-      console.error('[Admin] Failed to update request:', requestUpdateError)
+      safeError('[Admin] Failed to update request:', requestUpdateError)
       return NextResponse.json(
         { error: 'Failed to update request status' },
         { status: 500 }
@@ -84,7 +85,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         .eq('id', featureRequest.workspace_id)
 
       if (workspaceUpdateError) {
-        console.error('[Admin] Failed to grant feature access:', workspaceUpdateError)
+        safeError('[Admin] Failed to grant feature access:', workspaceUpdateError)
         return NextResponse.json(
           { error: 'Failed to grant feature access' },
           { status: 500 }

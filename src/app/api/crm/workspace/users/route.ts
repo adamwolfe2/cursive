@@ -8,6 +8,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function GET(request: NextRequest) {
   try {
@@ -26,7 +27,7 @@ export async function GET(request: NextRequest) {
       .order('full_name')
 
     if (error) {
-      console.error('[Workspace Users] Error:', error)
+      safeError('[Workspace Users] Error:', error)
       return NextResponse.json(
         { error: 'Failed to fetch workspace users' },
         { status: 500 }
@@ -43,7 +44,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ users })
 
   } catch (error: any) {
-    console.error('[Workspace Users] Error:', error)
+    safeError('[Workspace Users] Error:', error)
     return NextResponse.json(
       { error: 'Failed to fetch workspace users' },
       { status: 500 }

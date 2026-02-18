@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { requireAdmin, getCurrentAdminId } from '@/lib/auth/admin'
 import { getStripeClient } from '@/lib/stripe/client'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 /** Partner data from the payout_requests -> partners join */
 interface PayoutPartner {
@@ -177,7 +178,7 @@ export async function PATCH(
             .eq('status', 'available')
 
         } catch (stripeError: any) {
-          console.error('Stripe transfer failed:', stripeError)
+          safeError('Stripe transfer failed:', stripeError)
 
           // Revert to approved status
           await supabase
@@ -204,7 +205,7 @@ export async function PATCH(
       message: `Payout request ${action}${action === 'process' ? 'ed' : 'd'} successfully`,
     })
   } catch (error: any) {
-    console.error('Payout action error:', error)
+    safeError('Payout action error:', error)
     return NextResponse.json({ error: 'Failed to process action' }, { status: 500 })
   }
 }

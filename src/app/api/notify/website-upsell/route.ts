@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { Resend } from 'resend'
 import { z } from 'zod'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // Input validation schema
 const requestSchema = z.object({
@@ -88,13 +89,13 @@ export async function POST(request: NextRequest) {
     })
 
     if (emailError) {
-      console.error('Failed to send upsell notification:', emailError)
+      safeError('Failed to send upsell notification:', emailError)
       // Don't fail the request if email fails - the signup should still work
     }
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Error in website upsell notification:', error)
+    safeError('Error in website upsell notification:', error)
     return NextResponse.json(
       { error: 'Failed to send notification' },
       { status: 500 }

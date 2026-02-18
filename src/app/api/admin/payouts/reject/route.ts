@@ -10,6 +10,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { requireAdmin } from '@/lib/auth/admin'
 import { checkRateLimit, RATE_LIMIT_CONFIGS } from '@/lib/utils/rate-limit'
 import { z } from 'zod'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 const payoutRejectSchema = z.object({
   payout_id: z.string().uuid(),
@@ -111,7 +112,7 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       )
     }
-    console.error('[Admin Payouts] Rejection error:', error)
+    safeError('[Admin Payouts] Rejection error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

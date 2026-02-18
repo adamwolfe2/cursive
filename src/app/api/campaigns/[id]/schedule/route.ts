@@ -15,6 +15,7 @@ import {
   WEEKDAYS,
   isValidTimezone,
 } from '@/lib/services/campaign/timezone-scheduling.service'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface RouteContext {
   params: Promise<{ id: string }>
@@ -175,7 +176,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
       .eq('workspace_id', user.workspace_id)
 
     if (updateError) {
-      console.error('[Campaign Schedule] Update error:', updateError.message)
+      safeError('[Campaign Schedule] Update error:', updateError.message)
       return badRequest('Failed to update campaign schedule')
     }
 

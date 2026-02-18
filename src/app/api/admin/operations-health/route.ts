@@ -8,6 +8,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getFailureStats } from '@/lib/monitoring/failed-operations'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 /**
  * GET /api/admin/operations-health
@@ -84,7 +85,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(metrics)
   } catch (error) {
-    console.error('Failed to get operations health:', error)
+    safeError('Failed to get operations health:', error)
     return NextResponse.json({ error: 'Failed to get health metrics' }, { status: 500 })
   }
 }

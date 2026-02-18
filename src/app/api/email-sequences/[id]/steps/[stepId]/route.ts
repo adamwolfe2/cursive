@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 
 const updateStepSchema = z.object({
@@ -99,7 +100,7 @@ export async function PATCH(
       .single()
 
     if (error) {
-      console.error('Failed to update email sequence step:', error)
+      safeError('Failed to update email sequence step:', error)
       return NextResponse.json(
         { error: 'Failed to update step' },
         { status: 500 }
@@ -115,7 +116,7 @@ export async function PATCH(
       )
     }
 
-    console.error('Email sequence step PATCH error:', error)
+    safeError('Email sequence step PATCH error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -173,7 +174,7 @@ export async function DELETE(
       .eq('id', stepId)
 
     if (error) {
-      console.error('Failed to delete email sequence step:', error)
+      safeError('Failed to delete email sequence step:', error)
       return NextResponse.json(
         { error: 'Failed to delete step' },
         { status: 500 }
@@ -198,7 +199,7 @@ export async function DELETE(
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Email sequence step DELETE error:', error)
+    safeError('Email sequence step DELETE error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

@@ -9,6 +9,7 @@ import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized, badRequest } from '@/lib/utils/api-error-handler'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 const MAX_EXPORT_ROWS = 10_000
 
@@ -137,7 +138,7 @@ export async function POST(request: NextRequest) {
       .order('created_at', { ascending: false })
 
     if (leadsError) {
-      console.error('[Google Sheets Export] Failed to fetch leads:', leadsError.message)
+      safeError('[Google Sheets Export] Failed to fetch leads:', leadsError.message)
       throw new Error('Failed to fetch leads for export')
     }
 

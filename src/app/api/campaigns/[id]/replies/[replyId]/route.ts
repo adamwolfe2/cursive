@@ -7,6 +7,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface RouteContext {
   params: Promise<{ id: string; replyId: string }>
@@ -69,7 +70,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
 
     return NextResponse.json({ data: reply })
   } catch (error) {
-    console.error('Get reply error:', error)
+    safeError('Get reply error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
@@ -121,7 +122,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
       .single()
 
     if (updateError) {
-      console.error('Failed to update reply:', updateError)
+      safeError('Failed to update reply:', updateError)
       return NextResponse.json({ error: 'Failed to update reply' }, { status: 500 })
     }
 
@@ -133,7 +134,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
         { status: 400 }
       )
     }
-    console.error('Update reply error:', error)
+    safeError('Update reply error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

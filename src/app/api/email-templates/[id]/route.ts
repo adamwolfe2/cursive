@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 
 const updateTemplateSchema = z.object({
@@ -46,7 +47,7 @@ export async function GET(
 
     return NextResponse.json({ template })
   } catch (error) {
-    console.error('Email template GET error:', error)
+    safeError('Email template GET error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -97,7 +98,7 @@ export async function PATCH(
           { status: 400 }
         )
       }
-      console.error('Failed to update email template:', error)
+      safeError('Failed to update email template:', error)
       return NextResponse.json(
         { error: 'Failed to update template' },
         { status: 500 }
@@ -121,7 +122,7 @@ export async function PATCH(
       )
     }
 
-    console.error('Email template PATCH error:', error)
+    safeError('Email template PATCH error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -175,7 +176,7 @@ export async function DELETE(
       .eq('id', id)
 
     if (error) {
-      console.error('Failed to delete email template:', error)
+      safeError('Failed to delete email template:', error)
       return NextResponse.json(
         { error: 'Failed to delete template' },
         { status: 500 }
@@ -184,7 +185,7 @@ export async function DELETE(
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Email template DELETE error:', error)
+    safeError('Email template DELETE error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

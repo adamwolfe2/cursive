@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 
 const snippetSchema = z.object({
@@ -41,7 +42,7 @@ export async function PATCH(request: NextRequest) {
       .maybeSingle()
 
     if (updateError) {
-      console.error('[API] Snippet update error:', updateError)
+      safeError('[API] Snippet update error:', updateError)
       return NextResponse.json(
         { error: 'Failed to update snippet' },
         { status: 500 }
@@ -64,7 +65,7 @@ export async function PATCH(request: NextRequest) {
       )
     }
 
-    console.error('[API] Snippet update error:', error)
+    safeError('[API] Snippet update error:', error)
     return NextResponse.json(
       { error: 'Failed to update snippet' },
       { status: 500 }

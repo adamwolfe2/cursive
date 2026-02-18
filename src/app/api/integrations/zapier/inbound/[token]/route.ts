@@ -14,6 +14,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 /**
  * Validate the webhook token against the integrations table.
@@ -102,7 +103,7 @@ export async function GET(
       ],
     })
   } catch (error) {
-    console.error('[Zapier] Inbound GET error:', error)
+    safeError('[Zapier] Inbound GET error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -146,7 +147,7 @@ export async function POST(
       message: 'Webhook received',
     })
   } catch (error) {
-    console.error('[Zapier] Inbound POST error:', error)
+    safeError('[Zapier] Inbound POST error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

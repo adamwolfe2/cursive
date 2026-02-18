@@ -8,6 +8,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { requireAdmin } from '@/lib/auth/admin'
 import { handleApiError, unauthorized, forbidden, badRequest } from '@/lib/utils/api-error-handler'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface RouteParams {
   params: Promise<{ id: string }>
@@ -36,7 +37,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       .eq('id', id)
 
     if (error) {
-      console.error('[Admin] Failed to reject request:', error)
+      safeError('[Admin] Failed to reject request:', error)
       return NextResponse.json(
         { error: 'Failed to update request status' },
         { status: 500 }

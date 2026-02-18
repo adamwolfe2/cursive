@@ -8,6 +8,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { createClient } from '@/lib/supabase/server'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface ConnectionResponse {
   provider: string
@@ -35,7 +36,7 @@ export async function GET(request: NextRequest) {
       .order('created_at', { ascending: false })
 
     if (error) {
-      console.error('[CRM Connections] Failed to fetch connections:', error.message)
+      safeError('[CRM Connections] Failed to fetch connections:', error.message)
       throw new Error('Failed to fetch CRM connections')
     }
 

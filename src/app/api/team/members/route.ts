@@ -6,6 +6,7 @@ import { NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized, success } from '@/lib/utils/api-error-handler'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function GET(request: NextRequest) {
   try {
@@ -25,7 +26,7 @@ export async function GET(request: NextRequest) {
       .order('created_at', { ascending: true })
 
     if (error) {
-      console.error('[Team Members] Database error:', error)
+      safeError('[Team Members] Database error:', error)
       throw new Error('Failed to fetch members')
     }
 

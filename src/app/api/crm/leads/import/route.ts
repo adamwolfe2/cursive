@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { CRMLeadRepository } from '@/lib/repositories/crm-lead.repository'
 import { z } from 'zod'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // Use edge runtime for better performance
 
@@ -153,7 +154,7 @@ export async function POST(req: NextRequest) {
       errors: errors.slice(0, 10), // Limit error messages
     })
   } catch (error) {
-    console.error('[Lead Import] Error:', error)
+    safeError('[Lead Import] Error:', error)
     return NextResponse.json(
       {
         error: 'Failed to process import',

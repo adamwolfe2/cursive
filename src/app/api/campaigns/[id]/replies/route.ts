@@ -6,6 +6,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface RouteContext {
   params: Promise<{ id: string }>
@@ -83,7 +84,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
     const { data, error, count } = await query
 
     if (error) {
-      console.error('Failed to fetch replies:', error)
+      safeError('Failed to fetch replies:', error)
       return NextResponse.json({ error: 'Failed to fetch replies' }, { status: 500 })
     }
 
@@ -96,7 +97,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
       },
     })
   } catch (error) {
-    console.error('Campaign replies error:', error)
+    safeError('Campaign replies error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

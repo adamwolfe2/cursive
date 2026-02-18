@@ -6,6 +6,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { resolveFailedOperation } from '@/lib/monitoring/failed-operations'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 /**
  * POST /api/admin/failed-operations/[id]/resolve
@@ -36,7 +37,7 @@ export async function POST(
 
     return NextResponse.json({ success: true, message: 'Operation marked as resolved' })
   } catch (error) {
-    console.error('Failed to resolve operation:', error)
+    safeError('Failed to resolve operation:', error)
     return NextResponse.json({ error: 'Failed to resolve operation' }, { status: 500 })
   }
 }

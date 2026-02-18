@@ -10,6 +10,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized, badRequest } from '@/lib/utils/api-error-handler'
 import { createClient } from '@/lib/supabase/server'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 const SUPPORTED_PROVIDERS = ['salesforce', 'google_sheets', 'hubspot'] as const
 type Provider = typeof SUPPORTED_PROVIDERS[number]
@@ -51,7 +52,7 @@ export async function GET(
 
     if (error && error.code !== 'PGRST116') {
       // PGRST116 = no rows returned (not an error, just means not connected)
-      console.error(`[CRM Connection] Failed to fetch ${provider} connection:`, error.message)
+      safeError(`[CRM Connection] Failed to fetch ${provider} connection:`, error.message)
       throw new Error(`Failed to fetch ${provider} connection status`)
     }
 

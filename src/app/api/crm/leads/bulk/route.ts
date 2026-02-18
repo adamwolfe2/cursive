@@ -7,6 +7,7 @@ import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { CRMLeadRepository } from '@/lib/repositories/crm-lead.repository'
 import { withRateLimit } from '@/lib/middleware/rate-limiter'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // Validation schema for bulk operations
 const bulkOperationSchema = z.object({
@@ -156,7 +157,7 @@ export async function POST(request: NextRequest) {
         )
     }
   } catch (error) {
-    console.error('[CRM Bulk API] Failed to perform bulk operation:', error)
+    safeError('[CRM Bulk API] Failed to perform bulk operation:', error)
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Invalid data', details: error.errors },

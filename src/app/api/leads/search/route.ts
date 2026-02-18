@@ -9,6 +9,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getLeadProviderService, type LeadSearchFilters } from '@/lib/services/lead-provider.service'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function POST(request: NextRequest) {
   try {
@@ -118,7 +119,7 @@ export async function POST(request: NextRequest) {
         .insert(leadsToInsert)
 
       if (insertError) {
-        console.error('[Lead Search] Failed to save leads:', insertError)
+        safeError('[Lead Search] Failed to save leads:', insertError)
         return NextResponse.json(
           { error: 'Failed to save leads to workspace' },
           { status: 500 }
@@ -141,7 +142,7 @@ export async function POST(request: NextRequest) {
       },
     })
   } catch (error: any) {
-    console.error('Lead search error:', error)
+    safeError('Lead search error:', error)
 
     if (error.name === 'LeadLimitExceededError') {
       return NextResponse.json(

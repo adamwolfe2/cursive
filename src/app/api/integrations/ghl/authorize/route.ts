@@ -9,6 +9,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // GHL OAuth Configuration
 const GHL_OAUTH_URL = 'https://marketplace.gohighlevel.com/oauth/chooselocation'
@@ -70,7 +71,7 @@ export async function GET(req: NextRequest) {
     // Validate GHL configuration
     const clientId = process.env.GHL_CLIENT_ID
     if (!clientId) {
-      console.error('[GHL OAuth] Missing GHL_CLIENT_ID')
+      safeError('[GHL OAuth] Missing GHL_CLIENT_ID')
       return NextResponse.redirect(
         new URL('/settings/integrations?error=ghl_not_configured', req.url)
       )
@@ -125,7 +126,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.redirect(oauthUrl.toString())
   } catch (error: any) {
-    console.error('[GHL OAuth] Authorization error:', error)
+    safeError('[GHL OAuth] Authorization error:', error)
     return NextResponse.redirect(
       new URL('/settings/integrations?error=oauth_failed', req.url)
     )

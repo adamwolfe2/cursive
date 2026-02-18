@@ -7,7 +7,7 @@
 
 
 import { NextRequest, NextResponse } from 'next/server'
-import { safeError } from '@/lib/utils/log-sanitizer'
+import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
 import { createClient } from '@/lib/supabase/server'
 import { leadDataProcessor, type ProcessedLead } from '@/lib/services/lead-data-processor.service'
 import { geocodingService } from '@/lib/services/geocoding.service'
@@ -164,7 +164,7 @@ export async function POST(req: NextRequest) {
     // Inngest disabled (Node.js runtime not available on this deployment)
     // Original: inngest.send(insertedIds.map(leadId => ({ name: 'lead/created', data: { lead_id, workspace_id, source } })))
     if (insertedIds.length > 0) {
-      console.log(`[Import Process] ${insertedIds.length} leads imported (Inngest events skipped - Edge runtime)`)
+      safeLog(`[Import Process] ${insertedIds.length} leads imported (Inngest events skipped - Edge runtime)`)
     }
 
     return NextResponse.json({

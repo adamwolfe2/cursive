@@ -8,6 +8,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { CampaignBuilderRepository } from '@/lib/repositories/campaign-builder.repository'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 const createDraftSchema = z.object({
   name: z.string().min(1, 'Campaign name is required').max(200),
@@ -62,7 +63,7 @@ export async function GET(req: NextRequest) {
       offset,
     })
   } catch (error) {
-    console.error('[Campaign Builder] List error:', error)
+    safeError('[Campaign Builder] List error:', error)
     return NextResponse.json(
       { error: 'Failed to list campaigns' },
       { status: 500 }
@@ -108,7 +109,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ draft }, { status: 201 })
   } catch (error) {
-    console.error('[Campaign Builder] Create error:', error)
+    safeError('[Campaign Builder] Create error:', error)
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(

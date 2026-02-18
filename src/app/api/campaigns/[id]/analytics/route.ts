@@ -5,6 +5,7 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface RouteContext {
   params: Promise<{ id: string }>
@@ -38,7 +39,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
       .rpc('get_campaign_lead_stats', { p_campaign_id: campaignId })
 
     if (leadStatsError) {
-      console.error('[Campaign Analytics] Lead stats error:', leadStatsError)
+      safeError('[Campaign Analytics] Lead stats error:', leadStatsError)
       // Fallback to basic counts if function fails
       return NextResponse.json({ error: 'Failed to fetch campaign stats' }, { status: 500 })
     }
@@ -264,7 +265,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
       step_performance: stepPerformance,
     })
   } catch (error) {
-    console.error('Campaign analytics error:', error)
+    safeError('Campaign analytics error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

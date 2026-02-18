@@ -9,6 +9,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 const campaignRequestSchema = z.object({
   company_name: z.string().min(2),
@@ -82,7 +83,7 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (error) {
-      console.error('[Campaign Request] Database error:', error)
+      safeError('[Campaign Request] Database error:', error)
       return NextResponse.json(
         { error: 'Failed to create campaign request' },
         { status: 500 }
@@ -98,7 +99,7 @@ export async function POST(request: NextRequest) {
       data: campaignRequest,
     })
   } catch (error: any) {
-    console.error('[Campaign Request] Error:', error)
+    safeError('[Campaign Request] Error:', error)
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(

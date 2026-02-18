@@ -9,6 +9,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { getCompanyEnrichmentService } from '@/lib/services/company-enrichment.service'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function GET(request: NextRequest) {
   try {
@@ -31,7 +32,7 @@ export async function GET(request: NextRequest) {
       domain,
     })
   } catch (error: any) {
-    console.error('[Logo Fetch] Error:', error)
+    safeError('[Logo Fetch] Error:', error)
     return NextResponse.json(
       { error: 'Failed to fetch logo' },
       { status: 500 }

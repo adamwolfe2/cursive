@@ -13,6 +13,7 @@ import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { processEventInline } from '@/lib/audiencelab/edge-processor'
 import { z } from 'zod'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 const ParamsSchema = z.object({
   eventId: z.string().uuid(),
@@ -86,7 +87,7 @@ export async function POST(
       event_id: eventId,
     })
   } catch (error) {
-    console.error('[AL Replay] Error:', error)
+    safeError('[AL Replay] Error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

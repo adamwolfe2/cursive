@@ -9,6 +9,7 @@ import {
   applyRateLimitHeaders,
   RATE_LIMITS
 } from '@/lib/middleware/rate-limit'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // Zod schema for API key validation
 const authSchema = z.object({
@@ -82,7 +83,7 @@ export async function POST(request: NextRequest) {
     // Apply rate limit headers to successful response
     return applyRateLimitHeaders(response, rateLimitResult)
   } catch (error: any) {
-    console.error('Partner auth error:', error)
+    safeError('Partner auth error:', error)
     return NextResponse.json({ error: 'Authentication failed' }, { status: 500 })
   }
 }

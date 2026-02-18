@@ -10,6 +10,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function POST(req: NextRequest) {
   try {
@@ -49,7 +50,7 @@ export async function POST(req: NextRequest) {
 
     if (!webhookResponse.ok) {
       const errorText = await webhookResponse.text()
-      console.error('[Slack OAuth] Test message failed:', errorText)
+      safeError('[Slack OAuth] Test message failed:', errorText)
       return NextResponse.json(
         { error: 'Failed to send test message to Slack. The webhook may be invalid.' },
         { status: 502 }

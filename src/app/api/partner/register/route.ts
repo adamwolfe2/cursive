@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { withRateLimit, getRequestIdentifier } from '@/lib/middleware/rate-limiter'
 import { z } from 'zod'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 const registerSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters').max(100),
@@ -64,7 +65,7 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (createError || !partner) {
-      console.error('[Partner Register] Failed to create partner:', createError)
+      safeError('[Partner Register] Failed to create partner:', createError)
       return NextResponse.json(
         { error: 'Failed to create partner account' },
         { status: 500 }
@@ -78,7 +79,7 @@ export async function POST(request: NextRequest) {
       message: 'Partner account created successfully',
     })
   } catch (error) {
-    console.error('[Partner Register] Error:', error)
+    safeError('[Partner Register] Error:', error)
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(

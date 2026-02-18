@@ -2,6 +2,7 @@
 import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { requireAdmin } from '@/lib/auth/admin'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function GET() {
   try {
@@ -21,7 +22,7 @@ export async function GET() {
 
     return NextResponse.json({ messages: data })
   } catch (error) {
-    console.error('[Admin] Support messages fetch error:', error)
+    safeError('[Admin] Support messages fetch error:', error)
     return NextResponse.json(
       { error: 'Failed to fetch support messages' },
       { status: 500 }

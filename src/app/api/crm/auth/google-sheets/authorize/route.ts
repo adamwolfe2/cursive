@@ -10,6 +10,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // Google OAuth Configuration
 const GOOGLE_OAUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth'
@@ -71,7 +72,7 @@ export async function GET(req: NextRequest) {
     // Validate Google configuration
     const clientId = process.env.GOOGLE_CLIENT_ID
     if (!clientId) {
-      console.error('[Google Sheets OAuth] Missing GOOGLE_CLIENT_ID')
+      safeError('[Google Sheets OAuth] Missing GOOGLE_CLIENT_ID')
       return NextResponse.redirect(
         new URL('/settings/integrations?error=gs_not_configured', req.url)
       )
@@ -124,7 +125,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.redirect(oauthUrl.toString())
   } catch (error: any) {
-    console.error('[Google Sheets OAuth] Authorization error:', error)
+    safeError('[Google Sheets OAuth] Authorization error:', error)
     return NextResponse.redirect(
       new URL('/settings/integrations?error=gs_oauth_failed', req.url)
     )

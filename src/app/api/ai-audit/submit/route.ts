@@ -7,7 +7,7 @@ import { z } from 'zod'
 import { handleApiError, created } from '@/lib/utils/api-error-handler'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { withRateLimit } from '@/lib/middleware/rate-limiter'
-import { safeError } from '@/lib/utils/log-sanitizer'
+import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
 
 // CORS headers for cross-origin requests from marketing site
 const corsHeaders = {
@@ -145,7 +145,7 @@ export async function POST(request: NextRequest) {
 
     // Inngest disabled (Node.js runtime not available on this deployment)
     // Original: await inngest.send({ name: 'ai-audit/submitted', data: eventData })
-    console.log(`[AI Audit] Submission received for ${eventData.email} (Inngest event skipped - Edge runtime)`)
+    safeLog(`[AI Audit] Submission received for ${eventData.email} (Inngest event skipped - Edge runtime)`)
 
     // Non-blocking Slack notification
     sendSlackAlert({

@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
           .from('users')
           .select('id')
           .eq('referral_code', newCode)
-          .single()
+          .maybeSingle()
 
         if (!existingUser) {
           // Code is unique, save it

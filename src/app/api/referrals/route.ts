@@ -8,6 +8,7 @@ import {
   getWorkspaceReferralStats,
   assignWorkspaceReferralCode,
 } from '@/lib/services/referral.service'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function GET() {
   try {
@@ -42,7 +43,7 @@ export async function GET() {
 
     return NextResponse.json(stats)
   } catch (error) {
-    console.error('Failed to get referral stats:', error)
+    safeError('Failed to get referral stats:', error)
     return NextResponse.json(
       { error: 'Failed to get referral stats' },
       { status: 500 }

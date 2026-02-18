@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function GET() {
   try {
@@ -153,7 +154,7 @@ export async function GET() {
       chartData,
     })
   } catch (error) {
-    console.error('Error fetching lead stats:', error)
+    safeError('Error fetching lead stats:', error)
     return NextResponse.json(
       { error: 'Failed to fetch lead statistics' },
       { status: 500 }

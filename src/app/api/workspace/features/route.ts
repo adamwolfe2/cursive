@@ -7,6 +7,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function GET() {
   try {
@@ -43,7 +44,7 @@ export async function GET() {
       .single()
 
     if (error) {
-      console.error('[Workspace Features] Failed to fetch:', error)
+      safeError('[Workspace Features] Failed to fetch:', error)
       return NextResponse.json(
         { error: 'Failed to fetch workspace features' },
         { status: 500 }

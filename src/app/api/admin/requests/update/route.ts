@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { requireAdmin } from '@/lib/auth/admin'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { z } from 'zod'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 const updateSchema = z.object({
   request_id: z.string().uuid(),
@@ -47,7 +48,7 @@ export async function POST(request: NextRequest) {
       .eq('id', validated.request_id)
 
     if (updateError) {
-      console.error('Failed to update feature request:', updateError)
+      safeError('Failed to update feature request:', updateError)
       return NextResponse.json(
         { error: 'Failed to update request' },
         { status: 500 }
@@ -95,7 +96,7 @@ ${validated.admin_notes ? `*Admin Notes:* ${validated.admin_notes}` : ''}
       message: 'Request updated successfully',
     })
   } catch (error) {
-    console.error('Error updating feature request:', error)
+    safeError('Error updating feature request:', error)
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(

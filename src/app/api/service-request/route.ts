@@ -14,6 +14,7 @@ import { createServerClient } from '@supabase/ssr'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { withRateLimit } from '@/lib/middleware/rate-limiter'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 
 const serviceRequestSchema = z.object({
@@ -87,7 +88,7 @@ export async function POST(request: NextRequest) {
       })
 
     if (insertError) {
-      console.error('[API] Service request insert error:', insertError)
+      safeError('[API] Service request insert error:', insertError)
       return NextResponse.json(
         { error: 'Failed to submit request. Please try again.' },
         { status: 500 }
@@ -125,7 +126,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.error('[API] Service request error:', error)
+    safeError('[API] Service request error:', error)
     return NextResponse.json(
       { error: 'Failed to submit request. Please try again.' },
       { status: 500 }

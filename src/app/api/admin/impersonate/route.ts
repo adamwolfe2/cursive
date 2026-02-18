@@ -13,6 +13,7 @@ import {
   endImpersonation,
   getActiveImpersonationSession,
 } from '@/lib/auth/admin'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 const impersonateSchema = z.object({
   workspaceId: z.string().uuid('Invalid workspace ID'),
@@ -51,7 +52,7 @@ export async function POST(request: NextRequest) {
       message: 'Impersonation session started',
     })
   } catch (error) {
-    console.error('Impersonate error:', error)
+    safeError('Impersonate error:', error)
     return NextResponse.json(
       { error: 'Failed to start impersonation' },
       { status: 500 }
@@ -78,7 +79,7 @@ export async function DELETE() {
       message: 'Impersonation session ended',
     })
   } catch (error) {
-    console.error('End impersonate error:', error)
+    safeError('End impersonate error:', error)
     return NextResponse.json(
       { error: 'Failed to end impersonation' },
       { status: 500 }
@@ -99,7 +100,7 @@ export async function GET() {
       sessionId: session?.sessionId || null,
     })
   } catch (error) {
-    console.error('Get impersonation error:', error)
+    safeError('Get impersonation error:', error)
     return NextResponse.json(
       { error: 'Failed to get impersonation status' },
       { status: 500 }

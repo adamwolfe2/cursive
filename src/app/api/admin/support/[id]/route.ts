@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { requireAdmin } from '@/lib/auth/admin'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function PATCH(
   request: NextRequest,
@@ -65,7 +66,7 @@ export async function PATCH(
 
     return NextResponse.json({ message: data })
   } catch (error) {
-    console.error('[Admin] Support message update error:', error)
+    safeError('[Admin] Support message update error:', error)
     return NextResponse.json(
       { error: 'Failed to update support message' },
       { status: 500 }

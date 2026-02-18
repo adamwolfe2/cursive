@@ -5,6 +5,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { createClient } from '@/lib/supabase/server'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface RouteContext {
   params: Promise<{ topicId: string }>
@@ -55,7 +56,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
       },
     })
   } catch (error: any) {
-    console.error('[Trend History] Error:', error)
+    safeError('[Trend History] Error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

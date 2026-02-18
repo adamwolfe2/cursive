@@ -11,6 +11,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function POST(req: NextRequest) {
   try {
@@ -27,7 +28,7 @@ export async function POST(req: NextRequest) {
       .eq('id', user.id)
 
     if (userUpdateError) {
-      console.error('[Slack OAuth] Failed to clear user webhook URL:', userUpdateError)
+      safeError('[Slack OAuth] Failed to clear user webhook URL:', userUpdateError)
       return NextResponse.json(
         { error: 'Failed to disconnect Slack' },
         { status: 500 }
@@ -47,7 +48,7 @@ export async function POST(req: NextRequest) {
       .eq('status', 'active')
 
     if (integrationUpdateError) {
-      console.error('[Slack OAuth] Failed to update integration status:', integrationUpdateError)
+      safeError('[Slack OAuth] Failed to update integration status:', integrationUpdateError)
       // Non-fatal: user webhook URL was already cleared
     }
 

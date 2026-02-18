@@ -9,6 +9,7 @@ import { getCurrentUser } from '@/lib/auth/helpers'
 import { createClient } from '@/lib/supabase/server'
 import { serviceTierRepository } from '@/lib/repositories/service-tier.repository'
 import type { ProductTierFeatures } from '@/types'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 /** Type for service tier platform_features JSONB column */
 interface ServiceTierPlatformFeatures {
@@ -206,7 +207,7 @@ export async function GET(request: NextRequest) {
         : null,
     })
   } catch (error: any) {
-    console.error('[Workspace Tier] Error:', error)
+    safeError('[Workspace Tier] Error:', error)
     return NextResponse.json(
       { error: 'Failed to get tier info' },
       { status: 500 }

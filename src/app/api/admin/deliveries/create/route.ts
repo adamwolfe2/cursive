@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { sendDeliveryNotificationEmail } from '@/lib/email/service-emails'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 /**
  * POST /api/admin/deliveries/create
@@ -103,7 +104,7 @@ export async function POST(request: NextRequest) {
       .eq('id', delivery.id)
 
     if (updateError) {
-      console.error('[Admin] Failed to update delivery with file info:', updateError)
+      safeError('[Admin] Failed to update delivery with file info:', updateError)
     }
 
     // Send notification email if requested
@@ -128,7 +129,7 @@ export async function POST(request: NextRequest) {
           // Delivery notification sent successfully
         }
       } catch (emailError: any) {
-        console.error('[Admin] Failed to send delivery email:', emailError)
+        safeError('[Admin] Failed to send delivery email:', emailError)
         // Don't fail the request if email fails
       }
     }
@@ -139,7 +140,7 @@ export async function POST(request: NextRequest) {
       message: 'Delivery created successfully'
     })
   } catch (error) {
-    console.error('[Admin Deliveries Create] Error:', error)
+    safeError('[Admin Deliveries Create] Error:', error)
     return NextResponse.json(
       { error: 'Failed to create delivery' },
       { status: 500 }

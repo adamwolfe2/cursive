@@ -10,6 +10,7 @@ import { handleApiError, unauthorized, badRequest } from '@/lib/utils/api-error-
 import { createClient } from '@/lib/supabase/server'
 import { createHubSpotService } from '@/lib/services/hubspot.service'
 import { z } from 'zod'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 const MAX_SYNC_LEADS = 500
 
@@ -69,7 +70,7 @@ export async function POST(request: NextRequest) {
       .eq('workspace_id', user.workspace_id)
 
     if (leadsError) {
-      console.error('[HubSpot Export] Failed to fetch leads:', leadsError.message)
+      safeError('[HubSpot Export] Failed to fetch leads:', leadsError.message)
       throw new Error('Failed to fetch leads for sync')
     }
 

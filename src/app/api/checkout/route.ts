@@ -13,6 +13,7 @@ import { createServerClient } from '@supabase/ssr'
 import { getStripeClient } from '@/lib/stripe/client'
 import type Stripe from 'stripe'
 import { z } from 'zod'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // Request validation schema
 const checkoutSchema = z.object({
@@ -134,7 +135,7 @@ export async function POST(req: NextRequest) {
       .from('lead_purchases')
       .select('id')
       .eq('lead_id', leadId)
-      .single()
+      .maybeSingle()
 
     if (existingPurchase) {
       return NextResponse.json(
@@ -149,7 +150,7 @@ export async function POST(req: NextRequest) {
       .from('buyers')
       .select('stripe_customer_id')
       .eq('email', buyerEmail)
-      .single()
+      .maybeSingle()
 
     if (existingCustomer?.stripe_customer_id) {
       customer = await stripe.customers.retrieve(existingCustomer.stripe_customer_id)
@@ -223,7 +224,7 @@ export async function POST(req: NextRequest) {
       url: session.url,
     })
   } catch (error: any) {
-    console.error('[Checkout] Error:', error)
+    safeError('[Checkout] Error:', error)
     return NextResponse.json(
       { error: 'Failed to create checkout session' },
       { status: 500 }

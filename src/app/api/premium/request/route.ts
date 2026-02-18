@@ -9,6 +9,7 @@ import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { handleApiError, unauthorized, badRequest } from '@/lib/utils/api-error-handler'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // Validation schema
 const requestSchema = z.object({
@@ -101,7 +102,7 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (insertError) {
-      console.error('[Premium Request] Failed to create request:', insertError)
+      safeError('[Premium Request] Failed to create request:', insertError)
       return NextResponse.json(
         { error: 'Failed to create feature request' },
         { status: 500 }
@@ -145,7 +146,7 @@ ${validatedData.budget_range ? `*Budget:* ${validatedData.budget_range}\n` : ''}
         user_id: userProfile.id,
       },
     }).catch((err) => {
-      console.error('[Premium Request] Failed to send Slack notification:', err)
+      safeError('[Premium Request] Failed to send Slack notification:', err)
     })
 
     return NextResponse.json(
@@ -201,7 +202,7 @@ export async function GET(request: NextRequest) {
       .order('created_at', { ascending: false })
 
     if (error) {
-      console.error('[Premium Request] Failed to fetch requests:', error)
+      safeError('[Premium Request] Failed to fetch requests:', error)
       return NextResponse.json(
         { error: 'Failed to fetch feature requests' },
         { status: 500 }

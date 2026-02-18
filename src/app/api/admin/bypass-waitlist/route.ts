@@ -7,6 +7,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // Use edge runtime for instant response
 
@@ -40,7 +41,7 @@ export async function POST(req: NextRequest) {
 
     // Ensure admin password is configured via environment variable
     if (!ADMIN_BYPASS_PASSWORD) {
-      console.error('[Admin Bypass] ADMIN_BYPASS_PASSWORD environment variable is not set')
+      safeError('[Admin Bypass] ADMIN_BYPASS_PASSWORD environment variable is not set')
       return NextResponse.json(
         { error: 'Server configuration error' },
         { status: 500 }
@@ -70,7 +71,7 @@ export async function POST(req: NextRequest) {
     return response
   } catch (error) {
     // Log the actual error for debugging
-    console.error('[Admin Bypass] Error:', error)
+    safeError('[Admin Bypass] Error:', error)
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(

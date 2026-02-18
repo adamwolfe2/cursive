@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { z } from 'zod'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 const updateSettingsSchema = z.object({
   payout_threshold: z.number().min(25, 'Minimum payout threshold is $25'),
@@ -54,7 +55,7 @@ export async function PATCH(request: NextRequest) {
       .single()
 
     if (error) {
-      console.error('Failed to update partner settings:', error)
+      safeError('Failed to update partner settings:', error)
       return NextResponse.json(
         { error: 'Failed to update settings' },
         { status: 500 }
@@ -67,7 +68,7 @@ export async function PATCH(request: NextRequest) {
       payout_threshold: updatedPartner.payout_threshold,
     })
   } catch (error) {
-    console.error('Error updating partner settings:', error)
+    safeError('Error updating partner settings:', error)
     return NextResponse.json(
       { error: 'Failed to update settings' },
       { status: 500 }

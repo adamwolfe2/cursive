@@ -12,6 +12,7 @@ import { z } from 'zod'
 import { checkBulkSuppression } from '@/lib/services/campaign/suppression.service'
 import { sanitizeSearchTerm } from '@/lib/utils/sanitize-search'
 import { sanitizeCsvValue } from '@/lib/utils/csv-sanitizer'
+import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 
 interface RouteContext {
   params: Promise<{ id: string }>
@@ -118,7 +119,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
     try {
       leadsToImport = await parseLeadsFromInput(validated, user.workspace_id, supabase)
     } catch (error: any) {
-      console.error('[Lead Import] Parse error:', error)
+      safeError('[Lead Import] Parse error:', error)
       return badRequest('Failed to parse leads from input')
     }
 
@@ -151,7 +152,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
     // Inngest disabled (Node.js runtime not available on this deployment)
     // Original: await inngest.send({ name: 'campaign/batch-enrich', data: { campaign_id, workspace_id } })
     if (result.added > 0 && campaign.status === 'active') {
-      console.log(`[Campaign Lead Import] ${result.added} leads added to campaign ${campaignId} (Inngest enrichment skipped - Edge runtime)`)
+      safeLog(`[Campaign Lead Import] ${result.added} leads added to campaign ${campaignId} (Inngest enrichment skipped - Edge runtime)`)
     }
 
     return success(result)
@@ -305,7 +306,7 @@ async function fetchExistingLeads(
     .not('email', 'is', null)
 
   if (error) {
-    console.error('[Fetch Existing Leads] Database error:', error)
+    safeError('[Fetch Existing Leads] Database error:', error)
     throw new Error('Failed to fetch leads')
   }
 
@@ -360,7 +361,7 @@ async function fetchFilteredLeads(
   const { data, error } = await query
 
   if (error) {
-    console.error('[Fetch Filtered Leads] Database error:', error)
+    safeError('[Fetch Filtered Leads] Database error:', error)
     throw new Error('Failed to fetch filtered leads')
   }
 
@@ -505,7 +506,7 @@ async function processLeadImport(
       .select('id')
 
     if (createError) {
-      console.error('[Lead Import] Batch create error:', createError)
+      safeError('[Lead Import] Batch create error:', createError)
       result.errors.push(`Failed to create ${leadsToCreate.length} leads`)
       result.added -= leadsToCreate.length
     } else {
@@ -527,7 +528,7 @@ async function processLeadImport(
       .insert(campaignLeadsToInsert)
 
     if (insertError) {
-      console.error('[Lead Import] Bulk insert error:', insertError)
+      safeError('[Lead Import] Bulk insert error:', insertError)
       result.errors.push('Failed to add leads to campaign')
       result.added = 0
     }

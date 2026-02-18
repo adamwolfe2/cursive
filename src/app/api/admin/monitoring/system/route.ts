@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { requireAdmin } from '@/lib/auth/admin'
 import { getCurrentUser } from '@/lib/auth/helpers'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function GET(req: NextRequest) {
   try {
@@ -79,7 +80,7 @@ export async function GET(req: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('Failed to fetch system metrics:', error)
+    safeError('Failed to fetch system metrics:', error)
     return NextResponse.json(
       { error: 'Failed to fetch metrics' },
       { status: 500 }

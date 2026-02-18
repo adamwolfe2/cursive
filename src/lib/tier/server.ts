@@ -99,7 +99,7 @@ export async function getWorkspaceTier(workspaceId: string): Promise<WorkspaceTi
     `)
     .eq('workspace_id', workspaceId)
     .eq('status', 'active')
-    .single()
+    .maybeSingle()
 
   const serviceTier = serviceSubscription?.service_tier as {
     id: string
@@ -153,7 +153,7 @@ export async function getWorkspaceTier(workspaceId: string): Promise<WorkspaceTi
       )
     `)
     .eq('workspace_id', workspaceId)
-    .single()
+    .maybeSingle()
 
   const productTier = tierInfo?.product_tiers as {
     id: string

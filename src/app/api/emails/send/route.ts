@@ -5,6 +5,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { sendEmail, createEmailTemplate } from '@/lib/email/resend-client'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 const emailSchema = z.object({
   to: z.string().email(),
@@ -167,7 +168,7 @@ export async function POST(request: NextRequest) {
     })
 
     if (!result.success) {
-      console.error('[API] Email send failed:', result.error)
+      safeError('[API] Email send failed:', result.error)
       return NextResponse.json(
         { error: 'Failed to send email' },
         { status: 500 }
@@ -180,7 +181,7 @@ export async function POST(request: NextRequest) {
       messageId: result.data?.data?.id,
     })
   } catch (error) {
-    console.error('Error sending email:', error)
+    safeError('Error sending email:', error)
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(

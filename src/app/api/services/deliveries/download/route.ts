@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 const downloadSchema = z.object({
   delivery_id: z.string().uuid()
@@ -103,7 +104,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.error('[Service Deliveries Download] Error:', error)
+    safeError('[Service Deliveries Download] Error:', error)
     return NextResponse.json(
       { error: 'Failed to generate download URL' },
       { status: 500 }

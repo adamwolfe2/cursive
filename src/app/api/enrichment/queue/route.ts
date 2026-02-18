@@ -6,7 +6,7 @@
 
 
 import { NextRequest, NextResponse } from 'next/server'
-import { safeError } from '@/lib/utils/log-sanitizer'
+import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import {
@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
 
     // Inngest disabled (Node.js runtime not available on this deployment)
     // Original: await inngest.send({ name: 'enrichment/batch', data: { workspace_id, lead_ids, providers, priority } })
-    console.log(`[Enrichment Queue] ${validLeadIds.length} leads queued (Inngest event skipped - Edge runtime)`)
+    safeLog(`[Enrichment Queue] ${validLeadIds.length} leads queued (Inngest event skipped - Edge runtime)`)
 
     return NextResponse.json({
       success: true,

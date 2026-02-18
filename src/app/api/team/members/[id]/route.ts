@@ -8,6 +8,7 @@ import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized, forbidden, success, badRequest } from '@/lib/utils/api-error-handler'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface RouteContext {
   params: Promise<{ id: string }>
@@ -63,7 +64,7 @@ export async function PATCH(
       if (error.message.includes('Only owners can promote')) {
         return forbidden('Only owners can promote to admin')
       }
-      console.error('[Team Member Update] Database error:', error)
+      safeError('[Team Member Update] Database error:', error)
       throw new Error('Failed to update role')
     }
 
@@ -111,7 +112,7 @@ export async function DELETE(
       if (error.message.includes('Admins cannot remove other admins')) {
         return forbidden('Admins cannot remove other admins')
       }
-      console.error('[Team Member Delete] Database error:', error)
+      safeError('[Team Member Delete] Database error:', error)
       throw new Error('Failed to remove member')
     }
 

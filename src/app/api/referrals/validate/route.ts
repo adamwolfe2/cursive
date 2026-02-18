@@ -4,6 +4,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { lookupReferralCode } from '@/lib/services/referral.service'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function GET(request: NextRequest) {
   try {
@@ -28,7 +29,7 @@ export async function GET(request: NextRequest) {
       referrerName: result.referrerName,
     })
   } catch (error) {
-    console.error('Failed to validate referral code:', error)
+    safeError('Failed to validate referral code:', error)
     return NextResponse.json(
       { error: 'Failed to validate code' },
       { status: 500 }

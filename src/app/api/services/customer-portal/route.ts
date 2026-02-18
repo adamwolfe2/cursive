@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import Stripe from 'stripe'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // Lazy-load Stripe to avoid build-time initialization
 let stripeClient: Stripe | null = null
@@ -89,7 +90,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.error('[Customer Portal] Error:', error)
+    safeError('[Customer Portal] Error:', error)
     return NextResponse.json(
       { error: 'Failed to create portal session' },
       { status: 500 }

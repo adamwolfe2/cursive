@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 
 const updateSequenceSchema = z.object({
@@ -72,7 +73,7 @@ export async function GET(
 
     return NextResponse.json({ sequence })
   } catch (error) {
-    console.error('Email sequence GET error:', error)
+    safeError('Email sequence GET error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -139,7 +140,7 @@ export async function PATCH(
           { status: 400 }
         )
       }
-      console.error('Failed to update email sequence:', error)
+      safeError('Failed to update email sequence:', error)
       return NextResponse.json(
         { error: 'Failed to update sequence' },
         { status: 500 }
@@ -155,7 +156,7 @@ export async function PATCH(
       )
     }
 
-    console.error('Email sequence PATCH error:', error)
+    safeError('Email sequence PATCH error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -218,7 +219,7 @@ export async function DELETE(
       .eq('id', id)
 
     if (error) {
-      console.error('Failed to delete email sequence:', error)
+      safeError('Failed to delete email sequence:', error)
       return NextResponse.json(
         { error: 'Failed to delete sequence' },
         { status: 500 }
@@ -227,7 +228,7 @@ export async function DELETE(
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Email sequence DELETE error:', error)
+    safeError('Email sequence DELETE error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

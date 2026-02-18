@@ -8,6 +8,7 @@ import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized, success, badRequest } from '@/lib/utils/api-error-handler'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 const createTagSchema = z.object({
   name: z.string().min(1, 'Name is required').max(50, 'Name too long'),
@@ -28,7 +29,7 @@ export async function GET(request: NextRequest) {
       .order('name')
 
     if (error) {
-      console.error('[Lead Tags GET] Database error:', error)
+      safeError('[Lead Tags GET] Database error:', error)
       throw new Error('Failed to fetch tags')
     }
 
@@ -70,7 +71,7 @@ export async function POST(request: NextRequest) {
       if (error.code === '23505') {
         return badRequest('A tag with this name already exists')
       }
-      console.error('[Lead Tags POST] Database error:', error)
+      safeError('[Lead Tags POST] Database error:', error)
       throw new Error('Failed to create tag')
     }
 
