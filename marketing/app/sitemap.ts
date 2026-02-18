@@ -108,6 +108,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/blog/lusha-alternative',
     '/blog/cognism-alternative',
     '/blog/salesintel-alternative',
+    '/blog/hunter-io-alternative',
     // Existing "cursive vs" pages
     '/blog/cursive-vs-rb2b',
     '/blog/cursive-vs-leadfeeder',
