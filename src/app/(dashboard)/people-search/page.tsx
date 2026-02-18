@@ -95,7 +95,7 @@ export default function PeopleSearchPage() {
       <div>
         <h1 className="text-xl font-medium text-zinc-900">People Search</h1>
         <p className="mt-1 text-[13px] text-zinc-600">
-          Find and connect with decision-makers at target companies
+          Search 200M+ professionals. Reveal verified emails and phone numbers for 1 credit each.
         </p>
       </div>
 
@@ -121,7 +121,7 @@ export default function PeopleSearchPage() {
             </p>
           </div>
           <a
-            href="/pricing"
+            href="/settings/billing"
             className="text-[13px] font-medium text-zinc-900 hover:text-zinc-700"
           >
             Get more credits →

@@ -179,14 +179,27 @@ export default function PixelSettingsPage() {
         <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-zinc-900">Your Tracking Pixel</h2>
-            <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium ${
-              data.pixel.is_active
-                ? 'bg-green-50 text-green-700 border border-green-200'
-                : 'bg-zinc-100 text-zinc-600 border border-zinc-200'
-            }`}>
-              <span className={`h-1.5 w-1.5 rounded-full ${data.pixel.is_active ? 'bg-green-500' : 'bg-zinc-400'}`} />
-              {data.pixel.is_active ? 'Active' : 'Inactive'}
-            </span>
+            <div className="flex items-center gap-2">
+              {data.recent_events > 0 ? (
+                <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium bg-green-50 text-green-700 border border-green-200">
+                  <span className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
+                  Verified
+                </span>
+              ) : data.pixel.is_active ? (
+                <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200">
+                  <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+                  Not firing
+                </span>
+              ) : null}
+              <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium ${
+                data.pixel.is_active
+                  ? 'bg-green-50 text-green-700 border border-green-200'
+                  : 'bg-zinc-100 text-zinc-600 border border-zinc-200'
+              }`}>
+                <span className={`h-1.5 w-1.5 rounded-full ${data.pixel.is_active ? 'bg-green-500' : 'bg-zinc-400'}`} />
+                {data.pixel.is_active ? 'Active' : 'Inactive'}
+              </span>
+            </div>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-3">

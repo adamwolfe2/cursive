@@ -77,19 +77,19 @@ export default async function DashboardPage({
     // Today's lead count
     supabase
       .from('leads')
-      .select('*', { count: 'exact', head: true })
+      .select('id', { count: 'exact', head: true })
       .eq('workspace_id', userProfile.workspace_id)
       .gte('delivered_at', `${today}T00:00:00`),
     // This week's leads
     supabase
       .from('leads')
-      .select('*', { count: 'exact', head: true })
+      .select('id', { count: 'exact', head: true })
       .eq('workspace_id', userProfile.workspace_id)
       .gte('delivered_at', `${weekStart}T00:00:00`),
     // Total leads ever
     supabase
       .from('leads')
-      .select('*', { count: 'exact', head: true })
+      .select('id', { count: 'exact', head: true })
       .eq('workspace_id', userProfile.workspace_id),
     // Recent 6 leads
     supabase
@@ -116,7 +116,7 @@ export default async function DashboardPage({
     // Enriched leads count (for checklist)
     supabase
       .from('leads')
-      .select('*', { count: 'exact', head: true })
+      .select('id', { count: 'exact', head: true })
       .eq('workspace_id', userProfile.workspace_id)
       .eq('enrichment_status', 'enriched'),
     // Credits
@@ -198,10 +198,7 @@ export default async function DashboardPage({
               Welcome back, {userProfile.full_name?.split(' ')[0] || 'there'}!
             </h1>
             <p className="text-sm text-gray-500 mt-0.5">
-              {userProfile.workspaces?.name || 'Your Workspace'}
-              {userProfile.industry_segment && (
-                <span className="ml-2 text-xs text-primary">· {userProfile.industry_segment}</span>
-              )}
+              Here&apos;s your lead pipeline. New leads arrive every morning at 8am CT.
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -398,8 +395,13 @@ export default async function DashboardPage({
             ) : (
               <div className="text-center py-10">
                 <Calendar className="h-10 w-10 text-gray-200 mx-auto mb-3" />
-                <p className="text-sm font-medium text-gray-600">Leads arrive every morning at 8am CT</p>
-                <p className="text-xs text-gray-400 mt-1">Your first batch will appear here automatically</p>
+                <p className="text-sm font-medium text-gray-600">No leads yet today</p>
+                <p className="text-xs text-gray-400 mt-1">Leads arrive every morning at 8am CT based on your targeting preferences.</p>
+                {!hasPreferences && (
+                  <Link href="/my-leads/preferences" className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
+                    Set preferences <ArrowRight className="h-3.5 w-3.5" />
+                  </Link>
+                )}
               </div>
             )}
           </div>
@@ -449,8 +451,50 @@ export default async function DashboardPage({
             </AnimatedSection>
           )}
 
-          {/* Quick actions */}
+          {/* Next step — dynamic based on user state */}
           <AnimatedSection delay={0.2}>
+            {(() => {
+              // Determine the next logical action
+              const step = !hasPreferences
+                ? { label: 'Set targeting preferences', desc: 'Tell us your ideal customer so we can match leads.', href: '/my-leads/preferences', icon: <Target className="h-5 w-5 text-primary" />, color: 'border-primary/30 bg-primary/5' }
+                : !hasEnriched && totalCount > 0
+                ? { label: 'Enrich your first lead', desc: 'Reveal verified email, phone & LinkedIn — it\u2019s free.', href: '/leads', icon: <Sparkles className="h-5 w-5 text-blue-600" />, color: 'border-blue-200 bg-blue-50' }
+                : !hasPixel
+                ? { label: 'Install tracking pixel', desc: 'Identify anonymous website visitors in real-time.', href: '/settings/pixel', icon: <Eye className="h-5 w-5 text-violet-600" />, color: 'border-violet-200 bg-violet-50' }
+                : enrichedCount > 0 && !hasPixel
+                ? { label: 'Activate outreach', desc: 'Build a lookalike audience or launch managed outbound.', href: '/activate', icon: <Rocket className="h-5 w-5 text-green-600" />, color: 'border-green-200 bg-green-50' }
+                : null
+
+              if (!step) return (
+                <div className="rounded-xl border border-green-200 bg-green-50 p-5">
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="h-5 w-5 text-green-600 shrink-0" />
+                    <div>
+                      <p className="text-sm font-semibold text-green-900">You&apos;re all set!</p>
+                      <p className="text-xs text-green-700">Check your leads for fresh matches every morning at 8am CT.</p>
+                    </div>
+                  </div>
+                </div>
+              )
+
+              return (
+                <Link href={step.href} className={`block rounded-xl border p-5 transition-all hover:shadow-sm ${step.color}`}>
+                  <div className="flex items-center gap-3 mb-2">
+                    {step.icon}
+                    <p className="text-sm font-semibold text-gray-900">Next Step</p>
+                  </div>
+                  <p className="text-sm font-medium text-gray-800">{step.label}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">{step.desc}</p>
+                  <span className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-primary">
+                    Get started <ArrowRight className="h-3 w-3" />
+                  </span>
+                </Link>
+              )
+            })()}
+          </AnimatedSection>
+
+          {/* Quick actions */}
+          <AnimatedSection delay={0.22}>
             <div className="bg-white rounded-xl border border-gray-200 p-5">
               <h3 className="font-semibold text-gray-900 text-sm mb-3">Quick Actions</h3>
               <div className="space-y-2">
@@ -485,16 +529,6 @@ export default async function DashboardPage({
                     <p className="text-xs text-blue-500">Audiences + campaigns</p>
                   </div>
                   <ArrowRight className="h-3.5 w-3.5 text-blue-300 group-hover:text-blue-600 transition-colors" />
-                </Link>
-                <Link href="/my-leads/preferences" className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-gray-50 transition-colors group">
-                  <div className="p-1.5 rounded-lg bg-gray-100 group-hover:bg-gray-200 transition-colors">
-                    <Settings2 className="h-3.5 w-3.5 text-gray-500" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-800">Preferences</p>
-                    <p className="text-xs text-gray-400">Industry + location</p>
-                  </div>
-                  <ArrowRight className="h-3.5 w-3.5 text-gray-300 group-hover:text-primary transition-colors" />
                 </Link>
               </div>
             </div>

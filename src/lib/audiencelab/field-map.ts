@@ -44,19 +44,24 @@ export const LEAD_CREATING_EVENT_TYPES = new Set([
 /**
  * Determine if an event should create a lead (not just update identity).
  * - Authentication / form events always create leads.
- * - Other events only create leads if deliverability_score >= threshold
- *   AND the identity has a business email or phone.
+ * - Other events require: deliverability_score >= threshold,
+ *   an email (business or personal), AND a name + company.
  */
 export function isLeadWorthy(params: {
   eventType: string
   deliverabilityScore: number
   hasBusinessEmail: boolean
   hasPhone: boolean
+  hasName?: boolean
+  hasCompany?: boolean
 }): boolean {
   if (LEAD_CREATING_EVENT_TYPES.has(params.eventType)) return true
+  const hasEmail = params.hasBusinessEmail || params.hasPhone
+  const hasIdentity = (params.hasName ?? false) && (params.hasCompany ?? false)
   if (
     params.deliverabilityScore >= LEAD_CREATION_SCORE_THRESHOLD &&
-    (params.hasBusinessEmail || params.hasPhone)
+    hasEmail &&
+    hasIdentity
   ) {
     return true
   }

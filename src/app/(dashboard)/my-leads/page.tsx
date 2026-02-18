@@ -67,7 +67,7 @@ export default async function MyLeadsPage() {
         <div>
           <h1 className="text-2xl font-bold text-zinc-900">My Leads</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Leads matched to your targeting preferences
+            Leads assigned to you based on your targeting preferences.
           </p>
         </div>
         <Link

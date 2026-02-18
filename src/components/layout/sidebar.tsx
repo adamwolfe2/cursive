@@ -10,6 +10,8 @@ interface SidebarItem {
   name: string
   href: string
   icon: React.ReactNode
+  subText?: string
+  section?: string
   badge?: number
   children?: { name: string; href: string }[]
 }
@@ -142,65 +144,102 @@ export function Sidebar({ items, workspace, className }: SidebarProps) {
 
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto px-3 py-4">
-        <ul className="space-y-1">
-          {items.map((item) => {
-            const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
-            const hasChildren = item.children && item.children.length > 0
+        {(() => {
+          // Group items by section, preserving order
+          const sectionOrder: string[] = []
+          const sections: Record<string, typeof items> = {}
+          for (const item of items) {
+            const sec = item.section || 'default'
+            if (!sections[sec]) {
+              sections[sec] = []
+              sectionOrder.push(sec)
+            }
+            sections[sec].push(item)
+          }
 
-            return (
-              <li key={item.href}>
-                <Link
-                  href={item.href}
-                  className={cn(
-                    'group flex items-center gap-3 rounded-lg px-3 py-2.5 sm:py-2 text-sm font-medium transition-colors touch-manipulation',
-                    isActive
-                      ? 'bg-primary/10 text-primary'
-                      : 'text-muted-foreground hover:bg-muted hover:text-foreground active:bg-muted'
-                  )}
-                >
-                  <span
-                    className={cn(
-                      'flex h-5 w-5 items-center justify-center',
-                      isActive ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground'
-                    )}
-                  >
-                    {item.icon}
-                  </span>
-                  <span className="flex-1">{item.name}</span>
-                  {item.badge && item.badge > 0 && (
-                    <span className="ml-auto min-w-[1.25rem] rounded-full bg-primary px-1.5 py-0.5 text-center text-[10px] font-semibold leading-none text-white">
-                      {item.badge > 99 ? '99+' : item.badge}
-                    </span>
-                  )}
-                </Link>
+          const sectionLabels: Record<string, string> = {
+            leads: 'Your Leads',
+            actions: 'Take Action',
+            account: 'Account',
+            admin: 'Admin',
+          }
 
-                {/* Children */}
-                {hasChildren && isActive && (
-                  <ul className="mt-1 ml-4 space-y-1 border-l border-border pl-4">
-                    {item.children!.map((child) => {
-                      const isChildActive = pathname === child.href
-                      return (
-                        <li key={child.href}>
-                          <Link
-                            href={child.href}
-                            className={cn(
-                              'block rounded-lg px-3 py-1.5 text-sm transition-colors',
-                              isChildActive
-                                ? 'text-primary font-medium'
-                                : 'text-muted-foreground hover:text-foreground'
-                            )}
-                          >
-                            {child.name}
-                          </Link>
-                        </li>
-                      )
-                    })}
-                  </ul>
-                )}
-              </li>
-            )
-          })}
-        </ul>
+          return sectionOrder.map((sec) => (
+            <div key={sec} className={sec !== sectionOrder[0] ? 'mt-5' : ''}>
+              {sectionLabels[sec] && (
+                <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
+                  {sectionLabels[sec]}
+                </p>
+              )}
+              <ul className="space-y-1">
+                {sections[sec].map((item) => {
+                  const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
+                  const hasChildren = item.children && item.children.length > 0
+
+                  return (
+                    <li key={item.href}>
+                      <Link
+                        href={item.href}
+                        className={cn(
+                          'group flex items-center gap-3 rounded-lg px-3 py-2.5 sm:py-2 text-sm font-medium transition-colors touch-manipulation',
+                          isActive
+                            ? 'bg-primary/10 text-primary'
+                            : 'text-muted-foreground hover:bg-muted hover:text-foreground active:bg-muted'
+                        )}
+                      >
+                        <span
+                          className={cn(
+                            'flex h-5 w-5 items-center justify-center',
+                            isActive ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground'
+                          )}
+                        >
+                          {item.icon}
+                        </span>
+                        <span className="flex-1">
+                          <span className="block">{item.name}</span>
+                          {item.subText && (
+                            <span className="block text-[11px] font-normal text-muted-foreground/70 leading-tight">
+                              {item.subText}
+                            </span>
+                          )}
+                        </span>
+                        {item.badge && item.badge > 0 && (
+                          <span className="ml-auto min-w-[1.25rem] rounded-full bg-primary px-1.5 py-0.5 text-center text-[10px] font-semibold leading-none text-white">
+                            {item.badge > 99 ? '99+' : item.badge}
+                          </span>
+                        )}
+                      </Link>
+
+                      {/* Children */}
+                      {hasChildren && isActive && (
+                        <ul className="mt-1 ml-4 space-y-1 border-l border-border pl-4">
+                          {item.children!.map((child) => {
+                            const isChildActive = pathname === child.href
+                            return (
+                              <li key={child.href}>
+                                <Link
+                                  href={child.href}
+                                  className={cn(
+                                    'block rounded-lg px-3 py-1.5 text-sm transition-colors',
+                                    isChildActive
+                                      ? 'text-primary font-medium'
+                                      : 'text-muted-foreground hover:text-foreground'
+                                  )}
+                                >
+                                  {child.name}
+                                </Link>
+                              </li>
+                            )
+                          })}
+                        </ul>
+                      )}
+                    </li>
+                  )
+                })}
+              </ul>
+            </div>
+          ))
+        })()}
       </nav>
 
       {/* Footer */}

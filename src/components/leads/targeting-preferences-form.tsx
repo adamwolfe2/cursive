@@ -6,7 +6,7 @@
  * Form for users to configure their lead targeting preferences.
  */
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { cn } from '@/lib/design-system'
 import type { Database } from '@/types/database.types'
@@ -62,6 +62,49 @@ export function TargetingPreferencesForm({
   const [isActive, setIsActive] = useState<boolean>(
     initialData?.is_active ?? true
   )
+
+  // Live segment lookup — debounced check when industry or state changes
+  const [segmentStatus, setSegmentStatus] = useState<'idle' | 'checking' | 'found' | 'not_found'>('idle')
+  const [liveSegmentName, setLiveSegmentName] = useState<string | null>(null)
+  const segmentCheckTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    const primaryIndustry = industries[0]
+    const primaryState = states[0]
+
+    if (!primaryIndustry || !primaryState) {
+      setSegmentStatus('idle')
+      setLiveSegmentName(null)
+      return
+    }
+
+    setSegmentStatus('checking')
+
+    // Debounce 400ms
+    if (segmentCheckTimer.current) clearTimeout(segmentCheckTimer.current)
+    segmentCheckTimer.current = setTimeout(async () => {
+      try {
+        const res = await fetch(
+          `/api/leads/segment-check?industry=${encodeURIComponent(primaryIndustry)}&location=${encodeURIComponent(primaryState)}`
+        )
+        if (!res.ok) { setSegmentStatus('idle'); return }
+        const data = await res.json()
+        if (data.has_segment) {
+          setSegmentStatus('found')
+          setLiveSegmentName(data.segment_name)
+        } else {
+          setSegmentStatus('not_found')
+          setLiveSegmentName(null)
+        }
+      } catch {
+        setSegmentStatus('idle')
+      }
+    }, 400)
+
+    return () => {
+      if (segmentCheckTimer.current) clearTimeout(segmentCheckTimer.current)
+    }
+  }, [industries, states])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -233,6 +276,38 @@ export function TargetingPreferencesForm({
             <p className="mt-2 text-sm text-zinc-500">
               Selected: {states.join(', ')}
             </p>
+          )}
+
+          {/* Live segment coverage indicator */}
+          {industries.length > 0 && states.length > 0 && (
+            <div className="mt-3">
+              {segmentStatus === 'checking' && (
+                <div className="flex items-center gap-2 text-xs text-zinc-400">
+                  <span className="h-3 w-3 border-2 border-zinc-300 border-t-primary rounded-full animate-spin" />
+                  Checking audience coverage...
+                </div>
+              )}
+              {segmentStatus === 'found' && (
+                <div className="flex items-center gap-2 text-xs text-green-600 bg-green-50 border border-green-200 rounded-lg px-3 py-2">
+                  <svg className="h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span>
+                    Audience matched: <strong>{liveSegmentName}</strong>
+                  </span>
+                </div>
+              )}
+              {segmentStatus === 'not_found' && (
+                <div className="flex items-center gap-2 text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+                  <svg className="h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span>
+                    No audience segment for {industries[0]} in {states[0]} yet — our team will set one up after you save.
+                  </span>
+                </div>
+              )}
+            </div>
           )}
         </div>
 

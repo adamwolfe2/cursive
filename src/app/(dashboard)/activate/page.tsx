@@ -263,7 +263,7 @@ function FlowSelector({ onSelect, stats }: { onSelect: (f: FlowType) => void; st
         </div>
         <h1 className="text-3xl font-bold text-gray-900 mb-3">Activate Your Audience</h1>
         <p className="text-lg text-gray-500 max-w-xl mx-auto">
-          You&apos;ve built the data — now let us turn it into revenue. Choose how you want to activate.
+          Turn your leads into revenue. Build a lookalike audience or launch managed outbound.
         </p>
         {stats && (stats.pixel_visitors > 0 || stats.enriched > 0) && (
           <div className="flex items-center justify-center gap-4 mt-5">

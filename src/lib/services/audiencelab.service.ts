@@ -158,10 +158,10 @@ export function scoreLeadCompleteness(lead: AudienceLabLead): number {
 
 /**
  * Minimum completeness score for a lead to be delivered.
- * Score of 20 means at minimum: has an email OR (name + phone), etc.
+ * Score of 45 requires meaningful data: name + email + company at minimum.
  * Leads below this threshold are incomplete and not worth sending.
  */
-const MIN_LEAD_SCORE = 20
+const MIN_LEAD_SCORE = 45
 
 /**
  * Fetch leads from an Audience Labs audience.

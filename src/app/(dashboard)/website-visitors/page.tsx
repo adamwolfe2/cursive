@@ -399,9 +399,9 @@ function EmptyState({ hasPixel }: { hasPixel: boolean }) {
         <div className="mx-auto w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mb-4">
           <Eye className="h-7 w-7 text-primary" />
         </div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">Set up your tracking pixel</h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">Install the Cursive pixel</h3>
         <p className="text-sm text-gray-500 max-w-sm mx-auto mb-6">
-          Install the SuperPixel on your website and start identifying who&apos;s visiting your pages — for free for 14 days.
+          Install a lightweight pixel to identify anonymous website visitors in real-time. Free for 14 days.
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <a
@@ -532,7 +532,7 @@ export default function WebsiteVisitorsPage() {
             Website Visitors
           </h1>
           <p className="text-sm text-gray-500 mt-1">
-            Real people your pixel identified visiting your site
+            See who&apos;s visiting your website — identified by name, company, and contact info.
           </p>
         </div>
 
@@ -710,8 +710,37 @@ export default function WebsiteVisitorsPage() {
         </div>
       )}
 
-      {/* Visitor list */}
-      {isLoading ? (
+      {/* Trial expired locked overlay */}
+      {pixel?.trial_status === 'expired' && visitors.length > 0 && (
+        <div className="relative">
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm rounded-xl">
+            <div className="text-center max-w-md px-6">
+              <div className="mx-auto w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mb-3">
+                <AlertTriangle className="h-6 w-6 text-red-500" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-1">Pixel trial ended</h3>
+              <p className="text-sm text-gray-500 mb-4">
+                Upgrade to Pro to keep identifying website visitors and unlock full enrichment.
+              </p>
+              <a
+                href="/settings/billing"
+                className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white hover:bg-primary/90 transition-colors"
+              >
+                <Sparkles className="h-4 w-4" />
+                Upgrade to Pro
+              </a>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 opacity-30 pointer-events-none select-none" aria-hidden="true">
+            {visitors.slice(0, 3).map((v) => (
+              <VisitorCard key={v.id} lead={v} onEnrich={() => {}} onView={() => {}} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Visitor list (hidden when trial expired — locked overlay shows instead) */}
+      {pixel?.trial_status === 'expired' ? null : isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="bg-white rounded-xl border border-gray-200 p-5 animate-pulse">

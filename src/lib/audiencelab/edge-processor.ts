@@ -313,6 +313,8 @@ export async function processEventInline(
         deliverabilityScore: normalized.deliverability_score,
         hasBusinessEmail: normalized.business_emails.length > 0,
         hasPhone: normalized.phones.length > 0,
+        hasName: !!(normalized.first_name?.trim() && normalized.last_name?.trim()),
+        hasCompany: !!normalized.company_name?.trim(),
       })
 
       if (worthy) {

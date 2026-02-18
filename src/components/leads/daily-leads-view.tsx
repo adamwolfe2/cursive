@@ -8,7 +8,7 @@
  * intent score badges, and upgrade upsell hooks.
  */
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, memo } from 'react'
 import { useRouter } from 'next/navigation'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import {
@@ -169,13 +169,14 @@ function CopyButton({ value }: { value: string }) {
   )
 }
 
-function LeadCard({
+const LeadCard = memo(function LeadCard({
   lead,
   onEnrich,
   onView,
   selectionMode,
   isSelected,
   onToggleSelect,
+  creditsRemaining = 0,
 }: {
   lead: Lead
   onEnrich: (lead: Lead) => void
@@ -183,6 +184,7 @@ function LeadCard({
   selectionMode?: boolean
   isSelected?: boolean
   onToggleSelect?: (id: string) => void
+  creditsRemaining?: number
 }) {
   const name = lead.full_name || [lead.first_name, lead.last_name].filter(Boolean).join(' ') || 'Unknown Lead'
   const isEnriched = lead.enrichment_status === 'enriched'
@@ -301,12 +303,23 @@ function LeadCard({
             </div>
 
             <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-              {!isEnriched && (
+              {!isEnriched && creditsRemaining === 0 && (
+                <a
+                  href="/settings/billing"
+                  className="inline-flex items-center gap-1 text-xs bg-gray-400 text-white rounded-full px-2.5 py-1 font-medium hover:bg-gray-500 transition-colors"
+                >
+                  <Zap className="h-2.5 w-2.5" /> Buy Credits
+                </a>
+              )}
+              {!isEnriched && creditsRemaining > 0 && (
                 <button
                   onClick={() => onEnrich(lead)}
                   className="inline-flex items-center gap-1 text-xs bg-gradient-to-r from-blue-500 to-primary text-white rounded-full px-2.5 py-1 font-medium hover:opacity-90 transition-opacity"
                 >
                   <Zap className="h-2.5 w-2.5" /> Enrich
+                  {creditsRemaining <= 5 && (
+                    <span className="ml-0.5 text-[9px] opacity-80">{creditsRemaining} left</span>
+                  )}
                 </button>
               )}
               <button
@@ -321,11 +334,11 @@ function LeadCard({
       </div>
     </div>
   )
-}
+})
 
 // ─── Stat Card ─────────────────────────────────────────────
 
-function StatCard({
+const StatCard = memo(function StatCard({
   icon: Icon,
   label,
   value,
@@ -364,7 +377,7 @@ function StatCard({
     </div>
   )
   return href ? <a href={href}>{content}</a> : content
-}
+})
 
 // ─── Archive tab (client-side paginated fetch) ──────────────
 
@@ -491,6 +504,9 @@ export function DailyLeadsView({
   const [bulkEnriching, setBulkEnriching] = useState(false)
   const [bulkEnrichProgress, setBulkEnrichProgress] = useState(0)
 
+  // Local state for today's leads — enables optimistic updates after enrichment
+  const [todayLeads, setTodayLeads] = useState<Lead[]>(initialLeads)
+
   // Fetch credits
   useQuery({
     queryKey: ['user-credits'],
@@ -521,7 +537,7 @@ export function DailyLeadsView({
   const progressPct = (todayCount / Math.max(dailyLimit, 1)) * 100
 
   // Filter today's leads
-  const filteredToday = initialLeads.filter((l) => {
+  const filteredToday = todayLeads.filter((l) => {
     if (search) {
       const q = search.toLowerCase()
       if (![l.full_name, l.email, l.company_name].some((v) => v?.toLowerCase().includes(q))) return false
@@ -546,6 +562,12 @@ export function DailyLeadsView({
   }
 
   function handleEnrichSuccess() {
+    // Optimistically update the enriched lead in local state
+    if (enrichTarget) {
+      setTodayLeads((prev) =>
+        prev.map((l) => l.id === enrichTarget.id ? { ...l, enrichment_status: 'enriched' } : l)
+      )
+    }
     queryClient.invalidateQueries({ queryKey: ['leads-week'] })
     queryClient.invalidateQueries({ queryKey: ['leads-archive'] })
     queryClient.invalidateQueries({ queryKey: ['user-credits'] })
@@ -587,7 +609,13 @@ export function DailyLeadsView({
     for (let i = 0; i < selectedUnenriched.length; i++) {
       const lead = selectedUnenriched[i]
       try {
-        await fetch(`/api/leads/${lead.id}/enrich`, { method: 'POST' })
+        const res = await fetch(`/api/leads/${lead.id}/enrich`, { method: 'POST' })
+        if (res.ok) {
+          // Optimistically update this lead in local state
+          setTodayLeads((prev) =>
+            prev.map((l) => l.id === lead.id ? { ...l, enrichment_status: 'enriched' } : l)
+          )
+        }
       } catch {
         // continue on failure
       }
@@ -607,7 +635,7 @@ export function DailyLeadsView({
     exportToCSV(selectedLeads, `cursive-leads-selected-${new Date().toISOString().split('T')[0]}.csv`)
   }
 
-  const unenrichedToday = initialLeads.filter((l) => l.enrichment_status !== 'enriched').length
+  const unenrichedToday = todayLeads.filter((l) => l.enrichment_status !== 'enriched').length
 
   return (
     <div className="space-y-6">
@@ -619,7 +647,7 @@ export function DailyLeadsView({
             Your Daily Leads
           </h1>
           <p className="text-sm text-gray-500 mt-1">
-            Fresh, scored leads delivered every morning at 8am CT
+            Fresh, verified leads matched to your industry and location.
             {industrySegment && (
               <span className="ml-2 inline-flex items-center gap-1 text-xs text-primary bg-primary/10 rounded-full px-2 py-0.5">
                 <Target className="h-3 w-3" />
@@ -632,15 +660,15 @@ export function DailyLeadsView({
 
         <div className="flex items-center gap-2">
           <a
-            href="/leads/preferences"
+            href="/my-leads/preferences"
             className="inline-flex items-center gap-1.5 text-sm border border-gray-200 rounded-lg px-3 py-2 text-gray-600 hover:bg-gray-50 transition-colors"
           >
             <SlidersHorizontal className="h-3.5 w-3.5" />
             Targeting
           </a>
           <button
-            onClick={() => exportToCSV(initialLeads, `cursive-leads-${new Date().toISOString().split('T')[0]}.csv`)}
-            disabled={initialLeads.length === 0}
+            onClick={() => exportToCSV(todayLeads, `cursive-leads-${new Date().toISOString().split('T')[0]}.csv`)}
+            disabled={todayLeads.length === 0}
             className="inline-flex items-center gap-1.5 text-sm border border-gray-200 rounded-lg px-3 py-2 text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-40"
           >
             <Download className="h-3.5 w-3.5" />
@@ -843,13 +871,18 @@ export function DailyLeadsView({
           <div className="text-center py-14 bg-white rounded-xl border border-dashed border-gray-200">
             <Calendar className="h-12 w-12 text-gray-200 mx-auto mb-3" />
             <h3 className="font-semibold text-gray-700 mb-1">
-              {todayCount === 0 ? "Today's leads arrive at 8am CT" : 'No leads match your filters'}
+              {todayCount === 0 ? 'No leads yet today' : 'No leads match your filters'}
             </h3>
             <p className="text-sm text-gray-400 max-w-xs mx-auto">
               {todayCount === 0
-                ? `Your daily batch of ${dailyLimit} scored leads will be ready soon.`
+                ? 'Leads arrive every morning at 8am CT based on your targeting preferences.'
                 : 'Try clearing your search or filter.'}
             </p>
+            {todayCount === 0 && (
+              <a href="/my-leads/preferences" className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
+                Set preferences <ChevronRight className="h-3.5 w-3.5" />
+              </a>
+            )}
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -862,6 +895,7 @@ export function DailyLeadsView({
                 selectionMode={selectionMode}
                 isSelected={selectedIds.has(lead.id)}
                 onToggleSelect={toggleSelect}
+                creditsRemaining={creditsRemaining}
               />
             ))}
           </div>
@@ -900,6 +934,7 @@ export function DailyLeadsView({
                   selectionMode={selectionMode}
                   isSelected={selectedIds.has(lead.id)}
                   onToggleSelect={toggleSelect}
+                  creditsRemaining={creditsRemaining}
                 />
               ))}
             </div>
