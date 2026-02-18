@@ -109,6 +109,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/blog/cognism-alternative',
     '/blog/salesintel-alternative',
     '/blog/hunter-io-alternative',
+    '/blog/seamless-ai-alternative',
+    '/blog/audiencelab-alternative',
+    '/blog/opensend-alternative',
     // Existing "cursive vs" pages
     '/blog/cursive-vs-rb2b',
     '/blog/cursive-vs-leadfeeder',
@@ -153,6 +156,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/blog/best-b2b-data-providers-2026',
     '/blog/best-website-visitor-identification-software',
     '/blog/intent-data-providers-comparison',
+    '/blog/how-to-identify-anonymous-website-visitors',
+    '/blog/best-ai-sdr-tools-2026',
     // AI/WebMCP posts
     '/blog/ai-agents-replacing-buyer-journey',
     '/blog/webmcp-ai-agent-ready-lead-generation',
