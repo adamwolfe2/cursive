@@ -121,6 +121,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/blog/cursive-vs-apollo',
     // New "cursive vs" pages (created Feb 2026)
     '/blog/cursive-vs-zoominfo',
+    '/blog/cursive-vs-warmly',
+    '/blog/cursive-vs-6sense',
     // Existing competitor "vs cursive" pages
     '/blog/warmly-vs-cursive-comparison',
     '/blog/apollo-vs-cursive-comparison',
@@ -161,6 +163,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/blog/what-is-demand-generation',
     '/blog/what-is-sales-intelligence',
     '/blog/what-is-buyer-intent',
+    '/blog/what-is-revenue-intelligence',
     // AI/WebMCP posts
     '/blog/ai-agents-replacing-buyer-journey',
     '/blog/webmcp-ai-agent-ready-lead-generation',

@@ -160,6 +160,20 @@ const blogPosts = [
     category: 'Comparison',
   },
   {
+    title: 'Cursive vs Warmly: 70% vs 40% ID Rate, $1k vs $3.5k/mo (2026)',
+    description: 'Cursive vs Warmly compared on visitor identification rate, person-level data, automated outreach, and pricing. Cursive identifies 70% of B2B visitors vs Warmly\'s 40% at $1k vs $3.5k/mo.',
+    url: '/blog/cursive-vs-warmly',
+    date: '2026-02-18',
+    category: 'Comparison',
+  },
+  {
+    title: 'Cursive vs 6sense: $1k/mo All-In vs $50k-$200k/yr Enterprise (2026)',
+    description: 'Compare Cursive and 6sense for B2B revenue intelligence. 6sense costs $50,000-$200,000/year with 6-12 month implementation. Cursive delivers visitor ID, AI outreach, and direct mail for $1,000/month.',
+    url: '/blog/cursive-vs-6sense',
+    date: '2026-02-18',
+    category: 'Comparison',
+  },
+  {
     title: 'Warmly vs Cursive: 70% vs 40% ID Rate, $1k vs $3.5k/mo (2026)',
     description: 'Warmly vs Cursive compared on visitor identification rate, person-level data, pricing, and outreach automation.',
     url: '/blog/warmly-vs-cursive-comparison',
@@ -258,6 +272,13 @@ const blogPosts = [
     description: 'Learn the technical methods behind website visitor identification — IP tracking, reverse lookup, cookie-based tracking, and privacy-compliant approaches.',
     url: '/blog/how-to-identify-website-visitors-technical-guide',
     date: '2026-02-04',
+    category: 'Guide',
+  },
+  {
+    title: 'What Is Revenue Intelligence? Complete Guide for B2B Sales Teams (2026)',
+    description: 'Revenue intelligence combines AI analysis of sales activities, customer interactions, and market signals to give revenue teams actionable insights. How it works, what tools are involved, and how to use it.',
+    url: '/blog/what-is-revenue-intelligence',
+    date: '2026-02-18',
     category: 'Guide',
   },
   // Strategy guides
