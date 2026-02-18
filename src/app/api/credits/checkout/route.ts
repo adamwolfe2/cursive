@@ -14,7 +14,7 @@ import { CREDIT_PACKAGES } from '@/lib/constants/credit-packages'
 import { z } from 'zod'
 import Stripe from 'stripe'
 
-// Lazy-load Stripe with Web Crypto provider for Edge runtime
+// Lazy-load Stripe
 let stripeClient: Stripe | null = null
 function getStripe(): Stripe {
   if (!stripeClient) {
@@ -23,7 +23,6 @@ function getStripe(): Stripe {
     }
     stripeClient = new Stripe(STRIPE_CONFIG.secretKey, {
       apiVersion: STRIPE_CONFIG.apiVersion as Stripe.LatestApiVersion,
-      httpClient: Stripe.createFetchHttpClient(),
     })
   }
   return stripeClient
@@ -56,29 +55,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid package' }, { status: 400 })
     }
 
-    const repo = new MarketplaceRepository()
-
-    // Create credit purchase record
-    const purchase = await repo.createCreditPurchase({
-      workspaceId: user.workspace_id,
-      userId: user.id,
-      credits: selectedPackage.credits,
-      packageName: selectedPackage.name,
-      amountPaid: selectedPackage.price / 100, // Convert cents to dollars for DB
-      pricePerCredit: selectedPackage.pricePerCredit,
-    })
-
-    safeLog('[Credit Checkout] Created purchase record:', {
-      purchaseId: purchase.id,
-      packageId: selectedPackage.id,
-      credits: selectedPackage.credits,
-    })
-
-    // Create Stripe checkout session
+    // Create Stripe checkout session FIRST (before DB record)
+    // This prevents orphaned pending records if Stripe call fails
     const stripe = getStripe()
 
     const successUrl = `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?credit_purchase=success`
     const cancelUrl = `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?credit_purchase=cancelled`
+
+    // Generate a temporary ID for metadata — will be replaced with real purchase ID
+    const tempId = crypto.randomUUID()
 
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
@@ -101,7 +86,6 @@ export async function POST(request: NextRequest) {
       cancel_url: cancelUrl,
       metadata: {
         type: 'credit_purchase',
-        credit_purchase_id: purchase.id,
         workspace_id: user.workspace_id,
         user_id: user.id,
         credits: selectedPackage.credits.toString(),
@@ -110,8 +94,18 @@ export async function POST(request: NextRequest) {
       allow_promotion_codes: true,
     })
 
-    // Update purchase record with checkout session ID
-    // Note: Using admin client since this is a backend operation
+    // Now create the DB record with the session ID included
+    const repo = new MarketplaceRepository()
+    const purchase = await repo.createCreditPurchase({
+      workspaceId: user.workspace_id,
+      userId: user.id,
+      credits: selectedPackage.credits,
+      packageName: selectedPackage.name,
+      amountPaid: selectedPackage.price / 100, // Convert cents to dollars for DB
+      pricePerCredit: selectedPackage.pricePerCredit,
+    })
+
+    // Update purchase with session ID and update session metadata with purchase ID
     const { createAdminClient } = await import('@/lib/supabase/admin')
     const adminClient = createAdminClient()
     await adminClient
@@ -119,7 +113,15 @@ export async function POST(request: NextRequest) {
       .update({ stripe_checkout_session_id: session.id })
       .eq('id', purchase.id)
 
-    safeLog('[Credit Checkout] Created Stripe session:', {
+    // Update Stripe session metadata with the real purchase ID
+    await stripe.checkout.sessions.update(session.id, {
+      metadata: {
+        ...session.metadata,
+        credit_purchase_id: purchase.id,
+      },
+    })
+
+    safeLog('[Credit Checkout] Created Stripe session and purchase:', {
       sessionId: session.id,
       purchaseId: purchase.id,
     })

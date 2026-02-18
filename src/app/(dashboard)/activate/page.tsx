@@ -10,7 +10,7 @@
  * Multi-step wizard. On submit → Slack alert fires to Cursive team.
  */
 
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import {
@@ -1027,7 +1027,7 @@ function CampaignWizard({
 
 // ─── Main Page ─────────────────────────────────────────────
 
-export default function ActivatePage() {
+function ActivatePageInner() {
   const searchParams = useSearchParams()
   const queryClient = useQueryClient()
   const initialFlow = (searchParams.get('flow') as FlowType) ?? null
@@ -1056,7 +1056,9 @@ export default function ActivatePage() {
   })
 
   const defaultEmail = userData?.user?.email ?? ''
-  const defaultName = userData?.user?.user_metadata?.full_name?.split(' ')[0] ?? ''
+  const defaultName = userData?.user?.user_metadata?.full_name?.split(' ')[0]
+    || userData?.user?.user_metadata?.name?.split(' ')[0]
+    || ''
 
   if (done) {
     return (
@@ -1096,5 +1098,13 @@ export default function ActivatePage() {
         defaultName={defaultName}
       />
     </div>
+  )
+}
+
+export default function ActivatePage() {
+  return (
+    <Suspense fallback={<div className="py-6 text-center text-sm text-muted-foreground">Loading...</div>}>
+      <ActivatePageInner />
+    </Suspense>
   )
 }

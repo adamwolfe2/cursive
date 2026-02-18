@@ -5,7 +5,7 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
+import { Suspense, useState, useEffect } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -88,7 +88,7 @@ const PRICING_TIERS = [
   },
 ]
 
-export default function CampaignsPage() {
+function CampaignsPageInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const workspaceId = searchParams.get('workspace')
@@ -457,5 +457,13 @@ export default function CampaignsPage() {
         </Button>
       </div>
     </PageContainer>
+  )
+}
+
+export default function CampaignsPage() {
+  return (
+    <Suspense fallback={<div className="py-6 text-center text-sm text-muted-foreground">Loading...</div>}>
+      <CampaignsPageInner />
+    </Suspense>
   )
 }

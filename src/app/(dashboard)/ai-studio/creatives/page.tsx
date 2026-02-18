@@ -5,7 +5,7 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
+import { Suspense, useState, useEffect } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -57,7 +57,7 @@ const FORMATS = [
   { value: 'landscape', label: 'Landscape (16:9)', icon: '16:9' },
 ]
 
-export default function CreativesPage() {
+function CreativesPageInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const workspaceId = searchParams.get('workspace')
@@ -383,3 +383,10 @@ export default function CreativesPage() {
   )
 }
 
+export default function CreativesPage() {
+  return (
+    <Suspense fallback={<div className="py-6 text-center text-sm text-muted-foreground">Loading...</div>}>
+      <CreativesPageInner />
+    </Suspense>
+  )
+}

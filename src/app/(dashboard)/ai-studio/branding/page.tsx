@@ -5,7 +5,7 @@
 
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { Suspense, useState, useEffect, useRef } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { GradientCard, GradientBadge } from '@/components/ui/gradient-card'
@@ -45,7 +45,7 @@ interface BrandWorkspace {
   created_at: string
 }
 
-export default function BrandingPage() {
+function BrandingPageInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const workspaceId = searchParams.get('workspace')
@@ -356,5 +356,13 @@ export default function BrandingPage() {
         </PageSection>
       )}
     </PageContainer>
+  )
+}
+
+export default function BrandingPage() {
+  return (
+    <Suspense fallback={<div className="py-6 text-center text-sm text-muted-foreground">Loading...</div>}>
+      <BrandingPageInner />
+    </Suspense>
   )
 }

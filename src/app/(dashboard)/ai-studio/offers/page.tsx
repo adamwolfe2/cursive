@@ -5,7 +5,7 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
+import { Suspense, useState, useEffect } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { GradientCard, GradientBadge } from '@/components/ui/gradient-card'
@@ -25,7 +25,7 @@ interface Offer {
   created_at: string
 }
 
-export default function OffersPage() {
+function OffersPageInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const workspaceId = searchParams.get('workspace')
@@ -170,5 +170,13 @@ export default function OffersPage() {
         />
       )}
     </PageContainer>
+  )
+}
+
+export default function OffersPage() {
+  return (
+    <Suspense fallback={<div className="py-6 text-center text-sm text-muted-foreground">Loading...</div>}>
+      <OffersPageInner />
+    </Suspense>
   )
 }

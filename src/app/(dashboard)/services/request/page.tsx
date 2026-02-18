@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
 import { useToast } from '@/lib/hooks/use-toast'
@@ -19,7 +19,7 @@ const BUDGET_OPTIONS = [
   { value: '$10k+/mo', label: '$10k+ / month' },
 ]
 
-export default function ServiceRequestPage() {
+function ServiceRequestPageInner() {
   const searchParams = useSearchParams()
   const toast = useToast()
   const tierParam = searchParams.get('tier') || ''
@@ -239,5 +239,13 @@ export default function ServiceRequestPage() {
         </div>
       </form>
     </div>
+  )
+}
+
+export default function ServiceRequestPage() {
+  return (
+    <Suspense fallback={<div className="py-6 text-center text-sm text-muted-foreground">Loading...</div>}>
+      <ServiceRequestPageInner />
+    </Suspense>
   )
 }

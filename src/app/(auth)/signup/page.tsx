@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -11,7 +11,7 @@ import { signupSchema, type SignupFormData } from '@/lib/validation/schemas'
 import { PasswordStrength } from '@/components/ui/password-strength'
 import { getErrorMessage } from '@/lib/utils/error-messages'
 
-export default function SignupPage() {
+function SignupPageInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const source = searchParams.get('source')
@@ -341,5 +341,13 @@ export default function SignupPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense fallback={<div className="py-6 text-center text-sm text-muted-foreground">Loading...</div>}>
+      <SignupPageInner />
+    </Suspense>
   )
 }

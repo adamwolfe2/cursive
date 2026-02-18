@@ -5,7 +5,7 @@
 
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -22,7 +22,7 @@ interface Campaign {
   created_at: string
 }
 
-export default function CampaignSuccessPage() {
+function CampaignSuccessPageInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const sessionId = searchParams.get('session_id')
@@ -214,5 +214,13 @@ export default function CampaignSuccessPage() {
         </Card>
       </div>
     </div>
+  )
+}
+
+export default function CampaignSuccessPage() {
+  return (
+    <Suspense fallback={<div className="py-6 text-center text-sm text-muted-foreground">Loading...</div>}>
+      <CampaignSuccessPageInner />
+    </Suspense>
   )
 }

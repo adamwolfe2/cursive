@@ -5,7 +5,7 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
+import { Suspense, useState, useEffect } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { GradientCard, GradientBadge } from '@/components/ui/gradient-card'
@@ -30,7 +30,7 @@ interface CustomerProfile {
   preferred_channels: string[]
 }
 
-export default function ProfilesPage() {
+function ProfilesPageInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const workspaceId = searchParams.get('workspace')
@@ -307,5 +307,13 @@ export default function ProfilesPage() {
         </>
       )}
     </PageContainer>
+  )
+}
+
+export default function ProfilesPage() {
+  return (
+    <Suspense fallback={<div className="py-6 text-center text-sm text-muted-foreground">Loading...</div>}>
+      <ProfilesPageInner />
+    </Suspense>
   )
 }

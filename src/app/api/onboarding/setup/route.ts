@@ -3,7 +3,7 @@
  * Creates workspace + user profile + targeting using admin client (bypasses RLS)
  */
 
-import { NextResponse, type NextRequest } from 'next/server'
+import { NextResponse, type NextRequest, after } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
@@ -390,20 +390,22 @@ export async function POST(request: NextRequest) {
     // Build the response FIRST, then fire non-blocking side effects
     const response = NextResponse.json({ workspace_id: workspace.id })
 
-    // Non-blocking logo fetch from email domain (fire-and-forget)
+    // Non-blocking logo fetch from email domain — runs after response via next/server after()
     const GENERIC_DOMAINS = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'aol.com', 'icloud.com', 'protonmail.com', 'mail.com', 'live.com', 'msn.com']
     const emailDomain = validated.email.split('@')[1]?.toLowerCase()
     if (emailDomain && !GENERIC_DOMAINS.includes(emailDomain)) {
-      Promise.resolve().then(async () => {
+      const workspaceId = workspace.id
+      after(async () => {
         try {
           const { getCompanyEnrichmentService } = await import('@/lib/services/company-enrichment.service')
           const enrichmentService = getCompanyEnrichmentService()
           const logoUrl = await enrichmentService.fetchLogo(emailDomain)
           if (logoUrl) {
-            await admin
+            const afterAdmin = createAdminClient()
+            await afterAdmin
               .from('workspaces')
               .update({ branding: { logo_url: logoUrl } })
-              .eq('id', workspace.id)
+              .eq('id', workspaceId)
             safeError('[Onboarding] Logo fetched and saved:', { domain: emailDomain, logoUrl })
           }
         } catch (logoError) {

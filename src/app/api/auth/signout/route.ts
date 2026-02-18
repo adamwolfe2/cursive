@@ -47,27 +47,10 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // Clear any custom cookies
-    const response = NextResponse.json({
+    return NextResponse.json({
       success: true,
       message: 'Signed out successfully',
     })
-
-    // Clear Supabase auth cookies
-    const cookiesToClear = [
-      'sb-access-token',
-      'sb-refresh-token',
-      'sb-auth-token',
-    ]
-
-    cookiesToClear.forEach((cookieName) => {
-      response.cookies.set(cookieName, '', {
-        expires: new Date(0),
-        path: '/',
-      })
-    })
-
-    return response
   } catch (error: any) {
     safeError('[Sign Out] Error:', error)
     return NextResponse.json(
