@@ -1,4 +1,6 @@
 import { Metadata } from "next"
+import { StructuredData } from '@/components/seo/structured-data'
+import { generateBreadcrumbSchema, generateBlogPostSchema } from '@/lib/seo/structured-data'
 
 export const metadata: Metadata = {
   title: "Best Clearbit Alternatives After HubSpot Acquisition: 10 Tools Compared (2026) | Cursive",
@@ -39,5 +41,23 @@ export const metadata: Metadata = {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return children
+  return (
+    <>
+      <StructuredData data={[
+        generateBreadcrumbSchema([
+          { name: 'Home', url: 'https://www.meetcursive.com' },
+          { name: 'Blog', url: 'https://www.meetcursive.com/blog' },
+          { name: 'Best Clearbit Alternatives After HubSpot Acquisition: 10 Tools Compared (2026)', url: 'https://www.meetcursive.com/blog/clearbit-alternatives-comparison' },
+        ]),
+        generateBlogPostSchema({
+          title: 'Best Clearbit Alternatives After HubSpot Acquisition: 10 Tools Compared (2026)',
+          description: 'Clearbit was acquired by HubSpot in 2023 — its standalone features are being sunset. We compared 10 alternatives for B2B enrichment, visitor identification, and lead intelligence.',
+          url: 'https://www.meetcursive.com/blog/clearbit-alternatives-comparison',
+          datePublished: '2026-02-18',
+          dateModified: '2026-02-18',
+        }),
+      ]} />
+      {children}
+    </>
+  )
 }

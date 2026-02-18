@@ -1,4 +1,6 @@
 import { Metadata } from "next"
+import { StructuredData } from '@/components/seo/structured-data'
+import { generateBreadcrumbSchema, generateBlogPostSchema } from '@/lib/seo/structured-data'
 
 export const metadata: Metadata = {
   title: "Warmly vs Cursive: 70% ID Rate vs 40%, $1k vs $3.5k/mo (2026 Comparison) | Cursive",
@@ -39,5 +41,23 @@ export const metadata: Metadata = {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return children
+  return (
+    <>
+      <StructuredData data={[
+        generateBreadcrumbSchema([
+          { name: 'Home', url: 'https://www.meetcursive.com' },
+          { name: 'Blog', url: 'https://www.meetcursive.com/blog' },
+          { name: 'Warmly vs Cursive: 70% ID Rate vs 40%, $1k vs $3.5k/mo (2026 Comparison)', url: 'https://www.meetcursive.com/blog/warmly-vs-cursive-comparison' },
+        ]),
+        generateBlogPostSchema({
+          title: 'Warmly vs Cursive: 70% ID Rate vs 40%, $1k vs $3.5k/mo (2026 Comparison)',
+          description: 'Warmly vs Cursive compared: Cursive identifies 70% of visitors vs Warmly\'s 40%, starting at $1,000/mo vs $3,500/mo. Includes AI outreach, intent data, and direct mail. See which wins.',
+          url: 'https://www.meetcursive.com/blog/warmly-vs-cursive-comparison',
+          datePublished: '2026-02-18',
+          dateModified: '2026-02-18',
+        }),
+      ]} />
+      {children}
+    </>
+  )
 }

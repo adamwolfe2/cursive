@@ -1,4 +1,6 @@
 import { Metadata } from "next"
+import { StructuredData } from '@/components/seo/structured-data'
+import { generateBreadcrumbSchema, generateBlogPostSchema } from '@/lib/seo/structured-data'
 
 export const metadata: Metadata = {
   title: "CRM Integration & Data Enrichment: The Complete B2B Guide (2026) | Cursive",
@@ -39,5 +41,23 @@ export const metadata: Metadata = {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return children
+  return (
+    <>
+      <StructuredData data={[
+        generateBreadcrumbSchema([
+          { name: 'Home', url: 'https://www.meetcursive.com' },
+          { name: 'Blog', url: 'https://www.meetcursive.com/blog' },
+          { name: 'CRM Integration & Data Enrichment: The Complete B2B Guide (2026)', url: 'https://www.meetcursive.com/blog/crm-integration' },
+        ]),
+        generateBlogPostSchema({
+          title: 'CRM Integration & Data Enrichment: The Complete B2B Guide (2026)',
+          description: 'Learn how to integrate your CRM with visitor identification, automate data enrichment workflows, and sync intent signals to HubSpot, Salesforce, and your entire marketing stack.',
+          url: 'https://www.meetcursive.com/blog/crm-integration',
+          datePublished: '2026-02-18',
+          dateModified: '2026-02-18',
+        }),
+      ]} />
+      {children}
+    </>
+  )
 }

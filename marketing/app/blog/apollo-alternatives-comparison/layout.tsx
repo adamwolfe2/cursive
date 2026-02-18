@@ -1,4 +1,6 @@
 import { Metadata } from "next"
+import { StructuredData } from '@/components/seo/structured-data'
+import { generateBreadcrumbSchema, generateBlogPostSchema } from '@/lib/seo/structured-data'
 
 export const metadata: Metadata = {
   title: "7 Best Apollo.io Alternatives & Competitors in 2026 | Cursive",
@@ -50,5 +52,23 @@ export const metadata: Metadata = {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return children
+  return (
+    <>
+      <StructuredData data={[
+        generateBreadcrumbSchema([
+          { name: 'Home', url: 'https://www.meetcursive.com' },
+          { name: 'Blog', url: 'https://www.meetcursive.com/blog' },
+          { name: '7 Best Apollo.io Alternatives & Competitors in 2026', url: 'https://www.meetcursive.com/blog/apollo-alternatives-comparison' },
+        ]),
+        generateBlogPostSchema({
+          title: '7 Best Apollo.io Alternatives & Competitors in 2026',
+          description: 'Looking for Apollo.io alternatives? Compare the 7 best competitors for B2B prospecting, intent data, and outbound automation. Find the right tool for your sales team in 2026.',
+          url: 'https://www.meetcursive.com/blog/apollo-alternatives-comparison',
+          datePublished: '2026-02-18',
+          dateModified: '2026-02-18',
+        }),
+      ]} />
+      {children}
+    </>
+  )
 }

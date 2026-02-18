@@ -1,4 +1,6 @@
 import { Metadata } from "next"
+import { StructuredData } from '@/components/seo/structured-data'
+import { generateBreadcrumbSchema, generateBlogPostSchema } from '@/lib/seo/structured-data'
 
 export const metadata: Metadata = {
   title: "Cold Email Best Practices for 2026: What Actually Works | Cursive",
@@ -39,5 +41,23 @@ export const metadata: Metadata = {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return children
+  return (
+    <>
+      <StructuredData data={[
+        generateBreadcrumbSchema([
+          { name: 'Home', url: 'https://www.meetcursive.com' },
+          { name: 'Blog', url: 'https://www.meetcursive.com/blog' },
+          { name: 'Cold Email Best Practices for 2026: What Actually Works', url: 'https://www.meetcursive.com/blog/cold-email-2026' },
+        ]),
+        generateBlogPostSchema({
+          title: 'Cold Email Best Practices for 2026: What Actually Works',
+          description: 'Master cold email in 2026 with proven strategies for deliverability, personalization, and compliance. Get higher open rates and more meetings.',
+          url: 'https://www.meetcursive.com/blog/cold-email-2026',
+          datePublished: '2026-02-18',
+          dateModified: '2026-02-18',
+        }),
+      ]} />
+      {children}
+    </>
+  )
 }

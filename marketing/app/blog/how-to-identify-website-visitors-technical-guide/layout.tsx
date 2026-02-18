@@ -1,4 +1,6 @@
 import { Metadata } from "next"
+import { StructuredData } from '@/components/seo/structured-data'
+import { generateBreadcrumbSchema, generateBlogPostSchema } from '@/lib/seo/structured-data'
 
 export const metadata: Metadata = {
   title: "How to Identify Website Visitors: Technical Guide | Cursive",
@@ -39,5 +41,23 @@ export const metadata: Metadata = {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return children
+  return (
+    <>
+      <StructuredData data={[
+        generateBreadcrumbSchema([
+          { name: 'Home', url: 'https://www.meetcursive.com' },
+          { name: 'Blog', url: 'https://www.meetcursive.com/blog' },
+          { name: 'How to Identify Website Visitors: Technical Guide', url: 'https://www.meetcursive.com/blog/how-to-identify-website-visitors-technical-guide' },
+        ]),
+        generateBlogPostSchema({
+          title: 'How to Identify Website Visitors: Technical Guide',
+          description: 'Learn the technical methods behind website visitor identification including IP tracking, reverse lookup, cookie-based tracking, and privacy-compliant approaches for B2B lead generation.',
+          url: 'https://www.meetcursive.com/blog/how-to-identify-website-visitors-technical-guide',
+          datePublished: '2026-02-18',
+          dateModified: '2026-02-18',
+        }),
+      ]} />
+      {children}
+    </>
+  )
 }

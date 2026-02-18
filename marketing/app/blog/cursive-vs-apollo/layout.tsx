@@ -1,4 +1,6 @@
 import { Metadata } from "next"
+import { StructuredData } from '@/components/seo/structured-data'
+import { generateBreadcrumbSchema, generateBlogPostSchema } from '@/lib/seo/structured-data'
 
 export const metadata: Metadata = {
   title: "Cursive vs Apollo: 70% Visitor ID + $1k/mo vs Cold Contact Database (2026) | Cursive",
@@ -39,5 +41,23 @@ export const metadata: Metadata = {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return children
+  return (
+    <>
+      <StructuredData data={[
+        generateBreadcrumbSchema([
+          { name: 'Home', url: 'https://www.meetcursive.com' },
+          { name: 'Blog', url: 'https://www.meetcursive.com/blog' },
+          { name: 'Cursive vs Apollo: 70% Visitor ID + $1k/mo vs Cold Contact Database (2026)', url: 'https://www.meetcursive.com/blog/cursive-vs-apollo' },
+        ]),
+        generateBlogPostSchema({
+          title: 'Cursive vs Apollo: 70% Visitor ID + $1k/mo vs Cold Contact Database (2026)',
+          description: 'Compare Cursive and Apollo.io for B2B sales. Apollo has 250M+ contacts for cold outreach at $49/user/mo. Cursive identifies 70% of YOUR website visitors and automates warm, personalized outreach at $1k/mo — no cold lists needed.',
+          url: 'https://www.meetcursive.com/blog/cursive-vs-apollo',
+          datePublished: '2026-02-18',
+          dateModified: '2026-02-18',
+        }),
+      ]} />
+      {children}
+    </>
+  )
 }

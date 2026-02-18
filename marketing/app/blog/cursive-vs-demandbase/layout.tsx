@@ -1,4 +1,6 @@
 import { Metadata } from "next"
+import { StructuredData } from '@/components/seo/structured-data'
+import { generateBreadcrumbSchema, generateBlogPostSchema } from '@/lib/seo/structured-data'
 
 export const metadata: Metadata = {
   title: "Cursive vs Demandbase: $1k/mo vs $50k+/yr — Full ABM Stack Compared (2026) | Cursive",
@@ -39,5 +41,23 @@ export const metadata: Metadata = {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return children
+  return (
+    <>
+      <StructuredData data={[
+        generateBreadcrumbSchema([
+          { name: 'Home', url: 'https://www.meetcursive.com' },
+          { name: 'Blog', url: 'https://www.meetcursive.com/blog' },
+          { name: 'Cursive vs Demandbase: $1k/mo vs $50k+/yr — Full ABM Stack Compared (2026)', url: 'https://www.meetcursive.com/blog/cursive-vs-demandbase' },
+        ]),
+        generateBlogPostSchema({
+          title: 'Cursive vs Demandbase: $1k/mo vs $50k+/yr — Full ABM Stack Compared (2026)',
+          description: 'Compare Cursive and Demandbase for account-based marketing. Demandbase costs $50k+/year with long implementation. Cursive delivers ABM-like capabilities at $1k/mo with 5-minute setup.',
+          url: 'https://www.meetcursive.com/blog/cursive-vs-demandbase',
+          datePublished: '2026-02-18',
+          dateModified: '2026-02-18',
+        }),
+      ]} />
+      {children}
+    </>
+  )
 }

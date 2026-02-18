@@ -1,4 +1,6 @@
 import { Metadata } from "next"
+import { StructuredData } from '@/components/seo/structured-data'
+import { generateBreadcrumbSchema, generateBlogPostSchema } from '@/lib/seo/structured-data'
 
 export const metadata: Metadata = {
   title: "8 Best ZoomInfo Alternatives & Competitors for 2026 (Cheaper Options) | Cursive",
@@ -39,5 +41,23 @@ export const metadata: Metadata = {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return children
+  return (
+    <>
+      <StructuredData data={[
+        generateBreadcrumbSchema([
+          { name: 'Home', url: 'https://www.meetcursive.com' },
+          { name: 'Blog', url: 'https://www.meetcursive.com/blog' },
+          { name: '8 Best ZoomInfo Alternatives & Competitors for 2026 (Cheaper Options)', url: 'https://www.meetcursive.com/blog/zoominfo-alternatives-comparison' },
+        ]),
+        generateBlogPostSchema({
+          title: '8 Best ZoomInfo Alternatives & Competitors for 2026 (Cheaper Options)',
+          description: 'Tired of ZoomInfo\'s $15k-$40k+ annual contracts? Compare 8 affordable ZoomInfo alternatives for B2B data, intent signals, and prospecting. Find the right fit for your budget.',
+          url: 'https://www.meetcursive.com/blog/zoominfo-alternatives-comparison',
+          datePublished: '2026-02-18',
+          dateModified: '2026-02-18',
+        }),
+      ]} />
+      {children}
+    </>
+  )
 }

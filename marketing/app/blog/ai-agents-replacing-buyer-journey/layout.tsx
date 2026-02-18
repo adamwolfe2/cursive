@@ -1,4 +1,6 @@
 import { Metadata } from "next"
+import { StructuredData } from '@/components/seo/structured-data'
+import { generateBreadcrumbSchema, generateBlogPostSchema } from '@/lib/seo/structured-data'
 
 export const metadata: Metadata = {
   title: "Your Next Lead Won't Fill Out a Form — They'll Send an AI Agent | Cursive",
@@ -39,5 +41,23 @@ export const metadata: Metadata = {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return children
+  return (
+    <>
+      <StructuredData data={[
+        generateBreadcrumbSchema([
+          { name: 'Home', url: 'https://www.meetcursive.com' },
+          { name: 'Blog', url: 'https://www.meetcursive.com/blog' },
+          { name: 'Your Next Lead Won\'t Fill Out a Form — They\'ll Send an AI Agent', url: 'https://www.meetcursive.com/blog/ai-agents-replacing-buyer-journey' },
+        ]),
+        generateBlogPostSchema({
+          title: 'Your Next Lead Won\'t Fill Out a Form — They\'ll Send an AI Agent',
+          description: 'AI browser agents are changing how B2B buyers evaluate and purchase software. Here\'s how visitor identification and lead generation need to evolve for the agentic web.',
+          url: 'https://www.meetcursive.com/blog/ai-agents-replacing-buyer-journey',
+          datePublished: '2026-02-18',
+          dateModified: '2026-02-18',
+        }),
+      ]} />
+      {children}
+    </>
+  )
 }

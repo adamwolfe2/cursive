@@ -1,4 +1,6 @@
 import { Metadata } from "next"
+import { StructuredData } from '@/components/seo/structured-data'
+import { generateBreadcrumbSchema, generateBlogPostSchema } from '@/lib/seo/structured-data'
 
 export const metadata: Metadata = {
   title: "Best Website Visitor Identification Software in 2026: 8 Tools Compared | Cursive",
@@ -39,5 +41,23 @@ export const metadata: Metadata = {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return children
+  return (
+    <>
+      <StructuredData data={[
+        generateBreadcrumbSchema([
+          { name: 'Home', url: 'https://www.meetcursive.com' },
+          { name: 'Blog', url: 'https://www.meetcursive.com/blog' },
+          { name: 'Best Website Visitor Identification Software in 2026: 8 Tools Compared', url: 'https://www.meetcursive.com/blog/best-website-visitor-identification-software' },
+        ]),
+        generateBlogPostSchema({
+          title: 'Best Website Visitor Identification Software in 2026: 8 Tools Compared',
+          description: 'Compare the 8 best website visitor identification software tools for 2026. Find the right platform for de-anonymizing B2B website visitors — with identification rates, pricing, and a buyer\'s guide.',
+          url: 'https://www.meetcursive.com/blog/best-website-visitor-identification-software',
+          datePublished: '2026-02-18',
+          dateModified: '2026-02-18',
+        }),
+      ]} />
+      {children}
+    </>
+  )
 }

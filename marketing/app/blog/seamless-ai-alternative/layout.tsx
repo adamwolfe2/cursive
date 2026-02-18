@@ -1,4 +1,6 @@
 import { Metadata } from "next"
+import { StructuredData } from '@/components/seo/structured-data'
+import { generateBreadcrumbSchema, generateBlogPostSchema } from '@/lib/seo/structured-data'
 
 export const metadata: Metadata = {
   title: "7 Best Seamless.AI Alternatives & Competitors in 2026 | Cursive",
@@ -50,5 +52,23 @@ export const metadata: Metadata = {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return children
+  return (
+    <>
+      <StructuredData data={[
+        generateBreadcrumbSchema([
+          { name: 'Home', url: 'https://www.meetcursive.com' },
+          { name: 'Blog', url: 'https://www.meetcursive.com/blog' },
+          { name: '7 Best Seamless.AI Alternatives & Competitors in 2026', url: 'https://www.meetcursive.com/blog/seamless-ai-alternative' },
+        ]),
+        generateBlogPostSchema({
+          title: '7 Best Seamless.AI Alternatives & Competitors in 2026',
+          description: 'Looking for Seamless.AI alternatives? Compare the 7 best competitors for B2B contact data and prospecting. Find a cheaper, higher-quality alternative to Seamless.AI in 2026.',
+          url: 'https://www.meetcursive.com/blog/seamless-ai-alternative',
+          datePublished: '2026-02-18',
+          dateModified: '2026-02-18',
+        }),
+      ]} />
+      {children}
+    </>
+  )
 }

@@ -1,4 +1,6 @@
 import { Metadata } from "next"
+import { StructuredData } from '@/components/seo/structured-data'
+import { generateBreadcrumbSchema, generateBlogPostSchema } from '@/lib/seo/structured-data'
 
 export const metadata: Metadata = {
   title: "Best Lusha Alternatives: 7 B2B Contact Data Tools Compared (2026)",
@@ -39,5 +41,23 @@ export const metadata: Metadata = {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return children
+  return (
+    <>
+      <StructuredData data={[
+        generateBreadcrumbSchema([
+          { name: 'Home', url: 'https://www.meetcursive.com' },
+          { name: 'Blog', url: 'https://www.meetcursive.com/blog' },
+          { name: 'Best Lusha Alternatives: 7 B2B Contact Data Tools Compared (2026)', url: 'https://www.meetcursive.com/blog/lusha-alternative' },
+        ]),
+        generateBlogPostSchema({
+          title: 'Best Lusha Alternatives: 7 B2B Contact Data Tools Compared (2026)',
+          description: 'Compare the top Lusha alternatives for B2B contact data and prospecting. Find tools with more credits, visitor identification, AI outreach automation, and better value than Lusha.',
+          url: 'https://www.meetcursive.com/blog/lusha-alternative',
+          datePublished: '2026-02-18',
+          dateModified: '2026-02-18',
+        }),
+      ]} />
+      {children}
+    </>
+  )
 }

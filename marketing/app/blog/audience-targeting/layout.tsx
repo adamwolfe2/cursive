@@ -1,4 +1,6 @@
 import { Metadata } from "next"
+import { StructuredData } from '@/components/seo/structured-data'
+import { generateBreadcrumbSchema, generateBlogPostSchema } from '@/lib/seo/structured-data'
 
 export const metadata: Metadata = {
   title: "B2B Audience Targeting: The Complete Guide to Data-Driven Segmentation (2026) | Cursive",
@@ -39,5 +41,23 @@ export const metadata: Metadata = {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return children
+  return (
+    <>
+      <StructuredData data={[
+        generateBreadcrumbSchema([
+          { name: 'Home', url: 'https://www.meetcursive.com' },
+          { name: 'Blog', url: 'https://www.meetcursive.com/blog' },
+          { name: 'B2B Audience Targeting: The Complete Guide to Data-Driven Segmentation (2026)', url: 'https://www.meetcursive.com/blog/audience-targeting' },
+        ]),
+        generateBlogPostSchema({
+          title: 'B2B Audience Targeting: The Complete Guide to Data-Driven Segmentation (2026)',
+          description: 'Master B2B audience targeting with data-driven segmentation strategies. Learn how to build your ICP, use firmographic and intent data, and create high-converting audience segments at scale.',
+          url: 'https://www.meetcursive.com/blog/audience-targeting',
+          datePublished: '2026-02-18',
+          dateModified: '2026-02-18',
+        }),
+      ]} />
+      {children}
+    </>
+  )
 }

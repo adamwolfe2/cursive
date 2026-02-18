@@ -1,4 +1,6 @@
 import { Metadata } from "next"
+import { StructuredData } from '@/components/seo/structured-data'
+import { generateBreadcrumbSchema, generateBlogPostSchema } from '@/lib/seo/structured-data'
 
 export const metadata: Metadata = {
   title: "How to Scale Outbound Sales Without Hiring More SDRs | Cursive",
@@ -39,5 +41,23 @@ export const metadata: Metadata = {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return children
+  return (
+    <>
+      <StructuredData data={[
+        generateBreadcrumbSchema([
+          { name: 'Home', url: 'https://www.meetcursive.com' },
+          { name: 'Blog', url: 'https://www.meetcursive.com/blog' },
+          { name: 'How to Scale Outbound Sales Without Hiring More SDRs', url: 'https://www.meetcursive.com/blog/scaling-outbound' },
+        ]),
+        generateBlogPostSchema({
+          title: 'How to Scale Outbound Sales Without Hiring More SDRs',
+          description: 'Scale B2B outbound sales with automation, data, and technology. Proven strategies to 3x pipeline without increasing headcount or budget.',
+          url: 'https://www.meetcursive.com/blog/scaling-outbound',
+          datePublished: '2026-02-18',
+          dateModified: '2026-02-18',
+        }),
+      ]} />
+      {children}
+    </>
+  )
 }

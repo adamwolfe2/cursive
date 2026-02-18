@@ -1,4 +1,6 @@
 import { Metadata } from "next"
+import { StructuredData } from '@/components/seo/structured-data'
+import { generateBreadcrumbSchema, generateBlogPostSchema } from '@/lib/seo/structured-data'
 
 export const metadata: Metadata = {
   title: "B2B Lead Generation: Intent-Based Strategies That Build Pipeline (2026) | Cursive",
@@ -39,5 +41,23 @@ export const metadata: Metadata = {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return children
+  return (
+    <>
+      <StructuredData data={[
+        generateBreadcrumbSchema([
+          { name: 'Home', url: 'https://www.meetcursive.com' },
+          { name: 'Blog', url: 'https://www.meetcursive.com/blog' },
+          { name: 'B2B Lead Generation: Intent-Based Strategies That Build Pipeline (2026)', url: 'https://www.meetcursive.com/blog/lead-generation' },
+        ]),
+        generateBlogPostSchema({
+          title: 'B2B Lead Generation: Intent-Based Strategies That Build Pipeline (2026)',
+          description: 'Proven B2B lead generation strategies that prioritize intent over volume. Learn how to build predictable pipeline using visitor identification, intent data, and multi-channel outreach.',
+          url: 'https://www.meetcursive.com/blog/lead-generation',
+          datePublished: '2026-02-18',
+          dateModified: '2026-02-18',
+        }),
+      ]} />
+      {children}
+    </>
+  )
 }

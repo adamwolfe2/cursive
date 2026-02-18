@@ -1,4 +1,6 @@
 import { Metadata } from "next"
+import { StructuredData } from '@/components/seo/structured-data'
+import { generateBreadcrumbSchema, generateBlogPostSchema } from '@/lib/seo/structured-data'
 
 export const metadata: Metadata = {
   title: "Instantly Alternatives: Cold Email + Visitor ID Combined (2026)",
@@ -39,5 +41,23 @@ export const metadata: Metadata = {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return children
+  return (
+    <>
+      <StructuredData data={[
+        generateBreadcrumbSchema([
+          { name: 'Home', url: 'https://www.meetcursive.com' },
+          { name: 'Blog', url: 'https://www.meetcursive.com/blog' },
+          { name: 'Instantly Alternatives: Cold Email + Visitor ID Combined (2026)', url: 'https://www.meetcursive.com/blog/instantly-alternative' },
+        ]),
+        generateBlogPostSchema({
+          title: 'Instantly Alternatives: Cold Email + Visitor ID Combined (2026)',
+          description: 'Compare the best Instantly alternatives that combine cold email outreach with visitor identification and intent data. Find all-in-one platforms that replace your entire outbound stack.',
+          url: 'https://www.meetcursive.com/blog/instantly-alternative',
+          datePublished: '2026-02-18',
+          dateModified: '2026-02-18',
+        }),
+      ]} />
+      {children}
+    </>
+  )
 }

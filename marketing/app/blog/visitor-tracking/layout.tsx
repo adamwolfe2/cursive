@@ -1,4 +1,6 @@
 import { Metadata } from "next"
+import { StructuredData } from '@/components/seo/structured-data'
+import { generateBreadcrumbSchema, generateBlogPostSchema } from '@/lib/seo/structured-data'
 
 export const metadata: Metadata = {
   title: "Website Visitor Tracking: How It Works and How to Implement It (2026 Guide) | Cursive",
@@ -39,5 +41,23 @@ export const metadata: Metadata = {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return children
+  return (
+    <>
+      <StructuredData data={[
+        generateBreadcrumbSchema([
+          { name: 'Home', url: 'https://www.meetcursive.com' },
+          { name: 'Blog', url: 'https://www.meetcursive.com/blog' },
+          { name: 'Website Visitor Tracking: How It Works and How to Implement It (2026 Guide)', url: 'https://www.meetcursive.com/blog/visitor-tracking' },
+        ]),
+        generateBlogPostSchema({
+          title: 'Website Visitor Tracking: How It Works and How to Implement It (2026 Guide)',
+          description: 'Learn how website visitor tracking works for B2B companies. Covers IP-based identification, cookie tracking, privacy-compliant methods, and step-by-step implementation for turning anonymous traffic into qualified leads.',
+          url: 'https://www.meetcursive.com/blog/visitor-tracking',
+          datePublished: '2026-02-18',
+          dateModified: '2026-02-18',
+        }),
+      ]} />
+      {children}
+    </>
+  )
 }

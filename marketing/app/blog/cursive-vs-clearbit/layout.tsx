@@ -1,4 +1,6 @@
 import { Metadata } from "next"
+import { StructuredData } from '@/components/seo/structured-data'
+import { generateBreadcrumbSchema, generateBlogPostSchema } from '@/lib/seo/structured-data'
 
 export const metadata: Metadata = {
   title: "Cursive vs Clearbit: Best Clearbit Replacement After HubSpot Acquisition (2026) | Cursive",
@@ -39,5 +41,23 @@ export const metadata: Metadata = {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return children
+  return (
+    <>
+      <StructuredData data={[
+        generateBreadcrumbSchema([
+          { name: 'Home', url: 'https://www.meetcursive.com' },
+          { name: 'Blog', url: 'https://www.meetcursive.com/blog' },
+          { name: 'Cursive vs Clearbit: Best Clearbit Replacement After HubSpot Acquisition (2026)', url: 'https://www.meetcursive.com/blog/cursive-vs-clearbit' },
+        ]),
+        generateBlogPostSchema({
+          title: 'Cursive vs Clearbit: Best Clearbit Replacement After HubSpot Acquisition (2026)',
+          description: 'Clearbit was acquired by HubSpot — standalone Clearbit is being sunset. Cursive delivers 70% visitor ID (vs Clearbit\'s 30-40%) with AI outreach, intent data, and no HubSpot dependency.',
+          url: 'https://www.meetcursive.com/blog/cursive-vs-clearbit',
+          datePublished: '2026-02-18',
+          dateModified: '2026-02-18',
+        }),
+      ]} />
+      {children}
+    </>
+  )
 }

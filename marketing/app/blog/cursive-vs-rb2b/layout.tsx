@@ -1,4 +1,6 @@
 import { Metadata } from "next"
+import { StructuredData } from '@/components/seo/structured-data'
+import { generateBreadcrumbSchema, generateBlogPostSchema } from '@/lib/seo/structured-data'
 
 export const metadata: Metadata = {
   title: "Cursive vs RB2B: 70% vs 50-60% ID Rate — Full Comparison (2026) | Cursive",
@@ -39,5 +41,23 @@ export const metadata: Metadata = {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return children
+  return (
+    <>
+      <StructuredData data={[
+        generateBreadcrumbSchema([
+          { name: 'Home', url: 'https://www.meetcursive.com' },
+          { name: 'Blog', url: 'https://www.meetcursive.com/blog' },
+          { name: 'Cursive vs RB2B: 70% vs 50-60% ID Rate — Full Comparison (2026)', url: 'https://www.meetcursive.com/blog/cursive-vs-rb2b' },
+        ]),
+        generateBlogPostSchema({
+          title: 'Cursive vs RB2B: 70% vs 50-60% ID Rate — Full Comparison (2026)',
+          description: 'Cursive identifies 70% of US B2B visitors vs RB2B\'s 50-60%. Plus Cursive adds AI outreach, intent data, and direct mail — not just identification. Compare features and pricing inside.',
+          url: 'https://www.meetcursive.com/blog/cursive-vs-rb2b',
+          datePublished: '2026-02-18',
+          dateModified: '2026-02-18',
+        }),
+      ]} />
+      {children}
+    </>
+  )
 }

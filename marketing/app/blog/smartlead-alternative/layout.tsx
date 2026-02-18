@@ -1,4 +1,6 @@
 import { Metadata } from "next"
+import { StructuredData } from '@/components/seo/structured-data'
+import { generateBreadcrumbSchema, generateBlogPostSchema } from '@/lib/seo/structured-data'
 
 export const metadata: Metadata = {
   title: "Smartlead Alternatives: Email Outreach with Visitor Tracking (2026) | Cursive",
@@ -39,5 +41,23 @@ export const metadata: Metadata = {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return children
+  return (
+    <>
+      <StructuredData data={[
+        generateBreadcrumbSchema([
+          { name: 'Home', url: 'https://www.meetcursive.com' },
+          { name: 'Blog', url: 'https://www.meetcursive.com/blog' },
+          { name: 'Smartlead Alternatives: Email Outreach with Visitor Tracking (2026)', url: 'https://www.meetcursive.com/blog/smartlead-alternative' },
+        ]),
+        generateBlogPostSchema({
+          title: 'Smartlead Alternatives: Email Outreach with Visitor Tracking (2026)',
+          description: 'Compare the best Smartlead alternatives that combine email outreach with visitor identification and intent data. Find platforms with built-in visitor tracking, AI SDR, and multi-channel outreach.',
+          url: 'https://www.meetcursive.com/blog/smartlead-alternative',
+          datePublished: '2026-02-18',
+          dateModified: '2026-02-18',
+        }),
+      ]} />
+      {children}
+    </>
+  )
 }

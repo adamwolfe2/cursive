@@ -1,4 +1,6 @@
 import { Metadata } from "next"
+import { StructuredData } from '@/components/seo/structured-data'
+import { generateBreadcrumbSchema, generateBlogPostSchema } from '@/lib/seo/structured-data'
 
 export const metadata: Metadata = {
   title: "Apollo vs Cursive: Cold Database vs Warm Visitor ID — Which Wins? (2026) | Cursive",
@@ -39,5 +41,23 @@ export const metadata: Metadata = {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return children
+  return (
+    <>
+      <StructuredData data={[
+        generateBreadcrumbSchema([
+          { name: 'Home', url: 'https://www.meetcursive.com' },
+          { name: 'Blog', url: 'https://www.meetcursive.com/blog' },
+          { name: 'Apollo vs Cursive: Cold Database vs Warm Visitor ID — Which Wins? (2026)', url: 'https://www.meetcursive.com/blog/apollo-vs-cursive-comparison' },
+        ]),
+        generateBlogPostSchema({
+          title: 'Apollo vs Cursive: Cold Database vs Warm Visitor ID — Which Wins? (2026)',
+          description: 'Apollo gives you a 200M+ contact database for cold outreach. Cursive identifies YOUR visitors (70% rate) and automates warm outreach. Different tools, different outcomes. Compare here.',
+          url: 'https://www.meetcursive.com/blog/apollo-vs-cursive-comparison',
+          datePublished: '2026-02-18',
+          dateModified: '2026-02-18',
+        }),
+      ]} />
+      {children}
+    </>
+  )
 }

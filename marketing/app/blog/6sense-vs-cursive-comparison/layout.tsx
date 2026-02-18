@@ -1,4 +1,6 @@
 import { Metadata } from "next"
+import { StructuredData } from '@/components/seo/structured-data'
+import { generateBreadcrumbSchema, generateBlogPostSchema } from '@/lib/seo/structured-data'
 
 export const metadata: Metadata = {
   title: "6sense vs Cursive: $50k-$200k/yr vs $1k/mo — Intent Data Compared (2026) | Cursive",
@@ -39,5 +41,23 @@ export const metadata: Metadata = {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return children
+  return (
+    <>
+      <StructuredData data={[
+        generateBreadcrumbSchema([
+          { name: 'Home', url: 'https://www.meetcursive.com' },
+          { name: 'Blog', url: 'https://www.meetcursive.com/blog' },
+          { name: '6sense vs Cursive: $50k-$200k/yr vs $1k/mo — Intent Data Compared (2026)', url: 'https://www.meetcursive.com/blog/6sense-vs-cursive-comparison' },
+        ]),
+        generateBlogPostSchema({
+          title: '6sense vs Cursive: $50k-$200k/yr vs $1k/mo — Intent Data Compared (2026)',
+          description: '6sense costs $50,000-$200,000/year with multi-year contracts. Cursive delivers intent data, visitor identification, and AI SDR for $1,000/month with no commitment. Full comparison inside.',
+          url: 'https://www.meetcursive.com/blog/6sense-vs-cursive-comparison',
+          datePublished: '2026-02-18',
+          dateModified: '2026-02-18',
+        }),
+      ]} />
+      {children}
+    </>
+  )
 }

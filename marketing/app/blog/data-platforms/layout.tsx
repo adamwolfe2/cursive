@@ -1,4 +1,6 @@
 import { Metadata } from "next"
+import { StructuredData } from '@/components/seo/structured-data'
+import { generateBreadcrumbSchema, generateBlogPostSchema } from '@/lib/seo/structured-data'
 
 export const metadata: Metadata = {
   title: "Choosing a B2B Data Platform: Comparison, Features, and Data Quality Guide (2026) | Cursive",
@@ -39,5 +41,23 @@ export const metadata: Metadata = {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return children
+  return (
+    <>
+      <StructuredData data={[
+        generateBreadcrumbSchema([
+          { name: 'Home', url: 'https://www.meetcursive.com' },
+          { name: 'Blog', url: 'https://www.meetcursive.com/blog' },
+          { name: 'Choosing a B2B Data Platform: Comparison, Features, and Data Quality Guide (2026)', url: 'https://www.meetcursive.com/blog/data-platforms' },
+        ]),
+        generateBlogPostSchema({
+          title: 'Choosing a B2B Data Platform: Comparison, Features, and Data Quality Guide (2026)',
+          description: 'How to choose the right B2B data platform for your sales and marketing team. Compare approaches to contact enrichment, data quality management, and integration strategies. Covers CDPs, enrichment tools, and unified data platforms.',
+          url: 'https://www.meetcursive.com/blog/data-platforms',
+          datePublished: '2026-02-18',
+          dateModified: '2026-02-18',
+        }),
+      ]} />
+      {children}
+    </>
+  )
 }

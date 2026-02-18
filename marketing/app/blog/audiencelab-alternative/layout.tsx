@@ -1,4 +1,6 @@
 import { Metadata } from "next"
+import { StructuredData } from '@/components/seo/structured-data'
+import { generateBreadcrumbSchema, generateBlogPostSchema } from '@/lib/seo/structured-data'
 
 export const metadata: Metadata = {
   title: "Best AudienceLab Alternatives & Competitors in 2026 | Cursive",
@@ -50,5 +52,23 @@ export const metadata: Metadata = {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return children
+  return (
+    <>
+      <StructuredData data={[
+        generateBreadcrumbSchema([
+          { name: 'Home', url: 'https://www.meetcursive.com' },
+          { name: 'Blog', url: 'https://www.meetcursive.com/blog' },
+          { name: 'Best AudienceLab Alternatives & Competitors in 2026', url: 'https://www.meetcursive.com/blog/audiencelab-alternative' },
+        ]),
+        generateBlogPostSchema({
+          title: 'Best AudienceLab Alternatives & Competitors in 2026',
+          description: 'Looking for AudienceLab alternatives? Compare the best competitors for B2B data, visitor identification, and outreach automation. See why teams choose Cursive for a complete pipeline solution.',
+          url: 'https://www.meetcursive.com/blog/audiencelab-alternative',
+          datePublished: '2026-02-18',
+          dateModified: '2026-02-18',
+        }),
+      ]} />
+      {children}
+    </>
+  )
 }

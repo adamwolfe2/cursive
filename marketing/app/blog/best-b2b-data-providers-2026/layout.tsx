@@ -1,4 +1,6 @@
 import { Metadata } from "next"
+import { StructuredData } from '@/components/seo/structured-data'
+import { generateBreadcrumbSchema, generateBlogPostSchema } from '@/lib/seo/structured-data'
 
 export const metadata: Metadata = {
   title: "Best B2B Data Providers in 2026: 10 Platforms Compared | Cursive",
@@ -39,5 +41,23 @@ export const metadata: Metadata = {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return children
+  return (
+    <>
+      <StructuredData data={[
+        generateBreadcrumbSchema([
+          { name: 'Home', url: 'https://www.meetcursive.com' },
+          { name: 'Blog', url: 'https://www.meetcursive.com/blog' },
+          { name: 'Best B2B Data Providers in 2026: 10 Platforms Compared', url: 'https://www.meetcursive.com/blog/best-b2b-data-providers-2026' },
+        ]),
+        generateBlogPostSchema({
+          title: 'Best B2B Data Providers in 2026: 10 Platforms Compared',
+          description: 'Compare the 10 best B2B data providers in 2026. Find the right platform for sales intelligence, contact data, and intent signals — with pricing, ratings, and a buyer\'s guide.',
+          url: 'https://www.meetcursive.com/blog/best-b2b-data-providers-2026',
+          datePublished: '2026-02-18',
+          dateModified: '2026-02-18',
+        }),
+      ]} />
+      {children}
+    </>
+  )
 }

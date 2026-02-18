@@ -1,4 +1,6 @@
 import { Metadata } from "next"
+import { StructuredData } from '@/components/seo/structured-data'
+import { generateBreadcrumbSchema, generateBlogPostSchema } from '@/lib/seo/structured-data'
 
 export const metadata: Metadata = {
   title: "Best SalesIntel Alternatives: 7 B2B Data Providers Compared (2026)",
@@ -39,5 +41,23 @@ export const metadata: Metadata = {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return children
+  return (
+    <>
+      <StructuredData data={[
+        generateBreadcrumbSchema([
+          { name: 'Home', url: 'https://www.meetcursive.com' },
+          { name: 'Blog', url: 'https://www.meetcursive.com/blog' },
+          { name: 'Best SalesIntel Alternatives: 7 B2B Data Providers Compared (2026)', url: 'https://www.meetcursive.com/blog/salesintel-alternative' },
+        ]),
+        generateBlogPostSchema({
+          title: 'Best SalesIntel Alternatives: 7 B2B Data Providers Compared (2026)',
+          description: 'Looking for SalesIntel alternatives? Compare the 7 best competitors for B2B data, prospecting, visitor identification, and outbound automation. Find a cheaper, more flexible alternative to SalesIntel in 2026.',
+          url: 'https://www.meetcursive.com/blog/salesintel-alternative',
+          datePublished: '2026-02-18',
+          dateModified: '2026-02-18',
+        }),
+      ]} />
+      {children}
+    </>
+  )
 }

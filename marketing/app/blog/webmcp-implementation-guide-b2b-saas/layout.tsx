@@ -1,4 +1,6 @@
 import { Metadata } from "next"
+import { StructuredData } from '@/components/seo/structured-data'
+import { generateBreadcrumbSchema, generateBlogPostSchema } from '@/lib/seo/structured-data'
 
 export const metadata: Metadata = {
   title: "How to Implement WebMCP on Your B2B SaaS Website (With Real Code) | Cursive",
@@ -39,5 +41,23 @@ export const metadata: Metadata = {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return children
+  return (
+    <>
+      <StructuredData data={[
+        generateBreadcrumbSchema([
+          { name: 'Home', url: 'https://www.meetcursive.com' },
+          { name: 'Blog', url: 'https://www.meetcursive.com/blog' },
+          { name: 'How to Implement WebMCP on Your B2B SaaS Website (With Real Code)', url: 'https://www.meetcursive.com/blog/webmcp-implementation-guide-b2b-saas' },
+        ]),
+        generateBlogPostSchema({
+          title: 'How to Implement WebMCP on Your B2B SaaS Website (With Real Code)',
+          description: 'Step-by-step guide to implementing WebMCP on a Next.js B2B site. Includes declarative forms, imperative tool registration, llms.txt, and testing with Chrome 146.',
+          url: 'https://www.meetcursive.com/blog/webmcp-implementation-guide-b2b-saas',
+          datePublished: '2026-02-18',
+          dateModified: '2026-02-18',
+        }),
+      ]} />
+      {children}
+    </>
+  )
 }
