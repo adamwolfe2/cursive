@@ -69,28 +69,71 @@ export async function POST(req: NextRequest) {
       })
     }
 
-    // Get audience mapping for user's industry/location
-    const { data: segmentMapping, error: mappingError } = await supabase
+    // Get audience mapping for user's industry/location (with fallbacks)
+    // Try exact match first, then industry-only, then any available segment
+    let segmentMapping: { segment_id: string; segment_name: string } | null = null
+    let matchType: 'exact' | 'industry_only' | 'fallback' = 'exact'
+
+    // 1. Exact match: industry + location
+    const { data: exactMatch } = await supabase
       .from('audience_lab_segments')
       .select('segment_id, segment_name')
       .eq('industry', userProfile.industry_segment)
       .eq('location', userProfile.location_segment)
-      .single()
+      .maybeSingle()
 
-    if (mappingError || !segmentMapping) {
-      safeError('[PopulateInitialLeads] No audience mapping found:', {
+    if (exactMatch) {
+      segmentMapping = exactMatch
+    } else {
+      // 2. Fallback: same industry, any location (prefer 'us' as broadest)
+      const { data: industryMatches } = await supabase
+        .from('audience_lab_segments')
+        .select('segment_id, segment_name, location')
+        .eq('industry', userProfile.industry_segment)
+        .limit(10)
+
+      if (industryMatches && industryMatches.length > 0) {
+        // Prefer the 'us' (national) segment, otherwise take first available
+        const usMatch = industryMatches.find((m) => m.location === 'us')
+        segmentMapping = usMatch || industryMatches[0]
+        matchType = 'industry_only'
+        safeError('[PopulateInitialLeads] Using industry-only fallback:', {
+          requested: { industry: userProfile.industry_segment, location: userProfile.location_segment },
+          matched: { segment: segmentMapping!.segment_name, matchType },
+        })
+      } else {
+        // 3. Last resort: grab the broadest available segment (any 'us' segment)
+        const { data: anySegment } = await supabase
+          .from('audience_lab_segments')
+          .select('segment_id, segment_name')
+          .eq('location', 'us')
+          .limit(1)
+          .maybeSingle()
+
+        if (anySegment) {
+          segmentMapping = anySegment
+          matchType = 'fallback'
+          safeError('[PopulateInitialLeads] Using fallback segment (no industry match):', {
+            requested: { industry: userProfile.industry_segment, location: userProfile.location_segment },
+            matched: { segment: segmentMapping!.segment_name, matchType },
+          })
+        }
+      }
+    }
+
+    if (!segmentMapping) {
+      safeError('[PopulateInitialLeads] No audience mapping found (all fallbacks exhausted):', {
         industry: userProfile.industry_segment,
         location: userProfile.location_segment,
-        error: mappingError,
       })
-      return NextResponse.json(
-        {
-          error: 'No audience mapping found for your industry/location combination',
-          industry: userProfile.industry_segment,
-          location: userProfile.location_segment,
-        },
-        { status: 404 }
-      )
+      // Return success with 0 leads instead of 404 — user will see the "pipeline setup" banner
+      return NextResponse.json({
+        success: true,
+        message: 'Your lead pipeline is being configured. Your first leads will arrive by tomorrow at 8am CT.',
+        count: 0,
+        filtered: 0,
+        pending_setup: true,
+      })
     }
 
     // Determine how many leads to fetch (based on plan)

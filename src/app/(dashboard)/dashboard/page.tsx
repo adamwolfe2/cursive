@@ -219,7 +219,27 @@ export default async function DashboardPage({
           <CheckCircle2 className="h-5 w-5 text-green-600 shrink-0 mt-0.5" />
           <div>
             <p className="font-semibold text-green-900">Setup complete!</p>
-            <p className="text-sm text-green-700">We&apos;re setting up your tracking pixel and delivering your first leads now.</p>
+            <p className="text-sm text-green-700">
+              {totalCount > 0
+                ? `Your first ${totalCount} leads are ready — check them out below!`
+                : 'We\'re setting up your lead pipeline now. Your first leads will arrive shortly — check back in a few minutes or by 8am CT tomorrow.'}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Zero leads pipeline setup banner (shown when user has 0 total leads and NOT just onboarded) */}
+      {totalCount === 0 && onboarding !== 'complete' && (
+        <div className="rounded-xl bg-blue-50 border border-blue-200 p-5 flex items-start gap-3">
+          <Calendar className="h-5 w-5 text-blue-600 shrink-0 mt-0.5" />
+          <div>
+            <p className="font-semibold text-blue-900">Your lead pipeline is being set up</p>
+            <p className="text-sm text-blue-700 mt-1">
+              We&apos;re matching leads to your industry and location preferences. New leads are delivered every morning at 8am CT.
+              {!hasPreferences && (
+                <> In the meantime, <Link href="/my-leads/preferences" className="font-medium underline">set your targeting preferences</Link> to get the most relevant leads.</>
+              )}
+            </p>
           </div>
         </div>
       )}
@@ -316,7 +336,7 @@ export default async function DashboardPage({
                 <div className={`p-1.5 rounded-lg ${creditsRemaining <= 3 ? 'bg-amber-100' : 'bg-gray-100'}`}>
                   <Zap className={`h-4 w-4 ${creditsRemaining <= 3 ? 'text-amber-600' : 'text-gray-600'}`} />
                 </div>
-                <span className="text-sm text-gray-500">Credits Left</span>
+                <span className="text-sm text-gray-500">Enrichment Credits</span>
               </div>
               <div className={`text-3xl font-bold ${creditsRemaining <= 3 ? 'text-amber-600' : 'text-gray-900'}`}>{creditsRemaining}</div>
               <p className="text-xs text-gray-400 mt-1">of {creditLimit} daily · 1/enrichment</p>
@@ -591,7 +611,7 @@ export default async function DashboardPage({
                   <span className="text-sm font-semibold text-gray-900">Free Plan</span>
                 </div>
                 <p className="text-xs text-gray-500 mb-3">
-                  Upgrade to Pro for 100 leads/day, unlimited enrichments, and priority data.
+                  Upgrade to Pro for 100 leads/day, 1,000 enrichments/day, and priority data.
                 </p>
                 <Link
                   href="/settings/billing"

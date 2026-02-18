@@ -238,150 +238,42 @@ export default function BillingClient() {
                 {isPro ? (
                   <>
                     <li className="flex items-center text-sm text-muted-foreground">
-                      <svg
-                        className="mr-2 h-4 w-4 text-primary flex-shrink-0"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                      1,000 credits per day
+                      <svg className="mr-2 h-4 w-4 text-primary flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                      100 leads delivered daily
                     </li>
                     <li className="flex items-center text-sm text-muted-foreground">
-                      <svg
-                        className="mr-2 h-4 w-4 text-primary flex-shrink-0"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                      5 active queries
+                      <svg className="mr-2 h-4 w-4 text-primary flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                      1,000 enrichment credits/day
                     </li>
                     <li className="flex items-center text-sm text-muted-foreground">
-                      <svg
-                        className="mr-2 h-4 w-4 text-primary flex-shrink-0"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
+                      <svg className="mr-2 h-4 w-4 text-primary flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
                       Multi-channel delivery (Email, Slack, Webhooks)
                     </li>
                     <li className="flex items-center text-sm text-muted-foreground">
-                      <svg
-                        className="mr-2 h-4 w-4 text-primary flex-shrink-0"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                      Advanced filtering
+                      <svg className="mr-2 h-4 w-4 text-primary flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                      CRM + advanced filtering
                     </li>
                     <li className="flex items-center text-sm text-muted-foreground">
-                      <svg
-                        className="mr-2 h-4 w-4 text-primary flex-shrink-0"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
+                      <svg className="mr-2 h-4 w-4 text-primary flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
                       Priority support
                     </li>
                   </>
                 ) : (
                   <>
                     <li className="flex items-center text-sm text-muted-foreground">
-                      <svg
-                        className="mr-2 h-4 w-4 text-primary flex-shrink-0"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                      3 credits per day
+                      <svg className="mr-2 h-4 w-4 text-primary flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                      10 leads delivered daily
                     </li>
                     <li className="flex items-center text-sm text-muted-foreground">
-                      <svg
-                        className="mr-2 h-4 w-4 text-primary flex-shrink-0"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                      1 active query
+                      <svg className="mr-2 h-4 w-4 text-primary flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                      3 enrichment credits/day
                     </li>
                     <li className="flex items-center text-sm text-muted-foreground">
-                      <svg
-                        className="mr-2 h-4 w-4 text-primary flex-shrink-0"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
+                      <svg className="mr-2 h-4 w-4 text-primary flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
                       Email delivery only
                     </li>
                     <li className="flex items-center text-sm text-muted-foreground">
-                      <svg
-                        className="mr-2 h-4 w-4 text-primary flex-shrink-0"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
+                      <svg className="mr-2 h-4 w-4 text-primary flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
                       Basic support
                     </li>
                   </>
@@ -429,7 +321,7 @@ export default function BillingClient() {
         <div className="space-y-6">
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-foreground">Daily Credits</span>
+              <span className="text-sm font-medium text-foreground">Enrichment Credits</span>
               <span className="text-sm text-muted-foreground">
                 {user?.credits_remaining || 0} / {user?.daily_credit_limit || (isPro ? 1000 : 3)} remaining
               </span>
@@ -444,7 +336,7 @@ export default function BillingClient() {
                 }}
               />
             </div>
-            <p className="mt-1.5 text-xs text-muted-foreground">Resets daily at midnight UTC</p>
+            <p className="mt-1.5 text-xs text-muted-foreground">Each enrichment reveals phone, email & LinkedIn. Resets daily at midnight UTC.</p>
           </div>
 
           <div className="pt-4 border-t border-border">
@@ -504,13 +396,13 @@ export default function BillingClient() {
                   <svg className="h-4 w-4 text-primary flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
-                  <span className="text-sm text-foreground">1,000 credits/day</span>
+                  <span className="text-sm text-foreground">100 leads/day</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <svg className="h-4 w-4 text-primary flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
-                  <span className="text-sm text-foreground">5 active queries</span>
+                  <span className="text-sm text-foreground">1,000 enrichments/day</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <svg className="h-4 w-4 text-primary flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
