@@ -11,7 +11,7 @@ CREATE INDEX IF NOT EXISTS idx_leads_workspace_enrichment
 
 -- User lead assignments by user + workspace (my-leads page)
 CREATE INDEX IF NOT EXISTS idx_ula_user_workspace
-  ON user_lead_assignments(user_id, workspace_id, created_at DESC);
+  ON user_lead_assignments(user_id, workspace_id, assigned_at DESC);
 
 -- Users by auth_user_id (used in every authenticated request)
 CREATE INDEX IF NOT EXISTS idx_users_auth_user_id
