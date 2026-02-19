@@ -12,7 +12,7 @@ import { fetchLeadsFromSegment, type AudienceLabLead } from '@/lib/services/audi
 import { syncLeadsToGHL } from '@/lib/services/ghl.service'
 import { sendEmail } from '@/lib/email/service'
 import { meetsQualityBar } from '@/lib/services/lead-quality.service'
-import { checkWorkspaceDuplicates } from '@/lib/services/deduplication.service'
+import { checkWorkspaceDuplicates, logDedupRejections } from '@/lib/services/deduplication.service'
 
 /**
  * Score a lead based on data completeness.
@@ -173,6 +173,15 @@ export const distributeDailyLeads = inngest.createFunction(
               company_domain: l.company_domain,
             }))
           )
+
+          // Log dedup rejections (non-blocking)
+          const dedupCandidates = mappedLeads.map((l) => ({
+            email: l.email,
+            first_name: l.first_name,
+            last_name: l.last_name,
+            company_name: l.company_name,
+          }))
+          logDedupRejections(user.workspace_id!, 'daily_distribution', dedupCandidates, duplicateIndices, mappedLeads.length)
 
           const leadsToInsert = mappedLeads.filter((_, i) => !duplicateIndices.has(i))
 

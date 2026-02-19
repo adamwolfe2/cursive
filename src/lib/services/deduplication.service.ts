@@ -501,6 +501,59 @@ export async function checkWorkspaceDuplicates(
   return duplicateIndices
 }
 
+export interface DedupRejection {
+  reason: 'email_match' | 'name_company_match' | 'intra_batch'
+  email: string | null
+  name: string | null
+  company: string | null
+}
+
+/**
+ * Log workspace dedup rejections to the dedup_rejections table.
+ * Non-blocking — errors are silently caught to avoid disrupting lead delivery.
+ */
+export async function logDedupRejections(
+  workspaceId: string,
+  source: 'daily_distribution' | 'onboarding' | 'api_ingest',
+  candidates: Array<{
+    email: string | null
+    first_name: string | null
+    last_name: string | null
+    company_name: string | null
+  }>,
+  duplicateIndices: Set<number>,
+  batchSize: number
+): Promise<void> {
+  if (duplicateIndices.size === 0) return
+
+  try {
+    const supabase = createAdminClient()
+    const rows = Array.from(duplicateIndices).map((i) => {
+      const c = candidates[i]
+      return {
+        workspace_id: workspaceId,
+        reason: 'dedup', // simplified — detailed reason requires tracking per-step
+        source,
+        rejected_email: c.email || null,
+        rejected_name: c.first_name && c.last_name
+          ? `${c.first_name} ${c.last_name}`
+          : null,
+        rejected_company: c.company_name || null,
+        batch_size: batchSize,
+      }
+    })
+
+    // Insert in chunks to avoid payload limits
+    for (let i = 0; i < rows.length; i += 50) {
+      await supabase
+        .from('dedup_rejections')
+        .insert(rows.slice(i, i + 50))
+    }
+  } catch {
+    // Non-blocking — don't let logging failures disrupt lead delivery
+  }
+}
+
 /**
  * Get deduplication stats for a partner
  */

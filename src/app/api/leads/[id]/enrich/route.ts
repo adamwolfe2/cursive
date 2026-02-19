@@ -15,6 +15,25 @@ import { safeError } from '@/lib/utils/log-sanitizer'
 
 const ENRICH_CREDIT_COST = 1
 
+/** Non-blocking enrichment log insert */
+async function logEnrichment(
+  adminSupabase: ReturnType<typeof createAdminClient>,
+  params: {
+    workspace_id: string
+    lead_id: string
+    user_id: string
+    status: 'success' | 'failed' | 'no_data'
+    credits_used: number
+    fields_added: string[]
+  }
+) {
+  try {
+    await adminSupabase.from('enrichment_log').insert(params)
+  } catch {
+    // Non-blocking — don't let logging failures disrupt enrichment
+  }
+}
+
 export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -126,6 +145,15 @@ export async function POST(
         .update({ enrichment_status: 'failed' })
         .eq('id', leadId)
 
+      logEnrichment(adminSupabase, {
+        workspace_id: userProfile.workspace_id,
+        lead_id: leadId,
+        user_id: userProfile.id,
+        status: 'no_data',
+        credits_used: ENRICH_CREDIT_COST,
+        fields_added: [],
+      })
+
       return NextResponse.json({
         success: false,
         message: 'No additional data found for this lead',
@@ -199,6 +227,15 @@ export async function POST(
     await adminSupabase.rpc('increment_credits', {
       user_id: userProfile.id,
       amount: ENRICH_CREDIT_COST,
+    })
+
+    logEnrichment(adminSupabase, {
+      workspace_id: userProfile.workspace_id,
+      lead_id: leadId,
+      user_id: userProfile.id,
+      status: 'success',
+      credits_used: ENRICH_CREDIT_COST,
+      fields_added: fieldsAdded,
     })
 
     const after = { ...before, ...updates }

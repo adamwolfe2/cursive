@@ -48,15 +48,20 @@ export default function PixelSettingsPage() {
   const [copied, setCopied] = useState(false)
   const [verifying, setVerifying] = useState(false)
   const [verifyResult, setVerifyResult] = useState<VerifyResult | null>(null)
+  const [showTroubleshooting, setShowTroubleshooting] = useState(false)
 
   const handleVerifyInstallation = useCallback(async () => {
     setVerifying(true)
     setVerifyResult(null)
+    setShowTroubleshooting(false)
     try {
       const response = await fetch('/api/pixel/verify')
       if (!response.ok) throw new Error('Verification request failed')
       const result: VerifyResult = await response.json()
       setVerifyResult(result)
+      if (!result.verified) {
+        setShowTroubleshooting(true)
+      }
     } catch {
       toast.error('Could not reach the verification service — please try again.')
     } finally {
@@ -289,24 +294,85 @@ export default function PixelSettingsPage() {
           </div>
 
           {verifyResult !== null && (
-            <div className={`mt-3 flex items-center gap-2 rounded-lg px-4 py-3 text-sm font-medium ${
-              verifyResult.verified
-                ? 'bg-green-50 text-green-800 border border-green-200'
-                : 'bg-red-50 text-red-800 border border-red-200'
-            }`}>
-              {verifyResult.verified ? (
-                <>
-                  <span className="text-green-600">&#10003;</span>
-                  Pixel Active —{' '}
-                  {verifyResult.lastEventAt
-                    ? `last event ${formatRelativeTime(verifyResult.lastEventAt)}`
-                    : `${verifyResult.eventCount} event${verifyResult.eventCount === 1 ? '' : 's'} in the last 7 days`}
-                </>
-              ) : (
-                <>
-                  <span className="text-red-600">&#10007;</span>
-                  No events detected — check installation
-                </>
+            <div className="mt-3 space-y-3">
+              <div className={`flex items-center gap-2 rounded-lg px-4 py-3 text-sm font-medium ${
+                verifyResult.verified
+                  ? 'bg-green-50 text-green-800 border border-green-200'
+                  : 'bg-red-50 text-red-800 border border-red-200'
+              }`}>
+                {verifyResult.verified ? (
+                  <>
+                    <span className="text-green-600">&#10003;</span>
+                    <div>
+                      <span>Pixel verified and working</span>
+                      <span className="block text-xs font-normal text-green-700 mt-0.5">
+                        {verifyResult.eventCount} event{verifyResult.eventCount === 1 ? '' : 's'} in the last 7 days
+                        {verifyResult.lastEventAt && ` · Last event ${formatRelativeTime(verifyResult.lastEventAt)}`}
+                      </span>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-red-600">&#10007;</span>
+                    <div className="flex-1">
+                      <span>No events detected yet</span>
+                      <span className="block text-xs font-normal text-red-700 mt-0.5">
+                        It can take up to 5 minutes for the first event to appear after installation.
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => setShowTroubleshooting(!showTroubleshooting)}
+                      className="text-xs underline text-red-700 hover:text-red-900 shrink-0"
+                    >
+                      {showTroubleshooting ? 'Hide help' : 'Troubleshoot'}
+                    </button>
+                  </>
+                )}
+              </div>
+
+              {showTroubleshooting && !verifyResult.verified && (
+                <div className="rounded-lg border border-amber-200 bg-amber-50 p-4">
+                  <h4 className="text-sm font-semibold text-amber-900 mb-3">Troubleshooting Checklist</h4>
+                  <ol className="text-sm text-amber-800 space-y-2.5">
+                    <li className="flex gap-2">
+                      <span className="font-semibold text-amber-700 shrink-0">1.</span>
+                      <span>
+                        <strong>Snippet placement</strong> — Make sure the script tag is inside your{' '}
+                        <code className="text-xs bg-amber-100 px-1 py-0.5 rounded font-mono">&lt;head&gt;</code>{' '}
+                        section, not the body.
+                      </span>
+                    </li>
+                    <li className="flex gap-2">
+                      <span className="font-semibold text-amber-700 shrink-0">2.</span>
+                      <span>
+                        <strong>Domain match</strong> — The pixel is configured for{' '}
+                        <strong>{data.pixel.domain}</strong>. Make sure you installed the snippet on that exact domain.
+                      </span>
+                    </li>
+                    <li className="flex gap-2">
+                      <span className="font-semibold text-amber-700 shrink-0">3.</span>
+                      <span>
+                        <strong>Ad blockers</strong> — Some browser extensions or ad blockers may prevent the pixel from loading. Try in an incognito window.
+                      </span>
+                    </li>
+                    <li className="flex gap-2">
+                      <span className="font-semibold text-amber-700 shrink-0">4.</span>
+                      <span>
+                        <strong>Cache</strong> — If you just added the snippet, clear your site&apos;s cache (CDN, page cache) and refresh.
+                      </span>
+                    </li>
+                    <li className="flex gap-2">
+                      <span className="font-semibold text-amber-700 shrink-0">5.</span>
+                      <span>
+                        <strong>Visit your site</strong> — Open your website in a new tab to trigger the pixel, then come back here and click Verify again.
+                      </span>
+                    </li>
+                  </ol>
+                  <p className="mt-3 text-xs text-amber-700">
+                    Still not working? Contact us at{' '}
+                    <a href="mailto:support@meetcursive.com" className="underline">support@meetcursive.com</a>
+                  </p>
+                </div>
               )}
             </div>
           )}

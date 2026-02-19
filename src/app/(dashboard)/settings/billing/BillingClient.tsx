@@ -23,6 +23,15 @@ const INTEGRATION_LOGOS = {
   googleSheets: { src: '/Google_Sheets_Logo_512px.png', alt: 'Google Sheets' },
 }
 
+interface EnrichmentEntry {
+  id: string
+  lead_id: string
+  status: 'success' | 'failed' | 'no_data'
+  credits_used: number
+  fields_added: string[]
+  created_at: string
+}
+
 export default function BillingClient() {
   const toast = useToast()
   const queryClient = useQueryClient()
@@ -40,6 +49,19 @@ export default function BillingClient() {
   })
 
   const user = userData?.data
+
+  // Fetch enrichment history
+  const { data: enrichmentData } = useQuery<{
+    enrichments: EnrichmentEntry[]
+    stats: { total: number; successful: number; today: number }
+  }>({
+    queryKey: ['enrichment-history'],
+    queryFn: async () => {
+      const response = await fetch('/api/leads/enrichment-history')
+      if (!response.ok) return { enrichments: [], stats: { total: 0, successful: 0, today: 0 } }
+      return response.json()
+    },
+  })
 
   // Cancel subscription mutation
   const cancelSubscriptionMutation = useMutation({
@@ -342,6 +364,70 @@ export default function BillingClient() {
         </div>
         </CardContent>
       </Card>
+
+      {/* Enrichment Activity */}
+      {enrichmentData && enrichmentData.stats.total > 0 && (
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle>Enrichment Activity</CardTitle>
+              <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                <span>{enrichmentData.stats.today} today</span>
+                <span className="text-border">|</span>
+                <span>{enrichmentData.stats.total} total</span>
+                <span className="text-border">|</span>
+                <span className="text-green-600">
+                  {enrichmentData.stats.total > 0
+                    ? Math.round((enrichmentData.stats.successful / enrichmentData.stats.total) * 100)
+                    : 0}% success
+                </span>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2 max-h-64 overflow-y-auto">
+              {enrichmentData.enrichments.slice(0, 20).map((entry) => (
+                <div
+                  key={entry.id}
+                  className="flex items-center justify-between py-2 px-3 rounded-lg bg-muted/50 text-sm"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className={`inline-flex h-2 w-2 rounded-full ${
+                      entry.status === 'success' ? 'bg-green-500' :
+                      entry.status === 'no_data' ? 'bg-amber-500' : 'bg-red-500'
+                    }`} />
+                    <span className="text-muted-foreground font-mono text-xs truncate max-w-[120px]">
+                      {entry.lead_id.slice(0, 8)}...
+                    </span>
+                    {entry.status === 'success' && entry.fields_added.length > 0 && (
+                      <span className="text-xs text-muted-foreground">
+                        +{entry.fields_added.length} field{entry.fields_added.length !== 1 ? 's' : ''}
+                      </span>
+                    )}
+                    {entry.status === 'no_data' && (
+                      <span className="text-xs text-amber-600">No data found</span>
+                    )}
+                    {entry.status === 'failed' && (
+                      <span className="text-xs text-red-600">Failed</span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                    <span>{entry.credits_used} credit</span>
+                    <span>
+                      {new Date(entry.created_at).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        hour: 'numeric',
+                        minute: '2-digit',
+                      })}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Pro Plan Details for Free users */}
       {!isPro && (

@@ -12,7 +12,7 @@ import { createClient } from '@/lib/supabase/server'
 import { fetchLeadsFromSegment, type AudienceLabLead } from '@/lib/services/audiencelab.service'
 import { meetsQualityBar } from '@/lib/services/lead-quality.service'
 import { safeError } from '@/lib/utils/log-sanitizer'
-import { checkWorkspaceDuplicates } from '@/lib/services/deduplication.service'
+import { checkWorkspaceDuplicates, logDedupRejections } from '@/lib/services/deduplication.service'
 
 export async function POST(req: NextRequest) {
   try {
@@ -218,6 +218,15 @@ export async function POST(req: NextRequest) {
     )
 
     const dedupedLeads = leadsToInsert.filter((_, i) => !duplicateIndices.has(i))
+
+    // Log dedup rejections (non-blocking)
+    const dedupCandidates = leadsToInsert.map((l) => ({
+      email: l.email,
+      first_name: l.first_name || null,
+      last_name: l.last_name || null,
+      company_name: l.company_name || null,
+    }))
+    logDedupRejections(userProfile.workspace_id!, 'onboarding', dedupCandidates, duplicateIndices, leadsToInsert.length)
 
     const dedupCount = leadsToInsert.length - dedupedLeads.length
     if (dedupCount > 0) {
