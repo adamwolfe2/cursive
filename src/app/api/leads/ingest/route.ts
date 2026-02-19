@@ -20,6 +20,7 @@ import { getCurrentUser } from '@/lib/auth/helpers'
 import { createMatchingEngine } from '@/lib/services/matching-engine.service'
 import { createUserLeadRouter } from '@/lib/services/user-lead-router.service'
 import { createClient } from '@/lib/supabase/server'
+import { logDedupRejections } from '@/lib/services/deduplication.service'
 
 // Schema for direct lead push
 const LeadPushSchema = z.object({
@@ -95,6 +96,7 @@ export async function POST(req: NextRequest) {
       matched: boolean
       assignedTo?: string[]
       error?: string
+      deduplicated?: boolean
     }> = []
 
     const supabase = await createClient()
@@ -131,21 +133,41 @@ export async function POST(req: NextRequest) {
       return { matched, assignedTo }
     }
 
+    // Collect all leads for batch dedup logging
+    const allLeads = [
+      ...(request.leads || []),
+      ...(request.lead ? [request.lead] : []),
+    ]
+    const dedupCandidates = allLeads.map((l) => ({
+      email: l.email || null,
+      first_name: l.first_name || null,
+      last_name: l.last_name || null,
+      company_name: l.company_name || null,
+    }))
+    const dedupIndices = new Set<number>()
+    let leadIndex = 0
+
     // Handle batch leads
     if (request.leads) {
       for (const leadData of request.leads) {
+        const currentIndex = leadIndex++
         try {
-          const leadId = await createLeadFromPush(supabase, workspaceId, leadData, request)
+          const { id: leadId, wasDuplicate } = await createLeadFromPush(supabase, workspaceId, leadData, request)
 
-          if (request.auto_route) {
+          if (wasDuplicate) {
+            dedupIndices.add(currentIndex)
+          }
+
+          if (request.auto_route && !wasDuplicate) {
             const routing = await routeLeadToAll(leadId)
             results.push({
               leadId,
               matched: routing.matched,
               assignedTo: routing.assignedTo,
+              deduplicated: false,
             })
           } else {
-            results.push({ leadId, matched: false })
+            results.push({ leadId, matched: false, deduplicated: wasDuplicate })
           }
         } catch (err) {
           results.push({
@@ -159,18 +181,24 @@ export async function POST(req: NextRequest) {
 
     // Handle single lead
     if (request.lead) {
+      const currentIndex = leadIndex++
       try {
-        const leadId = await createLeadFromPush(supabase, workspaceId, request.lead, request)
+        const { id: leadId, wasDuplicate } = await createLeadFromPush(supabase, workspaceId, request.lead, request)
 
-        if (request.auto_route) {
+        if (wasDuplicate) {
+          dedupIndices.add(currentIndex)
+        }
+
+        if (request.auto_route && !wasDuplicate) {
           const routing = await routeLeadToAll(leadId)
           results.push({
             leadId,
             matched: routing.matched,
             assignedTo: routing.assignedTo,
+            deduplicated: false,
           })
         } else {
-          results.push({ leadId, matched: false })
+          results.push({ leadId, matched: false, deduplicated: wasDuplicate })
         }
       } catch (err) {
         results.push({
@@ -181,6 +209,9 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // Log dedup rejections (non-blocking)
+    logDedupRejections(workspaceId, 'api_ingest', dedupCandidates, dedupIndices, allLeads.length)
+
     // Update source statistics
     if (request.source_id) {
       await updateSourceStats(supabase, request.source_id, results)
@@ -190,6 +221,7 @@ export async function POST(req: NextRequest) {
       success: true,
       processed: results.length,
       matched: results.filter((r) => r.matched).length,
+      deduplicated: results.filter((r) => r.deduplicated).length,
       results,
     })
   } catch (error) {
@@ -209,7 +241,7 @@ async function createLeadFromPush(
   workspaceId: string,
   leadData: z.infer<typeof LeadPushSchema>,
   request: IngestRequest
-): Promise<string> {
+): Promise<{ id: string; wasDuplicate: boolean }> {
   // Deduplication: check email and name+company within workspace
   if (leadData.email) {
     const { data: existing } = await supabase
@@ -220,7 +252,7 @@ async function createLeadFromPush(
       .maybeSingle()
 
     if (existing) {
-      return existing.id
+      return { id: existing.id, wasDuplicate: true }
     }
   }
 
@@ -236,7 +268,7 @@ async function createLeadFromPush(
       .maybeSingle()
 
     if (nameMatch) {
-      return nameMatch.id
+      return { id: nameMatch.id, wasDuplicate: true }
     }
   }
 
@@ -290,7 +322,7 @@ async function createLeadFromPush(
     data: { lead_id: data.id, workspace_id: workspaceId, source: request.source_type || leadData.source || 'api' },
   }).catch((err) => safeError('[Lead Ingest] Inngest send failed:', err))
 
-  return data.id
+  return { id: data.id, wasDuplicate: false }
 }
 
 /**

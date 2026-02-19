@@ -64,6 +64,7 @@ export function DailyLeadsView({
   const [search, setSearch] = useState('')
   const [enrichTarget, setEnrichTarget] = useState<Lead | null>(null)
   const [creditsRemaining, setCreditsRemaining] = useState(0)
+  const [creditLimit, setCreditLimit] = useState(0)
   const [selectionMode, setSelectionMode] = useState(false)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [bulkEnriching, setBulkEnriching] = useState(false)
@@ -81,6 +82,7 @@ export function DailyLeadsView({
       if (!res.ok) return null
       const data = await res.json()
       setCreditsRemaining(data.credits?.remaining ?? 0)
+      setCreditLimit(data.credits?.limit ?? 0)
       return data
     },
     staleTime: 30_000,
@@ -328,8 +330,42 @@ export function DailyLeadsView({
         </div>
       )}
 
+      {/* Credit usage alert — shown when credits hit 80%+ usage */}
+      {creditLimit > 0 && creditsRemaining === 0 && (
+        <div className="rounded-xl border border-red-200 bg-red-50 px-5 py-3.5 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-2.5">
+            <Zap className="h-4 w-4 text-red-600 shrink-0" />
+            <p className="text-sm text-red-800">
+              <strong>No enrichment credits remaining.</strong> Credits reset at midnight CT.
+            </p>
+          </div>
+          <a
+            href="/settings/billing"
+            className="shrink-0 text-xs font-semibold text-red-700 border border-red-300 rounded-lg px-3 py-1.5 hover:bg-red-100 transition-colors"
+          >
+            Buy Credits
+          </a>
+        </div>
+      )}
+      {creditLimit > 0 && creditsRemaining > 0 && creditsRemaining / creditLimit <= 0.2 && (
+        <div className="rounded-xl border border-amber-200 bg-amber-50/60 px-5 py-3.5 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-2.5">
+            <Zap className="h-4 w-4 text-amber-600 shrink-0" />
+            <p className="text-sm text-amber-800">
+              <strong>{creditsRemaining} credit{creditsRemaining === 1 ? '' : 's'} left today</strong> — running low on enrichment credits.
+            </p>
+          </div>
+          <a
+            href="/settings/billing"
+            className="shrink-0 text-xs font-semibold text-amber-700 border border-amber-300 rounded-lg px-3 py-1.5 hover:bg-amber-100 transition-colors"
+          >
+            Get More
+          </a>
+        </div>
+      )}
+
       {/* Unenriched call to action */}
-      {unenrichedToday > 0 && !isFree && (
+      {unenrichedToday > 0 && !isFree && creditsRemaining > 0 && (
         <div className="rounded-xl border border-blue-100 bg-blue-50/60 px-5 py-3.5 flex items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
             <Zap className="h-4 w-4 text-blue-600 shrink-0" />
@@ -337,14 +373,6 @@ export function DailyLeadsView({
               <strong>{unenrichedToday} leads</strong> today haven&apos;t been enriched — fill in their email, phone, and LinkedIn. <span className="text-blue-600">1 credit each.</span>
             </p>
           </div>
-          {creditsRemaining <= 3 && (
-            <a
-              href="/settings/billing"
-              className="shrink-0 text-xs font-semibold text-blue-700 border border-blue-300 rounded-lg px-3 py-1.5 hover:bg-blue-100 transition-colors"
-            >
-              Get Credits
-            </a>
-          )}
         </div>
       )}
 

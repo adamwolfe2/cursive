@@ -350,7 +350,13 @@ export default function BillingClient() {
             </div>
             <div className="w-full bg-muted rounded-full h-2.5">
               <div
-                className="bg-primary h-2.5 rounded-full transition-all"
+                className={`h-2.5 rounded-full transition-all ${
+                  (user?.credits_remaining || 0) === 0
+                    ? 'bg-red-500'
+                    : (user?.credits_remaining || 0) / (user?.daily_credit_limit || (isPro ? 1000 : 3)) <= 0.2
+                      ? 'bg-amber-500'
+                      : 'bg-primary'
+                }`}
                 style={{
                   width: `${
                     Math.min(100, Math.max(0, ((user?.credits_remaining || 0) / (user?.daily_credit_limit || (isPro ? 1000 : 3))) * 100))
@@ -359,6 +365,42 @@ export default function BillingClient() {
               />
             </div>
             <p className="mt-1.5 text-xs text-muted-foreground">Each enrichment reveals phone, email & LinkedIn. Resets daily at midnight CT (Central Time).</p>
+
+            {/* Credit usage alerts */}
+            {user && (user.credits_remaining || 0) === 0 && (
+              <div className="mt-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3">
+                <div className="flex items-start gap-2">
+                  <svg className="h-4 w-4 text-red-600 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                  <div>
+                    <p className="text-sm font-medium text-red-800">No credits remaining</p>
+                    <p className="text-xs text-red-700 mt-0.5">
+                      Your daily enrichment credits are used up. They reset at midnight CT.
+                      {!isPro && ' Upgrade to Pro for 1,000 credits/day.'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+            {user && (user.credits_remaining || 0) > 0 &&
+              (user.credits_remaining || 0) / (user.daily_credit_limit || (isPro ? 1000 : 3)) <= 0.2 && (
+              <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3">
+                <div className="flex items-start gap-2">
+                  <svg className="h-4 w-4 text-amber-600 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                  <div>
+                    <p className="text-sm font-medium text-amber-800">Running low on credits</p>
+                    <p className="text-xs text-amber-700 mt-0.5">
+                      You have {user.credits_remaining} credit{user.credits_remaining === 1 ? '' : 's'} left today.
+                      {!isPro && ' Upgrade to Pro for 1,000 credits/day, or buy a credit pack below.'}
+                      {isPro && ' Buy a credit pack below for extra enrichments.'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
         </div>

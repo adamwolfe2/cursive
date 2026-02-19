@@ -80,7 +80,7 @@ export async function POST(
     // Fetch the lead — must belong to user's workspace
     const { data: lead } = await supabase
       .from('leads')
-      .select('id, workspace_id, first_name, last_name, full_name, email, phone, company_name, company_domain, job_title, city, state, linkedin_url, metadata, enrichment_status')
+      .select('id, workspace_id, first_name, last_name, full_name, email, phone, company_name, company_domain, job_title, city, state, linkedin_url, metadata, enrichment_status, enriched_at')
       .eq('id', leadId)
       .eq('workspace_id', userProfile.workspace_id)
       .single()
@@ -102,13 +102,32 @@ export async function POST(
     }
 
     if (lead.enrichment_status === 'failed') {
-      return NextResponse.json({
-        success: false,
-        message: 'No additional data available for this lead',
-        fields_added: [],
-        credits_used: 0,
-        credits_remaining: creditsRemaining,
-      })
+      // Allow retry after 30-day cooldown — AudienceLabs data refreshes over time
+      const RETRY_COOLDOWN_DAYS = 30
+      const enrichedAt = lead.enriched_at ? new Date(lead.enriched_at) : null
+      const cooldownExpired = enrichedAt
+        ? Date.now() - enrichedAt.getTime() > RETRY_COOLDOWN_DAYS * 24 * 60 * 60 * 1000
+        : true // No enriched_at = legacy lead, allow retry
+
+      if (!cooldownExpired) {
+        const daysLeft = Math.ceil(
+          (RETRY_COOLDOWN_DAYS * 24 * 60 * 60 * 1000 - (Date.now() - enrichedAt!.getTime())) / (24 * 60 * 60 * 1000)
+        )
+        return NextResponse.json({
+          success: false,
+          message: `No additional data was found previously. You can retry in ${daysLeft} day${daysLeft === 1 ? '' : 's'}.`,
+          fields_added: [],
+          credits_used: 0,
+          credits_remaining: creditsRemaining,
+          retry_available_at: new Date(enrichedAt!.getTime() + RETRY_COOLDOWN_DAYS * 24 * 60 * 60 * 1000).toISOString(),
+        })
+      }
+
+      // Cooldown expired — reset status to allow re-enrichment
+      await adminSupabase
+        .from('leads')
+        .update({ enrichment_status: 'pending' })
+        .eq('id', leadId)
     }
 
     // Build the enrichment filter — use whatever identifiers we have
@@ -139,10 +158,13 @@ export async function POST(
         amount: ENRICH_CREDIT_COST,
       })
 
-      // Mark lead as enrichment_failed to prevent repeated charges
+      // Mark lead as enrichment_failed with timestamp for cooldown tracking
       await adminSupabase
         .from('leads')
-        .update({ enrichment_status: 'failed' })
+        .update({
+          enrichment_status: 'failed',
+          enriched_at: new Date().toISOString(),
+        })
         .eq('id', leadId)
 
       logEnrichment(adminSupabase, {
