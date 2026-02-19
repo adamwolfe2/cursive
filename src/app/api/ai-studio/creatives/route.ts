@@ -4,6 +4,8 @@
  * POST /api/ai-studio/creatives - Generate new creative
  */
 
+export const maxDuration = 60 // Fal.ai Flux Pro generation can take up to 30s
+export const runtime = 'nodejs'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'

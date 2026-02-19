@@ -5,7 +5,8 @@
  */
 
 // NOTE: Cannot use Edge runtime — firecrawl-js depends on undici which requires Node.js APIs.
-// This route will hang on Vercel's Node.js serverless (known platform issue).
+export const maxDuration = 60 // Firecrawl + Claude brand extraction needs up to 60s
+export const runtime = 'nodejs'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
