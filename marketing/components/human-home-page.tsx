@@ -152,11 +152,10 @@ export function HumanHomePage() {
                 <Button
                   size="lg"
                   variant="outline"
-                  href="https://leads.meetcursive.com/signup?source=homepage"
-                  target="_blank"
+                  href="/superpixel"
                   className="px-6 py-3"
                 >
-                  Get 100 Free Leads
+                  See the Super Pixel
                 </Button>
               </div>
               <div className="mb-4" />
@@ -287,8 +286,8 @@ export function HumanHomePage() {
                   No commitment required
                 </li>
               </ul>
-              <Button href="https://leads.meetcursive.com/signup?source=homepage" target="_blank" className="w-full">
-                Try Free Leads
+              <Button href="/superpixel" className="w-full">
+                See the Super Pixel
               </Button>
             </motion.div>
 

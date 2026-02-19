@@ -26,16 +26,16 @@ const navLinks: NavLink[] = [
     label: "Products",
     dropdown: [
       {
-        href: "/marketplace",
-        label: "Lead Marketplace",
-        description: "Browse & buy verified B2B leads with credits",
-        icon: ShoppingCart,
+        href: "/superpixel",
+        label: "Super Pixel V4",
+        description: "Turn anonymous visitors into verified leads",
+        icon: Eye,
       },
       {
         href: "/pixel",
         label: "Visitor Pixel",
-        description: "See who's visiting your website",
-        icon: Eye,
+        description: "Learn how the pixel identifies visitors",
+        icon: Target,
       },
       {
         href: "/custom-audiences",
@@ -214,8 +214,8 @@ export function Header() {
 
             {/* Desktop CTA Buttons */}
             <div className="hidden md:flex items-center gap-4">
-              <Button size="sm" variant="outline" href="https://leads.meetcursive.com/signup?source=header" target="_blank">
-                Try Free Leads
+              <Button size="sm" variant="outline" href="/superpixel">
+                See the Pixel
               </Button>
               <Button size="sm" href="https://cal.com/cursive/30min" target="_blank">
                 Book a Call
@@ -313,11 +313,10 @@ export function Header() {
                 <Button
                   variant="outline"
                   className="w-full"
-                  href="https://leads.meetcursive.com/signup?source=header"
-                  target="_blank"
+                  href="/superpixel"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  Try Free Leads
+                  See the Pixel
                 </Button>
                 <Button
                   className="w-full"

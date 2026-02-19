@@ -255,9 +255,9 @@ export default function HomePage() {
                   description: "See Cursive identify your website visitors in real-time with a personalized walkthrough"
                 },
                 {
-                  label: "Try Free Leads",
-                  href: "https://leads.meetcursive.com/signup",
-                  description: "Sign up for the self-serve marketplace and get 100 free lead credits"
+                  label: "See the Super Pixel",
+                  href: "https://www.meetcursive.com/superpixel",
+                  description: "Learn how the Cursive Super Pixel V4 turns anonymous visitors into verified leads"
                 },
                 {
                   label: "Explore Platform Features",

@@ -8,6 +8,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // Core pages - highest priority
   const corePages = [
     { url: '', priority: 1.0, changefreq: 'weekly' as const },
+    { url: '/superpixel', priority: 1.0, changefreq: 'weekly' as const }, // Primary VSL/conversion page
     { url: '/platform', priority: 0.9, changefreq: 'weekly' as const },
     { url: '/pricing', priority: 0.9, changefreq: 'weekly' as const },
     { url: '/free-audit', priority: 0.9, changefreq: 'weekly' as const },
