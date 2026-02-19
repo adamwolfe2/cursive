@@ -12,7 +12,7 @@
 
 import { inngest } from '@/inngest/client'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { normalizeALPayload, extractEventType, isLeadWorthy } from '@/lib/audiencelab/field-map'
+import { normalizeALPayload, extractEventType, isLeadWorthy, isVerifiedEmail } from '@/lib/audiencelab/field-map'
 import {
   normalizeEmail,
   calculateHashKey,
@@ -252,13 +252,15 @@ export const processAudienceLabEvent = inngest.createFunction(
         return { lead_id: null, is_new_lead: false, reason: 'no_email' }
       }
 
-      // Lead-worthiness gate: auth events always create leads,
-      // other events only if score >= threshold AND (business email OR phone)
+      // Lead-worthiness gate: all events must pass quality checks
       const worthy = isLeadWorthy({
         eventType,
         deliverabilityScore: identity.deliverability_score,
+        hasVerifiedEmail: isVerifiedEmail(identity.email_validation_status),
         hasBusinessEmail: identity.business_emails.length > 0,
         hasPhone: identity.phones.length > 0,
+        hasName: !!(identity.first_name && identity.last_name),
+        hasCompany: !!identity.company_name?.trim(),
       })
       if (!worthy) {
         return { lead_id: null, is_new_lead: false, reason: 'not_lead_worthy' }

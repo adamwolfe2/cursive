@@ -31,41 +31,72 @@ function normalizePhone(phone: string | null | undefined): string {
 
 // ============ Lead-Worthiness Policy ============
 
-/** Minimum deliverability score to create a lead from non-auth events */
+/** Minimum deliverability score required to create any lead */
 export const LEAD_CREATION_SCORE_THRESHOLD = 60
 
-/** Event types that always create leads (regardless of score) */
-export const LEAD_CREATING_EVENT_TYPES = new Set([
-  'authentication',
-  'all_form_submissions',
-  'form_submission',
+/**
+ * Email validation statuses we consider "verified" (good enough to create a lead).
+ * Catch-all, unknown, invalid, and disposable are NOT sufficient.
+ */
+const VERIFIED_EMAIL_STATUSES = new Set([
+  'valid (esp)',
+  'valid(esp)',
+  'valid_esp',
+  'valid',
 ])
 
 /**
+ * Returns true only if the email validation status is verified (valid or valid+esp).
+ * Catch-all, unknown, risky, invalid, disposable → false.
+ */
+export function isVerifiedEmail(status: string | null | undefined): boolean {
+  if (!status) return false
+  return VERIFIED_EMAIL_STATUSES.has(status.toLowerCase().trim())
+}
+
+/** Patterns that indicate a junk / placeholder name value */
+const JUNK_NAME_RE = /^[a-zA-Z0-9]$|^\d+$|^(test|admin|user|unknown|n\/a|na|null|undefined|none|anonymous|noreply|info|contact|lead|id)$/i
+
+/**
+ * Sanitize a name field. Returns null if:
+ * - empty / whitespace only
+ * - single character ("d", "m", "j", "s" …)
+ * - known junk placeholder value
+ * - only digits
+ */
+export function sanitizeName(name: string | null | undefined): string | null {
+  if (!name) return null
+  const trimmed = name.trim()
+  if (trimmed.length < 2) return null
+  if (JUNK_NAME_RE.test(trimmed)) return null
+  return trimmed
+}
+
+/**
  * Determine if an event should create a lead (not just update identity).
- * - Authentication / form events always create leads.
- * - Other events require: deliverability_score >= threshold,
- *   an email (business or personal), AND a name + company.
+ *
+ * ALL events — including authentication / form events — must meet the same bar:
+ * 1. Verified email required (validation_status = valid or valid+esp)
+ * 2. Proper first AND last name (≥2 chars, no single letters / junk)
+ * 3. Minimum deliverability score
+ *
+ * Phone-only leads (no email) are stored as identities but never promoted to leads.
  */
 export function isLeadWorthy(params: {
   eventType: string
   deliverabilityScore: number
+  hasVerifiedEmail: boolean   // email_validation_status is 'valid' or 'valid(esp)'
   hasBusinessEmail: boolean
   hasPhone: boolean
-  hasName?: boolean
+  hasName?: boolean            // sanitized first_name AND last_name present
   hasCompany?: boolean
 }): boolean {
-  if (LEAD_CREATING_EVENT_TYPES.has(params.eventType)) return true
-  const hasEmail = params.hasBusinessEmail || params.hasPhone
-  const hasIdentity = (params.hasName ?? false) && (params.hasCompany ?? false)
-  if (
-    params.deliverabilityScore >= LEAD_CREATION_SCORE_THRESHOLD &&
-    hasEmail &&
-    hasIdentity
-  ) {
-    return true
-  }
-  return false
+  // Must have a verified email — unvalidated email_raw alone is not enough
+  if (!params.hasVerifiedEmail) return false
+  // Must have proper first + last name (no single letters, no junk)
+  if (!(params.hasName ?? false)) return false
+  // Must meet minimum deliverability score
+  return params.deliverabilityScore >= LEAD_CREATION_SCORE_THRESHOLD
 }
 
 // ============ Types ============
@@ -350,8 +381,8 @@ export function normalizeALPayload(raw: Record<string, any>): NormalizedIdentity
     uid: flat.uid || null,
     profile_id: flat.profile_id || null,
     hem_sha256: flat.hem_sha256 || flat.hem || null,
-    first_name: flat.FIRST_NAME || flat.first_name || null,
-    last_name: flat.LAST_NAME || flat.last_name || null,
+    first_name: sanitizeName(flat.FIRST_NAME || flat.first_name),
+    last_name: sanitizeName(flat.LAST_NAME || flat.last_name),
     personal_emails: personalEmails,
     business_emails: businessEmails,
     phones: uniquePhones,

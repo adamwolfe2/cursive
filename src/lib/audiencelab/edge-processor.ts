@@ -10,7 +10,7 @@
  */
 
 import { createAdminClient } from '@/lib/supabase/admin'
-import { normalizeALPayload, extractEventType, isLeadWorthy } from '@/lib/audiencelab/field-map'
+import { normalizeALPayload, extractEventType, isLeadWorthy, isVerifiedEmail } from '@/lib/audiencelab/field-map'
 import { notifyNewLead } from '@/lib/services/lead-notifications.service'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 
@@ -307,13 +307,14 @@ export async function processEventInline(
         .update(updateFields)
         .eq('id', existingLeadId)
     } else if (normalized.primary_email) {
-      // Check lead-worthiness
+      // Check lead-worthiness (all events including auth must pass quality gate)
       const worthy = isLeadWorthy({
         eventType,
         deliverabilityScore: normalized.deliverability_score,
+        hasVerifiedEmail: isVerifiedEmail(normalized.email_validation_status),
         hasBusinessEmail: normalized.business_emails.length > 0,
         hasPhone: normalized.phones.length > 0,
-        hasName: !!(normalized.first_name?.trim() && normalized.last_name?.trim()),
+        hasName: !!(normalized.first_name && normalized.last_name),
         hasCompany: !!normalized.company_name?.trim(),
       })
 

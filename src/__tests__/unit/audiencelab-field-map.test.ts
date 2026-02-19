@@ -10,11 +10,12 @@ import {
   normalizeALPayload,
   computeDeliverabilityScore,
   isLeadWorthy,
+  isVerifiedEmail,
+  sanitizeName,
   extractEventType,
   extractIpAddress,
   unwrapWebhookPayload,
   LEAD_CREATION_SCORE_THRESHOLD,
-  LEAD_CREATING_EVENT_TYPES,
 } from '@/lib/audiencelab/field-map'
 
 // ==========================================================================
@@ -167,78 +168,115 @@ describe('computeDeliverabilityScore', () => {
 // LEAD-WORTHINESS POLICY
 // ==========================================================================
 describe('isLeadWorthy', () => {
-  it('should always be true for authentication events', () => {
+  it('should be true for verified email + proper name + good score', () => {
+    expect(isLeadWorthy({
+      eventType: 'page_view',
+      deliverabilityScore: 70,
+      hasVerifiedEmail: true,
+      hasBusinessEmail: true,
+      hasPhone: false,
+      hasName: true,
+    })).toBe(true)
+  })
+
+  it('should be false for auth event without verified email (no more bypass)', () => {
     expect(isLeadWorthy({
       eventType: 'authentication',
       deliverabilityScore: 0,
+      hasVerifiedEmail: false,
       hasBusinessEmail: false,
       hasPhone: false,
-    })).toBe(true)
-  })
-
-  it('should always be true for form_submission events', () => {
-    expect(isLeadWorthy({
-      eventType: 'form_submission',
-      deliverabilityScore: 0,
-      hasBusinessEmail: false,
-      hasPhone: false,
-    })).toBe(true)
-  })
-
-  it('should always be true for all_form_submissions events', () => {
-    expect(isLeadWorthy({
-      eventType: 'all_form_submissions',
-      deliverabilityScore: 10,
-      hasBusinessEmail: false,
-      hasPhone: false,
-    })).toBe(true)
-  })
-
-  it('should be true for high score + business email', () => {
-    expect(isLeadWorthy({
-      eventType: 'page_view',
-      deliverabilityScore: 60,
-      hasBusinessEmail: true,
-      hasPhone: false,
-    })).toBe(true)
-  })
-
-  it('should be true for high score + phone', () => {
-    expect(isLeadWorthy({
-      eventType: 'page_view',
-      deliverabilityScore: 60,
-      hasBusinessEmail: false,
-      hasPhone: true,
-    })).toBe(true)
-  })
-
-  it('should be false for high score but no business email or phone', () => {
-    expect(isLeadWorthy({
-      eventType: 'page_view',
-      deliverabilityScore: 80,
-      hasBusinessEmail: false,
-      hasPhone: false,
+      hasName: false,
     })).toBe(false)
   })
 
-  it('should be false for low score even with business email', () => {
+  it('should be false when email not verified even with high score', () => {
+    expect(isLeadWorthy({
+      eventType: 'page_view',
+      deliverabilityScore: 95,
+      hasVerifiedEmail: false,
+      hasBusinessEmail: true,
+      hasPhone: true,
+      hasName: true,
+    })).toBe(false)
+  })
+
+  it('should be false when name is missing even with verified email + high score', () => {
+    expect(isLeadWorthy({
+      eventType: 'page_view',
+      deliverabilityScore: 80,
+      hasVerifiedEmail: true,
+      hasBusinessEmail: true,
+      hasPhone: false,
+      hasName: false,
+    })).toBe(false)
+  })
+
+  it('should be false for score below threshold', () => {
     expect(isLeadWorthy({
       eventType: 'page_view',
       deliverabilityScore: 59,
+      hasVerifiedEmail: true,
       hasBusinessEmail: true,
       hasPhone: true,
+      hasName: true,
     })).toBe(false)
   })
 
   it('should use threshold of 60', () => {
     expect(LEAD_CREATION_SCORE_THRESHOLD).toBe(60)
   })
+})
 
-  it('should include expected event types', () => {
-    expect(LEAD_CREATING_EVENT_TYPES.has('authentication')).toBe(true)
-    expect(LEAD_CREATING_EVENT_TYPES.has('form_submission')).toBe(true)
-    expect(LEAD_CREATING_EVENT_TYPES.has('all_form_submissions')).toBe(true)
-    expect(LEAD_CREATING_EVENT_TYPES.has('page_view')).toBe(false)
+// ==========================================================================
+// EMAIL VERIFICATION & NAME SANITIZATION
+// ==========================================================================
+describe('isVerifiedEmail', () => {
+  it('should return true for valid(esp)', () => {
+    expect(isVerifiedEmail('valid (esp)')).toBe(true)
+    expect(isVerifiedEmail('valid(esp)')).toBe(true)
+    expect(isVerifiedEmail('VALID (ESP)')).toBe(true)
+  })
+
+  it('should return true for valid', () => {
+    expect(isVerifiedEmail('valid')).toBe(true)
+  })
+
+  it('should return false for catch-all', () => {
+    expect(isVerifiedEmail('catch-all')).toBe(false)
+  })
+
+  it('should return false for unknown or null', () => {
+    expect(isVerifiedEmail('unknown')).toBe(false)
+    expect(isVerifiedEmail(null)).toBe(false)
+    expect(isVerifiedEmail(undefined)).toBe(false)
+  })
+})
+
+describe('sanitizeName', () => {
+  it('should return null for single letters', () => {
+    expect(sanitizeName('d')).toBe(null)
+    expect(sanitizeName('m')).toBe(null)
+    expect(sanitizeName('j')).toBe(null)
+  })
+
+  it('should return null for known junk values', () => {
+    expect(sanitizeName('test')).toBe(null)
+    expect(sanitizeName('admin')).toBe(null)
+    expect(sanitizeName('unknown')).toBe(null)
+    expect(sanitizeName('n/a')).toBe(null)
+  })
+
+  it('should return the name for real names', () => {
+    expect(sanitizeName('John')).toBe('John')
+    expect(sanitizeName('Smith')).toBe('Smith')
+    expect(sanitizeName('  Jane  ')).toBe('Jane')
+  })
+
+  it('should return null for null/undefined/empty', () => {
+    expect(sanitizeName(null)).toBe(null)
+    expect(sanitizeName(undefined)).toBe(null)
+    expect(sanitizeName('')).toBe(null)
   })
 })
 
