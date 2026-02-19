@@ -126,20 +126,22 @@ export function generateProductSchema(product: {
 export function generateBlogPostSchema(post: {
   title: string
   description: string
-  author: string
-  publishDate: string
-  image: string
+  url?: string
+  datePublished?: string
+  dateModified?: string
+  author?: string
+  publishDate?: string
+  image?: string
 }) {
   return {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
     headline: post.title,
     description: post.description,
-    author: {
-      '@type': 'Person',
-      name: post.author,
-    },
-    datePublished: post.publishDate,
-    image: post.image,
+    ...(post.url ? { url: post.url, mainEntityOfPage: { '@type': 'WebPage', '@id': post.url } } : {}),
+    ...(post.datePublished || post.publishDate ? { datePublished: post.datePublished || post.publishDate } : {}),
+    ...(post.dateModified ? { dateModified: post.dateModified } : {}),
+    ...(post.author ? { author: { '@type': 'Person', name: post.author } } : { author: { '@type': 'Organization', name: 'Cursive' } }),
+    ...(post.image ? { image: post.image } : {}),
   }
 }
