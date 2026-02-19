@@ -12,6 +12,10 @@
     {
       "path": "/api/cron/db-health",
       "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/cron/segment-pull",
+      "schedule": "0 6 * * *"
     }
   ]
 }
