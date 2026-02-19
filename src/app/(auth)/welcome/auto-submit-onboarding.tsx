@@ -41,24 +41,17 @@ export function AutoSubmitOnboarding({ isMarketplace }: AutoSubmitOnboardingProp
         if (!stored) {
           // No stored data means user came directly from OAuth (clicked "Sign in with Google")
           // Fetch their Google account info and create a basic workspace
-          console.log('[AutoSubmit] No sessionStorage - fetching user data from auth')
-
           const userResponse = await fetch('/api/auth/user')
 
           // Check if response is actually JSON before parsing
           const contentType = userResponse.headers.get('content-type')
           if (!contentType?.includes('application/json')) {
-            console.error('[AutoSubmit] Non-JSON response from /api/auth/user:', {
-              status: userResponse.status,
-              contentType,
-            })
             // Not JSON - likely an error page. Redirect to login.
             window.location.href = '/login?reason=invalid_session'
             return
           }
 
           if (!userResponse.ok) {
-            console.error('[AutoSubmit] Failed to fetch user:', userResponse.status)
             window.location.href = '/login?reason=auth_failed'
             return
           }
@@ -66,12 +59,9 @@ export function AutoSubmitOnboarding({ isMarketplace }: AutoSubmitOnboardingProp
           const { user } = await userResponse.json()
           if (!user) {
             // No user session - redirect to login
-            console.log('[AutoSubmit] No user found in response')
             window.location.href = '/login?reason=no_session'
             return
           }
-
-          console.log('[AutoSubmit] User data fetched:', { email: user.email })
 
           // Create basic onboarding data from Google account
           onboardingData = {
@@ -96,7 +86,6 @@ export function AutoSubmitOnboarding({ isMarketplace }: AutoSubmitOnboardingProp
 
         for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
           if (attempt > 0) {
-            console.log(`[AutoSubmit] Retry attempt ${attempt}/${MAX_RETRIES}`)
             // Wait before retrying: 500ms, 1500ms, 3000ms
             await wait(500 * attempt)
           }
@@ -105,11 +94,6 @@ export function AutoSubmitOnboarding({ isMarketplace }: AutoSubmitOnboardingProp
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(onboardingData),
-          })
-
-          console.log(`[AutoSubmit] /api/onboarding/setup response:`, {
-            status: lastResponse.status,
-            attempt: attempt + 1,
           })
 
           // 401 = session not ready yet; retry
@@ -122,7 +106,6 @@ export function AutoSubmitOnboarding({ isMarketplace }: AutoSubmitOnboardingProp
         }
 
         if (!lastResponse) {
-          console.error('[AutoSubmit] No response from server')
           throw new Error('Failed to contact server')
         }
 
@@ -149,7 +132,6 @@ export function AutoSubmitOnboarding({ isMarketplace }: AutoSubmitOnboardingProp
         // Fire both post-onboarding tasks in parallel (non-blocking):
         // 1. Populate initial leads immediately
         // 2. Auto-provision their SuperPixel so website visitor tracking is ready
-        console.log('[AutoSubmit] Onboarding complete — launching background setup...')
         const email = onboardingData.email || ''
         const emailDomain = email.includes('@') ? email.split('@')[1] : null
         const businessName = onboardingData.businessName || onboardingData.fullName || 'My Business'
@@ -158,10 +140,7 @@ export function AutoSubmitOnboarding({ isMarketplace }: AutoSubmitOnboardingProp
           // Populate leads immediately (don't wait for 8am cron)
           fetch('/api/leads/populate-initial', { method: 'POST' })
             .then(r => r.ok ? r.json() : null)
-            .then(result => {
-              if (result) console.log('[AutoSubmit] Initial leads populated:', result.count, 'leads')
-            })
-            .catch(err => console.warn('[AutoSubmit] Lead population failed (non-critical):', err)),
+            .catch(() => null),
 
           // Auto-provision SuperPixel using email domain as the website URL
           // If no valid domain, skip silently — user can do it from /settings/pixel
@@ -175,10 +154,7 @@ export function AutoSubmitOnboarding({ isMarketplace }: AutoSubmitOnboardingProp
                 }),
               })
               .then(r => r.ok ? r.json() : null)
-              .then(result => {
-                if (result?.pixel_id) console.log('[AutoSubmit] Pixel provisioned:', result.pixel_id)
-              })
-              .catch(err => console.warn('[AutoSubmit] Pixel provision failed (non-critical):', err))
+              .catch(() => null)
             : Promise.resolve(),
         ])
 

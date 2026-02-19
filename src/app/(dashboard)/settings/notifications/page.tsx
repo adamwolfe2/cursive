@@ -141,19 +141,6 @@ export default function NotificationsSettingsPage() {
 
             <div className="flex items-center justify-between py-3 border-b border-border last:border-0">
               <div className="flex-1">
-                <p className="text-sm font-medium text-foreground">Query Updates</p>
-                <p className="text-sm text-muted-foreground mt-0.5">
-                  Notifications about query status changes and errors
-                </p>
-              </div>
-              <ToggleSwitch
-                enabled={prefs.query_updates ?? true}
-                onChange={(value) => handleToggle('query_updates', value)}
-              />
-            </div>
-
-            <div className="flex items-center justify-between py-3 border-b border-border last:border-0">
-              <div className="flex-1">
                 <p className="text-sm font-medium text-foreground">Credit Alerts</p>
                 <p className="text-sm text-muted-foreground mt-0.5">
                   Get notified when you&apos;re running low on daily credits
@@ -303,7 +290,7 @@ export default function NotificationsSettingsPage() {
                 <option value="18:00">6:00 PM</option>
               </select>
               <p className="mt-1 text-xs text-muted-foreground">
-                Time zone: UTC (adjust for your local time zone)
+                Time zone: CT (Central Time)
               </p>
             </div>
           </div>

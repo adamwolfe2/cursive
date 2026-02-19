@@ -339,12 +339,6 @@ export default function BillingClient() {
             <p className="mt-1.5 text-xs text-muted-foreground">Each enrichment reveals phone, email & LinkedIn. Resets daily at midnight UTC.</p>
           </div>
 
-          <div className="pt-4 border-t border-border">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-foreground">Active Queries</span>
-              <span className="text-sm text-muted-foreground">0 / {isPro ? '5' : '1'}</span>
-            </div>
-          </div>
         </div>
         </CardContent>
       </Card>
