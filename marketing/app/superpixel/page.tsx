@@ -73,37 +73,46 @@ export default function SuperPixelPage() {
                 transition={{ duration: 0.8 }}
                 className="text-center max-w-4xl mx-auto"
               >
-                <span className="text-sm text-[#007AFF] mb-4 block font-medium tracking-wide uppercase">
-                  Cursive Super Pixel
-                </span>
+                {/* Exclusive launch badge */}
+                <div className="inline-flex items-center gap-2 bg-[#007AFF]/8 border border-[#007AFF]/20 text-[#007AFF] text-sm font-medium px-4 py-2 rounded-full mb-8">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#007AFF] opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-[#007AFF]" />
+                  </span>
+                  Introducing Super Pixel V4 — Our Most Advanced Model Yet
+                </div>
+
                 <h1 className="text-5xl lg:text-7xl font-light text-gray-900 mb-6 leading-tight">
-                  Turn Anonymous Visitors Into
+                  97% of Your Visitors Leave
                   <span className="block font-cursive text-6xl lg:text-7xl text-gray-500 mt-2">
-                    Verified Leads
+                    Without a Name.
                   </span>
                 </h1>
+
                 <p className="text-xl text-gray-600 mb-4 max-w-3xl mx-auto">
-                  The Cursive Super Pixel identifies, enriches, and delivers your website visitors as
-                  verified leads — complete with name, email, mobile, company, and intent score — in real time.
+                  The Super Pixel V4 is the only visitor identification engine built on a{" "}
+                  <strong className="text-gray-900 font-semibold">proprietary identity graph</strong> — not resold middleman data.
+                  It delivers verified leads with name, email, mobile, company, and intent score within minutes of every visit.
                 </p>
-                <p className="text-lg text-gray-500 mb-8 max-w-2xl mx-auto">
-                  97% of your visitors leave without a trace. The V4 Super Pixel captures them before they disappear — forever.
+                <p className="text-base text-gray-500 mb-8 max-w-2xl mx-auto">
+                  No other tool has this. Book a call and see it running live on your website.
                 </p>
+
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                   <Button size="lg" href={CAL_LINK} target="_blank">
-                    Book Your Free Demo Call
+                    See It Running on My Website
                     <ArrowRight className="w-5 h-5" />
                   </Button>
                   <Button size="lg" variant="outline" href="#how-it-works">
-                    See How It Works
+                    How It Works
                   </Button>
                 </div>
+
                 <div className="mt-8 flex flex-wrap items-center justify-center gap-6 text-sm text-gray-600">
                   {[
-                    "98% of US Households Covered",
-                    "60 Billion Intent Signals Daily",
+                    "Identifies 70% of US Web Visitors",
                     "0.05% Email Bounce Rate",
-                    "Proprietary Identity Graph",
+                    "420M+ Verified Contacts",
                   ].map((item) => (
                     <div key={item} className="flex items-center gap-2">
                       <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0" />
