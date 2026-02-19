@@ -339,10 +339,10 @@ export default function WhatIsDemandGeneration() {
               {/* CTA */}
               <SimpleRelatedPosts posts={relatedPosts} />
               <DashboardCTA
-                title="See Which Demand Gen Visitors Are Actually In-Market"
+                headline="See Which Demand Gen Visitors Are Actually In-Market"
                 description="Cursive identifies 70% of anonymous website visitors — including everyone who reads your blog, watches your webinars, and browses your pricing page. Start seeing names and emails behind your demand gen traffic."
                 ctaText="Start Free Trial"
-                ctaHref="https://leads.meetcursive.com"
+                ctaUrl="https://leads.meetcursive.com"
               />
 
               {/* Related Links */}

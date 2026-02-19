@@ -527,10 +527,10 @@ export default function HowToIdentifyAnonymousVisitors() {
 
             <MachineSection title="Related Pages">
               <MachineList items={[
-                <MachineLink key="vi" href="/visitor-identification" label="Visitor Identification" />,
-                <MachineLink key="intent" href="/intent-audiences" label="Intent Audiences" />,
-                <MachineLink key="what-is" href="/blog/what-is-website-visitor-identification" label="What Is Website Visitor Identification" />,
-                <MachineLink key="technical" href="/blog/how-to-identify-website-visitors-technical-guide" label="Technical Guide to Visitor Identification" />,
+                { label: "Visitor Identification", href: "/visitor-identification" },
+                { label: "Intent Audiences", href: "/intent-audiences" },
+                { label: "What Is Website Visitor Identification", href: "/blog/what-is-website-visitor-identification" },
+                { label: "Technical Guide to Visitor Identification", href: "/blog/how-to-identify-website-visitors-technical-guide" },
               ]} />
             </MachineSection>
           </MachineSection>

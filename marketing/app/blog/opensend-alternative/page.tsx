@@ -750,11 +750,10 @@ export default function BlogPost() {
         <section className="py-12 bg-gray-50">
           <Container>
             <SimpleRelatedPosts
-              currentSlug="opensend-alternative"
               posts={[
-                { slug: "cognism-alternative", title: "7 Best Cognism Alternatives & Competitors in 2026" },
-                { slug: "seamless-ai-alternative", title: "7 Best Seamless.AI Alternatives & Competitors in 2026" },
-                { slug: "hunter-io-alternative", title: "7 Best Hunter.io Alternatives & Competitors in 2026" },
+                { title: "7 Best Cognism Alternatives & Competitors in 2026", description: "Top alternatives to Cognism for B2B data and outreach.", href: "/blog/cognism-alternative" },
+                { title: "7 Best Seamless.AI Alternatives & Competitors in 2026", description: "Compare Seamless.AI alternatives for contact data and sales intelligence.", href: "/blog/seamless-ai-alternative" },
+                { title: "7 Best Hunter.io Alternatives & Competitors in 2026", description: "Find the best Hunter.io alternatives for email finding and B2B prospecting.", href: "/blog/hunter-io-alternative" },
               ]}
             />
           </Container>
@@ -810,11 +809,11 @@ export default function BlogPost() {
 
           <MachineSection title="Related Resources">
             <MachineList items={[
-              <MachineLink key="vi" href="/visitor-identification">Visitor Identification</MachineLink>,
-              <MachineLink key="platform" href="/platform">Cursive Platform Overview</MachineLink>,
-              <MachineLink key="pricing" href="/pricing">Cursive Pricing</MachineLink>,
-              <MachineLink key="seamless" href="/blog/seamless-ai-alternative">Seamless.AI Alternative</MachineLink>,
-              <MachineLink key="hunter" href="/blog/hunter-io-alternative">Hunter.io Alternative</MachineLink>,
+              { label: "Visitor Identification", href: "/visitor-identification" },
+              { label: "Cursive Platform Overview", href: "/platform" },
+              { label: "Cursive Pricing", href: "/pricing" },
+              { label: "Seamless.AI Alternative", href: "/blog/seamless-ai-alternative" },
+              { label: "Hunter.io Alternative", href: "/blog/hunter-io-alternative" },
             ]} />
           </MachineSection>
         </MachineContent>

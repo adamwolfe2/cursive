@@ -7,6 +7,7 @@ import { StructuredData } from "@/components/seo/structured-data"
 import { generateBlogPostSchema } from "@/lib/seo/structured-data"
 import Link from "next/link"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
+import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
 
 const relatedPosts = [
   { title: "What Is WebMCP?", description: "The complete guide to the Model Context Protocol for B2B.", href: "/blog/what-is-webmcp-guide" },

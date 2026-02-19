@@ -9,6 +9,7 @@ import { generateFAQSchema } from "@/lib/seo/faq-schema"
 import { generateBlogPostSchema } from "@/lib/seo/structured-data"
 import Link from "next/link"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
+import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
 
 const faqs = [
   {
@@ -933,7 +934,6 @@ export default function BlogPost() {
                     <strong>Set up your replacement tool(s).</strong> For Cursive, install the{" "}
                     <Link href="/pixel" className="text-blue-600 hover:underline">tracking pixel</Link> (5 minutes),
                     import your target account list, configure ICP filters in the{" "}
-import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
                     <Link href="/audience-builder" className="text-blue-600 hover:underline">audience builder</Link>,
                     and set up AI outreach sequences. Total setup time: a few hours versus Demandbase&apos;s 4-8 weeks.
                   </div>

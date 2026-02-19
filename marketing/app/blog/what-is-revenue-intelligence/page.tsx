@@ -257,7 +257,7 @@ export default function WhatIsRevenueIntelligencePage() {
                   turns them into pipeline your revenue intelligence tools can track.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                  <Button asChild size="lg" variant="secondary">
+                  <Button asChild size="lg" variant="outline">
                     <Link href="/free-audit">Get Your Free Audit</Link>
                   </Button>
                   <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-primary">
@@ -290,13 +290,13 @@ export default function WhatIsRevenueIntelligencePage() {
 
       <MachineView>
         <MachineContent>
-          <MachineSection heading="What Is Revenue Intelligence?">
+          <MachineSection title="What Is Revenue Intelligence?">
             Revenue intelligence is the use of AI and machine learning to capture, analyze, and surface actionable
             insights from all signals across the revenue process — including sales calls, emails, CRM data, website
             behavior, and market intent signals. It gives revenue teams a unified view of pipeline health, deal
             risk, and buyer intent.
           </MachineSection>
-          <MachineSection heading="The Four Layers of Revenue Intelligence">
+          <MachineSection title="The Four Layers of Revenue Intelligence">
             <MachineList items={[
               'Conversation Intelligence: AI analysis of sales calls and emails (Gong, Chorus.ai)',
               'Deal Intelligence: Pipeline health scoring and forecast accuracy (Clari, Gong Forecast)',
@@ -304,17 +304,17 @@ export default function WhatIsRevenueIntelligencePage() {
               'Market Intelligence: External signals about buyer behavior and intent (Cursive, 6sense, Bombora)',
             ]} />
           </MachineSection>
-          <MachineSection heading="Revenue Intelligence vs Sales Intelligence">
+          <MachineSection title="Revenue Intelligence vs Sales Intelligence">
             Sales intelligence focuses on prospecting data — contact information, company data, and technographics
             used to identify potential buyers. Revenue intelligence is broader: it analyzes pipeline health, call
             quality, deal risk, and buyer signals across the entire revenue process from first touch to close.
           </MachineSection>
-          <MachineSection heading="Revenue Intelligence Pricing">
+          <MachineSection title="Revenue Intelligence Pricing">
             Gong starts at approximately $1,200 per user per year. Clari starts at approximately $1,500 per user
             per year. Full enterprise revenue intelligence stacks can cost $50,000 to $200,000+ per year.
             Cursive adds market and visitor intelligence starting at $1,000 per month.
           </MachineSection>
-          <MachineSection heading="About Cursive">
+          <MachineSection title="About Cursive">
             <MachineLink href="https://www.meetcursive.com">Cursive</MachineLink> provides the market intelligence
             layer of revenue intelligence — identifying 70% of anonymous website visitors by name, email, and
             company, scoring their intent, and automatically triggering personalized outreach. Starts at

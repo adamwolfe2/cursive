@@ -768,11 +768,10 @@ export default function BlogPost() {
         <section className="py-12 bg-gray-50">
           <Container>
             <SimpleRelatedPosts
-              currentSlug="seamless-ai-alternative"
               posts={[
-                { slug: "cognism-alternative", title: "7 Best Cognism Alternatives & Competitors in 2026" },
-                { slug: "zoominfo-alternative", title: "7 Best ZoomInfo Alternatives & Competitors in 2026" },
-                { slug: "apollo-alternative", title: "7 Best Apollo.io Alternatives & Competitors in 2026" },
+                { title: "7 Best Cognism Alternatives & Competitors in 2026", description: "Top alternatives to Cognism for B2B data and outreach.", href: "/blog/cognism-alternative" },
+                { title: "7 Best ZoomInfo Alternatives & Competitors in 2026", description: "Compare ZoomInfo alternatives for B2B contact data and prospecting.", href: "/blog/zoominfo-alternatives-comparison" },
+                { title: "7 Best Apollo.io Alternatives & Competitors in 2026", description: "Find the best Apollo alternatives for B2B sales and outreach.", href: "/blog/apollo-alternatives-comparison" },
               ]}
             />
           </Container>
@@ -830,11 +829,11 @@ export default function BlogPost() {
 
           <MachineSection title="Related Resources">
             <MachineList items={[
-              <MachineLink key="vi" href="/visitor-identification">Visitor Identification</MachineLink>,
-              <MachineLink key="platform" href="/platform">Cursive Platform Overview</MachineLink>,
-              <MachineLink key="pricing" href="/pricing">Cursive Pricing</MachineLink>,
-              <MachineLink key="cognism" href="/blog/cognism-alternative">Cognism Alternative</MachineLink>,
-              <MachineLink key="zoominfo" href="/blog/zoominfo-alternative">ZoomInfo Alternative</MachineLink>,
+              { label: "Visitor Identification", href: "/visitor-identification" },
+              { label: "Cursive Platform Overview", href: "/platform" },
+              { label: "Cursive Pricing", href: "/pricing" },
+              { label: "Cognism Alternative", href: "/blog/cognism-alternative" },
+              { label: "ZoomInfo Alternative", href: "/blog/zoominfo-alternatives-comparison" },
             ]} />
           </MachineSection>
         </MachineContent>

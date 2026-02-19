@@ -298,7 +298,7 @@ export default function CursiveVsDemandbase() {
                   Live in 24 hours at $1,000/month.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                  <Button asChild size="lg" variant="secondary">
+                  <Button asChild size="lg" variant="outline">
                     <Link href="/free-audit">Get Your Free Visitor Audit</Link>
                   </Button>
                   <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-primary">

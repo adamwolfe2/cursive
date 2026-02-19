@@ -929,7 +929,7 @@ export default function BlogPost() {
                 70% identification rate.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button size="lg" variant="secondary" asChild>
+                <Button size="lg" variant="outline" asChild>
                   <Link href="/free-audit">Get Free Visitor Audit</Link>
                 </Button>
                 <Button size="lg" variant="outline" className="text-white border-white hover:bg-white/10" asChild>
