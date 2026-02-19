@@ -25,6 +25,7 @@ export interface EmailSendRequest {
   bodyHtml?: string
   bodyText?: string
   replyTo?: string
+  bcc?: string
   trackOpens?: boolean
   trackClicks?: boolean
   tags?: string[]
@@ -104,6 +105,7 @@ async function sendWithResend(request: EmailSendRequest): Promise<EmailSendResul
     const { data, error } = await resend.emails.send({
       from: fromAddress,
       to: request.to,
+      ...(request.bcc ? { bcc: [request.bcc] } : {}),
       subject: request.subject,
       html: request.bodyHtml || '',
       text: request.bodyText,

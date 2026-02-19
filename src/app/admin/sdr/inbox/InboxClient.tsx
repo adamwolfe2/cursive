@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import type { Workspace } from '@/types'
 
@@ -74,8 +75,11 @@ function DraftStatusBadge({ status }: { status: string }) {
 }
 
 export function InboxClient({ workspaces }: { workspaces: Workspace[] }) {
+  const searchParams = useSearchParams()
   const [activeFolder, setActiveFolder] = useState<string | undefined>(undefined)
-  const [selectedWorkspaceId, setSelectedWorkspaceId] = useState<string>('')
+  const [selectedWorkspaceId, setSelectedWorkspaceId] = useState<string>(
+    searchParams.get('workspace_id') || ''
+  )
   const [selectedReplyId, setSelectedReplyId] = useState<string | null>(null)
   const [search, setSearch] = useState('')
   const [editedDraft, setEditedDraft] = useState('')
@@ -99,10 +103,10 @@ export function InboxClient({ workspaces }: { workspaces: Workspace[] }) {
     staleTime: 30 * 1000,
   })
 
-  const replies = data?.replies || []
   const counts = data?.counts || {}
 
   const filtered = useMemo(() => {
+    const replies = data?.replies || []
     if (!search) return replies
     const lower = search.toLowerCase()
     return replies.filter(
@@ -112,7 +116,7 @@ export function InboxClient({ workspaces }: { workspaces: Workspace[] }) {
         r.subject.toLowerCase().includes(lower) ||
         (r.workspace?.name || '').toLowerCase().includes(lower)
     )
-  }, [replies, search])
+  }, [data, search])
 
   const selectedReply = filtered.find((r) => r.id === selectedReplyId) || null
 
@@ -192,7 +196,8 @@ export function InboxClient({ workspaces }: { workspaces: Workspace[] }) {
     { label: 'All Replies', draft_status: undefined },
     { label: 'Needs Approval', draft_status: 'needs_approval', count: counts.needs_approval },
     { label: 'Sent', draft_status: 'sent' },
-    { label: 'Rejected / Skipped', draft_status: 'rejected' },
+    { label: 'Rejected', draft_status: 'rejected' },
+    { label: 'Skipped', draft_status: 'skipped' },
   ]
 
   return (

@@ -46,12 +46,11 @@ export function DncClient({ workspaces }: { workspaces: Workspace[] }) {
     },
   })
 
-  const entries = data?.entries || []
-
   const filtered = useMemo(() => {
+    const entries = data?.entries || []
     if (!filterWorkspace) return entries
     return entries.filter((e) => e.workspace_id === filterWorkspace)
-  }, [entries, filterWorkspace])
+  }, [data, filterWorkspace])
 
   const addMutation = useMutation({
     mutationFn: async ({ workspace_id, emails, reason }: { workspace_id: string; emails: string[]; reason?: string }) => {
@@ -117,7 +116,7 @@ export function DncClient({ workspaces }: { workspaces: Workspace[] }) {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-xl font-semibold text-zinc-900">Do Not Contact List</h1>
-          <p className="text-sm text-zinc-500 mt-1">{entries.length} total entries</p>
+          <p className="text-sm text-zinc-500 mt-1">{(data?.entries || []).length} total entries</p>
         </div>
         <div className="flex gap-2">
           <button

@@ -1,6 +1,5 @@
 import { inngest } from '@/inngest/client'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { SdrConfigRepository } from '@/lib/repositories/sdr-config.repository'
 import { DncRepository } from '@/lib/repositories/dnc.repository'
 import { safeError } from '@/lib/utils/log-sanitizer'
 

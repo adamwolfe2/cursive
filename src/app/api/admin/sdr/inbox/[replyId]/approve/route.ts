@@ -43,6 +43,7 @@ export async function POST(
       subject: `Re: ${reply.subject || 'Following up'}`,
       bodyText: bodyWithCTA,
       replyTo: config?.notification_email || OUTREACH_FROM_EMAIL,
+      ...(config?.auto_bcc_address ? { bcc: config.auto_bcc_address } : {}),
     })
 
     if (!result.success) {

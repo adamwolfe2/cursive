@@ -223,17 +223,24 @@ export const processReply = inngest.createFunction(
     // Step 6: Auto-send reply for high-intent responses (only when HiL is off)
     if (routeResult.send && suggestedResponse && shouldAutoSend(classification)) {
       await step.run('send-auto-reply', async () => {
+        // Use workspace-specific config when available, fall back to env vars
+        const wsConfig = (routeResult as { send: true; config: import('@/lib/repositories/sdr-config.repository').SdrConfiguration | null }).config
+        const fromEmail = wsConfig?.notification_email || OUTREACH_FROM_EMAIL
+        const fromName = [wsConfig?.agent_first_name, wsConfig?.agent_last_name].filter(Boolean).join(' ') || OUTREACH_FROM_NAME
+        const calUrl = wsConfig?.cal_booking_url || CAL_BOOKING_URL
+
         // Append booking link to the Claude-generated body
-        const bodyWithCTA = `${suggestedResponse!.body}\n\n---\nBook a time that works for you: ${CAL_BOOKING_URL}`
+        const bodyWithCTA = `${suggestedResponse!.body}\n\n---\nBook a time that works for you: ${calUrl}`
 
         try {
           const result = await sendEmail({
             to: reply.from_email,
-            from: OUTREACH_FROM_EMAIL,
-            fromName: OUTREACH_FROM_NAME,
+            from: fromEmail,
+            fromName: fromName,
             subject: suggestedResponse!.subject || `Re: ${reply.subject || 'Following up'}`,
             bodyText: bodyWithCTA,
-            replyTo: OUTREACH_FROM_EMAIL,
+            replyTo: fromEmail,
+            ...(wsConfig?.auto_bcc_address ? { bcc: wsConfig.auto_bcc_address } : {}),
           })
 
           // Record the auto-send result on the reply
@@ -284,6 +291,7 @@ export const processReply = inngest.createFunction(
           reply_sentiment: classification.sentiment,
           reply_intent_score: classification.intent_score,
           last_reply_id: reply.id,
+          replied_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         })
         .eq('campaign_id', reply.campaign_id)
