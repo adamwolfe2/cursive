@@ -31,6 +31,10 @@ export async function POST(
     return NextResponse.json({ success: true })
   } catch (error) {
     safeError('[SDR Reject POST]', error)
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const isAuthError = error instanceof Error && error.message.includes('Unauthorized')
+    return NextResponse.json(
+      { error: isAuthError ? 'Unauthorized' : 'Internal server error' },
+      { status: isAuthError ? 401 : 500 }
+    )
   }
 }

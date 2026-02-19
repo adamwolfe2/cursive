@@ -81,6 +81,7 @@ export function InboxClient({ workspaces }: { workspaces: Workspace[] }) {
   const [editedDraft, setEditedDraft] = useState('')
   const [rejectNotes, setRejectNotes] = useState('')
   const [showRejectInput, setShowRejectInput] = useState(false)
+  const [actionError, setActionError] = useState<string | null>(null)
 
   const queryClient = useQueryClient()
 
@@ -92,8 +93,10 @@ export function InboxClient({ workspaces }: { workspaces: Workspace[] }) {
       if (selectedWorkspaceId) params.set('workspace_id', selectedWorkspaceId)
       params.set('limit', '200')
       const res = await fetch(`/api/admin/sdr/inbox?${params}`)
+      if (!res.ok) throw new Error('Failed to load inbox')
       return res.json() as Promise<{ replies: InboxReply[]; counts: Record<string, number> }>
     },
+    staleTime: 30 * 1000,
   })
 
   const replies = data?.replies || []
@@ -113,22 +116,42 @@ export function InboxClient({ workspaces }: { workspaces: Workspace[] }) {
 
   const selectedReply = filtered.find((r) => r.id === selectedReplyId) || null
 
-  // Set editedDraft when a reply is selected
   const handleSelectReply = (reply: InboxReply) => {
     setSelectedReplyId(reply.id)
     setEditedDraft(reply.suggested_response || '')
     setShowRejectInput(false)
     setRejectNotes('')
+    setActionError(null)
   }
 
-  const invalidate = () => queryClient.invalidateQueries({ queryKey: ['sdr-inbox'] })
+  const handleFolderChange = (draft_status: string | undefined) => {
+    setActiveFolder(draft_status)
+    setSelectedReplyId(null)
+    setActionError(null)
+  }
+
+  const handleWorkspaceChange = (id: string) => {
+    setSelectedWorkspaceId(id)
+    setSelectedReplyId(null)
+    setActionError(null)
+  }
+
+  const invalidate = () => {
+    queryClient.invalidateQueries({ queryKey: ['sdr-inbox'] })
+    setSelectedReplyId(null)
+    setActionError(null)
+  }
 
   const approveMutation = useMutation({
     mutationFn: async (replyId: string) => {
       const res = await fetch(`/api/admin/sdr/inbox/${replyId}/approve`, { method: 'POST' })
-      if (!res.ok) throw new Error('Failed to approve')
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error(data.error || 'Failed to approve')
+      }
     },
     onSuccess: invalidate,
+    onError: (error: Error) => setActionError(error.message),
   })
 
   const sendMutation = useMutation({
@@ -138,9 +161,13 @@ export function InboxClient({ workspaces }: { workspaces: Workspace[] }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ body }),
       })
-      if (!res.ok) throw new Error('Failed to send')
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error(data.error || 'Failed to send')
+      }
     },
     onSuccess: invalidate,
+    onError: (error: Error) => setActionError(error.message),
   })
 
   const rejectMutation = useMutation({
@@ -150,10 +177,16 @@ export function InboxClient({ workspaces }: { workspaces: Workspace[] }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ notes }),
       })
-      if (!res.ok) throw new Error('Failed to reject')
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error(data.error || 'Failed to reject')
+      }
     },
     onSuccess: invalidate,
+    onError: (error: Error) => setActionError(error.message),
   })
+
+  const isMutating = approveMutation.isPending || sendMutation.isPending || rejectMutation.isPending
 
   const folders: FolderItem[] = [
     { label: 'All Replies', draft_status: undefined },
@@ -173,7 +206,7 @@ export function InboxClient({ workspaces }: { workspaces: Workspace[] }) {
           {folders.map((folder) => (
             <button
               key={folder.label}
-              onClick={() => { setActiveFolder(folder.draft_status); setSelectedReplyId(null) }}
+              onClick={() => handleFolderChange(folder.draft_status)}
               className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-sm text-left transition-colors ${
                 activeFolder === folder.draft_status
                   ? 'bg-blue-50 text-blue-700 font-medium'
@@ -211,7 +244,7 @@ export function InboxClient({ workspaces }: { workspaces: Workspace[] }) {
           />
           <select
             value={selectedWorkspaceId}
-            onChange={(e) => setSelectedWorkspaceId(e.target.value)}
+            onChange={(e) => handleWorkspaceChange(e.target.value)}
             className="w-full px-3 py-1.5 text-sm border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
           >
             <option value="">All workspaces</option>
@@ -328,6 +361,13 @@ export function InboxClient({ workspaces }: { workspaces: Workspace[] }) {
               </div>
             </div>
 
+            {/* Action error */}
+            {actionError && (
+              <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-2 rounded-lg">
+                {actionError}
+              </div>
+            )}
+
             {/* Draft Section */}
             {selectedReply.suggested_response && (
               <div className="bg-white border rounded-lg p-4 space-y-3">
@@ -346,21 +386,22 @@ export function InboxClient({ workspaces }: { workspaces: Workspace[] }) {
                     <div className="flex items-center gap-2 flex-wrap">
                       <button
                         onClick={() => approveMutation.mutate(selectedReply.id)}
-                        disabled={approveMutation.isPending}
+                        disabled={isMutating}
                         className="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 disabled:opacity-50 transition-colors"
                       >
                         {approveMutation.isPending ? 'Sending...' : 'Approve & Send'}
                       </button>
                       <button
                         onClick={() => sendMutation.mutate({ replyId: selectedReply.id, body: editedDraft })}
-                        disabled={sendMutation.isPending}
+                        disabled={isMutating || !editedDraft.trim()}
                         className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors"
                       >
                         {sendMutation.isPending ? 'Sending...' : 'Edit & Send'}
                       </button>
                       <button
                         onClick={() => setShowRejectInput(!showRejectInput)}
-                        className="px-4 py-2 bg-white border text-sm font-medium rounded-md hover:bg-zinc-50 text-zinc-700 transition-colors"
+                        disabled={isMutating}
+                        className="px-4 py-2 bg-white border text-sm font-medium rounded-md hover:bg-zinc-50 text-zinc-700 transition-colors disabled:opacity-50"
                       >
                         Reject
                       </button>
@@ -376,7 +417,7 @@ export function InboxClient({ workspaces }: { workspaces: Workspace[] }) {
                         />
                         <button
                           onClick={() => rejectMutation.mutate({ replyId: selectedReply.id, notes: rejectNotes })}
-                          disabled={rejectMutation.isPending}
+                          disabled={isMutating}
                           className="px-3 py-1.5 bg-red-600 text-white text-sm rounded-md hover:bg-red-700 disabled:opacity-50"
                         >
                           {rejectMutation.isPending ? 'Rejecting...' : 'Confirm Reject'}
@@ -426,6 +467,13 @@ export function InboxClient({ workspaces }: { workspaces: Workspace[] }) {
                     {selectedReply.suggested_response}
                   </pre>
                 )}
+              </div>
+            )}
+
+            {/* No draft but reply exists */}
+            {!selectedReply.suggested_response && (
+              <div className="bg-zinc-50 border rounded-lg p-4 text-sm text-zinc-500">
+                No AI draft generated for this reply.
               </div>
             )}
           </div>

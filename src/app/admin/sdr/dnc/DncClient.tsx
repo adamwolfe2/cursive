@@ -60,21 +60,32 @@ export function DncClient({ workspaces }: { workspaces: Workspace[] }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ workspace_id, emails, reason }),
       })
-      if (!res.ok) throw new Error('Failed to add')
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error(data.error || 'Failed to add')
+      }
     },
     onSuccess: () => {
       invalidate()
+      // Reset both single and CSV modal states
       setShowAddModal(false)
+      setShowCsvModal(false)
       setAddEmail('')
       setAddReason('')
       setAddWorkspaceId('')
+      setCsvEmails([])
+      setCsvReason('')
+      setCsvPreview(false)
     },
   })
 
   const removeMutation = useMutation({
     mutationFn: async (id: string) => {
       const res = await fetch(`/api/admin/sdr/dnc/${id}`, { method: 'DELETE' })
-      if (!res.ok) throw new Error('Failed to remove')
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error(data.error || 'Failed to remove')
+      }
     },
     onSuccess: () => {
       invalidate()
@@ -87,8 +98,11 @@ export function DncClient({ workspaces }: { workspaces: Workspace[] }) {
     reader.onload = (e) => {
       const text = e.target?.result as string
       const lines = text.split('\n').map((l) => l.trim()).filter(Boolean)
-      // Basic CSV: treat each line as email or first column
-      const emails = lines.map((l) => l.split(',')[0].trim()).filter((e) => e.includes('@'))
+      // Extract first column (email), validate format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      const emails = lines
+        .map((l) => l.split(',')[0].replace(/["']/g, '').trim())
+        .filter((e) => emailRegex.test(e))
       setCsvEmails(emails)
       setCsvPreview(true)
     }
@@ -318,16 +332,7 @@ export function DncClient({ workspaces }: { workspaces: Workspace[] }) {
               </button>
               <button
                 onClick={() =>
-                  addMutation.mutate(
-                    { workspace_id: csvWorkspaceId, emails: csvEmails, reason: csvReason || undefined },
-                    {
-                      onSuccess: () => {
-                        setShowCsvModal(false)
-                        setCsvEmails([])
-                        setCsvPreview(false)
-                      },
-                    }
-                  )
+                  addMutation.mutate({ workspace_id: csvWorkspaceId, emails: csvEmails, reason: csvReason || undefined })
                 }
                 disabled={!csvWorkspaceId || csvEmails.length === 0 || addMutation.isPending}
                 className="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"

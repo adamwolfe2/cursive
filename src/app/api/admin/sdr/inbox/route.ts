@@ -24,6 +24,10 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ replies, counts })
   } catch (error) {
     safeError('[SDR Inbox GET]', error)
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const isAuthError = error instanceof Error && error.message.includes('Unauthorized')
+    return NextResponse.json(
+      { error: isAuthError ? 'Unauthorized' : 'Internal server error' },
+      { status: isAuthError ? 401 : 500 }
+    )
   }
 }

@@ -20,7 +20,11 @@ export async function GET(_req: NextRequest) {
     return NextResponse.json({ entries })
   } catch (error) {
     safeError('[SDR DNC GET]', error)
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const isAuthError = error instanceof Error && error.message.includes('Unauthorized')
+    return NextResponse.json(
+      { error: isAuthError ? 'Unauthorized' : 'Internal server error' },
+      { status: isAuthError ? 401 : 500 }
+    )
   }
 }
 
@@ -44,6 +48,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ added: parsed.data.emails.length })
   } catch (error) {
     safeError('[SDR DNC POST]', error)
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const isAuthError = error instanceof Error && error.message.includes('Unauthorized')
+    return NextResponse.json(
+      { error: isAuthError ? 'Unauthorized' : 'Internal server error' },
+      { status: isAuthError ? 401 : 500 }
+    )
   }
 }

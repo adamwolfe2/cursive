@@ -48,7 +48,7 @@ export class DncRepository {
     reason?: string,
     addedBy?: string
   ): Promise<void> {
-    await this.db.from('do_not_contact').upsert(
+    const { error } = await this.db.from('do_not_contact').upsert(
       {
         workspace_id: workspaceId,
         email: email.toLowerCase().trim(),
@@ -57,6 +57,7 @@ export class DncRepository {
       },
       { onConflict: 'workspace_id,email', ignoreDuplicates: true }
     )
+    if (error) throw new Error(`Failed to add to DNC: ${error.message}`)
   }
 
   async bulkAdd(
@@ -71,9 +72,10 @@ export class DncRepository {
       reason,
       added_by: addedBy,
     }))
-    await this.db
+    const { error } = await this.db
       .from('do_not_contact')
       .upsert(rows, { onConflict: 'workspace_id,email', ignoreDuplicates: true })
+    if (error) throw new Error(`Failed to bulk add to DNC: ${error.message}`)
   }
 
   async remove(id: string): Promise<void> {

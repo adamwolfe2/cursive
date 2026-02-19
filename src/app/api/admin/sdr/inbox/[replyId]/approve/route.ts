@@ -36,14 +36,22 @@ export async function POST(
       ? `${reply.suggested_response}\n\n---\n${config.cal_booking_url}`
       : reply.suggested_response
 
-    await sendEmail({
+    const result = await sendEmail({
       to: reply.from_email,
       from: config?.notification_email || OUTREACH_FROM_EMAIL,
       fromName: agentName,
       subject: `Re: ${reply.subject || 'Following up'}`,
       bodyText: bodyWithCTA,
-      ...(config?.auto_bcc_address ? { replyTo: config.auto_bcc_address } : {}),
+      replyTo: config?.notification_email || OUTREACH_FROM_EMAIL,
     })
+
+    if (!result.success) {
+      safeError('[SDR Approve] sendEmail failed:', result.error)
+      return NextResponse.json(
+        { error: `Failed to send email: ${result.error}` },
+        { status: 500 }
+      )
+    }
 
     const now = new Date().toISOString()
     await inboxRepo.updateDraftStatus(replyId, {
@@ -57,6 +65,10 @@ export async function POST(
     return NextResponse.json({ success: true })
   } catch (error) {
     safeError('[SDR Approve POST]', error)
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const isAuthError = error instanceof Error && error.message.includes('Unauthorized')
+    return NextResponse.json(
+      { error: isAuthError ? 'Unauthorized' : 'Internal server error' },
+      { status: isAuthError ? 401 : 500 }
+    )
   }
 }

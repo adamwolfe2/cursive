@@ -137,7 +137,9 @@ export function ConfigWizard({ workspaceId, workspaceName, initialConfig, client
     if (!clientProfile) return
     setForm((prev) => ({
       ...prev,
-      ...(clientProfile.company_name ? {} : {}),
+      ...(clientProfile.company_name && !prev.agent_last_name
+        ? { agent_last_name: clientProfile.company_name }
+        : {}),
     }))
   }
 
@@ -250,7 +252,7 @@ export function ConfigWizard({ workspaceId, workspaceName, initialConfig, client
                 >
                   <span
                     className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${
-                      form.do_not_contact_enabled ? 'translate-x-4.5' : 'translate-x-0.5'
+                      form.do_not_contact_enabled ? 'translate-x-5' : 'translate-x-0.5'
                     }`}
                   />
                 </button>
@@ -416,7 +418,7 @@ export function ConfigWizard({ workspaceId, workspaceName, initialConfig, client
                   >
                     <span
                       className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${
-                        form.human_in_the_loop ? 'translate-x-4.5' : 'translate-x-0.5'
+                        form.human_in_the_loop ? 'translate-x-5' : 'translate-x-0.5'
                       }`}
                     />
                   </button>
@@ -481,7 +483,7 @@ export function ConfigWizard({ workspaceId, workspaceName, initialConfig, client
                   >
                     <span
                       className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${
-                        form.follow_up_enabled ? 'translate-x-4.5' : 'translate-x-0.5'
+                        form.follow_up_enabled ? 'translate-x-5' : 'translate-x-0.5'
                       }`}
                     />
                   </button>
@@ -542,7 +544,7 @@ export function ConfigWizard({ workspaceId, workspaceName, initialConfig, client
                   >
                     <span
                       className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${
-                        form.reply_to_no_thanks ? 'translate-x-4.5' : 'translate-x-0.5'
+                        form.reply_to_no_thanks ? 'translate-x-5' : 'translate-x-0.5'
                       }`}
                     />
                   </button>

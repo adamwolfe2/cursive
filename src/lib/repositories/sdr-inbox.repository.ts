@@ -61,10 +61,20 @@ export class SdrInboxRepository {
   }
 
   async countByDraftStatus(): Promise<Record<string, number>> {
-    const { data } = await this.db.from('email_replies').select('draft_status')
+    // Run targeted counts for each status in parallel — avoids full table scan
+    const statuses = ['pending', 'needs_approval', 'sent', 'rejected', 'skipped', 'approved'] as const
+    const results = await Promise.all(
+      statuses.map((status) =>
+        this.db
+          .from('email_replies')
+          .select('id', { count: 'exact', head: true })
+          .eq('draft_status', status)
+          .then(({ count }) => ({ status, count: count || 0 }))
+      )
+    )
     const counts: Record<string, number> = {}
-    for (const row of data || []) {
-      counts[row.draft_status] = (counts[row.draft_status] || 0) + 1
+    for (const { status, count } of results) {
+      if (count > 0) counts[status] = count
     }
     return counts
   }
