@@ -1,9 +1,9 @@
 // Inngest API Route
 // Serves Inngest functions for background job processing
-// NOTE: Cannot use Edge runtime — Inngest functions transitively import nodemailer
+// Requires Node.js runtime — Inngest functions transitively import nodemailer
 // (via email-sequences → email-sender.service) which requires Node.js APIs.
-// This route will hang on Vercel's Node.js serverless (known platform issue).
-// Inngest execution is bypassed via inline processEventInline() in Edge webhook handlers.
+
+export const runtime = 'nodejs'
 
 import { serve } from 'inngest/next'
 import { inngest } from '@/inngest/client'

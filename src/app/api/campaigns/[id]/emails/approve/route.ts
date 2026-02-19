@@ -7,6 +7,7 @@ import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth'
 import { logger } from '@/lib/monitoring/logger'
+import { inngest } from '@/inngest/client'
 
 interface RouteContext {
   params: Promise<{ id: string }>
@@ -90,11 +91,16 @@ export async function POST(request: NextRequest, context: RouteContext) {
       (campaignLeads || []).map((cl) => [cl.lead_id, cl.id])
     )
 
-    // Inngest disabled (Node.js runtime not available on this deployment)
-    // Original: await inngest.send(emails.map(email => ({ name: 'campaign/email-approved', data: { email_send_id, campaign_lead_id, workspace_id } })))
     const approvedWithCampaignLead = emails.filter((email) => leadToCampaignLead.has(email.lead_id))
     if (approvedWithCampaignLead.length > 0) {
-      logger.info('Emails approved (Inngest events skipped - Edge runtime)', { count: approvedWithCampaignLead.length, campaignId })
+      await inngest.send(approvedWithCampaignLead.map((email) => ({
+        name: 'campaign/email-approved' as const,
+        data: {
+          email_send_id: email.id,
+          campaign_lead_id: leadToCampaignLead.get(email.lead_id)!,
+          workspace_id: user.workspace_id,
+        },
+      })))
     }
 
     return NextResponse.json({

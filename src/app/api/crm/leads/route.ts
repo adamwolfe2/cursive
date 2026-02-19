@@ -7,6 +7,7 @@ import { getCurrentUser } from '@/lib/auth/helpers'
 import { CRMLeadRepository } from '@/lib/repositories/crm-lead.repository'
 import { z } from 'zod'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { inngest } from '@/inngest/client'
 
 // Use edge runtime
 
@@ -53,8 +54,10 @@ export async function POST(req: NextRequest) {
       created_at: new Date().toISOString(),
     })
 
-    // Inngest disabled (Node.js runtime not available on this deployment)
-    // Original: inngest.send({ name: 'lead/created', data: { lead_id, workspace_id, source } })
+    inngest.send({
+      name: 'lead/created' as const,
+      data: { lead_id: lead.id, workspace_id: user.workspace_id, source: validated.source },
+    }).catch((err) => safeError('[Create Lead] Inngest send failed:', err))
 
     return NextResponse.json({ success: true, lead })
   } catch (error) {

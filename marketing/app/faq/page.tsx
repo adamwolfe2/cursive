@@ -183,9 +183,9 @@ export default function FAQPage() {
             </p>
           </div>
           <div>
-            <p className="text-white mb-2">What's included in the setup fee?</p>
+            <p className="text-white mb-2">Is there a setup fee?</p>
             <p className="text-gray-400">
-              Outbound ($2,500): Email domain setup, inbox warmup, deliverability optimization, campaign strategy, brand voice AI training. Pipeline ($5,000): Everything in Outbound plus API integration, AI SDR configuration, multi-channel setup, white-glove onboarding.
+              No setup fees — ever. Everything is included in your monthly subscription.
             </p>
           </div>
           <div>

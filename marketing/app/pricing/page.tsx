@@ -1387,7 +1387,7 @@ const faqs = [
     answer: "Yes. We have native integrations with Salesforce, HubSpot, Pipedrive, and 200+ other tools. We can also push data via API or CSV export. During onboarding, we'll connect directly to your existing stack.",
   },
   {
-    question: "What's included in the setup fee?",
+    question: "Is there a setup fee?",
     answer: "There are no setup fees for any Cursive plan. Everything is included in your monthly subscription: email domain setup, inbox configuration, deliverability optimization, campaign strategy, copy review, AI training on your brand voice, API integration, and dedicated onboarding. We believe in transparent, all-inclusive pricing with no surprise costs.",
   },
   {

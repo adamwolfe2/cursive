@@ -13,6 +13,7 @@ import { checkBulkSuppression } from '@/lib/services/campaign/suppression.servic
 import { sanitizeSearchTerm } from '@/lib/utils/sanitize-search'
 import { sanitizeCsvValue } from '@/lib/utils/csv-sanitizer'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
+import { inngest } from '@/inngest/client'
 
 interface RouteContext {
   params: Promise<{ id: string }>
@@ -149,10 +150,12 @@ export async function POST(request: NextRequest, context: RouteContext) {
       })
     }
 
-    // Inngest disabled (Node.js runtime not available on this deployment)
-    // Original: await inngest.send({ name: 'campaign/batch-enrich', data: { campaign_id, workspace_id } })
     if (result.added > 0 && campaign.status === 'active') {
-      safeLog(`[Campaign Lead Import] ${result.added} leads added to campaign ${campaignId} (Inngest enrichment skipped - Edge runtime)`)
+      await inngest.send({
+        name: 'campaign/batch-enrich' as const,
+        data: { campaign_id: campaignId, workspace_id: user.workspace_id },
+      })
+      safeLog(`[Campaign Lead Import] ${result.added} leads added to campaign ${campaignId}, enrichment queued`)
     }
 
     return success(result)

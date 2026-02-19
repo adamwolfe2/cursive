@@ -8,6 +8,7 @@ import { getCurrentUser } from '@/lib/auth/helpers'
 import { CRMLeadRepository } from '@/lib/repositories/crm-lead.repository'
 import { z } from 'zod'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { inngest } from '@/inngest/client'
 
 // Use edge runtime for better performance
 
@@ -136,8 +137,12 @@ export async function POST(req: NextRequest) {
     }
 
     // Emit lead/created events for all imported leads (non-blocking)
-    // Inngest disabled (Node.js runtime not available on this deployment)
-    // Original: inngest.send(createdLeadIds.map(id => ({ name: 'lead/created', data: { lead_id: id, workspace_id, source: 'import' } })))
+    if (createdLeadIds.length > 0) {
+      inngest.send(createdLeadIds.map((id) => ({
+        name: 'lead/created' as const,
+        data: { lead_id: id, workspace_id: user.workspace_id, source: 'import' },
+      }))).catch((err) => safeError('[Lead Import] Inngest send failed:', err))
+    }
 
     // Calculate statistics
     const imported = results.filter(r => r.success).length

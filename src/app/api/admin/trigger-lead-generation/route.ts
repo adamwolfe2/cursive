@@ -4,6 +4,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
+import { inngest } from '@/inngest/client'
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,21 +13,24 @@ export async function POST(request: NextRequest) {
     await requireAdmin()
 
     const body = await request.json()
-    const { query_id } = body
+    const { query_id, workspace_id } = body
 
     if (query_id) {
-      // Inngest disabled (Node.js runtime not available on this deployment)
-      // Original: await inngest.send({ name: 'lead/generate', data: { query_id, workspace_id } })
-      safeLog(`[Admin Trigger Lead Generation] Generation requested for query ${query_id} (Inngest disabled - Edge runtime)`)
+      if (!workspace_id) {
+        return NextResponse.json({ error: 'workspace_id is required' }, { status: 400 })
+      }
+
+      await inngest.send({
+        name: 'lead/generate' as const,
+        data: { query_id, workspace_id },
+      })
+      safeLog(`[Admin Trigger Lead Generation] Generation queued for query ${query_id}`)
 
       return NextResponse.json({
         success: true,
-        message: `Lead generation requested for query ${query_id} (Note: Inngest background processing unavailable)`,
+        message: `Lead generation queued for query ${query_id}`,
       })
     } else {
-      // Trigger daily generation for all queries
-      // Note: This would normally be triggered by cron
-      // For testing, we can manually invoke it
       return NextResponse.json({
         success: true,
         message: 'Lead generation will run on next cron schedule (2 AM daily)',

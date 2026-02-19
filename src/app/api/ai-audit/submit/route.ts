@@ -8,6 +8,7 @@ import { handleApiError, created } from '@/lib/utils/api-error-handler'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { withRateLimit } from '@/lib/middleware/rate-limiter'
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
+import { inngest } from '@/inngest/client'
 
 // CORS headers for cross-origin requests from marketing site
 const corsHeaders = {
@@ -143,9 +144,8 @@ export async function POST(request: NextRequest) {
     if (validated.utm_medium?.trim()) eventData.utm_medium = validated.utm_medium.trim()
     if (validated.utm_campaign?.trim()) eventData.utm_campaign = validated.utm_campaign.trim()
 
-    // Inngest disabled (Node.js runtime not available on this deployment)
-    // Original: await inngest.send({ name: 'ai-audit/submitted', data: eventData })
-    safeLog(`[AI Audit] Submission received for ${eventData.email} (Inngest event skipped - Edge runtime)`)
+    await inngest.send({ name: 'ai-audit/submitted' as const, data: eventData })
+    safeLog(`[AI Audit] Submission received and queued for ${eventData.email}`)
 
     // Non-blocking Slack notification
     sendSlackAlert({

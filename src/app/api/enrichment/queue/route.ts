@@ -7,6 +7,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
+import { inngest } from '@/inngest/client'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import {
@@ -68,9 +69,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'No valid leads found' }, { status: 400 })
     }
 
-    // Inngest disabled (Node.js runtime not available on this deployment)
-    // Original: await inngest.send({ name: 'enrichment/batch', data: { workspace_id, lead_ids, providers, priority } })
-    safeLog(`[Enrichment Queue] ${validLeadIds.length} leads queued (Inngest event skipped - Edge runtime)`)
+    await inngest.send({
+      name: 'enrichment/batch' as const,
+      data: { workspace_id: user.workspace_id, lead_ids: validLeadIds, providers, priority },
+    })
+    safeLog(`[Enrichment Queue] ${validLeadIds.length} leads queued for enrichment`)
 
     return NextResponse.json({
       success: true,

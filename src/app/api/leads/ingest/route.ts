@@ -14,6 +14,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { inngest } from '@/inngest/client'
 import { z } from 'zod'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { createMatchingEngine } from '@/lib/services/matching-engine.service'
@@ -268,9 +269,10 @@ async function createLeadFromPush(
     })
   }
 
-  // Inngest disabled (Node.js runtime not available on this deployment)
-  // Original: inngest.send({ name: 'lead/created', data: { lead_id: data.id, workspace_id, source } })
-  safeError(`[Lead Ingest] Lead ${data.id} created (Inngest event skipped - Edge runtime)`)
+  inngest.send({
+    name: 'lead/created' as const,
+    data: { lead_id: data.id, workspace_id: workspaceId, source: request.source_type || leadData.source || 'api' },
+  }).catch((err) => safeError('[Lead Ingest] Inngest send failed:', err))
 
   return data.id
 }
