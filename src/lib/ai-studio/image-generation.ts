@@ -6,6 +6,8 @@
 import * as fal from '@fal-ai/client'
 import type { BrandDNA } from './firecrawl'
 import type { CustomerProfile, KnowledgeBase } from './knowledge'
+import { logApiCall } from '@/lib/services/api-logger'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 function configureFal() {
   if (!process.env.FAL_KEY) {
@@ -73,6 +75,7 @@ export async function generateAdCreative({
     const { model, steps } = getQualitySettings(quality)
 
     // Generate with Flux (Pro for quality, Dev for balanced, Schnell for fast)
+    const falStart = Date.now()
     const result = await (fal as any).subscribe(model, {
       input: {
         prompt: enhancedPrompt,
@@ -83,6 +86,10 @@ export async function generateAdCreative({
         guidance_scale: quality === 'high' ? 3.5 : 3.0, // Higher guidance for better brand adherence
       }
     }) as any
+    const falEndpoint = model.replace('fal-ai/', '')
+    logApiCall({ service: 'fal', endpoint: falEndpoint, durationMs: Date.now() - falStart,
+      statusCode: result?.images?.length ? 200 : 500,
+      metadata: { model, format, quality } })
 
     if (!result.images || result.images.length === 0) {
       throw new Error('No images generated')
@@ -95,7 +102,7 @@ export async function generateAdCreative({
       enhancedPrompt,
     }
   } catch (error: any) {
-    console.error('[ImageGen] Error generating creative:', error)
+    safeError('[ImageGen] Error generating creative:', error)
     throw new Error(`Failed to generate creative: ${error.message}`)
   }
 }

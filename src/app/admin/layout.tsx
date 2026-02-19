@@ -71,6 +71,7 @@ export default async function AdminLayout({
                   { href: '/admin/leads', label: 'Leads' },
                   { href: '/admin/analytics', label: 'Analytics' },
                   { href: '/admin/payouts', label: 'Payouts' },
+                  { href: '/admin/api', label: 'API Costs' },
                 ].map(({ href, label }) => (
                   <Link
                     key={href}

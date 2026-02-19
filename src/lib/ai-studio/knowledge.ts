@@ -5,6 +5,8 @@
 
 import OpenAI from 'openai'
 import type { BrandDNA } from './firecrawl'
+import { safeError } from '@/lib/utils/log-sanitizer'
+import { logApiCall } from '@/lib/services/api-logger'
 
 function getOpenAIClient() {
   if (!process.env.OPENAI_API_KEY) {
@@ -154,6 +156,7 @@ Visual Assets Available:
 
 Analyze this content deeply and generate a comprehensive, actionable knowledge base in the exact JSON format specified. Be specific with examples from their actual content.`
 
+    const kbStart = Date.now()
     const response = await openai.chat.completions.create({
       model: 'gpt-4o',  // Latest GPT-4 Omni model for best quality
       messages: [
@@ -165,6 +168,12 @@ Analyze this content deeply and generate a comprehensive, actionable knowledge b
       max_tokens: 4000,  // Increased for comprehensive knowledge base
     })
 
+    logApiCall({
+      service: 'openai', endpoint: 'knowledge-base', model: 'gpt-4o',
+      durationMs: Date.now() - kbStart, statusCode: 200,
+      tokensIn: response.usage?.prompt_tokens, tokensOut: response.usage?.completion_tokens,
+    })
+
     const content = response.choices[0].message.content
     if (!content) {
       throw new Error('No content returned from OpenAI')
@@ -174,7 +183,7 @@ Analyze this content deeply and generate a comprehensive, actionable knowledge b
 
     return knowledgeBase
   } catch (error: any) {
-    console.error('[Knowledge] Error generating knowledge base:', error)
+    safeError('[Knowledge] Error generating knowledge base:', error)
     throw new Error(`Failed to generate knowledge base: ${error.message}`)
   }
 }
@@ -233,8 +242,9 @@ ${JSON.stringify(knowledgeBase, null, 2)}
 
 Generate 3-5 detailed buyer personas in the exact JSON format specified.`
 
+    const profilesStart = Date.now()
     const response = await openai.chat.completions.create({
-      model: 'gpt-4-turbo-preview',
+      model: 'gpt-4o',  // Upgrade from deprecated gpt-4-turbo-preview
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt }
@@ -242,6 +252,12 @@ Generate 3-5 detailed buyer personas in the exact JSON format specified.`
       response_format: { type: 'json_object' },
       temperature: 0.8,
       max_tokens: 2000,
+    })
+
+    logApiCall({
+      service: 'openai', endpoint: 'customer-profiles', model: 'gpt-4o',
+      durationMs: Date.now() - profilesStart, statusCode: 200,
+      tokensIn: response.usage?.prompt_tokens, tokensOut: response.usage?.completion_tokens,
     })
 
     const content = response.choices[0].message.content
@@ -253,7 +269,7 @@ Generate 3-5 detailed buyer personas in the exact JSON format specified.`
 
     return result.personas || []
   } catch (error: any) {
-    console.error('[Knowledge] Error generating customer profiles:', error)
+    safeError('[Knowledge] Error generating customer profiles:', error)
     throw new Error(`Failed to generate customer profiles: ${error.message}`)
   }
 }

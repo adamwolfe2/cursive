@@ -4,6 +4,8 @@
  */
 
 import FirecrawlApp from '@mendable/firecrawl-js'
+import { logApiCall } from '@/lib/services/api-logger'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 function getFirecrawlClient() {
   if (!process.env.FIRECRAWL_API_KEY) {
@@ -57,11 +59,15 @@ export async function extractBrandDNA(url: string): Promise<FirecrawlResult> {
     const normalizedUrl = url.startsWith('http') ? url : `https://${url}`
 
     // 1. Scrape the website for content and assets
+    const scrapeStart = Date.now()
     const scrapeResult: any = await firecrawl.scrape(normalizedUrl, {
       formats: ['markdown', 'html', 'links', 'screenshot'],
       onlyMainContent: true,
       includeTags: ['img', 'link', 'meta', 'style'],
     } as any)
+    logApiCall({ service: 'firecrawl', endpoint: 'scrape', durationMs: Date.now() - scrapeStart,
+      statusCode: scrapeResult?.success === false ? 500 : 200,
+      metadata: { url: normalizedUrl } })
 
     // 2. Extract comprehensive brand intelligence with LLM
     const extractionSchema = {
@@ -191,7 +197,7 @@ export async function extractBrandDNA(url: string): Promise<FirecrawlResult> {
       }
     }
   } catch (error: any) {
-    console.error('[Firecrawl] Error extracting brand DNA:', error)
+    safeError('[Firecrawl] Error extracting brand DNA:', error)
     throw new Error(`Failed to extract brand DNA: ${error.message}`)
   }
 }
