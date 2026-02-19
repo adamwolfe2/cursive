@@ -176,21 +176,34 @@ export async function getUserPermissions(): Promise<Permission[]> {
 }
 
 /**
- * Check if user is a platform admin (from platform_admins table)
+ * Check if user is a platform admin.
+ * Checks platform_admins table first (legacy), then falls back to users.role = owner/admin.
  */
 export async function isPlatformAdmin(): Promise<boolean> {
   const user = await getCurrentUser()
   if (!user) return false
 
   const supabase = await createClient()
-  const { data } = await supabase
-    .from('platform_admins')
-    .select('id')
-    .eq('email', user.email)
-    .eq('is_active', true)
+
+  // Check legacy platform_admins table first
+  if (user.email) {
+    const { data } = await supabase
+      .from('platform_admins')
+      .select('id')
+      .eq('email', user.email)
+      .eq('is_active', true)
+      .single()
+    if (data) return true
+  }
+
+  // Fall back to users.role check (owner/admin)
+  const { data: userData } = await supabase
+    .from('users')
+    .select('role')
+    .eq('auth_user_id', user.id)
     .single()
 
-  return !!data
+  return userData?.role === 'owner' || userData?.role === 'admin'
 }
 
 /**
