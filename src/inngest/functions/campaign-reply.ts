@@ -5,6 +5,11 @@ import { inngest } from '../client'
 import { createAdminClient } from '@/lib/supabase/admin'
 import Anthropic from '@anthropic-ai/sdk'
 import { quickClassify, type IntentCategory, type SuggestedAction } from '@/lib/services/ai/intent'
+import { sendEmail } from '@/lib/services/outreach/email-sender.service'
+
+const CAL_BOOKING_URL = process.env.CAL_BOOKING_URL || 'https://cal.com/cursive/30min'
+const OUTREACH_FROM_EMAIL = process.env.OUTREACH_FROM_EMAIL || 'team@meetcursive.com'
+const OUTREACH_FROM_NAME = process.env.OUTREACH_FROM_NAME || 'The Cursive Team'
 
 // Mock flag for development when API keys aren't available
 const USE_MOCKS = !process.env.ANTHROPIC_API_KEY
@@ -174,7 +179,46 @@ export const processReply = inngest.createFunction(
       })
     }
 
-    // Step 5: Update campaign lead status
+    // Step 5: Auto-send reply for high-intent responses
+    if (suggestedResponse && shouldAutoSend(classification)) {
+      await step.run('send-auto-reply', async () => {
+        // Append booking link to the Claude-generated body
+        const bodyWithCTA = `${suggestedResponse!.body}\n\n---\nBook a time that works for you: ${CAL_BOOKING_URL}`
+
+        try {
+          const result = await sendEmail({
+            to: reply.from_email,
+            from: OUTREACH_FROM_EMAIL,
+            fromName: OUTREACH_FROM_NAME,
+            subject: suggestedResponse!.subject || `Re: ${reply.subject || 'Following up'}`,
+            bodyText: bodyWithCTA,
+            replyTo: OUTREACH_FROM_EMAIL,
+          })
+
+          // Record the auto-send result on the reply
+          const supabase = createAdminClient()
+          await supabase
+            .from('email_replies')
+            .update({
+              suggested_response_metadata: {
+                ...(typeof reply.suggested_response_metadata === 'object' ? reply.suggested_response_metadata as object : {}),
+                auto_sent: result.success,
+                auto_sent_at: new Date().toISOString(),
+                auto_sent_provider: result.provider,
+                auto_sent_message_id: result.messageId,
+              },
+            })
+            .eq('id', reply.id)
+
+          logger.info(`Auto-reply ${result.success ? 'sent' : 'failed (provider error)'} for reply ${reply.id}`)
+        } catch (err) {
+          // Non-fatal — log and continue. Manual follow-up will catch it.
+          logger.error(`Auto-reply send error for reply ${reply.id}: ${err}`)
+        }
+      })
+    }
+
+    // Step 6: Update campaign lead status
     await step.run('update-campaign-lead', async () => {
       const supabase = createAdminClient()
 
@@ -277,6 +321,13 @@ function shouldGenerateResponse(classification: ReplyClassification): boolean {
   // Generate responses for positive, questions, and neutral replies
   const generateFor = ['positive', 'neutral', 'question']
   return generateFor.includes(classification.sentiment) && classification.intent_score >= 3
+}
+
+// Helper: Determine if we should auto-send the reply (high-confidence, high-intent only)
+function shouldAutoSend(classification: ReplyClassification): boolean {
+  if (classification.sentiment === 'positive' && classification.intent_score >= 7) return true
+  if (classification.sentiment === 'question' && classification.intent_score >= 6) return true
+  return false
 }
 
 // Helper: Generate mock classification for development

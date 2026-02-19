@@ -132,7 +132,7 @@ export const processEnrichmentJob = inngest.createFunction(
     await step.run('update-lead', async () => {
       const supabase = createAdminClient()
 
-      if (enrichmentResult.skipped) {
+      if ('skipped' in enrichmentResult && enrichmentResult.skipped) {
         // Already enriched — mark job as completed without re-enriching or charging credits
         await supabase
           .from('enrichment_jobs')
@@ -176,7 +176,7 @@ export const processEnrichmentJob = inngest.createFunction(
         .update({
           status: enrichmentResult.success ? 'completed' : 'failed',
           result: enrichmentResult.data,
-          error: enrichmentResult.error,
+          error: 'error' in enrichmentResult ? enrichmentResult.error : undefined,
           completed_at: new Date().toISOString(),
         })
         .eq('id', job_id)
@@ -189,7 +189,7 @@ export const processEnrichmentJob = inngest.createFunction(
         request_data: { lead_id, provider },
         response_data: enrichmentResult.data,
         status: enrichmentResult.success ? 'success' : 'failed',
-        error_message: enrichmentResult.error,
+        error_message: 'error' in enrichmentResult ? enrichmentResult.error : undefined,
         credits_used: enrichmentResult.creditsUsed || 0,
       })
     })
@@ -226,7 +226,7 @@ export const processEnrichmentJob = inngest.createFunction(
       lead_id,
       provider,
       data: enrichmentResult.data,
-      skipped: enrichmentResult.skipped || false,
+      skipped: 'skipped' in enrichmentResult ? (enrichmentResult.skipped || false) : false,
     }
   }
 )

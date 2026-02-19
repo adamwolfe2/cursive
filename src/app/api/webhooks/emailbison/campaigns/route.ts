@@ -1,10 +1,12 @@
 // EmailBison Campaign Webhook Handler
 // Receives webhook events for campaign emails and processes them
 
+export const runtime = 'nodejs'
 
 import { NextResponse, type NextRequest } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { inngest } from '@/inngest/client'
 import {
   parseWebhookEvent,
   isEmailSentEvent,
@@ -287,8 +289,25 @@ async function handleReplyReceived(
       .eq('id', campaignLeadId)
   }
 
-  // Note: Inngest reply handling skipped (Node.js runtime not available on this deployment)
-  // Reply data already saved to email_replies table above
+  // Fire Inngest event for AI classification and auto-reply
+  if (reply?.id) {
+    try {
+      await inngest.send({
+        name: 'emailbison/reply-received',
+        data: {
+          reply_id: reply.id,
+          lead_email: data.from_email,
+          from_email: data.from_email,
+          subject: data.subject || '',
+          body: data.body_plain || data.body || '',
+          received_at: data.received_at,
+        },
+      })
+    } catch (inngestError) {
+      safeError('[Campaign Webhook] Failed to queue reply for AI processing:', inngestError)
+      // Non-fatal: reply data is already saved to DB
+    }
+  }
 }
 
 /**
@@ -374,8 +393,7 @@ async function handleBounce(
 
   }
 
-  // Note: Inngest bounce handling skipped (Node.js runtime not available on this deployment)
-  // Bounce data already saved to leads and campaign_leads tables above
+  // Bounce data saved to leads and campaign_leads tables above — no further async processing needed
 }
 
 /**
