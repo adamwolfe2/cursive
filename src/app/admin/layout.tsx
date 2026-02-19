@@ -7,6 +7,7 @@
 
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { createClient } from '@/lib/supabase/server'
 import { getUserWithRole } from '@/lib/auth/roles'
 import { createAdminClient } from '@/lib/supabase/admin'
@@ -52,10 +53,8 @@ export default async function AdminLayout({
           <div className="flex items-center justify-between h-14">
             <div className="flex items-center gap-6">
               <Link href="/admin/dashboard" className="flex items-center gap-2 flex-shrink-0">
-                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-600 text-white">
-                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-                  </svg>
+                <div className="relative h-7 w-7 overflow-hidden rounded-lg flex-shrink-0">
+                  <Image src="/cursive-logo.png" alt="Cursive" fill className="object-contain" priority />
                 </div>
                 <span className="text-sm font-semibold text-zinc-900">Cursive Admin</span>
               </Link>
@@ -67,8 +66,8 @@ export default async function AdminLayout({
                   { href: '/admin/services/subscriptions', label: 'Services' },
                   { href: '/admin/waitlist', label: 'Waitlist' },
                   { href: '/admin/support', label: 'Support' },
-                  { href: '/admin/requests', label: 'Feature Reqs' },
-                  { href: '/admin/premium-requests', label: 'Upgrade Reqs' },
+                  { href: '/admin/requests', label: 'Feedback' },
+                  { href: '/admin/premium-requests', label: 'Upgrades' },
                   { href: '/admin/leads', label: 'Leads' },
                   { href: '/admin/analytics', label: 'Analytics' },
                   { href: '/admin/payouts', label: 'Payouts' },
@@ -76,7 +75,7 @@ export default async function AdminLayout({
                   <Link
                     key={href}
                     href={href}
-                    className="px-3 py-1.5 text-sm text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 rounded-md transition-colors"
+                    className="px-3 py-1.5 text-sm text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 rounded-md transition-colors whitespace-nowrap"
                   >
                     {label}
                   </Link>
