@@ -110,6 +110,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/blog/hunter-io-alternative',
     '/blog/seamless-ai-alternative',
     '/blog/opensend-alternative',
+    '/blog/datashopper-alternative',
+    '/blog/audiencelab-alternative',
     // Existing "cursive vs" pages
     '/blog/cursive-vs-rb2b',
     '/blog/cursive-vs-leadfeeder',

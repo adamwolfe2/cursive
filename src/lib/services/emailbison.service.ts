@@ -8,10 +8,6 @@
 const EMAILBISON_API_URL = process.env.EMAILBISON_API_URL || 'https://send.meetcursive.com'
 const EMAILBISON_API_KEY = process.env.EMAILBISON_API_KEY
 
-if (!EMAILBISON_API_KEY) {
-  console.warn('[EmailBison] API key not configured')
-}
-
 export interface EmailBisonAccount {
   id: string
   email: string
@@ -39,8 +35,6 @@ export async function createEmailBisonAccount(userData: {
   }
 
   try {
-    console.log('[EmailBison] Creating account for:', userData.email)
-
     // TODO: Replace with actual Email Bison API endpoint
     // This is a placeholder implementation
     const response = await fetch(`${EMAILBISON_API_URL}/api/accounts`, {
@@ -58,18 +52,10 @@ export async function createEmailBisonAccount(userData: {
 
     if (!response.ok) {
       const error = await response.text()
-      console.error('[EmailBison] Account creation failed:', {
-        status: response.status,
-        error,
-      })
       throw new Error(`Email Bison API error: ${response.status} - ${error}`)
     }
 
     const account = await response.json()
-    console.log('[EmailBison] Account created:', {
-      id: account.id,
-      email: account.email,
-    })
 
     return {
       id: account.id,
@@ -79,7 +65,6 @@ export async function createEmailBisonAccount(userData: {
       created_at: account.created_at,
     }
   } catch (error) {
-    console.error('[EmailBison] Failed to create account:', error)
     // For now, return a placeholder until we have the actual API
     return {
       id: `eb_${Date.now()}`,
@@ -103,8 +88,6 @@ export async function getEmailBisonAccount(accountId: string): Promise<EmailBiso
   }
 
   try {
-    console.log('[EmailBison] Fetching account:', accountId)
-
     // TODO: Replace with actual Email Bison API endpoint
     const response = await fetch(`${EMAILBISON_API_URL}/api/accounts/${accountId}`, {
       method: 'GET',
@@ -119,17 +102,12 @@ export async function getEmailBisonAccount(accountId: string): Promise<EmailBiso
         return null
       }
       const error = await response.text()
-      console.error('[EmailBison] Account fetch failed:', {
-        status: response.status,
-        error,
-      })
       throw new Error(`Email Bison API error: ${response.status} - ${error}`)
     }
 
     const account = await response.json()
     return account
-  } catch (error) {
-    console.error('[EmailBison] Failed to fetch account:', error)
+  } catch {
     return null
   }
 }
@@ -144,30 +122,17 @@ export async function deleteEmailBisonAccount(accountId: string): Promise<void> 
     throw new Error('EMAILBISON_API_KEY not configured')
   }
 
-  try {
-    console.log('[EmailBison] Deleting account:', accountId)
+  // TODO: Replace with actual Email Bison API endpoint
+  const response = await fetch(`${EMAILBISON_API_URL}/api/accounts/${accountId}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${EMAILBISON_API_KEY}`,
+    },
+  })
 
-    // TODO: Replace with actual Email Bison API endpoint
-    const response = await fetch(`${EMAILBISON_API_URL}/api/accounts/${accountId}`, {
-      method: 'DELETE',
-      headers: {
-        'Authorization': `Bearer ${EMAILBISON_API_KEY}`,
-      },
-    })
-
-    if (!response.ok) {
-      const error = await response.text()
-      console.error('[EmailBison] Account deletion failed:', {
-        status: response.status,
-        error,
-      })
-      throw new Error(`Email Bison API error: ${response.status} - ${error}`)
-    }
-
-    console.log('[EmailBison] Account deleted successfully')
-  } catch (error) {
-    console.error('[EmailBison] Failed to delete account:', error)
-    throw error
+  if (!response.ok) {
+    const error = await response.text()
+    throw new Error(`Email Bison API error: ${response.status} - ${error}`)
   }
 }
 
