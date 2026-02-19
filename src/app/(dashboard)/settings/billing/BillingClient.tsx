@@ -336,7 +336,7 @@ export default function BillingClient() {
                 }}
               />
             </div>
-            <p className="mt-1.5 text-xs text-muted-foreground">Each enrichment reveals phone, email & LinkedIn. Resets daily at midnight UTC.</p>
+            <p className="mt-1.5 text-xs text-muted-foreground">Each enrichment reveals phone, email & LinkedIn. Resets daily at midnight CT (Central Time).</p>
           </div>
 
         </div>

@@ -5,7 +5,6 @@ import { useQuery } from '@tanstack/react-query'
 import { TopicCard } from '@/components/trends/topic-card'
 import { useRouter } from 'next/navigation'
 import { PageContainer, PageHeader } from '@/components/layout'
-import { FeatureGate } from '@/components/billing/feature-gate'
 
 type TrendType = 'gainers' | 'losers'
 
@@ -39,7 +38,6 @@ export default function TrendsPage() {
   }
 
   return (
-    <FeatureGate featureName="Trends" comingSoon featureDescription="Track trending topics and industries to discover new lead opportunities. Trends analytics is coming soon.">
     <PageContainer>
       <PageHeader
         title="Trending Topics"
@@ -164,6 +162,5 @@ export default function TrendsPage() {
       )}
     </div>
     </PageContainer>
-    </FeatureGate>
   )
 }

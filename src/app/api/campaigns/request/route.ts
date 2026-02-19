@@ -10,6 +10,7 @@ import { getCurrentUser } from '@/lib/auth/helpers'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { inngest } from '@/inngest/client'
 
 const campaignRequestSchema = z.object({
   company_name: z.string().min(2),
@@ -90,9 +91,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // 4. FUTURE: Send notification to EmailBison team
-    // Implementation: Use Inngest event or Slack webhook notification
-    // await inngest.send({ name: 'emailbison/campaign-request', data: { ...campaignRequest } })
+    // 4. Notify EmailBison team via Inngest
+    await inngest.send({ name: 'emailbison/campaign-request', data: { ...campaignRequest } } as any)
 
     return NextResponse.json({
       success: true,

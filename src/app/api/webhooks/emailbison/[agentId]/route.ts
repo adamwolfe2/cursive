@@ -12,6 +12,7 @@ import {
   type ReplyReceivedEvent,
 } from '@/lib/services/emailbison'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
+import { inngest } from '@/inngest/client'
 
 interface RouteContext {
   params: Promise<{ agentId: string }>
@@ -272,12 +273,11 @@ async function handleReplyReceived(
     throw new Error('Failed to create email message')
   }
 
-  // FUTURE: Trigger AI classification and response generation via Inngest
-  // When AI email processing is implemented, uncomment:
-  // await inngest.send({
-  //   name: 'email/reply-received',
-  //   data: { thread_id: threadId, agent_id: agent.id }
-  // })
+  // Trigger AI classification and response generation via Inngest
+  await inngest.send({
+    name: 'email/reply-received',
+    data: { thread_id: threadId, agent_id: agent.id }
+  } as any)
 }
 
 /**

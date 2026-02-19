@@ -123,18 +123,36 @@ export default function SuperPixelPage() {
               </h2>
             </div>
 
-            {/* Video placeholder */}
-            <div className="aspect-video bg-gray-900 rounded-xl flex items-center justify-center relative overflow-hidden mb-6">
-              <div className="absolute inset-0 bg-gradient-to-br from-gray-800 to-gray-950" />
-              <div className="relative z-10 flex flex-col items-center text-center px-8">
-                <div className="w-20 h-20 rounded-full bg-white/10 border-2 border-white/30 flex items-center justify-center mb-4 hover:bg-white/20 transition-colors cursor-pointer">
-                  <Play className="w-8 h-8 text-white fill-white ml-1" />
+            {/* Watch Demo CTA */}
+            <div className="bg-gray-900 rounded-xl p-12 flex flex-col items-center text-center mb-6">
+              <p className="text-gray-300 text-base max-w-md mb-6">
+                See how Cursive&apos;s Super Pixel turns anonymous traffic into a pipeline
+                of verified, high-intent leads in under 5 minutes.
+              </p>
+              <a
+                href={CAL_LINK}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-7 py-3.5 rounded-xl transition-colors duration-200"
+              >
+                <Play className="w-5 h-5 fill-white" />
+                Watch Live Demo
+              </a>
+            </div>
+
+            {/* Results Stats Bar */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+              {[
+                { stat: "70%", label: "ID Rate" },
+                { stat: "420M+", label: "Verified Contacts" },
+                { stat: "2-min", label: "Setup Time" },
+                { stat: "$0", label: "Setup Fee" },
+              ].map(({ stat, label }) => (
+                <div key={label} className="bg-gray-50 border border-gray-200 rounded-xl p-4 text-center">
+                  <div className="text-2xl font-bold text-gray-900">{stat}</div>
+                  <div className="text-sm text-gray-500 mt-1">{label}</div>
                 </div>
-                <p className="text-gray-300 text-base max-w-md">
-                  Watch how Cursive&apos;s Super Pixel turns your anonymous traffic into a pipeline
-                  of verified, high-intent leads in under 5 minutes.
-                </p>
-              </div>
+              ))}
             </div>
 
             {/* Warning box */}

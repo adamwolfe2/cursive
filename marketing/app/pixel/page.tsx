@@ -587,7 +587,7 @@ export default function PixelPage() {
               <div>
                 <p className="text-gray-900 font-medium mb-2">Lead Marketplace (Outbound/Cold Leads):</p>
                 <p className="text-gray-700">
-                  Self-serve access to 50,000+ verified B2B contacts. Browse and buy leads filtered by industry, seniority, and intent. Best for: proactive outreach to new prospects who haven't found you yet.
+                  Self-serve access to 420M+ verified B2B contacts. Browse and buy leads filtered by industry, seniority, and intent. Best for: proactive outreach to new prospects who haven't found you yet.
                 </p>
               </div>
               <p className="text-gray-700">
@@ -607,7 +607,7 @@ export default function PixelPage() {
               {
                 label: "Browse Lead Marketplace",
                 href: "https://www.meetcursive.com/marketplace",
-                description: "Self-serve access to 50,000+ verified B2B leads"
+                description: "Self-serve access to 420M+ verified B2B leads"
               },
               {
                 label: "View All Services",

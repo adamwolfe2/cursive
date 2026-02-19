@@ -179,13 +179,13 @@ export default function FAQPage() {
           <div>
             <p className="text-white mb-2">Can I cancel anytime?</p>
             <p className="text-gray-400">
-              Yes. All plans are month-to-month with no long-term contracts. Give 30 days notice to cancel. Setup fees are non-refundable, but monthly fees are prorated if you cancel mid-month.
+              Yes. All plans are month-to-month with no long-term contracts. Give 30 days notice to cancel. Monthly fees are prorated if you cancel mid-month.
             </p>
           </div>
           <div>
             <p className="text-white mb-2">Is there a setup fee?</p>
             <p className="text-gray-400">
-              No setup fees — ever. Everything is included in your monthly subscription.
+              No setup fees — ever. Your first month includes complimentary white-glove onboarding from our team to get your pixel installed, integrations connected, and first leads flowing — at no additional cost.
             </p>
           </div>
           <div>
