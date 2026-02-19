@@ -56,8 +56,8 @@ export const processEnrichmentJob = inngest.createFunction(
   async ({ event, step, logger }) => {
     const { job_id, lead_id, workspace_id, provider } = event.data as EnrichmentJobData
 
-    // Step 1: Mark job as in progress and fetch lead
-    const { job, lead } = await step.run('fetch-job-and-lead', async () => {
+    // Step 1: Mark job as in progress and fetch lead (includes dedup check)
+    const { job, lead, alreadyEnriched } = await step.run('fetch-job-and-lead', async () => {
       const supabase = createAdminClient()
 
       // Update job status
@@ -89,13 +89,27 @@ export const processEnrichmentJob = inngest.createFunction(
         .eq('id', job_id)
         .single()
 
-      return { job: jobData, lead: leadData }
+      // DEDUP: Check if this provider already enriched this lead successfully
+      const { data: existingLog } = await supabase
+        .from('enrichment_logs')
+        .select('id')
+        .eq('lead_id', lead_id)
+        .eq('workspace_id', workspace_id)
+        .eq('provider', provider)
+        .eq('status', 'success')
+        .maybeSingle()
+
+      return { job: jobData, lead: leadData, alreadyEnriched: !!existingLog }
     })
 
     logger.info(`Processing enrichment job ${job_id} for lead ${lead_id} with provider ${provider}`)
 
-    // Step 2: Execute enrichment based on provider
+    // Step 2: Execute enrichment based on provider (skip if already enriched)
     const enrichmentResult = await step.run(`enrich-with-${provider}`, async () => {
+      if (alreadyEnriched) {
+        return { success: true, data: null, skipped: true, creditsUsed: 0 }
+      }
+
       switch (provider) {
         case 'email_validation':
           return await enrichEmailValidation(lead)
@@ -114,9 +128,22 @@ export const processEnrichmentJob = inngest.createFunction(
       }
     })
 
-    // Step 3: Update lead with enrichment results
+    // Step 3: Update lead with enrichment results (skipped if already enriched)
     await step.run('update-lead', async () => {
       const supabase = createAdminClient()
+
+      if (enrichmentResult.skipped) {
+        // Already enriched — mark job as completed without re-enriching or charging credits
+        await supabase
+          .from('enrichment_jobs')
+          .update({
+            status: 'completed',
+            result: { skipped: true, reason: 'already_enriched' },
+            completed_at: new Date().toISOString(),
+          })
+          .eq('id', job_id)
+        return
+      }
 
       if (enrichmentResult.success && enrichmentResult.data) {
         const updatePayload: Record<string, any> = {
@@ -199,6 +226,7 @@ export const processEnrichmentJob = inngest.createFunction(
       lead_id,
       provider,
       data: enrichmentResult.data,
+      skipped: enrichmentResult.skipped || false,
     }
   }
 )

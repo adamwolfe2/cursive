@@ -65,8 +65,17 @@ const nextConfig: NextConfig = {
     ]
   },
 
-  // Domain redirects (www → non-www) handled by Vercel domain settings
-  // to avoid conflicts with Vercel's automatic redirect behavior.
+  // Explicit non-www → www redirect (belt-and-suspenders alongside Vercel domain settings)
+  async redirects() {
+    return [
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'meetcursive.com' }],
+        destination: 'https://www.meetcursive.com/:path*',
+        permanent: true,
+      },
+    ]
+  },
 };
 
 export default nextConfig;
