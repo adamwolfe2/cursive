@@ -22,6 +22,7 @@ const dancingScript = Dancing_Script({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://www.meetcursive.com'),
   ...generateMetadata({
     title: "Turn Website Visitors Into Booked Meetings",
     description: "Identify 70% of website visitors and automate personalized outreach. Turn anonymous traffic into booked meetings with AI-powered lead generation.",

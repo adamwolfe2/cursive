@@ -95,7 +95,7 @@ export function HumanHomePage() {
         <Container className="max-w-[1440px] lg:px-12">
           {/* Eyebrow Badge */}
           <motion.div
-            initial={{ opacity: 0, y: -10 }}
+            initial={false}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
             className="text-center lg:text-left mb-4"
@@ -110,7 +110,7 @@ export function HumanHomePage() {
           <div className="lg:flex lg:gap-8 xl:gap-12 items-start">
             {/* Left Column: Copy */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={false}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
               className="lg:w-[40%] lg:flex-shrink-0 text-center lg:text-left mb-8 lg:mb-0"
@@ -185,7 +185,7 @@ export function HumanHomePage() {
 
             {/* Right Column: Demo */}
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
+              initial={false}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
               className="lg:flex-1 lg:min-w-0"
@@ -226,7 +226,7 @@ export function HumanHomePage() {
                     <AnimatePresence mode="wait">
                       <motion.div
                         key={activeFeature}
-                        initial={{ opacity: 0, y: 10 }}
+                        initial={false}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
@@ -260,7 +260,7 @@ export function HumanHomePage() {
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Card 1: Browse & Buy */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={false}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               className="bg-white rounded-2xl p-8 border border-gray-200 hover:shadow-lg transition-all"
@@ -293,7 +293,7 @@ export function HumanHomePage() {
 
             {/* Card 2: Let Us Handle It */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={false}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
@@ -346,7 +346,7 @@ export function HumanHomePage() {
               return (
                 <motion.div
                   key={i}
-                  initial={{ opacity: 0 }}
+                  initial={false}
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true, margin: "-100px" }}
                   transition={{ delay: i * 0.05, duration: 0.3 }}
@@ -383,7 +383,7 @@ export function HumanHomePage() {
             {coreFeatures.map((feature, index) => (
               <motion.div
                 key={feature.title}
-                initial={{ opacity: 0 }}
+                initial={false}
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ delay: index * 0.03, duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
@@ -449,7 +449,7 @@ export function HumanHomePage() {
             ].map((stat, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, y: 20 }}
+                initial={false}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}

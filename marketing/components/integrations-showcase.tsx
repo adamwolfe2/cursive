@@ -73,7 +73,7 @@ export function IntegrationsShowcase({
         {integrations.map((integration, i) => (
           <motion.div
             key={integration.name}
-            initial={{ opacity: 0, scale: 0.8, y: 20 }}
+            initial={false}
             whileInView={{ opacity: 1, scale: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
             transition={{
@@ -97,7 +97,7 @@ export function IntegrationsShowcase({
       </div>
 
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={false}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ delay: 0.8 }}

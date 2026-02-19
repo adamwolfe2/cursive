@@ -20,7 +20,7 @@ export function CustomerLogos() {
     <section className="py-16 bg-gray-100">
       <Container>
         <motion.div
-          initial={{ opacity: 0 }}
+          initial={false}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true, margin: "-50px" }}
           transition={{ duration: 0.3 }}

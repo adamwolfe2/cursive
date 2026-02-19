@@ -63,7 +63,7 @@ export function CompetitiveAdvantagesSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={false}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
@@ -86,7 +86,7 @@ export function CompetitiveAdvantagesSection() {
             return (
               <motion.div
                 key={advantage.title}
-                initial={{ opacity: 0 }}
+                initial={false}
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{
@@ -129,7 +129,7 @@ export function CompetitiveAdvantagesSection() {
 
         {/* Bottom CTA */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={false}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.4, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}

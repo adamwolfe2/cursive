@@ -87,7 +87,7 @@ export function DashboardPreview() {
             ].map((stat, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, y: 20 }}
+                initial={false}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1 }}
                 className="bg-gray-50 rounded-xl p-3 sm:p-4 border border-gray-200"
@@ -129,7 +129,7 @@ export function DashboardPreview() {
                   {leads.map((lead, i) => (
                     <motion.tr
                       key={i}
-                      initial={{ opacity: 0, x: -20 }}
+                      initial={false}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: i * 0.05 }}
                       className="hover:bg-gray-50 transition-colors"

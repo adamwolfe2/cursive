@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation'
 import { BlogPostLayout } from '@/components/blog/blog-post-layout'
 import { getPostBySlug, getRelatedPosts } from '@/lib/blog-content-loader'
 
+export const dynamic = 'force-static'
+
 interface PageProps {
   params: {
     category: string
