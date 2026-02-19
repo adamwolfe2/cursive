@@ -38,23 +38,15 @@ async function checkDatabase(): Promise<{ status: string; responseTime: number; 
 async function checkStripe(): Promise<{ status: string; error?: string }> {
   const key = process.env.STRIPE_SECRET_KEY
   if (!key) return { status: 'unconfigured' }
-
-  try {
-    const res = await fetch('https://api.stripe.com/v1/balance', {
-      headers: { Authorization: `Bearer ${key}` },
-      signal: AbortSignal.timeout(5000),
-    })
-    return res.ok ? { status: 'healthy' } : { status: 'unhealthy', error: `HTTP ${res.status}` }
-  } catch (e) {
-    return { status: 'unhealthy', error: e instanceof Error ? e.message : 'Unknown' }
-  }
+  const valid = key.startsWith('sk_live_') || key.startsWith('sk_test_')
+  return valid ? { status: 'configured' } : { status: 'misconfigured', error: 'Invalid key format' }
 }
 
 export async function GET() {
   const [db, stripe] = await Promise.all([checkDatabase(), checkStripe()])
 
   const overall =
-    db.status === 'healthy' && stripe.status === 'healthy' ? 'healthy'
+    db.status === 'healthy' && stripe.status === 'configured' ? 'healthy'
     : db.status === 'unhealthy' ? 'unhealthy'
     : 'degraded'
 

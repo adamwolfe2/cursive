@@ -10,6 +10,11 @@ import { safeError } from '@/lib/utils/log-sanitizer'
 // ─── Rate Limiting (in-memory, Edge-compatible) ───────────────────────────
 // Shared across requests within the same Edge instance.
 // Not durable across cold starts, but provides burst protection.
+// TODO(security): Replace with Upstash Redis for durable rate limiting across Edge instances.
+// In-memory store is per-instance — multiple Vercel Edge replicas each have independent counters.
+// A distributed attacker can bypass limits by spreading requests across replicas.
+// Current implementation provides single-instance burst protection only.
+// See: https://upstash.com/docs/redis/quickstarts/vercel-edge
 const rateLimitStore = new Map<string, { count: number; resetAt: number }>()
 
 const RATE_LIMIT_TIERS = {
@@ -76,8 +81,7 @@ export async function middleware(req: NextRequest) {
     if (
       pathname.startsWith('/api/webhooks') ||
       pathname.startsWith('/api/cron') ||
-      pathname.startsWith('/api/inngest') ||
-      pathname === '/api/health'
+      pathname.startsWith('/api/inngest')
     ) {
       return NextResponse.next({
         request: req,
@@ -138,14 +142,12 @@ export async function middleware(req: NextRequest) {
       pathname.startsWith('/_next') ||
       pathname.startsWith('/api/webhooks') ||
       pathname.startsWith('/api/cron') ||
-      pathname === '/api/health' ||
       pathname.startsWith('/api/inngest')
 
-    // API routes (except webhooks and health) require authentication
+    // API routes (except webhooks and cron) require authentication
     const isApiRoute = pathname.startsWith('/api') &&
       !pathname.startsWith('/api/webhooks') &&
-      !pathname.startsWith('/api/cron') &&
-      pathname !== '/api/health'
+      !pathname.startsWith('/api/cron')
 
     // Skip auth check entirely for public routes to prevent redirect loops
     let authenticatedUser: { id: string; email?: string } | null = null

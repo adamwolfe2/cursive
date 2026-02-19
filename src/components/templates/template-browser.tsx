@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import DOMPurify from 'isomorphic-dompurify'
 import { PageContainer, PageHeader } from '@/components/layout'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -366,7 +367,7 @@ export function TemplateBrowser() {
                   <div
                     className="prose prose-sm max-w-none text-foreground"
                     dangerouslySetInnerHTML={{
-                      __html: renderWithSampleData(previewTemplate.body_html),
+                      __html: DOMPurify.sanitize(renderWithSampleData(previewTemplate.body_html)),
                     }}
                   />
                 </div>
