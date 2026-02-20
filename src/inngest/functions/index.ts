@@ -234,3 +234,6 @@ export { weeklySummaryEmail } from './weekly-summary-email'
 
 // Partner Stripe Connect Validation (daily 10am CT — reminds partners to complete Stripe onboarding)
 export { partnerStripeValidation } from './partner-stripe-validation'
+
+// Credit Alert Checker (twice daily — emails workspace owners when balance below threshold)
+export { creditAlertChecker } from './credit-alert-checker'

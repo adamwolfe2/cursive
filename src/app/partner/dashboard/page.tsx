@@ -68,7 +68,7 @@ export default async function PartnerDashboard() {
       <StatsCards analytics={analytics} credits={credits} />
 
       {/* Partner Leaderboard — top partners by leads sold this month */}
-      <PartnerLeaderboard />
+      <PartnerLeaderboard isAdmin={user.role === 'owner' || user.role === 'admin'} />
 
       {/* Partner Tier Breakdown */}
       <PartnerTierOverview totalLeads={totalLeadsUploaded} />

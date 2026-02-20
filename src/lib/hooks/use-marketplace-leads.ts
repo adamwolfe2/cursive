@@ -64,7 +64,7 @@ interface MarketplaceLeadsParams {
   filters: MarketplaceFilters
   page: number
   limit: number
-  orderBy: 'freshness_score' | 'intent_score' | 'price'
+  orderBy: 'freshness_score' | 'intent_score' | 'price' | 'created_at'
   orderDirection: 'asc' | 'desc'
 }
 

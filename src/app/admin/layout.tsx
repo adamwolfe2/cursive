@@ -74,8 +74,10 @@ export default async function AdminLayout({
                   { href: '/admin/payouts', label: 'Payouts' },
                   { href: '/admin/api', label: 'API Costs' },
                   { href: '/admin/monitoring/dedup-enrichment', label: 'Dedup' },
+                  { href: '/admin/email-deliverability', label: 'Deliverability' },
                   { href: '/admin/email-stats', label: 'Email Stats' },
                   { href: '/admin/dedup-stats', label: 'Dedup Stats' },
+                  { href: '/admin/credit-usage', label: 'Credit Usage' },
                 ].map(({ href, label }) => (
                   <Link
                     key={href}

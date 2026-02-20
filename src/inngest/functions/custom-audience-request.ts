@@ -3,6 +3,7 @@
 
 import { inngest } from '../client'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { sendCustomAudienceConfirmationEmail } from '@/lib/email/service'
 
 export const handleCustomAudienceRequest = inngest.createFunction(
   { id: 'handle-custom-audience-request', retries: 2 },
@@ -12,10 +13,36 @@ export const handleCustomAudienceRequest = inngest.createFunction(
 
     // Step 1: Send confirmation email to user
     await step.run('send-confirmation-email', async () => {
-      logger.info(`[Custom Audience] Confirmation email queued for ${user_email}`)
-      // TODO: send confirmation email via Resend
-      // "We received your custom audience request for {industry} leads"
-      // "Expect a 25-lead sample within 48 hours"
+      logger.info(`[Custom Audience] Sending confirmation email to ${user_email}`)
+
+      // Look up user's display name
+      let userName = user_email.split('@')[0]
+      if (user_id) {
+        try {
+          const { createAdminClient } = await import('@/lib/supabase/admin')
+          const supabase = createAdminClient()
+          const { data: userData } = await supabase
+            .from('users')
+            .select('first_name, last_name')
+            .eq('id', user_id)
+            .maybeSingle()
+          if (userData?.first_name) {
+            userName = [userData.first_name, userData.last_name].filter(Boolean).join(' ')
+          }
+        } catch {
+          // fallback to email prefix if lookup fails
+        }
+      }
+
+      const result = await sendCustomAudienceConfirmationEmail(
+        user_email,
+        userName,
+        industry,
+        volume
+      )
+      if (!result.success) {
+        safeError('[Custom Audience] Failed to send confirmation email:', result.error)
+      }
     })
 
     // Step 2: Wait 24 hours, then check if internal team has responded

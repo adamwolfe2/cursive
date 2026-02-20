@@ -200,6 +200,22 @@ const navigationItems: NavItemConfig[] = [
       { name: 'Security', href: '/settings/security' },
     ],
   },
+  {
+    name: 'API Docs',
+    href: '/docs/api',
+    section: 'account',
+    subText: 'Endpoint reference',
+    icon: (
+      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
+        />
+      </svg>
+    ),
+  },
   // ── Admin Only ──
   {
     name: 'AI Studio',

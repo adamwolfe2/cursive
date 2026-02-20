@@ -98,9 +98,13 @@ export default function MarketplacePage() {
   const [page, setPage] = useState(0)
   const [limit] = useState(20)
 
-  // Sorting
-  const [orderBy, setOrderBy] = useState<'freshness_score' | 'intent_score' | 'price'>('freshness_score')
-  const [orderDirection, setOrderDirection] = useState<'asc' | 'desc'>('desc')
+  // Sorting — 'relevant' maps to default ordering (freshness_score desc), 'newest' to created_at desc, 'intent' to intent_score desc
+  type SortOption = 'relevant' | 'newest' | 'intent'
+  const [sortOption, setSortOption] = useState<SortOption>('relevant')
+
+  // Derive orderBy/orderDirection from sortOption
+  const orderBy = sortOption === 'intent' ? 'intent_score' : sortOption === 'newest' ? 'created_at' : 'freshness_score'
+  const orderDirection: 'asc' | 'desc' = 'desc'
 
   // ── React Query hooks ──────────────────────────────────────────────────────
   const leadsQuery = useMarketplaceLeads({
@@ -219,6 +223,7 @@ export default function MarketplacePage() {
       companySizes: [],
       seniorityLevels: [],
     })
+    setSortOption('relevant')
     setPage(0)
   }, [])
 
@@ -715,19 +720,27 @@ export default function MarketplacePage() {
                     </div>
                   </MobileFilters>
 
+                  {/* Sort dropdown — desktop and mobile */}
                   <select
-                    value={`${orderBy}-${orderDirection}`}
+                    value={sortOption}
                     onChange={(e) => {
-                      const [newOrderBy, newDirection] = e.target.value.split('-') as [typeof orderBy, typeof orderDirection]
-                      setOrderBy(newOrderBy)
-                      setOrderDirection(newDirection)
+                      const val = e.target.value as SortOption | 'verified_email'
+                      if (val === 'verified_email') {
+                        // Shortcut: set hasVerifiedEmail filter + reset sort to relevant
+                        setFilters((prev) => ({ ...prev, hasVerifiedEmail: true }))
+                        setSortOption('relevant')
+                      } else {
+                        setSortOption(val)
+                      }
+                      setPage(0)
                     }}
                     className="h-11 px-3 text-[13px] border border-zinc-200 bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-500"
+                    aria-label="Sort leads"
                   >
-                    <option value="freshness_score-desc">Freshest first</option>
-                    <option value="intent_score-desc">Highest intent first</option>
-                    <option value="price-asc">Lowest price first</option>
-                    <option value="price-desc">Highest price first</option>
+                    <option value="relevant">Most Relevant</option>
+                    <option value="newest">Newest First</option>
+                    <option value="intent">Highest Intent</option>
+                    <option value="verified_email">Verified Email Only</option>
                   </select>
                 </div>
 

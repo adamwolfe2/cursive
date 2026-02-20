@@ -1,5 +1,11 @@
 -- Outbound Webhook System
 -- Allows workspaces to subscribe to lead/credit events via HTTP POST
+--
+-- TODO: MUST BE APPLIED MANUALLY
+-- The Supabase CLI is not linked (project_id = "your-project-id" in config.toml).
+-- To apply: Supabase dashboard → SQL Editor → paste this file and run.
+-- Or: npx supabase db push --db-url "postgresql://postgres:[DB_PASSWORD]@db.lrbftjspiiakfnydxbgk.supabase.co:5432/postgres"
+-- Until applied, all webhook delivery calls will fail with table-not-found errors.
 
 -- workspace_webhooks: one row per configured endpoint per workspace
 CREATE TABLE IF NOT EXISTS workspace_webhooks (

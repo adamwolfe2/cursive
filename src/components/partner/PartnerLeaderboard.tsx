@@ -1,6 +1,6 @@
 /**
  * Partner Leaderboard Component
- * Shows the top 10 partners by leads sold this calendar month,
+ * Shows the top 10 partners ranked by the chosen category and period,
  * with tier badges, podium styling for top 3, and the current
  * user's row highlighted (appended at the bottom if outside top 10).
  */
@@ -10,9 +10,9 @@
 import { useEffect, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Shield, Award, Crown, Trophy, Loader2 } from 'lucide-react'
+import { Shield, Award, Crown, Trophy, Loader2, Download } from 'lucide-react'
 import { cn } from '@/lib/design-system'
-import type { LeaderboardEntry } from '@/app/api/partner/leaderboard/route'
+import type { LeaderboardEntry, LeaderboardPeriod, LeaderboardCategory } from '@/app/api/partner/leaderboard/route'
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -37,6 +37,19 @@ const TIER_ICONS = {
   Silver: Award,
   Gold:   Crown,
 }
+
+const PERIOD_OPTIONS: { value: LeaderboardPeriod; label: string }[] = [
+  { value: 'week', label: 'Week' },
+  { value: 'month', label: 'Month' },
+  { value: 'quarter', label: 'Quarter' },
+  { value: 'alltime', label: 'All Time' },
+]
+
+const CATEGORY_OPTIONS: { value: LeaderboardCategory; label: string }[] = [
+  { value: 'revenue', label: 'Revenue' },
+  { value: 'leads', label: 'Leads' },
+  { value: 'conversion', label: 'Conversion' },
+]
 
 // ---------------------------------------------------------------------------
 // Sub-components
@@ -80,6 +93,30 @@ function RankBadge({ rank }: { rank: number }) {
   )
 }
 
+function FilterButton({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean
+  onClick: () => void
+  children: React.ReactNode
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        'rounded-md px-3 py-1 text-xs font-medium transition-colors',
+        active
+          ? 'bg-foreground text-background'
+          : 'bg-muted text-muted-foreground hover:bg-muted/70'
+      )}
+    >
+      {children}
+    </button>
+  )
+}
+
 // ---------------------------------------------------------------------------
 // Main component
 // ---------------------------------------------------------------------------
@@ -87,13 +124,18 @@ function RankBadge({ rank }: { rank: number }) {
 interface PartnerLeaderboardProps {
   /** Override the month displayed in the header (ISO string). Defaults to current month. */
   month?: string
+  /** Whether the current user is an admin (shows Export CSV button). */
+  isAdmin?: boolean
 }
 
-export function PartnerLeaderboard({ month }: PartnerLeaderboardProps) {
+export function PartnerLeaderboard({ month, isAdmin = false }: PartnerLeaderboardProps) {
   const [entries, setEntries] = useState<LeaderboardEntry[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [resolvedMonth, setResolvedMonth] = useState<string>(month ?? new Date().toISOString())
+  const [period, setPeriod] = useState<LeaderboardPeriod>('month')
+  const [category, setCategory] = useState<LeaderboardCategory>('revenue')
+  const [exporting, setExporting] = useState(false)
 
   useEffect(() => {
     let cancelled = false
@@ -103,7 +145,8 @@ export function PartnerLeaderboard({ month }: PartnerLeaderboardProps) {
         setLoading(true)
         setError(null)
 
-        const res = await fetch('/api/partner/leaderboard')
+        const params = new URLSearchParams({ period, category })
+        const res = await fetch(`/api/partner/leaderboard?${params.toString()}`)
 
         if (!res.ok) {
           const body = await res.json().catch(() => ({}))
@@ -130,7 +173,35 @@ export function PartnerLeaderboard({ month }: PartnerLeaderboardProps) {
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [period, category])
+
+  async function handleExport() {
+    try {
+      setExporting(true)
+      const params = new URLSearchParams({ period, category })
+      const res = await fetch(`/api/partner/leaderboard/export?${params.toString()}`)
+
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}))
+        throw new Error(body?.error ?? 'Export failed')
+      }
+
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `leaderboard-${period}-${category}.csv`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+    } catch (err: unknown) {
+      // Silent fail — the download simply won't trigger
+      console.error('[Leaderboard] Export error:', err)
+    } finally {
+      setExporting(false)
+    }
+  }
 
   // Format month header: "February 2026"
   const monthLabel = new Date(resolvedMonth).toLocaleDateString('en-US', {
@@ -139,23 +210,79 @@ export function PartnerLeaderboard({ month }: PartnerLeaderboardProps) {
     timeZone: 'UTC',
   })
 
+  // Determine header label based on period
+  const periodLabel =
+    period === 'week'
+      ? 'This Week'
+      : period === 'month'
+      ? monthLabel
+      : period === 'quarter'
+      ? 'This Quarter'
+      : 'All Time'
+
   // Separate top-10 rows from the "you're outside top 10" appended row
   const top10 = entries.filter((e) => e.rank <= 10 || entries.indexOf(e) < 10)
   const currentUserOutsideTop10 = entries.find(
     (e) => e.is_current_user && !top10.includes(e)
   )
 
+  // Determine primary stat column label based on category
+  const primaryStatLabel =
+    category === 'revenue' ? 'Earnings' : category === 'leads' ? 'Leads' : 'Conv. %'
+
   return (
     <Card>
-      <CardHeader className="pb-4">
+      <CardHeader className="pb-3">
         <div className="flex items-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-50">
             <Trophy className="h-5 w-5 text-amber-600" />
           </div>
-          <div>
+          <div className="flex-1 min-w-0">
             <CardTitle className="text-lg">Partner Leaderboard</CardTitle>
-            <p className="text-sm text-muted-foreground">{monthLabel}</p>
+            <p className="text-sm text-muted-foreground">{periodLabel}</p>
           </div>
+
+          {/* Admin-only Export CSV button */}
+          {isAdmin && (
+            <button
+              onClick={handleExport}
+              disabled={exporting || loading}
+              className="inline-flex items-center gap-1.5 rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted disabled:opacity-50 transition-colors"
+            >
+              {exporting ? (
+                <Loader2 className="h-3 w-3 animate-spin" />
+              ) : (
+                <Download className="h-3 w-3" />
+              )}
+              Export CSV
+            </button>
+          )}
+        </div>
+
+        {/* Period filter buttons */}
+        <div className="flex items-center gap-1.5 pt-2">
+          {PERIOD_OPTIONS.map((opt) => (
+            <FilterButton
+              key={opt.value}
+              active={period === opt.value}
+              onClick={() => setPeriod(opt.value)}
+            >
+              {opt.label}
+            </FilterButton>
+          ))}
+        </div>
+
+        {/* Category tabs */}
+        <div className="flex items-center gap-1.5 pt-1">
+          {CATEGORY_OPTIONS.map((opt) => (
+            <FilterButton
+              key={opt.value}
+              active={category === opt.value}
+              onClick={() => setCategory(opt.value)}
+            >
+              {opt.label}
+            </FilterButton>
+          ))}
         </div>
       </CardHeader>
 
@@ -174,7 +301,7 @@ export function PartnerLeaderboard({ month }: PartnerLeaderboardProps) {
 
         {!loading && !error && entries.length === 0 && (
           <div className="px-6 py-8 text-center text-sm text-muted-foreground">
-            No leads sold yet this month. Be the first!
+            No data yet for this period. Be the first!
           </div>
         )}
 
@@ -186,7 +313,7 @@ export function PartnerLeaderboard({ month }: PartnerLeaderboardProps) {
               <span>Partner</span>
               <span className="text-right">Tier</span>
               <span className="text-right">Leads</span>
-              <span className="text-right">Earnings</span>
+              <span className="text-right">{primaryStatLabel}</span>
             </div>
 
             {/* Top 10 rows */}
@@ -194,6 +321,7 @@ export function PartnerLeaderboard({ month }: PartnerLeaderboardProps) {
               <LeaderboardRow
                 key={`${entry.rank}-${entry.partner_name}`}
                 entry={entry}
+                category={category}
               />
             ))}
 
@@ -205,7 +333,7 @@ export function PartnerLeaderboard({ month }: PartnerLeaderboardProps) {
                   <span className="text-xs text-muted-foreground">Your rank</span>
                   <div className="h-px flex-1 bg-border" />
                 </div>
-                <LeaderboardRow entry={currentUserOutsideTop10} />
+                <LeaderboardRow entry={currentUserOutsideTop10} category={category} />
               </>
             )}
           </div>
@@ -219,9 +347,26 @@ export function PartnerLeaderboard({ month }: PartnerLeaderboardProps) {
 // Row component
 // ---------------------------------------------------------------------------
 
-function LeaderboardRow({ entry }: { entry: LeaderboardEntry }) {
+function LeaderboardRow({
+  entry,
+  category,
+}: {
+  entry: LeaderboardEntry
+  category: LeaderboardCategory
+}) {
   const isPodium = entry.rank <= 3
   const podiumColor = isPodium ? PODIUM_COLORS[entry.rank] : null
+
+  // Primary stat based on category
+  const primaryStat =
+    category === 'revenue'
+      ? `$${entry.earnings_this_month.toFixed(2)}`
+      : category === 'leads'
+      ? entry.leads_sold_this_month.toLocaleString()
+      : `${entry.conversion_rate.toFixed(1)}%`
+
+  const primaryStatSub =
+    category === 'revenue' ? 'earned' : category === 'leads' ? 'leads' : 'conv.'
 
   return (
     <div
@@ -267,26 +412,40 @@ function LeaderboardRow({ entry }: { entry: LeaderboardEntry }) {
         <TierBadge tier={entry.tier} />
       </div>
 
-      {/* Leads sold */}
+      {/* Leads sold (always shown) */}
       <div className="text-right">
         <span
           className={cn(
             'text-sm font-semibold tabular-nums',
-            isPodium && !entry.is_current_user ? '' : 'text-foreground'
+            isPodium && !entry.is_current_user && category === 'leads' ? '' : 'text-foreground'
           )}
-          style={isPodium ? { color: podiumColor ?? undefined } : undefined}
+          style={
+            isPodium && !entry.is_current_user && category === 'leads'
+              ? { color: podiumColor ?? undefined }
+              : undefined
+          }
         >
           {entry.leads_sold_this_month.toLocaleString()}
         </span>
         <p className="text-[10px] text-muted-foreground leading-none mt-0.5">leads</p>
       </div>
 
-      {/* Earnings */}
+      {/* Primary stat column */}
       <div className="text-right">
-        <span className="text-sm font-semibold tabular-nums text-emerald-600">
-          ${entry.earnings_this_month.toFixed(2)}
+        <span
+          className={cn(
+            'text-sm font-semibold tabular-nums',
+            category === 'revenue' ? 'text-emerald-600' : 'text-foreground'
+          )}
+          style={
+            isPodium && !entry.is_current_user && category !== 'revenue'
+              ? { color: podiumColor ?? undefined }
+              : undefined
+          }
+        >
+          {primaryStat}
         </span>
-        <p className="text-[10px] text-muted-foreground leading-none mt-0.5">earned</p>
+        <p className="text-[10px] text-muted-foreground leading-none mt-0.5">{primaryStatSub}</p>
       </div>
     </div>
   )

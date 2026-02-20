@@ -57,6 +57,10 @@ export default function BillingClient() {
   const [arThreshold, setArThreshold] = useState(10)
   const [arPackage, setArPackage] = useState('starter')
 
+  // Low Balance Alert local state (synced from API)
+  const [alertThreshold, setAlertThreshold] = useState(10)
+  const [alertSaving, setAlertSaving] = useState(false)
+
   // Fetch current user data
   const { data: userData, isLoading } = useQuery({
     queryKey: ['user', 'me'],
@@ -81,6 +85,45 @@ export default function BillingClient() {
       return response.json()
     },
   })
+
+  // Fetch credit alert threshold
+  const { data: alertData } = useQuery<{ threshold: number }>({
+    queryKey: ['credit-alert-threshold'],
+    queryFn: async () => {
+      const response = await fetch('/api/billing/credit-alert-threshold')
+      if (!response.ok) return { threshold: 10 }
+      return response.json()
+    },
+  })
+
+  // Sync fetched alert threshold into local state
+  useEffect(() => {
+    if (alertData?.threshold !== undefined) {
+      setAlertThreshold(alertData.threshold)
+    }
+  }, [alertData])
+
+  const handleSaveAlertThreshold = async () => {
+    setAlertSaving(true)
+    try {
+      const response = await fetch('/api/billing/credit-alert-threshold', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ threshold: alertThreshold }),
+      })
+      if (!response.ok) {
+        const error = await response.json()
+        toast.error(error.error || 'Failed to save alert threshold')
+      } else {
+        queryClient.invalidateQueries({ queryKey: ['credit-alert-threshold'] })
+        toast.success('Low balance alert threshold saved')
+      }
+    } catch {
+      toast.error('Failed to save alert threshold')
+    } finally {
+      setAlertSaving(false)
+    }
+  }
 
   // Fetch auto-recharge settings
   const { data: autoRechargeData } = useQuery<{ data: AutoRechargeSettings }>({
@@ -873,6 +916,56 @@ export default function BillingClient() {
               className="min-w-[100px]"
             >
               {saveAutoRechargeMutation.isPending ? 'Saving...' : 'Save Settings'}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Low Balance Alert */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle>Low Balance Alert</CardTitle>
+            <Badge variant="outline" className="text-xs">Notification</Badge>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            Get notified when your marketplace credit balance drops below a set threshold.
+          </p>
+          <div className="flex items-end gap-4">
+            <div className="space-y-1.5">
+              <label
+                htmlFor="alert-threshold"
+                className="text-sm font-medium text-foreground"
+              >
+                Alert me when balance drops below
+              </label>
+              <div className="flex items-center gap-2">
+                <input
+                  id="alert-threshold"
+                  type="number"
+                  min={1}
+                  max={1000}
+                  value={alertThreshold}
+                  onChange={(e) => {
+                    const val = parseInt(e.target.value, 10)
+                    if (!isNaN(val) && val >= 1 && val <= 1000) {
+                      setAlertThreshold(val)
+                    }
+                  }}
+                  className="w-24 rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                />
+                <span className="text-sm text-muted-foreground">credits</span>
+              </div>
+              <p className="text-xs text-muted-foreground">Between 1 and 1,000</p>
+            </div>
+            <Button
+              onClick={handleSaveAlertThreshold}
+              disabled={alertSaving}
+              className="mb-0"
+            >
+              {alertSaving ? 'Saving...' : 'Save'}
             </Button>
           </div>
         </CardContent>

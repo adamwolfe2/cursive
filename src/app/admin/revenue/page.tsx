@@ -3,7 +3,9 @@
  * Cursive Platform
  *
  * Server component showing key business revenue metrics:
- * - MRR estimate, credits sold/redeemed, active workspaces, partner payouts
+ * - Real MRR/ARR with month-over-month growth
+ * - Next-month revenue forecast (linear regression)
+ * - Churn & retention analysis
  * - Daily revenue table (last 30 days)
  * - Top 10 spenders
  * - Revenue by credit package
@@ -47,9 +49,19 @@ interface PartnerRow {
   earnings: number
 }
 
+interface ChurnedWorkspace {
+  workspace_id: string
+  name: string
+  last_purchase: string
+  total_spend: number
+}
+
 interface RevenueData {
   overview: {
-    estimated_mrr: number
+    mrr_current_month: number
+    mrr_last_month: number
+    mrr_growth_percent: number | null
+    arr_annualized: number
     credits_sold_count: number
     credits_sold_units: number
     credits_sold_value: number
@@ -59,10 +71,46 @@ interface RevenueData {
     pending_payouts_value: number
     commissions_this_month: number
   }
+  forecast: {
+    next_month_projected: number
+    confidence_low: number
+    confidence_high: number
+    months_used: number
+  }
+  retention: {
+    churned_count: number
+    at_risk_count: number
+    churned_workspaces: ChurnedWorkspace[]
+  }
   dailyRevenue: DailyRevenue[]
   topSpenders: SpenderRow[]
   revenueByPackage: PackageRow[]
   topPartners: PartnerRow[]
+}
+
+// ─── Linear regression helper ─────────────────────────────────────────────
+
+/**
+ * Least-squares linear regression on (x, y) pairs.
+ * Returns { slope, intercept } for y = slope * x + intercept.
+ */
+function linearRegression(points: { x: number; y: number }[]): { slope: number; intercept: number } {
+  const n = points.length
+  if (n === 0) return { slope: 0, intercept: 0 }
+  if (n === 1) return { slope: 0, intercept: points[0].y }
+
+  const sumX = points.reduce((s, p) => s + p.x, 0)
+  const sumY = points.reduce((s, p) => s + p.y, 0)
+  const sumXY = points.reduce((s, p) => s + p.x * p.y, 0)
+  const sumX2 = points.reduce((s, p) => s + p.x * p.x, 0)
+
+  const denominator = n * sumX2 - sumX * sumX
+  if (denominator === 0) return { slope: 0, intercept: sumY / n }
+
+  const slope = (n * sumXY - sumX * sumY) / denominator
+  const intercept = (sumY - slope * sumX) / n
+
+  return { slope, intercept }
 }
 
 // ─── Data fetching ────────────────────────────────────────────────────────────
@@ -72,11 +120,29 @@ async function fetchRevenueData(): Promise<RevenueData | null> {
     const supabase = createAdminClient()
 
     const now = new Date()
+
+    // Current month
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
+
+    // Last month
+    const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString()
+    const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
+
+    // Last 3 months for forecast (month-2, month-1, current)
+    const threeMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 2, 1).toISOString()
+
+    // Last 30 days for daily chart
     const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString()
+
+    // Churn: purchased 30-60 days ago but NOT in last 30 days
+    const sixtyDaysAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000).toISOString()
+    // At-risk: last purchase 20-30 days ago
+    const twentyDaysAgo = new Date(now.getTime() - 20 * 24 * 60 * 60 * 1000).toISOString()
 
     const [
       creditPurchasesThisMonth,
+      creditPurchasesLastMonth,
+      creditPurchasesLast3Months,
       creditPurchasesLast30Days,
       topSpendersAllTime,
       creditPurchasesAllPackages,
@@ -84,12 +150,30 @@ async function fetchRevenueData(): Promise<RevenueData | null> {
       pendingPayouts,
       partnerEarningsThisMonth,
       topPartnersByEarnings,
+      // Churn: all workspace purchase records from 60+ days ago through last 30 days
+      purchasesForChurnAnalysis,
+      // Recent purchases (last 30 days) for churn exclusion
+      recentPurchasesForChurn,
     ] = await Promise.all([
       supabase
         .from('credit_purchases')
         .select('workspace_id, credits, amount_paid, package_name')
         .eq('status', 'completed')
         .gte('created_at', monthStart),
+
+      supabase
+        .from('credit_purchases')
+        .select('amount_paid')
+        .eq('status', 'completed')
+        .gte('created_at', lastMonthStart)
+        .lt('created_at', lastMonthEnd),
+
+      supabase
+        .from('credit_purchases')
+        .select('created_at, amount_paid')
+        .eq('status', 'completed')
+        .gte('created_at', threeMonthsAgo)
+        .order('created_at', { ascending: true }),
 
       supabase
         .from('credit_purchases')
@@ -128,14 +212,75 @@ async function fetchRevenueData(): Promise<RevenueData | null> {
         .from('partner_earnings')
         .select('partner_id, amount, partners(name)')
         .gte('created_at', monthStart),
+
+      // All purchases between 60 days ago and 20 days ago — candidates for churn
+      supabase
+        .from('credit_purchases')
+        .select('workspace_id, created_at, amount_paid, workspaces(name)')
+        .eq('status', 'completed')
+        .gte('created_at', sixtyDaysAgo)
+        .lt('created_at', twentyDaysAgo),
+
+      // Purchases in the last 20 days — used to exclude active workspaces
+      supabase
+        .from('credit_purchases')
+        .select('workspace_id')
+        .eq('status', 'completed')
+        .gte('created_at', twentyDaysAgo),
     ])
 
+    // ── MRR / ARR ────────────────────────────────────────────────────────────
     const thisMonthPurchases = creditPurchasesThisMonth.data || []
+    const mrrCurrentMonth = thisMonthPurchases.reduce(
+      (s, r) => s + Number(r.amount_paid || 0), 0
+    )
+
+    const lastMonthPurchasesRows = creditPurchasesLastMonth.data || []
+    const mrrLastMonth = lastMonthPurchasesRows.reduce(
+      (s, r) => s + Number(r.amount_paid || 0), 0
+    )
+
+    const mrrGrowthPercent =
+      mrrLastMonth > 0
+        ? Math.round(((mrrCurrentMonth - mrrLastMonth) / mrrLastMonth) * 10000) / 100
+        : null
+
+    const arrAnnualized = mrrCurrentMonth * 12
+
     const totalCreditsSoldCount = thisMonthPurchases.length
     const totalCreditsSoldUnits = thisMonthPurchases.reduce((s, r) => s + (r.credits || 0), 0)
-    const totalCreditsSoldValue = thisMonthPurchases.reduce((s, r) => s + Number(r.amount_paid || 0), 0)
-    const estimatedMRR = totalCreditsSoldValue
+    const totalCreditsSoldValue = mrrCurrentMonth
 
+    // ── Revenue Forecast (last 3 months → project month+1) ──────────────────
+    const last3Purchases = creditPurchasesLast3Months.data || []
+
+    // Group by month index (0, 1, 2 relative to threeMonthsAgo start)
+    const forecastMonthMap: Record<number, number> = {}
+    const baseYear = new Date(threeMonthsAgo).getFullYear()
+    const baseMonth = new Date(threeMonthsAgo).getMonth()
+
+    last3Purchases.forEach((row) => {
+      const d = new Date(row.created_at)
+      const monthIdx = (d.getFullYear() - baseYear) * 12 + (d.getMonth() - baseMonth)
+      if (monthIdx >= 0 && monthIdx <= 2) {
+        forecastMonthMap[monthIdx] = (forecastMonthMap[monthIdx] ?? 0) + Number(row.amount_paid || 0)
+      }
+    })
+
+    // Build regression points
+    const regressionPoints = [0, 1, 2]
+      .filter((i) => forecastMonthMap[i] !== undefined)
+      .map((i) => ({ x: i, y: forecastMonthMap[i] }))
+
+    const { slope, intercept } = linearRegression(regressionPoints)
+    const nextMonthProjected = Math.max(0, slope * 3 + intercept)
+
+    // Confidence: ±20% of projected (simple heuristic)
+    const confidenceRange = nextMonthProjected * 0.2
+    const confidenceLow = Math.max(0, nextMonthProjected - confidenceRange)
+    const confidenceHigh = nextMonthProjected + confidenceRange
+
+    // ── Daily revenue last 30 days ───────────────────────────────────────────
     const dailyMap: Record<string, DailyRevenue> = {}
     const last30Purchases = creditPurchasesLast30Days.data || []
     last30Purchases.forEach((row) => {
@@ -147,6 +292,7 @@ async function fetchRevenueData(): Promise<RevenueData | null> {
     })
     const dailyRevenue = Object.values(dailyMap).sort((a, b) => a.date.localeCompare(b.date))
 
+    // ── Top 10 spenders all-time ─────────────────────────────────────────────
     const spenderMap: Record<string, SpenderRow> = {}
     const allSpenders = (topSpendersAllTime.data || []) as any[]
     allSpenders.forEach((row) => {
@@ -171,6 +317,7 @@ async function fetchRevenueData(): Promise<RevenueData | null> {
       .sort((a, b) => b.total_spend - a.total_spend)
       .slice(0, 10)
 
+    // ── Revenue by package ───────────────────────────────────────────────────
     const packageMap: Record<string, PackageRow> = {}
     const allPackages = creditPurchasesAllPackages.data || []
     allPackages.forEach((row) => {
@@ -182,19 +329,24 @@ async function fetchRevenueData(): Promise<RevenueData | null> {
     })
     const revenueByPackage = Object.values(packageMap).sort((a, b) => b.total_value - a.total_value)
 
+    // ── Credits redeemed this month ──────────────────────────────────────────
     const redeemedRows = creditsRedeemedThisMonth.data || []
     const totalCreditsRedeemed = redeemedRows.reduce((s, r) => s + (r.credits_used || 0), 0)
 
+    // ── Active workspaces this month ─────────────────────────────────────────
     const activeWorkspaceIds = new Set(thisMonthPurchases.map((r) => r.workspace_id))
     const activeWorkspacesCount = activeWorkspaceIds.size
 
+    // ── Partner payouts pending ──────────────────────────────────────────────
     const pendingPayoutRows = pendingPayouts.data || []
     const totalPendingPayouts = pendingPayoutRows.length
     const totalPendingPayoutsValue = pendingPayoutRows.reduce((s, r) => s + Number(r.amount || 0), 0)
 
+    // ── Partner commissions this month ───────────────────────────────────────
     const earningsRows = partnerEarningsThisMonth.data || []
     const totalCommissionsThisMonth = earningsRows.reduce((s, r) => s + Number(r.amount || 0), 0)
 
+    // ── Top 5 earning partners this month ────────────────────────────────────
     const partnerEarningsMap: Record<string, PartnerRow> = {}
     const topEarningsRows = (topPartnersByEarnings.data || []) as any[]
     topEarningsRows.forEach((row) => {
@@ -212,9 +364,62 @@ async function fetchRevenueData(): Promise<RevenueData | null> {
       .sort((a, b) => b.earnings - a.earnings)
       .slice(0, 5)
 
+    // ── Churn Analysis ───────────────────────────────────────────────────────
+    // Recent workspace IDs (purchased in last 20 days) — NOT churned
+    const recentWorkspaceIds = new Set(
+      (recentPurchasesForChurn.data || []).map((r) => r.workspace_id)
+    )
+
+    // Build a map of workspace → most recent purchase date (in the 20-60 day window)
+    const candidateMap: Record<string, { name: string; last_purchase: string; total_spend: number }> = {}
+    for (const row of (purchasesForChurnAnalysis.data || []) as any[]) {
+      const wid = row.workspace_id
+      if (!candidateMap[wid]) {
+        candidateMap[wid] = {
+          name: row.workspaces?.name || wid.slice(0, 8),
+          last_purchase: row.created_at,
+          total_spend: 0,
+        }
+      }
+      // Track latest purchase date in window
+      if (row.created_at > candidateMap[wid].last_purchase) {
+        candidateMap[wid].last_purchase = row.created_at
+      }
+      candidateMap[wid].total_spend += Number(row.amount_paid || 0)
+    }
+
+    // Churned: in candidate window and NOT in recent set
+    const churnedEntries = Object.entries(candidateMap).filter(
+      ([wid]) => !recentWorkspaceIds.has(wid)
+    )
+    const churnedCount = churnedEntries.length
+
+    // At-risk: in candidate window, last purchase 20-30 days ago, still active recently
+    // For simplicity: workspaces whose MOST RECENT purchase was 20-30 days ago and not churned
+    const thirtyDaysAgoDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
+    const atRiskCount = Object.entries(candidateMap).filter(([wid, data]) => {
+      if (recentWorkspaceIds.has(wid)) return false
+      const lastPurchaseDate = new Date(data.last_purchase)
+      return lastPurchaseDate >= thirtyDaysAgoDate
+    }).length
+
+    // Top 5 churned workspaces by historical spend
+    const churnedWorkspaces: ChurnedWorkspace[] = churnedEntries
+      .sort(([, a], [, b]) => b.total_spend - a.total_spend)
+      .slice(0, 5)
+      .map(([wid, data]) => ({
+        workspace_id: wid,
+        name: data.name,
+        last_purchase: data.last_purchase,
+        total_spend: Math.round(data.total_spend * 100) / 100,
+      }))
+
     return {
       overview: {
-        estimated_mrr: estimatedMRR,
+        mrr_current_month: Math.round(mrrCurrentMonth * 100) / 100,
+        mrr_last_month: Math.round(mrrLastMonth * 100) / 100,
+        mrr_growth_percent: mrrGrowthPercent,
+        arr_annualized: Math.round(arrAnnualized * 100) / 100,
         credits_sold_count: totalCreditsSoldCount,
         credits_sold_units: totalCreditsSoldUnits,
         credits_sold_value: totalCreditsSoldValue,
@@ -223,6 +428,17 @@ async function fetchRevenueData(): Promise<RevenueData | null> {
         pending_payouts_count: totalPendingPayouts,
         pending_payouts_value: totalPendingPayoutsValue,
         commissions_this_month: totalCommissionsThisMonth,
+      },
+      forecast: {
+        next_month_projected: Math.round(nextMonthProjected * 100) / 100,
+        confidence_low: Math.round(confidenceLow * 100) / 100,
+        confidence_high: Math.round(confidenceHigh * 100) / 100,
+        months_used: regressionPoints.length,
+      },
+      retention: {
+        churned_count: churnedCount,
+        at_risk_count: atRiskCount,
+        churned_workspaces: churnedWorkspaces,
       },
       dailyRevenue,
       topSpenders,
@@ -249,13 +465,22 @@ function fmtDate(iso: string): string {
   return new Date(iso + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 }
 
+function fmtDateTime(iso: string): string {
+  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+}
+
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-function StatCard({ label, value, sub }: { label: string; value: string; sub?: string }) {
+function StatCard({ label, value, sub, highlight }: { label: string; value: string; sub?: string; highlight?: 'green' | 'red' | 'amber' }) {
+  const highlightClasses = {
+    green: 'text-emerald-600',
+    red: 'text-red-500',
+    amber: 'text-amber-600',
+  }
   return (
     <div className="bg-white border border-zinc-200 rounded-lg p-4">
       <div className="text-[12px] text-zinc-500 mb-1">{label}</div>
-      <div className="text-2xl font-semibold text-zinc-900 tracking-tight">{value}</div>
+      <div className={`text-2xl font-semibold tracking-tight ${highlight ? highlightClasses[highlight] : 'text-zinc-900'}`}>{value}</div>
       {sub && <div className="text-[12px] text-zinc-400 mt-1">{sub}</div>}
     </div>
   )
@@ -269,6 +494,12 @@ function SectionCard({ title, children }: { title: string; children: React.React
       </div>
       <div className="overflow-x-auto">{children}</div>
     </div>
+  )
+}
+
+function EmptyState({ message }: { message: string }) {
+  return (
+    <div className="px-5 py-8 text-center text-zinc-400 text-[13px]">{message}</div>
   )
 }
 
@@ -311,18 +542,43 @@ export default async function AdminRevenuePage() {
           </div>
         ) : (
           <>
-            {/* ── Top Stats ──────────────────────────────────────────────────── */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            {/* ── MRR / ARR Stats ─────────────────────────────────────────── */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
               <StatCard
-                label="Estimated MRR"
-                value={fmtUSD(data.overview.estimated_mrr)}
-                sub="Credit sales this month"
+                label="MRR (This Month)"
+                value={fmtUSD(data.overview.mrr_current_month)}
+                sub={
+                  data.overview.mrr_growth_percent !== null
+                    ? `${data.overview.mrr_growth_percent >= 0 ? '+' : ''}${data.overview.mrr_growth_percent.toFixed(1)}% vs last month`
+                    : 'Credit sales this month'
+                }
+                highlight={
+                  data.overview.mrr_growth_percent !== null
+                    ? data.overview.mrr_growth_percent >= 0
+                      ? 'green'
+                      : 'red'
+                    : undefined
+                }
+              />
+              <StatCard
+                label="ARR (Annualized)"
+                value={fmtUSD(data.overview.arr_annualized)}
+                sub="MRR × 12"
+              />
+              <StatCard
+                label="MRR Last Month"
+                value={fmtUSD(data.overview.mrr_last_month)}
+                sub="Previous calendar month"
               />
               <StatCard
                 label="Credits Sold This Month"
                 value={fmt(data.overview.credits_sold_units)}
                 sub={`${data.overview.credits_sold_count} purchase${data.overview.credits_sold_count !== 1 ? 's' : ''} · ${fmtUSD(data.overview.credits_sold_value)}`}
               />
+            </div>
+
+            {/* ── Secondary Stats ─────────────────────────────────────────── */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
               <StatCard
                 label="Credits Redeemed This Month"
                 value={fmt(data.overview.credits_redeemed)}
@@ -333,9 +589,6 @@ export default async function AdminRevenuePage() {
                 value={fmt(data.overview.active_workspaces)}
                 sub="Purchased credits this month"
               />
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
               <StatCard
                 label="Partner Payouts Pending"
                 value={fmtUSD(data.overview.pending_payouts_value)}
@@ -346,21 +599,94 @@ export default async function AdminRevenuePage() {
                 value={fmtUSD(data.overview.commissions_this_month)}
                 sub="Sum of all partner earnings"
               />
-              <div className="bg-white border border-zinc-200 rounded-lg p-4 flex items-center justify-center">
-                <a
-                  href="/admin/payouts"
-                  className="text-[13px] font-medium text-zinc-700 hover:text-zinc-900 underline underline-offset-2"
-                >
-                  Manage Payouts
-                </a>
+            </div>
+
+            {/* ── Forecast + Retention Row ─────────────────────────────────── */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              {/* Forecast card */}
+              <div className="bg-white border border-zinc-200 rounded-lg p-5">
+                <div className="text-[14px] font-medium text-zinc-900 mb-3">Next Month Forecast</div>
+                <div className="text-3xl font-semibold text-zinc-900 tracking-tight mb-1">
+                  {fmtUSD(data.forecast.next_month_projected)}
+                </div>
+                <div className="text-[12px] text-zinc-500 mb-3">
+                  Projected revenue · ±{fmtUSD(data.forecast.next_month_projected * 0.2)} confidence range
+                </div>
+                <div className="flex gap-4 text-[12px]">
+                  <div>
+                    <span className="text-zinc-400">Low: </span>
+                    <span className="text-zinc-700 font-medium">{fmtUSD(data.forecast.confidence_low)}</span>
+                  </div>
+                  <div>
+                    <span className="text-zinc-400">High: </span>
+                    <span className="text-zinc-700 font-medium">{fmtUSD(data.forecast.confidence_high)}</span>
+                  </div>
+                  <div>
+                    <span className="text-zinc-400">Based on: </span>
+                    <span className="text-zinc-700 font-medium">{data.forecast.months_used} month{data.forecast.months_used !== 1 ? 's' : ''}</span>
+                  </div>
+                </div>
               </div>
+
+              {/* Retention summary card */}
+              <div className="bg-white border border-zinc-200 rounded-lg p-5">
+                <div className="text-[14px] font-medium text-zinc-900 mb-3">Retention Overview</div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <div className="text-[12px] text-zinc-500 mb-0.5">Churned (last 30-60d)</div>
+                    <div className="text-2xl font-semibold text-red-500">{data.retention.churned_count}</div>
+                    <div className="text-[11px] text-zinc-400">workspaces</div>
+                  </div>
+                  <div>
+                    <div className="text-[12px] text-zinc-500 mb-0.5">At Risk (20-30d inactive)</div>
+                    <div className="text-2xl font-semibold text-amber-600">{data.retention.at_risk_count}</div>
+                    <div className="text-[11px] text-zinc-400">workspaces</div>
+                  </div>
+                </div>
+                <div className="mt-3">
+                  <a
+                    href="/admin/payouts"
+                    className="text-[13px] font-medium text-zinc-700 hover:text-zinc-900 underline underline-offset-2"
+                  >
+                    Manage Payouts
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            {/* ── Churned Workspaces Table ─────────────────────────────────── */}
+            <div className="mb-6">
+              <SectionCard title="Retention — Top Churned Workspaces (last 30–60 days)">
+                {data.retention.churned_workspaces.length === 0 ? (
+                  <EmptyState message="No churned workspaces detected in this period." />
+                ) : (
+                  <table className="w-full">
+                    <thead className="bg-zinc-50 border-b border-zinc-100">
+                      <tr>
+                        <th className="px-5 py-2.5 text-left text-[12px] font-medium text-zinc-500">Workspace</th>
+                        <th className="px-5 py-2.5 text-right text-[12px] font-medium text-zinc-500">Last Purchase</th>
+                        <th className="px-5 py-2.5 text-right text-[12px] font-medium text-zinc-500">Historical Spend</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {data.retention.churned_workspaces.map((row) => (
+                        <tr key={row.workspace_id} className="border-b border-zinc-100 last:border-0 hover:bg-zinc-50">
+                          <td className="px-5 py-2.5 text-[13px] text-zinc-800">{row.name}</td>
+                          <td className="px-5 py-2.5 text-[13px] text-zinc-600 text-right">{fmtDateTime(row.last_purchase)}</td>
+                          <td className="px-5 py-2.5 text-[13px] font-medium text-zinc-900 text-right">{fmtUSD(row.total_spend)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </SectionCard>
             </div>
 
             {/* ── Daily Revenue Last 30 Days ─────────────────────────────────── */}
             <div className="mb-6">
               <SectionCard title="Daily Revenue — Last 30 Days">
                 {data.dailyRevenue.length === 0 ? (
-                  <div className="px-5 py-8 text-center text-zinc-400 text-[13px]">No revenue recorded in the last 30 days</div>
+                  <EmptyState message="No revenue recorded in the last 30 days." />
                 ) : (
                   <table className="w-full">
                     <thead className="bg-zinc-50 border-b border-zinc-100">
@@ -404,7 +730,7 @@ export default async function AdminRevenuePage() {
               {/* Top 10 Spenders */}
               <SectionCard title="Top 10 Spenders (All-Time)">
                 {data.topSpenders.length === 0 ? (
-                  <div className="px-5 py-8 text-center text-zinc-400 text-[13px]">No purchase data available</div>
+                  <EmptyState message="No purchase data available." />
                 ) : (
                   <table className="w-full">
                     <thead className="bg-zinc-50 border-b border-zinc-100">
@@ -434,7 +760,7 @@ export default async function AdminRevenuePage() {
               {/* Revenue by Package */}
               <SectionCard title="Revenue by Credit Package (All-Time)">
                 {data.revenueByPackage.length === 0 ? (
-                  <div className="px-5 py-8 text-center text-zinc-400 text-[13px]">No package data available</div>
+                  <EmptyState message="No package data available." />
                 ) : (
                   <table className="w-full">
                     <thead className="bg-zinc-50 border-b border-zinc-100">
@@ -477,7 +803,7 @@ export default async function AdminRevenuePage() {
             {/* ── Partner Section ───────────────────────────────────────────── */}
             <SectionCard title="Top 5 Earning Partners — This Month">
               {data.topPartners.length === 0 ? (
-                <div className="px-5 py-8 text-center text-zinc-400 text-[13px]">No partner earnings recorded this month</div>
+                <EmptyState message="No partner earnings recorded this month." />
               ) : (
                 <table className="w-full">
                   <thead className="bg-zinc-50 border-b border-zinc-100">

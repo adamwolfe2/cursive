@@ -607,6 +607,76 @@ export async function sendPayoutFailedEmail(
   })
 }
 
+/**
+ * Send custom audience request confirmation email
+ */
+export async function sendCustomAudienceConfirmationEmail(
+  email: string,
+  userName: string,
+  industry: string,
+  volume: number
+): Promise<EmailResult> {
+  const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://leads.meetcursive.com'
+  const marketplaceUrl = `${APP_URL}/marketplace`
+  const unsubscribeUrl = `${APP_URL}/settings/notifications`
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Custom Audience Request Received</title></head>
+<body style="margin:0;padding:0;background:#f4f4f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f5;padding:40px 20px;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e4e4e7;">
+        <tr><td style="background:#2563eb;padding:24px 32px;">
+          <p style="margin:0;color:#ffffff;font-size:20px;font-weight:700;">Cursive</p>
+        </td></tr>
+        <tr><td style="padding:40px 32px;">
+          <h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#18181b;">We received your custom audience request!</h1>
+          <p style="margin:0 0 16px;font-size:16px;color:#71717a;line-height:1.6;">Hi ${userName},</p>
+          <p style="margin:0 0 24px;font-size:16px;color:#71717a;line-height:1.6;">
+            Your request for a custom ${industry} audience of ${volume.toLocaleString()} leads has been received. Our team is reviewing it now.
+          </p>
+          <table cellpadding="0" cellspacing="0" style="background:#f4f4f5;border-radius:8px;padding:20px;margin-bottom:24px;width:100%;">
+            <tr><td>
+              <p style="margin:0 0 8px;font-size:14px;font-weight:600;color:#18181b;">Request Summary</p>
+              <p style="margin:0 0 4px;font-size:14px;color:#71717a;">Industry: <strong style="color:#18181b;">${industry}</strong></p>
+              <p style="margin:0;font-size:14px;color:#71717a;">Volume: <strong style="color:#18181b;">${volume.toLocaleString()} leads</strong></p>
+            </td></tr>
+          </table>
+          <p style="margin:0 0 24px;font-size:16px;color:#71717a;line-height:1.6;">
+            Expect a 25-lead sample within 48 hours. Our team will reach out to discuss pricing and timeline.
+          </p>
+          <p style="margin:0 0 32px;font-size:16px;color:#71717a;line-height:1.6;">
+            In the meantime, explore our marketplace for immediately available leads:
+          </p>
+          <a href="${marketplaceUrl}" style="display:inline-block;background:#2563eb;color:#ffffff;text-decoration:none;padding:14px 28px;border-radius:8px;font-size:15px;font-weight:600;">Browse Marketplace</a>
+        </td></tr>
+        <tr><td style="padding:24px 32px;border-top:1px solid #e4e4e7;">
+          <p style="margin:0;font-size:12px;color:#a1a1aa;line-height:1.6;">
+            You're receiving this because you submitted a custom audience request at leads.meetcursive.com.<br>
+            <a href="${unsubscribeUrl}" style="color:#a1a1aa;">Manage notifications</a>
+          </p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`
+
+  const text = `Hi ${userName},\n\nYour custom audience request has been received.\n\nIndustry: ${industry}\nVolume: ${volume.toLocaleString()} leads\n\nExpect a 25-lead sample within 48 hours.\n\nIn the meantime, browse available leads: ${marketplaceUrl}`
+
+  return sendEmail({
+    to: email,
+    subject: 'Custom Audience Request Received — Sample in 48 Hours',
+    html,
+    text,
+    tags: [
+      { name: 'category', value: 'notification' },
+      { name: 'type', value: 'custom_audience_request' },
+    ],
+  })
+}
+
 // ============================================
 // BATCH SENDING
 // ============================================

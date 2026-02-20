@@ -24,7 +24,8 @@ const filtersSchema = z.object({
   priceMax: z.number().min(0).optional(),
   limit: z.number().int('Limit must be an integer').min(1).max(100).default(20),
   offset: z.number().int('Offset must be an integer').min(0).default(0),
-  orderBy: z.enum(['price', 'intent_score', 'freshness_score', 'created_at']).optional(),
+  orderBy: z.enum(['price', 'intent_score', 'freshness_score', 'created_at', 'relevant']).optional(),
+  sort: z.enum(['relevant', 'newest', 'intent']).optional(),
   orderDirection: z.enum(['asc', 'desc']).optional(),
 })
 
@@ -119,11 +120,15 @@ export async function GET(request: NextRequest) {
       priceMax: validated.priceMax,
     }
 
+    // Resolve 'relevant' sort alias to the default ordering column
+    const resolvedOrderBy =
+      validated.orderBy === 'relevant' ? 'freshness_score' : validated.orderBy
+
     const repo = new MarketplaceRepository()
     const { leads, total } = await repo.browseLeads(filters, {
       limit: validated.limit,
       offset: validated.offset,
-      orderBy: validated.orderBy,
+      orderBy: resolvedOrderBy,
       orderDirection: validated.orderDirection,
     })
 
