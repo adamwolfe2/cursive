@@ -36,8 +36,10 @@ function AcceptInviteContent() {
 
         if (!res.ok) {
           if (res.status === 401) {
-            // User not logged in - redirect to login with return URL
-            router.push(`/login?redirect=/auth/accept-invite?token=${token}`)
+            // User not logged in - redirect to login with return URL.
+            // Encode the redirect path so the nested query param is preserved.
+            const returnUrl = encodeURIComponent(`/auth/accept-invite?token=${token}`)
+            router.push(`/login?redirect=${returnUrl}`)
             return
           }
           throw new Error(data.error || 'Failed to accept invitation')

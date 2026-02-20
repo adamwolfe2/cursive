@@ -577,7 +577,8 @@ export class MarketplaceRepository {
       .maybeSingle()
 
     if (error) throw new Error(`Failed to complete credit purchase: ${error.message}`)
-    return data as CreditPurchase
+    if (!data) throw new Error(`Credit purchase ${purchaseId} not found after update`)
+    return data
   }
 
   // ============================================================================
