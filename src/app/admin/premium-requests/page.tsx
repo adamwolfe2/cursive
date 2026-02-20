@@ -29,7 +29,7 @@ export default async function AdminPremiumRequestsPage() {
     .from('users')
     .select('id, role')
     .eq('auth_user_id', session.user.id)
-    .single()
+    .maybeSingle()
 
   if (!userProfile || !['admin', 'owner'].includes(userProfile.role)) {
     redirect('/dashboard')

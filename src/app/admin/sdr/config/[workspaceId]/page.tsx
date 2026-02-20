@@ -14,8 +14,8 @@ export default async function SdrConfigPage({
   const supabase = createAdminClient()
   const [configData, workspaceData, profileData] = await Promise.all([
     new SdrConfigRepository().findByWorkspace(workspaceId),
-    supabase.from('workspaces').select('id, name').eq('id', workspaceId).single(),
-    supabase.from('client_profiles').select('*').eq('workspace_id', workspaceId).single(),
+    supabase.from('workspaces').select('id, name').eq('id', workspaceId).maybeSingle(),
+    supabase.from('client_profiles').select('*').eq('workspace_id', workspaceId).maybeSingle(),
   ])
 
   return (

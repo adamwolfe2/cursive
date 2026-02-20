@@ -1,5 +1,6 @@
 'use client'
 
+import { type ReactNode } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
 import { useToast } from '@/lib/hooks/use-toast'
@@ -12,23 +13,68 @@ interface ToggleSwitchProps {
   enabled: boolean
   onChange: (enabled: boolean) => void
   disabled?: boolean
+  saving?: boolean
 }
 
-function ToggleSwitch({ enabled, onChange, disabled }: ToggleSwitchProps) {
+function ToggleSwitch({ enabled, onChange, disabled, saving }: ToggleSwitchProps) {
+  const isDisabled = disabled || saving
   return (
     <button
-      onClick={() => !disabled && onChange(!enabled)}
-      disabled={disabled}
-      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+      type="button"
+      role="switch"
+      aria-checked={enabled}
+      onClick={() => !isDisabled && onChange(!enabled)}
+      disabled={isDisabled}
+      className={`relative inline-flex h-6 w-11 flex-shrink-0 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
         enabled ? 'bg-primary' : 'bg-muted'
-      } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+      } ${isDisabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
     >
       <span
-        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+        className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
           enabled ? 'translate-x-6' : 'translate-x-1'
         }`}
       />
     </button>
+  )
+}
+
+interface NotificationRowProps {
+  title: string
+  description: ReactNode
+  settingKey: string
+  defaultValue: boolean
+  prefs: Record<string, boolean | string>
+  isSaving: boolean
+  masterDisabled?: boolean
+  onToggle: (key: string, value: boolean) => void
+}
+
+function NotificationRow({
+  title,
+  description,
+  settingKey,
+  defaultValue,
+  prefs,
+  isSaving,
+  masterDisabled,
+  onToggle,
+}: NotificationRowProps) {
+  const enabled = (prefs[settingKey] as boolean) ?? defaultValue
+  const isDisabled = masterDisabled || isSaving
+
+  return (
+    <div className={`flex items-center justify-between py-3 border-b border-border last:border-0 ${isDisabled && masterDisabled ? 'opacity-60' : ''}`}>
+      <div className="flex-1 pr-4">
+        <p className="text-sm font-medium text-foreground">{title}</p>
+        <div className="text-sm text-muted-foreground mt-0.5">{description}</div>
+      </div>
+      <ToggleSwitch
+        enabled={enabled}
+        onChange={(value) => onToggle(settingKey, value)}
+        disabled={isDisabled}
+        saving={isSaving}
+      />
+    </div>
   )
 }
 
@@ -64,12 +110,14 @@ export default function NotificationsSettingsPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user', 'me'] })
-      toast.success('Notification preferences updated!')
+      toast.success('Notification preferences saved.')
     },
     onError: (error: Error) => {
       toast.error(error.message || 'Failed to update notifications')
     },
   })
+
+  const isSaving = updateNotificationsMutation.isPending
 
   const handleToggle = (setting: string, value: boolean | string) => {
     const currentPrefs = user?.notification_preferences || {}
@@ -89,83 +137,85 @@ export default function NotificationsSettingsPage() {
     )
   }
 
-  const prefs = user?.notification_preferences || {}
+  const prefs: Record<string, boolean | string> = user?.notification_preferences || {}
+  const emailMasterEnabled = (prefs.email_notifications as boolean) ?? true
+  const dailyDigestEnabled = (prefs.daily_digest as boolean) ?? false
 
   return (
     <div className="space-y-6">
-      {/* Email Notifications */}
+      {/* Master Email Toggle */}
       <Card>
         <CardHeader>
-          <CardTitle>Email Notifications</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle>Email Notifications</CardTitle>
+            {isSaving && (
+              <span className="text-xs text-muted-foreground animate-pulse">Saving...</span>
+            )}
+          </div>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between py-3 border-b border-border last:border-0">
-              <div className="flex-1">
-                <p className="text-sm font-medium text-foreground">New Lead Alerts</p>
+          <div className="space-y-1">
+            {/* Master toggle — always at top */}
+            <div className="flex items-center justify-between py-3 border-b border-border mb-2">
+              <div className="flex-1 pr-4">
+                <p className="text-sm font-semibold text-foreground">All Email Notifications</p>
                 <p className="text-sm text-muted-foreground mt-0.5">
-                  Get notified immediately when new leads match your queries
+                  {emailMasterEnabled
+                    ? 'You are receiving email notifications'
+                    : 'All email notifications are paused'}
                 </p>
               </div>
               <ToggleSwitch
-                enabled={prefs.new_leads ?? true}
-                onChange={(value) => handleToggle('new_leads', value)}
-              />
-            </div>
-
-            <div className="flex items-center justify-between py-3 border-b border-border last:border-0">
-              <div className="flex-1">
-                <p className="text-sm font-medium text-foreground">Daily Digest</p>
-                <p className="text-sm text-muted-foreground mt-0.5">
-                  Receive a daily summary of lead generation activity
-                </p>
-              </div>
-              <ToggleSwitch
-                enabled={prefs.daily_digest ?? false}
-                onChange={(value) => handleToggle('daily_digest', value)}
-              />
-            </div>
-
-            <div className="flex items-center justify-between py-3 border-b border-border last:border-0">
-              <div className="flex-1">
-                <p className="text-sm font-medium text-foreground">Weekly Report</p>
-                <p className="text-sm text-muted-foreground mt-0.5">
-                  Get a weekly performance report with insights and statistics
-                </p>
-              </div>
-              <ToggleSwitch
-                enabled={prefs.weekly_report ?? true}
-                onChange={(value) => handleToggle('weekly_report', value)}
-              />
-            </div>
-
-            <div className="flex items-center justify-between py-3 border-b border-border last:border-0">
-              <div className="flex-1">
-                <p className="text-sm font-medium text-foreground">Credit Alerts</p>
-                <p className="text-sm text-muted-foreground mt-0.5">
-                  Get notified when you&apos;re running low on daily credits
-                </p>
-              </div>
-              <ToggleSwitch
-                enabled={prefs.credit_alerts ?? true}
-                onChange={(value) => handleToggle('credit_alerts', value)}
-              />
-            </div>
-
-            <div className="flex items-center justify-between py-3">
-              <div className="flex-1">
-                <p className="text-sm font-medium text-foreground">
-                  All Email Notifications
-                </p>
-                <p className="text-sm text-muted-foreground mt-0.5">
-                  Master toggle for all email notifications
-                </p>
-              </div>
-              <ToggleSwitch
-                enabled={prefs.email_notifications ?? true}
+                enabled={emailMasterEnabled}
                 onChange={(value) => handleToggle('email_notifications', value)}
+                saving={isSaving}
               />
             </div>
+
+            {/* Sub-toggles — disabled when master is off */}
+            <NotificationRow
+              title="New Lead Alerts"
+              description="Get notified immediately when new leads match your queries"
+              settingKey="new_leads"
+              defaultValue={true}
+              prefs={prefs}
+              isSaving={isSaving}
+              masterDisabled={!emailMasterEnabled}
+              onToggle={handleToggle}
+            />
+
+            <NotificationRow
+              title="Daily Digest"
+              description="Receive a daily summary of lead generation activity"
+              settingKey="daily_digest"
+              defaultValue={false}
+              prefs={prefs}
+              isSaving={isSaving}
+              masterDisabled={!emailMasterEnabled}
+              onToggle={handleToggle}
+            />
+
+            <NotificationRow
+              title="Weekly Report"
+              description="Get a weekly performance report with insights and statistics"
+              settingKey="weekly_report"
+              defaultValue={true}
+              prefs={prefs}
+              isSaving={isSaving}
+              masterDisabled={!emailMasterEnabled}
+              onToggle={handleToggle}
+            />
+
+            <NotificationRow
+              title="Credit Alerts"
+              description="Get notified when you're running low on daily credits"
+              settingKey="credit_alerts"
+              defaultValue={true}
+              prefs={prefs}
+              isSaving={isSaving}
+              masterDisabled={!emailMasterEnabled}
+              onToggle={handleToggle}
+            />
           </div>
         </CardContent>
       </Card>
@@ -180,9 +230,9 @@ export default function NotificationsSettingsPage() {
             Choose how you want to receive new leads from your active queries
           </p>
 
-          <div className="space-y-4">
-            <div className="flex items-center justify-between py-3 border-b border-border last:border-0">
-              <div className="flex-1">
+          <div className="space-y-1">
+            <div className="flex items-center justify-between py-3 border-b border-border">
+              <div className="flex-1 pr-4">
                 <div className="flex items-center gap-2">
                   <p className="text-sm font-medium text-foreground">Email Delivery</p>
                   <Badge variant="muted">Free</Badge>
@@ -192,13 +242,14 @@ export default function NotificationsSettingsPage() {
                 </p>
               </div>
               <ToggleSwitch
-                enabled={prefs.lead_delivery_email ?? true}
+                enabled={(prefs.lead_delivery_email as boolean) ?? true}
                 onChange={(value) => handleToggle('lead_delivery_email', value)}
+                saving={isSaving}
               />
             </div>
 
-            <div className="flex items-center justify-between py-3 border-b border-border last:border-0">
-              <div className="flex-1">
+            <div className="flex items-center justify-between py-3 border-b border-border">
+              <div className="flex-1 pr-4">
                 <div className="flex items-center gap-2">
                   <p className="text-sm font-medium text-foreground">Slack Notifications</p>
                   <Badge variant="default">Pro</Badge>
@@ -216,14 +267,15 @@ export default function NotificationsSettingsPage() {
                 </p>
               </div>
               <ToggleSwitch
-                enabled={prefs.slack_notifications ?? false}
+                enabled={(prefs.slack_notifications as boolean) ?? false}
                 onChange={(value) => handleToggle('slack_notifications', value)}
                 disabled={!user?.slack_webhook_url}
+                saving={isSaving}
               />
             </div>
 
             <div className="flex items-center justify-between py-3">
-              <div className="flex-1">
+              <div className="flex-1 pr-4">
                 <div className="flex items-center gap-2">
                   <p className="text-sm font-medium text-foreground">Webhook Delivery</p>
                   <Badge variant="default">Pro</Badge>
@@ -241,9 +293,10 @@ export default function NotificationsSettingsPage() {
                 </p>
               </div>
               <ToggleSwitch
-                enabled={prefs.webhook_delivery ?? false}
+                enabled={(prefs.webhook_delivery as boolean) ?? false}
                 onChange={(value) => handleToggle('webhook_delivery', value)}
                 disabled={!user?.zapier_webhook_url && !user?.custom_webhook_url}
+                saving={isSaving}
               />
             </div>
           </div>
@@ -256,7 +309,7 @@ export default function NotificationsSettingsPage() {
           <CardTitle>Notification Preferences</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4 max-w-md">
+          <div className="space-y-6 max-w-md">
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">
                 Notification Email Address
@@ -273,13 +326,27 @@ export default function NotificationsSettingsPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
+              <label
+                htmlFor="digest-time"
+                className={`block text-sm font-medium mb-2 ${
+                  !dailyDigestEnabled || !emailMasterEnabled
+                    ? 'text-muted-foreground'
+                    : 'text-foreground'
+                }`}
+              >
                 Preferred Time for Daily Digest
+                {!dailyDigestEnabled && (
+                  <span className="ml-2 text-xs font-normal text-muted-foreground">
+                    (enable Daily Digest above)
+                  </span>
+                )}
               </label>
               <select
-                value={prefs.digest_time || '09:00'}
+                id="digest-time"
+                value={(prefs.digest_time as string) || '09:00'}
                 onChange={(e) => handleToggle('digest_time', e.target.value)}
-                className="flex h-10 w-full max-w-xs rounded-lg border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                disabled={!dailyDigestEnabled || !emailMasterEnabled || isSaving}
+                className="flex h-10 w-full max-w-xs rounded-lg border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-muted"
               >
                 <option value="06:00">6:00 AM</option>
                 <option value="07:00">7:00 AM</option>

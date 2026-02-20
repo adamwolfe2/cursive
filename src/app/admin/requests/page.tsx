@@ -20,7 +20,7 @@ export default async function AdminRequestsPage() {
     .from('users')
     .select('role')
     .eq('auth_user_id', session.user.id)
-    .single()
+    .maybeSingle()
 
   if (!userRecord || (userRecord.role !== 'admin' && userRecord.role !== 'owner')) {
     redirect('/dashboard?error=admin_required')
