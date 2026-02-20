@@ -16,7 +16,7 @@ import { calculateIntentScore, calculateFreshnessScore, calculateMarketplacePric
 import { withRateLimit } from '@/lib/middleware/rate-limiter'
 import { UPLOAD_LIMITS } from '@/lib/constants/timeouts'
 import { routeLeadsToMatchingUsers } from '@/lib/services/marketplace-lead-routing'
-import { safeError } from '@/lib/utils/log-sanitizer'
+import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 
 // Input validation for lead data
 const leadSchema = z.object({
@@ -438,7 +438,7 @@ export async function POST(request: NextRequest) {
     if (leadsToInsert.length > 0) {
       const { error: insertError } = await adminClient
         .from('leads')
-        .insert(leadsToInsert as never[])
+        .insert(leadsToInsert as any[])
 
       if (insertError) {
         safeError('Failed to insert leads:', insertError)
@@ -469,7 +469,7 @@ export async function POST(request: NextRequest) {
       if (insertedLeads?.length) {
         const newLeadIds = insertedLeads.map((l: { id: string }) => l.id)
         routingStats = await routeLeadsToMatchingUsers(newLeadIds, { source: 'partner' })
-        safeError(`[Partner Upload] Routed ${routingStats.routed} leads to matching users`)
+        safeLog(`[Partner Upload] Routed ${routingStats.routed} leads to matching users`)
       }
     }
 

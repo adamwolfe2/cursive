@@ -383,7 +383,7 @@ export const processPartnerUpload = inngest.createFunction(
         if (leadsToInsert.length > 0) {
           const { error: insertError } = await supabase
             .from('leads')
-            .insert(leadsToInsert as never[])
+            .insert(leadsToInsert as any[])
 
           if (insertError) {
             throw new Error(`Failed to insert leads: ${insertError.message}`)

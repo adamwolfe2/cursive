@@ -50,8 +50,8 @@ const LeadPushSchema = z.object({
   source: z.string().optional(),
   source_id: z.string().uuid().optional(),
 
-  // Optional raw data
-  raw_data: z.any().optional(),
+  // Optional raw data (must be an object, not arbitrary primitives/arrays)
+  raw_data: z.record(z.unknown()).optional(),
 })
 
 const IngestRequestSchema = z.object({

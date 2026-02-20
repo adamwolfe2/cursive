@@ -22,9 +22,9 @@ export default function PartnerOnboardingPage() {
 
     try {
       const supabase = createClient()
-      const { data: { session } } = await supabase.auth.getSession()
+      const { data: { user } } = await supabase.auth.getUser()
 
-      if (!session) {
+      if (!user) {
         router.push('/login')
         return
       }
@@ -40,7 +40,7 @@ export default function PartnerOnboardingPage() {
           role: 'partner',
           firstName,
           lastName,
-          email: session.user.email!,
+          email: user.email ?? '',
           companyName: companyName || `${fullName}'s Workspace`,
           partnerType: 'data_provider',
           primaryVerticals: 'general',

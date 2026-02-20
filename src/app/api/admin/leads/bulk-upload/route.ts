@@ -7,7 +7,7 @@ import { z } from 'zod'
 import { calculateIntentScore, calculateFreshnessScore, calculateMarketplacePrice } from '@/lib/services/lead-scoring.service'
 import { routeLeadsToMatchingUsers } from '@/lib/services/marketplace-lead-routing'
 import { queueLeadsForVerification } from '@/lib/services/email-verification.service'
-import { safeError } from '@/lib/utils/log-sanitizer'
+import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 import { checkRateLimit, RATE_LIMIT_CONFIGS } from '@/lib/utils/rate-limit'
 
 // Industry mapping
@@ -337,7 +337,7 @@ export async function POST(request: NextRequest) {
     let routingStats = { routed: 0, notified: 0 }
     if (insertedLeadIds.length > 0) {
       routingStats = await routeLeadsToMatchingUsers(insertedLeadIds, { source: 'admin_upload' })
-      safeError(`[Admin Bulk Upload] Routed ${routingStats.routed} leads to matching users`)
+      safeLog(`[Admin Bulk Upload] Routed ${routingStats.routed} leads to matching users`)
 
       // Queue all inserted leads for async email verification (high priority)
       queueLeadsForVerification(insertedLeadIds, 1).catch(err => {
