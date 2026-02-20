@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { requireAdmin } from '@/lib/auth/admin'
+import { handleApiError } from '@/lib/utils/api-error-handler'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 const rejectSchema = z.object({
@@ -32,15 +33,6 @@ export async function POST(
     const admin = await requireAdmin()
 
     const supabase = await createClient()
-
-    // Get user for audit log
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
 
     // Parse request body
     const body = await request.json()
@@ -84,7 +76,7 @@ export async function POST(
         rejection_reason: validated.reason,
         rejection_code: validated.reasonCode,
         verified_at: new Date().toISOString(),
-        verified_by: user.id,
+        verified_by: admin.id,
       })
       .eq('id', id)
       .select()
@@ -100,7 +92,7 @@ export async function POST(
 
     // Log action
     await supabase.from('audit_logs').insert({
-      user_id: user.id,
+      user_id: admin.id,
       action: 'lead.rejected',
       resource_type: 'lead',
       resource_id: id,
@@ -142,18 +134,6 @@ export async function POST(
 
     return NextResponse.json({ lead: updatedLead })
   } catch (error) {
-    safeError('Error rejecting lead:', error)
-
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: error.errors[0].message },
-        { status: 400 }
-      )
-    }
-
-    return NextResponse.json(
-      { error: 'Failed to reject lead' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

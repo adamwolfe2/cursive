@@ -208,7 +208,7 @@ export async function POST(request: NextRequest) {
 
     if (existingSlug) {
       // Append random 4-char suffix to guarantee uniqueness
-      const suffix = Math.random().toString(36).substring(2, 6)
+      const suffix = crypto.randomUUID().replace(/-/g, '').substring(0, 4)
       slug = `${slug}-${suffix}`
       safeLog('[Onboarding] Slug collision, using:', slug)
     }

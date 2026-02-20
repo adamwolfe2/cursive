@@ -4,8 +4,9 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 
 const autoRechargeSchema = z.object({
@@ -16,25 +17,10 @@ const autoRechargeSchema = z.object({
 
 export async function GET() {
   try {
-    const supabase = await createClient()
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
 
-    // Auth check
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    // Get user's workspace
-    const { data: userData } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', user.id)
-      .maybeSingle()
-
-    if (!userData?.workspace_id) {
+    if (!user.workspace_id) {
       return NextResponse.json({ error: 'No workspace found' }, { status: 404 })
     }
 
@@ -43,7 +29,7 @@ export async function GET() {
     const { data: workspace } = await adminClient
       .from('workspaces')
       .select('settings')
-      .eq('id', userData.workspace_id)
+      .eq('id', user.workspace_id)
       .maybeSingle()
 
     const autoRecharge = workspace?.settings?.auto_recharge ?? {
@@ -52,36 +38,20 @@ export async function GET() {
       recharge_amount: 'starter',
     }
 
-    safeLog('[Auto-Recharge] Fetched settings for workspace', { workspace_id: userData.workspace_id })
+    safeLog('[Auto-Recharge] Fetched settings for workspace', { workspace_id: user.workspace_id })
 
     return NextResponse.json({ data: autoRecharge })
   } catch (error) {
-    safeError('[Auto-Recharge] Failed to fetch settings', error)
-    return NextResponse.json({ error: 'Failed to fetch auto-recharge settings' }, { status: 500 })
+    return handleApiError(error)
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createClient()
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
 
-    // Auth check
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    // Get user's workspace
-    const { data: userData } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', user.id)
-      .maybeSingle()
-
-    if (!userData?.workspace_id) {
+    if (!user.workspace_id) {
       return NextResponse.json({ error: 'No workspace found' }, { status: 404 })
     }
 
@@ -93,7 +63,7 @@ export async function POST(request: NextRequest) {
     const { data: workspace } = await adminClient
       .from('workspaces')
       .select('settings')
-      .eq('id', userData.workspace_id)
+      .eq('id', user.workspace_id)
       .maybeSingle()
 
     const existingSettings = workspace?.settings ?? {}
@@ -112,7 +82,7 @@ export async function POST(request: NextRequest) {
     const { error: updateError } = await adminClient
       .from('workspaces')
       .update({ settings: updatedSettings })
-      .eq('id', userData.workspace_id)
+      .eq('id', user.workspace_id)
 
     if (updateError) {
       safeError('[Auto-Recharge] Failed to save settings', updateError)
@@ -120,7 +90,7 @@ export async function POST(request: NextRequest) {
     }
 
     safeLog('[Auto-Recharge] Saved settings for workspace', {
-      workspace_id: userData.workspace_id,
+      workspace_id: user.workspace_id,
       enabled: validated.enabled,
       threshold: validated.threshold,
       recharge_amount: validated.recharge_amount,
@@ -128,13 +98,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true, data: updatedSettings.auto_recharge })
   } catch (error) {
-    safeError('[Auto-Recharge] Failed to save settings', error)
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Invalid request', details: error.errors },
-        { status: 400 }
-      )
-    }
-    return NextResponse.json({ error: 'Failed to save auto-recharge settings' }, { status: 500 })
+    return handleApiError(error)
   }
 }

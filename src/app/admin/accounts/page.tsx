@@ -1,12 +1,13 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useMutation } from '@tanstack/react-query'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { sanitizeSearchTerm } from '@/lib/utils/sanitize-search'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { useToast } from '@/lib/hooks/use-toast'
 
 interface Workspace {
   id: string
@@ -42,7 +43,7 @@ export default function AdminAccountsPage() {
 
   const supabase = createClient()
   const router = useRouter()
-  const queryClient = useQueryClient()
+  const { toast } = useToast()
 
   // Admin role check - prevent non-admins from accessing
   useEffect(() => {
@@ -146,14 +147,8 @@ export default function AdminAccountsPage() {
     })
   }
 
-  const toggleSuspend = async (workspace: Workspace) => {
+  const toggleSuspend = async (workspace: Workspace, reason?: string) => {
     const action = workspace.is_suspended ? 'unsuspend' : 'suspend'
-    const reason = workspace.is_suspended
-      ? undefined
-      : prompt('Reason for suspension (optional):') || undefined
-
-    // User cancelled suspension
-    if (!workspace.is_suspended && reason === null) return
 
     try {
       const response = await fetch(`/api/admin/workspaces/${workspace.id}/suspend`, {
@@ -167,10 +162,18 @@ export default function AdminAccountsPage() {
         throw new Error(error.error || 'Failed to update workspace')
       }
 
+      toast({
+        title: 'Success',
+        description: `Workspace ${action === 'suspend' ? 'suspended' : 'unsuspended'} successfully`,
+      })
       refetch()
     } catch (error) {
       safeError('[AdminAccounts]', 'Failed to toggle suspension:', error)
-      alert(error instanceof Error ? error.message : 'Failed to update workspace')
+      toast({
+        title: 'Error',
+        description: error instanceof Error ? error.message : 'Failed to update workspace',
+        variant: 'destructive',
+      })
     }
   }
 
@@ -396,7 +399,7 @@ export default function AdminAccountsPage() {
                           Details
                         </Link>
                         <button
-                          onClick={() => toggleSuspend(workspace)}
+                          onClick={() => toggleSuspend(workspace, undefined)}
                           className={`text-[12px] font-medium ${
                             workspace.is_suspended
                               ? 'text-green-600 hover:text-green-700'

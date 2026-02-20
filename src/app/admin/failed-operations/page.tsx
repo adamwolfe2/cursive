@@ -30,6 +30,7 @@ import {
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { RefreshCw, CheckCircle, XCircle, AlertTriangle, Eye } from 'lucide-react'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { useToast } from '@/lib/hooks/use-toast'
 
 type OperationType = 'email' | 'webhook' | 'job'
 
@@ -56,6 +57,7 @@ export default function FailedOperationsPage() {
   const [detailsOpen, setDetailsOpen] = useState(false)
   const [retrying, setRetrying] = useState<string | null>(null)
   const [resolving, setResolving] = useState<string | null>(null)
+  const { toast } = useToast()
   const [isAdmin, setIsAdmin] = useState(false)
   const [authChecked, setAuthChecked] = useState(false)
 
@@ -124,14 +126,14 @@ export default function FailedOperationsPage() {
       const result = await response.json()
 
       if (result.success) {
-        alert('Operation queued for retry')
+        toast({ title: 'Success', description: 'Operation queued for retry' })
         await loadOperations()
       } else {
-        alert(`Failed to retry: ${result.error}`)
+        toast({ title: 'Retry failed', description: result.error || 'Unknown error', variant: 'destructive' })
       }
     } catch (error) {
       safeError('[FailedOperations]', 'Failed to retry operation:', error)
-      alert('Failed to retry operation')
+      toast({ title: 'Error', description: 'Failed to retry operation', variant: 'destructive' })
     } finally {
       setRetrying(null)
     }
@@ -146,11 +148,11 @@ export default function FailedOperationsPage() {
 
       if (!response.ok) throw new Error('Failed to resolve operation')
 
-      alert('Operation marked as resolved')
+      toast({ title: 'Success', description: 'Operation marked as resolved' })
       await loadOperations()
     } catch (error) {
       safeError('[FailedOperations]', 'Failed to resolve operation:', error)
-      alert('Failed to resolve operation')
+      toast({ title: 'Error', description: 'Failed to resolve operation', variant: 'destructive' })
     } finally {
       setResolving(null)
     }

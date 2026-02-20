@@ -110,7 +110,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create the offer
-    const { data: newOffer, error: insertError } = await (supabase as any)
+    const { data: newOffer, error: insertError } = await supabase
       .from('offers')
       .insert({
         brand_workspace_id: workspaceId,

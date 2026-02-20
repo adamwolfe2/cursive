@@ -2,7 +2,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { z } from 'zod'
-import { createClient } from '@/lib/supabase/server'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { inngest } from '@/inngest/client'
 
 const customAudienceSchema = z.object({
@@ -17,20 +18,10 @@ const customAudienceSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
 
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const { data: userData } = await supabase
-      .from('users')
-      .select('id, workspace_id, email, full_name')
-      .eq('auth_user_id', user.id)
-      .maybeSingle()
-
-    if (!userData?.workspace_id) {
+    if (!user.workspace_id) {
       return NextResponse.json({ error: 'No workspace found' }, { status: 404 })
     }
 
@@ -41,8 +32,8 @@ export async function POST(request: NextRequest) {
     const { data: requestData, error: insertError } = await supabase
       .from('custom_audience_requests')
       .insert({
-        workspace_id: userData.workspace_id,
-        user_id: userData.id,
+        workspace_id: user.workspace_id,
+        user_id: user.id,
         industry: validated.industry,
         geography: validated.geography,
         company_size: validated.companySize,
@@ -77,8 +68,8 @@ export async function POST(request: NextRequest) {
               {
                 type: 'section',
                 fields: [
-                  { type: 'mrkdwn', text: `*User:* ${userData.full_name || userData.email}` },
-                  { type: 'mrkdwn', text: `*Workspace:* ${userData.workspace_id}` },
+                  { type: 'mrkdwn', text: `*User:* ${user.full_name || user.email}` },
+                  { type: 'mrkdwn', text: `*Workspace:* ${user.workspace_id}` },
                   { type: 'mrkdwn', text: `*Industry:* ${validated.industry}` },
                   { type: 'mrkdwn', text: `*Geography:* ${validated.geography}` },
                   { type: 'mrkdwn', text: `*Volume:* ${validated.volume} leads` },
@@ -134,9 +125,9 @@ export async function POST(request: NextRequest) {
         name: 'marketplace/custom-audience-requested',
         data: {
           request_id: requestData.id,
-          workspace_id: userData.workspace_id,
-          user_id: userData.id,
-          user_email: userData.email,
+          workspace_id: user.workspace_id,
+          user_id: user.id,
+          user_email: user.email,
           industry: validated.industry,
           volume: validated.volume,
         },
@@ -151,10 +142,6 @@ export async function POST(request: NextRequest) {
       id: requestData.id,
     })
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: 'Invalid request', details: error.errors }, { status: 400 })
-    }
-    safeError('Custom audience request error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return handleApiError(error)
   }
 }

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { getSubscriptionLink } from '@/lib/stripe/payment-links'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { useToast } from '@/lib/hooks/use-toast'
 
 interface UpgradeButtonProps {
   billingPeriod: 'monthly' | 'yearly'
@@ -18,6 +19,7 @@ export function UpgradeButton({
   variant = 'primary',
 }: UpgradeButtonProps) {
   const [loading, setLoading] = useState(false)
+  const { toast } = useToast()
 
   const handleUpgrade = async () => {
     setLoading(true)
@@ -59,7 +61,7 @@ export function UpgradeButton({
         const paymentUrl = getSubscriptionLink(plan, cycle)
         window.location.href = paymentUrl
       } catch {
-        alert('Failed to start checkout. Please try again or contact support.')
+        toast({ title: 'Error', description: 'Failed to start checkout. Please try again or contact support.', variant: 'destructive' })
         setLoading(false)
       }
     }

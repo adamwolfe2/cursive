@@ -32,14 +32,12 @@ const deleteUserSchema = z.object({
   confirm_email: z.string().email('Valid email is required for confirmation'),
 })
 
-// Generate a unique referral code
+// Generate a unique referral code using cryptographically secure random
 function generateReferralCode(): string {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
-  let code = ''
-  for (let i = 0; i < 8; i++) {
-    code += chars.charAt(Math.floor(Math.random() * chars.length))
-  }
-  return code
+  const bytes = new Uint8Array(8)
+  crypto.getRandomValues(bytes)
+  return Array.from(bytes).map(b => chars[b % chars.length]).join('')
 }
 
 export async function GET(request: NextRequest) {

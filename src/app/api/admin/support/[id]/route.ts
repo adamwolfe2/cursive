@@ -1,8 +1,9 @@
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { requireAdmin } from '@/lib/auth/admin'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function PATCH(
@@ -15,14 +16,8 @@ export async function PATCH(
     // Verify admin using centralized helper
     await requireAdmin()
 
-    const supabase = await createClient()
-
-    // Get user for audit trail
-    const { data: { user } } = await supabase.auth.getUser()
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
     const body = await request.json()
     const { status, admin_notes } = body
 
@@ -36,16 +31,7 @@ export async function PATCH(
       updateData.status = status
       if (status === 'responded') {
         updateData.responded_at = new Date().toISOString()
-        // Get user from users table
-        const { data: userData } = await supabase
-          .from('users')
-          .select('id')
-          .eq('auth_user_id', user.id)
-          .maybeSingle()
-
-        if (userData) {
-          updateData.responded_by = userData.id
-        }
+        updateData.responded_by = user.id
       }
     }
 

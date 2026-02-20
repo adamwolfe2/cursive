@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
+import { useToast } from '@/lib/hooks/use-toast'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
@@ -93,6 +94,7 @@ export const EnhancedLeadsTable = React.forwardRef<EnhancedLeadsTableHandle, Enh
   const [editingLead, setEditingLead] = React.useState<LeadTableRow | null>(null)
   const [selectedLeadIds, setSelectedLeadIds] = React.useState<Set<string>>(new Set())
   const router = useRouter()
+  const { toast } = useToast()
 
   // Expose clearSelection to parent via ref
   React.useImperativeHandle(ref, () => ({
@@ -529,10 +531,10 @@ export const EnhancedLeadsTable = React.forwardRef<EnhancedLeadsTableHandle, Enh
                                   if (response.ok) {
                                     router.refresh()
                                   } else {
-                                    alert('Failed to delete lead')
+                                    toast({ title: 'Error', description: 'Failed to delete lead', variant: 'destructive' })
                                   }
                                 } catch (error) {
-                                  alert('Failed to delete lead')
+                                  toast({ title: 'Error', description: 'Failed to delete lead', variant: 'destructive' })
                                 }
                               }
                             }}

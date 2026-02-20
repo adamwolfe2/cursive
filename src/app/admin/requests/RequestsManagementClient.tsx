@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { CheckCircle, XCircle, Clock, AlertCircle, ExternalLink, MessageSquare } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { useToast } from '@/lib/hooks/use-toast'
 
 interface FeatureRequest {
   id: string
@@ -48,6 +49,7 @@ export function RequestsManagementClient({ initialRequests }: RequestsManagement
   const [selectedRequest, setSelectedRequest] = useState<FeatureRequest | null>(null)
   const [adminNotes, setAdminNotes] = useState('')
   const [updating, setUpdating] = useState(false)
+  const { toast } = useToast()
 
   // Filter requests
   const filteredRequests = requests.filter((req) => {
@@ -117,7 +119,7 @@ export function RequestsManagementClient({ initialRequests }: RequestsManagement
       router.refresh()
     } catch (error) {
       safeError('[RequestsManagementClient]', 'Failed to update request:', error)
-      alert('Failed to update request')
+      toast({ title: 'Error', description: 'Failed to update request', variant: 'destructive' })
     } finally {
       setUpdating(false)
     }

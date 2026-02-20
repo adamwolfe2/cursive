@@ -112,7 +112,7 @@ export function PartnerTable({
                 {partner.website && (
                   <a
                     href={partner.website}
-                    target="_blank"
+                    target="_blank" rel="noopener noreferrer"
                     className="flex items-center gap-1 text-xs text-muted-foreground"
                   >
                     {partner.website} <ExternalLink className="h-3 w-3" />

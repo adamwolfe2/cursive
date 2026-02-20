@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
     const supabase = await createClient()
 
     // 3. Check if workspace already exists for this URL
-    const { data: existing } = await (supabase as any)
+    const { data: existing } = await supabase
       .from('brand_workspaces')
       .select('id, name, extraction_status')
       .eq('workspace_id', user.workspace_id)
@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 4. Create workspace record (status: processing)
-    const { data: workspace, error: workspaceError } = await (supabase as any)
+    const { data: workspace, error: workspaceError } = await supabase
       .from('brand_workspaces')
       .insert({
         user_id: user.auth_user_id,
@@ -133,7 +133,7 @@ async function processBrandExtractionWithTimeout(
     ])
   } catch (error: any) {
     safeError('[Brand Extract] Background extraction failed:', error)
-    await (supabase as any)
+    await supabase
       .from('brand_workspaces')
       .update({
         extraction_status: 'error',
@@ -162,7 +162,7 @@ async function processBrandExtraction(
     )
 
     // Step 3: Update workspace with extracted data
-    await (supabase as any)
+    await supabase
       .from('brand_workspaces')
       .update({
         name: firecrawlResult.brandData.company_name,
@@ -204,7 +204,7 @@ async function processBrandExtraction(
       preferred_channels: profile.preferred_channels,
     }))
 
-    await (supabase as any)
+    await supabase
       .from('customer_profiles')
       .insert(profilesData)
 
@@ -218,7 +218,7 @@ async function processBrandExtraction(
     }))
 
     if (offersData.length > 0) {
-      await (supabase as any)
+      await supabase
         .from('offers')
         .insert(offersData)
     }

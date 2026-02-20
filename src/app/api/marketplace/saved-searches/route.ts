@@ -4,8 +4,8 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { getCurrentUser } from '@/lib/auth/helpers'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 const saveSearchSchema = z.object({
@@ -16,42 +16,25 @@ const saveSearchSchema = z.object({
 // ── Helper: resolve authenticated user + workspace ──────────────────────────
 
 async function resolveUser() {
-  const supabase = await createClient()
+  const user = await getCurrentUser()
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser()
-
-  if (authError || !user) {
-    return { user: null, userData: null, error: 'Unauthorized' }
+  if (!user) {
+    return { user: null, error: 'Unauthorized' }
   }
 
-  const { data: userData, error: userError } = await supabase
-    .from('users')
-    .select('id, workspace_id')
-    .eq('auth_user_id', user.id)
-    .maybeSingle()
-
-  if (userError) {
-    safeError('[SavedSearches] Failed to fetch user data:', userError)
-    return { user: null, userData: null, error: 'Failed to fetch user data' }
+  if (!user.workspace_id) {
+    return { user: null, error: 'No workspace found' }
   }
 
-  if (!userData?.workspace_id) {
-    return { user: null, userData: null, error: 'No workspace found' }
-  }
-
-  return { user, userData, error: null }
+  return { user, error: null }
 }
-
 // ── GET: List saved searches ─────────────────────────────────────────────────
 
 export async function GET() {
   try {
-    const { userData, error } = await resolveUser()
+    const { user, error } = await resolveUser()
 
-    if (error || !userData) {
+    if (error || !user) {
       return NextResponse.json({ error: error ?? 'Unauthorized' }, { status: 401 })
     }
 
@@ -60,8 +43,8 @@ export async function GET() {
     const { data: savedSearches, error: fetchError } = await admin
       .from('saved_filters')
       .select('id, name, filters, created_at, updated_at')
-      .eq('user_id', userData.id)
-      .eq('workspace_id', userData.workspace_id)
+      .eq('user_id', user.id)
+      .eq('workspace_id', user.workspace_id)
       .eq('filter_type', 'marketplace')
       .order('created_at', { ascending: false })
 
@@ -81,9 +64,9 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const { userData, error } = await resolveUser()
+    const { user, error } = await resolveUser()
 
-    if (error || !userData) {
+    if (error || !user) {
       return NextResponse.json({ error: error ?? 'Unauthorized' }, { status: 401 })
     }
 
@@ -110,8 +93,8 @@ export async function POST(request: NextRequest) {
     const { data: savedSearch, error: insertError } = await admin
       .from('saved_filters')
       .insert({
-        user_id: userData.id,
-        workspace_id: userData.workspace_id,
+        user_id: user.id,
+        workspace_id: user.workspace_id,
         name,
         filter_type: 'marketplace',
         filters,

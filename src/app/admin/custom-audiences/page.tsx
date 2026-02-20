@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import { ArrowLeft, ExternalLink, Mail, CheckCircle2, XCircle, Clock, Package } from 'lucide-react'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { useToast } from '@/lib/hooks/use-toast'
 
 interface CustomAudienceRequest {
   id: string
@@ -59,6 +60,7 @@ export default function CustomAudiencesAdminPage() {
   const [filter, setFilter] = useState<string>('all')
   const [selectedRequest, setSelectedRequest] = useState<CustomAudienceRequest | null>(null)
   const [updating, setUpdating] = useState(false)
+  const { toast } = useToast()
 
   useEffect(() => {
     fetchRequests()
@@ -110,7 +112,7 @@ export default function CustomAudiencesAdminPage() {
 
     if (error) {
       safeError('[CustomAudiences]', 'Failed to update status:', error)
-      alert('Failed to update status')
+      toast({ title: 'Error', description: 'Failed to update status', variant: 'destructive' })
     } else {
       await fetchRequests()
       setSelectedRequest(null)

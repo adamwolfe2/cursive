@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Sparkles, X } from 'lucide-react'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { useToast } from '@/lib/hooks/use-toast'
 
 interface RequestMoreLeadsBannerProps {
   currentLeads: number
@@ -14,6 +15,7 @@ export function RequestMoreLeadsBanner({ currentLeads, leadLimit, workspaceName 
   const [dismissed, setDismissed] = useState(false)
   const [requesting, setRequesting] = useState(false)
   const [requested, setRequested] = useState(false)
+  const { toast } = useToast()
 
   // Calculate if near or at limit
   const percentUsed = (currentLeads / leadLimit) * 100
@@ -54,7 +56,7 @@ export function RequestMoreLeadsBanner({ currentLeads, leadLimit, workspaceName 
       setTimeout(() => setDismissed(true), 5000)
     } catch (error) {
       safeError('[RequestMoreLeadsBanner]', 'Failed to request more leads:', error)
-      alert(error instanceof Error ? error.message : 'Failed to submit request')
+      toast({ title: 'Error', description: error instanceof Error ? error.message : 'Failed to submit request', variant: 'destructive' })
     } finally {
       setRequesting(false)
     }

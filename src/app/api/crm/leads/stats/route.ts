@@ -2,36 +2,26 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function GET() {
   try {
-    const supabase = await createClient()
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
 
-    // Get current user and workspace (server-verified)
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    // Get user's workspace
-    const { data: userData, error: userError } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', user.id)
-      .maybeSingle()
-
-    if (userError || !userData) {
+    if (!user.workspace_id) {
       return NextResponse.json(
         { error: 'User workspace not found' },
         { status: 404 }
       )
     }
 
-    const workspaceId = userData.workspace_id
+    const workspaceId = user.workspace_id
+
+    // RLS-scoped client for leads queries
+    const supabase = await createClient()
 
     // Get current month start and last month start dates
     const now = new Date()
@@ -153,10 +143,6 @@ export async function GET() {
       chartData,
     })
   } catch (error) {
-    safeError('Error fetching lead stats:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch lead statistics' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

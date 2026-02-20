@@ -3,41 +3,21 @@
 // Returns combined credit transaction history (purchases + usage) for the workspace
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function GET(req: NextRequest) {
   try {
-    const supabase = await createClient()
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
 
-    // Auth check (server-verified)
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser()
-
-    if (authError) {
-      safeError('[Credit History] Auth error:', authError)
-      return NextResponse.json({ error: 'Authentication failed' }, { status: 401 })
-    }
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    // Get user's workspace
-    const { data: userData } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', user.id)
-      .maybeSingle()
-
-    if (!userData?.workspace_id) {
+    if (!user.workspace_id) {
       return NextResponse.json({ error: 'No workspace found' }, { status: 404 })
     }
 
-    const workspaceId = userData.workspace_id
+    const workspaceId = user.workspace_id
 
     // Parse query params
     const { searchParams } = new URL(req.url)
@@ -174,7 +154,6 @@ export async function GET(req: NextRequest) {
       },
     })
   } catch (error) {
-    safeError('[Credit History] Unexpected error:', error)
-    return NextResponse.json({ error: 'Failed to fetch credit history' }, { status: 500 })
+    return handleApiError(error)
   }
 }

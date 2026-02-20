@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Download, FileText, Package, Calendar, CheckCircle, Clock, Loader2 } from 'lucide-react'
+import { useToast } from '@/lib/hooks/use-toast'
 
 interface Delivery {
   id: string
@@ -29,6 +30,7 @@ const DELIVERY_TYPE_LABELS: Record<string, string> = {
 
 export function DeliveriesList({ deliveries }: DeliveriesListProps) {
   const [downloading, setDownloading] = useState<string | null>(null)
+  const { toast } = useToast()
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -63,7 +65,7 @@ export function DeliveriesList({ deliveries }: DeliveriesListProps) {
       // Open signed URL in new tab to download
       window.open(data.download_url, '_blank')
     } catch (err: any) {
-      alert(err.message || 'Failed to download file')
+      toast({ title: 'Download failed', description: err.message || 'Failed to download file', variant: 'destructive' })
     } finally {
       setDownloading(null)
     }

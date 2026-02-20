@@ -5,6 +5,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { CRMLeadRepository } from '@/lib/repositories/crm-lead.repository'
 import { withRateLimit } from '@/lib/middleware/rate-limiter'
 import { safeError } from '@/lib/utils/log-sanitizer'
@@ -19,43 +21,23 @@ const bulkOperationSchema = z.object({
 // POST /api/crm/leads/bulk - Perform bulk operations
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createClient()
-
-    // Auth check
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
 
     // Rate limiting
     const rateLimitResult = await withRateLimit(
       request,
-      'crm-operations' as any,
+      'crm-bulk',
       `user:${user.id}`
     )
-    if (rateLimitResult) {
-      return rateLimitResult
-    }
-
-    // Get user's workspace
-    const { data: userData } = await supabase
-      .from('users')
-      .select('id, workspace_id')
-      .eq('auth_user_id', user.id)
-      .maybeSingle()
-
-    if (!userData?.workspace_id) {
-      return NextResponse.json({ error: 'No workspace found' }, { status: 404 })
-    }
+    if (rateLimitResult) return rateLimitResult
 
     // Parse and validate request body
     const body = await request.json()
     const validated = bulkOperationSchema.parse(body)
 
     const repo = new CRMLeadRepository()
+    const workspaceId = user.workspace_id
 
     // Perform action based on type
     switch (validated.action) {
@@ -64,11 +46,7 @@ export async function POST(request: NextRequest) {
           .enum(['new', 'contacted', 'qualified', 'won', 'lost'])
           .parse(validated.data.status)
 
-        await repo.bulkUpdate(
-          validated.ids,
-          { status },
-          userData.workspace_id
-        )
+        await repo.bulkUpdate(validated.ids, { status }, workspaceId)
 
         return NextResponse.json({
           success: true,
@@ -87,7 +65,7 @@ export async function POST(request: NextRequest) {
         await repo.bulkUpdate(
           validated.ids,
           { assigned_user_id: assignedUserId },
-          userData.workspace_id
+          workspaceId
         )
 
         return NextResponse.json({
@@ -100,16 +78,26 @@ export async function POST(request: NextRequest) {
       case 'add_tags': {
         const tagsToAdd = z.array(z.string()).parse(validated.data.tags)
 
-        // For each lead, fetch current tags and merge with new ones
-        // This requires individual updates due to array merging logic
-        for (const leadId of validated.ids) {
-          const lead = await repo.findById(leadId, userData.workspace_id)
-          if (!lead) continue
+        // Batch-fetch all leads in one query, then update in parallel
+        const supabase = await createClient()
+        const { data: leads } = await supabase
+          .from('leads')
+          .select('id, tags')
+          .in('id', validated.ids)
+          .eq('workspace_id', workspaceId)
 
-          const currentTags = lead.tags || []
-          const newTags = Array.from(new Set([...currentTags, ...tagsToAdd]))
-
-          await repo.update(leadId, { tags: newTags }, userData.workspace_id)
+        if (leads && leads.length > 0) {
+          await Promise.all(
+            leads.map((lead) => {
+              const currentTags = (lead.tags as string[]) || []
+              const newTags = Array.from(new Set([...currentTags, ...tagsToAdd]))
+              return supabase
+                .from('leads')
+                .update({ tags: newTags })
+                .eq('id', lead.id)
+                .eq('workspace_id', workspaceId)
+            })
+          )
         }
 
         return NextResponse.json({
@@ -122,15 +110,26 @@ export async function POST(request: NextRequest) {
       case 'remove_tags': {
         const tagsToRemove = z.array(z.string()).parse(validated.data.tags)
 
-        // For each lead, fetch current tags and remove specified ones
-        for (const leadId of validated.ids) {
-          const lead = await repo.findById(leadId, userData.workspace_id)
-          if (!lead) continue
+        // Batch-fetch all leads in one query, then update in parallel
+        const supabase = await createClient()
+        const { data: leads } = await supabase
+          .from('leads')
+          .select('id, tags')
+          .in('id', validated.ids)
+          .eq('workspace_id', workspaceId)
 
-          const currentTags = lead.tags || []
-          const newTags = currentTags.filter((tag) => !tagsToRemove.includes(tag))
-
-          await repo.update(leadId, { tags: newTags }, userData.workspace_id)
+        if (leads && leads.length > 0) {
+          await Promise.all(
+            leads.map((lead) => {
+              const currentTags = (lead.tags as string[]) || []
+              const newTags = currentTags.filter((tag) => !tagsToRemove.includes(tag))
+              return supabase
+                .from('leads')
+                .update({ tags: newTags })
+                .eq('id', lead.id)
+                .eq('workspace_id', workspaceId)
+            })
+          )
         }
 
         return NextResponse.json({
@@ -141,7 +140,7 @@ export async function POST(request: NextRequest) {
       }
 
       case 'delete': {
-        await repo.bulkDelete(validated.ids, userData.workspace_id)
+        await repo.bulkDelete(validated.ids, workspaceId)
 
         return NextResponse.json({
           success: true,
@@ -158,15 +157,6 @@ export async function POST(request: NextRequest) {
     }
   } catch (error) {
     safeError('[CRM Bulk API] Failed to perform bulk operation:', error)
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Invalid data', details: error.errors },
-        { status: 400 }
-      )
-    }
-    return NextResponse.json(
-      { error: 'Failed to perform bulk operation' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

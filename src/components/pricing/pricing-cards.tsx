@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { getSubscriptionLink } from '@/lib/stripe/payment-links'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { useToast } from '@/lib/hooks/use-toast'
 
 interface SubscriptionPlan {
   id: string
@@ -28,6 +29,7 @@ interface PricingCardsProps {
 export function PricingCards({ plans, currentPlan }: PricingCardsProps) {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly')
   const [loadingPlanId, setLoadingPlanId] = useState<string | null>(null)
+  const { toast } = useToast()
   const router = useRouter()
 
   const handleCheckout = async (plan: SubscriptionPlan) => {
@@ -83,7 +85,7 @@ export function PricingCards({ plans, currentPlan }: PricingCardsProps) {
       window.location.href = url
     } catch (error) {
       safeError('[PricingCards]', 'Checkout error:', error)
-      alert(error instanceof Error ? error.message : 'Failed to start checkout')
+      toast({ title: 'Error', description: error instanceof Error ? error.message : 'Failed to start checkout', variant: 'destructive' })
       setLoadingPlanId(null)
     }
   }

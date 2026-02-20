@@ -5,9 +5,9 @@
 
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { requireAdmin } from '@/lib/auth/admin'
+import { handleApiError } from '@/lib/utils/api-error-handler'
 import { checkRateLimit, RATE_LIMIT_CONFIGS } from '@/lib/utils/rate-limit'
 import { z } from 'zod'
 import { safeError } from '@/lib/utils/log-sanitizer'
@@ -41,13 +41,7 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const supabase = await createClient()
 
-    // Get current user for audit trail
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
 
     // Parse and validate request body
     const { payout_id, reason } = payoutRejectSchema.parse(await req.json())
@@ -83,7 +77,7 @@ export async function POST(req: NextRequest) {
       .from('payout_requests')
       .update({
         status: 'rejected',
-        rejected_by_user_id: user.id,
+        rejected_by_user_id: admin.id,
         rejected_at: new Date().toISOString(),
         rejection_reason: reason || 'No reason provided',
         updated_at: new Date().toISOString(),
@@ -105,17 +99,7 @@ export async function POST(req: NextRequest) {
       payout_id,
       message: `Payout of $${payout.amount.toFixed(2)} rejected`,
     })
-  } catch (error: any) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Invalid request', details: error.errors },
-        { status: 400 }
-      )
-    }
-    safeError('[Admin Payouts] Rejection error:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+  } catch (error) {
+    return handleApiError(error)
   }
 }
