@@ -181,6 +181,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/blog/webmcp-ai-agent-ready-lead-generation',
     '/blog/webmcp-implementation-guide-b2b-saas',
     '/blog/what-is-webmcp-guide',
+    // New competitor alternative + educational pages (created Feb 20 2026)
+    '/blog/amplemarket-alternative',
+    '/blog/qualified-alternative',
+    '/blog/what-is-b2b-data',
+    '/blog/b2b-lead-generation-guide-2026',
+    '/blog/website-visitor-identification-guide',
   ].map(url => ({
     url,
     priority: 0.7,

@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge'
 import { Skeleton, SkeletonCard } from '@/components/ui/skeleton'
 import { getServiceLink } from '@/lib/stripe/payment-links'
 import { CREDIT_PACKAGES } from '@/lib/constants/credit-packages'
+import { SendLimitsCard } from '@/components/settings/send-limits-card'
 
 // Credit package options for the auto-recharge dropdown (matches CREDIT_PACKAGES)
 const AUTO_RECHARGE_PACKAGES = [
@@ -557,6 +558,9 @@ export default function BillingClient() {
         </div>
         </CardContent>
       </Card>
+
+      {/* Send Limits */}
+      <SendLimitsCard />
 
       {/* Enrichment Activity */}
       {enrichmentData && enrichmentData.stats.total > 0 && (

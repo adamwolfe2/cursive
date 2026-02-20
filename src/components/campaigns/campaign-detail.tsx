@@ -284,10 +284,10 @@ export function CampaignDetail({ campaignId }: CampaignDetailProps) {
         <TabsContent value="analytics">
           <Card className="p-6">
             <div className="text-center py-12">
-              <p className="text-muted-foreground">Analytics coming soon</p>
-              <p className="text-sm text-muted-foreground mt-2">
-                Track open rates, reply rates, and campaign performance here.
-              </p>
+              <p className="text-muted-foreground mb-4">View detailed analytics for this campaign</p>
+              <Button onClick={() => router.push(`/campaigns/${campaignId}/analytics`)}>
+                View Analytics
+              </Button>
             </div>
           </Card>
         </TabsContent>

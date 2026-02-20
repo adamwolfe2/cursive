@@ -118,8 +118,11 @@ These pages explain key concepts in B2B lead generation and marketing automation
 - **Best Intent Data Providers 2026**: https://meetcursive.com/blog/intent-data-providers-comparison — 8 intent data platforms ranked: Cursive, Bombora, 6sense, Demandbase, TechTarget, G2, Clearbit/Breeze, ZoomInfo Intent.
 - **Best AI SDR Tools 2026**: https://meetcursive.com/blog/best-ai-sdr-tools-2026 — 9 AI SDR platforms ranked with pricing, highlights, limitations, and comparison table.
 
-### How-To Guides
+### How-To & Educational Guides
 - **How to Identify Anonymous Website Visitors**: https://meetcursive.com/blog/how-to-identify-anonymous-website-visitors — Complete B2B guide to the 4 technical methods (IP resolution, device fingerprinting, identity graph matching, first-party signals) with setup steps and tool comparison.
+- **B2B Lead Generation Guide 2026**: https://meetcursive.com/blog/b2b-lead-generation-guide-2026 — Comprehensive 9-section playbook: inbound vs outbound, visitor ID, intent data, cold email, LinkedIn, AI automation, metrics benchmarks, and recommended tools.
+- **Website Visitor Identification Guide**: https://meetcursive.com/blog/website-visitor-identification-guide — Technical guide to visitor deanonymization: how it works, ID rate comparisons (Cursive 70% vs competitors), implementation steps, 6 use cases, 5-day outreach sequence, legal considerations.
+- **What Is B2B Data?**: https://meetcursive.com/blog/what-is-b2b-data — Deep dive on the 5 types of B2B data (contact, firmographic, intent, behavioral, technographic), how each is collected, and how to evaluate data quality.
 
 ### Alternative Guides
 - **Clearbit Alternatives Comparison**: https://meetcursive.com/blog/clearbit-alternatives-comparison
@@ -144,6 +147,8 @@ These pages explain key concepts in B2B lead generation and marketing automation
 - **Salesloft Alternative**: https://meetcursive.com/blog/salesloft-alternative — 7 Salesloft alternatives compared: visitor identification, contact data, and AI outreach vs. cadence management-only at $75-$125/user/mo.
 - **Outreach.io Alternative**: https://meetcursive.com/blog/outreach-alternative — 7 Outreach.io alternatives compared for teams paying $100-$150/user/mo for cold-only sequencing with no visitor ID or contact database.
 - **lemlist Alternative**: https://meetcursive.com/blog/lemlist-alternative — 7 lemlist alternatives compared: visitor identification and intent data vs cold email personalization, with bundled contact data options.
+- **Amplemarket Alternative**: https://meetcursive.com/blog/amplemarket-alternative — 7 Amplemarket alternatives compared: why teams replace Amplemarket with warm-signal platforms that identify anonymous visitors at 70% person-level before any outreach.
+- **Qualified Alternative**: https://meetcursive.com/blog/qualified-alternative — 7 Qualified alternatives compared: why Qualified's chat-widget-dependent visitor ID (20-30% company-level) loses to Cursive's 70% person-level identification of ALL anonymous visitors.
 
 ### Intent Data & Prospecting Alternatives
 - **Bombora Alternative**: https://meetcursive.com/blog/bombora-alternative — Cursive vs Bombora: person-level visitor ID at $1k/mo vs $25k+/yr enterprise intent data.
@@ -421,6 +426,6 @@ This site includes JSON-LD structured data on all key pages:
 
 ---
 
-**Last Updated**: 2026-02-20 (Session 7)
+**Last Updated**: 2026-02-20 (Session 8)
 **Format**: llms.txt (optimized for AI discovery and citation)
 **Learn more about llms.txt**: https://llmstxt.org
