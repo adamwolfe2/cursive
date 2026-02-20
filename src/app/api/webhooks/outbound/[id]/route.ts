@@ -8,8 +8,9 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 const ALLOWED_EVENTS = [
@@ -25,23 +26,6 @@ const patchSchema = z.object({
   events: z.array(z.enum(ALLOWED_EVENTS)).min(1).optional(),
   is_active: z.boolean().optional(),
 })
-
-async function getUser() {
-  const supabase = await createClient()
-  const {
-    data: { user: authUser },
-  } = await supabase.auth.getUser()
-
-  if (!authUser) return null
-
-  const { data: user } = await supabase
-    .from('users')
-    .select('id, workspace_id')
-    .eq('auth_user_id', authUser.id)
-    .maybeSingle()
-
-  return user ?? null
-}
 
 /** Verify the webhook belongs to the user's workspace */
 async function ownsWebhook(webhookId: string, workspaceId: string): Promise<boolean> {
@@ -64,10 +48,8 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params
-    const user = await getUser()
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
 
     if (!(await ownsWebhook(id, user.workspace_id))) {
       return NextResponse.json({ error: 'Not found' }, { status: 404 })
@@ -86,9 +68,8 @@ export async function DELETE(
     }
 
     return NextResponse.json({ success: true })
-  } catch (err: any) {
-    safeError('[Webhooks/Outbound] DELETE error:', err)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  } catch (error) {
+    return handleApiError(error)
   }
 }
 
@@ -101,10 +82,8 @@ export async function PATCH(
 ) {
   try {
     const { id } = await params
-    const user = await getUser()
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
 
     if (!(await ownsWebhook(id, user.workspace_id))) {
       return NextResponse.json({ error: 'Not found' }, { status: 404 })
@@ -142,8 +121,7 @@ export async function PATCH(
     }
 
     return NextResponse.json({ data: updated })
-  } catch (err: any) {
-    safeError('[Webhooks/Outbound] PATCH error:', err)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  } catch (error) {
+    return handleApiError(error)
   }
 }

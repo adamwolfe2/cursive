@@ -7,11 +7,11 @@
 
 
 import { NextRequest, NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
-import { createServerClient } from '@supabase/ssr'
+import { createClient } from '@/lib/supabase/server'
 import { cancelSubscription, resumeSubscription } from '@/lib/stripe/client'
 import { z } from 'zod'
-import { safeError } from '@/lib/utils/log-sanitizer'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 
 // Request validation schema
 const cancelSchema = z.object({
@@ -19,60 +19,13 @@ const cancelSchema = z.object({
   reason: z.string().optional(),
 })
 
-/**
- * Get authenticated user from session
- */
-async function getAuthenticatedUser() {
-  const cookieStore = await cookies()
-
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll()
-        },
-        setAll(cookiesToSet: any[]) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
-            )
-          } catch {
-            // Ignore
-          }
-        },
-      },
-    }
-  )
-
-  const {
-    data: { user: authUser },
-  } = await supabase.auth.getUser()
-
-  if (!authUser) {
-    return { user: null, supabase }
-  }
-
-  const { data: user } = await supabase
-    .from('users')
-    .select('id, workspace_id, email')
-    .eq('auth_user_id', authUser.id)
-    .maybeSingle()
-
-  return { user, supabase }
-}
-
 export async function POST(req: NextRequest) {
   try {
     // Authenticate user
-    const { user, supabase } = await getAuthenticatedUser()
-    if (!user) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      )
-    }
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
+
+    const supabase = await createClient()
 
     // Validate request body
     const body = await req.json()
@@ -174,11 +127,7 @@ export async function POST(req: NextRequest) {
         message: 'Subscription resumed successfully',
       })
     }
-  } catch (error: any) {
-    safeError('[Billing Cancel] Error:', error)
-    return NextResponse.json(
-      { error: 'Failed to process request' },
-      { status: 500 }
-    )
+  } catch (error) {
+    return handleApiError(error)
   }
 }

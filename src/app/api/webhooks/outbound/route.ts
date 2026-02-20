@@ -8,8 +8,9 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 const ALLOWED_EVENTS = [
@@ -27,24 +28,6 @@ const webhookSchema = z.object({
   name: z.string().min(1).max(100).optional(),
 })
 
-/** Return the authenticated user + workspace, or null */
-async function getUser() {
-  const supabase = await createClient()
-  const {
-    data: { user: authUser },
-  } = await supabase.auth.getUser()
-
-  if (!authUser) return null
-
-  const { data: user } = await supabase
-    .from('users')
-    .select('id, workspace_id')
-    .eq('auth_user_id', authUser.id)
-    .maybeSingle()
-
-  return user ?? null
-}
-
 /** Generate a 32-byte hex secret */
 function generateSecret(): string {
   return Array.from(crypto.getRandomValues(new Uint8Array(32)))
@@ -57,10 +40,8 @@ function generateSecret(): string {
 // ---------------------------------------------------------------------------
 export async function GET() {
   try {
-    const user = await getUser()
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
 
     const supabase = createAdminClient()
     const { data: webhooks, error } = await supabase
@@ -105,9 +86,8 @@ export async function GET() {
     }))
 
     return NextResponse.json({ data: result })
-  } catch (err: any) {
-    safeError('[Webhooks/Outbound] GET error:', err)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  } catch (error) {
+    return handleApiError(error)
   }
 }
 
@@ -116,10 +96,8 @@ export async function GET() {
 // ---------------------------------------------------------------------------
 export async function POST(req: NextRequest) {
   try {
-    const user = await getUser()
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
 
     const body = await req.json()
     const parsed = webhookSchema.safeParse(body)
@@ -164,8 +142,7 @@ export async function POST(req: NextRequest) {
       },
       { status: 201 }
     )
-  } catch (err: any) {
-    safeError('[Webhooks/Outbound] POST error:', err)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  } catch (error) {
+    return handleApiError(error)
   }
 }

@@ -1,4 +1,3 @@
-
 /**
  * Premium Feature Request API
  * Allows users to request access to premium features
@@ -7,6 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
+import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized, badRequest } from '@/lib/utils/api-error-handler'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { safeError } from '@/lib/utils/log-sanitizer'
@@ -30,27 +30,11 @@ type RequestInput = z.infer<typeof requestSchema>
  */
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createClient()
-
     // Get authenticated user
-    const {
-      data: { user: authUser },
-    } = await supabase.auth.getUser()
+    const userProfile = await getCurrentUser()
+    if (!userProfile) return unauthorized()
 
-    if (!authUser) {
-      return unauthorized()
-    }
-
-    // Get user profile
-    const { data: userProfile } = await supabase
-      .from('users')
-      .select('id, workspace_id, email, full_name')
-      .eq('auth_user_id', authUser.id)
-      .maybeSingle()
-
-    if (!userProfile) {
-      return badRequest('User profile not found')
-    }
+    const supabase = await createClient()
 
     // Get workspace info
     const { data: workspace } = await supabase
@@ -157,7 +141,7 @@ ${validatedData.budget_range ? `*Budget:* ${validatedData.budget_range}\n` : ''}
       },
       { status: 201 }
     )
-  } catch (error: any) {
+  } catch (error) {
     return handleApiError(error)
   }
 }
@@ -168,27 +152,11 @@ ${validatedData.budget_range ? `*Budget:* ${validatedData.budget_range}\n` : ''}
  */
 export async function GET(request: NextRequest) {
   try {
-    const supabase = await createClient()
-
     // Get authenticated user
-    const {
-      data: { user: authUser },
-    } = await supabase.auth.getUser()
+    const userProfile = await getCurrentUser()
+    if (!userProfile) return unauthorized()
 
-    if (!authUser) {
-      return unauthorized()
-    }
-
-    // Get user profile
-    const { data: userProfile } = await supabase
-      .from('users')
-      .select('id, workspace_id')
-      .eq('auth_user_id', authUser.id)
-      .maybeSingle()
-
-    if (!userProfile) {
-      return badRequest('User profile not found')
-    }
+    const supabase = await createClient()
 
     // Get all requests for this workspace
     const { data: requests, error } = await supabase
@@ -213,7 +181,7 @@ export async function GET(request: NextRequest) {
       success: true,
       data: requests,
     })
-  } catch (error: any) {
+  } catch (error) {
     return handleApiError(error)
   }
 }

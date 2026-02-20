@@ -12,9 +12,10 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getPartnerTier } from '@/lib/services/partner-tier.service'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 export const dynamic = 'force-dynamic'
@@ -111,23 +112,10 @@ export async function GET(req: NextRequest) {
       : 'revenue'
 
     // 2. Auth: verify the caller is a logged-in partner
-    const supabase = await createClient()
-    const {
-      data: { user: authUser },
-      error: authError,
-    } = await supabase.auth.getUser()
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
 
-    if (authError || !authUser) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const { data: user } = await supabase
-      .from('users')
-      .select('id, role, partner_approved, linked_partner_id')
-      .eq('auth_user_id', authUser.id)
-      .maybeSingle()
-
-    if (!user || user.role !== 'partner') {
+    if (user.role !== 'partner') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
@@ -345,7 +333,6 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ leaderboard, month: now.toISOString(), period, category })
   } catch (error) {
-    safeError('[Leaderboard] Unexpected error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return handleApiError(error)
   }
 }

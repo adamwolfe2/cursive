@@ -20,9 +20,10 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getPartnerTier } from '@/lib/services/partner-tier.service'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 export const dynamic = 'force-dynamic'
@@ -68,25 +69,8 @@ export async function GET(
     }
 
     // 1. Auth check — must be logged in
-    const supabase = await createClient()
-    const {
-      data: { user: authUser },
-      error: authError,
-    } = await supabase.auth.getUser()
-
-    if (authError || !authUser) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const { data: user } = await supabase
-      .from('users')
-      .select('id, role, linked_partner_id')
-      .eq('auth_user_id', authUser.id)
-      .maybeSingle()
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
 
     const isOwnProfile = user.linked_partner_id === partnerId
     const isAdmin = user.role === 'owner' || user.role === 'admin'
@@ -213,7 +197,6 @@ export async function GET(
 
     return NextResponse.json(responseData)
   } catch (error) {
-    safeError('[PartnerProfile] Unexpected error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return handleApiError(error)
   }
 }
