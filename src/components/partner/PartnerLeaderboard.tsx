@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Shield, Award, Crown, Trophy, Loader2, Download } from 'lucide-react'
 import { cn } from '@/lib/design-system'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import type { LeaderboardEntry, LeaderboardPeriod, LeaderboardCategory } from '@/app/api/partner/leaderboard/route'
 
 // ---------------------------------------------------------------------------
@@ -197,7 +198,7 @@ export function PartnerLeaderboard({ month, isAdmin = false }: PartnerLeaderboar
       URL.revokeObjectURL(url)
     } catch (err: unknown) {
       // Silent fail — the download simply won't trigger
-      console.error('[Leaderboard] Export error:', err)
+      safeError('[Leaderboard] Export error:', err)
     } finally {
       setExporting(false)
     }
