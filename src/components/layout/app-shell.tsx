@@ -197,6 +197,8 @@ const navigationItems: NavItemConfig[] = [
       { name: 'Team', href: '/settings/team' },
       { name: 'API Keys', href: '/settings/api-keys' },
       { name: 'Pixel & Tracking', href: '/settings/pixel' },
+      { name: 'Client Profile', href: '/settings/client-profile' },
+      { name: 'Branding', href: '/settings/branding' },
       { name: 'Integrations', href: '/settings/integrations' },
       { name: 'Notifications', href: '/settings/notifications' },
       { name: 'Security', href: '/settings/security' },

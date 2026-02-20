@@ -124,6 +124,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/blog/salesloft-alternative',
     '/blog/outreach-alternative',
     '/blog/lemlist-alternative',
+    // New cold email + comparison pages (created Feb 20 2026)
+    '/blog/instantly-ai-alternative',
+    '/blog/smartlead-alternative',
+    '/blog/apollo-io-vs-zoominfo',
     // Existing "cursive vs" pages
     '/blog/cursive-vs-rb2b',
     '/blog/cursive-vs-leadfeeder',
