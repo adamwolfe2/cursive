@@ -257,22 +257,45 @@ export default async function DashboardPage({
       )}
 
       {/* Credits low banner */}
-      {creditsRemaining <= 3 && !isFree && (
-        <div className="rounded-xl bg-amber-50 border border-amber-200 p-4 flex items-center justify-between gap-4">
+      {creditsRemaining <= 3 && (
+        <div className={`rounded-xl p-4 flex items-center justify-between gap-4 ${
+          isFree
+            ? 'bg-indigo-50 border border-indigo-200'
+            : 'bg-amber-50 border border-amber-200'
+        }`}>
           <div className="flex items-center gap-3">
-            <Zap className="h-5 w-5 text-amber-600 shrink-0" />
+            {isFree ? (
+              <Rocket className="h-5 w-5 text-indigo-600 shrink-0" />
+            ) : (
+              <Zap className="h-5 w-5 text-amber-600 shrink-0" />
+            )}
             <div>
-              <p className="font-semibold text-amber-900 text-sm">
-                {creditsRemaining === 0 ? 'You\'re out of enrichment credits' : `Only ${creditsRemaining} enrichment credit${creditsRemaining === 1 ? '' : 's'} left`}
-              </p>
-              <p className="text-xs text-amber-700">Each lead enrichment (phone, email, LinkedIn) costs 1 credit.</p>
+              {isFree ? (
+                <>
+                  <p className="font-semibold text-indigo-900 text-sm">
+                    {creditsRemaining === 0 ? 'You\'ve used all your free credits today' : `Only ${creditsRemaining} free credit${creditsRemaining === 1 ? '' : 's'} left today`}
+                  </p>
+                  <p className="text-xs text-indigo-700">Upgrade to Pro for 1,000 daily credits, priority enrichment, and full CRM access.</p>
+                </>
+              ) : (
+                <>
+                  <p className="font-semibold text-amber-900 text-sm">
+                    {creditsRemaining === 0 ? 'You\'re out of enrichment credits' : `Only ${creditsRemaining} enrichment credit${creditsRemaining === 1 ? '' : 's'} left`}
+                  </p>
+                  <p className="text-xs text-amber-700">Each lead enrichment (phone, email, LinkedIn) costs 1 credit.</p>
+                </>
+              )}
             </div>
           </div>
           <Link
             href="/settings/billing"
-            className="shrink-0 text-sm font-semibold bg-amber-600 text-white rounded-lg px-3 py-1.5 hover:bg-amber-700 transition-colors"
+            className={`shrink-0 text-sm font-semibold text-white rounded-lg px-3 py-1.5 transition-colors ${
+              isFree
+                ? 'bg-indigo-600 hover:bg-indigo-700'
+                : 'bg-amber-600 hover:bg-amber-700'
+            }`}
           >
-            Buy Credits
+            {isFree ? 'Upgrade to Pro' : 'Buy Credits'}
           </Link>
         </div>
       )}
