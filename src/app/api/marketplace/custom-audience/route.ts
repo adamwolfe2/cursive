@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
+import { inngest } from '@/inngest/client'
 
 const customAudienceSchema = z.object({
   industry: z.string().min(1),
@@ -125,6 +126,24 @@ export async function POST(request: NextRequest) {
       }
     } catch (slackError) {
       safeError('Failed to send Slack notification:', slackError)
+    }
+
+    // Fire Inngest event for follow-up workflow (confirmation email + 24h reminder)
+    try {
+      await inngest.send({
+        name: 'marketplace/custom-audience-requested',
+        data: {
+          request_id: requestData.id,
+          workspace_id: userData.workspace_id,
+          user_id: userData.id,
+          user_email: userData.email,
+          industry: validated.industry,
+          volume: validated.volume,
+        },
+      })
+    } catch (inngestError) {
+      safeError('[Custom Audience] Failed to queue follow-up workflow:', inngestError)
+      // Non-fatal: request is already saved to DB
     }
 
     return NextResponse.json({

@@ -2,17 +2,18 @@
 // Processes custom audience requests with confirmation email, 24h follow-up, and Slack reminders
 
 import { inngest } from '../client'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export const handleCustomAudienceRequest = inngest.createFunction(
   { id: 'handle-custom-audience-request', retries: 2 },
   { event: 'marketplace/custom-audience-requested' },
-  async ({ event, step }) => {
+  async ({ event, step, logger }) => {
     const { request_id, workspace_id, user_id, user_email, industry, volume } = event.data
 
     // Step 1: Send confirmation email to user
     await step.run('send-confirmation-email', async () => {
-      console.log(`[Custom Audience] Confirmation email sent to ${user_email}`)
-      // In production: send confirmation email
+      logger.info(`[Custom Audience] Confirmation email queued for ${user_email}`)
+      // TODO: send confirmation email via Resend
       // "We received your custom audience request for {industry} leads"
       // "Expect a 25-lead sample within 48 hours"
     })
@@ -36,7 +37,7 @@ export const handleCustomAudienceRequest = inngest.createFunction(
     if (!responded) {
       // Send reminder to sales team
       await step.run('send-reminder', async () => {
-        console.log(`[Custom Audience] 24h reminder: Request ${request_id} not yet actioned`)
+        logger.info(`[Custom Audience] 24h reminder: Request ${request_id} not yet actioned`)
 
         // Send Slack reminder
         const slackUrl = process.env.SLACK_SALES_WEBHOOK_URL
@@ -50,7 +51,7 @@ export const handleCustomAudienceRequest = inngest.createFunction(
               }),
             })
           } catch (e) {
-            console.error('Failed to send Slack reminder:', e)
+            safeError('[Custom Audience] Failed to send Slack reminder:', e)
           }
         }
       })
