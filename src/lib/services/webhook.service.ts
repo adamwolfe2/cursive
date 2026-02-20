@@ -5,6 +5,8 @@
  * Handles webhook delivery to workspace endpoints with retry logic.
  */
 
+import { hmacSha256Hex, timingSafeEqual } from '@/lib/utils/crypto'
+
 export interface WebhookPayload {
   event: string
   timestamp: string
@@ -16,34 +18,6 @@ export interface WebhookDeliveryResult {
   statusCode?: number
   responseBody?: string
   error?: string
-}
-
-/**
- * Generate HMAC-SHA256 hex digest (Edge-compatible)
- */
-async function hmacSha256Hex(key: string, data: string): Promise<string> {
-  const encoder = new TextEncoder()
-  const cryptoKey = await crypto.subtle.importKey(
-    'raw',
-    encoder.encode(key),
-    { name: 'HMAC', hash: 'SHA-256' },
-    false,
-    ['sign']
-  )
-  const sig = await crypto.subtle.sign('HMAC', cryptoKey, encoder.encode(data))
-  return Array.from(new Uint8Array(sig)).map(b => b.toString(16).padStart(2, '0')).join('')
-}
-
-/**
- * Timing-safe string comparison (Edge-compatible)
- */
-function timingSafeEqual(a: string, b: string): boolean {
-  if (a.length !== b.length) return false
-  let result = 0
-  for (let i = 0; i < a.length; i++) {
-    result |= a.charCodeAt(i) ^ b.charCodeAt(i)
-  }
-  return result === 0
 }
 
 /**

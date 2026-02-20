@@ -22,37 +22,10 @@ import {
   type EmailClickedEvent,
 } from '@/lib/services/emailbison'
 
+import { verifyHmacSignature, sha256Hex } from '@/lib/utils/crypto'
+
 // Webhook secret from environment
 const WEBHOOK_SECRET = process.env.EMAILBISON_WEBHOOK_SECRET || ''
-
-// Timing-safe string comparison to prevent timing attacks
-function timingSafeEqual(a: string, b: string): boolean {
-  if (a.length !== b.length) return false
-  let result = 0
-  for (let i = 0; i < a.length; i++) {
-    result |= a.charCodeAt(i) ^ b.charCodeAt(i)
-  }
-  return result === 0
-}
-
-// Edge-compatible HMAC-SHA256 verification
-async function verifySignatureEdge(payload: string, signature: string, secret: string): Promise<boolean> {
-  const encoder = new TextEncoder()
-  const key = await crypto.subtle.importKey(
-    'raw', encoder.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
-  )
-  const sig = await crypto.subtle.sign('HMAC', key, encoder.encode(payload))
-  const expected = Array.from(new Uint8Array(sig)).map(b => b.toString(16).padStart(2, '0')).join('')
-  const provided = signature.replace(/^sha256=/, '')
-  return timingSafeEqual(expected, provided)
-}
-
-// Edge-compatible SHA-256 hash
-async function sha256Hex(data: string): Promise<string> {
-  const encoded = new TextEncoder().encode(data)
-  const hash = await crypto.subtle.digest('SHA-256', encoded)
-  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('')
-}
 
 export async function POST(request: NextRequest) {
   let idempotencyKey: string | undefined
@@ -72,7 +45,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify signature - REQUIRED for security (Edge-compatible)
-    const isValid = await verifySignatureEdge(rawBody, signature, WEBHOOK_SECRET)
+    const isValid = await verifyHmacSignature(rawBody, signature, WEBHOOK_SECRET)
     if (!isValid) {
       safeError('[Campaign Webhook] Signature verification failed')
       return NextResponse.json(

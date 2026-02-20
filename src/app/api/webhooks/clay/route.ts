@@ -9,6 +9,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { hmacSha256Hex, timingSafeEqual } from '@/lib/utils/crypto'
 
 // Types for Clay webhook payload
 interface ClayPerson {
@@ -40,30 +41,6 @@ interface ClayWebhookPayload {
 }
 
 /**
- * Compute HMAC-SHA256 hex digest using Web Crypto API
- */
-async function hmacSha256Hex(data: string, secret: string): Promise<string> {
-  const encoder = new TextEncoder()
-  const key = await crypto.subtle.importKey(
-    'raw', encoder.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
-  )
-  const sig = await crypto.subtle.sign('HMAC', key, encoder.encode(data))
-  return Array.from(new Uint8Array(sig)).map(b => b.toString(16).padStart(2, '0')).join('')
-}
-
-/**
- * Constant-time string comparison to prevent timing attacks
- */
-function timingSafeEqual(a: string, b: string): boolean {
-  if (a.length !== b.length) return false
-  let result = 0
-  for (let i = 0; i < a.length; i++) {
-    result |= a.charCodeAt(i) ^ b.charCodeAt(i)
-  }
-  return result === 0
-}
-
-/**
  * Verify Clay webhook signature
  */
 async function verifySignature(
@@ -75,10 +52,8 @@ async function verifySignature(
     return false
   }
 
-  // Clay uses HMAC-SHA256 signature
-  const expectedSignature = await hmacSha256Hex(payload, secret)
-
   try {
+    const expectedSignature = await hmacSha256Hex(secret, payload)
     return timingSafeEqual(signature, expectedSignature)
   } catch {
     return false
