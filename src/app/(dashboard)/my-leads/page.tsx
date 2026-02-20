@@ -37,7 +37,7 @@ export default async function MyLeadsPage() {
     .from('users')
     .select('id, workspace_id, full_name, email')
     .eq('auth_user_id', session.user.id)
-    .single()
+    .maybeSingle()
 
   if (!userData) {
     redirect('/welcome')

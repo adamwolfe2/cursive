@@ -23,7 +23,7 @@ export default async function DailyLeadsPage() {
     .from('users')
     .select('id, workspace_id, industry_segment, location_segment, daily_lead_limit, plan')
     .eq('auth_user_id', user.id)
-    .single()
+    .maybeSingle()
 
   if (!userProfile?.workspace_id) {
     redirect('/welcome')

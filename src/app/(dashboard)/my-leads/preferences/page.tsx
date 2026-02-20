@@ -113,7 +113,7 @@ export default async function TargetingPreferencesPage() {
     .from('users')
     .select('id, workspace_id, full_name, email')
     .eq('auth_user_id', user.id)
-    .single()
+    .maybeSingle()
 
   if (userError || !userData) {
     redirect('/welcome')

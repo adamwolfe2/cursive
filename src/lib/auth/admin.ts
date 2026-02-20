@@ -37,7 +37,7 @@ export async function isAdmin(): Promise<boolean> {
       .select('id')
       .eq('email', user.email)
       .eq('is_active', true)
-      .single()
+      .maybeSingle()
 
     return !!admin
   } catch (error) {
@@ -81,7 +81,7 @@ export async function requireAdmin(): Promise<{ id: string; email: string }> {
       .select('id, email')
       .eq('email', user.email)
       .eq('is_active', true)
-      .single()
+      .maybeSingle()
 
     if (admin) {
       return { id: admin.id, email: admin.email ?? user.email }
@@ -93,7 +93,7 @@ export async function requireAdmin(): Promise<{ id: string; email: string }> {
     .from('users')
     .select('id, email, role')
     .eq('auth_user_id', user.id)
-    .single()
+    .maybeSingle()
 
   if (!userData || (userData.role !== 'owner' && userData.role !== 'admin')) {
     throw new Error('Unauthorized: Admin access required')
@@ -120,7 +120,7 @@ export async function requireAdminRole(): Promise<{ id: string; email: string }>
     .from('users')
     .select('id, email, role')
     .eq('auth_user_id', user.id)
-    .single()
+    .maybeSingle()
 
   if (!userData || (userData.role !== 'owner' && userData.role !== 'admin')) {
     throw new Error('Unauthorized: Admin access required')
@@ -147,7 +147,7 @@ export async function getCurrentAdminId(): Promise<string | null> {
       .select('id')
       .eq('email', user.email)
       .eq('is_active', true)
-      .single()
+      .maybeSingle()
 
     return admin?.id || null
   } catch {
@@ -173,7 +173,7 @@ export async function getCurrentAdmin(): Promise<PlatformAdmin | null> {
       .select('*')
       .eq('email', user.email)
       .eq('is_active', true)
-      .single()
+      .maybeSingle()
 
     return admin as PlatformAdmin | null
   } catch {
@@ -213,7 +213,7 @@ export async function startImpersonation(
       .from('workspaces')
       .select('id, name')
       .eq('id', workspaceId)
-      .single()
+      .maybeSingle()
 
     if (workspaceError || !workspace) {
       return { success: false, error: 'Workspace not found' }
@@ -277,7 +277,7 @@ export async function endImpersonation(): Promise<{ success: boolean; error?: st
       .select('id, workspace_id')
       .eq('admin_id', admin.id)
       .eq('is_active', true)
-      .single()
+      .maybeSingle()
 
     if (activeSession) {
       // End the session
@@ -329,7 +329,7 @@ export async function getActiveImpersonationSession(): Promise<{
       `)
       .eq('admin_id', admin.id)
       .eq('is_active', true)
-      .single()
+      .maybeSingle()
 
     if (!session) {
       return null
@@ -499,7 +499,7 @@ export async function getWorkspaceById(workspaceId: string): Promise<Workspace |
       users(*)
     `)
     .eq('id', workspaceId)
-    .single()
+    .maybeSingle()
 
   if (error) {
     return null
@@ -525,7 +525,7 @@ export async function suspendWorkspace(
       .from('workspaces')
       .select('is_suspended, suspended_reason')
       .eq('id', workspaceId)
-      .single()
+      .maybeSingle()
 
     const { error } = await supabase
       .from('workspaces')

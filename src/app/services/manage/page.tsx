@@ -20,7 +20,7 @@ export default async function ManageSubscriptionPage() {
     .from('users')
     .select('workspace_id, full_name, email')
     .eq('auth_user_id', user.id)
-    .single()
+    .maybeSingle()
 
   if (!userData?.workspace_id) {
     redirect('/welcome')

@@ -69,7 +69,7 @@ async function getCurrentUser(): Promise<AuthenticatedUser | null> {
       .from('users')
       .select('*, workspaces(*)')
       .eq('auth_user_id', authUser.id)
-      .single()
+      .maybeSingle()
 
     if (!user) {
       return null

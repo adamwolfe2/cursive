@@ -93,7 +93,7 @@ export default async function DashboardLayout({
       .from('users')
       .select('id, auth_user_id, full_name, email, plan, role, workspace_id, daily_credit_limit, daily_credits_used, workspaces(id, name, subdomain, website_url, branding)')
       .eq('auth_user_id', user.id)
-      .single(),
+      .maybeSingle(),
     // Inline admin check to avoid redundant getSession() call in isAdmin()
     user.email
       ? supabase

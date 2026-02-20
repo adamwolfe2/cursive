@@ -32,7 +32,7 @@ export async function getCurrentUserWithAccess(): Promise<AccessControlUser | nu
     .from('users')
     .select('id, email, role, partner_approved, active_subscription, plan, workspace_id')
     .eq('auth_user_id', authUser.id)
-    .single()
+    .maybeSingle()
 
   return user
 }

@@ -10,6 +10,7 @@
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react'
 import type { ProductTierFeatures, TierSlug } from '@/types'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // ============================================================================
 // TYPES
@@ -137,7 +138,7 @@ export function TierProvider({ children }: { children: React.ReactNode }) {
         setUsage(data.usage || DEFAULT_USAGE)
       }
     } catch (err: any) {
-      console.error('Failed to fetch tier info:', err)
+      safeError('[TierProvider] Failed to fetch tier info:', err)
       setError(err.message)
     } finally {
       setIsLoading(false)

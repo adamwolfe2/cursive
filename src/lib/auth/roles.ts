@@ -30,7 +30,7 @@ export async function getUserWithRole(authUser: User): Promise<UserWithRole | nu
     .from('users')
     .select('id, auth_user_id, email, full_name, role, plan, workspace_id')
     .eq('auth_user_id', authUser.id)
-    .single()
+    .maybeSingle()
 
   if (error || !user) {
     safeError('[getUserWithRole] Failed to fetch user:', error)
@@ -76,7 +76,7 @@ export async function isApprovedPartner(authUser: User): Promise<boolean> {
     .from('partners')
     .select('id, status, is_active, stripe_onboarding_complete')
     .eq('email', user.email)
-    .single()
+    .maybeSingle()
 
   if (error || !partner) return false
 

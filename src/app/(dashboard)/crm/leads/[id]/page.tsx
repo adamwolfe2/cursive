@@ -32,7 +32,7 @@ export default async function LeadDetailPage({ params }: PageProps) {
     .from('users')
     .select('workspace_id')
     .eq('auth_user_id', session.user.id)
-    .single()
+    .maybeSingle()
   if (!userData?.workspace_id) redirect('/welcome')
 
   // Fetch lead data

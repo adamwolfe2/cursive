@@ -192,7 +192,7 @@ export async function isPlatformAdmin(): Promise<boolean> {
       .select('id')
       .eq('email', user.email)
       .eq('is_active', true)
-      .single()
+      .maybeSingle()
     if (data) return true
   }
 
@@ -201,7 +201,7 @@ export async function isPlatformAdmin(): Promise<boolean> {
     .from('users')
     .select('role')
     .eq('auth_user_id', user.id)
-    .single()
+    .maybeSingle()
 
   return userData?.role === 'owner' || userData?.role === 'admin'
 }
@@ -279,7 +279,7 @@ async function getLinkedPartner(partnerId: string): Promise<Partner | null> {
     .from('partners')
     .select('*')
     .eq('id', partnerId)
-    .single()
+    .maybeSingle()
 
   return data as Partner | null
 }

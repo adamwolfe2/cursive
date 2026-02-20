@@ -28,7 +28,7 @@ export default async function AgentDetailPage({ params }: PageProps) {
     .from('users')
     .select('workspace_id')
     .eq('auth_user_id', session.user.id)
-    .single()
+    .maybeSingle()
   if (!userData?.workspace_id) redirect('/welcome')
 
   // Get agent with details

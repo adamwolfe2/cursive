@@ -28,7 +28,7 @@ export default async function QueriesPage() {
     .from('users')
     .select('id, workspace_id, plan, role')
     .eq('auth_user_id', session.user.id)
-    .single()
+    .maybeSingle()
 
   if (!userData?.workspace_id) {
     redirect('/welcome')

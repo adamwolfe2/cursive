@@ -26,7 +26,7 @@ export default async function CRMLeadsPage({ searchParams }: CRMLeadsPageProps) 
     .from('users')
     .select('workspace_id')
     .eq('auth_user_id', session.user.id)
-    .single()
+    .maybeSingle()
   if (!userData?.workspace_id) redirect('/welcome')
 
   const params = await searchParams

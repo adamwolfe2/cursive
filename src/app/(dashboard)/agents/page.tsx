@@ -24,7 +24,7 @@ export default async function AgentsPage() {
     .from('users')
     .select('workspace_id')
     .eq('auth_user_id', session.user.id)
-    .single()
+    .maybeSingle()
   if (!userData?.workspace_id) redirect('/welcome')
 
   // Get agents

@@ -173,7 +173,7 @@ export default function TeamSettingsPage() {
       </div>
 
       {/* Members Table */}
-      <div className="rounded-xl border border-zinc-200 bg-white overflow-hidden">
+      <div className="rounded-xl border border-zinc-200 bg-white overflow-x-auto">
         <div className="px-6 py-4 border-b border-zinc-200">
           <h2 className="font-semibold text-zinc-900">Members ({members.length})</h2>
         </div>
@@ -282,7 +282,7 @@ export default function TeamSettingsPage() {
 
       {/* Pending Invites */}
       {invites.length > 0 && (
-        <div className="rounded-xl border border-zinc-200 bg-white overflow-hidden">
+        <div className="rounded-xl border border-zinc-200 bg-white overflow-x-auto">
           <div className="px-6 py-4 border-b border-zinc-200">
             <h2 className="font-semibold text-zinc-900">Pending Invites ({invites.length})</h2>
           </div>

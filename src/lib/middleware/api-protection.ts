@@ -111,7 +111,7 @@ export async function protectRoute(
       .from('users')
       .select('id, email, workspace_id, plan')
       .eq('auth_user_id', authUser.id)
-      .single()
+      .maybeSingle()
 
     if (profileError || !profile) {
       return {

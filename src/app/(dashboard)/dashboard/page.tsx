@@ -41,7 +41,7 @@ export default async function DashboardPage({
     .from('users')
     .select('id, auth_user_id, workspace_id, email, full_name, plan, role, daily_lead_limit, industry_segment, location_segment, workspaces(id, name, industry_vertical)')
     .eq('auth_user_id', user.id)
-    .single()
+    .maybeSingle()
 
   const userProfile = userData as {
     id: string

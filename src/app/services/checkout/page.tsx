@@ -48,7 +48,7 @@ export default async function CheckoutPage({ searchParams }: CheckoutPageProps) 
     .from('users')
     .select('workspace_id')
     .eq('auth_user_id', user.id)
-    .single()
+    .maybeSingle()
 
   if (!userData?.workspace_id) {
     redirect('/welcome')
