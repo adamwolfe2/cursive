@@ -64,13 +64,25 @@ export function AutoSubmitOnboarding({ isMarketplace, isReturning }: AutoSubmitO
             return
           }
 
-          // Create basic onboarding data from Google account
+          // Create onboarding data from Google account using correct API schema fields.
+          // Split full_name into firstName/lastName to match the businessSchema.
+          const rawName: string = user.user_metadata?.full_name || user.user_metadata?.name || ''
+          const nameParts = rawName.trim().split(/\s+/).filter(Boolean)
+          const firstName = nameParts[0] || user.email?.split('@')[0] || 'User'
+          const lastName = nameParts.slice(1).join(' ') || 'Account'
+          // Use email domain (without TLD) as company name for B2B signups
+          const emailDomainPart = user.email?.split('@')[1]?.split('.')[0] || ''
+          const companyName = emailDomainPart
+            ? emailDomainPart.charAt(0).toUpperCase() + emailDomainPart.slice(1)
+            : rawName || 'My Business'
           onboardingData = {
-            businessName: user.user_metadata?.full_name || user.email?.split('@')[0] || 'My Business',
-            fullName: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
+            role: 'business',
+            firstName,
+            lastName,
             email: user.email,
-            industry: 'Other', // Default industry
-            role: 'business', // Default to business role
+            companyName,
+            industry: 'Other',
+            monthlyLeadNeed: '25-50 leads', // sensible default for OAuth direct signups
           }
         } else {
           const data = JSON.parse(stored)
