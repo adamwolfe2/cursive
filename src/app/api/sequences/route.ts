@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
       .from('users')
       .select('workspace_id')
       .eq('auth_user_id', authUser.id)
-      .single()
+      .maybeSingle()
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
       .from('users')
       .select('workspace_id, id')
       .eq('auth_user_id', authUser.id)
-      .single()
+      .maybeSingle()
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
@@ -100,9 +100,13 @@ export async function POST(req: NextRequest) {
         created_by: user.id,
       })
       .select('id, workspace_id, name, description, trigger_type, trigger_config, status, created_by, created_at')
-      .single()
+      .maybeSingle()
 
     if (sequenceError) {
+      return NextResponse.json({ error: 'Failed to create sequence' }, { status: 500 })
+    }
+
+    if (!sequence) {
       return NextResponse.json({ error: 'Failed to create sequence' }, { status: 500 })
     }
 

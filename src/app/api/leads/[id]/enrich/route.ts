@@ -54,7 +54,7 @@ export async function POST(
       .from('users')
       .select('id, workspace_id, daily_credits_used, daily_credit_limit, plan')
       .eq('auth_user_id', user.id)
-      .single()
+      .maybeSingle()
 
     if (!userProfile?.workspace_id) {
       return NextResponse.json({ error: 'No workspace found' }, { status: 400 })
@@ -83,7 +83,7 @@ export async function POST(
       .select('id, workspace_id, first_name, last_name, full_name, email, phone, company_name, company_domain, job_title, city, state, linkedin_url, metadata, enrichment_status, enriched_at')
       .eq('id', leadId)
       .eq('workspace_id', userProfile.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (!lead) {
       return NextResponse.json({ error: 'Lead not found' }, { status: 404 })

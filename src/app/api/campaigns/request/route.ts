@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
         timeline: data.timeline,
       })
       .select('id, workspace_id, status, company_name, contact_name, contact_email, target_industry, campaign_goal, timeline, created_at')
-      .single()
+      .maybeSingle()
 
     if (error) {
       safeError('[Campaign Request] Database error:', error)

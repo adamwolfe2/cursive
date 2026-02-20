@@ -106,7 +106,7 @@ export async function POST(request: NextRequest) {
       .from('workspaces')
       .select('name')
       .eq('id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     // 6. Send invitation email
     const inviteUrl = `${process.env.NEXT_PUBLIC_APP_URL}/auth/accept-invite?token=${invite.token}`

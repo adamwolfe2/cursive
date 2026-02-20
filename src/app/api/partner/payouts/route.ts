@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
         .from('users')
         .select('linked_partner_id')
         .eq('auth_user_id', user.id)
-        .single()
+        .maybeSingle()
 
       if (userData?.linked_partner_id) {
         partnerId = userData.linked_partner_id
@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
         .select('id')
         .eq('api_key', apiKey)
         .eq('is_active', true)
-        .single()
+        .maybeSingle()
 
       if (!partner) {
         return NextResponse.json({ error: 'Invalid API key' }, { status: 401 })
@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
       .select('id, name, total_earnings, pending_balance, available_balance, payout_threshold, stripe_account_id, stripe_onboarding_complete')
       .eq('id', partnerId)
       .eq('is_active', true)
-      .single()
+      .maybeSingle()
 
     if (partnerError || !partner) {
       return NextResponse.json({ error: 'Partner not found' }, { status: 404 })

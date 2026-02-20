@@ -39,7 +39,7 @@ export async function POST(
     .eq('id', partnerId)
     .eq('status', 'pending')
     .select('id, email, contact_name, company_name, status')
-    .single()
+    .maybeSingle()
 
   if (error || !partner) {
     return NextResponse.json(

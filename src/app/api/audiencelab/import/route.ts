@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
       .from('users')
       .select('workspace_id')
       .eq('auth_user_id', user.id)
-      .single()
+      .maybeSingle()
 
     if (!userData?.workspace_id) {
       return NextResponse.json(
@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
       .from('audiencelab_import_jobs')
       .select('id, status, total_rows, processed_rows')
       .eq('idempotency_hash', importHash)
-      .single()
+      .maybeSingle()
 
     if (existingJob?.status === 'completed') {
       return NextResponse.json({
@@ -113,7 +113,7 @@ export async function POST(request: NextRequest) {
         idempotency_hash: importHash,
       }, { onConflict: 'idempotency_hash' })
       .select('id')
-      .single()
+      .maybeSingle()
 
     const jobId = importJob?.id
 

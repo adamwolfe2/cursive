@@ -56,7 +56,7 @@ export class UserLeadRouterService {
       `)
       .eq('id', leadId)
       .eq('workspace_id', this.workspaceId)
-      .single()
+      .maybeSingle()
 
     if (leadError || !lead) {
       safeError('Lead not found:', leadId)
@@ -273,7 +273,7 @@ export class UserLeadRouterService {
       .from('user_targeting')
       .select('daily_lead_count, weekly_lead_count, monthly_lead_count')
       .eq('user_id', userId)
-      .single()
+      .maybeSingle()
 
     if (fetchError || !current) {
       safeError('[UserLeadRouter] Failed to fetch targeting for count increment:', fetchError)

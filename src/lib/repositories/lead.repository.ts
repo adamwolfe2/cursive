@@ -112,7 +112,7 @@ export class LeadRepository {
       .select('*, queries(name, global_topics(topic, category))')
       .eq('id', id)
       .eq('workspace_id', workspaceId)
-      .single()
+      .maybeSingle()
 
     if (error) {
       if (error.code === 'PGRST116') {
@@ -186,7 +186,7 @@ export class LeadRepository {
       .from('lead_intent_breakdown')
       .select('*')
       .eq('workspace_id', workspaceId)
-      .single()
+      .maybeSingle()
 
     if (error) {
       safeError('[LeadRepository] Get intent breakdown error:', error)
@@ -254,7 +254,7 @@ export class LeadRepository {
       .from('leads')
       .insert(lead)
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) {
       safeError('[LeadRepository] Create error:', error)
@@ -280,7 +280,7 @@ export class LeadRepository {
       .eq('id', id)
       .eq('workspace_id', workspaceId)
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) {
       safeError('[LeadRepository] Update error:', error)

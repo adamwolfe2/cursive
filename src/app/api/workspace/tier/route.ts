@@ -78,7 +78,7 @@ export async function GET(request: NextRequest) {
           )
         `)
         .eq('workspace_id', user.workspace_id)
-        .single(),
+        .maybeSingle(),
       supabase
         .from('leads')
         .select('id', { count: 'exact', head: true })

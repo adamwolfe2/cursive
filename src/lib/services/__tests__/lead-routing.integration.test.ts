@@ -40,7 +40,7 @@ describe('Lead Routing Integration Tests', () => {
         allowed_regions: ['US'],
       })
       .select('id')
-      .single()
+      .maybeSingle()
 
     const { data: workspace2 } = await supabase
       .from('workspaces')
@@ -51,7 +51,7 @@ describe('Lead Routing Integration Tests', () => {
         allowed_regions: ['US'],
       })
       .select('id')
-      .single()
+      .maybeSingle()
 
     testWorkspaceId = workspace1!.id
     testWorkspaceId2 = workspace2!.id
@@ -70,7 +70,7 @@ describe('Lead Routing Integration Tests', () => {
         },
       })
       .select('id')
-      .single()
+      .maybeSingle()
 
     testRuleId = rule!.id
   })
@@ -103,7 +103,7 @@ describe('Lead Routing Integration Tests', () => {
           .digest('hex'),
       })
       .select('id')
-      .single()
+      .maybeSingle()
 
     testLeadId = lead!.id
   })
@@ -124,7 +124,7 @@ describe('Lead Routing Integration Tests', () => {
         .from('leads')
         .select('routing_status, routing_locked_by, routing_attempts')
         .eq('id', testLeadId)
-        .single()
+        .maybeSingle()
 
       expect(lead?.routing_status).toBe('routing')
       expect(lead?.routing_locked_by).toBe(lockOwner)
@@ -174,7 +174,7 @@ describe('Lead Routing Integration Tests', () => {
         .from('leads')
         .select('routing_status, workspace_id, routing_locked_by')
         .eq('id', testLeadId)
-        .single()
+        .maybeSingle()
 
       expect(lead?.routing_status).toBe('routed')
       expect(lead?.workspace_id).toBe(testWorkspaceId2)
@@ -215,7 +215,7 @@ describe('Lead Routing Integration Tests', () => {
         .from('leads')
         .select('routing_status, routing_error')
         .eq('id', testLeadId)
-        .single()
+        .maybeSingle()
 
       expect(lead?.routing_status).toBe('pending')
       expect(lead?.routing_error).toBe('Test error')
@@ -258,7 +258,7 @@ describe('Lead Routing Integration Tests', () => {
         .from('leads')
         .select('routing_status, routing_error')
         .eq('id', testLeadId)
-        .single()
+        .maybeSingle()
 
       expect(lead?.routing_status).toBe('failed')
       expect(lead?.routing_error).toBe('Final error')
@@ -290,7 +290,7 @@ describe('Lead Routing Integration Tests', () => {
           contact_data: { email: 'duplicate@test.com' },
         })
         .select('id')
-        .single()
+        .maybeSingle()
 
       // Check for duplicate from different workspace
       const { data: duplicates } = await supabase.rpc('check_cross_partner_duplicate', {
@@ -330,7 +330,7 @@ describe('Lead Routing Integration Tests', () => {
         .from('leads')
         .select('routing_status, routing_locked_by')
         .eq('id', testLeadId)
-        .single()
+        .maybeSingle()
 
       expect(lead?.routing_status).toBe('pending')
       expect(lead?.routing_locked_by).toBeNull()
@@ -355,7 +355,7 @@ describe('Lead Routing Integration Tests', () => {
         .from('leads')
         .select('routing_status')
         .eq('id', testLeadId)
-        .single()
+        .maybeSingle()
 
       expect(lead?.routing_status).toBe('expired')
     })
@@ -379,7 +379,7 @@ describe('Lead Routing Integration Tests', () => {
         .from('leads')
         .select('workspace_id, routing_status')
         .eq('id', testLeadId)
-        .single()
+        .maybeSingle()
 
       expect(lead?.workspace_id).toBe(testWorkspaceId2)
       expect(lead?.routing_status).toBe('routed')

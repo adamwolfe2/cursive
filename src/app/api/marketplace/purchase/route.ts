@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
       .from('users')
       .select('id, workspace_id, full_name, email')
       .eq('auth_user_id', user.id)
-      .single()
+      .maybeSingle()
 
     if (!userData?.workspace_id) {
       return NextResponse.json({ error: 'No workspace found' }, { status: 404 })
@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
         .eq('idempotency_key', validated.idempotencyKey)
         .eq('workspace_id', userData.workspace_id)
         .eq('endpoint', '/api/marketplace/purchase')
-        .single()
+        .maybeSingle()
 
       if (existingKey) {
         // Request already processed - return cached response
@@ -540,7 +540,7 @@ export async function GET(request: NextRequest) {
       .from('users')
       .select('id, workspace_id, full_name, email')
       .eq('auth_user_id', user.id)
-      .single()
+      .maybeSingle()
 
     if (!userData?.workspace_id) {
       return NextResponse.json({ error: 'User workspace not found' }, { status: 403 })

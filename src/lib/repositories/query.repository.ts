@@ -36,7 +36,7 @@ export class QueryRepository {
       .select('*, global_topics(id, topic, category)')
       .eq('id', id)
       .eq('workspace_id', workspaceId)
-      .single()
+      .maybeSingle()
 
     if (error) {
       if (error.code === 'PGRST116') {
@@ -58,7 +58,7 @@ export class QueryRepository {
       .from('queries')
       .insert(query)
       .select('*, global_topics(id, topic, category)')
-      .single()
+      .maybeSingle()
 
     if (error) {
       throw new DatabaseError(error.message)
@@ -83,7 +83,7 @@ export class QueryRepository {
       .eq('id', id)
       .eq('workspace_id', workspaceId)
       .select('*, global_topics(id, topic, category)')
-      .single()
+      .maybeSingle()
 
     if (error) {
       throw new DatabaseError(error.message)

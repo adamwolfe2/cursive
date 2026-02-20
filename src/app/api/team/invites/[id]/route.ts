@@ -39,7 +39,7 @@ export async function DELETE(
       .eq('workspace_id', user.workspace_id)
       .eq('status', 'pending')
       .select('id')
-      .single()
+      .maybeSingle()
 
     if (error) {
       if (error.code === 'PGRST116') {

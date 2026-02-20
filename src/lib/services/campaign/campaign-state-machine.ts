@@ -101,7 +101,7 @@ export async function transitionCampaignStatus(
     .select('id, status, workspace_id, name, scheduled_start_at')
     .eq('id', context.campaignId)
     .eq('workspace_id', context.workspaceId)
-    .single()
+    .maybeSingle()
 
   if (fetchError || !campaign) {
     return {
@@ -257,7 +257,7 @@ export async function validateCampaignForActivation(
     `)
     .eq('id', campaignId)
     .eq('workspace_id', workspaceId)
-    .single()
+    .maybeSingle()
 
   if (error || !campaign) {
     return { valid: false, errors: ['Campaign not found'] }

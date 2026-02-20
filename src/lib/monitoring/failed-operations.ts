@@ -50,10 +50,14 @@ export async function recordFailedOperation(params: RecordFailedOperationParams)
         last_retry_at: new Date().toISOString(),
       })
       .select('id')
-      .single()
+      .maybeSingle()
 
     if (error) {
       safeError('[Failed Operations] Error recording failed operation', error)
+      return null
+    }
+
+    if (!data) {
       return null
     }
 
@@ -190,7 +194,7 @@ export async function retryFailedOperation(id: string): Promise<{ success: boole
       .from('failed_operations')
       .select('*')
       .eq('id', id)
-      .single()
+      .maybeSingle()
 
     if (fetchError || !operation) {
       return { success: false, error: 'Failed operation not found' }

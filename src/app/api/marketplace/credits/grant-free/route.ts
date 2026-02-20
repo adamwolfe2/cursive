@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
       .from('users')
       .select('id, workspace_id')
       .eq('auth_user_id', user.id)
-      .single()
+      .maybeSingle()
 
     if (userError) {
       safeError('[Grant Free Credits] Failed to fetch user data:', userError)
@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
         .from('free_credit_grants')
         .select('id')
         .eq('workspace_id', userData.workspace_id)
-        .single()
+        .maybeSingle()
 
       if (existingGrant) {
         return NextResponse.json({
@@ -94,7 +94,7 @@ export async function POST(request: NextRequest) {
         .from('workspace_credits')
         .select('balance, total_earned')
         .eq('workspace_id', userData.workspace_id)
-        .single()
+        .maybeSingle()
 
       if (existing) {
         // Increment existing balance (safe: free_credit_grants prevents duplicates)

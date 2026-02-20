@@ -49,7 +49,7 @@ export class CreditService {
       .from('users')
       .select('plan, daily_credits_used, daily_credits_reset_at')
       .eq('id', userId)
-      .single()
+      .maybeSingle()
 
     if (error || !user) {
       throw new Error('User not found')
@@ -189,7 +189,7 @@ export class CreditService {
       .from('users')
       .select('plan, daily_credits_used, daily_credits_reset_at')
       .eq('id', userId)
-      .single()
+      .maybeSingle()
 
     if (error || !user) {
       throw new Error('User not found')

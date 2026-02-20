@@ -35,7 +35,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
       .select('id')
       .eq('id', campaignId)
       .eq('workspace_id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (campaignError || !campaign) {
       return NextResponse.json({ error: 'Campaign not found' }, { status: 404 })
@@ -63,7 +63,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
       `)
       .eq('id', emailId)
       .eq('campaign_id', campaignId)
-      .single()
+      .maybeSingle()
 
     if (emailError || !email) {
       return NextResponse.json({ error: 'Email not found' }, { status: 404 })
@@ -95,7 +95,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
       .select('id')
       .eq('id', campaignId)
       .eq('workspace_id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (campaignError || !campaign) {
       return NextResponse.json({ error: 'Campaign not found' }, { status: 404 })
@@ -107,7 +107,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
       .select('id, status')
       .eq('id', emailId)
       .eq('campaign_id', campaignId)
-      .single()
+      .maybeSingle()
 
     if (emailError || !existingEmail) {
       return NextResponse.json({ error: 'Email not found' }, { status: 404 })
@@ -134,7 +134,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
       .eq('id', emailId)
       .eq('campaign_id', campaignId)
       .select()
-      .single()
+      .maybeSingle()
 
     if (updateError) {
       logger.error('Failed to update email', { error: updateError instanceof Error ? updateError.message : String(updateError), emailId })

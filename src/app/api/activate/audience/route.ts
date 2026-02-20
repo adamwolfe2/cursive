@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
       .from('users')
       .select('id, workspace_id, full_name, email')
       .eq('auth_user_id', user.id)
-      .single()
+      .maybeSingle()
 
     if (!profile?.workspace_id) {
       return NextResponse.json({ error: 'No workspace' }, { status: 400 })
@@ -103,7 +103,7 @@ export async function POST(req: NextRequest) {
         status: 'pending',
       })
       .select('id')
-      .single()
+      .maybeSingle()
 
     if (insertError) {
       safeError('[Activate/Audience] Insert error:', insertError)

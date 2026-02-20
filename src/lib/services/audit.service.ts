@@ -156,9 +156,9 @@ export async function createAuditLog(params: CreateAuditLogParams): Promise<stri
         duration_ms: params.durationMs,
       })
       .select('id')
-      .single()
+      .maybeSingle()
 
-    return insertError ? null : insertData.id
+    return insertError || !insertData ? null : insertData.id
   }
 
   return data

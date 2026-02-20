@@ -37,7 +37,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
       .select('id, workspace_id, name, daily_send_limit, sends_today, last_send_reset_at')
       .eq('id', campaignId)
       .eq('workspace_id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (campaignError || !campaign) {
       return notFound('Campaign not found')

@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
       .from('partners')
       .select('id')
       .eq('api_key', apiKey)
-      .single()
+      .maybeSingle()
 
     if (partnerError || !partner) {
       return NextResponse.json({ error: 'Invalid API key' }, { status: 401 })
@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
       .from('partner_upload_batches')
       .select('id, partner_id, storage_path, status, file_size_bytes')
       .eq('id', batch_id)
-      .single()
+      .maybeSingle()
 
     if (batchError || !batch) {
       return NextResponse.json({ error: 'Batch not found' }, { status: 404 })

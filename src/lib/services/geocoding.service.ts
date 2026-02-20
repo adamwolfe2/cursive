@@ -309,7 +309,7 @@ export class GeocodingService {
         .eq('state', input.state || '')
         .eq('postal_code', input.postal_code || '')
         .eq('country', input.country || 'US')
-        .single()
+        .maybeSingle()
 
       if (error || !data) return null
 

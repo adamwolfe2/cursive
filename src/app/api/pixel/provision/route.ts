@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
       .from('users')
       .select('workspace_id, full_name, role')
       .eq('auth_user_id', user.id)
-      .single()
+      .maybeSingle()
 
     if (userError || !userData?.workspace_id) {
       return NextResponse.json({ error: 'No workspace found' }, { status: 400 })

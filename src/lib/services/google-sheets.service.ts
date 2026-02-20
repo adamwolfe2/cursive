@@ -43,7 +43,7 @@ export class GoogleSheetsService {
       .select('id, access_token, refresh_token, token_expires_at')
       .eq('workspace_id', this.workspaceId)
       .eq('provider', 'google_sheets')
-      .single()
+      .maybeSingle()
 
     // Cast: crm_connections table may not be in generated DB types
     const connection = data as {
@@ -135,7 +135,7 @@ export class GoogleSheetsService {
       .select('refresh_token')
       .eq('workspace_id', this.workspaceId)
       .eq('provider', 'google_sheets')
-      .single()
+      .maybeSingle()
 
     const conn = connection as { refresh_token: string | null } | null
     return conn?.refresh_token || null

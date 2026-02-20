@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
       .select('id, access_token, refresh_token, token_expires_at, instance_url, status')
       .eq('workspace_id', user.workspace_id)
       .eq('provider', 'salesforce')
-      .single()
+      .maybeSingle()
 
     // Cast: crm_connections table may not be in generated DB types
     const conn = connection as { id: string; access_token: string; refresh_token: string; token_expires_at: string | null; instance_url: string; status: string } | null

@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
       .from('users')
       .select('id, workspace_id, industry_segment, location_segment, daily_lead_limit, plan, is_active')
       .eq('auth_user_id', currentUser.auth_user_id)
-      .single()
+      .maybeSingle()
 
     if (userError || !userProfile) {
       safeError('[PopulateInitialLeads] User not found:', userError)

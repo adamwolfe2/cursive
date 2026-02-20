@@ -125,7 +125,7 @@ export async function GET(req: NextRequest) {
       .select('id')
       .eq('workspace_id', context.workspace_id)
       .eq('provider', 'google_sheets')
-      .single()
+      .maybeSingle()
 
     const connectionData = {
       workspace_id: context.workspace_id,

@@ -24,7 +24,7 @@ export class PartnerRepository {
       .from('partners')
       .select('*')
       .eq('id', partnerId)
-      .single()
+      .maybeSingle()
 
     if (error) return null
     return data as Partner
@@ -39,7 +39,7 @@ export class PartnerRepository {
       .from('partners')
       .select('*')
       .eq('api_key', apiKey)
-      .single()
+      .maybeSingle()
 
     if (error) return null
     return data as Partner
@@ -54,7 +54,7 @@ export class PartnerRepository {
       .from('partners')
       .select('*')
       .eq('email', email)
-      .single()
+      .maybeSingle()
 
     if (error) return null
     return data as Partner
@@ -69,7 +69,7 @@ export class PartnerRepository {
       .from('partners')
       .select('*')
       .eq('referral_code', code)
-      .single()
+      .maybeSingle()
 
     if (error) return null
     return data as Partner
@@ -161,7 +161,7 @@ export class PartnerRepository {
         base_commission_rate: 0.30,
       })
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) throw new Error(`Failed to create partner: ${error.message}`)
     return data as Partner
@@ -210,7 +210,7 @@ export class PartnerRepository {
       .update(updateData)
       .eq('id', partnerId)
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) throw new Error(`Failed to update partner: ${error.message}`)
     return data as Partner
@@ -353,7 +353,7 @@ export class PartnerRepository {
         status: 'pending',
       })
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) throw new Error(`Failed to create upload batch: ${error.message}`)
     return data as PartnerUploadBatch
@@ -414,7 +414,7 @@ export class PartnerRepository {
       .update(updateData)
       .eq('id', batchId)
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) throw new Error(`Failed to update upload batch: ${error.message}`)
     return data as PartnerUploadBatch
@@ -560,7 +560,7 @@ export class PartnerRepository {
       .from('partner_analytics')
       .select('*')
       .eq('partner_id', partnerId)
-      .single()
+      .maybeSingle()
 
     if (error) {
       safeError('[PartnerRepository] Failed to get analytics:', error)
@@ -579,7 +579,7 @@ export class PartnerRepository {
       .from('partner_credits')
       .select('*')
       .eq('partner_id', partnerId)
-      .single()
+      .maybeSingle()
 
     if (error) {
       if (error.code === 'PGRST116') {

@@ -51,7 +51,7 @@ async function ownsWebhook(webhookId: string, workspaceId: string): Promise<bool
     .select('id')
     .eq('id', webhookId)
     .eq('workspace_id', workspaceId)
-    .single()
+    .maybeSingle()
   return !!data
 }
 
@@ -134,7 +134,7 @@ export async function PATCH(
       .eq('id', id)
       .eq('workspace_id', user.workspace_id)
       .select('id, name, url, events, is_active, updated_at')
-      .single()
+      .maybeSingle()
 
     if (error || !updated) {
       safeError('[Webhooks/Outbound] PATCH error:', error)

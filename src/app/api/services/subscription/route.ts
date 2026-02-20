@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
       .from('users')
       .select('workspace_id')
       .eq('auth_user_id', user.id)
-      .single()
+      .maybeSingle()
 
     if (userError) {
       safeError('[Services Subscription] Failed to fetch user data:', userError)

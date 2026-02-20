@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
         .from('email_sends')
         .select('id, workspace_id, lead_id, campaign_id')
         .eq('provider_message_id', inboundEmail.inReplyTo)
-        .single()
+        .maybeSingle()
 
       if (send) {
         emailSend = send
@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
         .from('leads')
         .select('id, workspace_id, email')
         .eq('email', inboundEmail.from)
-        .single()
+        .maybeSingle()
 
       if (matchedLead) {
         lead = matchedLead
@@ -107,10 +107,14 @@ export async function POST(request: NextRequest) {
         processed: false,
       })
       .select('id')
-      .single()
+      .maybeSingle()
 
     if (insertError) {
       safeError('Failed to store inbound message:', insertError)
+      return NextResponse.json({ error: 'Failed to store message' }, { status: 500 })
+    }
+
+    if (!inboundMessage) {
       return NextResponse.json({ error: 'Failed to store message' }, { status: 500 })
     }
 

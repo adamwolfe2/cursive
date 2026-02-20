@@ -110,7 +110,7 @@ export async function lookupReferralCode(
       .from('workspaces')
       .select('id, name')
       .eq('referral_code', code)
-      .single()
+      .maybeSingle()
 
     if (data) {
       return {
@@ -127,7 +127,7 @@ export async function lookupReferralCode(
       .select('id, name')
       .eq('referral_code', code)
       .eq('is_active', true)
-      .single()
+      .maybeSingle()
 
     if (data) {
       return {
@@ -159,10 +159,14 @@ export async function createReferral(params: CreateReferralParams): Promise<stri
       status: 'pending',
     })
     .select('id')
-    .single()
+    .maybeSingle()
 
   if (error) {
     throw new Error(`Failed to create referral: ${error.message}`)
+  }
+
+  if (!data) {
+    throw new Error('Failed to create referral: no data returned')
   }
 
   return data.id
@@ -187,7 +191,7 @@ export async function processBuyerSignupMilestone(referralId: string): Promise<{
     .from('referrals')
     .select('*')
     .eq('id', referralId)
-    .single()
+    .maybeSingle()
 
   if (error || !referral) {
     throw new Error('Referral not found')
@@ -241,7 +245,7 @@ export async function processBuyerFirstPurchaseMilestone(referralId: string): Pr
     .from('referrals')
     .select('*')
     .eq('id', referralId)
-    .single()
+    .maybeSingle()
 
   if (error || !referral) {
     throw new Error('Referral not found')
@@ -295,7 +299,7 @@ export async function processBuyerSpendMilestone(referralId: string): Promise<{
     .from('referrals')
     .select('*')
     .eq('id', referralId)
-    .single()
+    .maybeSingle()
 
   if (error || !referral) {
     throw new Error('Referral not found')
@@ -359,7 +363,7 @@ export async function processPartnerReferralMilestones(referralId: string): Prom
     .from('referrals')
     .select('*')
     .eq('id', referralId)
-    .single()
+    .maybeSingle()
 
   if (error || !referral || !referral.referred_partner_id) {
     return { milestonesAwarded: [], totalCashAwarded: 0 }
@@ -370,7 +374,7 @@ export async function processPartnerReferralMilestones(referralId: string): Prom
     .from('partners')
     .select('total_leads_uploaded, total_earnings, verification_pass_rate')
     .eq('id', referral.referred_partner_id)
-    .single()
+    .maybeSingle()
 
   if (!partner) {
     return { milestonesAwarded: [], totalCashAwarded: 0 }
@@ -392,7 +396,7 @@ export async function processPartnerReferralMilestones(referralId: string): Prom
         .from('partners')
         .select('available_balance')
         .eq('id', referral.referrer_partner_id)
-        .single()
+        .maybeSingle()
 
       const { error: m1Error } = await supabase
         .from('partners')
@@ -417,7 +421,7 @@ export async function processPartnerReferralMilestones(referralId: string): Prom
         .from('partners')
         .select('available_balance')
         .eq('id', referral.referrer_partner_id)
-        .single()
+        .maybeSingle()
 
       const { error: m2Error } = await supabase
         .from('partners')
@@ -442,7 +446,7 @@ export async function processPartnerReferralMilestones(referralId: string): Prom
         .from('partners')
         .select('available_balance')
         .eq('id', referral.referrer_partner_id)
-        .single()
+        .maybeSingle()
 
       const { error: m3Error } = await supabase
         .from('partners')
@@ -502,7 +506,7 @@ export async function processReferralReward(
     .from('referrals')
     .select('referral_type')
     .eq('id', referralId)
-    .single()
+    .maybeSingle()
 
   if (!referral) return null
 
@@ -539,7 +543,7 @@ async function addCreditsToWorkspace(
     .from('workspace_credits')
     .select('*')
     .eq('workspace_id', workspaceId)
-    .single()
+    .maybeSingle()
 
   if (existingCredits) {
     const { error: creditUpdateError } = await supabase
@@ -586,7 +590,7 @@ export async function getWorkspaceReferralStats(workspaceId: string): Promise<{
     .from('workspaces')
     .select('referral_code')
     .eq('id', workspaceId)
-    .single()
+    .maybeSingle()
 
   // Get referral stats
   const { data: referrals } = await supabase
@@ -626,7 +630,7 @@ export async function getPartnerReferralStats(partnerId: string): Promise<{
     .from('partners')
     .select('referral_code, bonus_commission_rate, bonus_expires_at')
     .eq('id', partnerId)
-    .single()
+    .maybeSingle()
 
   // Get referral stats
   const { data: referrals } = await supabase
@@ -665,7 +669,7 @@ export async function assignWorkspaceReferralCode(workspaceId: string): Promise<
       .from('workspaces')
       .select('id')
       .eq('referral_code', code)
-      .single()
+      .maybeSingle()
 
     if (!existing) break
     code = generateReferralCode('buyer')
@@ -699,7 +703,7 @@ export async function assignPartnerReferralCode(partnerId: string): Promise<stri
       .from('partners')
       .select('id')
       .eq('referral_code', code)
-      .single()
+      .maybeSingle()
 
     if (!existing) break
     code = generateReferralCode('partner')

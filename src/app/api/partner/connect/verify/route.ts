@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
       .from('users')
       .select('workspace_id')
       .eq('auth_user_id', user.id)
-      .single()
+      .maybeSingle()
 
     if (userError || !userData) {
       return NextResponse.json(
@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
       .from('partners')
       .select('id, stripe_account_id, stripe_onboarding_complete, workspace_id')
       .eq('id', partnerId)
-      .single()
+      .maybeSingle()
 
     if (partnerError || !partner) {
       return NextResponse.json(

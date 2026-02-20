@@ -51,7 +51,7 @@ export class WaitlistRepository {
       .from('waitlist_signups')
       .insert(signup)
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) {
       // Handle duplicate email error
@@ -75,7 +75,7 @@ export class WaitlistRepository {
       .from('waitlist_signups')
       .select('*')
       .eq('email', email.toLowerCase())
-      .single()
+      .maybeSingle()
 
     if (error) {
       if (error.code === 'PGRST116') {

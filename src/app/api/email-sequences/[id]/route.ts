@@ -65,7 +65,7 @@ export async function GET(
       )
       .eq('id', id)
       .eq('workspace_id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (error || !sequence) {
       return NextResponse.json({ error: 'Sequence not found' }, { status: 404 })
@@ -104,7 +104,7 @@ export async function PATCH(
       .select('id, status')
       .eq('id', id)
       .eq('workspace_id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (!existing) {
       return NextResponse.json({ error: 'Sequence not found' }, { status: 404 })
@@ -131,7 +131,7 @@ export async function PATCH(
       .update(validated)
       .eq('id', id)
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) {
       if (error.code === '23505') {
@@ -184,7 +184,7 @@ export async function DELETE(
       .select('id, status')
       .eq('id', id)
       .eq('workspace_id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (!existing) {
       return NextResponse.json({ error: 'Sequence not found' }, { status: 404 })

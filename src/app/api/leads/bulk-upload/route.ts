@@ -159,10 +159,17 @@ export async function POST(req: NextRequest) {
         status: 'processing',
       })
       .select('id')
-      .single()
+      .maybeSingle()
 
     if (jobError) {
       safeError('[Bulk Upload] Failed to create job:', jobError)
+      return NextResponse.json(
+        { error: 'Failed to create upload job' },
+        { status: 500 }
+      )
+    }
+
+    if (!job) {
       return NextResponse.json(
         { error: 'Failed to create upload job' },
         { status: 500 }

@@ -76,7 +76,7 @@ export class LeadActivityRepository {
       .from('lead_notes')
       .insert(note)
       .select('*, created_by_user:users!lead_notes_created_by_fkey(id, full_name, email, avatar_url)')
-      .single()
+      .maybeSingle()
 
     if (error) {
       safeError('[LeadActivityRepository] Create note error:', error)
@@ -102,7 +102,7 @@ export class LeadActivityRepository {
       .eq('id', noteId)
       .eq('workspace_id', workspaceId)
       .select('*, created_by_user:users!lead_notes_created_by_fkey(id, full_name, email, avatar_url)')
-      .single()
+      .maybeSingle()
 
     if (error) {
       safeError('[LeadActivityRepository] Update note error:', error)
@@ -238,7 +238,7 @@ export class LeadActivityRepository {
         metadata: metadata || {},
       })
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) {
       safeError('[LeadActivityRepository] Log activity error:', error)

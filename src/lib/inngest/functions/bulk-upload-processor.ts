@@ -95,7 +95,7 @@ export const processBulkUpload = inngest.createFunction(
               .select('id')
               .eq('fingerprint', fingerprint)
               .eq('workspace_id', workspaceId)
-              .single()
+              .maybeSingle()
 
             if (existing) {
               results.failed++
@@ -113,7 +113,7 @@ export const processBulkUpload = inngest.createFunction(
                 routing_status: 'pending', // Pending routing
               })
               .select('id')
-              .single()
+              .maybeSingle()
 
             if (insertError || !insertedLead) {
               results.failed++
@@ -250,7 +250,7 @@ export const importLeadFromAudienceLabs = inngest.createFunction(
         .select('id')
         .eq('fingerprint', fingerprint)
         .eq('workspace_id', leadData.workspace_id)
-        .single()
+        .maybeSingle()
       return data
     })
 
@@ -275,7 +275,7 @@ export const importLeadFromAudienceLabs = inngest.createFunction(
           }
         })
         .select()
-        .single()
+        .maybeSingle()
 
       if (error) throw error
       return data
@@ -287,7 +287,7 @@ export const importLeadFromAudienceLabs = inngest.createFunction(
         .from('bulk_upload_jobs')
         .select('successful_records')
         .eq('id', jobId)
-        .single()
+        .maybeSingle()
 
       if (job) {
         await supabase

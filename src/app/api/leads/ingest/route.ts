@@ -297,11 +297,15 @@ async function createLeadFromPush(
       delivery_status: 'pending',
     })
     .select('id')
-    .single()
+    .maybeSingle()
 
   if (error) {
     safeError('[Lead Ingest] Database error:', error)
     throw new Error('Failed to create lead')
+  }
+
+  if (!data) {
+    throw new Error('Failed to create lead: no data returned')
   }
 
   // Create company association if SIC code provided

@@ -54,7 +54,7 @@ async function getAuthenticatedUser() {
     .from('users')
     .select('id, workspace_id, email')
     .eq('auth_user_id', authUser.id)
-    .single()
+    .maybeSingle()
 
   return user
 }

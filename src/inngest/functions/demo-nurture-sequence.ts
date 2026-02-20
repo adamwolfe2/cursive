@@ -62,7 +62,7 @@ export const demoNurtureSequence = inngest.createFunction(
         .select('id, status')
         .eq('lead_id', leadId)
         .eq('sequence_id', 'demo-nurture-v1') // Use consistent ID
-        .single()
+        .maybeSingle()
 
       if (existing?.status === 'active') {
         throw new Error('Lead already enrolled in demo sequence')
@@ -85,7 +85,7 @@ export const demoNurtureSequence = inngest.createFunction(
           },
         })
         .select()
-        .single()
+        .maybeSingle()
 
       if (error) throw error
 
@@ -390,7 +390,7 @@ async function buildEmailTokens(
     .from('leads')
     .select('*, contact_data, company_data')
     .eq('id', leadId)
-    .single()
+    .maybeSingle()
 
   if (!lead) throw new Error('Lead not found')
 
@@ -452,7 +452,7 @@ async function sendSequenceEmail({
     .select('*')
     .eq('category', 'demo-sequence')
     .eq('name', emailType)
-    .single()
+    .maybeSingle()
 
   if (!template) {
     throw new Error(`Email template not found: ${emailType}`)
@@ -475,7 +475,7 @@ async function sendSequenceEmail({
     .from('leads')
     .select('contact_data')
     .eq('id', leadId)
-    .single()
+    .maybeSingle()
 
   const contactData = lead?.contact_data as LeadContactData | null
   const recipientEmail = contactData?.contacts?.[0]?.email || contactData?.email

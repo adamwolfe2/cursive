@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
       .from('users')
       .select('workspace_id, full_name')
       .eq('auth_user_id', authUser.id)
-      .single()
+      .maybeSingle()
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
       .from('workspaces')
       .select('name, industry_vertical')
       .eq('id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     const body = await req.json()
     const {
@@ -85,7 +85,7 @@ export async function POST(req: NextRequest) {
         .select('company_data, contact_data, ai_analysis')
         .eq('id', lead_id)
         .eq('workspace_id', user.workspace_id)
-        .single()
+        .maybeSingle()
 
       if (lead?.ai_analysis) {
         const analysis = lead.ai_analysis as LeadAiAnalysis

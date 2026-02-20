@@ -210,7 +210,7 @@ export async function POST(request: NextRequest) {
             .from('lead_tags')
             .insert({ workspace_id: user.workspace_id, name: tag_name.trim(), color: '#6b7280' })
             .select('id')
-            .single()
+            .maybeSingle()
 
           if (tagCreateErr || !newTag) {
             safeError('[Bulk Tag] Error creating tag:', tagCreateErr)

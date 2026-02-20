@@ -131,7 +131,7 @@ export async function checkDuplicate(
     .from('leads')
     .select('id, partner_id, hash_key')
     .eq('hash_key', hashKey)
-    .single()
+    .maybeSingle()
 
   if (error && error.code !== 'PGRST116') {
     // PGRST116 = no rows found, which is expected for new leads
@@ -353,7 +353,7 @@ export async function batchCheckDuplicates(
             .from('leads')
             .select('id, partner_id, hash_key')
             .eq('id', match.lead_id)
-            .single()
+            .maybeSingle()
 
           if (matchedLead) {
             const isSamePartner = matchedLead.partner_id === currentPartnerId

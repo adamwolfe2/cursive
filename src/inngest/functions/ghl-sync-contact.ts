@@ -53,7 +53,7 @@ export const ghlSyncContact = inngest.createFunction(
         .from('leads')
         .select('first_name, last_name, email, phone, company_name, company_industry, state, seniority_level, intent_score_calculated')
         .eq('id', lead_id)
-        .single()
+        .maybeSingle()
 
       if (error || !data) {
         throw new Error(`Lead not found: ${lead_id}`)

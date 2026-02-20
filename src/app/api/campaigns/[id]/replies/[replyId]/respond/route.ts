@@ -38,7 +38,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
       .select('id, workspace_id')
       .eq('id', campaignId)
       .eq('workspace_id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (campaignError || !campaign) {
       return NextResponse.json({ error: 'Campaign not found' }, { status: 404 })
@@ -63,7 +63,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
       `)
       .eq('id', replyId)
       .eq('campaign_id', campaignId)
-      .single()
+      .maybeSingle()
 
     if (replyError || !reply) {
       return NextResponse.json({ error: 'Reply not found' }, { status: 404 })
@@ -127,7 +127,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
         },
       })
       .select('id')
-      .single()
+      .maybeSingle()
 
     if (sendError) {
       logger.error('Failed to create response record', { error: sendError instanceof Error ? sendError.message : String(sendError), replyId, campaignId })

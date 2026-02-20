@@ -178,7 +178,7 @@ export class MarketplaceRepository {
       )
       .eq('id', leadId)
       .eq('is_marketplace_listed', true)
-      .single()
+      .maybeSingle()
 
     if (error || !data) return null
 
@@ -194,7 +194,7 @@ export class MarketplaceRepository {
       .from('leads')
       .select('*')
       .eq('id', leadId)
-      .single()
+      .maybeSingle()
 
     if (error || !data) return null
     return data as MarketplaceLead
@@ -246,7 +246,7 @@ export class MarketplaceRepository {
         status: 'pending',
       })
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) throw new Error(`Failed to create purchase: ${error.message}`)
     return data as MarketplacePurchase
@@ -317,7 +317,7 @@ export class MarketplaceRepository {
       })
       .eq('id', purchaseId)
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) throw new Error(`Failed to complete purchase: ${error.message}`)
     return data as MarketplacePurchase
@@ -361,7 +361,7 @@ export class MarketplaceRepository {
       .select('*')
       .eq('id', purchaseId)
       .eq('buyer_workspace_id', workspaceId)
-      .single()
+      .maybeSingle()
 
     if (error || !data) return null
     return data as MarketplacePurchase
@@ -431,7 +431,7 @@ export class MarketplaceRepository {
       .select('id')
       .eq('id', purchaseId)
       .eq('buyer_workspace_id', workspaceId)
-      .single()
+      .maybeSingle()
 
     if (!purchase) {
       throw new Error('Purchase not found or does not belong to workspace')
@@ -473,7 +473,7 @@ export class MarketplaceRepository {
       .from('workspace_credits')
       .select('*')
       .eq('workspace_id', workspaceId)
-      .single()
+      .maybeSingle()
 
     if (error) {
       // If no record exists, return default
@@ -555,7 +555,7 @@ export class MarketplaceRepository {
         status: 'pending',
       })
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) throw new Error(`Failed to create credit purchase: ${error.message}`)
     return data as CreditPurchase
@@ -574,7 +574,7 @@ export class MarketplaceRepository {
       })
       .eq('id', purchaseId)
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) throw new Error(`Failed to complete credit purchase: ${error.message}`)
     return data as CreditPurchase

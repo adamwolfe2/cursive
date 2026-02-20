@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
       .from('users')
       .select('workspace_id')
       .eq('auth_user_id', user.id)
-      .single()
+      .maybeSingle()
 
     if (!userData?.workspace_id) {
       return NextResponse.json({ error: 'No workspace' }, { status: 403 })

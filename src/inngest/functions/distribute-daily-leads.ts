@@ -95,7 +95,7 @@ export const distributeDailyLeads = inngest.createFunction(
             .select('segment_id, segment_name')
             .eq('industry', user.industry_segment)
             .eq('location', user.location_segment)
-            .single()
+            .maybeSingle()
 
           if (mappingError || !segmentMapping) {
             return

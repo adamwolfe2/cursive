@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
       .from('users')
       .select('workspace_id')
       .eq('auth_user_id', authUser.id)
-      .single()
+      .maybeSingle()
 
     if (!user?.workspace_id) {
       return NextResponse.json({ error: 'No workspace found' }, { status: 404 })
@@ -37,11 +37,15 @@ export async function GET(request: NextRequest) {
       .from('workspaces')
       .select('webhook_url, webhook_secret, webhook_enabled, email_notifications, notification_email')
       .eq('id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (error) {
       safeError('[Webhooks] Failed to fetch settings:', error)
       return NextResponse.json({ error: 'Failed to fetch settings' }, { status: 500 })
+    }
+
+    if (!workspace) {
+      return NextResponse.json({ error: 'Workspace not found' }, { status: 404 })
     }
 
     return NextResponse.json({
@@ -74,7 +78,7 @@ export async function PATCH(request: NextRequest) {
       .from('users')
       .select('workspace_id')
       .eq('auth_user_id', authUser.id)
-      .single()
+      .maybeSingle()
 
     if (!user?.workspace_id) {
       return NextResponse.json({ error: 'No workspace found' }, { status: 404 })
@@ -132,7 +136,7 @@ export async function POST(request: NextRequest) {
       .from('users')
       .select('workspace_id')
       .eq('auth_user_id', authUser.id)
-      .single()
+      .maybeSingle()
 
     if (!user?.workspace_id) {
       return NextResponse.json({ error: 'No workspace found' }, { status: 404 })
@@ -173,7 +177,7 @@ export async function PUT(request: NextRequest) {
       .from('users')
       .select('workspace_id')
       .eq('auth_user_id', authUser.id)
-      .single()
+      .maybeSingle()
 
     if (!user?.workspace_id) {
       return NextResponse.json({ error: 'No workspace found' }, { status: 404 })
@@ -184,7 +188,7 @@ export async function PUT(request: NextRequest) {
       .from('workspaces')
       .select('webhook_url, webhook_secret')
       .eq('id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (!workspace?.webhook_url) {
       return NextResponse.json({ error: 'No webhook URL configured' }, { status: 400 })

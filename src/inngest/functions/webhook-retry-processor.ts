@@ -111,7 +111,7 @@ async function processWebhookEvent(event: Stripe.Event, supabase: any) {
         .from('marketplace_purchases')
         .select('status')
         .eq('id', purchaseId)
-        .single()
+        .maybeSingle()
 
       if (existingPurchase?.status === 'completed') {
         return
@@ -153,7 +153,7 @@ async function processWebhookEvent(event: Stripe.Event, supabase: any) {
             .from('partners')
             .select('pending_balance, total_earnings')
             .eq('id', partnerId)
-            .single()
+            .maybeSingle()
 
           if (partner) {
             await supabase
@@ -197,7 +197,7 @@ async function processWebhookEvent(event: Stripe.Event, supabase: any) {
         .from('workspace_credits')
         .select('*')
         .eq('workspace_id', workspaceId)
-        .single()
+        .maybeSingle()
 
       if (existingCredits) {
         await supabase
@@ -237,7 +237,7 @@ async function processWebhookEvent(event: Stripe.Event, supabase: any) {
       .from('credit_purchases')
       .select('id, workspace_id, credits, user_id, package_name')
       .eq('stripe_payment_intent_id', paymentIntentId)
-      .single()
+      .maybeSingle()
 
     if (creditPurchase) {
       // Mark credit purchase as refunded
@@ -254,7 +254,7 @@ async function processWebhookEvent(event: Stripe.Event, supabase: any) {
         .from('workspace_credits')
         .select('balance, total_purchased')
         .eq('workspace_id', creditPurchase.workspace_id)
-        .single()
+        .maybeSingle()
 
       if (workspaceCredits) {
         await supabase
@@ -275,7 +275,7 @@ async function processWebhookEvent(event: Stripe.Event, supabase: any) {
       .from('marketplace_purchases')
       .select('id, buyer_workspace_id, credits_used, buyer_user_id, total_leads')
       .eq('stripe_payment_intent_id', paymentIntentId)
-      .single()
+      .maybeSingle()
 
     if (marketplacePurchase) {
       // Mark purchase as refunded
@@ -318,7 +318,7 @@ async function processWebhookEvent(event: Stripe.Event, supabase: any) {
             .from('partners')
             .select('pending_balance, total_earnings, total_leads_sold')
             .eq('id', partnerId)
-            .single()
+            .maybeSingle()
 
           if (partner) {
             await supabase
@@ -340,7 +340,7 @@ async function processWebhookEvent(event: Stripe.Event, supabase: any) {
           .from('workspace_credits')
           .select('balance')
           .eq('workspace_id', marketplacePurchase.buyer_workspace_id)
-          .single()
+          .maybeSingle()
 
         if (workspaceCredits) {
           await supabase
@@ -367,7 +367,7 @@ async function processWebhookEvent(event: Stripe.Event, supabase: any) {
       .from('workspaces')
       .select('id')
       .eq('stripe_customer_id', customerId)
-      .single()
+      .maybeSingle()
 
     if (workspace) {
       // Get plan from price ID
@@ -376,7 +376,7 @@ async function processWebhookEvent(event: Stripe.Event, supabase: any) {
         .from('subscription_plans')
         .select('id, name')
         .or(`stripe_price_id_monthly.eq.${priceId},stripe_price_id_yearly.eq.${priceId}`)
-        .single()
+        .maybeSingle()
 
       // Update subscription
       await supabase
@@ -421,7 +421,7 @@ async function processWebhookEvent(event: Stripe.Event, supabase: any) {
       .from('subscriptions')
       .select('workspace_id')
       .eq('stripe_subscription_id', subscription.id)
-      .single()
+      .maybeSingle()
 
     if (sub) {
       await supabase.from('workspaces').update({ plan: 'free' }).eq('id', sub.workspace_id)
@@ -438,14 +438,14 @@ async function processWebhookEvent(event: Stripe.Event, supabase: any) {
       .from('workspaces')
       .select('id')
       .eq('stripe_customer_id', customerId)
-      .single()
+      .maybeSingle()
 
     if (workspace) {
       const { data: subscription } = await supabase
         .from('subscriptions')
         .select('id')
         .eq('workspace_id', workspace.id)
-        .single()
+        .maybeSingle()
 
       await supabase.from('invoices').insert({
         workspace_id: workspace.id,

@@ -28,7 +28,7 @@ export async function GET() {
       .from('users')
       .select('workspace_id')
       .eq('auth_user_id', user.id)
-      .single()
+      .maybeSingle()
 
     if (!userData?.workspace_id) {
       return NextResponse.json({ error: 'No workspace found' }, { status: 404 })

@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
       .select('*')
       .eq('user_id', userProfile.id)
       .eq('workspace_id', userProfile.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (error && error.code !== 'PGRST116') {
       // PGRST116 = no rows returned (acceptable)
@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
       .select('id')
       .eq('user_id', userProfile.id)
       .eq('workspace_id', userProfile.workspace_id)
-      .single()
+      .maybeSingle()
 
     const targetingData = {
       user_id: userProfile.id,
@@ -133,7 +133,7 @@ export async function POST(request: NextRequest) {
         .eq('user_id', userProfile.id) // SECURITY: Double-check user_id
         .eq('workspace_id', userProfile.workspace_id) // SECURITY: Double-check workspace_id
         .select()
-        .single()
+        .maybeSingle()
 
       if (error) {
         safeError('Failed to update targeting preferences:', error)
@@ -150,7 +150,7 @@ export async function POST(request: NextRequest) {
         .from('user_targeting')
         .insert(targetingData)
         .select()
-        .single()
+        .maybeSingle()
 
       if (error) {
         safeError('Failed to create targeting preferences:', error)

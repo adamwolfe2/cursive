@@ -574,7 +574,7 @@ export class CompanyEnrichmentService {
         .from('company_enrichment_cache')
         .select('*')
         .eq('domain', domain)
-        .single()
+        .maybeSingle()
 
       if (!data) return null
 

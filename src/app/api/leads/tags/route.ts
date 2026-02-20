@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
         ...validationResult.data,
       })
       .select('id, workspace_id, name, color, description, created_at')
-      .single()
+      .maybeSingle()
 
     if (error) {
       if (error.code === '23505') {

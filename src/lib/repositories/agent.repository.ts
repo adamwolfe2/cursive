@@ -47,7 +47,7 @@ export class AgentRepository {
       .select('*')
       .eq('id', id)
       .eq('workspace_id', workspaceId)
-      .single()
+      .maybeSingle()
 
     if (error) {
       if (error.code === 'PGRST116') {
@@ -69,7 +69,7 @@ export class AgentRepository {
       .from('agents')
       .insert(agent)
       .select('*')
-      .single()
+      .maybeSingle()
 
     if (error) {
       throw new DatabaseError(error.message)
@@ -94,7 +94,7 @@ export class AgentRepository {
       .eq('id', id)
       .eq('workspace_id', workspaceId)
       .select('*')
-      .single()
+      .maybeSingle()
 
     if (error) {
       throw new DatabaseError(error.message)
@@ -159,7 +159,7 @@ export class AgentRepository {
       .select('*')
       .eq('id', id)
       .eq('workspace_id', workspaceId)
-      .single()
+      .maybeSingle()
 
     if (agentError) {
       if (agentError.code === 'PGRST116') {
@@ -273,7 +273,7 @@ export class AgentRepository {
       .from('email_instructions')
       .insert(instruction)
       .select('*')
-      .single()
+      .maybeSingle()
 
     if (error) {
       throw new DatabaseError(error.message)
@@ -340,7 +340,7 @@ export class AgentRepository {
       .from('kb_entries')
       .insert(entry)
       .select('*')
-      .single()
+      .maybeSingle()
 
     if (error) {
       throw new DatabaseError(error.message)
@@ -425,7 +425,7 @@ export class AgentRepository {
       .select('*')
       .eq('id', threadId)
       .eq('agent_id', agentId)
-      .single()
+      .maybeSingle()
 
     if (threadError) {
       if (threadError.code === 'PGRST116') {

@@ -74,7 +74,7 @@ ${validated.message}
         user_agent,
       })
       .select('id')
-      .single()
+      .maybeSingle()
 
     if (error) {
       safeError('[API] Contact sales insert error:', error)

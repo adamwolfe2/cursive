@@ -124,7 +124,7 @@ async function processPartnerPayout(partner: {
     .select('id, stripe_transfer_id')
     .eq('partner_id', partner.partnerId)
     .eq('idempotency_key', idempotencyKey)
-    .single()
+    .maybeSingle()
 
   if (existingPayout) {
     return {
@@ -287,7 +287,7 @@ export const triggerManualPayout = inngest.createFunction(
         .from('partners')
         .select('id, name, email, available_balance, stripe_account_id, stripe_onboarding_complete')
         .eq('id', partnerId)
-        .single()
+        .maybeSingle()
 
       if (error || !data) {
         throw new Error(`Partner not found: ${partnerId}`)

@@ -67,7 +67,7 @@ export const processSequenceEnrollment = inngest.createFunction(
         .select('id, status')
         .eq('sequence_id', sequence_id)
         .eq('lead_id', lead_id)
-        .single()
+        .maybeSingle()
 
       if (existing) {
         if (existing.status === 'active') {
@@ -84,7 +84,7 @@ export const processSequenceEnrollment = inngest.createFunction(
           })
           .eq('id', existing.id)
           .select()
-          .single()
+          .maybeSingle()
 
         if (error) throw error
         return data
@@ -101,7 +101,7 @@ export const processSequenceEnrollment = inngest.createFunction(
           current_step: 1,
         })
         .select()
-        .single()
+        .maybeSingle()
 
       if (error) throw error
       return data
@@ -157,19 +157,19 @@ export const processSequenceStep = inngest.createFunction(
           .from('email_sequence_enrollments')
           .select('*')
           .eq('id', enrollment_id)
-          .single(),
+          .maybeSingle(),
         supabase
           .from('email_sequence_steps')
           .select('*')
           .eq('sequence_id', sequence_id)
           .eq('step_number', step_number)
           .eq('is_active', true)
-          .single(),
+          .maybeSingle(),
         supabase
           .from('leads')
           .select('*, contact_data, company_data')
           .eq('id', lead_id)
-          .single(),
+          .maybeSingle(),
       ])
 
       return {
@@ -264,7 +264,7 @@ export const processSequenceStep = inngest.createFunction(
         .eq('sequence_id', sequence_id)
         .eq('step_number', step_number + 1)
         .eq('is_active', true)
-        .single()
+        .maybeSingle()
 
       if (nextStep) {
         const delayMs = (nextStep.delay_hours || 0) * 60 * 60 * 1000
@@ -337,7 +337,7 @@ async function executeEmailStep(
     .from('workspaces')
     .select('name')
     .eq('id', workspaceId)
-    .single()
+    .maybeSingle()
 
   // Get primary email account
   const { data: emailAccount } = await supabase
@@ -345,7 +345,7 @@ async function executeEmailStep(
     .select('*')
     .eq('workspace_id', workspaceId)
     .eq('is_primary', true)
-    .single()
+    .maybeSingle()
 
   const senderEmail = emailAccount?.email_address || process.env.DEFAULT_FROM_EMAIL || 'noreply@cursive.io'
   const senderName = emailAccount?.display_name || workspace?.name || 'Cursive'

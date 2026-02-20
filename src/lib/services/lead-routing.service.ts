@@ -95,7 +95,7 @@ export class LeadRoutingService {
         .select('*')
         .eq('id', leadId)
         .eq('workspace_id', sourceWorkspaceId) // RLS: explicit workspace filter
-        .single()
+        .maybeSingle()
 
       if (leadError || !lead) {
         await this.handleRoutingFailure(supabase, leadId, lockOwnerId, 'Lead not found', maxRetries)
@@ -284,7 +284,7 @@ export class LeadRoutingService {
       .from('workspaces')
       .select('allowed_industries, allowed_regions')
       .eq('id', workspaceId)
-      .single()
+      .maybeSingle()
 
     if (!workspace) {
       return {

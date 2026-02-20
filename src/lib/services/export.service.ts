@@ -287,7 +287,7 @@ export async function exportCampaignAnalytics(
     .select('id, name, status, started_at, completed_at')
     .eq('id', campaignId)
     .eq('workspace_id', workspaceId)
-    .single()
+    .maybeSingle()
 
   if (!campaign) {
     throw new Error('Campaign not found')

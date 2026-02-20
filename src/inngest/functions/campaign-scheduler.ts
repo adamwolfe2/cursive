@@ -189,7 +189,7 @@ export const onCampaignStatusChange = inngest.createFunction(
             )
           `)
           .eq('id', campaign_id)
-          .single()
+          .maybeSingle()
 
         if (!campaign) {
           logger.error(`Campaign ${campaign_id} not found for notification`)
@@ -202,7 +202,7 @@ export const onCampaignStatusChange = inngest.createFunction(
           .select('email, full_name')
           .eq('workspace_id', workspace_id)
           .eq('role', 'owner')
-          .single()
+          .maybeSingle()
 
         if (!owner) {
           logger.warn(`No owner found for workspace ${workspace_id}`)

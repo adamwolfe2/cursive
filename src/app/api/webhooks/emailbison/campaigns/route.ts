@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
       .eq('idempotency_key', idempotencyKey)
       .eq('workspace_id', 'system')
       .eq('endpoint', '/api/webhooks/emailbison/campaigns')
-      .single()
+      .maybeSingle()
 
     if (existingKey) {
       // Request already processed successfully - return cached response
@@ -230,7 +230,7 @@ async function handleReplyReceived(
     .eq('status', 'sent')
     .order('sent_at', { ascending: false })
     .limit(1)
-    .single()
+    .maybeSingle()
 
   if (!emailSend) {
     safeError(`[Campaign Webhook] No matching sent email found for ${data.from_email}`)
@@ -254,7 +254,7 @@ async function handleReplyReceived(
       emailbison_reply_id: String(data.reply_id),
     })
     .select('id')
-    .single()
+    .maybeSingle()
 
   if (replyError) {
     safeError('[Campaign Webhook] Failed to create reply record:', replyError)
@@ -397,7 +397,7 @@ async function handleEmailOpened(
     .eq('status', 'sent')
     .order('sent_at', { ascending: false })
     .limit(1)
-    .single()
+    .maybeSingle()
 
   if (findError || !emailSend) {
     safeError(`[Campaign Webhook] No sent email found for open event: ${data.to_email}`)
@@ -449,7 +449,7 @@ async function handleEmailClicked(
     .in('status', ['sent', 'opened'])
     .order('sent_at', { ascending: false })
     .limit(1)
-    .single()
+    .maybeSingle()
 
   if (findError || !emailSend) {
     safeError(`[Campaign Webhook] No email found for click event: ${data.to_email}`)

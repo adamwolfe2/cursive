@@ -52,7 +52,7 @@ async function getServiceTierById(tierId: string) {
     .from('service_tiers')
     .select('*')
     .eq('id', tierId)
-    .single()
+    .maybeSingle()
   if (error && error.code !== 'PGRST116') {
     throw new Error(`Failed to fetch service tier: ${error.message}`)
   }
@@ -83,7 +83,7 @@ async function getWorkspaceEmailInfo(workspaceId: string) {
     .from('workspaces')
     .select('name, users(email, full_name)')
     .eq('id', workspaceId)
-    .single()
+    .maybeSingle()
 
   if (!workspace || !workspace.users || workspace.users.length === 0) {
     throw new Error(`Workspace or user not found: ${workspaceId}`)
@@ -246,7 +246,7 @@ export async function handleSubscriptionUpdated(subscription: Stripe.Subscriptio
       .from('service_subscriptions')
       .select('*')
       .eq('stripe_subscription_id', subscription.id)
-      .single()
+      .maybeSingle()
 
     if (findError || !existingSubscription) {
       return await handleSubscriptionCreated(subscription)
@@ -380,7 +380,7 @@ export async function handleSubscriptionDeleted(subscription: Stripe.Subscriptio
         .from('service_subscriptions')
         .select('workspace_id, current_period_end, service_tier:service_tiers(name)')
         .eq('stripe_subscription_id', subscription.id)
-        .single()
+        .maybeSingle()
 
       if (serviceSubscription) {
         const emailInfo = await getWorkspaceEmailInfo(serviceSubscription.workspace_id)
@@ -436,7 +436,7 @@ export async function handleInvoicePaymentFailed(invoice: Stripe.Invoice): Promi
         .from('service_subscriptions')
         .select('workspace_id, service_tier:service_tiers(name)')
         .eq('stripe_subscription_id', invoice.subscription as string)
-        .single()
+        .maybeSingle()
 
       if (subscription) {
         const emailInfo = await getWorkspaceEmailInfo(subscription.workspace_id)
@@ -476,7 +476,7 @@ export async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice): Pr
       .from('service_subscriptions')
       .select('*, service_tier:service_tiers(*)')
       .eq('stripe_subscription_id', invoice.subscription as string)
-      .single()
+      .maybeSingle()
 
     if (!subscription) {
       return

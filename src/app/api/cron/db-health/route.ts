@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
       .eq('event_category', 'security_audit')
       .order('created_at', { ascending: false })
       .limit(1)
-      .single()
+      .maybeSingle()
 
     const prevStatus = (prevRun?.metadata as Record<string, unknown>)?.status as string | undefined
 

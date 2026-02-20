@@ -21,7 +21,7 @@ export async function GET(
     .from('users')
     .select('workspace_id')
     .eq('auth_user_id', user.id)
-    .single()
+    .maybeSingle()
 
   if (userError || !userData || !userData.workspace_id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -49,7 +49,7 @@ export async function GET(
     .eq('id', purchaseId)
     .eq('buyer_workspace_id', workspaceId)
     .eq('status', 'completed')
-    .single()
+    .maybeSingle()
 
   if (purchaseError || !purchase) {
     return NextResponse.json({ error: 'Purchase not found' }, { status: 404 })

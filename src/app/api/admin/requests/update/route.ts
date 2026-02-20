@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
         user:users!user_id(email, full_name)
       `)
       .eq('id', validated.request_id)
-      .single()
+      .maybeSingle()
 
     if (!featureRequest) {
       return NextResponse.json({ error: 'Request not found' }, { status: 404 })

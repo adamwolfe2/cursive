@@ -64,7 +64,7 @@ export async function sendSms(
         .select('phone_number, sends_today, daily_send_limit')
         .eq('id', accountId)
         .eq('workspace_id', workspaceId)
-        .single()
+        .maybeSingle()
 
       if (account) {
         // Check daily limit
@@ -145,10 +145,14 @@ export async function logSentSms(
       sent_at: result.success ? new Date().toISOString() : null,
     })
     .select('id')
-    .single()
+    .maybeSingle()
 
   if (error) {
     safeError('Failed to log SMS:', error)
+    return null
+  }
+
+  if (!data) {
     return null
   }
 
@@ -238,7 +242,7 @@ export async function handleIncomingSms(
     .from('leads')
     .select('id, workspace_id, contact_data')
     .filter('contact_data->contacts', 'cs', JSON.stringify([{ phone: from }]))
-    .single()
+    .maybeSingle()
 
   if (!lead) {
     return

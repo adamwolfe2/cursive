@@ -34,7 +34,7 @@ export async function POST(
       .from('users')
       .select('id, role, active_subscription, workspace_id')
       .eq('auth_user_id', authUser.id)
-      .single()
+      .maybeSingle()
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
@@ -60,7 +60,7 @@ export async function POST(
       .from('leads')
       .select('id, business_name, industry, uploaded_by_partner_id, status, marketplace_price')
       .eq('id', id)
-      .single()
+      .maybeSingle()
 
     if (leadError || !lead) {
       return NextResponse.json({ error: 'Lead not found' }, { status: 404 })

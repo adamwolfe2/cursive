@@ -106,7 +106,7 @@ export const marketplaceOnboardingSequence = inngest.createFunction(
         .from('workspace_credits')
         .select('balance')
         .eq('workspace_id', workspace_id)
-        .single()
+        .maybeSingle()
 
       const balance = creditsData?.balance || 0
 

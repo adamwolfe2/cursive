@@ -118,9 +118,9 @@ export async function logFailedJob(params: LogFailedJobParams): Promise<string |
         context: params.context || {},
       })
       .select('id')
-      .single()
+      .maybeSingle()
 
-    return insertError ? null : insertData.id
+    return insertError || !insertData ? null : insertData.id
   }
 
   return data
@@ -271,7 +271,7 @@ export async function markRetryFailed(jobId: string, errorMessage: string): Prom
       .from('failed_jobs')
       .select('attempts, max_attempts')
       .eq('id', jobId)
-      .single()
+      .maybeSingle()
 
     if (job) {
       if (job.attempts >= job.max_attempts) {

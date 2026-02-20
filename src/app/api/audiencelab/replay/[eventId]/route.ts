@@ -51,7 +51,7 @@ export async function POST(
       .from('users')
       .select('workspace_id')
       .eq('auth_user_id', user.id)
-      .single()
+      .maybeSingle()
 
     if (!userData?.workspace_id) {
       return NextResponse.json({ error: 'No workspace' }, { status: 403 })
@@ -63,7 +63,7 @@ export async function POST(
       .select('id, source, workspace_id')
       .eq('id', eventId)
       .eq('workspace_id', userData.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (eventError || !event) {
       return NextResponse.json({ error: 'Event not found' }, { status: 404 })

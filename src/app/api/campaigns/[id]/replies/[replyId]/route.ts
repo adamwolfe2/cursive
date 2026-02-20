@@ -34,7 +34,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
       .select('id')
       .eq('id', campaignId)
       .eq('workspace_id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (campaignError || !campaign) {
       return NextResponse.json({ error: 'Campaign not found' }, { status: 404 })
@@ -62,7 +62,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
       `)
       .eq('id', replyId)
       .eq('campaign_id', campaignId)
-      .single()
+      .maybeSingle()
 
     if (replyError || !reply) {
       return NextResponse.json({ error: 'Reply not found' }, { status: 404 })
@@ -94,7 +94,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
       .select('id')
       .eq('id', campaignId)
       .eq('workspace_id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (campaignError || !campaign) {
       return NextResponse.json({ error: 'Campaign not found' }, { status: 404 })
@@ -119,7 +119,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
       .eq('id', replyId)
       .eq('campaign_id', campaignId)
       .select()
-      .single()
+      .maybeSingle()
 
     if (updateError) {
       safeError('Failed to update reply:', updateError)

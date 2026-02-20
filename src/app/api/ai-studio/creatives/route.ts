@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
       .from('users')
       .select('workspace_id')
       .eq('auth_user_id', user.id)
-      .single()
+      .maybeSingle()
 
     if (!userData) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
       .select('id')
       .eq('id', workspaceId)
       .eq('workspace_id', userData.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (!brandWorkspace) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
@@ -100,7 +100,7 @@ export async function POST(request: NextRequest) {
       .from('users')
       .select('workspace_id')
       .eq('auth_user_id', user.id)
-      .single()
+      .maybeSingle()
 
     if (!userData) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
@@ -112,7 +112,7 @@ export async function POST(request: NextRequest) {
       .select('*, customer_profiles(*), offers(*)')
       .eq('id', workspaceId)
       .eq('workspace_id', userData.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (workspaceError || !workspace) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
@@ -153,7 +153,7 @@ export async function POST(request: NextRequest) {
         generation_status: 'completed',
       })
       .select('id, brand_workspace_id, icp_id, offer_id, image_url, prompt, style_preset, format, generation_status, created_at')
-      .single()
+      .maybeSingle()
 
     if (saveError) {
       safeError('[Creatives POST] Save error:', saveError)

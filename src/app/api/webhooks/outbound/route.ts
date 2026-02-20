@@ -146,7 +146,7 @@ export async function POST(req: NextRequest) {
         is_active: true,
       })
       .select('id, name, url, events, is_active, created_at')
-      .single()
+      .maybeSingle()
 
     if (error || !webhook) {
       safeError('[Webhooks/Outbound] POST insert error:', error)

@@ -110,7 +110,7 @@ async function handleCreditPurchaseCompleted(session: Stripe.Checkout.Session): 
     .from('credit_purchases')
     .select('id, status, completed_at')
     .eq('id', credit_purchase_id)
-    .single()
+    .maybeSingle()
 
   if (existingPurchase?.status === 'completed') {
     safeLog(`[Stripe Webhook] Credit purchase ${credit_purchase_id} already completed, skipping`)
@@ -128,7 +128,7 @@ async function handleCreditPurchaseCompleted(session: Stripe.Checkout.Session): 
     .from('workspace_credits')
     .select('balance')
     .eq('workspace_id', workspace_id)
-    .single()
+    .maybeSingle()
 
   const newBalance = creditsData?.balance ?? creditsAmount
 
@@ -140,7 +140,7 @@ async function handleCreditPurchaseCompleted(session: Stripe.Checkout.Session): 
       .from('users')
       .select('email, full_name')
       .eq('id', user_id)
-      .single()
+      .maybeSingle()
 
     if (userData?.email) {
       await sendCreditPurchaseConfirmationEmail(
@@ -226,7 +226,7 @@ async function handleLeadPurchaseCompleted(session: Stripe.Checkout.Session): Pr
       .from('users')
       .select('email, full_name')
       .eq('id', user_id)
-      .single()
+      .maybeSingle()
 
     if (userData?.email) {
       const downloadExpiresAt = getDaysFromNow(TIMEOUTS.DOWNLOAD_EXPIRY_DAYS)
@@ -282,7 +282,7 @@ async function handleChargeFailed(event: Stripe.Event): Promise<void> {
     .from('users')
     .select('id, email, full_name, workspace_id')
     .eq('stripe_customer_id', customerId)
-    .single()
+    .maybeSingle()
 
   if (userData?.workspace_id) {
     // Create a billing notification for the user
@@ -355,7 +355,7 @@ async function handleChargeRefunded(event: Stripe.Event): Promise<void> {
     .from('users')
     .select('id, email, full_name, workspace_id')
     .eq('stripe_customer_id', customerId)
-    .single()
+    .maybeSingle()
 
   // Try to find original purchase by payment_intent ID
   if (paymentIntentId) {
@@ -363,7 +363,7 @@ async function handleChargeRefunded(event: Stripe.Event): Promise<void> {
       .from('credit_purchases')
       .select('id, credits, status')
       .eq('stripe_payment_intent_id', paymentIntentId)
-      .single()
+      .maybeSingle()
 
     if (creditPurchase) {
       safeLog('[Stripe Webhook] Refund is for credit purchase', {
@@ -378,7 +378,7 @@ async function handleChargeRefunded(event: Stripe.Event): Promise<void> {
         .from('purchases')
         .select('id, status')
         .eq('stripe_payment_intent_id', paymentIntentId)
-        .single()
+        .maybeSingle()
 
       if (leadPurchase) {
         safeLog('[Stripe Webhook] Refund is for lead purchase', {
@@ -518,7 +518,7 @@ async function handleCustomerDeleted(event: Stripe.Event): Promise<void> {
     .from('users')
     .select('id, email')
     .eq('stripe_customer_id', customerId)
-    .single()
+    .maybeSingle()
 
   if (userData) {
     // Clear the stripe_customer_id from the user record
@@ -598,7 +598,7 @@ export async function POST(request: NextRequest) {
       .from('webhook_events')
       .select('id, processed_at')
       .eq('stripe_event_id', event.id)
-      .single()
+      .maybeSingle()
 
     if (existingEvent) {
       safeLog('[Stripe Webhook] Duplicate event detected, skipping', {

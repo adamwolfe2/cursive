@@ -58,7 +58,7 @@ async function getAuthenticatedUser() {
     .from('users')
     .select('id, workspace_id, email')
     .eq('auth_user_id', authUser.id)
-    .single()
+    .maybeSingle()
 
   return { user, supabase }
 }
@@ -92,7 +92,7 @@ export async function POST(req: NextRequest) {
       .from('workspaces')
       .select('id, stripe_subscription_id, stripe_customer_id, plan')
       .eq('id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (workspaceError || !workspace) {
       return NextResponse.json(

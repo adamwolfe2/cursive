@@ -128,7 +128,7 @@ export class CRMLeadRepository {
       )
       .eq('id', leadId)
       .eq('workspace_id', workspaceId)
-      .single()
+      .maybeSingle()
 
     if (error) {
       if (error.code === 'PGRST116') return null // Not found
@@ -157,7 +157,7 @@ export class CRMLeadRepository {
         )
       `
       )
-      .single()
+      .maybeSingle()
 
     if (error) {
       safeError('[CRMLeadRepository] Failed to create lead:', error)
@@ -192,7 +192,7 @@ export class CRMLeadRepository {
         )
       `
       )
-      .single()
+      .maybeSingle()
 
     if (error) {
       safeError('[CRMLeadRepository] Failed to update lead:', error)

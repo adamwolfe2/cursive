@@ -78,7 +78,7 @@ export async function GET(request: NextRequest) {
             .update({ referral_code: newCode })
             .eq('id', user.id)
             .select('referral_code')
-            .single()
+            .maybeSingle()
 
           if (!error && updatedUser) {
             referralCode = (updatedUser as any).referral_code
@@ -174,7 +174,7 @@ export async function PATCH(request: NextRequest) {
       .update(updates)
       .eq('id', user.id)
       .select('*')
-      .single()
+      .maybeSingle()
 
     if (error) {
       throw error

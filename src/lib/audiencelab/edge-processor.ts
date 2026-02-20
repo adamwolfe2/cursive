@@ -85,7 +85,7 @@ async function checkDuplicate(
     .from('leads')
     .select('id, partner_id, hash_key')
     .eq('hash_key', hashKey)
-    .single()
+    .maybeSingle()
 
   if (error && error.code !== 'PGRST116') {
     safeError(`${LOG_PREFIX} Duplicate check error`, error)
@@ -124,7 +124,7 @@ export async function processEventInline(
       .from('audiencelab_events')
       .select('*')
       .eq('id', eventId)
-      .single()
+      .maybeSingle()
 
     if (fetchError || !rawEvent) {
       return { success: false, error: `Event not found: ${fetchError?.message}` }
@@ -158,7 +158,7 @@ export async function processEventInline(
         .from('audiencelab_identities')
         .select('id, visit_count, lead_id')
         .eq('profile_id', normalized.profile_id)
-        .single()
+        .maybeSingle()
       existingIdentity = data
     }
 
@@ -168,7 +168,7 @@ export async function processEventInline(
         .select('id, visit_count, lead_id')
         .eq('uid', normalized.uid)
         .limit(1)
-        .single()
+        .maybeSingle()
       existingIdentity = data
     }
 
@@ -178,7 +178,7 @@ export async function processEventInline(
         .select('id, visit_count, lead_id')
         .eq('hem_sha256', normalized.hem_sha256)
         .limit(1)
-        .single()
+        .maybeSingle()
       existingIdentity = data
     }
 
@@ -188,7 +188,7 @@ export async function processEventInline(
         .select('id, visit_count, lead_id')
         .contains('personal_emails', [normalized.primary_email])
         .limit(1)
-        .single()
+        .maybeSingle()
       existingIdentity = data
     }
 
@@ -260,7 +260,7 @@ export async function processEventInline(
           workspace_id: targetWorkspaceId,
         })
         .select('id')
-        .single()
+        .maybeSingle()
 
       if (insertError) {
         safeError(`${LOG_PREFIX} Failed to insert identity`, insertError)
@@ -364,7 +364,7 @@ export async function processEventInline(
               status: 'new',
             })
             .select('id')
-            .single()
+            .maybeSingle()
 
           if (leadError) {
             safeError(`${LOG_PREFIX} Failed to create lead`, leadError)
@@ -390,7 +390,7 @@ export async function processEventInline(
           .from('leads')
           .select('id, company_industry, state_code, state, city, postal_code')
           .eq('id', leadId)
-          .single()
+          .maybeSingle()
 
         if (lead) {
           // Get all active user targeting for this workspace

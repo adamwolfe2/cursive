@@ -95,7 +95,7 @@ export async function deliverWebhook(
     .from('workspace_webhooks')
     .select('id, workspace_id, url, secret, events, is_active')
     .eq('id', webhookId)
-    .single()
+    .maybeSingle()
 
   if (loadError || !webhook) {
     safeError('[WebhookDelivery] Failed to load webhook:', loadError)
@@ -118,7 +118,7 @@ export async function deliverWebhook(
         completed_at: new Date().toISOString(),
       })
       .select('id')
-      .single()
+      .maybeSingle()
 
     return {
       webhookId,
@@ -140,7 +140,7 @@ export async function deliverWebhook(
       attempts: 0,
     })
     .select('id')
-    .single()
+    .maybeSingle()
 
   if (insertError || !delivery) {
     safeError('[WebhookDelivery] Failed to create delivery record:', insertError)

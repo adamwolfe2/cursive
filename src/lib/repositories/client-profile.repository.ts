@@ -45,7 +45,7 @@ export class ClientProfileRepository {
       .select('*')
       .eq('id', id)
       .eq('workspace_id', workspaceId)
-      .single()
+      .maybeSingle()
 
     if (error) {
       if (error.code === 'PGRST116') {
@@ -70,7 +70,7 @@ export class ClientProfileRepository {
       .eq('is_active', true)
       .order('created_at', { ascending: false })
       .limit(1)
-      .single()
+      .maybeSingle()
 
     if (error) {
       if (error.code === 'PGRST116') {
@@ -92,7 +92,7 @@ export class ClientProfileRepository {
       .from('client_profiles')
       .insert(profile)
       .select('*')
-      .single()
+      .maybeSingle()
 
     if (error) {
       throw new DatabaseError(error.message)
@@ -120,7 +120,7 @@ export class ClientProfileRepository {
       .eq('id', id)
       .eq('workspace_id', workspaceId)
       .select('*')
-      .single()
+      .maybeSingle()
 
     if (error) {
       throw new DatabaseError(error.message)

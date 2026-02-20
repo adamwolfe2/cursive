@@ -39,7 +39,7 @@ export async function GET(
       .select('*')
       .eq('id', id)
       .eq('workspace_id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (error || !template) {
       return NextResponse.json({ error: 'Template not found' }, { status: 404 })
@@ -78,7 +78,7 @@ export async function PATCH(
       .select('id')
       .eq('id', id)
       .eq('workspace_id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (!existing) {
       return NextResponse.json({ error: 'Template not found' }, { status: 404 })
@@ -89,7 +89,7 @@ export async function PATCH(
       .update(validated)
       .eq('id', id)
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) {
       if (error.code === '23505') {
@@ -150,7 +150,7 @@ export async function DELETE(
       .select('id')
       .eq('id', id)
       .eq('workspace_id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (!existing) {
       return NextResponse.json({ error: 'Template not found' }, { status: 404 })

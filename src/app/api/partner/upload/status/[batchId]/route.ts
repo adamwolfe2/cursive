@@ -26,7 +26,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       .from('partners')
       .select('id')
       .eq('api_key', apiKey)
-      .single()
+      .maybeSingle()
 
     if (partnerError || !partner) {
       return NextResponse.json({ error: 'Invalid API key' }, { status: 401 })
@@ -56,7 +56,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         created_at
       `)
       .eq('id', batchId)
-      .single()
+      .maybeSingle()
 
     if (batchError || !batch) {
       return NextResponse.json({ error: 'Batch not found' }, { status: 404 })

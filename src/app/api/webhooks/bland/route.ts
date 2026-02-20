@@ -185,7 +185,7 @@ export async function POST(req: NextRequest) {
         .eq('idempotency_key', call_id)
         .eq('workspace_id', idempWorkspaceId)
         .eq('endpoint', '/api/webhooks/bland')
-        .single()
+        .maybeSingle()
 
       if (existingKey) {
         // Request already processed successfully - return cached response
@@ -250,7 +250,7 @@ export async function POST(req: NextRequest) {
         onConflict: 'external_call_id',
       })
       .select('id')
-      .single()
+      .maybeSingle()
 
     if (callError) {
       safeError('[Bland Webhook] Failed to save call:', callError)

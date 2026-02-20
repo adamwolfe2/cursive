@@ -26,7 +26,7 @@ export const leadEnrichment = inngest.createFunction(
         .select('*')
         .eq('id', lead_id)
         .eq('workspace_id', workspace_id)
-        .single()
+        .maybeSingle()
 
       if (error) {
         logger.error('Failed to fetch lead:', error)
@@ -171,7 +171,7 @@ export const leadEnrichment = inngest.createFunction(
         .from('workspaces')
         .select('id')
         .eq('id', workspace_id)
-        .single()
+        .maybeSingle()
 
       // Check for active integrations
       const { data: integrations } = await supabase
@@ -211,7 +211,7 @@ export const leadEnrichment = inngest.createFunction(
         .from('leads')
         .select('id, first_name, last_name, email, phone, company_name, company_industry, enrichment_status, enriched_at')
         .eq('id', lead_id)
-        .single()
+        .maybeSingle()
 
       await inngest.send({
         name: 'outbound-webhook/deliver',

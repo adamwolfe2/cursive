@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
       .select('id')
       .eq('workspace_id', user.workspace_id)
       .eq('type', 'zapier')
-      .single()
+      .maybeSingle()
 
     const integrationData = {
       workspace_id: user.workspace_id,

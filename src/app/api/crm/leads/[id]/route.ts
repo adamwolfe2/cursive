@@ -46,7 +46,7 @@ export async function PATCH(
       .eq('id', id)
       .eq('workspace_id', user.workspace_id)
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) throw error
 

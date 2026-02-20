@@ -52,10 +52,17 @@ export async function PATCH(request: NextRequest) {
       })
       .eq('id', user.linked_partner_id)
       .select('id, payout_threshold')
-      .single()
+      .maybeSingle()
 
     if (error) {
       safeError('Failed to update partner settings:', error)
+      return NextResponse.json(
+        { error: 'Failed to update settings' },
+        { status: 500 }
+      )
+    }
+
+    if (!updatedPartner) {
       return NextResponse.json(
         { error: 'Failed to update settings' },
         { status: 500 }

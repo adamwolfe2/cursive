@@ -55,7 +55,7 @@ export class HubSpotService {
       .select('access_token, refresh_token, token_expires_at')
       .eq('workspace_id', this.workspaceId)
       .eq('provider', 'hubspot')
-      .single()
+      .maybeSingle()
 
     if (!connection) {
       return false
@@ -245,7 +245,7 @@ export class HubSpotService {
         .select('id, field_mappings')
         .eq('workspace_id', this.workspaceId)
         .eq('provider', 'hubspot')
-        .single()
+        .maybeSingle()
 
       const mappings = (connection?.field_mappings as Record<string, string>) || {}
 

@@ -112,7 +112,7 @@ export async function createVariant(
       description: data.description,
     })
     .select()
-    .single()
+    .maybeSingle()
 
   if (error) {
     return { success: false, error: error.message }
@@ -201,7 +201,7 @@ export async function assignVariant(
     .from('email_template_variants')
     .select('*')
     .eq('id', variantId)
-    .single()
+    .maybeSingle()
 
   return variant ? mapVariant(variant) : null
 }
@@ -220,14 +220,14 @@ async function assignVariantJS(
     .from('variant_assignments')
     .select('variant_id')
     .eq('campaign_lead_id', campaignLeadId)
-    .single()
+    .maybeSingle()
 
   if (existing) {
     const { data: variant } = await supabase
       .from('email_template_variants')
       .select('*')
       .eq('id', existing.variant_id)
-      .single()
+      .maybeSingle()
 
     return variant ? mapVariant(variant) : null
   }
@@ -289,7 +289,7 @@ export async function getAssignedVariant(
     .from('variant_assignments')
     .select('variant:email_template_variants(*)')
     .eq('campaign_lead_id', campaignLeadId)
-    .single()
+    .maybeSingle()
 
   if (!assignment?.variant) {
     return null
@@ -332,7 +332,7 @@ export async function createExperiment(
       auto_end_on_significance: data.autoEndOnSignificance !== false,
     })
     .select()
-    .single()
+    .maybeSingle()
 
   if (error) {
     return { success: false, error: error.message }
@@ -381,7 +381,7 @@ export async function getExperimentResults(
     .from('ab_experiments')
     .select('*, campaign:email_campaigns(id)')
     .eq('id', experimentId)
-    .single()
+    .maybeSingle()
 
   if (!experiment) {
     return null

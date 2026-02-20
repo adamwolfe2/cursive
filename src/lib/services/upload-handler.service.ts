@@ -190,10 +190,14 @@ export class UploadHandlerService {
         status: 'pending',
       })
       .select('id')
-      .single()
+      .maybeSingle()
 
     if (error) {
       throw new DatabaseError(`Failed to create upload job: ${error.message}`)
+    }
+
+    if (!data) {
+      throw new DatabaseError('Failed to create upload job: no data returned')
     }
 
     return data.id
@@ -545,10 +549,14 @@ export class UploadHandlerService {
       delivery_status: 'pending',
     }
 
-    const { data, error } = await supabase.from('leads').insert(leadData).select('id').single()
+    const { data, error } = await supabase.from('leads').insert(leadData).select('id').maybeSingle()
 
     if (error) {
       throw new DatabaseError(`Failed to create lead: ${error.message}`)
+    }
+
+    if (!data) {
+      throw new DatabaseError('Failed to create lead: no data returned')
     }
 
     // Create company association if we have SIC code
@@ -647,7 +655,7 @@ export class UploadHandlerService {
       .select('*')
       .eq('id', jobId)
       .eq('workspace_id', this.workspaceId)
-      .single()
+      .maybeSingle()
 
     if (error || !data) {
       return null

@@ -153,7 +153,7 @@ export async function POST(request: NextRequest) {
       .select('id, payload_summary')
       .eq('event_id', eventHash)
       .eq('source', 'audience-labs')
-      .single()
+      .maybeSingle()
 
     if (existingEvent) {
       safeLog(`${LOG_PREFIX} Duplicate webhook detected, skipping`)
@@ -177,7 +177,7 @@ export async function POST(request: NextRequest) {
         .select('workspace_id')
         .eq('is_active', true)
         .limit(1)
-        .single()
+        .maybeSingle()
       if (pixelData?.workspace_id) workspaceId = pixelData.workspace_id
     }
 
@@ -215,7 +215,7 @@ export async function POST(request: NextRequest) {
           workspace_id: workspaceId,
         })
         .select('id')
-        .single()
+        .maybeSingle()
 
       if (insertError) {
         safeError(`${LOG_PREFIX} Failed to store row`, insertError)

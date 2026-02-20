@@ -178,7 +178,7 @@ async function sendWithGmail(
       .from('email_accounts')
       .select('credentials_encrypted')
       .eq('id', account.id)
-      .single()
+      .maybeSingle()
 
     if (!accountData?.credentials_encrypted) {
       return {
@@ -271,7 +271,7 @@ async function sendWithOutlook(
       .from('email_accounts')
       .select('credentials_encrypted')
       .eq('id', account.id)
-      .single()
+      .maybeSingle()
 
     if (!accountData?.credentials_encrypted) {
       return {
@@ -378,7 +378,7 @@ async function sendWithSmtp(
       .from('email_accounts')
       .select('credentials_encrypted')
       .eq('id', account.id)
-      .single()
+      .maybeSingle()
 
     if (!accountData?.credentials_encrypted) {
       return {
@@ -448,7 +448,7 @@ async function getEmailAccount(
     .select('*')
     .eq('id', accountId)
     .eq('workspace_id', workspaceId)
-    .single()
+    .maybeSingle()
 
   if (!data) return null
 
@@ -480,7 +480,7 @@ async function incrementSendCount(accountId: string): Promise<void> {
       .from('email_accounts')
       .select('sends_today')
       .eq('id', accountId)
-      .single()
+      .maybeSingle()
 
     await supabase
       .from('email_accounts')
@@ -692,10 +692,14 @@ export async function logSentEmail(
       sent_at: result.success ? new Date().toISOString() : null,
     })
     .select('id')
-    .single()
+    .maybeSingle()
 
   if (error) {
     safeError('Failed to log sent email:', error)
+    return null
+  }
+
+  if (!data) {
     return null
   }
 

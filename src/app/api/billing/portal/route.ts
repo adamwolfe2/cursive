@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
       .from('workspaces')
       .select('stripe_customer_id')
       .eq('id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (workspaceError || !workspace) {
       return badRequest('Workspace not found')

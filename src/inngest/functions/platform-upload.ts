@@ -47,7 +47,7 @@ export const platformUpload = inngest.createFunction(
         .eq('workspace_id', workspace_id)
         .eq('type', 'platform')
         .eq('status', 'active')
-        .single()
+        .maybeSingle()
 
       return integration?.config as any
     })

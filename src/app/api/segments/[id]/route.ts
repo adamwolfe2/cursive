@@ -40,7 +40,7 @@ export async function GET(
       .select('*')
       .eq('id', id)
       .eq('workspace_id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (error || !segment) {
       return NextResponse.json({ error: 'Segment not found' }, { status: 404 })
@@ -82,7 +82,7 @@ export async function PATCH(
       .select('user_id')
       .eq('id', id)
       .eq('workspace_id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (!existing) {
       return NextResponse.json({ error: 'Segment not found' }, { status: 404 })
@@ -101,7 +101,7 @@ export async function PATCH(
       .update(validated)
       .eq('id', id)
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) {
       safeError('[Segments API] Update error:', error)
@@ -156,7 +156,7 @@ export async function DELETE(
       .select('user_id')
       .eq('id', id)
       .eq('workspace_id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (!existing) {
       return NextResponse.json({ error: 'Segment not found' }, { status: 404 })

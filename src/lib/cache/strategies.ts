@@ -26,7 +26,7 @@ export async function getCachedUser(userId: string) {
         .from('users')
         .select('*')
         .eq('id', userId)
-        .single()
+        .maybeSingle()
 
       return data
     },
@@ -56,7 +56,7 @@ export async function getCachedWorkspace(workspaceId: string) {
         .from('workspaces')
         .select('*')
         .eq('id', workspaceId)
-        .single()
+        .maybeSingle()
 
       return data
     },
@@ -214,7 +214,7 @@ export async function getCachedCreditStatus(userId: string) {
         .from('users')
         .select('daily_credits_used, plan, daily_credits_reset_at')
         .eq('id', userId)
-        .single()
+        .maybeSingle()
 
       if (!user) return null
 
@@ -255,7 +255,7 @@ export async function getCachedAnalytics(workspaceId: string) {
         .from('workspace_analytics')
         .select('*')
         .eq('workspace_id', workspaceId)
-        .single()
+        .maybeSingle()
 
       return data
     },

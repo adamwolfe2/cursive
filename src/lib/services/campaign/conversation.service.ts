@@ -232,7 +232,7 @@ export async function getConversation(
     )
     .eq('id', conversationId)
     .eq('workspace_id', workspaceId)
-    .single()
+    .maybeSingle()
 
   if (convError || !conversation) {
     return null
@@ -286,7 +286,7 @@ export async function markConversationRead(
     .select('id')
     .eq('id', conversationId)
     .eq('workspace_id', workspaceId)
-    .single()
+    .maybeSingle()
 
   if (!conversation) {
     return { success: false, messagesMarked: 0 }
@@ -434,7 +434,7 @@ export async function addReplyToConversation(
     )
     .eq('id', conversationId)
     .eq('workspace_id', workspaceId)
-    .single()
+    .maybeSingle()
 
   if (convError || !conversation) {
     return { success: false, error: 'Conversation not found' }
@@ -461,7 +461,7 @@ export async function addReplyToConversation(
       step_number: conversation.message_count + 1,
     })
     .select()
-    .single()
+    .maybeSingle()
 
   if (sendError) {
     return { success: false, error: sendError.message }
@@ -556,10 +556,14 @@ export async function findOrCreateConversation(
         status: 'active',
       })
       .select('id')
-      .single()
+      .maybeSingle()
 
     if (insertError) {
       throw new Error(`Failed to create conversation: ${insertError.message}`)
+    }
+
+    if (!newConv) {
+      throw new Error('Failed to create conversation: no data returned')
     }
 
     return newConv.id
@@ -639,10 +643,14 @@ export async function addMessageToConversation(
         is_read: message.direction === 'outbound',
       })
       .select('id')
-      .single()
+      .maybeSingle()
 
     if (insertError) {
       throw new Error(`Failed to add message: ${insertError.message}`)
+    }
+
+    if (!newMsg) {
+      throw new Error('Failed to add message: no data returned')
     }
 
     // Update conversation stats manually

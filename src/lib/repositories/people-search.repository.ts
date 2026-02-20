@@ -84,7 +84,7 @@ export class PeopleSearchRepository {
         filters,
       })
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) {
       safeError('[PeopleSearchRepository] Save search error:', error)
@@ -168,7 +168,7 @@ export class PeopleSearchRepository {
         search_filters: searchFilters,
       })
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) {
       safeError('[PeopleSearchRepository] Create result error:', error)

@@ -63,7 +63,7 @@ async function getAuthenticatedUser() {
     .from('users')
     .select('id, workspace_id, email')
     .eq('auth_user_id', authUser.id)
-    .single()
+    .maybeSingle()
 
   return user
 }
@@ -122,7 +122,7 @@ export async function POST(req: NextRequest) {
       .select('id, workspace_id, company_name, company_industry, company_location')
       .eq('id', leadId)
       .eq('workspace_id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (leadError || !lead) {
       return NextResponse.json(

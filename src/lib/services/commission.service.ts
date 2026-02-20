@@ -225,7 +225,7 @@ export async function recordCommission(params: {
     .from('partners')
     .select('*')
     .eq('id', params.partnerId)
-    .single()
+    .maybeSingle()
 
   if (partnerError || !partner) {
     throw new Error('Partner not found')
@@ -341,7 +341,7 @@ export async function getPartnerCommissionSummary(partnerId: string): Promise<{
     .from('partners')
     .select('*')
     .eq('id', partnerId)
-    .single()
+    .maybeSingle()
 
   if (error || !partner) {
     throw new Error('Partner not found')

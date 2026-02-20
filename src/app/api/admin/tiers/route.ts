@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
       .from('product_tiers')
       .select('id, name')
       .eq('slug', tierSlug)
-      .single()
+      .maybeSingle()
 
     if (tierError || !tier) {
       return NextResponse.json(
@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
       .from('workspace_tiers')
       .select('id, workspace_id, product_tier_id, billing_cycle, subscription_status, daily_lead_limit_override, monthly_lead_limit_override, feature_overrides, internal_notes, product_tiers(name, slug)')
       .eq('workspace_id', workspaceId)
-      .single()
+      .maybeSingle()
 
     // Upsert workspace tier
     const { data: workspaceTier, error: upsertError } = await supabase
@@ -92,9 +92,13 @@ export async function POST(request: NextRequest) {
         { onConflict: 'workspace_id' }
       )
       .select('id, workspace_id, product_tier_id, billing_cycle, subscription_status, daily_lead_limit_override, monthly_lead_limit_override, feature_overrides, internal_notes')
-      .single()
+      .maybeSingle()
 
     if (upsertError) throw upsertError
+
+    if (!workspaceTier) {
+      return NextResponse.json({ error: 'Failed to upsert workspace tier' }, { status: 500 })
+    }
 
     // Log admin action
     await logAdminAction(
@@ -155,7 +159,7 @@ export async function PATCH(request: NextRequest) {
       .from('workspace_tiers')
       .select('id, workspace_id, product_tier_id, billing_cycle, subscription_status, daily_lead_limit_override, monthly_lead_limit_override, feature_overrides, internal_notes')
       .eq('workspace_id', workspaceId)
-      .single()
+      .maybeSingle()
 
     if (!currentTier) {
       return NextResponse.json(
@@ -192,9 +196,13 @@ export async function PATCH(request: NextRequest) {
       .update(updates)
       .eq('workspace_id', workspaceId)
       .select('id, workspace_id, product_tier_id, billing_cycle, subscription_status, daily_lead_limit_override, monthly_lead_limit_override, feature_overrides, internal_notes')
-      .single()
+      .maybeSingle()
 
     if (updateError) throw updateError
+
+    if (!updatedTier) {
+      return NextResponse.json({ error: 'Failed to update workspace tier' }, { status: 500 })
+    }
 
     // Log admin action
     await logAdminAction(

@@ -209,7 +209,7 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
             )
             .eq('id', payload.new.id)
             .eq('workspace_id', workspaceId)
-            .single()
+            .maybeSingle()
 
           if (data) {
             const newAssignment = data as unknown as LeadAssignment

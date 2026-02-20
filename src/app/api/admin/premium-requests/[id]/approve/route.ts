@@ -33,7 +33,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       .from('premium_feature_requests')
       .select('*')
       .eq('id', id)
-      .single()
+      .maybeSingle()
 
     if (fetchError || !featureRequest) {
       return badRequest('Feature request not found')

@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
         users!inner (email, full_name)
       `)
       .eq('id', subscriptionId)
-      .single()
+      .maybeSingle()
 
     if (subError || !subscription) {
       return NextResponse.json(
@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
         delivered_at: new Date().toISOString(),
       })
       .select('id')
-      .single()
+      .maybeSingle()
 
     if (deliveryError || !delivery) {
       throw new Error(`Failed to create delivery: ${deliveryError?.message}`)

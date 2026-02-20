@@ -296,7 +296,7 @@ export async function startVoiceCampaign(
     .select('*')
     .eq('id', campaignId)
     .eq('workspace_id', workspaceId)
-    .single()
+    .maybeSingle()
 
   if (campaignError || !campaign) {
     throw new Error('Campaign not found')
@@ -393,10 +393,14 @@ async function logVoiceCall(data: {
       external_id: data.externalId,
     })
     .select('id')
-    .single()
+    .maybeSingle()
 
   if (error) {
     safeError('Failed to log voice call:', error)
+    return null
+  }
+
+  if (!call) {
     return null
   }
 

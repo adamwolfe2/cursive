@@ -48,7 +48,7 @@ export async function POST(
       .select('*')
       .eq('id', id)
       .eq('workspace_id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (segmentError || !segment) {
       return NextResponse.json({ error: 'Segment not found' }, { status: 404 })
@@ -59,7 +59,7 @@ export async function POST(
       .from('workspaces')
       .select('id, credits_balance')
       .eq('id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (!workspace) {
       return NextResponse.json({ error: 'Workspace not found' }, { status: 404 })

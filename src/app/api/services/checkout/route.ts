@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
       .from('users')
       .select('workspace_id, workspaces(billing_email)')
       .eq('auth_user_id', user.id)
-      .single()
+      .maybeSingle()
 
     if (!userData || !userData.workspace_id) {
       return NextResponse.json(

@@ -64,7 +64,7 @@ export class CampaignRepository {
       .select('*')
       .eq('id', id)
       .eq('workspace_id', workspaceId)
-      .single()
+      .maybeSingle()
 
     if (error) {
       if (error.code === 'PGRST116') {
@@ -95,7 +95,7 @@ export class CampaignRepository {
       .select('*')
       .eq('id', id)
       .eq('workspace_id', workspaceId)
-      .single()
+      .maybeSingle()
 
     if (campaignError) {
       if (campaignError.code === 'PGRST116') {
@@ -124,7 +124,7 @@ export class CampaignRepository {
       .eq('status', 'pending')
       .order('created_at', { ascending: false })
       .limit(1)
-      .single()
+      .maybeSingle()
 
     // Ignore not found error for review
     if (reviewError && reviewError.code !== 'PGRST116') {
@@ -148,7 +148,7 @@ export class CampaignRepository {
       .from('email_campaigns')
       .insert(campaign)
       .select('*')
-      .single()
+      .maybeSingle()
 
     if (error) {
       throw new DatabaseError(error.message)
@@ -173,7 +173,7 @@ export class CampaignRepository {
       .eq('id', id)
       .eq('workspace_id', workspaceId)
       .select('*')
-      .single()
+      .maybeSingle()
 
     if (error) {
       throw new DatabaseError(error.message)
@@ -232,7 +232,7 @@ export class CampaignRepository {
         sample_emails_reviewed: sampleEmails,
       })
       .select('*')
-      .single()
+      .maybeSingle()
 
     if (reviewError) {
       throw new DatabaseError(reviewError.message)
@@ -345,7 +345,7 @@ export class CampaignRepository {
       .from('campaign_leads')
       .select('campaign_id')
       .eq('id', campaignLeadId)
-      .single()
+      .maybeSingle()
 
     if (lookupError || !campaignLead) {
       throw new DatabaseError('Campaign lead not found')
@@ -362,7 +362,7 @@ export class CampaignRepository {
       .update({ status })
       .eq('id', campaignLeadId)
       .select('*')
-      .single()
+      .maybeSingle()
 
     if (error) {
       throw new DatabaseError(error.message)
@@ -462,7 +462,7 @@ export class CampaignRepository {
       .from('campaign_reviews')
       .select('campaign_id')
       .eq('id', reviewId)
-      .single()
+      .maybeSingle()
 
     if (lookupError || !existingReview) {
       throw new DatabaseError('Review not found')
@@ -486,7 +486,7 @@ export class CampaignRepository {
       })
       .eq('id', reviewId)
       .select('*')
-      .single()
+      .maybeSingle()
 
     if (reviewError) {
       throw new DatabaseError(reviewError.message)

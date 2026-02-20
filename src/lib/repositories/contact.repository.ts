@@ -98,7 +98,7 @@ export class ContactRepository {
       .select('*')
       .eq('id', id)
       .eq('workspace_id', workspaceId)
-      .single()
+      .maybeSingle()
 
     if (error) {
       if (error.code === 'PGRST116') return null
@@ -155,7 +155,7 @@ export class ContactRepository {
       .from('contacts')
       .insert(contact)
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) {
       throw new Error(`Failed to create contact: ${error.message}`)
@@ -176,7 +176,7 @@ export class ContactRepository {
       .eq('id', id)
       .eq('workspace_id', workspaceId)
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) {
       throw new Error(`Failed to update contact: ${error.message}`)
@@ -213,7 +213,7 @@ export class ContactRepository {
       .select('*')
       .eq('email', email)
       .eq('workspace_id', workspaceId)
-      .single()
+      .maybeSingle()
 
     if (error) {
       if (error.code === 'PGRST116') return null

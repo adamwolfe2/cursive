@@ -119,7 +119,7 @@ export const ghlCreateSubaccount = inngest.createFunction(
         .from('workspaces')
         .select('settings')
         .eq('id', workspace_id)
-        .single()
+        .maybeSingle()
 
       const currentSettings = (workspace?.settings as Record<string, unknown>) || {}
 

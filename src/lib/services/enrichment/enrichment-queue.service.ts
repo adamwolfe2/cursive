@@ -123,10 +123,15 @@ export async function queueEnrichment(
         data: { webhook_url: config.webhookUrl },
       })
       .select('id')
-      .single()
+      .maybeSingle()
 
     if (error) {
       safeError('[Enrichment] Failed to queue enrichment job:', error)
+      continue
+    }
+
+    if (!job) {
+      safeError('[Enrichment] Enrichment job insert returned null')
       continue
     }
 

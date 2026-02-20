@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
         status: 'draft',
       })
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) {
       if (error.code === '23505') {

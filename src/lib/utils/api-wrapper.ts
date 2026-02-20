@@ -182,7 +182,7 @@ export async function getWorkspaceIdFromRequest(
       .from('users')
       .select('workspace_id')
       .eq('auth_user_id', userId)
-      .single()
+      .maybeSingle()
 
     return user?.workspace_id || null
   } catch (error) {

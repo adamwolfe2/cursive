@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
       .from('partners')
       .select('id, name, is_active, status')
       .eq('api_key', apiKey)
-      .single()
+      .maybeSingle()
 
     if (partnerError || !partner) {
       return NextResponse.json({ error: 'Invalid API key' }, { status: 401 })
@@ -79,13 +79,17 @@ export async function POST(request: NextRequest) {
         chunk_size: calculateOptimalChunkSize(estimated_rows),
       })
       .select('id')
-      .single()
+      .maybeSingle()
 
     if (batchError) {
       safeError('Failed to create upload batch:', batchError)
       return NextResponse.json({
         error: 'Failed to initiate upload',
       }, { status: 500 })
+    }
+
+    if (!batch) {
+      return NextResponse.json({ error: 'Failed to create upload batch' }, { status: 500 })
     }
 
     if (useStorageFirst) {

@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
       .from('partners')
       .select('id, email, company_name, stripe_account_id')
       .eq('id', partnerId)
-      .single()
+      .maybeSingle()
 
     if (partnerError || !partner) {
       return NextResponse.json(

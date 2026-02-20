@@ -28,7 +28,7 @@ export default async function PartnerDashboard() {
     .from('users')
     .select('id, full_name, role, partner_approved')
     .eq('auth_user_id', authUser.id)
-    .single()
+    .maybeSingle()
 
   if (!user) redirect('/login')
   if (user.role !== 'partner') redirect('/dashboard')

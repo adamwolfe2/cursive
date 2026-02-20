@@ -63,7 +63,7 @@ async function getAuthenticatedUser() {
     .from('users')
     .select('id, workspace_id, email')
     .eq('auth_user_id', authUser.id)
-    .single()
+    .maybeSingle()
 
   return { user, supabase }
 }
@@ -85,7 +85,7 @@ export async function GET(req: NextRequest) {
       .from('workspaces')
       .select('webhook_url, webhook_secret, webhook_enabled, webhook_events')
       .eq('id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (error || !workspace) {
       return NextResponse.json(
@@ -160,7 +160,7 @@ export async function POST(req: NextRequest) {
         .from('workspaces')
         .select('webhook_secret')
         .eq('id', user.workspace_id)
-        .single()
+        .maybeSingle()
 
       if (!existing?.webhook_secret) {
         updateData.webhook_secret = Array.from(crypto.getRandomValues(new Uint8Array(32))).map(b => b.toString(16).padStart(2, '0')).join('')
@@ -186,7 +186,7 @@ export async function POST(req: NextRequest) {
       .from('workspaces')
       .select('webhook_url, webhook_secret, webhook_enabled, webhook_events')
       .eq('id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     return NextResponse.json({
       success: true,
@@ -240,7 +240,7 @@ export async function PUT(req: NextRequest) {
       .from('workspaces')
       .select('webhook_secret')
       .eq('id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     // Create test payload
     const testPayload = {

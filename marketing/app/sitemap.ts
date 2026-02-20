@@ -102,7 +102,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/blog/leadfeeder-alternative',
     '/blog/demandbase-alternative',
     '/blog/instantly-alternative',
-    '/blog/smartlead-alternative',
     '/blog/clay-alternative',
     // New competitor alternative pages (created Feb 2026)
     '/blog/lusha-alternative',

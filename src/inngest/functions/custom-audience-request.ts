@@ -56,7 +56,7 @@ export const handleCustomAudienceRequest = inngest.createFunction(
         .from('custom_audience_requests')
         .select('status')
         .eq('id', request_id)
-        .single()
+        .maybeSingle()
 
       return request?.status !== 'pending'
     })

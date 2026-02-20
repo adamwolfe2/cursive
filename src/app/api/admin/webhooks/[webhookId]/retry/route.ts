@@ -30,7 +30,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
       .from('webhook_events')
       .select('*')
       .eq('id', webhookId)
-      .single()
+      .maybeSingle()
 
     if (fetchError || !event) {
       return NextResponse.json(
@@ -133,7 +133,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
       .from('webhook_events')
       .select('*')
       .eq('id', webhookId)
-      .single()
+      .maybeSingle()
 
     if (error || !event) {
       return NextResponse.json(

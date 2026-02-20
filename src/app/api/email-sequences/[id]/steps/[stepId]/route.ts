@@ -54,7 +54,7 @@ export async function PATCH(
       )
       .eq('id', stepId)
       .eq('sequence_id', sequenceId)
-      .single()
+      .maybeSingle()
 
     if (!existingStep || (existingStep.email_sequences as any).workspace_id !== user.workspace_id) {
       return NextResponse.json({ error: 'Step not found' }, { status: 404 })
@@ -67,7 +67,7 @@ export async function PATCH(
         .select('id')
         .eq('sequence_id', sequenceId)
         .eq('step_order', validated.step_order)
-        .single()
+        .maybeSingle()
 
       if (targetStep) {
         // Swap orders
@@ -85,7 +85,7 @@ export async function PATCH(
         .select('id')
         .eq('id', validated.template_id)
         .eq('workspace_id', user.workspace_id)
-        .single()
+        .maybeSingle()
 
       if (!template) {
         return NextResponse.json({ error: 'Template not found' }, { status: 404 })
@@ -97,7 +97,7 @@ export async function PATCH(
       .update(validated)
       .eq('id', stepId)
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) {
       safeError('Failed to update email sequence step:', error)
@@ -154,7 +154,7 @@ export async function DELETE(
       )
       .eq('id', stepId)
       .eq('sequence_id', sequenceId)
-      .single()
+      .maybeSingle()
 
     if (!existingStep || (existingStep.email_sequences as any).workspace_id !== user.workspace_id) {
       return NextResponse.json({ error: 'Step not found' }, { status: 404 })

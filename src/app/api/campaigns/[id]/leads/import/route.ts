@@ -109,7 +109,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
       .select('id, workspace_id, name, status')
       .eq('id', campaignId)
       .eq('workspace_id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (campaignError || !campaign) {
       return notFound('Campaign not found')

@@ -54,12 +54,12 @@ export const enrichCampaignLead = inngest.createFunction(
           .from('leads')
           .select('*')
           .eq('id', lead_id)
-          .single(),
+          .maybeSingle(),
         supabase
           .from('email_campaigns')
           .select('*')
           .eq('id', campaign_id)
-          .single(),
+          .maybeSingle(),
       ])
 
       if (leadResult.error) {

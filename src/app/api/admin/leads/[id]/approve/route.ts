@@ -34,7 +34,7 @@ export async function POST(
       .from('leads')
       .select('id, workspace_id, partner_id, verification_status_admin')
       .eq('id', id)
-      .single()
+      .maybeSingle()
 
     if (fetchError || !lead) {
       return NextResponse.json({ error: 'Lead not found' }, { status: 404 })
@@ -56,7 +56,7 @@ export async function POST(
       })
       .eq('id', id)
       .select()
-      .single()
+      .maybeSingle()
 
     if (updateError) {
       safeError('Error approving lead:', updateError)

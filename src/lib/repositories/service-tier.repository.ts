@@ -114,7 +114,7 @@ export class ServiceTierRepository {
       .from('service_tiers')
       .select('*')
       .eq('slug', slug)
-      .single()
+      .maybeSingle()
 
     if (error) {
       if ((error as any).code === 'PGRST116') {
@@ -137,7 +137,7 @@ export class ServiceTierRepository {
       .from('service_tiers')
       .select('*')
       .eq('id', id)
-      .single()
+      .maybeSingle()
 
     if (error) {
       if ((error as any).code === 'PGRST116') {
@@ -161,7 +161,7 @@ export class ServiceTierRepository {
       .select('*, service_tiers(*)')
       .eq('workspace_id', workspaceId)
       .eq('status', 'active')
-      .single()
+      .maybeSingle()
 
     if (error) {
       if ((error as any).code === 'PGRST116') {
@@ -204,7 +204,7 @@ export class ServiceTierRepository {
       .from('service_subscriptions')
       .select('*, service_tier:service_tiers(*)')
       .eq('id', subscriptionId)
-      .single()
+      .maybeSingle()
 
     if (error) {
       if ((error as any).code === 'PGRST116') {
@@ -227,7 +227,7 @@ export class ServiceTierRepository {
       .from('service_subscriptions')
       .insert(data)
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) {
       logger.error('[ServiceTierRepo] Error creating subscription:', error)
@@ -248,7 +248,7 @@ export class ServiceTierRepository {
       .update(updates)
       .eq('id', id)
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) {
       logger.error('[ServiceTierRepo] Error updating subscription:', error)
@@ -268,7 +268,7 @@ export class ServiceTierRepository {
       .from('service_subscriptions')
       .select('*')
       .eq('stripe_subscription_id', stripeSubscriptionId)
-      .single()
+      .maybeSingle()
 
     if (error) {
       if ((error as any).code === 'PGRST116') {
@@ -301,7 +301,7 @@ export class ServiceTierRepository {
       .from('service_deliveries')
       .insert(data)
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) {
       logger.error('[ServiceTierRepo] Error creating delivery:', error)
@@ -342,7 +342,7 @@ export class ServiceTierRepository {
       .update(updates)
       .eq('id', id)
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) {
       logger.error('[ServiceTierRepo] Error updating delivery:', error)

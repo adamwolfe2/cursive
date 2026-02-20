@@ -115,7 +115,7 @@ export async function createPartner(params: {
       status: 'pending' as PartnerStatus,
     })
     .select()
-    .single()
+    .maybeSingle()
 
   if (error) {
     throw new Error(`Failed to create partner: ${error.message}`)
@@ -149,7 +149,7 @@ export async function updatePartnerStatus(
     .update(updateData)
     .eq('id', partnerId)
     .select()
-    .single()
+    .maybeSingle()
 
   if (error) {
     throw new Error(`Failed to update partner status: ${error.message}`)

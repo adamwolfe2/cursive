@@ -67,7 +67,7 @@ export async function POST(
       `
       )
       .eq('id', id)
-      .single()
+      .maybeSingle()
 
     if (fetchError || !lead) {
       return NextResponse.json({ error: 'Lead not found' }, { status: 404 })
@@ -88,7 +88,7 @@ export async function POST(
       })
       .eq('id', id)
       .select()
-      .single()
+      .maybeSingle()
 
     if (updateError) {
       safeError('Error rejecting lead:', updateError)

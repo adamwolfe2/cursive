@@ -49,7 +49,7 @@ export class SalesforceService {
       .select('id, access_token, refresh_token, token_expires_at, instance_url, field_mappings')
       .eq('workspace_id', this.workspaceId)
       .eq('provider', 'salesforce')
-      .single()
+      .maybeSingle()
 
     // Cast: crm_connections table may not be in generated DB types
     const connection = data as {
@@ -155,7 +155,7 @@ export class SalesforceService {
       .select('refresh_token')
       .eq('workspace_id', this.workspaceId)
       .eq('provider', 'salesforce')
-      .single()
+      .maybeSingle()
 
     const conn = connection as { refresh_token: string | null } | null
     return conn?.refresh_token || null

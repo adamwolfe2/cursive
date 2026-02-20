@@ -135,7 +135,7 @@ export class LeadProviderService {
         )
       `)
       .eq('workspace_id', workspaceId)
-      .single()
+      .maybeSingle()
 
     // Get today's usage
     const today = new Date().toISOString().split('T')[0]

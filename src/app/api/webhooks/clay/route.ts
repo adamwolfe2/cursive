@@ -123,7 +123,7 @@ export async function POST(req: NextRequest) {
         .from('enrichment_jobs')
         .select('workspace_id')
         .eq('id', enrichment_job_id)
-        .single()
+        .maybeSingle()
 
       targetWorkspaceId = job?.workspace_id
     }
@@ -152,7 +152,7 @@ export async function POST(req: NextRequest) {
         .eq('idempotency_key', clay_record_id)
         .eq('workspace_id', targetWorkspaceId)
         .eq('endpoint', '/api/webhooks/clay')
-        .single()
+        .maybeSingle()
 
       if (existingKey) {
         // Request already processed successfully - return cached response
@@ -215,7 +215,7 @@ export async function POST(req: NextRequest) {
         },
       })
       .select('id')
-      .single()
+      .maybeSingle()
 
     if (leadError) {
       safeError('[Clay Webhook] Failed to insert lead:', leadError)
@@ -236,6 +236,10 @@ export async function POST(req: NextRequest) {
         { error: 'Failed to create lead' },
         { status: 500 }
       )
+    }
+
+    if (!lead) {
+      return NextResponse.json({ error: 'Failed to create lead: no data returned' }, { status: 500 })
     }
 
     // Route lead to appropriate workspace

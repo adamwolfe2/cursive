@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
       .from('workspaces')
       .select('id, name, credits_balance')
       .eq('id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (!workspace) {
       return NextResponse.json({ error: 'Workspace not found' }, { status: 404 })

@@ -122,13 +122,13 @@ export async function createNotification(
         metadata: params.metadata || {},
       })
       .select('id')
-      .single()
+      .maybeSingle()
 
     if (insertError) {
       return { success: false, error: insertError.message }
     }
 
-    return { success: true, notificationId: notification.id }
+    return { success: true, notificationId: notification?.id }
   }
 
   return { success: true, notificationId: data }
@@ -318,7 +318,7 @@ export async function getNotificationPreferences(
     .select('*')
     .eq('user_id', userId)
     .eq('workspace_id', workspaceId)
-    .single()
+    .maybeSingle()
 
   if (error || !data) {
     // Return defaults

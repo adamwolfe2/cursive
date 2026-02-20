@@ -56,7 +56,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
       .select('id, name')
       .eq('id', campaignId)
       .eq('workspace_id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (campaignError || !campaign) {
       return notFound('Campaign not found')
@@ -152,7 +152,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
       .select('id')
       .eq('id', campaignId)
       .eq('workspace_id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (error || !campaign) {
       return notFound('Campaign not found')
@@ -164,7 +164,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
       .select('id')
       .eq('campaign_id', campaignId)
       .eq('status', 'running')
-      .single()
+      .maybeSingle()
 
     if (existingRunning) {
       return badRequest('Campaign already has a running experiment. End it before starting a new one.')
@@ -221,7 +221,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
       .select('id')
       .eq('id', campaignId)
       .eq('workspace_id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (campaignError || !campaign) {
       return notFound('Campaign not found')
@@ -241,7 +241,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
       .select('id, status')
       .eq('id', experimentId)
       .eq('campaign_id', campaignId)
-      .single()
+      .maybeSingle()
 
     if (expError || !experiment) {
       return notFound('Experiment not found')

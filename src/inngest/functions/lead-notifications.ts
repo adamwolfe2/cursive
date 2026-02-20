@@ -38,7 +38,7 @@ export const sendLeadNotifications = inngest.createFunction(
           'id, email, first_name, last_name, company_name, contact_title, job_title, phone, city, state, linkedin_url, intent_score, lead_score, status, source, created_at'
         )
         .eq('id', lead_id)
-        .single()
+        .maybeSingle()
 
       if (error) {
         safeError(

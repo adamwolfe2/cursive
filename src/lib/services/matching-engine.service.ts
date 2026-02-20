@@ -193,7 +193,7 @@ export class MatchingEngineService {
       `)
       .eq('id', leadId)
       .eq('workspace_id', this.workspaceId)
-      .single()
+      .maybeSingle()
 
     if (leadError || !lead) {
       return null

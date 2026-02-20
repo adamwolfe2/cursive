@@ -93,7 +93,7 @@ export const processReply = inngest.createFunction(
         query = query.eq('from_email', from_email).order('received_at', { ascending: false }).limit(1)
       }
 
-      const { data, error } = await query.single()
+      const { data, error } = await query.maybeSingle()
 
       if (error) {
         logger.warn(`Reply record not found: ${error.message}`)

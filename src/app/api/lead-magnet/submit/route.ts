@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
         referrer: request.headers.get('referer'),
       })
       .select()
-      .single()
+      .maybeSingle()
 
     if (insertError) {
       // If duplicate email, that's okay - just return success

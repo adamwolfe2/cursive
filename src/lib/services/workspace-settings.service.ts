@@ -117,7 +117,7 @@ export async function getWorkspaceSettings(workspaceId: string): Promise<Workspa
     .from('workspaces')
     .select('settings, sales_co_settings, name')
     .eq('id', workspaceId)
-    .single()
+    .maybeSingle()
 
   if (error || !data) {
     throw new Error('Failed to fetch workspace settings')
@@ -161,7 +161,7 @@ export async function updateWorkspaceSettings(
     .from('workspaces')
     .select('settings, sales_co_settings')
     .eq('id', workspaceId)
-    .single()
+    .maybeSingle()
 
   if (fetchError) {
     return { success: false, error: fetchError.message }
@@ -278,7 +278,7 @@ export async function getIntegration(
     .select('*')
     .eq('workspace_id', workspaceId)
     .eq('provider', provider)
-    .single()
+    .maybeSingle()
 
   if (error || !data) {
     return null
@@ -319,7 +319,7 @@ export async function upsertIntegration(
     .from('workspace_integrations')
     .upsert(upsertData, { onConflict: 'workspace_id,provider' })
     .select()
-    .single()
+    .maybeSingle()
 
   if (error) {
     return { success: false, error: error.message }
@@ -556,10 +556,14 @@ export async function createApiKey(
       expires_at: data.expiresAt?.toISOString(),
     })
     .select('id')
-    .single()
+    .maybeSingle()
 
   if (error) {
     return { success: false, error: error.message }
+  }
+
+  if (!result) {
+    return { success: false, error: 'Failed to create API key: no data returned' }
   }
 
   // Return the full key only once - it won't be recoverable
@@ -635,7 +639,7 @@ export async function validateApiKey(
     .select('workspace_id, scopes, is_active, expires_at')
     .eq('key_hash', keyHash)
     .eq('is_active', true)
-    .single()
+    .maybeSingle()
 
   if (error || !data) {
     return { valid: false }

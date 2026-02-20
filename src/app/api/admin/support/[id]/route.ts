@@ -41,7 +41,7 @@ export async function PATCH(
           .from('users')
           .select('id')
           .eq('auth_user_id', user.id)
-          .single()
+          .maybeSingle()
 
         if (userData) {
           updateData.responded_by = userData.id
@@ -58,7 +58,7 @@ export async function PATCH(
       .update(updateData)
       .eq('id', id)
       .select('id, user_id, workspace_id, subject, message, status, priority, category, admin_notes, created_at, updated_at')
-      .single()
+      .maybeSingle()
 
     if (error) {
       throw new Error(error.message)

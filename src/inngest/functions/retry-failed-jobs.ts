@@ -209,7 +209,7 @@ export const onJobRetryRequested = inngest.createFunction(
         .from('failed_jobs')
         .select('*')
         .eq('id', job_id)
-        .single()
+        .maybeSingle()
       return data
     })
 

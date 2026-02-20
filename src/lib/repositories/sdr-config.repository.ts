@@ -39,7 +39,7 @@ export class SdrConfigRepository {
       .from('sdr_configurations')
       .select('*')
       .eq('workspace_id', workspaceId)
-      .single()
+      .maybeSingle()
     return data as SdrConfiguration | null
   }
 
@@ -54,7 +54,7 @@ export class SdrConfigRepository {
         { onConflict: 'workspace_id' }
       )
       .select('*')
-      .single()
+      .maybeSingle()
     if (error) throw new Error(error.message)
     return data as SdrConfiguration
   }

@@ -123,7 +123,7 @@ export class TemplateRepository {
       .select('*')
       .eq('id', id)
       .eq('workspace_id', workspaceId)
-      .single()
+      .maybeSingle()
 
     if (error) {
       if (error.code === 'PGRST116') {
@@ -145,7 +145,7 @@ export class TemplateRepository {
       .from('email_templates')
       .insert(template)
       .select('*')
-      .single()
+      .maybeSingle()
 
     if (error) {
       throw new DatabaseError(error.message)
@@ -188,7 +188,7 @@ export class TemplateRepository {
       .eq('id', id)
       .eq('workspace_id', workspaceId)
       .select('*')
-      .single()
+      .maybeSingle()
 
     if (error) {
       throw new DatabaseError(error.message)

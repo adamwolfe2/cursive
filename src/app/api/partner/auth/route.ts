@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
       .select('id, name, payout_rate, total_leads_uploaded, total_earnings')
       .eq('api_key', api_key)
       .eq('is_active', true)
-      .single()
+      .maybeSingle()
 
     if (error || !partner) {
       return NextResponse.json({ error: 'Invalid API key' }, { status: 401 })

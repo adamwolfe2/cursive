@@ -152,7 +152,7 @@ export async function POST(request: NextRequest) {
             website_url: data.website_url,
           })
           .select()
-          .single()
+          .maybeSingle()
 
         if (insertError) {
           throw insertError
@@ -184,7 +184,7 @@ export async function POST(request: NextRequest) {
           workspace_id: data.workspace_id,
         }, { onConflict: 'pixel_id' })
         .select()
-        .single()
+        .maybeSingle()
 
       if (insertError) {
         throw insertError

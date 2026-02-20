@@ -21,7 +21,7 @@ async function getPartnerSettings() {
     .from('users')
     .select('linked_partner_id')
     .eq('auth_user_id', session.user.id)
-    .single()
+    .maybeSingle()
 
   if (!user?.linked_partner_id) redirect('/login')
 

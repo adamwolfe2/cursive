@@ -71,7 +71,7 @@ export async function POST(
       .from('users')
       .select('id')
       .eq('auth_user_id', authUser.id)
-      .single()
+      .maybeSingle()
 
     if (!buyerProfile || buyerProfile.id !== buyerId) {
       return NextResponse.json(
@@ -87,7 +87,7 @@ export async function POST(
       .from('lead_purchases')
       .select('id')
       .eq('stripe_payment_intent_id', paymentIntentId)
-      .single()
+      .maybeSingle()
 
     if (existingPurchase) {
       return NextResponse.json({ success: true, alreadyRecorded: true })
@@ -119,7 +119,7 @@ export async function POST(
       .from('users')
       .select('workspace_id')
       .eq('id', buyerId)
-      .single()
+      .maybeSingle()
 
     if (!buyer) {
       throw new Error('Buyer not found')
@@ -130,7 +130,7 @@ export async function POST(
       .from('leads')
       .select('id')
       .eq('id', leadId)
-      .single()
+      .maybeSingle()
 
     if (!leadData) {
       throw new Error('Lead not found')

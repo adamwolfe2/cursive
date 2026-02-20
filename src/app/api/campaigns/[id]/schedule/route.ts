@@ -61,7 +61,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
       `)
       .eq('id', campaignId)
       .eq('workspace_id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (error || !campaign) {
       return notFound('Campaign not found')
@@ -186,7 +186,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
         .from('email_campaigns')
         .select('sequence_settings')
         .eq('id', campaignId)
-        .single()
+        .maybeSingle()
 
       const settings = (campaign?.sequence_settings || {}) as Record<string, any>
       settings.respect_recipient_timezone = validated.respect_recipient_timezone
@@ -232,7 +232,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
       .select('id')
       .eq('id', campaignId)
       .eq('workspace_id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (error || !campaign) {
       return notFound('Campaign not found')

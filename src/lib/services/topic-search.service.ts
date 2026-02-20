@@ -81,7 +81,7 @@ export class TopicSearchService {
       .from('global_topics')
       .select('*')
       .eq('id', id)
-      .single()
+      .maybeSingle()
 
     if (error) {
       if (error.code === 'PGRST116') {

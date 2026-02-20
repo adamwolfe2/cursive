@@ -48,7 +48,7 @@ export const processAudienceLabEvent = inngest.createFunction(
         .from('audiencelab_events')
         .select('*')
         .eq('id', event_id)
-        .single()
+        .maybeSingle()
 
       if (error || !data) {
         throw new Error(`Event not found: ${event_id} — ${error?.message}`)
@@ -89,7 +89,7 @@ export const processAudienceLabEvent = inngest.createFunction(
           .from('audiencelab_identities')
           .select('id, visit_count')
           .eq('profile_id', normalized.profile_id)
-          .single()
+          .maybeSingle()
         existingIdentity = data
       }
 
@@ -99,7 +99,7 @@ export const processAudienceLabEvent = inngest.createFunction(
           .select('id, visit_count')
           .eq('uid', normalized.uid)
           .limit(1)
-          .single()
+          .maybeSingle()
         existingIdentity = data
       }
 
@@ -109,7 +109,7 @@ export const processAudienceLabEvent = inngest.createFunction(
           .select('id, visit_count')
           .eq('hem_sha256', normalized.hem_sha256)
           .limit(1)
-          .single()
+          .maybeSingle()
         existingIdentity = data
       }
 
@@ -119,7 +119,7 @@ export const processAudienceLabEvent = inngest.createFunction(
           .select('id, visit_count')
           .contains('personal_emails', [normalized.primary_email])
           .limit(1)
-          .single()
+          .maybeSingle()
         existingIdentity = data
       }
 
@@ -156,7 +156,7 @@ export const processAudienceLabEvent = inngest.createFunction(
           })
           .eq('id', existingIdentity.id)
           .select('id, lead_id')
-          .single()
+          .maybeSingle()
 
         if (updateError) {
           throw new Error(`Failed to update identity: ${updateError.message}`)
@@ -192,7 +192,7 @@ export const processAudienceLabEvent = inngest.createFunction(
             workspace_id: targetWorkspaceId,
           })
           .select('id')
-          .single()
+          .maybeSingle()
 
         if (insertError) {
           throw new Error(`Failed to insert identity: ${insertError.message}`)
@@ -320,7 +320,7 @@ export const processAudienceLabEvent = inngest.createFunction(
           },
         })
         .select('id')
-        .single()
+        .maybeSingle()
 
       if (leadError) {
         throw new Error(`Failed to create lead: ${leadError.message}`)
@@ -363,7 +363,7 @@ export const processAudienceLabEvent = inngest.createFunction(
             .from('leads')
             .select('id, company_industry, state_code, state, city, postal_code')
             .eq('id', leadResult.lead_id!)
-            .single()
+            .maybeSingle()
 
           if (!lead) return
 

@@ -172,7 +172,7 @@ async function calculatePartnerScore(partnerId: string): Promise<{
     .from('partners')
     .select('verification_pass_rate, duplicate_rate, data_completeness_rate')
     .eq('id', partnerId)
-    .single()
+    .maybeSingle()
 
   if (error || !partner) {
     return { totalScore: 50, components: {} }

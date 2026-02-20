@@ -268,7 +268,7 @@ export const checkSequenceCompletion = inngest.createFunction(
         .from('email_campaigns')
         .select('sequence_steps')
         .eq('id', campaign_id)
-        .single()
+        .maybeSingle()
 
       if (campaignError || !campaign) {
         logger.warn(`Could not fetch campaign ${campaign_id}`)

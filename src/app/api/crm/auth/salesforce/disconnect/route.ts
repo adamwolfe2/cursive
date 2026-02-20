@@ -29,7 +29,7 @@ export async function POST() {
       .select('id')
       .eq('workspace_id', user.workspace_id)
       .eq('provider', 'salesforce')
-      .single()
+      .maybeSingle()
 
     if (!existingConnection) {
       return NextResponse.json(

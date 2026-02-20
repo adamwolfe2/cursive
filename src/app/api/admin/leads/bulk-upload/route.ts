@@ -305,7 +305,7 @@ export async function POST(request: NextRequest) {
           utm_campaign: validRow.utm_campaign || null,
           enrichment_status: 'pending',
           delivery_status: 'pending',
-        } as any).select('id').single()
+        } as any).select('id').maybeSingle()
 
         if (insertError) {
           safeError(`[Admin Bulk Upload] Row ${rowNum} insert error:`, insertError)

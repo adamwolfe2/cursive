@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
       .from('users')
       .select('workspace_id')
       .eq('auth_user_id', user.id)
-      .single()
+      .maybeSingle()
 
     if (!userData || userData.workspace_id !== validated.workspace_id) {
       return NextResponse.json(
@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
       .from('service_subscriptions')
       .select('stripe_customer_id')
       .eq('workspace_id', validated.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (!subscription || !subscription.stripe_customer_id) {
       return NextResponse.json(

@@ -36,14 +36,14 @@ export const deliverLeadWebhook = inngest.createFunction(
         .from('workspaces')
         .select('id, name, webhook_url, webhook_secret, webhook_enabled')
         .eq('id', workspace_id)
-        .single()
+        .maybeSingle()
 
       if (error) throw new Error(`Workspace not found: ${error.message}`)
       return data
     })
 
-    // Skip if webhooks not enabled
-    if (!workspace.webhook_enabled || !workspace.webhook_url) {
+    // Skip if workspace not found or webhooks not enabled
+    if (!workspace || !workspace.webhook_enabled || !workspace.webhook_url) {
       return { skipped: true, reason: 'Webhooks not enabled' }
     }
 
@@ -53,7 +53,7 @@ export const deliverLeadWebhook = inngest.createFunction(
         .from('leads')
         .select('*')
         .eq('id', lead_id)
-        .single()
+        .maybeSingle()
 
       if (error) throw new Error(`Lead not found: ${error.message}`)
       return data
@@ -73,7 +73,7 @@ export const deliverLeadWebhook = inngest.createFunction(
           status: 'pending',
         })
         .select()
-        .single()
+        .maybeSingle()
 
       if (error) throw new Error(`Failed to create delivery record: ${error.message}`)
       return data
@@ -299,14 +299,14 @@ export const sendLeadEmailNotification = inngest.createFunction(
         .from('workspaces')
         .select('id, name, email_notifications, notification_email')
         .eq('id', workspace_id)
-        .single()
+        .maybeSingle()
 
       if (error) throw new Error(`Workspace not found: ${error.message}`)
       return data
     })
 
-    // Skip if email notifications not enabled
-    if (!workspace.email_notifications || !workspace.notification_email) {
+    // Skip if workspace not found or email notifications not enabled
+    if (!workspace || !workspace.email_notifications || !workspace.notification_email) {
       return { skipped: true, reason: 'Email notifications not enabled' }
     }
 
@@ -316,7 +316,7 @@ export const sendLeadEmailNotification = inngest.createFunction(
         .from('leads')
         .select('*')
         .eq('id', lead_id)
-        .single()
+        .maybeSingle()
 
       if (error) throw new Error(`Lead not found: ${error.message}`)
       return data

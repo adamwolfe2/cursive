@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
       .from('users')
       .select('id, workspace_id, email, full_name')
       .eq('auth_user_id', authUser.id)
-      .single()
+      .maybeSingle()
 
     if (!userProfile) {
       return badRequest('User profile not found')
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
       .from('workspaces')
       .select('id, name, slug')
       .eq('id', userProfile.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (!workspace) {
       return badRequest('Workspace not found')
@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
         priority: 'medium',
       })
       .select()
-      .single()
+      .maybeSingle()
 
     if (insertError) {
       safeError('[Premium Request] Failed to create request:', insertError)
@@ -184,7 +184,7 @@ export async function GET(request: NextRequest) {
       .from('users')
       .select('id, workspace_id')
       .eq('auth_user_id', authUser.id)
-      .single()
+      .maybeSingle()
 
     if (!userProfile) {
       return badRequest('User profile not found')

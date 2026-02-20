@@ -56,7 +56,7 @@ export class SdrInboxRepository {
       .from('email_replies')
       .select('*, workspace:workspaces(name, slug)')
       .eq('id', id)
-      .single()
+      .maybeSingle()
     return data as SdrInboxReply | null
   }
 

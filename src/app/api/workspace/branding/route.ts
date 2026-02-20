@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
       .from('workspaces')
       .select('branding')
       .eq('id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (error) {
       return badRequest('Failed to fetch branding')
@@ -74,7 +74,7 @@ export async function PATCH(request: NextRequest) {
       .from('workspaces')
       .select('branding')
       .eq('id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (fetchError) {
       return badRequest('Failed to fetch current branding')

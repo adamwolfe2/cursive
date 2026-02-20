@@ -72,7 +72,7 @@ export const ghlPipelineLifecycle = inngest.createFunction(
         .from('workspaces')
         .select('settings')
         .eq('id', workspace_id)
-        .single()
+        .maybeSingle()
 
       const settings = (workspace?.settings as Record<string, unknown>) || {}
       return (settings.ghl_opportunity_id as string) || null

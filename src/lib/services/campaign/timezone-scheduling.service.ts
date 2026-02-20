@@ -112,7 +112,7 @@ async function calculateOptimalSendTimeJS(
     .from('email_campaigns')
     .select('send_window_start, send_window_end, send_timezone, send_days, send_window_enabled')
     .eq('id', campaignId)
-    .single()
+    .maybeSingle()
 
   const timezone = recipientTimezone || campaign?.send_timezone || 'America/New_York'
   const startTime = campaign?.send_window_start || '09:00'

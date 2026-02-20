@@ -23,7 +23,7 @@ export async function PATCH(
       .from('users')
       .select('workspace_id')
       .eq('auth_user_id', authUser.id)
-      .single()
+      .maybeSingle()
 
     if (!user?.workspace_id) {
       return NextResponse.json({ error: 'No workspace found' }, { status: 404 })
@@ -35,7 +35,7 @@ export async function PATCH(
       .select('id')
       .eq('id', id)
       .eq('workspace_id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (!existing) {
       return NextResponse.json({ error: 'Preference not found' }, { status: 404 })
@@ -65,7 +65,7 @@ export async function PATCH(
       .update(updateData)
       .eq('id', id)
       .select('id, workspace_id, name, description, is_active, target_industries, target_regions, target_company_sizes, target_intent_signals, max_leads_per_day, max_cost_per_lead, monthly_budget, created_at, updated_at')
-      .single()
+      .maybeSingle()
 
     if (error) {
       safeError('[Lead Preferences] Failed to update preference:', error)
@@ -98,7 +98,7 @@ export async function DELETE(
       .from('users')
       .select('workspace_id')
       .eq('auth_user_id', authUser.id)
-      .single()
+      .maybeSingle()
 
     if (!user?.workspace_id) {
       return NextResponse.json({ error: 'No workspace found' }, { status: 404 })

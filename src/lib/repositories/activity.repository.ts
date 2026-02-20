@@ -111,7 +111,7 @@ export class ActivityRepository {
       .select('*')
       .eq('id', id)
       .eq('workspace_id', workspaceId)
-      .single()
+      .maybeSingle()
 
     if (error) {
       if (error.code === 'PGRST116') return null
@@ -313,7 +313,7 @@ export class ActivityRepository {
   async create(activity: ActivityInsert): Promise<Activity> {
     const supabase = await createClient()
 
-    const { data, error } = await supabase.from('activities').insert(activity).select().single()
+    const { data, error } = await supabase.from('activities').insert(activity).select().maybeSingle()
 
     if (error) {
       throw new Error(`Failed to create activity: ${error.message}`)
@@ -334,7 +334,7 @@ export class ActivityRepository {
       .eq('id', id)
       .eq('workspace_id', workspaceId)
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) {
       throw new Error(`Failed to update activity: ${error.message}`)

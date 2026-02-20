@@ -31,7 +31,7 @@ export async function GET() {
       .from('users')
       .select('workspace_id')
       .eq('auth_user_id', user.id)
-      .single()
+      .maybeSingle()
 
     if (userError) {
       safeError('[Get Credits] Failed to fetch user data:', userError)

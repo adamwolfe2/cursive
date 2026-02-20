@@ -44,7 +44,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
       .select('id, workspace_id')
       .eq('id', campaignId)
       .eq('workspace_id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (campaignError || !campaign) {
       return NextResponse.json({ error: 'Campaign not found' }, { status: 404 })

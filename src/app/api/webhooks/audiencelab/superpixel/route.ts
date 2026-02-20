@@ -119,7 +119,7 @@ async function resolveWorkspace(
     .select('workspace_id')
     .eq('pixel_id', pixelId)
     .eq('is_active', true)
-    .single()
+    .maybeSingle()
 
   return data?.workspace_id || null
 }
@@ -192,7 +192,7 @@ export async function POST(request: NextRequest) {
       .select('id, payload_summary')
       .eq('event_id', eventHash)
       .eq('source', 'audience-labs')
-      .single()
+      .maybeSingle()
 
     if (existingEvent) {
       safeLog(`${LOG_PREFIX} Duplicate webhook detected, skipping`)
@@ -233,7 +233,7 @@ export async function POST(request: NextRequest) {
             workspace_id: null,
           })
           .select('id')
-          .single()
+          .maybeSingle()
       }
 
       // Fire-and-forget alert for unknown pixel
@@ -292,7 +292,7 @@ export async function POST(request: NextRequest) {
           workspace_id: workspaceId,
         })
         .select('id')
-        .single()
+        .maybeSingle()
 
       if (insertError) {
         safeError(`${LOG_PREFIX} Failed to store event`, insertError)

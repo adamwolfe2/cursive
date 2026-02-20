@@ -44,7 +44,7 @@ export async function POST(
       .select('id, status')
       .eq('id', sequenceId)
       .eq('workspace_id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (!sequence) {
       return NextResponse.json({ error: 'Sequence not found' }, { status: 404 })
@@ -57,7 +57,7 @@ export async function POST(
         .select('id')
         .eq('id', validated.template_id)
         .eq('workspace_id', user.workspace_id)
-        .single()
+        .maybeSingle()
 
       if (!template) {
         return NextResponse.json({ error: 'Template not found' }, { status: 404 })
@@ -79,7 +79,7 @@ export async function POST(
       .eq('sequence_id', sequenceId)
       .order('step_order', { ascending: false })
       .limit(1)
-      .single()
+      .maybeSingle()
 
     const nextOrder = (lastStep?.step_order ?? -1) + 1
 
@@ -98,7 +98,7 @@ export async function POST(
         conditions: validated.conditions || {},
       })
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) {
       safeError('Failed to create email sequence step:', error)

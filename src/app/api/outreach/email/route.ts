@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
       .from('users')
       .select('workspace_id')
       .eq('auth_user_id', authUser.id)
-      .single()
+      .maybeSingle()
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
@@ -65,14 +65,14 @@ export async function POST(req: NextRequest) {
         .from('workspaces')
         .select('name')
         .eq('id', user.workspace_id)
-        .single()
+        .maybeSingle()
 
       const { data: account } = await supabase
         .from('email_accounts')
         .select('email_address, display_name')
         .eq('workspace_id', user.workspace_id)
         .eq(account_id ? 'id' : 'is_primary', account_id || true)
-        .single()
+        .maybeSingle()
 
       const fromEmail = account?.email_address || process.env.DEFAULT_FROM_EMAIL || 'noreply@cursive.io'
       const fromName = account?.display_name || workspace?.name || 'Cursive'
@@ -109,14 +109,14 @@ export async function POST(req: NextRequest) {
       .from('workspaces')
       .select('name')
       .eq('id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     const { data: account } = await supabase
       .from('email_accounts')
       .select('id, email_address, display_name')
       .eq('workspace_id', user.workspace_id)
       .eq(account_id ? 'id' : 'is_primary', account_id || true)
-      .single()
+      .maybeSingle()
 
     const fromEmail = account?.email_address || process.env.DEFAULT_FROM_EMAIL || 'noreply@cursive.io'
     const fromName = account?.display_name || workspace?.name || 'Cursive'

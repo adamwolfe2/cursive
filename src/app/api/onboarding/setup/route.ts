@@ -237,7 +237,7 @@ export async function POST(request: NextRequest) {
       .from('workspaces')
       .insert(workspaceInsert)
       .select('id')
-      .single()
+      .maybeSingle()
 
     if (workspaceError) {
       safeError('[Onboarding] Workspace creation FAILED:', {
@@ -246,6 +246,14 @@ export async function POST(request: NextRequest) {
         details: workspaceError.details,
         hint: workspaceError.hint
       })
+      return NextResponse.json(
+        { error: 'Failed to create workspace. Please try again.' },
+        { status: 500 }
+      )
+    }
+
+    if (!workspace) {
+      safeError('[Onboarding] Workspace insert returned null')
       return NextResponse.json(
         { error: 'Failed to create workspace. Please try again.' },
         { status: 500 }
@@ -291,7 +299,7 @@ export async function POST(request: NextRequest) {
       .from('users')
       .insert(userInsert)
       .select('id')
-      .single()
+      .maybeSingle()
 
     if (userError) {
       // Rollback: delete the workspace we just created
@@ -302,6 +310,16 @@ export async function POST(request: NextRequest) {
         details: userError.details,
         hint: userError.hint
       })
+      return NextResponse.json(
+        { error: 'Failed to create user profile. Please try again.' },
+        { status: 500 }
+      )
+    }
+
+    if (!userProfile) {
+      // Rollback: delete the workspace we just created
+      await admin.from('workspaces').delete().eq('id', workspace.id)
+      safeError('[Onboarding] User insert returned null')
       return NextResponse.json(
         { error: 'Failed to create user profile. Please try again.' },
         { status: 500 }

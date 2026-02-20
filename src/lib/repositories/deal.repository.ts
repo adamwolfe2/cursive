@@ -112,7 +112,7 @@ export class DealRepository {
       .select('*')
       .eq('id', id)
       .eq('workspace_id', workspaceId)
-      .single()
+      .maybeSingle()
 
     if (error) {
       if (error.code === 'PGRST116') return null
@@ -239,7 +239,7 @@ export class DealRepository {
   async create(deal: DealInsert): Promise<Deal> {
     const supabase = await createClient()
 
-    const { data, error } = await supabase.from('deals').insert(deal).select().single()
+    const { data, error } = await supabase.from('deals').insert(deal).select().maybeSingle()
 
     if (error) {
       throw new Error(`Failed to create deal: ${error.message}`)
@@ -260,7 +260,7 @@ export class DealRepository {
       .eq('id', id)
       .eq('workspace_id', workspaceId)
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) {
       throw new Error(`Failed to update deal: ${error.message}`)

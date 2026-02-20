@@ -181,7 +181,7 @@ export const dfyOnboardingSequence = inngest.createFunction(
         .from('service_subscriptions')
         .select('status')
         .eq('id', subscription_id)
-        .single()
+        .maybeSingle()
 
       const isActive = sub?.status === 'active'
 

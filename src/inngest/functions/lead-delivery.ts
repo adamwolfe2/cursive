@@ -35,7 +35,7 @@ export const leadDelivery = inngest.createFunction(
           .from('leads')
           .select('*, queries(name, global_topics(topic, category))')
           .eq('id', lead_id)
-          .single()
+          .maybeSingle()
 
         if (leadError) {
           throw new Error(`Failed to fetch lead: ${leadError.message}`)
@@ -45,7 +45,7 @@ export const leadDelivery = inngest.createFunction(
           .from('workspaces')
           .select('*')
           .eq('id', workspace_id)
-          .single()
+          .maybeSingle()
 
         if (workspaceError) {
           throw new Error(`Failed to fetch workspace: ${workspaceError.message}`)
@@ -113,7 +113,7 @@ export const leadDelivery = inngest.createFunction(
             .eq('workspace_id', workspace_id)
             .eq('type', 'slack')
             .eq('status', 'active')
-            .single()
+            .maybeSingle()
 
           if (slackIntegration) {
             const webhookUrl = (slackIntegration.config as IntegrationConfig)?.webhook_url
@@ -195,7 +195,7 @@ export const leadDelivery = inngest.createFunction(
             .eq('workspace_id', workspace_id)
             .eq('type', 'webhook')
             .eq('status', 'active')
-            .single()
+            .maybeSingle()
 
           if (webhookIntegration) {
             const webhookUrl = (webhookIntegration.config as IntegrationConfig)?.url

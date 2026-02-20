@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
       .from('partners')
       .select('id, commission_rate')
       .eq('user_id', user.id)
-      .single()
+      .maybeSingle()
 
     if (!partner) {
       return NextResponse.json(

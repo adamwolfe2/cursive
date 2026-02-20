@@ -63,7 +63,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
       .from('agents')
       .select('id, workspace_id, name')
       .eq('id', agentId)
-      .single()
+      .maybeSingle()
 
     if (agentError || !agent) {
       safeError('[EmailBison Webhook] Agent not found:', agentId)
@@ -95,7 +95,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
       .eq('idempotency_key', idempotencyKey)
       .eq('workspace_id', workspaceId)
       .eq('endpoint', '/api/webhooks/emailbison')
-      .single()
+      .maybeSingle()
 
     if (existingKey) {
       // Request already processed successfully - return cached response
@@ -193,7 +193,7 @@ async function handleReplyReceived(
     .eq('agent_id', agent.id)
     .eq('sender_email', data.from_email)
     .eq('campaign_id', String(data.campaign_id))
-    .single()
+    .maybeSingle()
 
   let threadId: string
 
@@ -213,7 +213,7 @@ async function handleReplyReceived(
       .select('id')
       .eq('workspace_id', agent.workspace_id)
       .eq('email', data.from_email)
-      .single()
+      .maybeSingle()
 
     // Create new thread
     const { data: newThread, error: threadError } = await supabase
@@ -229,7 +229,7 @@ async function handleReplyReceived(
         status: 'new',
       })
       .select('id')
-      .single()
+      .maybeSingle()
 
     if (threadError || !newThread) {
       safeError('[EmailBison Webhook] Failed to create thread:', threadError)

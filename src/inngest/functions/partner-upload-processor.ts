@@ -107,7 +107,7 @@ export const processPartnerUpload = inngest.createFunction(
         .from('partner_upload_batches')
         .select('chunk_size')
         .eq('id', batch_id)
-        .single()
+        .maybeSingle()
 
       // Download file from storage
       const { data: fileBuffer, error: downloadError } = await supabase
@@ -452,7 +452,7 @@ export const processPartnerUpload = inngest.createFunction(
         .from('partners')
         .select('total_leads_uploaded')
         .eq('id', partner_id)
-        .single()
+        .maybeSingle()
 
       await supabase
         .from('partners')
@@ -529,7 +529,7 @@ export const retryStalledUploads = inngest.createFunction(
           .from('partner_upload_batches')
           .select('retry_count')
           .eq('id', batch.batch_id)
-          .single()
+          .maybeSingle()
 
         await supabase
           .from('partner_upload_batches')
@@ -544,7 +544,7 @@ export const retryStalledUploads = inngest.createFunction(
           .from('partner_upload_batches')
           .select('storage_path, partner_id, retry_count, max_retries')
           .eq('id', batch.batch_id)
-          .single()
+          .maybeSingle()
 
         if (batchData && batchData.retry_count <= batchData.max_retries) {
           // Re-trigger processing

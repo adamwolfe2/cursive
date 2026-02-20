@@ -46,7 +46,7 @@ export async function PATCH(
         )
       `)
       .eq('id', payoutId)
-      .single()
+      .maybeSingle()
 
     if (fetchError || !payout) {
       return NextResponse.json({ error: 'Payout request not found' }, { status: 404 })

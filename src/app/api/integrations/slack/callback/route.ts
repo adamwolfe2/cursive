@@ -121,7 +121,7 @@ export async function GET(req: NextRequest) {
       .from('users')
       .select('id, workspace_id')
       .eq('auth_user_id', authUser.id)
-      .single()
+      .maybeSingle()
 
     if (!userData) {
       safeError('[Slack OAuth] User record not found for authenticated session')
@@ -237,7 +237,7 @@ export async function GET(req: NextRequest) {
       .select('id')
       .eq('workspace_id', context.workspace_id)
       .eq('type', 'slack')
-      .single()
+      .maybeSingle()
 
     const integrationData = {
       workspace_id: context.workspace_id,

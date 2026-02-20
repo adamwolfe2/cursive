@@ -110,7 +110,7 @@ export async function POST(request: NextRequest) {
       .from('users')
       .select('id, role, partner_approved, email, full_name, linked_partner_id')
       .eq('auth_user_id', authUser.id)
-      .single()
+      .maybeSingle()
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
@@ -205,10 +205,17 @@ export async function POST(request: NextRequest) {
         detected_columns: Object.keys(records[0] || {}),
       })
       .select('id')
-      .single()
+      .maybeSingle()
 
     if (batchError) {
       safeError('Failed to create upload batch:', batchError)
+      return NextResponse.json({
+        success: false,
+        error: 'Failed to create upload batch',
+      }, { status: 500 })
+    }
+
+    if (!uploadBatch) {
       return NextResponse.json({
         success: false,
         error: 'Failed to create upload batch',

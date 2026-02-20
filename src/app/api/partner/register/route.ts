@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
       .from('partners')
       .select('id, email')
       .eq('email', validatedData.email)
-      .single()
+      .maybeSingle()
 
     if (existingPartner) {
       return NextResponse.json(
@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
         base_commission_rate: 0.30, // 30% default commission
       })
       .select('id, email, api_key')
-      .single()
+      .maybeSingle()
 
     if (createError || !partner) {
       safeError('[Partner Register] Failed to create partner:', createError)

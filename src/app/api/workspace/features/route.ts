@@ -27,7 +27,7 @@ export async function GET() {
       .from('users')
       .select('workspace_id')
       .eq('auth_user_id', authUser.id)
-      .single()
+      .maybeSingle()
 
     if (!userProfile) {
       return NextResponse.json(
@@ -41,7 +41,7 @@ export async function GET() {
       .from('workspaces')
       .select('has_pixel_access, has_whitelabel_access, has_extra_data_access, has_outbound_access, premium_features_updated_at')
       .eq('id', userProfile.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (error) {
       safeError('[Workspace Features] Failed to fetch:', error)

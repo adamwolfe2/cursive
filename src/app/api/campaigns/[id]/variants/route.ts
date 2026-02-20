@@ -56,7 +56,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
       .select('id, name')
       .eq('id', campaignId)
       .eq('workspace_id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (error || !campaign) {
       return notFound('Campaign not found')
@@ -112,7 +112,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
       .select('id')
       .eq('id', campaignId)
       .eq('workspace_id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (error || !campaign) {
       return notFound('Campaign not found')
@@ -169,7 +169,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
       .select('id')
       .eq('id', campaignId)
       .eq('workspace_id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (error || !campaign) {
       return notFound('Campaign not found')

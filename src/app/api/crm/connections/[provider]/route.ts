@@ -48,7 +48,7 @@ export async function GET(
       .select('id, provider, status, instance_url, last_sync_at, created_at, token_expires_at')
       .eq('workspace_id', user.workspace_id)
       .eq('provider', provider)
-      .single()
+      .maybeSingle()
 
     if (error && error.code !== 'PGRST116') {
       // PGRST116 = no rows returned (not an error, just means not connected)

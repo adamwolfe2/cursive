@@ -35,7 +35,7 @@ export async function isEmailSuppressed(
     .select('id, reason, suppressed_at')
     .eq('email', email.toLowerCase())
     .eq('workspace_id', workspaceId)
-    .single()
+    .maybeSingle()
 
   if (error || !data) {
     return { isSuppressed: false }
@@ -121,13 +121,13 @@ export async function addToSuppressionList(
       }
     )
     .select('id')
-    .single()
+    .maybeSingle()
 
   if (error) {
     return { success: false, error: error.message }
   }
 
-  return { success: true, id: data.id }
+  return { success: true, id: data?.id }
 }
 
 /**

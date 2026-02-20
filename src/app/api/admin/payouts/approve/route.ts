@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
         )
       `)
       .eq('id', payout_id)
-      .single()
+      .maybeSingle()
 
     if (payoutError || !payout) {
       return NextResponse.json({ error: 'Payout not found' }, { status: 404 })

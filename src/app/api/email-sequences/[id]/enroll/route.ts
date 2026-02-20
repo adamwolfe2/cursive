@@ -37,7 +37,7 @@ export async function POST(
       .select('id, status')
       .eq('id', sequenceId)
       .eq('workspace_id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (!sequence) {
       return NextResponse.json({ error: 'Sequence not found' }, { status: 404 })
@@ -136,7 +136,7 @@ export async function GET(
       .select('id')
       .eq('id', sequenceId)
       .eq('workspace_id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (!sequence) {
       return NextResponse.json({ error: 'Sequence not found' }, { status: 404 })

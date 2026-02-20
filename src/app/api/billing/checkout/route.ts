@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
         .from('subscription_plans')
         .select(`name, ${priceColumn}`)
         .eq('name', planName)
-        .single()
+        .maybeSingle()
 
       if (planError || !plan) {
         return NextResponse.json(
@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
       .select('status, plan_id')
       .eq('workspace_id', user.workspace_id)
       .in('status', ['active', 'trialing'])
-      .single()
+      .maybeSingle()
 
     if (existingSubscription) {
       return badRequest('You already have an active subscription. Please manage your subscription from the billing page.')

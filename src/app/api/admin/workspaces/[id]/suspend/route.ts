@@ -30,7 +30,7 @@ export async function PATCH(
       .from('workspaces')
       .select('id, name, is_suspended')
       .eq('id', workspaceId)
-      .single()
+      .maybeSingle()
 
     if (fetchError || !workspace) {
       return NextResponse.json(

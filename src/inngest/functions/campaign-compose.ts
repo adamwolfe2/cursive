@@ -41,13 +41,13 @@ export const composeCampaignEmail = inngest.createFunction(
             .from('campaign_leads')
             .select('*')
             .eq('id', campaign_lead_id)
-            .single(),
+            .maybeSingle(),
           supabase
             .from('email_campaigns')
             .select('*')
             .eq('id', campaign_id)
-            .single(),
-          supabase.from('leads').select('*').eq('id', lead_id).single(),
+            .maybeSingle(),
+          supabase.from('leads').select('*').eq('id', lead_id).maybeSingle(),
           supabase
             .from('email_templates')
             .select('*')
@@ -57,7 +57,7 @@ export const composeCampaignEmail = inngest.createFunction(
             .from('workspaces')
             .select('name, sales_co_settings')
             .eq('id', workspace_id)
-            .single(),
+            .maybeSingle(),
         ])
 
         if (campaignLeadResult.error) {
@@ -178,7 +178,7 @@ export const composeCampaignEmail = inngest.createFunction(
         .eq('lead_id', lead_id)
         .eq('step_number', stepNumber)
         .in('status', ['pending_approval', 'approved', 'sending', 'sent'])
-        .single()
+        .maybeSingle()
 
       if (existing) {
         return existing
@@ -211,7 +211,7 @@ export const composeCampaignEmail = inngest.createFunction(
         .from('email_sends')
         .insert(insertData)
         .select()
-        .single()
+        .maybeSingle()
 
       if (error) {
         throw new Error(`Failed to create email send record: ${error.message}`)

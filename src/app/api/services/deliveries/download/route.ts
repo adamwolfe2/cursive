@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
       .from('users')
       .select('workspace_id')
       .eq('auth_user_id', user.id)
-      .single()
+      .maybeSingle()
 
     if (!userData || !userData.workspace_id) {
       return NextResponse.json(
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
         )
       `)
       .eq('id', validated.delivery_id)
-      .single()
+      .maybeSingle()
 
     if (deliveryError || !delivery) {
       return NextResponse.json(

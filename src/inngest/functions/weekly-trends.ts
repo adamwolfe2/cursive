@@ -55,7 +55,7 @@ export const weeklyTrends = inngest.createFunction(
             .eq('topic_id', topic.id)
             .order('week_start', { ascending: false })
             .limit(1)
-            .single()
+            .maybeSingle()
 
           const previousVolume = previousTrend?.volume || topic.current_volume
           const currentVolume = topic.current_volume

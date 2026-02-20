@@ -111,7 +111,7 @@ async function processCreditPurchase({
       .from('workspace_credits')
       .select('balance')
       .eq('workspace_id', workspace_id)
-      .single()
+      .maybeSingle()
 
     const newBalance = creditsData?.balance ?? creditsAmount
 
@@ -147,7 +147,7 @@ async function processCreditPurchase({
       .from('users')
       .select('email, full_name')
       .eq('id', result.user_id)
-      .single()
+      .maybeSingle()
 
     if (userData?.email) {
       await inngest.send({
@@ -172,7 +172,7 @@ async function processCreditPurchase({
       .from('users')
       .select('email, full_name')
       .eq('id', result.user_id)
-      .single()
+      .maybeSingle()
 
     if (userData?.email) {
       await inngest.send({
@@ -328,7 +328,7 @@ async function processLeadPurchase({
       .from('users')
       .select('email, full_name')
       .eq('id', user_id)
-      .single()
+      .maybeSingle()
 
     if (userData?.email) {
       const downloadExpiresAt = new Date()
@@ -356,7 +356,7 @@ async function processLeadPurchase({
       .from('users')
       .select('email, full_name')
       .eq('id', user_id)
-      .single()
+      .maybeSingle()
 
     if (userData?.email) {
       await inngest.send({

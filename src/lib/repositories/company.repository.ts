@@ -92,7 +92,7 @@ export class CompanyRepository {
       .select('*')
       .eq('id', id)
       .eq('workspace_id', workspaceId)
-      .single()
+      .maybeSingle()
 
     if (error) {
       if (error.code === 'PGRST116') return null
@@ -112,7 +112,7 @@ export class CompanyRepository {
       .from('companies')
       .insert(company)
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) {
       throw new Error(`Failed to create company: ${error.message}`)
@@ -133,7 +133,7 @@ export class CompanyRepository {
       .eq('id', id)
       .eq('workspace_id', workspaceId)
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) {
       throw new Error(`Failed to update company: ${error.message}`)
@@ -170,7 +170,7 @@ export class CompanyRepository {
       .select('*')
       .eq('domain', domain)
       .eq('workspace_id', workspaceId)
-      .single()
+      .maybeSingle()
 
     if (error) {
       if (error.code === 'PGRST116') return null

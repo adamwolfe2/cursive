@@ -27,7 +27,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
       .from('global_topics')
       .select('id, name, slug, category, description')
       .eq('id', topicId)
-      .single()
+      .maybeSingle()
 
     if (topicError || !topic) {
       return NextResponse.json({ error: 'Topic not found' }, { status: 404 })

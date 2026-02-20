@@ -33,7 +33,7 @@ export class CampaignBuilderRepository {
         status: 'draft',
       })
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) {
       throw new Error(`Failed to create campaign draft: ${error.message}`)
@@ -53,7 +53,7 @@ export class CampaignBuilderRepository {
       .select('*')
       .eq('id', draftId)
       .eq('workspace_id', workspaceId)
-      .single()
+      .maybeSingle()
 
     if (error) {
       if (error.code === 'PGRST116') return null
@@ -125,7 +125,7 @@ export class CampaignBuilderRepository {
       .eq('id', draftId)
       .eq('workspace_id', workspaceId)
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) {
       throw new Error(`Failed to update campaign draft: ${error.message}`)
@@ -188,7 +188,7 @@ export class CampaignBuilderRepository {
       .eq('id', draftId)
       .eq('workspace_id', workspaceId)
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) {
       throw new Error(`Failed to save generated emails: ${error.message}`)
@@ -229,7 +229,7 @@ export class CampaignBuilderRepository {
       .eq('id', draftId)
       .eq('workspace_id', workspaceId)
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) {
       throw new Error(`Failed to mark as exported: ${error.message}`)

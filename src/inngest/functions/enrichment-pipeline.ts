@@ -76,7 +76,7 @@ export const processEnrichmentJob = inngest.createFunction(
         .select('*')
         .eq('id', lead_id)
         .eq('workspace_id', workspace_id)
-        .single()
+        .maybeSingle()
 
       if (leadError || !leadData) {
         throw new Error(`Lead not found: ${lead_id}`)
@@ -87,7 +87,7 @@ export const processEnrichmentJob = inngest.createFunction(
         .from('enrichment_jobs')
         .select('*')
         .eq('id', job_id)
-        .single()
+        .maybeSingle()
 
       // DEDUP: Check if this provider already enriched this lead successfully
       const { data: existingLog } = await supabase
@@ -342,7 +342,7 @@ async function enrichWithAI(
       .from('workspaces')
       .select('industry_vertical, allowed_industries, allowed_regions')
       .eq('id', workspaceId)
-      .single()
+      .maybeSingle()
 
     // Run AI analysis
     const [companyAnalysis, qualification] = await Promise.all([
@@ -591,7 +591,7 @@ export const batchEnrichLeads = inngest.createFunction(
               max_attempts: 3,
             })
             .select('id')
-            .single()
+            .maybeSingle()
 
           if (!error && job) {
             jobs.push(job.id)
@@ -650,7 +650,7 @@ export const enrichNewLead = inngest.createFunction(
         .from('workspaces')
         .select('auto_enrich_leads, enrichment_provider')
         .eq('id', workspace_id)
-        .single()
+        .maybeSingle()
 
       return workspace?.auto_enrich_leads !== false
     })

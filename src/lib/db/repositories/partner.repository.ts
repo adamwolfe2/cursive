@@ -23,7 +23,7 @@ export class PartnerRepository {
       .from('partner_analytics')
       .select('*')
       .eq('partner_id', partnerId)
-      .single()
+      .maybeSingle()
 
     if (error) {
       safeError('[PartnerRepository] Failed to get analytics:', error)
@@ -136,7 +136,7 @@ export class PartnerRepository {
       .from('partner_credits')
       .select('*')
       .eq('partner_id', partnerId)
-      .single()
+      .maybeSingle()
 
     if (error) {
       // If no record exists, return zero balance
@@ -238,7 +238,7 @@ export class PartnerRepository {
         stripe_payment_intent_id: purchase.stripe_payment_intent_id,
       })
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) {
       safeError('[PartnerRepository] Failed to record purchase:', error)

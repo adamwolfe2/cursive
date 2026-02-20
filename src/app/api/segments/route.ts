@@ -107,7 +107,7 @@ export async function POST(request: NextRequest) {
         status: validated.status,
       })
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) {
       safeError('[Segments API] Create error:', error)

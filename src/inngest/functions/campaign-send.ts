@@ -57,7 +57,7 @@ export const sendApprovedEmail = inngest.createFunction(
             sequence_settings
           )
         `)
-        .single()
+        .maybeSingle()
 
       if (claimed) {
         return claimed
@@ -75,7 +75,7 @@ export const sendApprovedEmail = inngest.createFunction(
           )
         `)
         .eq('id', email_send_id)
-        .single()
+        .maybeSingle()
 
       if (fetchError) {
         throw new Error(`Failed to fetch email send: ${fetchError.message}`)
@@ -248,10 +248,15 @@ export const sendApprovedEmail = inngest.createFunction(
         .from('campaign_leads')
         .select('current_step')
         .eq('id', campaign_lead_id)
-        .single()
+        .maybeSingle()
 
       if (fetchError) {
         logger.warn(`Failed to fetch campaign lead: ${fetchError.message}`)
+        return
+      }
+
+      if (!campaignLead) {
+        logger.warn(`Campaign lead ${campaign_lead_id} not found`)
         return
       }
 
@@ -413,7 +418,7 @@ export const onEmailApproved = inngest.createFunction(
           )
         `)
         .eq('id', email_send_id)
-        .single()
+        .maybeSingle()
 
       if (emailError) {
         throw new Error(`Failed to fetch email: ${emailError.message}`)

@@ -157,7 +157,7 @@ export async function getGhlConnection(workspaceId: string): Promise<GhlConnecti
     .select('id, access_token, refresh_token, token_expires_at, metadata')
     .eq('workspace_id', workspaceId)
     .eq('provider', 'gohighlevel')
-    .single()
+    .maybeSingle()
 
   // Cast: crm_connections table may not be in generated DB types
   const connection = data as {

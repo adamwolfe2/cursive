@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
       .from('users')
       .select('id, workspace_id, full_name, email, role')
       .eq('auth_user_id', user.id)
-      .single()
+      .maybeSingle()
 
     if (userError || !userData?.workspace_id) {
       return NextResponse.json({ error: 'No workspace found' }, { status: 400 })
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
       .from('workspaces')
       .select('name, slug')
       .eq('id', userData.workspace_id)
-      .single()
+      .maybeSingle()
 
     const body = await request.json()
     const validated = requestSchema.parse(body)
@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
         status: 'pending',
       })
       .select()
-      .single()
+      .maybeSingle()
 
     if (insertError) {
       throw insertError
@@ -188,7 +188,7 @@ export async function GET(request: NextRequest) {
       .from('users')
       .select('workspace_id')
       .eq('auth_user_id', user.id)
-      .single()
+      .maybeSingle()
 
     if (!userData?.workspace_id) {
       return NextResponse.json({ error: 'No workspace found' }, { status: 400 })

@@ -42,7 +42,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
       .select('id')
       .eq('id', campaignId)
       .eq('workspace_id', user.workspace_id)
-      .single()
+      .maybeSingle()
 
     if (campaignError || !campaign) {
       return NextResponse.json({ error: 'Campaign not found' }, { status: 404 })
@@ -54,7 +54,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
       .select('id, status')
       .eq('id', emailId)
       .eq('campaign_id', campaignId)
-      .single()
+      .maybeSingle()
 
     if (emailError || !existingEmail) {
       return NextResponse.json({ error: 'Email not found' }, { status: 404 })

@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
         .from('users')
         .select('linked_partner_id')
         .eq('auth_user_id', user.id)
-        .single()
+        .maybeSingle()
 
       if (userData?.linked_partner_id) {
         partnerId = userData.linked_partner_id
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
         .select('id')
         .eq('api_key', apiKey)
         .eq('is_active', true)
-        .single()
+        .maybeSingle()
 
       if (!apiPartner) {
         return NextResponse.json({ error: 'Invalid API key' }, { status: 401 })
@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
       .select('id, stripe_account_id, stripe_onboarding_complete, available_balance, payout_threshold')
       .eq('id', partnerId)
       .eq('is_active', true)
-      .single()
+      .maybeSingle()
 
     if (partnerError || !partner) {
       return NextResponse.json({ error: 'Partner not found' }, { status: 404 })
@@ -141,10 +141,17 @@ export async function POST(request: NextRequest) {
         requested_at: new Date().toISOString(),
       })
       .select('id, partner_id, amount, status, requested_at, created_at')
-      .single()
+      .maybeSingle()
 
     if (insertError) {
       safeError('[Payout Request] Failed to create payout request:', insertError)
+      return NextResponse.json(
+        { error: 'Failed to create payout request' },
+        { status: 500 }
+      )
+    }
+
+    if (!payoutRequest) {
       return NextResponse.json(
         { error: 'Failed to create payout request' },
         { status: 500 }

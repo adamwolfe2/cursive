@@ -22,7 +22,7 @@ export async function GET() {
       .from('users')
       .select('workspace_id')
       .eq('auth_user_id', user.id)
-      .single()
+      .maybeSingle()
 
     if (userError || !userData) {
       return NextResponse.json(
@@ -49,7 +49,7 @@ export async function GET() {
       .from('workspace_credits')
       .select('balance')
       .eq('workspace_id', workspaceId)
-      .single()
+      .maybeSingle()
 
     const credits = creditsData?.balance || 0
 

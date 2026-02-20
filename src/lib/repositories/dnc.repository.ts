@@ -20,7 +20,7 @@ export class DncRepository {
       .select('id')
       .eq('workspace_id', workspaceId)
       .eq('email', email.toLowerCase().trim())
-      .single()
+      .maybeSingle()
     return !!data
   }
 

@@ -65,14 +65,14 @@ async function checkSendLimitsManual(
     .from('email_campaigns')
     .select('daily_send_limit, sends_today, last_send_reset_at')
     .eq('id', campaignId)
-    .single()
+    .maybeSingle()
 
   // Get workspace limits
   const { data: workspace } = await supabase
     .from('workspaces')
     .select('global_daily_send_limit, sends_today, last_send_reset_at')
     .eq('id', workspaceId)
-    .single()
+    .maybeSingle()
 
   const campaignLimit = campaign?.daily_send_limit || 50
   const campaignSent =
@@ -137,7 +137,7 @@ async function incrementSendCountManual(
       .from('email_campaigns')
       .select('sends_today, last_send_reset_at')
       .eq('id', campaignId)
-      .single()
+      .maybeSingle()
 
     const campaignSendsToday = campaign?.last_send_reset_at === today
       ? ((campaign?.sends_today || 0) + 1)
@@ -156,7 +156,7 @@ async function incrementSendCountManual(
       .from('workspaces')
       .select('sends_today, last_send_reset_at')
       .eq('id', workspaceId)
-      .single()
+      .maybeSingle()
 
     const workspaceSendsToday = (workspace as any)?.last_send_reset_at === today
       ? (((workspace as any)?.sends_today || 0) + 1)
@@ -252,7 +252,7 @@ export async function getWorkspaceSendStats(
     .from('workspaces')
     .select('global_daily_send_limit, sends_today')
     .eq('id', workspaceId)
-    .single()
+    .maybeSingle()
 
   // Get active campaigns stats
   const { data: campaigns } = await supabase

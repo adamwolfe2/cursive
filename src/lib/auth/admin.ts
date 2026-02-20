@@ -229,7 +229,7 @@ export async function startImpersonation(
         is_active: true,
       })
       .select('id')
-      .single()
+      .maybeSingle()
 
     if (sessionError || !session) {
       return { success: false, error: 'Failed to create impersonation session' }
