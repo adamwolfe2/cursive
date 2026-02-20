@@ -36,7 +36,12 @@ import {
   Zap,
   Target,
   Activity,
+  Layers,
+  Monitor,
+  ArrowRight,
 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
 import { SkeletonStatCard, SkeletonCard, SkeletonTable } from '@/components/ui/skeleton'
 
@@ -451,8 +456,19 @@ export default function AnalyticsPage() {
               {segmentLoading ? (
                 <SkeletonTable rows={5} columns={4} />
               ) : segmentPerf.length === 0 ? (
-                <div className="text-center py-12 text-muted-foreground">
-                  No active segments yet
+                <div className="flex flex-col items-center justify-center py-12 text-center">
+                  <div className="mb-4 rounded-full bg-muted p-4">
+                    <Layers className="h-8 w-8 text-muted-foreground" />
+                  </div>
+                  <h4 className="text-base font-semibold text-foreground mb-1">No active segments yet</h4>
+                  <p className="text-sm text-muted-foreground mb-6 max-w-md">
+                    Segments let you organize and filter your audience by specific criteria. Create a segment to start tracking performance metrics.
+                  </p>
+                  <Button asChild>
+                    <Link href="/segment-builder" className="gap-1.5">
+                      Create Segment <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </Button>
                 </div>
               ) : (
                 <div className="overflow-x-auto">
@@ -507,8 +523,19 @@ export default function AnalyticsPage() {
               {pixelLoading ? (
                 <SkeletonTable rows={5} columns={5} />
               ) : pixelPerf.length === 0 ? (
-                <div className="text-center py-12 text-muted-foreground">
-                  No active pixels yet
+                <div className="flex flex-col items-center justify-center py-12 text-center">
+                  <div className="mb-4 rounded-full bg-muted p-4">
+                    <Monitor className="h-8 w-8 text-muted-foreground" />
+                  </div>
+                  <h4 className="text-base font-semibold text-foreground mb-1">No active pixels yet</h4>
+                  <p className="text-sm text-muted-foreground mb-6 max-w-md">
+                    Install a tracking pixel on your website to identify visitors, track engagement, and unlock identity resolution analytics.
+                  </p>
+                  <Button asChild>
+                    <Link href="/settings/pixel" className="gap-1.5">
+                      Install Pixel <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </Button>
                 </div>
               ) : (
                 <div className="overflow-x-auto">

@@ -29,6 +29,9 @@ import { LeadMobileCard } from './LeadMobileCard'
 import { useCRMStore } from '@/lib/crm/crm-state'
 import type { LeadTableRow } from '@/types/crm.types'
 import { cn } from '@/lib/utils'
+import { Users, Search } from 'lucide-react'
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
 
 export interface LeadsDataTableProps {
   data: LeadTableRow[]
@@ -121,8 +124,15 @@ export function LeadsDataTable({
       {/* Mobile Card View */}
       <div className="md:hidden space-y-3">
         {data.length === 0 ? (
-          <div className="text-center py-12 text-muted-foreground">
-            No leads found
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <div className="mb-3 rounded-full bg-muted p-3">
+              <Users className="h-6 w-6 text-muted-foreground" />
+            </div>
+            <p className="text-sm font-medium text-foreground">No leads found</p>
+            <p className="text-xs text-muted-foreground mt-1 mb-4">Try adjusting your filters or browse the marketplace for new leads.</p>
+            <Button size="sm" variant="outline" asChild>
+              <Link href="/leads/discover">Browse Marketplace</Link>
+            </Button>
           </div>
         ) : (
           data.map((lead, index) => (
@@ -194,9 +204,13 @@ export function LeadsDataTable({
                   colSpan={table.getAllColumns().length}
                   className="h-24 text-center"
                 >
-                  <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground">
-                    <p>No leads found</p>
-                    <p className="text-sm">Try adjusting your filters</p>
+                  <div className="flex flex-col items-center justify-center gap-2 py-4">
+                    <Search className="h-8 w-8 text-muted-foreground/50" />
+                    <p className="text-sm font-medium text-foreground">No leads found</p>
+                    <p className="text-xs text-muted-foreground">Try adjusting your filters or browse the marketplace for new leads.</p>
+                    <Button size="sm" variant="outline" asChild className="mt-2">
+                      <Link href="/leads/discover">Browse Marketplace</Link>
+                    </Button>
                   </div>
                 </TableCell>
               </TableRow>

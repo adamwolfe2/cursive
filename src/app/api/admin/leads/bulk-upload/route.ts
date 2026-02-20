@@ -8,6 +8,7 @@ import { calculateIntentScore, calculateFreshnessScore, calculateMarketplacePric
 import { routeLeadsToMatchingUsers } from '@/lib/services/marketplace-lead-routing'
 import { queueLeadsForVerification } from '@/lib/services/email-verification.service'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { checkRateLimit, RATE_LIMIT_CONFIGS } from '@/lib/utils/rate-limit'
 
 // Industry mapping
 const INDUSTRY_MAP: Record<string, string> = {
@@ -98,7 +99,27 @@ function calculateLeadScore(lead: any): number {
 export async function POST(request: NextRequest) {
   try {
     // Check admin authorization (throws if not admin)
-    await requireAdmin()
+    const admin = await requireAdmin()
+
+    // SECURITY: Rate limit bulk upload operations to prevent abuse
+    const rateLimitKey = `admin_bulk_upload:${admin.email}`
+    const rateLimit = checkRateLimit(rateLimitKey, RATE_LIMIT_CONFIGS.admin_bulk_upload)
+
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        {
+          error: 'Too many bulk upload requests. Please try again later.',
+          retryAfter: rateLimit.retryAfter
+        },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': String(rateLimit.retryAfter),
+            'X-RateLimit-Remaining': '0',
+          }
+        }
+      )
+    }
 
     const adminClient = createAdminClient()
 

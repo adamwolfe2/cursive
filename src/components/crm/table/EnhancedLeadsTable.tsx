@@ -410,10 +410,19 @@ export const EnhancedLeadsTable = React.forwardRef<EnhancedLeadsTableHandle, Enh
             ) : paginatedLeads.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={9} className="py-12 text-center">
+                  <svg className="mx-auto h-10 w-10 text-gray-300 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
                   <p className="text-sm font-medium text-gray-900">No leads found</p>
                   <p className="mt-1 text-sm text-gray-500">
                     Try adjusting your filters, or check your daily leads for new matches.
                   </p>
+                  <a
+                    href="/leads"
+                    className="mt-3 inline-flex items-center gap-1.5 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    View Daily Leads
+                  </a>
                 </TableCell>
               </TableRow>
             ) : (

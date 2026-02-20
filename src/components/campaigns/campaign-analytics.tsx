@@ -8,6 +8,7 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
+import { FileText, BarChart3, ListOrdered } from 'lucide-react'
 
 interface CampaignStats {
   total_leads: number
@@ -314,8 +315,10 @@ export function CampaignAnalytics({ campaignId }: CampaignAnalyticsProps) {
               </p>
             </div>
             {templatePerf.length === 0 ? (
-              <div className="p-8 text-center text-muted-foreground">
-                No template data available yet
+              <div className="flex flex-col items-center justify-center p-8 text-center">
+                <FileText className="h-8 w-8 text-muted-foreground/50 mb-2" />
+                <p className="text-sm font-medium text-foreground">No template data available yet</p>
+                <p className="text-xs text-muted-foreground mt-1">Template performance data will appear here once your campaign starts sending emails.</p>
               </div>
             ) : (
               <div className="divide-y divide-border">
@@ -357,8 +360,10 @@ export function CampaignAnalytics({ campaignId }: CampaignAnalyticsProps) {
               </p>
             </div>
             {valuePropPerf.length === 0 ? (
-              <div className="p-8 text-center text-muted-foreground">
-                No value proposition data available yet
+              <div className="flex flex-col items-center justify-center p-8 text-center">
+                <BarChart3 className="h-8 w-8 text-muted-foreground/50 mb-2" />
+                <p className="text-sm font-medium text-foreground">No value proposition data available yet</p>
+                <p className="text-xs text-muted-foreground mt-1">Add value propositions to your campaign to track which messaging resonates best with leads.</p>
               </div>
             ) : (
               <div className="divide-y divide-border">
@@ -398,8 +403,10 @@ export function CampaignAnalytics({ campaignId }: CampaignAnalyticsProps) {
               </p>
             </div>
             {stepPerf.length === 0 ? (
-              <div className="p-8 text-center text-muted-foreground">
-                No step data available yet
+              <div className="flex flex-col items-center justify-center p-8 text-center">
+                <ListOrdered className="h-8 w-8 text-muted-foreground/50 mb-2" />
+                <p className="text-sm font-medium text-foreground">No step data available yet</p>
+                <p className="text-xs text-muted-foreground mt-1">Sequence step performance will appear here once emails start being sent through the campaign sequence.</p>
               </div>
             ) : (
               <div className="p-4">

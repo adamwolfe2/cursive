@@ -5,12 +5,33 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 import { inngest } from '@/inngest/client'
+import { checkRateLimit, RATE_LIMIT_CONFIGS } from '@/lib/utils/rate-limit'
 
 export async function POST(request: NextRequest) {
   try {
     // SECURITY: Verify platform admin access
     const { requireAdmin } = await import('@/lib/auth/admin')
-    await requireAdmin()
+    const admin = await requireAdmin()
+
+    // SECURITY: Rate limit enrichment triggers to prevent excessive external API calls
+    const rateLimitKey = `admin_trigger_enrichment:${admin.email}`
+    const rateLimit = checkRateLimit(rateLimitKey, RATE_LIMIT_CONFIGS.admin_trigger_enrichment)
+
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        {
+          error: 'Too many enrichment trigger requests. Please try again later.',
+          retryAfter: rateLimit.retryAfter
+        },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': String(rateLimit.retryAfter),
+            'X-RateLimit-Remaining': '0',
+          }
+        }
+      )
+    }
 
     const body = await request.json()
     const { lead_id, workspace_id } = body

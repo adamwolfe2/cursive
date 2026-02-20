@@ -496,7 +496,13 @@ export function DailyLeadsView({
         ) : weekLeads.length === 0 ? (
           <div className="text-center py-12 bg-white rounded-xl border border-dashed border-gray-200">
             <TrendingUp className="h-10 w-10 text-gray-200 mx-auto mb-3" />
-            <p className="text-gray-500">No leads this week yet</p>
+            <p className="font-medium text-gray-700 mb-1">No leads this week yet</p>
+            <p className="text-sm text-gray-400 max-w-xs mx-auto">
+              New leads are delivered daily based on your targeting preferences. Check back soon!
+            </p>
+            <a href="/my-leads/preferences" className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
+              Review preferences
+            </a>
           </div>
         ) : (
           <>

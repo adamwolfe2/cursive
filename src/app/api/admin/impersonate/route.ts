@@ -14,6 +14,7 @@ import {
   getActiveImpersonationSession,
 } from '@/lib/auth/admin'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { checkRateLimit, RATE_LIMIT_CONFIGS } from '@/lib/utils/rate-limit'
 
 const impersonateSchema = z.object({
   workspaceId: z.string().uuid('Invalid workspace ID'),
@@ -23,7 +24,27 @@ const impersonateSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     // Verify admin (throws if not admin)
-    await requireAdmin()
+    const admin = await requireAdmin()
+
+    // SECURITY: Rate limit impersonation to prevent abuse of this sensitive operation
+    const rateLimitKey = `admin_impersonate:${admin.email}`
+    const rateLimit = checkRateLimit(rateLimitKey, RATE_LIMIT_CONFIGS.admin_impersonate)
+
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        {
+          error: 'Too many impersonation requests. Please try again later.',
+          retryAfter: rateLimit.retryAfter
+        },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': String(rateLimit.retryAfter),
+            'X-RateLimit-Remaining': '0',
+          }
+        }
+      )
+    }
 
     const body = await request.json()
     const validation = impersonateSchema.safeParse(body)

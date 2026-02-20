@@ -399,11 +399,19 @@ export function EnhancedCompaniesTable({
                   <div className="flex flex-col items-center justify-center gap-2">
                     <Building2 className="h-12 w-12 text-gray-300" />
                     <p className="text-sm font-medium text-gray-900">No companies found</p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-gray-500 max-w-sm mx-auto">
                       {hasActiveFilters
-                        ? 'Try adjusting your filters'
-                        : 'Get started by creating your first company'}
+                        ? 'Try adjusting your filters to see results.'
+                        : 'Companies are added automatically when you enrich leads. Browse the marketplace to get started.'}
                     </p>
+                    {!hasActiveFilters && (
+                      <a
+                        href="/leads/discover"
+                        className="mt-2 inline-flex items-center gap-1.5 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                      >
+                        Browse Marketplace
+                      </a>
+                    )}
                   </div>
                 </TableCell>
               </TableRow>

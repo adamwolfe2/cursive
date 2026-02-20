@@ -203,8 +203,12 @@ export function LeadNotesPanel({ leadId, className }: LeadNotesPanelProps) {
             </svg>
           </div>
         ) : notes.length === 0 ? (
-          <div className="text-center py-8 text-sm text-zinc-500">
-            No notes yet. Add your first note above.
+          <div className="text-center py-8">
+            <svg className="mx-auto h-8 w-8 text-zinc-300 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+            </svg>
+            <p className="text-sm font-medium text-zinc-700">No notes yet</p>
+            <p className="text-xs text-zinc-500 mt-1">Use the form above to add notes about conversations, follow-ups, or key details.</p>
           </div>
         ) : (
           notes.map((note: any) => (

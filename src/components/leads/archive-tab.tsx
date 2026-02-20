@@ -97,8 +97,16 @@ export function ArchiveTab({
       ) : leads.length === 0 ? (
         <div className="text-center py-12 bg-white rounded-xl border border-dashed border-gray-200">
           <Users className="h-10 w-10 text-gray-300 mx-auto mb-3" />
-          <p className="text-gray-500 font-medium">No leads found</p>
-          <p className="text-sm text-gray-400 mt-1">Try adjusting your filters</p>
+          <p className="text-gray-600 font-medium">No archived leads found</p>
+          <p className="text-sm text-gray-400 mt-1 max-w-sm mx-auto">
+            Archived leads will appear here. Try adjusting your filters or check your active leads.
+          </p>
+          <a
+            href="/leads"
+            className="mt-4 inline-flex items-center gap-1.5 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+          >
+            View Active Leads
+          </a>
         </div>
       ) : (
         <>

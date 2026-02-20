@@ -10,11 +10,32 @@ import { requireAdmin, getAdminContext, logAdminAction } from '@/lib/auth/admin'
 import { getLeadProviderService, type LeadSearchFilters } from '@/lib/services/lead-provider.service'
 import { createClient } from '@/lib/supabase/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { checkRateLimit, RATE_LIMIT_CONFIGS } from '@/lib/utils/rate-limit'
 
 export async function POST(request: NextRequest) {
   try {
-    await requireAdmin()
+    const admin = await requireAdmin()
     const adminContext = await getAdminContext()
+
+    // SECURITY: Rate limit expensive search operations
+    const rateLimitKey = `admin_lead_search:${admin.email}`
+    const rateLimit = checkRateLimit(rateLimitKey, RATE_LIMIT_CONFIGS.admin_lead_search)
+
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        {
+          error: 'Too many search requests. Please try again later.',
+          retryAfter: rateLimit.retryAfter
+        },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': String(rateLimit.retryAfter),
+            'X-RateLimit-Remaining': '0',
+          }
+        }
+      )
+    }
 
     const body = await request.json()
     let {
@@ -133,8 +154,28 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    await requireAdmin()
+    const admin = await requireAdmin()
     const adminContext = await getAdminContext()
+
+    // SECURITY: Rate limit search history queries
+    const rateLimitKey = `admin_lead_search_get:${admin.email}`
+    const rateLimit = checkRateLimit(rateLimitKey, RATE_LIMIT_CONFIGS.admin_lead_search)
+
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        {
+          error: 'Too many requests. Please try again later.',
+          retryAfter: rateLimit.retryAfter
+        },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': String(rateLimit.retryAfter),
+            'X-RateLimit-Remaining': '0',
+          }
+        }
+      )
+    }
 
     const { searchParams } = new URL(request.url)
     let workspaceId = searchParams.get('workspaceId')

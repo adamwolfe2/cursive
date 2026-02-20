@@ -24,6 +24,10 @@ const purchaseSchema = z.object({
   idempotencyKey: z.string().uuid('Invalid idempotency key format').optional(),
 })
 
+const purchaseQuerySchema = z.object({
+  purchaseId: z.string().uuid('Invalid purchase ID format'),
+})
+
 export async function POST(request: NextRequest) {
   let idempotencyKey: string | undefined
   let workspaceId: string | undefined
@@ -64,7 +68,16 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const validated = purchaseSchema.parse(body)
+    const parseResult = purchaseSchema.safeParse(body)
+
+    if (!parseResult.success) {
+      return NextResponse.json(
+        { error: 'Invalid request', details: parseResult.error.flatten().fieldErrors },
+        { status: 400 }
+      )
+    }
+
+    const validated = parseResult.data
     idempotencyKey = validated.idempotencyKey
 
     // IDEMPOTENCY: Check if request already processed
@@ -470,12 +483,6 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Invalid request', details: error.errors },
-        { status: 400 }
-      )
-    }
     return NextResponse.json(
       { error: 'Failed to process purchase' },
       { status: 500 }
@@ -508,11 +515,19 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'User workspace not found' }, { status: 403 })
     }
 
-    const purchaseId = request.nextUrl.searchParams.get('purchaseId')
+    // Validate query params with Zod
+    const queryResult = purchaseQuerySchema.safeParse({
+      purchaseId: request.nextUrl.searchParams.get('purchaseId'),
+    })
 
-    if (!purchaseId) {
-      return NextResponse.json({ error: 'Purchase ID required' }, { status: 400 })
+    if (!queryResult.success) {
+      return NextResponse.json(
+        { error: 'Invalid request', details: queryResult.error.flatten().fieldErrors },
+        { status: 400 }
+      )
     }
+
+    const { purchaseId } = queryResult.data
 
     const repo = new MarketplaceRepository()
     // SECURITY: Validate purchase belongs to user's workspace

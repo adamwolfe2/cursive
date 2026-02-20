@@ -17,6 +17,11 @@ export interface RateLimitConfig {
 export const RATE_LIMIT_CONFIGS = {
   payout_approval: { windowMs: 60 * 60 * 1000, max: 10 }, // 10/hour
   payout_rejection: { windowMs: 60 * 60 * 1000, max: 20 }, // 20/hour
+  admin_lead_search: { windowMs: 60 * 1000, max: 30 }, // 30/minute — expensive search operation
+  admin_bulk_upload: { windowMs: 60 * 1000, max: 5 }, // 5/minute — bulk operations
+  admin_trigger_lead_generation: { windowMs: 60 * 1000, max: 10 }, // 10/minute — triggers external APIs
+  admin_trigger_enrichment: { windowMs: 60 * 1000, max: 10 }, // 10/minute — triggers external APIs
+  admin_impersonate: { windowMs: 60 * 1000, max: 10 }, // 10/minute — security-sensitive
 } as const
 
 export interface RateLimitResult {

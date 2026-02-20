@@ -133,7 +133,10 @@ export default async function AdminMarketplacePage() {
               </div>
             ))}
             {recentPurchases?.length === 0 && (
-              <p className="py-8 text-center text-sm text-muted-foreground">No purchases yet</p>
+              <div className="py-8 text-center">
+                <p className="text-sm font-medium text-foreground">No purchases yet</p>
+                <p className="text-xs text-muted-foreground mt-1">Marketplace purchases will appear here when users buy leads.</p>
+              </div>
             )}
           </div>
         </CardContent>

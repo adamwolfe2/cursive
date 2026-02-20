@@ -382,6 +382,17 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
               ? 'Leads will appear here when they match your targeting preferences.'
               : `No ${filter} leads at the moment.`}
           </p>
+          {filter === 'all' && (
+            <a
+              href="/my-leads/preferences"
+              className="mt-4 inline-flex items-center gap-1.5 rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 transition-colors"
+            >
+              Set Targeting Preferences
+              <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </a>
+          )}
         </div>
       ) : (
         <div className="overflow-x-auto">

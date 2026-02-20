@@ -259,9 +259,15 @@ export default async function QueryDetailPage({ params }: QueryDetailPageProps) 
             <h3 className="mt-2 text-sm font-semibold text-gray-900">
               No leads yet
             </h3>
-            <p className="mt-1 text-sm text-gray-500">
-              Leads will appear here once your query runs
+            <p className="mt-1 text-sm text-gray-500 max-w-sm mx-auto">
+              Leads will appear here once your query runs. Queries run automatically, or you can browse the marketplace while you wait.
             </p>
+            <a
+              href="/leads/discover"
+              className="mt-4 inline-flex items-center gap-1.5 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+            >
+              Browse Marketplace
+            </a>
           </div>
         ) : (
           <div className="divide-y divide-gray-200">

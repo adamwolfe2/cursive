@@ -264,7 +264,13 @@ export default function PartnerPayoutsPage() {
 
           {payoutHistory.length === 0 ? (
             <div className="px-6 py-12 text-center">
-              <p className="text-[13px] text-zinc-500">No payout requests yet</p>
+              <svg className="mx-auto h-10 w-10 text-zinc-300 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+              <p className="text-[14px] font-medium text-zinc-900 mb-1">No payout requests yet</p>
+              <p className="text-[13px] text-zinc-500">
+                Once you earn commissions from uploaded leads, you can request payouts here.
+              </p>
             </div>
           ) : (
             <div className="divide-y divide-zinc-200">

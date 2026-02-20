@@ -11,19 +11,19 @@ import type { MarketplaceFilters, SeniorityLevel } from '@/types/database.types'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 const filtersSchema = z.object({
-  industries: z.array(z.string()).optional(),
-  states: z.array(z.string()).optional(),
-  companySizes: z.array(z.string()).optional(),
-  seniorityLevels: z.array(z.string()).optional(),
+  industries: z.array(z.string()).max(20, 'Too many industries (max 20)').optional(),
+  states: z.array(z.string()).max(50, 'Too many states (max 50)').optional(),
+  companySizes: z.array(z.string()).max(20, 'Too many company sizes (max 20)').optional(),
+  seniorityLevels: z.array(z.string()).max(20, 'Too many seniority levels (max 20)').optional(),
   intentScoreMin: z.number().min(0).max(100).optional(),
   intentScoreMax: z.number().min(0).max(100).optional(),
   freshnessMin: z.number().min(0).max(100).optional(),
   hasPhone: z.boolean().optional(),
   hasVerifiedEmail: z.boolean().optional(),
-  priceMin: z.number().optional(),
-  priceMax: z.number().optional(),
-  limit: z.number().min(1).max(100).optional(),
-  offset: z.number().min(0).optional(),
+  priceMin: z.number().min(0).optional(),
+  priceMax: z.number().min(0).optional(),
+  limit: z.number().int('Limit must be an integer').min(1).max(100).default(20),
+  offset: z.number().int('Offset must be an integer').min(0).default(0),
   orderBy: z.enum(['price', 'intent_score', 'freshness_score', 'created_at']).optional(),
   orderDirection: z.enum(['asc', 'desc']).optional(),
 })
@@ -93,8 +93,17 @@ export async function GET(request: NextRequest) {
     rawFilters.orderBy = searchParams.get('orderBy') || undefined
     rawFilters.orderDirection = searchParams.get('orderDirection') || undefined
 
-    // Validate
-    const validated = filtersSchema.parse(rawFilters)
+    // Validate with safeParse for structured error handling
+    const parseResult = filtersSchema.safeParse(rawFilters)
+
+    if (!parseResult.success) {
+      return NextResponse.json(
+        { error: 'Invalid filters', details: parseResult.error.flatten().fieldErrors },
+        { status: 400 }
+      )
+    }
+
+    const validated = parseResult.data
 
     const filters: MarketplaceFilters = {
       industries: validated.industries,
@@ -112,8 +121,8 @@ export async function GET(request: NextRequest) {
 
     const repo = new MarketplaceRepository()
     const { leads, total } = await repo.browseLeads(filters, {
-      limit: validated.limit || 20,
-      offset: validated.offset || 0,
+      limit: validated.limit,
+      offset: validated.offset,
       orderBy: validated.orderBy,
       orderDirection: validated.orderDirection,
     })
@@ -121,14 +130,11 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       leads,
       total,
-      limit: validated.limit || 20,
-      offset: validated.offset || 0,
+      limit: validated.limit,
+      offset: validated.offset,
     })
   } catch (error) {
     safeError('Failed to browse leads:', error)
-    if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: 'Invalid filters', details: error.errors }, { status: 400 })
-    }
     return NextResponse.json({ error: 'Failed to browse leads' }, { status: 500 })
   }
 }

@@ -171,9 +171,15 @@ export default async function AgentDetailPage({ params }: PageProps) {
             </Button>
           </div>
           {instructions.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-8">
-              No instructions yet. Add instructions to guide the AI responses.
-            </p>
+            <div className="text-center py-8">
+              <svg className="mx-auto h-8 w-8 text-muted-foreground/40 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <p className="text-sm font-medium text-foreground">No instructions yet</p>
+              <p className="text-xs text-muted-foreground mt-1 max-w-sm mx-auto">
+                Add instructions to guide the AI on how to respond to emails -- tone, topics to cover, and when to escalate.
+              </p>
+            </div>
           ) : (
             <div className="space-y-3">
               {instructions.map((instruction, index) => (
@@ -206,9 +212,15 @@ export default async function AgentDetailPage({ params }: PageProps) {
             </Button>
           </div>
           {kbEntries.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-8">
-              No knowledge base entries yet. Add entries to provide context for AI responses.
-            </p>
+            <div className="text-center py-8">
+              <svg className="mx-auto h-8 w-8 text-muted-foreground/40 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              </svg>
+              <p className="text-sm font-medium text-foreground">No knowledge base entries yet</p>
+              <p className="text-xs text-muted-foreground mt-1 max-w-sm mx-auto">
+                Add product details, FAQs, or company information to help the AI craft accurate, informed responses.
+              </p>
+            </div>
           ) : (
             <div className="grid gap-4 sm:grid-cols-2">
               {kbEntries.map((entry) => (

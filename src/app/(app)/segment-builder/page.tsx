@@ -727,9 +727,12 @@ export default function SegmentBuilderPage() {
                   <SkeletonCard />
                 </div>
               ) : savedSegments.length === 0 ? (
-                <div className="text-center py-12 text-muted-foreground">
-                  <p>No saved segments yet</p>
-                  <p className="text-sm mt-2">Build a segment and click &quot;Save&quot; to reuse it</p>
+                <div className="text-center py-12">
+                  <svg className="mx-auto h-10 w-10 text-muted-foreground/40 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                  </svg>
+                  <p className="text-sm font-medium text-foreground">No saved segments yet</p>
+                  <p className="text-xs text-muted-foreground mt-1 max-w-sm mx-auto">Build a segment using the filters above and click &quot;Save&quot; to reuse it for audience targeting and analytics.</p>
                 </div>
               ) : (
                 <div className="space-y-3">

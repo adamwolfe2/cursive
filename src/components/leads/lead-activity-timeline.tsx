@@ -135,8 +135,12 @@ export function LeadActivityTimeline({ leadId, className }: LeadActivityTimeline
 
   if (activities.length === 0) {
     return (
-      <div className={cn('text-center py-8 text-sm text-zinc-500', className)}>
-        No activity yet.
+      <div className={cn('text-center py-8', className)}>
+        <svg className="mx-auto h-8 w-8 text-zinc-300 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <p className="text-sm font-medium text-zinc-700">No activity yet</p>
+        <p className="text-xs text-zinc-500 mt-1">Activities like emails, calls, and status changes will appear here as you interact with this lead.</p>
       </div>
     )
   }

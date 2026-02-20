@@ -7,7 +7,9 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import {
   sendCreditPurchaseConfirmationEmail,
   sendPurchaseConfirmationEmail,
+  sendEmail,
 } from '@/lib/email/service'
+import { inngest } from '@/inngest/client'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 import { STRIPE_CONFIG } from '@/lib/stripe/config'
 import { TIMEOUTS, getDaysFromNow } from '@/lib/constants/timeouts'
@@ -247,6 +249,301 @@ async function handleLeadPurchaseCompleted(session: Stripe.Checkout.Session): Pr
 }
 
 // ============================================================================
+// CHARGE & CUSTOMER EVENT HANDLERS
+// ============================================================================
+
+/**
+ * Handle charge.failed events
+ * Logs failure details, notifies the user, and queues an Inngest event
+ */
+async function handleChargeFailed(event: Stripe.Event): Promise<void> {
+  const charge = event.data.object as Stripe.Charge
+  const customerId = charge.customer as string | null
+  const amountFormatted = (charge.amount / 100).toFixed(2)
+  const failureReason = charge.failure_message || charge.failure_code || 'Unknown'
+
+  safeLog('[Stripe Webhook] Charge failed', {
+    chargeId: charge.id,
+    amount: amountFormatted,
+    currency: charge.currency,
+    customerId,
+    failureReason,
+  })
+
+  if (!customerId) {
+    safeLog('[Stripe Webhook] charge.failed has no customer ID, skipping user lookup')
+    return
+  }
+
+  const adminClient = createAdminClient()
+
+  // Look up user by Stripe customer ID
+  const { data: userData } = await adminClient
+    .from('users')
+    .select('id, email, full_name, workspace_id')
+    .eq('stripe_customer_id', customerId)
+    .single()
+
+  if (userData?.workspace_id) {
+    // Create a billing notification for the user
+    await adminClient.from('notifications').insert({
+      workspace_id: userData.workspace_id,
+      user_id: userData.id,
+      type: 'system',
+      category: 'warning',
+      title: 'Payment failed',
+      message: `A charge of $${amountFormatted} ${charge.currency.toUpperCase()} failed: ${failureReason}`,
+      metadata: {
+        billing_event: 'charge_failed',
+        charge_id: charge.id,
+        amount: charge.amount,
+        currency: charge.currency,
+        failure_reason: failureReason,
+      },
+      priority: 10,
+    })
+  }
+
+  // Queue Inngest event for further processing
+  try {
+    await inngest.send({
+      name: 'billing/charge-failed',
+      data: {
+        charge_id: charge.id,
+        customer_id: customerId,
+        amount: charge.amount,
+        currency: charge.currency,
+        failure_reason: failureReason,
+        user_id: userData?.id || null,
+        user_email: userData?.email || null,
+      },
+    } as any)
+  } catch (inngestError) {
+    safeError('[Stripe Webhook] Failed to queue billing/charge-failed Inngest event', inngestError)
+  }
+}
+
+/**
+ * Handle charge.refunded events
+ * Logs refund details, looks up original purchase, and creates a notification
+ */
+async function handleChargeRefunded(event: Stripe.Event): Promise<void> {
+  const charge = event.data.object as Stripe.Charge
+  const customerId = charge.customer as string | null
+  const amountRefunded = charge.amount_refunded
+  const amountRefundedFormatted = (amountRefunded / 100).toFixed(2)
+  const paymentIntentId = charge.payment_intent as string | null
+
+  safeLog('[Stripe Webhook] Charge refunded', {
+    chargeId: charge.id,
+    amountRefunded: amountRefundedFormatted,
+    currency: charge.currency,
+    paymentIntentId,
+    customerId,
+    refundReason: charge.refunds?.data?.[0]?.reason || 'not_specified',
+  })
+
+  if (!customerId) {
+    safeLog('[Stripe Webhook] charge.refunded has no customer ID, skipping user lookup')
+    return
+  }
+
+  const adminClient = createAdminClient()
+
+  // Look up user by Stripe customer ID
+  const { data: userData } = await adminClient
+    .from('users')
+    .select('id, email, full_name, workspace_id')
+    .eq('stripe_customer_id', customerId)
+    .single()
+
+  // Try to find original purchase by payment_intent ID
+  if (paymentIntentId) {
+    const { data: creditPurchase } = await adminClient
+      .from('credit_purchases')
+      .select('id, credits, status')
+      .eq('stripe_payment_intent_id', paymentIntentId)
+      .single()
+
+    if (creditPurchase) {
+      safeLog('[Stripe Webhook] Refund is for credit purchase', {
+        creditPurchaseId: creditPurchase.id,
+        credits: creditPurchase.credits,
+        status: creditPurchase.status,
+      })
+      // Note: Credit deduction on refund could be implemented here if needed
+    } else {
+      // Check the purchases table (lead purchases)
+      const { data: leadPurchase } = await adminClient
+        .from('purchases')
+        .select('id, status')
+        .eq('stripe_payment_intent_id', paymentIntentId)
+        .single()
+
+      if (leadPurchase) {
+        safeLog('[Stripe Webhook] Refund is for lead purchase', {
+          purchaseId: leadPurchase.id,
+          status: leadPurchase.status,
+        })
+      }
+    }
+  }
+
+  // Create notification for the user
+  if (userData?.workspace_id) {
+    await adminClient.from('notifications').insert({
+      workspace_id: userData.workspace_id,
+      user_id: userData.id,
+      type: 'system',
+      category: 'info',
+      title: 'Refund processed',
+      message: `Refund processed: $${amountRefundedFormatted} ${charge.currency.toUpperCase()}`,
+      metadata: {
+        billing_event: 'charge_refunded',
+        charge_id: charge.id,
+        amount_refunded: amountRefunded,
+        currency: charge.currency,
+        payment_intent_id: paymentIntentId,
+      },
+      priority: 5,
+    })
+  }
+}
+
+/**
+ * Handle charge.dispute.created events
+ * Logs dispute details, creates high priority admin notification, sends alert email
+ */
+async function handleChargeDisputeCreated(event: Stripe.Event): Promise<void> {
+  const dispute = event.data.object as Stripe.Dispute
+  const amountFormatted = (dispute.amount / 100).toFixed(2)
+  const evidenceDueBy = dispute.evidence_details?.due_by
+    ? new Date(dispute.evidence_details.due_by * 1000).toISOString()
+    : 'Unknown'
+  const evidenceDueByFormatted = dispute.evidence_details?.due_by
+    ? new Date(dispute.evidence_details.due_by * 1000).toLocaleDateString('en-US', {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric',
+      })
+    : 'Unknown'
+
+  safeLog('[Stripe Webhook] Dispute created', {
+    disputeId: dispute.id,
+    chargeId: dispute.charge,
+    amount: amountFormatted,
+    currency: dispute.currency,
+    reason: dispute.reason,
+    evidenceDueBy,
+  })
+
+  const adminClient = createAdminClient()
+
+  // Create a high-priority admin notification
+  // Find an admin user to associate the notification with
+  const { data: adminUsers } = await adminClient
+    .from('users')
+    .select('id, workspace_id')
+    .eq('role', 'admin')
+    .limit(1)
+
+  if (adminUsers && adminUsers.length > 0) {
+    const admin = adminUsers[0]
+    await adminClient.from('notifications').insert({
+      workspace_id: admin.workspace_id,
+      user_id: admin.id,
+      type: 'system',
+      category: 'error',
+      title: `Dispute filed: $${amountFormatted}`,
+      message: `A chargeback/dispute has been filed for $${amountFormatted} ${dispute.currency.toUpperCase()}. Reason: ${dispute.reason}. Evidence due by ${evidenceDueByFormatted}.`,
+      metadata: {
+        billing_event: 'charge_dispute_created',
+        dispute_id: dispute.id,
+        charge_id: dispute.charge,
+        amount: dispute.amount,
+        currency: dispute.currency,
+        reason: dispute.reason,
+        evidence_due_by: evidenceDueBy,
+      },
+      priority: 20, // Highest priority
+    })
+  }
+
+  // Send alert email to support
+  const supportEmail = process.env.SUPPORT_EMAIL || 'hello@meetcursive.com'
+
+  try {
+    await sendEmail({
+      to: supportEmail,
+      subject: `[URGENT] Stripe Dispute Filed — $${amountFormatted} ${dispute.currency.toUpperCase()}`,
+      html: `
+        <h2>Stripe Dispute Alert</h2>
+        <p>A chargeback/dispute has been filed and requires immediate attention.</p>
+        <table style="border-collapse: collapse; margin: 16px 0;">
+          <tr><td style="padding: 8px; font-weight: bold;">Dispute ID:</td><td style="padding: 8px;">${dispute.id}</td></tr>
+          <tr><td style="padding: 8px; font-weight: bold;">Charge ID:</td><td style="padding: 8px;">${dispute.charge}</td></tr>
+          <tr><td style="padding: 8px; font-weight: bold;">Amount:</td><td style="padding: 8px;">$${amountFormatted} ${dispute.currency.toUpperCase()}</td></tr>
+          <tr><td style="padding: 8px; font-weight: bold;">Reason:</td><td style="padding: 8px;">${dispute.reason}</td></tr>
+          <tr><td style="padding: 8px; font-weight: bold;">Evidence Due By:</td><td style="padding: 8px;">${evidenceDueByFormatted}</td></tr>
+        </table>
+        <p><a href="https://dashboard.stripe.com/disputes/${dispute.id}">View in Stripe Dashboard</a></p>
+      `,
+      tags: [
+        { name: 'category', value: 'billing' },
+        { name: 'type', value: 'dispute_alert' },
+      ],
+    })
+  } catch (emailError) {
+    safeError('[Stripe Webhook] Failed to send dispute alert email', emailError)
+  }
+}
+
+/**
+ * Handle customer.deleted events
+ * Logs deletion and clears stripe_customer_id from the user record
+ */
+async function handleCustomerDeleted(event: Stripe.Event): Promise<void> {
+  const customer = event.data.object as Stripe.Customer
+  const customerId = customer.id
+
+  safeLog('[Stripe Webhook] Customer deleted', {
+    customerId,
+    email: customer.email,
+  })
+
+  const adminClient = createAdminClient()
+
+  // Look up user by stripe_customer_id
+  const { data: userData } = await adminClient
+    .from('users')
+    .select('id, email')
+    .eq('stripe_customer_id', customerId)
+    .single()
+
+  if (userData) {
+    // Clear the stripe_customer_id from the user record
+    const { error: updateError } = await adminClient
+      .from('users')
+      .update({ stripe_customer_id: null })
+      .eq('id', userData.id)
+
+    if (updateError) {
+      safeError('[Stripe Webhook] Failed to clear stripe_customer_id for user', {
+        userId: userData.id,
+        error: updateError.message,
+      })
+    } else {
+      safeLog('[Stripe Webhook] Cleared stripe_customer_id for user', {
+        userId: userData.id,
+        previousCustomerId: customerId,
+      })
+    }
+  } else {
+    safeLog('[Stripe Webhook] No user found for deleted customer', { customerId })
+  }
+}
+
+// ============================================================================
 // MAIN WEBHOOK ROUTE HANDLER
 // ============================================================================
 
@@ -365,6 +662,14 @@ export async function POST(request: NextRequest) {
         // Handle checkout session completed (credit purchases and lead purchases)
         // Process inline since Inngest callbacks hang on Vercel (Node.js serverless issue)
         await handleCheckoutSessionCompleted(event)
+      } else if (event.type === 'charge.failed') {
+        await handleChargeFailed(event)
+      } else if (event.type === 'charge.refunded') {
+        await handleChargeRefunded(event)
+      } else if (event.type === 'charge.dispute.created') {
+        await handleChargeDisputeCreated(event)
+      } else if (event.type === 'customer.deleted') {
+        await handleCustomerDeleted(event)
       } else {
         safeLog('[Stripe Webhook] Unhandled event type: ' + event.type)
       }

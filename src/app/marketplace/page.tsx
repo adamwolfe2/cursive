@@ -5,49 +5,23 @@ export const dynamic = 'force-dynamic'
 import { useEffect, useState, useCallback, useMemo } from 'react'
 import Link from 'next/link'
 import { NavBar } from '@/components/nav-bar'
-import { useToast } from '@/lib/hooks/use-toast'
 import { useDebounce } from '@/hooks/use-debounce'
-import { Button, buttonVariants } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
 import { MobileFilters } from './components/MobileFilters'
 import { BuyLeadButton } from '@/components/marketplace/BuyLeadButton'
 import { UpsellBanner } from '@/components/marketplace/UpsellBanner'
 import { getServiceLink } from '@/lib/stripe/payment-links'
-import { getErrorMessage } from '@/lib/utils/error-messages'
-import { safeError } from '@/lib/utils/log-sanitizer'
+import {
+  useMarketplaceLeads,
+  useMarketplaceCredits,
+  useMarketplaceStats,
+  usePurchaseLeads,
+  type MarketplaceFilters,
+} from '@/lib/hooks/use-marketplace-leads'
+import { useQueryClient } from '@tanstack/react-query'
 
-// Types for marketplace leads
-interface MarketplaceLeadPreview {
-  id: string
-  first_name: string | null
-  last_name: string | null
-  job_title: string | null
-  company_name: string
-  company_industry: string | null
-  company_size: string | null
-  city: string | null
-  state: string | null
-  seniority_level: string | null
-  intent_score: number
-  freshness_score: number
-  verification_status: string
-  has_phone: boolean
-  has_email: boolean
-  price: number
-  email_preview: string | null
-  phone_preview: string | null
-}
-
-interface Filters {
-  industries: string[]
-  states: string[]
-  companySizes: string[]
-  seniorityLevels: string[]
-  intentScoreMin?: number
-  freshnessMin?: number
-  hasPhone?: boolean
-  hasVerifiedEmail?: boolean
-}
+// Re-use Filters type from the hook
+type Filters = MarketplaceFilters
 
 // Constants
 const INDUSTRIES = [
@@ -98,14 +72,8 @@ function getFreshnessBadge(score: number): { label: string; color: string } {
 }
 
 export default function MarketplacePage() {
-  const { toast } = useToast()
-  const [leads, setLeads] = useState<MarketplaceLeadPreview[]>([])
-  const [totalLeads, setTotalLeads] = useState(0)
-  const [isLoading, setIsLoading] = useState(true)
-  const [credits, setCredits] = useState(0)
-  const [totalSpend, setTotalSpend] = useState(0)
+  const queryClient = useQueryClient()
   const [selectedLeads, setSelectedLeads] = useState<Set<string>>(new Set())
-  const [isPurchasing, setIsPurchasing] = useState(false)
   const [showSuccessMessage, setShowSuccessMessage] = useState(false)
   const [purchasedLeadCount, setPurchasedLeadCount] = useState(0)
 
@@ -127,63 +95,25 @@ export default function MarketplacePage() {
   const [orderBy, setOrderBy] = useState<'freshness_score' | 'intent_score' | 'price'>('freshness_score')
   const [orderDirection, setOrderDirection] = useState<'asc' | 'desc'>('desc')
 
-  const fetchLeads = useCallback(async () => {
-    setIsLoading(true)
-    try {
-      const params = new URLSearchParams()
+  // ── React Query hooks ──────────────────────────────────────────────────────
+  const leadsQuery = useMarketplaceLeads({
+    filters: debouncedFilters,
+    page,
+    limit,
+    orderBy,
+    orderDirection,
+  })
+  const creditsQuery = useMarketplaceCredits()
+  const statsQuery = useMarketplaceStats()
+  const purchaseMutation = usePurchaseLeads()
 
-      if (debouncedFilters.industries.length) params.set('industries', debouncedFilters.industries.join(','))
-      if (debouncedFilters.states.length) params.set('states', debouncedFilters.states.join(','))
-      if (debouncedFilters.companySizes.length) params.set('companySizes', debouncedFilters.companySizes.join(','))
-      if (debouncedFilters.seniorityLevels.length) params.set('seniorityLevels', debouncedFilters.seniorityLevels.join(','))
-      if (debouncedFilters.intentScoreMin !== undefined) params.set('intentScoreMin', String(debouncedFilters.intentScoreMin))
-      if (debouncedFilters.freshnessMin !== undefined) params.set('freshnessMin', String(debouncedFilters.freshnessMin))
-      if (debouncedFilters.hasPhone) params.set('hasPhone', 'true')
-      if (debouncedFilters.hasVerifiedEmail) params.set('hasVerifiedEmail', 'true')
-
-      params.set('limit', String(limit))
-      params.set('offset', String(page * limit))
-      params.set('orderBy', orderBy)
-      params.set('orderDirection', orderDirection)
-
-      const response = await fetch(`/api/marketplace/leads?${params.toString()}`)
-      if (response.ok) {
-        const data = await response.json()
-        setLeads(data.leads || [])
-        setTotalLeads(data.total || 0)
-      }
-    } catch (error) {
-      safeError('[MarketplacePage]', 'Failed to fetch leads:', error)
-    } finally {
-      setIsLoading(false)
-    }
-  }, [debouncedFilters, page, limit, orderBy, orderDirection])
-
-  const fetchCredits = useCallback(async () => {
-    try {
-      const response = await fetch('/api/marketplace/credits')
-      if (response.ok) {
-        const data = await response.json()
-        setCredits(data.balance || 0)
-      }
-    } catch (error) {
-      safeError('[MarketplacePage]', 'Failed to fetch credits:', error)
-    }
-    try {
-      const statsRes = await fetch('/api/marketplace/stats')
-      if (statsRes.ok) {
-        const statsData = await statsRes.json()
-        setTotalSpend(statsData.totalSpent || 0)
-      }
-    } catch (error) {
-      safeError('[MarketplacePage]', 'Failed to fetch stats:', error)
-    }
-  }, [])
-
-  useEffect(() => {
-    fetchLeads()
-    fetchCredits()
-  }, [fetchLeads, fetchCredits])
+  // Derived values from query results
+  const leads = leadsQuery.data?.leads ?? []
+  const totalLeads = leadsQuery.data?.total ?? 0
+  const isLoading = leadsQuery.isLoading
+  const credits = creditsQuery.data?.balance ?? 0
+  const totalSpend = statsQuery.data?.totalSpent ?? 0
+  const isPurchasing = purchaseMutation.isPending
 
   // Handle Stripe redirect
   useEffect(() => {
@@ -236,52 +166,21 @@ export default function MarketplacePage() {
     return count
   }, [filters])
 
-  // Memoize callbacks to prevent unnecessary re-renders
+  // Purchase selected leads via mutation
   const purchaseSelected = useCallback(async () => {
     if (selectedLeads.size === 0) return
 
-    setIsPurchasing(true)
-    try {
-      const response = await fetch('/api/marketplace/purchase', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          leadIds: Array.from(selectedLeads),
-          paymentMethod: 'credits',
-        }),
-      })
-
-      if (response.ok) {
-        const data = await response.json()
-        setPurchasedLeadCount(data.leads?.length || selectedLeads.size)
+    const leadIds = Array.from(selectedLeads)
+    purchaseMutation.mutate(leadIds, {
+      onSuccess: (data) => {
+        const count = data.leads?.length || leadIds.length
+        setPurchasedLeadCount(count)
         setShowSuccessMessage(true)
         setSelectedLeads(new Set())
-        setCredits(data.creditsRemaining || 0)
-        fetchLeads() // Refresh to remove purchased leads
         setTimeout(() => setShowSuccessMessage(false), 5000)
-        toast({
-          title: 'Purchase successful',
-          message: `${data.leads?.length || selectedLeads.size} lead(s) purchased successfully`,
-          type: 'success',
-        })
-      } else {
-        const error = await response.json()
-        toast({
-          title: 'Purchase failed',
-          message: getErrorMessage(error.error || error),
-          type: 'error',
-        })
-      }
-    } catch (error) {
-      toast({
-        title: 'Purchase failed',
-        message: getErrorMessage(error),
-        type: 'error',
-      })
-    } finally {
-      setIsPurchasing(false)
-    }
-  }, [selectedLeads, fetchLeads, toast])
+      },
+    })
+  }, [selectedLeads, purchaseMutation])
 
   const toggleFilter = useCallback((category: keyof Filters, value: string) => {
     setFilters((prev) => {
@@ -993,8 +892,9 @@ export default function MarketplacePage() {
                                 <BuyLeadButton
                                   lead={lead}
                                   onPurchaseComplete={() => {
-                                    // Refresh leads list
-                                    fetchLeads()
+                                    // Invalidate leads cache so purchased lead disappears
+                                    queryClient.invalidateQueries({ queryKey: ['marketplace-leads'] })
+                                    queryClient.invalidateQueries({ queryKey: ['marketplace-credits'] })
                                   }}
                                 />
                               </div>

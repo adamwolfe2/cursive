@@ -22,6 +22,9 @@ import { LeadMobileCardList } from './lead-mobile-card'
 import { formatDate, cn } from '@/lib/utils'
 import { TableSkeleton } from '@/components/skeletons'
 import { ErrorDisplay } from '@/components/error-display'
+import { Users, ArrowRight } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import Link from 'next/link'
 
 interface LeadsTableProps {
   initialFilters?: {
@@ -473,8 +476,15 @@ export function LeadsTable({ initialFilters }: LeadsTableProps) {
       {/* Mobile Card View (< md) */}
       <div className="md:hidden">
         {table.getRowModel().rows.length === 0 ? (
-          <div className="rounded-lg border border-zinc-200 bg-white shadow-sm px-6 py-12 text-center text-sm text-zinc-500">
-            No leads found
+          <div className="rounded-lg border border-zinc-200 bg-white shadow-sm px-6 py-12 text-center">
+            <Users className="h-10 w-10 text-zinc-300 mx-auto mb-3" />
+            <p className="text-sm font-medium text-zinc-900">No leads found</p>
+            <p className="text-xs text-zinc-500 mt-1 mb-4">Leads will appear here when they match your targeting preferences.</p>
+            <Button size="sm" variant="outline" asChild>
+              <Link href="/my-leads/preferences" className="gap-1.5">
+                Set Preferences <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            </Button>
           </div>
         ) : (
           <LeadMobileCardList
@@ -512,9 +522,16 @@ export function LeadsTable({ initialFilters }: LeadsTableProps) {
                 <tr>
                   <td
                     colSpan={columns.length}
-                    className="px-6 py-12 text-center text-sm text-zinc-500"
+                    className="px-6 py-12 text-center"
                   >
-                    No leads found
+                    <Users className="h-10 w-10 text-zinc-300 mx-auto mb-3" />
+                    <p className="text-sm font-medium text-zinc-900">No leads found</p>
+                    <p className="text-xs text-zinc-500 mt-1 mb-4">Leads will appear here when they match your targeting preferences.</p>
+                    <Button size="sm" variant="outline" asChild>
+                      <Link href="/my-leads/preferences" className="gap-1.5">
+                        Set Preferences <ArrowRight className="h-3.5 w-3.5" />
+                      </Link>
+                    </Button>
                   </td>
                 </tr>
               ) : (

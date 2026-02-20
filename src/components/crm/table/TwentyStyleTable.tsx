@@ -216,10 +216,19 @@ export function TwentyStyleTable({ data, onRowClick }: TwentyStyleTableProps) {
               <tr>
                 <td colSpan={9} className="px-4 py-16 text-center">
                   <div className="flex flex-col items-center gap-2">
-                    <p className="text-sm font-medium text-gray-500">No people yet</p>
+                    <svg className="h-10 w-10 text-gray-300 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                    <p className="text-sm font-medium text-gray-700">No people yet</p>
                     <p className="text-xs text-gray-400">
-                      Add leads from the marketplace or import them
+                      Browse the marketplace to find leads, or import them from a CSV file.
                     </p>
+                    <a
+                      href="/leads/discover"
+                      className="mt-2 inline-flex items-center gap-1.5 rounded-md border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                    >
+                      Browse Marketplace
+                    </a>
                   </div>
                 </td>
               </tr>

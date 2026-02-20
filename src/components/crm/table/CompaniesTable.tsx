@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Button } from '@/components/ui/button'
 import { Filter, ArrowUpDown, Settings2, ChevronDown, ExternalLink, Plus } from 'lucide-react'
@@ -206,10 +207,19 @@ export function CompaniesTable({ data, onRowClick, onCreateClick }: CompaniesTab
               <tr>
                 <td colSpan={8} className="px-4 py-16 text-center">
                   <div className="flex flex-col items-center gap-2">
-                    <p className="text-sm font-medium text-gray-500">No companies yet</p>
+                    <svg className="h-10 w-10 text-gray-300 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                    <p className="text-sm font-medium text-gray-700">No companies yet</p>
                     <p className="text-xs text-gray-400">
-                      Add companies from your leads or import them
+                      Companies are automatically created when you enrich leads with company data, or you can import them.
                     </p>
+                    <Link
+                      href="/crm/leads"
+                      className="mt-2 inline-flex items-center gap-1.5 rounded-md border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                    >
+                      View Leads
+                    </Link>
                   </div>
                 </td>
               </tr>

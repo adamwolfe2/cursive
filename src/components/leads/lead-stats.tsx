@@ -1,6 +1,7 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
+import Link from 'next/link'
 import { formatDate, formatNumber } from '@/lib/utils'
 import { StatCardsSkeleton } from '@/components/skeletons'
 import { ErrorDisplay } from '@/components/error-display'
@@ -256,8 +257,22 @@ export function LeadStats() {
             No leads yet
           </h3>
           <p className="mt-1 text-[13px] text-zinc-500">
-            Get started by creating a query to discover leads
+            Get started by creating a query to discover leads or browse the marketplace.
           </p>
+          <div className="mt-4 flex items-center justify-center gap-3">
+            <Link
+              href="/queries"
+              className="inline-flex items-center gap-1.5 rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 transition-colors"
+            >
+              Create Query
+            </Link>
+            <Link
+              href="/leads/discover"
+              className="inline-flex items-center gap-1.5 rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 transition-colors"
+            >
+              Browse Marketplace
+            </Link>
+          </div>
         </div>
       )}
     </div>

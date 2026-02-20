@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { TopicCard } from '@/components/trends/topic-card'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { PageContainer, PageHeader } from '@/components/layout'
 
 type TrendType = 'gainers' | 'losers'
@@ -150,14 +151,20 @@ export default function TrendsPage() {
               d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
             />
           </svg>
-          <h3 className="mt-2 text-[13px] font-medium text-zinc-900">
+          <h3 className="mt-2 text-[14px] font-medium text-zinc-900">
             No trends available
           </h3>
-          <p className="mt-1 text-[13px] text-zinc-600">
+          <p className="mt-1 text-[13px] text-zinc-600 max-w-sm mx-auto">
             {activeTab === 'gainers'
-              ? 'No gaining topics found in the current period.'
-              : 'No declining topics found in the current period.'}
+              ? 'No gaining topics found in the current period. Create a query to start tracking industry trends.'
+              : 'No declining topics found in the current period. Create a query to start tracking industry trends.'}
           </p>
+          <Link
+            href="/queries"
+            className="mt-4 inline-flex items-center gap-1.5 rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 transition-colors"
+          >
+            Create Query
+          </Link>
         </div>
       )}
     </div>
