@@ -9,6 +9,7 @@ import { inngest } from '../client'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { firecrawlService } from '@/lib/services/firecrawl.service'
 import { tavilyService } from '@/lib/services/tavily.service'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export const scrapeWebsite = inngest.createFunction(
   {
@@ -39,7 +40,7 @@ export const scrapeWebsite = inngest.createFunction(
         const data = await firecrawlService.scrapeWebsite(websiteUrl)
         return { success: true as const, data }
       } catch (error: any) {
-        console.error('Firecrawl failed:', error.message)
+        safeError('Firecrawl failed:', error.message)
         return { success: false as const, data: null, error: error.message }
       }
     })
@@ -57,7 +58,7 @@ export const scrapeWebsite = inngest.createFunction(
           const data = await tavilyService.searchCompany(companyName, domain)
           return { success: true as const, data }
         } catch (error: any) {
-          console.error('Tavily failed:', error.message)
+          safeError('Tavily failed:', error.message)
           return { success: false as const, data: null, error: error.message }
         }
       })

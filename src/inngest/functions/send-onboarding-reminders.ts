@@ -1,6 +1,7 @@
 import { inngest } from '../client'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { sendOnboardingReminderEmail } from '@/lib/email/service-emails'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 /**
  * Send onboarding reminder emails
@@ -45,7 +46,7 @@ export const sendOnboardingReminders = inngest.createFunction(
         .lte('created_at', threeDaysAgo.toISOString())
 
       if (error) {
-        console.error('[Inngest] Error fetching incomplete onboarding:', error)
+        safeError('[Inngest] Error fetching incomplete onboarding:', error)
         throw error
       }
 
@@ -75,7 +76,7 @@ export const sendOnboardingReminders = inngest.createFunction(
 
           sent.push(subscription.id)
         } catch (error: any) {
-          console.error(`[Inngest] Failed to send reminder for ${subscription.id}:`, error)
+          safeError(`[Inngest] Failed to send reminder for ${subscription.id}:`, error)
           failed.push({ id: subscription.id, error: error.message })
         }
       }

@@ -9,6 +9,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
 import { UnauthorizedError, ForbiddenError, RateLimitError } from './errors'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 /** User row with joined workspace data from Supabase relation query */
 interface UserWithWorkspace {
@@ -89,7 +90,7 @@ async function getCurrentUser(): Promise<AuthenticatedUser | null> {
       daily_credit_limit: workspace?.daily_credit_limit || 10,
     }
   } catch (error) {
-    console.error('[Auth] Failed to get current user:', error)
+    safeError('[Auth] Failed to get current user:', error)
     return null
   }
 }
@@ -343,7 +344,7 @@ export function withLogging<T extends NextResponse>(
       return response
     } catch (error) {
       const duration = Date.now() - start
-      console.error(
+      safeError(
         `[API] ${method} ${url} - Error (${duration}ms)`,
         error
       )

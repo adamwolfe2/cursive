@@ -52,13 +52,23 @@ export const processCampaignSequences = inngest.createFunction(
     }
 
     // Step 2: For each campaign, find leads ready for next email (timezone-aware)
-    const results = await step.run('process-campaigns', async () => {
+    // Data gathering is separated from event emission to prevent duplicate events on retry
+    const campaignReadyLeads = await step.run('gather-ready-leads', async () => {
       const supabase = createAdminClient()
-      const processed: Array<{
+      const campaignData: Array<{
         campaign_id: string
-        leads_queued: number
+        campaign_name: string
+        workspace_id: string
         auto_send: boolean
         timezone_optimized: boolean
+        events: Array<{
+          campaign_lead_id: string
+          campaign_id: string
+          lead_id: string
+          workspace_id: string
+          sequence_step: number
+          auto_send: boolean
+        }>
       }> = []
 
       for (const campaign of activeCampaigns) {
@@ -69,12 +79,10 @@ export const processCampaignSequences = inngest.createFunction(
         }
 
         // Use timezone-aware lead selection
-        // This considers each lead's optimal send time based on their timezone
         let readyLeads: Array<{ campaignLeadId: string; leadId: string }> = []
         let timezoneOptimized = false
 
         try {
-          // Try timezone-optimized query first
           const tzLeads = await getLeadsReadyForSend(campaign.id, 50)
           readyLeads = tzLeads.map((l) => ({
             campaignLeadId: l.campaignLeadId,
@@ -82,7 +90,6 @@ export const processCampaignSequences = inngest.createFunction(
           }))
           timezoneOptimized = true
         } catch {
-          // Fallback to basic query
           const { data, error } = await supabase
             .from('campaign_leads')
             .select('id, lead_id, current_step')
@@ -117,31 +124,57 @@ export const processCampaignSequences = inngest.createFunction(
 
         const stepMap = new Map((leadSteps || []).map((l) => [l.id, l.current_step || 0]))
 
-        // Queue composition for each lead
+        // Build event data (no side effects yet)
         const events = readyLeads.map((lead) => ({
-          name: 'campaign/compose-email' as const,
-          data: {
-            campaign_lead_id: lead.campaignLeadId,
-            campaign_id: campaign.id,
-            lead_id: lead.leadId,
-            workspace_id: campaign.workspace_id,
-            sequence_step: (stepMap.get(lead.campaignLeadId) || 0) + 1,
-            auto_send: campaign.auto_send_approved,
-          },
+          campaign_lead_id: lead.campaignLeadId,
+          campaign_id: campaign.id,
+          lead_id: lead.leadId,
+          workspace_id: campaign.workspace_id,
+          sequence_step: (stepMap.get(lead.campaignLeadId) || 0) + 1,
+          auto_send: campaign.auto_send_approved,
         }))
 
-        await inngest.send(events)
-
-        processed.push({
+        campaignData.push({
           campaign_id: campaign.id,
-          leads_queued: readyLeads.length,
+          campaign_name: campaign.name,
+          workspace_id: campaign.workspace_id,
           auto_send: campaign.auto_send_approved,
           timezone_optimized: timezoneOptimized,
+          events,
         })
       }
 
-      return processed
+      return campaignData
     })
+
+    // Step 3: Emit compose events per campaign (isolated side effects)
+    // Each campaign gets its own step so a failure in one doesn't re-emit events for others
+    const results: Array<{
+      campaign_id: string
+      leads_queued: number
+      auto_send: boolean
+      timezone_optimized: boolean
+    }> = []
+
+    for (const campaign of campaignReadyLeads) {
+      await step.run(`queue-compose-${campaign.campaign_id}`, async () => {
+        const events = campaign.events.map((e) => ({
+          name: 'campaign/compose-email' as const,
+          data: e,
+        }))
+
+        if (events.length > 0) {
+          await inngest.send(events)
+        }
+      })
+
+      results.push({
+        campaign_id: campaign.campaign_id,
+        leads_queued: campaign.events.length,
+        auto_send: campaign.auto_send,
+        timezone_optimized: campaign.timezone_optimized,
+      })
+    }
 
     const totalLeads = results.reduce((sum, r) => sum + r.leads_queued, 0)
     logger.info(`Processed ${results.length} campaigns, queued ${totalLeads} emails`)

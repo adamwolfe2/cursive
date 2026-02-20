@@ -1,6 +1,6 @@
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { getCurrentUser } from '@/lib/auth/helpers'
 import { Resend } from 'resend'
 import { z } from 'zod'
 import { safeError } from '@/lib/utils/log-sanitizer'
@@ -27,10 +27,8 @@ function escapeHtml(unsafe: string): string {
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createClient()
-
     // Get current user
-    const { data: { user } } = await supabase.auth.getUser()
+    const user = await getCurrentUser()
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }

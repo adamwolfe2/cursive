@@ -2,6 +2,7 @@
 // Handles duplicate detection, hash calculation, and rejection logging
 
 import { createAdminClient } from '@/lib/supabase/admin'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // Edge-compatible crypto helper (no Node.js 'crypto' import)
 async function sha256Hex(data: string): Promise<string> {
@@ -240,7 +241,7 @@ export async function storeRejectionLog(
     })
 
   if (error) {
-    console.error('Failed to store rejection log:', error)
+    safeError('[Deduplication] Failed to store rejection log:', error)
     return null
   }
 
@@ -301,7 +302,7 @@ export async function batchCheckDuplicates(
       .is('is_deleted', false) // Exclude soft-deleted leads
 
     if (error) {
-      console.error('[Deduplication] Batch duplicate check error:', error)
+      safeError('[Deduplication] Batch duplicate check error:', error)
       continue
     }
 
@@ -341,7 +342,7 @@ export async function batchCheckDuplicates(
           })
 
         if (fuzzyError) {
-          console.error('[Deduplication] Fuzzy matching error for lead:', lead.email, fuzzyError)
+          safeError('[Deduplication] Fuzzy matching error for lead:', { email: lead.email, error: fuzzyError })
           continue
         }
 
@@ -369,7 +370,7 @@ export async function batchCheckDuplicates(
           }
         }
       } catch (fuzzyError) {
-        console.error('[Deduplication] Fuzzy matching exception for lead:', lead.email, fuzzyError)
+        safeError('[Deduplication] Fuzzy matching exception for lead:', { email: lead.email, error: fuzzyError })
         // Continue processing other leads even if fuzzy matching fails for one
       }
     }

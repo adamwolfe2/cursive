@@ -7,6 +7,7 @@
  */
 
 import Anthropic from '@anthropic-ai/sdk'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // Lazy initialization to avoid issues during build
 let anthropicClient: Anthropic | null = null
@@ -167,7 +168,7 @@ Respond ONLY with valid JSON, no additional text.`
       }
     }
   } catch (error) {
-    console.error('[Claude] Company analysis failed:', error)
+    safeError('[Claude] Company analysis failed:', error)
     return {
       summary: `Unable to analyze ${companyData.name}`,
       industry: companyData.industry || 'Unknown',
@@ -285,7 +286,7 @@ Respond ONLY with valid JSON.`
       }
     }
   } catch (error) {
-    console.error('[Claude] Lead qualification failed:', error)
+    safeError('[Claude] Lead qualification failed:', error)
     return {
       score: 50,
       tier: 'cold',
@@ -387,7 +388,7 @@ Respond ONLY with valid JSON.`
       }
     }
   } catch (error) {
-    console.error('[Claude] Sales email generation failed:', error)
+    safeError('[Claude] Sales email generation failed:', error)
     return {
       subject: `Quick question about ${context.recipientCompany}`,
       body: `Hi ${context.recipientName},\n\nI noticed ${context.recipientCompany} and wanted to reach out about ${context.valueProposition}.\n\n${context.callToAction}\n\nBest,\n${context.senderName}`,
@@ -483,7 +484,7 @@ For fields you cannot determine, use null or empty arrays. Respond ONLY with val
       }
     }
   } catch (error) {
-    console.error('[Claude] Company research failed:', error)
+    safeError('[Claude] Company research failed:', error)
     return {
       companyName: domain.split('.')[0],
       description: 'Unable to analyze company',
@@ -592,7 +593,7 @@ Respond ONLY with valid JSON.`
       }
     }
   } catch (error) {
-    console.error('[Claude] Intent signal analysis failed:', error)
+    safeError('[Claude] Intent signal analysis failed:', error)
     return {
       intentScore: 30,
       category: 'low_intent',
@@ -689,7 +690,7 @@ Respond ONLY with valid JSON.`
       }
     }
   } catch (error) {
-    console.error('[Claude] Conversation analysis failed:', error)
+    safeError('[Claude] Conversation analysis failed:', error)
     return {
       sentiment: 'neutral',
       engagement: 'medium',

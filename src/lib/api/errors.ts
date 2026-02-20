@@ -19,6 +19,7 @@ import {
   ErrorDetails,
   ApiErrorResponse,
 } from './response'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // ============================================
 // BASE ERROR CLASS
@@ -140,7 +141,7 @@ export class ExternalServiceError extends ApiError {
  */
 export function handleApiError(error: unknown): NextResponse<ApiErrorResponse> {
   // Log error for debugging
-  console.error('[API Error]', error)
+  safeError('[API Error]', error)
 
   // Already an API error
   if (error instanceof ApiError) {

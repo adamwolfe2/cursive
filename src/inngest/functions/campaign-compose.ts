@@ -164,8 +164,25 @@ export const composeCampaignEmail = inngest.createFunction(
     })
 
     // Step 6: Create email_sends record (pending approval)
+    // Idempotency: check if an email_send already exists for this campaign_lead + step
+    // to prevent duplicates on retry
     const emailSend = await step.run('create-email-send', async () => {
       const supabase = createAdminClient()
+      const stepNumber = campaignLead.current_step + 1
+
+      // Check for existing email_send to prevent duplicates on retry
+      const { data: existing } = await supabase
+        .from('email_sends')
+        .select('*')
+        .eq('campaign_id', campaign_id)
+        .eq('lead_id', lead_id)
+        .eq('step_number', stepNumber)
+        .in('status', ['pending_approval', 'approved', 'sending', 'sent'])
+        .single()
+
+      if (existing) {
+        return existing
+      }
 
       const insertData: Record<string, any> = {
         workspace_id,
@@ -178,7 +195,7 @@ export const composeCampaignEmail = inngest.createFunction(
         body_html: composedEmail.body_html,
         body_text: composedEmail.body_text,
         status: 'pending_approval', // Requires human review
-        step_number: campaignLead.current_step + 1,
+        step_number: stepNumber,
         composition_metadata: {
           ...composedEmail.metadata,
           variant_used: variant ? variant.variantKey : null,

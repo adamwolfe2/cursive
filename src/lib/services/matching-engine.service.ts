@@ -672,7 +672,7 @@ export class MatchingEngineService {
     )
 
     if (error) {
-      console.error('Failed to create unroutable record:', error)
+      safeError('[Matching Engine] Failed to create unroutable record:', error)
     }
   }
 

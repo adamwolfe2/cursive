@@ -18,6 +18,14 @@ const domainSchema = z.string().min(1).max(255).regex(
   'Invalid domain format'
 )
 
+const enrichRequestSchema = z.object({
+  domain: z.string().max(255).optional(),
+  website: z.string().max(500).optional(),
+  saveToWorkspace: z.boolean().default(false),
+}).refine(data => data.domain || data.website, {
+  message: 'Domain or website URL is required',
+})
+
 export async function POST(request: NextRequest) {
   try {
     const user = await getCurrentUser()
@@ -29,17 +37,22 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { domain, website, saveToWorkspace = false } = body
+    const validationResult = enrichRequestSchema.safeParse(body)
 
-    // Accept either domain or website URL
-    const targetDomain = domain || website
-
-    if (!targetDomain) {
-      return NextResponse.json(
-        { error: 'Domain or website URL is required' },
-        { status: 400 }
-      )
+    if (!validationResult.success) {
+      if (validationResult.error instanceof z.ZodError) {
+        return NextResponse.json(
+          { error: 'Invalid request', details: validationResult.error.errors },
+          { status: 400 }
+        )
+      }
+      return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
     }
+
+    const { domain, website, saveToWorkspace } = validationResult.data
+
+    // Accept either domain or website URL (refine guarantees at least one exists)
+    const targetDomain = (domain || website) as string
 
     const enrichmentService = getCompanyEnrichmentService()
 

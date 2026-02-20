@@ -4,6 +4,7 @@
  */
 
 import { createClient } from '@/lib/supabase/server'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export type AuditAction =
   | 'create'
@@ -132,7 +133,7 @@ export async function createAuditLog(params: CreateAuditLogParams): Promise<stri
   })
 
   if (error) {
-    console.error('Failed to create audit log:', error.message)
+    safeError('[Audit] Failed to create audit log:', error)
 
     // Fallback to direct insert
     const { data: insertData, error: insertError } = await supabase
@@ -322,7 +323,7 @@ export async function logSecurityEvent(params: {
   })
 
   if (error) {
-    console.error('Failed to log security event:', error.message)
+    safeError('[Audit] Failed to log security event:', error)
     return null
   }
 

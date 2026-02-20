@@ -7,25 +7,18 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { getCurrentUser } from '@/lib/auth/helpers'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function GET(req: NextRequest) {
   try {
-    const supabase = await createClient()
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-    if (authError || !user) {
+    const user = await getCurrentUser()
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { data: profile } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', user.id)
-      .single()
-
-    if (!profile?.workspace_id) {
+    if (!user.workspace_id) {
       return NextResponse.json({ error: 'No workspace' }, { status: 400 })
     }
 
@@ -46,7 +39,7 @@ export async function GET(req: NextRequest) {
         'id, first_name, last_name, full_name, email, phone, company_name, company_domain, job_title, city, state, country, intent_score_calculated, enrichment_status, created_at, source, linkedin_url',
         { count: 'exact' }
       )
-      .eq('workspace_id', profile.workspace_id)
+      .eq('workspace_id', user.workspace_id)
       .or('source.ilike.%pixel%,source.ilike.%superpixel%')
       .gte('created_at', since)
       .order('created_at', { ascending: false })
@@ -73,26 +66,26 @@ export async function GET(req: NextRequest) {
       adminSupabase
         .from('leads')
         .select('*', { count: 'exact', head: true })
-        .eq('workspace_id', profile.workspace_id)
+        .eq('workspace_id', user.workspace_id)
         .or('source.ilike.%pixel%,source.ilike.%superpixel%')
         .gte('created_at', since),
       adminSupabase
         .from('leads')
         .select('*', { count: 'exact', head: true })
-        .eq('workspace_id', profile.workspace_id)
+        .eq('workspace_id', user.workspace_id)
         .or('source.ilike.%pixel%,source.ilike.%superpixel%')
         .gte('created_at', since)
         .eq('enrichment_status', 'enriched'),
       adminSupabase
         .from('leads')
         .select('*', { count: 'exact', head: true })
-        .eq('workspace_id', profile.workspace_id)
+        .eq('workspace_id', user.workspace_id)
         .or('source.ilike.%pixel%,source.ilike.%superpixel%')
         .gte('created_at', weekAgo),
       adminSupabase
         .from('leads')
         .select('intent_score_calculated')
-        .eq('workspace_id', profile.workspace_id)
+        .eq('workspace_id', user.workspace_id)
         .or('source.ilike.%pixel%,source.ilike.%superpixel%')
         .gte('created_at', since)
         .not('intent_score_calculated', 'is', null)
@@ -109,7 +102,7 @@ export async function GET(req: NextRequest) {
     const { data: pixel } = await adminSupabase
       .from('audiencelab_pixels')
       .select('pixel_id, domain, trial_status, trial_ends_at, is_active')
-      .eq('workspace_id', profile.workspace_id)
+      .eq('workspace_id', user.workspace_id)
       .maybeSingle()
 
     return NextResponse.json({

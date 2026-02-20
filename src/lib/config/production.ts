@@ -5,6 +5,8 @@
  * Helpers for production deployment and optimization.
  */
 
+import { safeError } from '@/lib/utils/log-sanitizer'
+
 // ============================================
 // CACHING
 // ============================================
@@ -147,9 +149,9 @@ export async function reportError(
     //   method: 'POST',
     //   body: JSON.stringify(report),
     // })
-    console.error('[ERROR REPORT]', report)
+    safeError('[ERROR REPORT]', report)
   } else {
-    console.error('[DEV ERROR]', error, context)
+    safeError('[DEV ERROR]', error)
   }
 }
 
@@ -256,7 +258,7 @@ export async function gracefulShutdown(): Promise<void> {
     try {
       await handler()
     } catch (error) {
-      console.error('[SHUTDOWN] Handler error:', error)
+      safeError('[SHUTDOWN] Handler error:', error)
     }
   }
 

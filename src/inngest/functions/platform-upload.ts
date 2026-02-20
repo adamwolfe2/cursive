@@ -3,6 +3,7 @@
 
 import { inngest } from '../client'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export const platformUpload = inngest.createFunction(
   {
@@ -211,7 +212,7 @@ async function uploadToTechPlatform(
       uploaded_count: leads.length,
     }
   } catch (error: any) {
-    console.error('[TechPlatform] Upload error:', error)
+    safeError('[TechPlatform] Upload error:', error)
     throw error
   }
 }

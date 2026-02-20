@@ -23,6 +23,15 @@ const notificationPreferencesSchema = z.object({
   digest_time: z.string().optional(),
 }).passthrough()
 
+const patchUserSchema = z.object({
+  full_name: z.string().min(1, 'Full name is required').max(200).trim().optional(),
+  notification_preferences: notificationPreferencesSchema.optional(),
+}).strict()
+
+const deleteUserSchema = z.object({
+  confirm_email: z.string().email('Valid email is required for confirmation'),
+})
+
 // Generate a unique referral code
 function generateReferralCode(): string {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
@@ -126,26 +135,31 @@ export async function PATCH(request: NextRequest) {
       return unauthorized()
     }
 
-    // 2. Get update data
+    // 2. Validate input with Zod
     const body = await request.json()
-    const { full_name, notification_preferences } = body
+    const validationResult = patchUserSchema.safeParse(body)
+
+    if (!validationResult.success) {
+      if (validationResult.error instanceof z.ZodError) {
+        return NextResponse.json(
+          { error: 'Invalid request', details: validationResult.error.errors },
+          { status: 400 }
+        )
+      }
+      return validationError('Invalid request data')
+    }
+
+    const { full_name, notification_preferences } = validationResult.data
 
     // 3. Build update object
     const updates: Record<string, any> = {}
 
     if (full_name !== undefined) {
-      if (typeof full_name !== 'string' || full_name.trim().length === 0) {
-        return validationError('Full name is required')
-      }
-      updates.full_name = full_name.trim()
+      updates.full_name = full_name
     }
 
     if (notification_preferences !== undefined) {
-      const parsed = notificationPreferencesSchema.safeParse(notification_preferences)
-      if (!parsed.success) {
-        return validationError('Invalid notification preferences format')
-      }
-      updates.notification_preferences = parsed.data
+      updates.notification_preferences = notification_preferences
     }
 
     // 4. Check if there's anything to update
@@ -205,13 +219,21 @@ export async function DELETE(request: NextRequest) {
       return unauthorized()
     }
 
-    // 2. Require email confirmation to prevent accidental deletion
+    // 2. Validate input with Zod
     const body = await request.json()
-    const { confirm_email } = body
+    const validationResult = deleteUserSchema.safeParse(body)
 
-    if (!confirm_email || typeof confirm_email !== 'string') {
+    if (!validationResult.success) {
+      if (validationResult.error instanceof z.ZodError) {
+        return NextResponse.json(
+          { error: 'Invalid request', details: validationResult.error.errors },
+          { status: 400 }
+        )
+      }
       return validationError('Email confirmation is required to delete account')
     }
+
+    const { confirm_email } = validationResult.data
 
     if (confirm_email.toLowerCase() !== user.email.toLowerCase()) {
       return validationError('Email confirmation does not match your account email')

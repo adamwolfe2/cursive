@@ -7,6 +7,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { fetchWithTimeout } from '@/lib/utils/retry'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // Configuration
 const GHL_TIMEOUT = 30000 // 30 seconds
@@ -99,7 +100,7 @@ async function refreshGhlToken(
   connection: GhlConnection
 ): Promise<{ accessToken: string; refreshToken: string } | null> {
   if (!process.env.GHL_CLIENT_ID || !process.env.GHL_CLIENT_SECRET) {
-    console.error('[GHL] Missing GHL_CLIENT_ID or GHL_CLIENT_SECRET')
+    safeError('[GHL] Missing GHL_CLIENT_ID or GHL_CLIENT_SECRET')
     return null
   }
 

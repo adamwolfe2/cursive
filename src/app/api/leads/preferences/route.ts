@@ -1,29 +1,34 @@
 
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { getCurrentUser } from '@/lib/auth/helpers'
 import { createClient } from '@/lib/supabase/server'
-import { safeParseFloat } from '@/lib/utils/parse-number'
+
+const createPreferenceSchema = z.object({
+  name: z.string().min(1, 'Name is required').max(200),
+  description: z.string().max(1000).optional().nullable(),
+  target_industries: z.array(z.string()).default([]),
+  target_regions: z.array(z.string()).default([]),
+  target_company_sizes: z.array(z.string()).default([]),
+  target_intent_signals: z.array(z.string()).default([]),
+  max_leads_per_day: z.number().int().min(1).max(10000).default(10),
+  max_cost_per_lead: z.number().min(0).max(10000).optional().nullable(),
+  monthly_budget: z.number().min(0).max(1000000).optional().nullable(),
+})
 
 export async function GET(request: NextRequest) {
   try {
-    const supabase = await createClient()
-
-    // Get current user (server-verified)
-    const { data: { user: authUser } } = await supabase.auth.getUser()
-    if (!authUser) {
+    const user = await getCurrentUser()
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Get user's workspace
-    const { data: user } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', authUser.id)
-      .single()
-
-    if (!user?.workspace_id) {
+    if (!user.workspace_id) {
       return NextResponse.json({ error: 'No workspace found' }, { status: 404 })
     }
+
+    const supabase = await createClient()
 
     // Get preferences
     const { data: preferences, error } = await supabase
@@ -46,56 +51,46 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createClient()
-
-    // Get current user
-    const { data: { user: authUser } } = await supabase.auth.getUser()
-    if (!authUser) {
+    const user = await getCurrentUser()
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Get user's workspace
-    const { data: user } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', authUser.id)
-      .single()
-
-    if (!user?.workspace_id) {
+    if (!user.workspace_id) {
       return NextResponse.json({ error: 'No workspace found' }, { status: 404 })
     }
 
-    const body = await request.json()
-    const {
-      name,
-      description,
-      target_industries,
-      target_regions,
-      target_company_sizes,
-      target_intent_signals,
-      max_leads_per_day,
-      max_cost_per_lead,
-      monthly_budget,
-    } = body
+    const supabase = await createClient()
 
-    if (!name) {
-      return NextResponse.json({ error: 'Name is required' }, { status: 400 })
+    const body = await request.json()
+    const validationResult = createPreferenceSchema.safeParse(body)
+
+    if (!validationResult.success) {
+      if (validationResult.error instanceof z.ZodError) {
+        return NextResponse.json(
+          { error: 'Invalid request', details: validationResult.error.errors },
+          { status: 400 }
+        )
+      }
+      return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
     }
+
+    const validated = validationResult.data
 
     // Create preference
     const { data: preference, error } = await supabase
       .from('lead_preferences')
       .insert({
         workspace_id: user.workspace_id,
-        name,
-        description,
-        target_industries: target_industries || [],
-        target_regions: target_regions || [],
-        target_company_sizes: target_company_sizes || [],
-        target_intent_signals: target_intent_signals || [],
-        max_leads_per_day: max_leads_per_day || 10,
-        max_cost_per_lead: max_cost_per_lead ? safeParseFloat(max_cost_per_lead, { min: 0 }) : null,
-        monthly_budget: monthly_budget ? safeParseFloat(monthly_budget, { min: 0 }) : null,
+        name: validated.name,
+        description: validated.description,
+        target_industries: validated.target_industries,
+        target_regions: validated.target_regions,
+        target_company_sizes: validated.target_company_sizes,
+        target_intent_signals: validated.target_intent_signals,
+        max_leads_per_day: validated.max_leads_per_day,
+        max_cost_per_lead: validated.max_cost_per_lead ?? null,
+        monthly_budget: validated.monthly_budget ?? null,
       })
       .select('id, workspace_id, name, description, target_industries, target_regions, target_company_sizes, target_intent_signals, max_leads_per_day, max_cost_per_lead, monthly_budget, created_at, updated_at')
       .single()

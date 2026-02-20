@@ -14,6 +14,10 @@ import {
   type ConversationFilters,
 } from '@/lib/services/campaign/conversation.service'
 
+const conversationActionSchema = z.object({
+  action: z.enum(['stats']),
+})
+
 const listQuerySchema = z.object({
   page: z.coerce.number().int().min(1).optional(),
   limit: z.coerce.number().int().min(1).max(100).optional(),
@@ -114,8 +118,15 @@ export async function POST(request: NextRequest) {
     if (!user) return unauthorized()
 
     const body = await request.json()
+    const validationResult = conversationActionSchema.safeParse(body)
 
-    if (body.action === 'stats') {
+    if (!validationResult.success) {
+      return badRequest('Invalid action. Supported actions: stats')
+    }
+
+    const { action } = validationResult.data
+
+    if (action === 'stats') {
       const stats = await getConversationStats(user.workspace_id)
       return success({
         stats: {

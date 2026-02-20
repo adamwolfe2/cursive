@@ -1,6 +1,7 @@
 import { inngest } from '../client'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { sendRenewalReminderEmail } from '@/lib/email/service-emails'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 /**
  * Send renewal reminder emails
@@ -49,7 +50,7 @@ export const sendRenewalReminders = inngest.createFunction(
         .lt('current_period_end', eightDaysFromNow.toISOString())
 
       if (error) {
-        console.error('[Inngest] Error fetching upcoming renewals:', error)
+        safeError('[Inngest] Error fetching upcoming renewals:', error)
         throw error
       }
 
@@ -76,7 +77,7 @@ export const sendRenewalReminders = inngest.createFunction(
 
           sent.push(subscription.id)
         } catch (error: any) {
-          console.error(`[Inngest] Failed to send renewal reminder for ${subscription.id}:`, error)
+          safeError(`[Inngest] Failed to send renewal reminder for ${subscription.id}:`, error)
           failed.push({ id: subscription.id, error: error.message })
         }
       }

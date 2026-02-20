@@ -15,6 +15,7 @@ import Image from 'next/image'
 
 interface AutoSubmitOnboardingProps {
   isMarketplace: boolean
+  isReturning?: boolean
 }
 
 /** Small helper: wait for `ms` milliseconds */
@@ -22,7 +23,7 @@ function wait(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-export function AutoSubmitOnboarding({ isMarketplace }: AutoSubmitOnboardingProps) {
+export function AutoSubmitOnboarding({ isMarketplace, isReturning }: AutoSubmitOnboardingProps) {
   const router = useRouter()
   const [error, setError] = useState<string | null>(null)
   const [status, setStatus] = useState<'loading' | 'error'>('loading')
@@ -80,14 +81,14 @@ export function AutoSubmitOnboarding({ isMarketplace }: AutoSubmitOnboardingProp
 
         // Retry logic: the auth callback sets cookies but they may not be
         // available to the API route on the very first request after redirect.
-        // Retry up to 3 times with exponential back-off for 401 responses.
-        const MAX_RETRIES = 3
+        // Retry up to 5 times with increasing delays for 401 responses.
+        const MAX_RETRIES = 5
+        const RETRY_DELAYS = [500, 1000, 2000, 3000, 4000] // ~10.5s total
         let lastResponse: Response | null = null
 
         for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
           if (attempt > 0) {
-            // Wait before retrying: 500ms, 1500ms, 3000ms
-            await wait(500 * attempt)
+            await wait(RETRY_DELAYS[attempt - 1])
           }
 
           lastResponse = await fetch('/api/onboarding/setup', {
@@ -110,18 +111,21 @@ export function AutoSubmitOnboarding({ isMarketplace }: AutoSubmitOnboardingProp
         }
 
         if (lastResponse.status === 409) {
-          // Already has workspace
-          sessionStorage.removeItem('cursive_onboarding')
-          router.push(isMarketplace ? '/marketplace' : '/dashboard')
-          return
+          // Check if it's a slug collision vs already-has-workspace
+          const body409 = await lastResponse.json()
+          if (body409.workspace_id) {
+            // Already has workspace — redirect to dashboard
+            sessionStorage.removeItem('cursive_onboarding')
+            router.push(isMarketplace ? '/marketplace' : '/dashboard')
+            return
+          }
+          // Slug collision — show specific error
+          throw new Error('This workspace name is already taken. Please try a different company name.')
         }
 
         if (lastResponse.status === 401) {
           // Still unauthorized after retries -- session may have expired
-          // or cookies were lost. Clear storage and send to login.
-          sessionStorage.removeItem('cursive_onboarding')
-          window.location.href = '/login?reason=session_expired'
-          return
+          throw new Error('Your session may have expired. Please sign in again.')
         }
 
         if (!lastResponse.ok) {
@@ -162,7 +166,14 @@ export function AutoSubmitOnboarding({ isMarketplace }: AutoSubmitOnboardingProp
         sessionStorage.removeItem('cursive_onboarding')
         router.push(isMarketplace ? '/marketplace' : '/dashboard')
       } catch (err: any) {
-        setError(err.message || 'Something went wrong')
+        // Provide specific error messages based on error type
+        if (err instanceof TypeError && err.message === 'Failed to fetch') {
+          setError('Network error. Please check your connection and try again.')
+        } else if (err.message) {
+          setError(err.message)
+        } else {
+          setError('Something went wrong. Please try again.')
+        }
         setStatus('error')
       }
     }
@@ -179,13 +190,7 @@ export function AutoSubmitOnboarding({ isMarketplace }: AutoSubmitOnboardingProp
           <p className="text-sm text-muted-foreground">{error}</p>
           <div className="flex flex-col gap-3 items-center">
             <button
-              onClick={() => {
-                setStatus('loading')
-                setError(null)
-                submittedRef.current = false
-                // Force re-mount by navigating
-                window.location.href = '/welcome?returning=true'
-              }}
+              onClick={() => window.location.reload()}
               className="h-10 px-6 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 transition-colors"
             >
               Try Again

@@ -3,6 +3,7 @@
 
 import { inngest } from '../client'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // Support multiple verification providers
 const verifyEmail = async (email: string): Promise<{
@@ -58,7 +59,7 @@ const verifyEmail = async (email: string): Promise<{
   }
 
   // No verification service configured - mark as unknown
-  console.warn('No email verification service configured')
+  safeError('No email verification service configured')
   return { status: 'unknown', response: { error: 'No service configured' } }
 }
 

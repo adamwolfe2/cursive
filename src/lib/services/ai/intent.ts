@@ -2,6 +2,7 @@
 // Classifies email replies by buyer intent
 
 import { createOpenAIClient, type OpenAIClient } from './openai'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export type IntentCategory =
   | 'INTERESTED'      // 8-10: Wants demo, call, more info
@@ -175,7 +176,7 @@ ${emailBody}
       confidence: 0.8,
     }
   } catch (error) {
-    console.error('[Intent Classification] AI error:', error)
+    safeError('[Intent Classification] AI error:', error)
 
     // Fallback to neutral classification
     return {

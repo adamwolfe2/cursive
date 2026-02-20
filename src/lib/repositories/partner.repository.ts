@@ -4,6 +4,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { sanitizeSearchTerm } from '@/lib/utils/sanitize-search'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import type {
   Partner,
   PartnerUploadBatch,
@@ -562,7 +563,7 @@ export class PartnerRepository {
       .single()
 
     if (error) {
-      console.error('[PartnerRepository] Failed to get analytics:', error)
+      safeError('[PartnerRepository] Failed to get analytics:', error)
       return null
     }
 
@@ -591,7 +592,7 @@ export class PartnerRepository {
           updated_at: new Date().toISOString(),
         }
       }
-      console.error('[PartnerRepository] Failed to get credits:', error)
+      safeError('[PartnerRepository] Failed to get credits:', error)
       return null
     }
 
@@ -626,7 +627,7 @@ export class PartnerRepository {
       .range(offset, offset + limit - 1)
 
     if (error) {
-      console.error('[PartnerRepository] Failed to get uploaded leads:', error)
+      safeError('[PartnerRepository] Failed to get uploaded leads:', error)
       throw new Error('Failed to fetch uploaded leads')
     }
 

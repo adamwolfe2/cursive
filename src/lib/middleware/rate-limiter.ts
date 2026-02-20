@@ -3,6 +3,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // Rate limit configurations by endpoint type
 export const RATE_LIMITS = {
@@ -100,7 +101,7 @@ export async function checkRateLimit(
     .gte('created_at', windowStart.toISOString())
 
   if (error) {
-    console.error('Rate limit check failed:', error)
+    safeError('Rate limit check failed:', error)
     // SECURITY: Fail closed - reject requests when rate limit DB is unavailable
     // This prevents abuse during outages but may cause false positives
     // Monitor error rates and consider circuit breaker pattern if needed

@@ -23,7 +23,7 @@ export default function VerifyEmailPage() {
 
         // Check if email is already verified
         if (session.user.email_confirmed_at) {
-          router.push('/onboarding')
+          router.push('/welcome')
         }
       }
     }
@@ -47,7 +47,7 @@ export default function VerifyEmailPage() {
       type: 'signup',
       email: email,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback?next=/onboarding`,
+        emailRedirectTo: `${window.location.origin}/auth/callback?next=/welcome`,
       },
     })
 

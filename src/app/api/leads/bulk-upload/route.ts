@@ -9,6 +9,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { getCurrentUser } from '@/lib/auth/helpers'
 import { createClient } from '@/lib/supabase/server'
 import { sanitizeCsvValue } from '@/lib/utils/csv-sanitizer'
 import { z } from 'zod'
@@ -25,30 +26,6 @@ const csvRowSchema = z.object({
   phone: z.string().optional().nullable(),
   job_title: z.string().optional().nullable(),
 })
-
-/**
- * Get authenticated user from session
- */
-async function getAuthenticatedUser() {
-  const supabase = await createClient()
-
-  const {
-    data: { user: authUser },
-  } = await supabase.auth.getUser()
-
-  if (!authUser) {
-    return { user: null, supabase }
-  }
-
-  // Get user with workspace
-  const { data: user } = await supabase
-    .from('users')
-    .select('id, workspace_id, email')
-    .eq('auth_user_id', authUser.id)
-    .single()
-
-  return { user, supabase }
-}
 
 /**
  * Parse CSV content into records
@@ -111,13 +88,15 @@ function parseCSVLine(line: string): string[] {
 export async function POST(req: NextRequest) {
   try {
     // Authenticate user
-    const { user, supabase } = await getAuthenticatedUser()
+    const user = await getCurrentUser()
     if (!user) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
       )
     }
+
+    const supabase = await createClient()
 
     // Parse form data
     const formData = await req.formData()

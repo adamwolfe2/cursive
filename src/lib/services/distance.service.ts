@@ -8,6 +8,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { geocodingService, type GeocodingInput } from './geocoding.service'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // ============================================
 // TYPES
@@ -146,7 +147,7 @@ export class DistanceService {
     const { data: leadsData, error } = await query
 
     if (error) {
-      console.error('Proximity search error:', error)
+      safeError('[Distance] Proximity search error:', error)
       return {
         leads: [],
         total_count: 0,
@@ -231,7 +232,7 @@ export class DistanceService {
       .lte('longitude', maxLng)
 
     if (error) {
-      console.error('Direct proximity search error:', error)
+      safeError('[Distance] Direct proximity search error:', error)
       return {
         leads: [],
         total_count: 0,

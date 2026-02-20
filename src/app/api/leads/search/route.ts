@@ -7,70 +7,63 @@
 
 
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
+import { getCurrentUser } from '@/lib/auth/helpers'
 import { createClient } from '@/lib/supabase/server'
 import { getLeadProviderService, type LeadSearchFilters } from '@/lib/services/lead-provider.service'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
+const leadSearchSchema = z.object({
+  filters: z.object({
+    topic: z.string().max(500).optional(),
+    keywords: z.array(z.string().max(200)).max(50).optional(),
+    industries: z.array(z.string().max(200)).max(50).optional(),
+    jobTitles: z.array(z.string().max(200)).max(50).optional(),
+    locations: z.array(z.string().max(200)).max(50).optional(),
+    companySize: z.string().max(100).optional(),
+    limit: z.number().int().min(1).max(500).optional(),
+  }).refine(data =>
+    data.topic ||
+    (data.keywords && data.keywords.length > 0) ||
+    (data.industries && data.industries.length > 0) ||
+    (data.jobTitles && data.jobTitles.length > 0),
+    { message: 'At least one search filter is required (topic, keywords, industries, or job titles)' }
+  ),
+  provider: z.enum(['audience_labs']).optional(),
+  saveLeads: z.boolean().default(true),
+})
+
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createClient()
-
-    // Check authentication
-    const {
-      data: { user: authUser },
-    } = await supabase.auth.getUser()
-
-    if (!authUser) {
+    const user = await getCurrentUser()
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Get user's workspace
-    const { data: user, error: userError } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', authUser.id)
-      .single()
-
-    if (userError || !user?.workspace_id) {
+    if (!user.workspace_id) {
       return NextResponse.json(
         { error: 'Workspace not found' },
         { status: 400 }
       )
     }
 
+    const supabase = await createClient()
     const workspaceId = user.workspace_id
 
     const body = await request.json()
-    const {
-      filters,
-      provider,
-      saveLeads = true,
-    } = body as {
-      filters: LeadSearchFilters
-      provider?: 'audience_labs'
-      saveLeads?: boolean
+    const validationResult = leadSearchSchema.safeParse(body)
+
+    if (!validationResult.success) {
+      if (validationResult.error instanceof z.ZodError) {
+        return NextResponse.json(
+          { error: 'Invalid request', details: validationResult.error.errors },
+          { status: 400 }
+        )
+      }
+      return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
     }
 
-    if (!filters) {
-      return NextResponse.json(
-        { error: 'Filters are required' },
-        { status: 400 }
-      )
-    }
-
-    // Validate at least some search criteria
-    const hasFilters =
-      filters.topic ||
-      (filters.keywords && filters.keywords.length > 0) ||
-      (filters.industries && filters.industries.length > 0) ||
-      (filters.jobTitles && filters.jobTitles.length > 0)
-
-    if (!hasFilters) {
-      return NextResponse.json(
-        { error: 'At least one search filter is required (topic, keywords, industries, or job titles)' },
-        { status: 400 }
-      )
-    }
+    const { filters, provider, saveLeads } = validationResult.data
 
     const leadProvider = getLeadProviderService()
 

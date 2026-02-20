@@ -279,18 +279,22 @@ export const triggerManualPayout = inngest.createFunction(
 
     logger.info(`Manual payout requested for partner ${partnerId} by ${requestedBy}`)
 
-    const supabase = createAdminClient()
+    // Wrap DB fetch in step.run for memoization across retries
+    const partner = await step.run('fetch-partner', async () => {
+      const supabase = createAdminClient()
 
-    // Get partner details
-    const { data: partner, error } = await supabase
-      .from('partners')
-      .select('id, name, email, available_balance, stripe_account_id, stripe_onboarding_complete')
-      .eq('id', partnerId)
-      .single()
+      const { data, error } = await supabase
+        .from('partners')
+        .select('id, name, email, available_balance, stripe_account_id, stripe_onboarding_complete')
+        .eq('id', partnerId)
+        .single()
 
-    if (error || !partner) {
-      throw new Error(`Partner not found: ${partnerId}`)
-    }
+      if (error || !data) {
+        throw new Error(`Partner not found: ${partnerId}`)
+      }
+
+      return data
+    })
 
     // Process payout
     const result = await step.run('process-payout', async () => {
@@ -350,41 +354,52 @@ export const reconcilePayouts = inngest.createFunction(
   },
   { cron: '0 5 * * 0' }, // 5 AM every Sunday
   async ({ step, logger }) => {
-    const supabase = createAdminClient()
-    const stripe = getStripeClient()
+    // Wrap DB fetch in step.run for memoization across retries
+    const payouts = await step.run('fetch-payouts-for-reconciliation', async () => {
+      const supabase = createAdminClient()
 
-    // Get recent payouts that might need reconciliation
-    const { data: payouts, error } = await supabase
-      .from('payout_requests')
-      .select('id, stripe_transfer_id, status')
-      .eq('status', 'completed')
-      .gte('created_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString())
-      .not('stripe_transfer_id', 'is', null)
-      .limit(100)
+      const { data, error } = await supabase
+        .from('payout_requests')
+        .select('id, stripe_transfer_id, status')
+        .eq('status', 'completed')
+        .gte('created_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString())
+        .not('stripe_transfer_id', 'is', null)
+        .limit(100)
 
-    if (error || !payouts) {
-      throw new Error('Failed to fetch payouts for reconciliation')
-    }
+      if (error || !data) {
+        throw new Error('Failed to fetch payouts for reconciliation')
+      }
+
+      return data
+    })
 
     let reconciled = 0
 
     for (const payout of payouts) {
-      await step.run(`reconcile-${payout.id}`, async () => {
+      const wasReversed = await step.run(`reconcile-${payout.id}`, async () => {
         try {
+          const stripe = getStripeClient()
           const transfer = await stripe.transfers.retrieve(payout.stripe_transfer_id!)
 
           // Check if transfer was reversed or failed
           if (transfer.reversed) {
+            const supabase = createAdminClient()
             await supabase
               .from('payout_requests')
               .update({ status: 'reversed' })
               .eq('id', payout.id)
-            reconciled++
+            return true
           }
+          return false
         } catch (err) {
           safeError(`Failed to reconcile payout ${payout.id}:`, err)
+          return false
         }
       })
+
+      if (wasReversed) {
+        reconciled++
+      }
     }
 
     logger.info('Payout reconciliation completed', { checked: payouts.length, reconciled })

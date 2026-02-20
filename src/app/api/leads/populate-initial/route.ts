@@ -8,6 +8,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
+import { getCurrentUser } from '@/lib/auth/helpers'
 import { createClient } from '@/lib/supabase/server'
 import { fetchLeadsFromSegment, type AudienceLabLead } from '@/lib/services/audiencelab.service'
 import { meetsQualityBar } from '@/lib/services/lead-quality.service'
@@ -16,22 +17,18 @@ import { checkWorkspaceDuplicates, logDedupRejections } from '@/lib/services/ded
 
 export async function POST(req: NextRequest) {
   try {
-    const supabase = await createClient()
-
-    // Get authenticated user
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) {
+    const currentUser = await getCurrentUser()
+    if (!currentUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
+
+    const supabase = await createClient()
 
     // Get user profile with workspace and segment info
     const { data: userProfile, error: userError } = await supabase
       .from('users')
       .select('id, workspace_id, industry_segment, location_segment, daily_lead_limit, plan, is_active')
-      .eq('auth_user_id', user.id)
+      .eq('auth_user_id', currentUser.auth_user_id)
       .single()
 
     if (userError || !userProfile) {

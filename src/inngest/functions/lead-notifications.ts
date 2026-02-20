@@ -12,6 +12,7 @@ import { inngest } from '../client'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { notifyNewLead } from '@/lib/services/lead-notifications.service'
 import type { LeadNotification } from '@/lib/services/lead-notifications.service'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 function getSupabaseAdmin() {
   return createAdminClient()
@@ -40,7 +41,7 @@ export const sendLeadNotifications = inngest.createFunction(
         .single()
 
       if (error) {
-        console.error(
+        safeError(
           `[Lead Notifications] Lead not found (${lead_id}), skipping notifications: ${error.message}`
         )
         return null

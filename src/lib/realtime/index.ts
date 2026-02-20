@@ -9,6 +9,7 @@
 
 import { useEffect, useCallback, useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import type { RealtimeChannel, RealtimePostgresChangesPayload } from '@supabase/supabase-js'
 
 // ============================================
@@ -413,7 +414,7 @@ export function useLiveData<T extends { id: string }>(
       const { data: fetchedData, error } = await query
 
       if (error) {
-        console.error(`Error fetching ${table}:`, error)
+        safeError(`Error fetching ${table}:`, error)
       } else {
         setData((fetchedData || []) as T[])
       }

@@ -37,11 +37,34 @@ export const sendApprovedEmail = inngest.createFunction(
   async ({ event, step, logger }) => {
     const { email_send_id, campaign_lead_id, workspace_id } = event.data
 
-    // Step 1: Fetch email send record
+    // Step 1: Fetch email send record and atomically claim it for sending
+    // This prevents duplicate sends on retry — only the first attempt transitions
+    // from 'approved' to 'sending'. Subsequent retries see 'sending' or 'sent'.
     const emailSend = await step.run('fetch-email-send', async () => {
       const supabase = createAdminClient()
 
-      const { data, error } = await supabase
+      // Atomically transition from 'approved' → 'sending' to prevent double-sends
+      const { data: claimed, error: claimError } = await supabase
+        .from('email_sends')
+        .update({ status: 'sending', updated_at: new Date().toISOString() })
+        .eq('id', email_send_id)
+        .eq('status', 'approved')
+        .select(`
+          *,
+          campaign:email_campaigns!campaign_id(
+            id,
+            name,
+            sequence_settings
+          )
+        `)
+        .single()
+
+      if (claimed) {
+        return claimed
+      }
+
+      // If claim failed, check if it's already sending/sent (idempotent retry)
+      const { data: existing, error: fetchError } = await supabase
         .from('email_sends')
         .select(`
           *,
@@ -54,16 +77,34 @@ export const sendApprovedEmail = inngest.createFunction(
         .eq('id', email_send_id)
         .single()
 
-      if (error) {
-        throw new Error(`Failed to fetch email send: ${error.message}`)
+      if (fetchError) {
+        throw new Error(`Failed to fetch email send: ${fetchError.message}`)
       }
 
-      if (data.status !== 'approved') {
-        throw new Error(`Email ${email_send_id} is not approved (status: ${data.status})`)
+      if (existing.status === 'sent') {
+        // Already sent on a previous attempt — return it so function can exit cleanly
+        return existing
       }
 
-      return data
+      if (existing.status === 'sending') {
+        // We claimed it on a previous retry of this step — continue
+        return existing
+      }
+
+      throw new Error(`Email ${email_send_id} is not approved (status: ${existing.status})`)
     })
+
+    // If already sent (idempotent retry), return immediately
+    if (emailSend.status === 'sent') {
+      logger.info(`Email ${email_send_id} was already sent, skipping (idempotent)`)
+      return {
+        success: true,
+        email_send_id,
+        message_id: emailSend.emailbison_message_id,
+        sent_at: emailSend.sent_at,
+        idempotent_skip: true,
+      }
+    }
 
     logger.info(`Sending email ${email_send_id} to ${emailSend.recipient_email}`)
 

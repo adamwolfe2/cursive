@@ -33,12 +33,28 @@ export const marketplaceUpsellCheck = inngest.createFunction(
       return { action: 'none', reason: 'already_subscribed' }
     }
 
-    // Record upsell event
+    // Record upsell event (idempotent — skip if already recorded for this trigger)
     const { upsellType } = await step.run('record-upsell-event', async () => {
       const { createAdminClient } = await import('@/lib/supabase/admin')
       const supabase = createAdminClient()
 
       const upsellType = lifetime_spend > 2000 ? 'outbound' : 'data'
+
+      // Check if upsell event already recorded for this workspace + type + trigger
+      // to prevent duplicates on retry
+      const { data: existing } = await supabase
+        .from('upsell_events')
+        .select('id')
+        .eq('workspace_id', workspace_id)
+        .eq('user_id', user_id)
+        .eq('upsell_type', upsellType)
+        .eq('trigger', 'credit_purchase')
+        .gte('created_at', new Date(Date.now() - 60 * 60 * 1000).toISOString()) // Within last hour
+        .limit(1)
+
+      if (existing && existing.length > 0) {
+        return { upsellType }
+      }
 
       await supabase.from('upsell_events').insert({
         workspace_id,

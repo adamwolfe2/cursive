@@ -5,6 +5,8 @@
  * Documentation: https://github.com/adamwolfe2/cursive/blob/main/docs/audiencelab-faq.md
  */
 
+import { safeError, safeLog, safeWarn } from '@/lib/utils/log-sanitizer'
+
 const AUDIENCELAB_API_BASE = 'https://api.audiencelab.io'
 const API_KEY = process.env.AUDIENCELAB_ACCOUNT_API_KEY
 
@@ -74,7 +76,7 @@ export interface SegmentCriteria {
  */
 export async function listAllAudiences(): Promise<AudienceLabAudience[]> {
   try {
-    console.log('[AudienceLab] Fetching all audiences')
+    safeLog('[AudienceLab] Fetching all audiences')
 
     const response = await fetch(`${AUDIENCELAB_API_BASE}/audiences`, {
       method: 'GET',
@@ -86,17 +88,17 @@ export async function listAllAudiences(): Promise<AudienceLabAudience[]> {
 
     if (!response.ok) {
       const error = await response.text()
-      console.error('[AudienceLab] Failed to list audiences:', error)
+      safeError('[AudienceLab] Failed to list audiences:', error)
       return []
     }
 
     const result = await response.json()
     const audiences = result.data || result
 
-    console.log('[AudienceLab] Found audiences:', audiences.length)
+    safeLog('[AudienceLab] Found audiences:', { count: audiences.length })
     return audiences
   } catch (error) {
-    console.error('[AudienceLab] Error listing audiences:', error)
+    safeError('[AudienceLab] Error listing audiences:', error)
     return []
   }
 }
@@ -193,7 +195,7 @@ export async function fetchLeadsFromSegment(
     url.searchParams.set('page', page.toString())
     url.searchParams.set('page_size', fetchSize.toString())
 
-    console.log('[AudienceLab] Fetching leads for quality sort:', {
+    safeLog('[AudienceLab] Fetching leads for quality sort:', {
       audienceId,
       page,
       requested: pageSize,
@@ -210,7 +212,7 @@ export async function fetchLeadsFromSegment(
 
     if (!response.ok) {
       const error = await response.text()
-      console.error('[AudienceLab] API error:', {
+      safeError('[AudienceLab] API error:', {
         status: response.status,
         statusText: response.statusText,
         error,
@@ -218,7 +220,7 @@ export async function fetchLeadsFromSegment(
       })
 
       if (response.status === 404) {
-        console.warn('[AudienceLab] Audience not found:', audienceId)
+        safeWarn('[AudienceLab] Audience not found:', { audienceId })
         return []
       }
 
@@ -240,7 +242,7 @@ export async function fetchLeadsFromSegment(
       ? Math.round(scoredLeads.reduce((sum, { score }) => sum + score, 0) / scoredLeads.length)
       : 0
 
-    console.log('[AudienceLab] Quality sort complete:', {
+    safeLog('[AudienceLab] Quality sort complete:', {
       audienceId,
       fetched: rawLeads.length,
       qualified: scoredLeads.length,
@@ -251,7 +253,7 @@ export async function fetchLeadsFromSegment(
 
     return topLeads
   } catch (error) {
-    console.error('[AudienceLab] Failed to fetch leads:', error)
+    safeError('[AudienceLab] Failed to fetch leads:', error)
     return []
   }
 }
@@ -309,11 +311,11 @@ export async function fetchDailyLeadsForUser(
   const segmentId = getSegmentIdForCriteria(criteria.industry, criteria.location)
 
   if (!segmentId) {
-    console.warn('[AudienceLab] No segment found for criteria:', criteria)
+    safeWarn('[AudienceLab] No segment found for criteria:', criteria)
     return []
   }
 
-  console.log('[AudienceLab] Fetching daily leads for user:', {
+  safeLog('[AudienceLab] Fetching daily leads for user:', {
     userId,
     criteria,
     segmentId,
@@ -337,7 +339,7 @@ export async function fetchDailyLeadsForUser(
     })
     .slice(0, limit)
 
-  console.log('[AudienceLab] Filtered leads:', {
+  safeLog('[AudienceLab] Filtered leads:', {
     total: leads.length,
     filtered: filteredLeads.length,
     limit,

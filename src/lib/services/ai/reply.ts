@@ -2,6 +2,7 @@
 // Generates AI-powered email responses based on context
 
 import { createOpenAIClient } from './openai'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import type { IntentClassification } from './intent'
 
 export interface ReplyContext {
@@ -210,7 +211,7 @@ export async function generateReply(
       kbEntriesUsed,
     }
   } catch (error) {
-    console.error('[Reply Generation] Error:', error)
+    safeError('[Reply Generation] Error:', error)
     throw new Error(
       `Failed to generate reply: ${error instanceof Error ? error.message : 'Unknown error'}`
     )

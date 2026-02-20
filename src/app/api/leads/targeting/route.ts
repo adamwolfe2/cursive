@@ -9,6 +9,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { getCurrentUser } from '@/lib/auth/helpers'
 import { createClient } from '@/lib/supabase/server'
 
 // Zod validation schema
@@ -32,27 +33,12 @@ type TargetingInput = z.infer<typeof targetingSchema>
  */
 export async function GET(request: NextRequest) {
   try {
-    const supabase = await createClient()
-
-    // Get current user (server-verified)
-    const {
-      data: { user: authUser },
-    } = await supabase.auth.getUser()
-
-    if (!authUser) {
+    const userProfile = await getCurrentUser()
+    if (!userProfile) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Get user's profile
-    const { data: userProfile } = await supabase
-      .from('users')
-      .select('id, workspace_id')
-      .eq('auth_user_id', authUser.id)
-      .single()
-
-    if (!userProfile) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
-    }
+    const supabase = await createClient()
 
     // Get targeting preferences
     const { data: targeting, error } = await supabase
@@ -87,27 +73,12 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createClient()
-
-    // Get current user (use getUser for write operations per Supabase docs)
-    const {
-      data: { user: authUser },
-    } = await supabase.auth.getUser()
-
-    if (!authUser) {
+    const userProfile = await getCurrentUser()
+    if (!userProfile) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Get user's profile
-    const { data: userProfile } = await supabase
-      .from('users')
-      .select('id, workspace_id')
-      .eq('auth_user_id', authUser.id)
-      .single()
-
-    if (!userProfile) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
-    }
+    const supabase = await createClient()
 
     // Parse and validate request body
     const body = await request.json()

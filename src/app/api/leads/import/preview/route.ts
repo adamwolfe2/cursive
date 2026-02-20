@@ -7,10 +7,21 @@
 
 
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { leadDataProcessor } from '@/lib/services/lead-data-processor.service'
 import { fieldMapper } from '@/lib/services/field-mapper.service'
 import { safeError } from '@/lib/utils/log-sanitizer'
+
+const importPreviewSchema = z.object({
+  rows: z.array(z.record(z.string())).min(1, 'At least one data row is required').max(10000),
+  options: z.object({
+    autoCorrect: z.boolean().optional(),
+    validateEmail: z.boolean().optional(),
+    normalizePhone: z.boolean().optional(),
+    normalizeAddress: z.boolean().optional(),
+  }).optional(),
+})
 
 // ============================================
 // POST /api/leads/import/preview
@@ -37,31 +48,24 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Workspace not found' }, { status: 404 })
     }
 
-    // Parse request body
+    // Parse and validate request body
     const body = await req.json()
-    const { rows, options } = body as {
-      rows: Array<Record<string, string>>
-      options?: {
-        autoCorrect?: boolean
-        validateEmail?: boolean
-        normalizePhone?: boolean
-        normalizeAddress?: boolean
+    const validationResult = importPreviewSchema.safeParse(body)
+
+    if (!validationResult.success) {
+      if (validationResult.error instanceof z.ZodError) {
+        return NextResponse.json(
+          { error: 'Invalid request', details: validationResult.error.errors },
+          { status: 400 }
+        )
       }
-    }
-
-    if (!rows || !Array.isArray(rows)) {
       return NextResponse.json(
-        { error: 'Invalid request: rows must be an array' },
+        { error: 'Invalid request: rows must be a non-empty array' },
         { status: 400 }
       )
     }
 
-    if (rows.length === 0) {
-      return NextResponse.json(
-        { error: 'No data rows provided' },
-        { status: 400 }
-      )
-    }
+    const { rows, options } = validationResult.data
 
     // Preview the import
     const preview = await leadDataProcessor.previewImport(rows, {

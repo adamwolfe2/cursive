@@ -4,6 +4,7 @@
 import { inngest } from '../client'
 import { createAdminClient } from '@/lib/supabase/admin'
 import Stripe from 'stripe'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export const webhookRetryProcessor = inngest.createFunction(
   {
@@ -227,7 +228,7 @@ async function processWebhookEvent(event: Stripe.Event, supabase: any) {
     const paymentIntentId = charge.payment_intent as string
 
     if (!paymentIntentId) {
-      console.error('Charge refunded but no payment_intent found')
+      safeError('Charge refunded but no payment_intent found')
       return
     }
 
@@ -464,7 +465,7 @@ async function processWebhookEvent(event: Stripe.Event, supabase: any) {
   // Handle payment failures
   if (event.type === 'payment_intent.payment_failed') {
     const paymentIntent = event.data.object as Stripe.PaymentIntent
-    console.error('Payment failed:', paymentIntent.id)
+    safeError('Payment failed:', paymentIntent.id)
     return
   }
 }

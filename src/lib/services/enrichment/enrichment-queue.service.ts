@@ -12,6 +12,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { inngest } from '@/inngest/client'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // ============================================================================
 // TYPES
@@ -125,7 +126,7 @@ export async function queueEnrichment(
       .single()
 
     if (error) {
-      console.error(`Failed to queue enrichment job: ${error.message}`)
+      safeError('[Enrichment] Failed to queue enrichment job:', error)
       continue
     }
 
@@ -167,7 +168,7 @@ export async function getNextJobs(
     .limit(limit)
 
   if (error) {
-    console.error(`Failed to get enrichment jobs: ${error.message}`)
+    safeError('[Enrichment] Failed to get enrichment jobs:', error)
     return []
   }
 

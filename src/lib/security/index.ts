@@ -7,6 +7,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { hmacSha256Hex, timingSafeEqual } from '@/lib/utils/crypto'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 function generateRandomHex(byteLength: number): string {
   const bytes = crypto.getRandomValues(new Uint8Array(byteLength))
@@ -440,9 +441,9 @@ export function logAuditEvent(entry: Omit<AuditLogEntry, 'timestamp'>): void {
 
   // In production, send to logging service
   if (process.env.NODE_ENV === 'production') {
-    console.log('[AUDIT]', JSON.stringify(logEntry))
+    safeError('[AUDIT]', JSON.stringify(logEntry))
   } else {
-    console.log('[AUDIT]', logEntry)
+    safeError('[AUDIT]', logEntry)
   }
 
   // Keep in memory for development (limit to last 1000)

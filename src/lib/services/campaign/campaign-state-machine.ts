@@ -4,6 +4,7 @@
  */
 
 import { createClient } from '@/lib/supabase/server'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // Campaign statuses
 export type CampaignStatus =
@@ -311,7 +312,7 @@ export async function getScheduledCampaignsToActivate(): Promise<
     .lte('scheduled_start_at', now)
 
   if (error) {
-    console.error('Error fetching scheduled campaigns:', error)
+    safeError('[Campaign] Error fetching scheduled campaigns:', error)
     return []
   }
 

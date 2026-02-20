@@ -207,7 +207,7 @@ export async function POST(request: NextRequest) {
 
     if (existingSlug) {
       return NextResponse.json(
-        { error: 'Company name is taken. Please try another.' },
+        { error: 'A workspace with this name already exists. Please try a different company name.' },
         { status: 409 }
       )
     }
@@ -355,7 +355,7 @@ export async function POST(request: NextRequest) {
         const targetStates = parseTargetLocations(validated.targetLocations)
         const caps = LEAD_CAPS[validated.monthlyLeadNeed] || LEAD_CAPS['25-50 leads']
 
-        await admin
+        const { error: targetingInsertError } = await admin
           .from('user_targeting')
           .insert({
             user_id: userProfile.id,
@@ -371,11 +371,19 @@ export async function POST(request: NextRequest) {
             is_active: true,
           })
 
-        safeLog('[Onboarding] User targeting created:', {
-          industries: [validated.industry],
-          states: targetStates,
-          caps,
-        })
+        if (targetingInsertError) {
+          safeError('[Onboarding] User targeting insert failed (non-fatal):', {
+            message: targetingInsertError.message,
+            code: targetingInsertError.code,
+            details: targetingInsertError.details,
+          })
+        } else {
+          safeLog('[Onboarding] User targeting created:', {
+            industries: [validated.industry],
+            states: targetStates,
+            caps,
+          })
+        }
       } catch (targetingError) {
         // Non-fatal: user can set targeting later from dashboard
         safeError('[Onboarding] User targeting creation failed (non-fatal):', targetingError instanceof Error ? targetingError.message : targetingError)

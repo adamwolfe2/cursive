@@ -39,7 +39,7 @@ export default async function WelcomePage({
     // Show AutoSubmitOnboarding which reads form data from sessionStorage.
     // If sessionStorage is empty (e.g. user navigated here directly),
     // AutoSubmitOnboarding will redirect them back to the quiz flow.
-    return <AutoSubmitOnboarding isMarketplace={isMarketplace} />
+    return <AutoSubmitOnboarding isMarketplace={isMarketplace} isReturning={isReturning} />
   }
 
   // No session — show the quiz flow
