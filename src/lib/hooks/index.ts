@@ -8,6 +8,7 @@
 'use client'
 
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { safeWarn } from '@/lib/utils/log-sanitizer'
 
 // Re-export existing hooks
 export { useDebounce } from './use-debounce'
@@ -229,7 +230,7 @@ export function useLocalStorage<T>(
       const item = window.localStorage.getItem(key)
       return item ? JSON.parse(item) : initialValue
     } catch (error) {
-      console.warn(`Error reading localStorage key "${key}":`, error)
+      safeWarn(`Error reading localStorage key "${key}":`, error)
       return initialValue
     }
   })
@@ -243,7 +244,7 @@ export function useLocalStorage<T>(
           window.localStorage.setItem(key, JSON.stringify(valueToStore))
         }
       } catch (error) {
-        console.warn(`Error setting localStorage key "${key}":`, error)
+        safeWarn(`Error setting localStorage key "${key}":`, error)
       }
     },
     [key, storedValue]

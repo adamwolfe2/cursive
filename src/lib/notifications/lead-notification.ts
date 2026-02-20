@@ -7,6 +7,7 @@
  */
 
 import { sendNewLeadEmail } from '@/lib/email'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import type { Lead } from '@/types'
 
 interface UserInfo {
@@ -79,7 +80,7 @@ export async function notifyUserNewLead(
       error: result.error,
     }
   } catch (error) {
-    console.error('[LeadNotification] Failed to send notification:', error)
+    safeError('[LeadNotification] Failed to send notification:', error)
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',

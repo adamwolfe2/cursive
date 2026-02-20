@@ -6,6 +6,7 @@
  */
 
 import { z } from 'zod'
+import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 
 // ============================================
 // ENVIRONMENT SCHEMAS
@@ -96,8 +97,8 @@ function validateClientEnv(): ClientEnv {
   })
 
   if (!parsed.success) {
-    console.error('Invalid client environment variables:')
-    console.error(parsed.error.flatten().fieldErrors)
+    safeError('Invalid client environment variables:')
+    safeError('Field errors:', parsed.error.flatten().fieldErrors)
 
     throw new Error('Invalid client environment configuration')
   }
@@ -136,8 +137,8 @@ function validateServerEnv(): ServerEnv {
   })
 
   if (!parsed.success) {
-    console.error('Invalid server environment variables:')
-    console.error(parsed.error.flatten().fieldErrors)
+    safeError('Invalid server environment variables:')
+    safeError('Field errors:', parsed.error.flatten().fieldErrors)
 
     throw new Error('Invalid server environment configuration')
   }
@@ -290,19 +291,19 @@ export function checkEnvironment(): EnvCheckResult {
 export function logEnvironmentCheck(): void {
   const result = checkEnvironment()
 
-  console.log('\n=== Environment Check ===')
-  console.log(`Status: ${result.valid ? '✓ Valid' : '✗ Invalid'}`)
-  console.log(`Environment: ${process.env.NODE_ENV}`)
+  safeLog('\n=== Environment Check ===')
+  safeLog(`Status: ${result.valid ? 'Valid' : 'Invalid'}`)
+  safeLog(`Environment: ${process.env.NODE_ENV}`)
 
   if (result.missing.length > 0) {
-    console.log('\nMissing required variables:')
-    result.missing.forEach(v => console.log(`  ✗ ${v}`))
+    safeLog('\nMissing required variables:')
+    result.missing.forEach(v => safeLog(`  - ${v}`))
   }
 
   if (result.warnings.length > 0) {
-    console.log('\nWarnings:')
-    result.warnings.forEach(v => console.log(`  ! ${v}`))
+    safeLog('\nWarnings:')
+    result.warnings.forEach(v => safeLog(`  ! ${v}`))
   }
 
-  console.log('=========================\n')
+  safeLog('=========================\n')
 }

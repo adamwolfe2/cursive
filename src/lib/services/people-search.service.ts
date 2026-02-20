@@ -2,6 +2,7 @@
 // Business logic for searching people using Clay API
 
 import { ClayClient } from '@/lib/integrations/clay'
+import { safeWarn, safeError } from '@/lib/utils/log-sanitizer'
 import type { PeopleSearchFilters } from '@/lib/repositories/people-search.repository'
 
 export interface PersonResult {
@@ -84,7 +85,7 @@ export class PeopleSearchService {
         // 1. Search for company by name to get domain
         // 2. Then use domain to find contacts
         // For now, return empty array as we need domain
-        console.warn(
+        safeWarn(
           '[PeopleSearchService] Company name search requires domain lookup'
         )
         return []
@@ -93,7 +94,7 @@ export class PeopleSearchService {
       // No valid search criteria
       throw new Error('Please provide either a company domain or company name')
     } catch (error: any) {
-      console.error('[PeopleSearchService] Search error:', error)
+      safeError('[PeopleSearchService] Search error:', error)
       throw new Error(`Failed to search people: ${error.message}`)
     }
   }
@@ -106,7 +107,7 @@ export class PeopleSearchService {
       const result = await this.clayClient.verifyEmail(email)
       return result.valid
     } catch (error) {
-      console.error('[PeopleSearchService] Email verification error:', error)
+      safeError('[PeopleSearchService] Email verification error:', error)
       return false
     }
   }

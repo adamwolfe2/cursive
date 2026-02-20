@@ -11,6 +11,7 @@
 
 import { Resend } from 'resend'
 import { createClient } from '@/lib/supabase/server'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // ============================================================================
 // TYPES
@@ -552,7 +553,7 @@ async function refreshGmailToken(
     const clientId = process.env.GOOGLE_CLIENT_ID
     const clientSecret = process.env.GOOGLE_CLIENT_SECRET
     if (!clientId || !clientSecret) {
-      console.error('Google OAuth credentials not configured')
+      safeError('Google OAuth credentials not configured')
       return null
     }
 
@@ -607,7 +608,7 @@ async function refreshOutlookToken(
     const clientId = process.env.MICROSOFT_CLIENT_ID
     const clientSecret = process.env.MICROSOFT_CLIENT_SECRET
     if (!clientId || !clientSecret) {
-      console.error('Microsoft OAuth credentials not configured')
+      safeError('Microsoft OAuth credentials not configured')
       return null
     }
 
@@ -694,7 +695,7 @@ export async function logSentEmail(
     .single()
 
   if (error) {
-    console.error('Failed to log sent email:', error)
+    safeError('Failed to log sent email:', error)
     return null
   }
 

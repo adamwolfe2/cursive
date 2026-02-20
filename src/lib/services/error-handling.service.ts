@@ -4,6 +4,7 @@
  */
 
 import { createClient } from '@/lib/supabase/server'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export type ErrorType =
   | 'timeout'
@@ -94,7 +95,7 @@ export async function logFailedJob(params: LogFailedJobParams): Promise<string |
   })
 
   if (error) {
-    console.error('Failed to log failed job:', error.message)
+    safeError('Failed to log failed job:', error.message)
 
     // Fallback to direct insert
     const { data: insertData, error: insertError } = await supabase

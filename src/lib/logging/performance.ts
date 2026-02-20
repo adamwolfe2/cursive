@@ -2,6 +2,7 @@
 // Track operation timings and identify bottlenecks
 
 import { logPerformance } from './logger'
+import { safeWarn } from '@/lib/utils/log-sanitizer'
 
 export interface PerformanceMarker {
   name: string
@@ -32,7 +33,7 @@ export class PerformanceMonitor {
   measure(name: string, metadata?: Record<string, any>) {
     const marker = this.markers.get(name)
     if (!marker) {
-      console.warn(`No marker found for ${name}`)
+      safeWarn(`No marker found for ${name}`)
       return 0
     }
 

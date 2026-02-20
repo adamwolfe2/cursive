@@ -6,6 +6,7 @@
  */
 
 import { createClient } from '@/lib/supabase/server'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // ============================================================================
 // TYPES
@@ -147,7 +148,7 @@ export async function logSentSms(
     .single()
 
   if (error) {
-    console.error('Failed to log SMS:', error)
+    safeError('Failed to log SMS:', error)
     return null
   }
 

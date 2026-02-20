@@ -4,6 +4,8 @@
  * Handles sub-account creation and lead syncing to GHL CRM
  */
 
+import { safeLog, safeError, safeWarn } from '@/lib/utils/log-sanitizer'
+
 const GHL_API_BASE = 'https://services.leadconnectorhq.com'
 const GHL_LOCATION_TOKEN = process.env.GHL_CURSIVE_LOCATION_TOKEN
 const GHL_AGENCY_TOKEN = process.env.GHL_CURSIVE_AGENCY_TOKEN
@@ -11,7 +13,7 @@ const GHL_LOCATION_ID = process.env.GHL_CURSIVE_LOCATION_ID
 const GHL_SNAPSHOT_ID = process.env.GHL_SNAPSHOT_ID
 
 if (!GHL_LOCATION_TOKEN || !GHL_AGENCY_TOKEN) {
-  console.warn('[GHL] API tokens not configured')
+  safeWarn('[GHL] API tokens not configured')
 }
 
 export interface GHLSubAccount {
@@ -58,7 +60,7 @@ export async function createGHLSubAccount(userData: {
   }
 
   try {
-    console.log('[GHL] Creating sub-account for:', userData.email)
+    safeLog('[GHL] Creating sub-account for:', userData.email)
 
     const response = await fetch(`${GHL_API_BASE}/locations/`, {
       method: 'POST',
@@ -80,7 +82,7 @@ export async function createGHLSubAccount(userData: {
 
     if (!response.ok) {
       const error = await response.text()
-      console.error('[GHL] Sub-account creation failed:', {
+      safeError('[GHL] Sub-account creation failed:', {
         status: response.status,
         error,
       })
@@ -88,7 +90,7 @@ export async function createGHLSubAccount(userData: {
     }
 
     const subAccount = await response.json()
-    console.log('[GHL] Sub-account created:', {
+    safeLog('[GHL] Sub-account created:', {
       id: subAccount.id,
       name: subAccount.name,
     })
@@ -107,7 +109,7 @@ export async function createGHLSubAccount(userData: {
       timezone: subAccount.timezone,
     }
   } catch (error) {
-    console.error('[GHL] Failed to create sub-account:', error)
+    safeError('[GHL] Failed to create sub-account:', error)
     throw error
   }
 }
@@ -141,7 +143,7 @@ export async function upsertGHLContact(
   try {
     const accessToken = await getLocationAccessToken(locationId)
 
-    console.log('[GHL] Upserting contact:', {
+    safeLog('[GHL] Upserting contact:', {
       locationId,
       email: contactData.email,
     })
@@ -169,7 +171,7 @@ export async function upsertGHLContact(
 
     if (!response.ok) {
       const error = await response.text()
-      console.error('[GHL] Contact upsert failed:', {
+      safeError('[GHL] Contact upsert failed:', {
         status: response.status,
         error,
       })
@@ -177,11 +179,11 @@ export async function upsertGHLContact(
     }
 
     const contact = await response.json()
-    console.log('[GHL] Contact upserted:', { id: contact.contact?.id })
+    safeLog('[GHL] Contact upserted:', { id: contact.contact?.id })
 
     return contact
   } catch (error) {
-    console.error('[GHL] Failed to upsert contact:', error)
+    safeError('[GHL] Failed to upsert contact:', error)
     throw error
   }
 }
@@ -206,7 +208,7 @@ export async function syncLeadsToGHL(
   }>,
   tags: string[] = ['cursive-lead']
 ): Promise<number> {
-  console.log('[GHL] Syncing leads to location:', {
+  safeLog('[GHL] Syncing leads to location:', {
     locationId,
     count: leads.length,
   })
@@ -228,7 +230,7 @@ export async function syncLeadsToGHL(
       })
       successCount++
     } catch (error) {
-      console.error('[GHL] Failed to sync lead:', {
+      safeError('[GHL] Failed to sync lead:', {
         email: lead.email,
         error,
       })
@@ -236,7 +238,7 @@ export async function syncLeadsToGHL(
     }
   }
 
-  console.log('[GHL] Sync complete:', {
+  safeLog('[GHL] Sync complete:', {
     total: leads.length,
     success: successCount,
     failed: leads.length - successCount,
@@ -256,7 +258,7 @@ export async function deleteGHLSubAccount(locationId: string): Promise<void> {
   }
 
   try {
-    console.log('[GHL] Deleting sub-account:', locationId)
+    safeLog('[GHL] Deleting sub-account:', locationId)
 
     const response = await fetch(`${GHL_API_BASE}/locations/${locationId}`, {
       method: 'DELETE',
@@ -268,16 +270,16 @@ export async function deleteGHLSubAccount(locationId: string): Promise<void> {
 
     if (!response.ok) {
       const error = await response.text()
-      console.error('[GHL] Sub-account deletion failed:', {
+      safeError('[GHL] Sub-account deletion failed:', {
         status: response.status,
         error,
       })
       throw new Error(`GHL API error: ${response.status} - ${error}`)
     }
 
-    console.log('[GHL] Sub-account deleted successfully')
+    safeLog('[GHL] Sub-account deleted successfully')
   } catch (error) {
-    console.error('[GHL] Failed to delete sub-account:', error)
+    safeError('[GHL] Failed to delete sub-account:', error)
     throw error
   }
 }

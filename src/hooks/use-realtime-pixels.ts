@@ -8,6 +8,7 @@
 import { useEffect, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface UseRealtimePixelsOptions {
   workspaceId: string
@@ -48,7 +49,7 @@ export function useRealtimePixels({
       .on('system', { event: '*' }, (payload) => {
         // Monitor connection status - don't show toast for pixels (less critical)
         if (payload.type === 'CLOSED' || payload.type === 'ERROR') {
-          console.error('[Realtime] Pixel connection closed or error:', payload)
+          safeError('[Realtime] Pixel connection closed or error:', payload)
           // Invalidate queries to refetch stale data
           queryClient.invalidateQueries({ queryKey: ['analytics', 'pixels'] })
         }

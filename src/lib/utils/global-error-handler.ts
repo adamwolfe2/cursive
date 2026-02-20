@@ -4,11 +4,13 @@
  * Handles unhandled promise rejections and runtime errors
  */
 
+import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
+
 // Error logging service (replace with actual service like Sentry)
 function logErrorToService(error: Error, context?: any) {
   // In development, log to console
   if (process.env.NODE_ENV === 'development') {
-    console.error('[Global Error Handler]:', error, context)
+    safeError('[Global Error Handler]:', error, context)
   }
 
   // In production, send to error tracking service
@@ -51,7 +53,7 @@ export function initGlobalErrorHandler() {
 
   // Log that handler is initialized
   if (process.env.NODE_ENV === 'development') {
-    console.log('[Global Error Handler] Initialized')
+    safeLog('[Global Error Handler] Initialized')
   }
 }
 

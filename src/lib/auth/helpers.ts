@@ -2,6 +2,7 @@
 
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
+import { safeError, safeWarn } from '@/lib/utils/log-sanitizer'
 import type { User } from '@/types'
 
 /**
@@ -29,7 +30,7 @@ export async function getCurrentUser(): Promise<User | null> {
       process.env.VERCEL_ENV === 'development' || !process.env.VERCEL_URL
 
     if (!isDevelopmentDomain) {
-      console.error('🚨 SECURITY: DEV BYPASS attempted on non-development environment - BLOCKED')
+      safeError('SECURITY: DEV BYPASS attempted on non-development environment - BLOCKED')
       // Fall through to normal auth flow
     } else {
       const cookieStore = await cookies()
@@ -37,7 +38,7 @@ export async function getCurrentUser(): Promise<User | null> {
 
       if (hasAdminBypass) {
         // Log bypass usage for security audit trail
-        console.warn('⚠️  DEV BYPASS MODE ACTIVE (LOCAL DEVELOPMENT ONLY)')
+        safeWarn('DEV BYPASS MODE ACTIVE (LOCAL DEVELOPMENT ONLY)')
 
         // Return mock admin user ONLY for local development
         return {

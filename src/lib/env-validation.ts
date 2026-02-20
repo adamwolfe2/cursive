@@ -6,6 +6,8 @@
  * Import this in middleware or root layout to catch misconfigurations early.
  */
 
+import { safeError, safeWarn } from '@/lib/utils/log-sanitizer'
+
 const REQUIRED_ENV_VARS = [
   'NEXT_PUBLIC_SUPABASE_URL',
   'NEXT_PUBLIC_SUPABASE_ANON_KEY',
@@ -64,7 +66,7 @@ export function validateRequiredEnvVars(): void {
       'Check your .env.local file or deployment environment configuration.',
     ].join('\n')
 
-    console.error(message)
+    safeError(message)
     throw new Error(message)
   }
 
@@ -77,7 +79,7 @@ export function validateRequiredEnvVars(): void {
   }
 
   if (missingOptional.length > 0) {
-    console.warn(
+    safeWarn(
       `[WARN] Missing optional environment variables (some features may not work):\n${missingOptional.map((v) => `  - ${v}`).join('\n')}`
     )
   }

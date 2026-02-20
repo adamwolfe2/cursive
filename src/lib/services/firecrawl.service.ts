@@ -5,6 +5,8 @@
  * Service for scraping websites to extract company branding and information.
  */
 
+import { safeWarn, safeError } from '@/lib/utils/log-sanitizer'
+
 export interface WebsiteData {
   favicon_url: string | null
   logo_url: string | null
@@ -21,7 +23,7 @@ export class FirecrawlService {
   constructor() {
     this.apiKey = process.env.FIRECRAWL_API_KEY || ''
     if (!this.apiKey) {
-      console.warn('FIRECRAWL_API_KEY not set')
+      safeWarn('FIRECRAWL_API_KEY not set')
     }
   }
 
@@ -59,7 +61,7 @@ export class FirecrawlService {
       const data = await response.json()
       return this.extractWebsiteData(data, url)
     } catch (error) {
-      console.error('Firecrawl scrape error:', error)
+      safeError('Firecrawl scrape error:', error)
       throw error
     }
   }

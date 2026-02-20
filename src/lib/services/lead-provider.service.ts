@@ -9,6 +9,7 @@
  */
 
 import { createClient } from '@/lib/supabase/server'
+import { safeWarn } from '@/lib/utils/log-sanitizer'
 
 // ============================================================================
 // TYPES
@@ -262,7 +263,7 @@ export class LeadProviderService {
       created_at: new Date().toISOString(),
     })
     // Ignore if table doesn't exist yet
-    if (insertError) console.warn('lead_usage insert skipped:', insertError.message)
+    if (insertError) safeWarn('lead_usage insert skipped:', insertError.message)
   }
 
   /**

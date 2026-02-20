@@ -4,6 +4,7 @@
  */
 
 import { createAdminClient } from '@/lib/supabase/admin'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // Per-unit costs in USD
 const FLAT_COSTS: Record<string, number> = {
@@ -99,7 +100,7 @@ export function logApiCall(entry: ApiLogEntry): void {
         metadata:       { ...entry.metadata, model: entry.model },
       })
   ).then(({ error }) => {
-    if (error) console.error('[api-logger] Failed to log:', error.message)
+    if (error) safeError('[api-logger] Failed to log:', error.message)
   }).catch(() => {/* swallow network errors */})
 }
 

@@ -8,6 +8,7 @@
 'use client'
 
 import * as React from 'react'
+import { safeLog } from '@/lib/utils/log-sanitizer'
 
 // ============================================
 // TYPES
@@ -187,7 +188,7 @@ export function trackExperimentEvent(
 
   // Development logging
   if (process.env.NODE_ENV === 'development') {
-    console.log('[A/B Test Event]', {
+    safeLog('[A/B Test Event]', {
       experimentId,
       variantId: assignment.variantId,
       eventName,

@@ -8,7 +8,7 @@
 
 import { useState, useEffect, useCallback, useRef, useMemo, memo } from 'react'
 import { toast } from 'sonner'
-import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
+import { safeLog, safeError, safeWarn } from '@/lib/utils/log-sanitizer'
 import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/design-system'
 import type { Database } from '@/types/database.types'
@@ -71,11 +71,11 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
   // SECURITY: Validate page is within bounds to prevent expensive out-of-range queries
   useEffect(() => {
     if (page > totalPages && totalPages > 0) {
-      console.warn(`[Pagination] Page ${page} exceeds totalPages ${totalPages}, resetting to page 1`)
+      safeWarn(`[Pagination] Page ${page} exceeds totalPages ${totalPages}, resetting to page 1`)
       setPage(1)
     }
     if (page < 1) {
-      console.warn(`[Pagination] Page ${page} is below minimum, resetting to page 1`)
+      safeWarn(`[Pagination] Page ${page} is below minimum, resetting to page 1`)
       setPage(1)
     }
   }, [page, totalPages])
@@ -192,7 +192,7 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
         (payload) => {
           // SECURITY: Verify workspace_id in payload before updating local state
           if (payload.new.workspace_id !== workspaceId) {
-            console.warn('[Security] Ignoring UPDATE event from different workspace')
+            safeWarn('[Security] Ignoring UPDATE event from different workspace')
             return
           }
 
@@ -217,7 +217,7 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
         (payload) => {
           // SECURITY: Verify workspace_id in payload before deleting from local state
           if (payload.old.workspace_id !== workspaceId) {
-            console.warn('[Security] Ignoring DELETE event from different workspace')
+            safeWarn('[Security] Ignoring DELETE event from different workspace')
             return
           }
 

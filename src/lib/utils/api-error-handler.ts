@@ -4,6 +4,7 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { FeatureNotAvailableError, LimitExceededError } from '@/lib/tier/server'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 /**
  * Custom API Errors
@@ -77,7 +78,7 @@ export function handleApiError(error: unknown): NextResponse {
     error instanceof LimitExceededError
 
   if (!isExpectedError) {
-    console.error('[API Error]:', error)
+    safeError('[API Error]:', error)
   }
 
   // Zod validation errors

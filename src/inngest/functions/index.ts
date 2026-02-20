@@ -170,6 +170,9 @@ export { marketplaceUpsellCheck } from './marketplace-upsell'
 export { marketplaceOnboardingSequence } from './marketplace-onboarding'
 export { handleCustomAudienceRequest } from './custom-audience-request'
 
+// Post-purchase nurture drip (3-email sequence after credit purchase)
+export { postPurchaseSequence } from './post-purchase-sequence'
+
 // AI Audit Processing
 export { processAiAudit } from './process-ai-audit'
 
@@ -214,5 +217,11 @@ export { inactiveUserReengagement } from './inactive-reengagement'
 // Abandoned onboarding recovery (daily — re-engages users who haven't finished setup)
 export { abandonedOnboardingRecovery } from './abandoned-onboarding'
 
+// Abandoned cart recovery (every 4h — sends recovery emails for incomplete Stripe checkouts)
+export { abandonedCartRecovery } from './abandoned-cart-recovery'
+
 // AI SDR Follow-up Cron (9am CT weekdays)
 export { sdrFollowupCron } from './sdr-followup'
+
+// Weekly Summary Email (Monday 9am CT — activity digest per workspace)
+export { weeklySummaryEmail } from './weekly-summary-email'

@@ -9,6 +9,7 @@ import { useEffect } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface UseRealtimeLeadsOptions {
   workspaceId: string
@@ -44,7 +45,7 @@ export function useRealtimeLeads({
       .on('system', { event: '*' }, (payload) => {
         // Monitor connection status
         if (payload.type === 'CLOSED' || payload.type === 'ERROR') {
-          console.error('[Realtime] Connection closed or error:', payload)
+          safeError('[Realtime] Connection closed or error:', payload)
           if (showToasts) {
             toast.error('Real-time connection lost', {
               description: 'Refreshing data...',

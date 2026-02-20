@@ -4,6 +4,7 @@
 // PostHog integration for product analytics
 
 import posthog from 'posthog-js'
+import { safeWarn } from '@/lib/utils/log-sanitizer'
 import { useEffect } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
 
@@ -17,7 +18,7 @@ export function initAnalytics() {
   const apiHost = process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com'
 
   if (!apiKey) {
-    console.warn('PostHog API key not configured')
+    safeWarn('PostHog API key not configured')
     return
   }
 

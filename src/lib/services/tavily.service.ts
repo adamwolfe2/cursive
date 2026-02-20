@@ -5,6 +5,8 @@
  * Fallback service for company research when Firecrawl fails.
  */
 
+import { safeWarn, safeError } from '@/lib/utils/log-sanitizer'
+
 export interface CompanyResearchResult {
   company_name: string | null
   description: string | null
@@ -20,7 +22,7 @@ export class TavilyService {
   constructor() {
     this.apiKey = process.env.TAVILY_API_KEY || ''
     if (!this.apiKey) {
-      console.warn('TAVILY_API_KEY not set')
+      safeWarn('TAVILY_API_KEY not set')
     }
   }
 
@@ -59,7 +61,7 @@ export class TavilyService {
       const data = await response.json()
       return this.extractCompanyInfo(data, companyName)
     } catch (error) {
-      console.error('Tavily search error:', error)
+      safeError('Tavily search error:', error)
       throw error
     }
   }

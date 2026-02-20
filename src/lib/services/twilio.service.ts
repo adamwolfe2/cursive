@@ -3,6 +3,7 @@
 
 import Twilio from 'twilio'
 import { createClient } from '@/lib/supabase/server'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 const twilioClient = process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN
   ? Twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN)
@@ -36,7 +37,7 @@ export class TwilioService {
    */
   async sendSMS(params: SendSMSParams): Promise<{ success: boolean; sid?: string; error?: string }> {
     if (!twilioClient) {
-      console.error('[TwilioService] Twilio not configured')
+      safeError('[TwilioService] Twilio not configured')
       return { success: false, error: 'Twilio not configured' }
     }
 
@@ -81,7 +82,7 @@ export class TwilioService {
 
       return { success: true, sid: message.sid }
     } catch (error: any) {
-      console.error('[TwilioService] Send SMS error:', error)
+      safeError('[TwilioService] Send SMS error:', error)
 
       // Log failed attempt
       await supabase.from('communication_logs').insert({
@@ -139,7 +140,7 @@ export class TwilioService {
 
       return { success: true, sid: call.sid }
     } catch (error: any) {
-      console.error('[TwilioService] Make call error:', error)
+      safeError('[TwilioService] Make call error:', error)
       return { success: false, error: error.message }
     }
   }
@@ -170,7 +171,7 @@ export class TwilioService {
         country: lookup.countryCode,
       }
     } catch (error: any) {
-      console.error('[TwilioService] Lookup error:', error)
+      safeError('[TwilioService] Lookup error:', error)
       return { valid: false, error: error.message }
     }
   }
