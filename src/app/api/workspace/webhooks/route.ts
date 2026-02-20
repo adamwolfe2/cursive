@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { createClient } from '@/lib/supabase/server'
+import { getCurrentUser } from '@/lib/auth/helpers'
 import { z } from 'zod'
 
 // Zod schema for PATCH validation
@@ -12,25 +13,14 @@ const updateWebhookSchema = z.object({
   notification_email: z.string().email('Invalid email address').optional().nullable(),
 })
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    const supabase = await createClient()
-
-    // Get current user's workspace (server-verified)
-    const { data: { user: authUser } } = await supabase.auth.getUser()
-    if (!authUser) {
+    const user = await getCurrentUser()
+    if (!user?.workspace_id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { data: user } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', authUser.id)
-      .maybeSingle()
-
-    if (!user?.workspace_id) {
-      return NextResponse.json({ error: 'No workspace found' }, { status: 404 })
-    }
+    const supabase = await createClient()
 
     // Get workspace webhook settings
     const { data: workspace, error } = await supabase
@@ -58,7 +48,7 @@ export async function GET(request: NextRequest) {
         notification_email: workspace.notification_email,
       },
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('Get webhook settings error:', error)
     return NextResponse.json({ error: 'Failed to fetch settings' }, { status: 500 })
   }
@@ -66,22 +56,9 @@ export async function GET(request: NextRequest) {
 
 export async function PATCH(request: NextRequest) {
   try {
-    const supabase = await createClient()
-
-    // Get current user's workspace
-    const { data: { user: authUser } } = await supabase.auth.getUser()
-    if (!authUser) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const { data: user } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', authUser.id)
-      .maybeSingle()
-
+    const user = await getCurrentUser()
     if (!user?.workspace_id) {
-      return NextResponse.json({ error: 'No workspace found' }, { status: 404 })
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     // Validate input with Zod
@@ -98,11 +75,13 @@ export async function PATCH(request: NextRequest) {
     const { webhook_url, webhook_enabled, email_notifications, notification_email } = parseResult.data
 
     // Build update object with only provided fields
-    const updateData: Record<string, any> = {}
+    const updateData: Record<string, unknown> = {}
     if (webhook_url !== undefined) updateData.webhook_url = webhook_url
     if (webhook_enabled !== undefined) updateData.webhook_enabled = webhook_enabled
     if (email_notifications !== undefined) updateData.email_notifications = email_notifications
     if (notification_email !== undefined) updateData.notification_email = notification_email
+
+    const supabase = await createClient()
 
     const { error } = await supabase
       .from('workspaces')
@@ -115,35 +94,24 @@ export async function PATCH(request: NextRequest) {
     }
 
     return NextResponse.json({ success: true })
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('Update webhook settings error:', error)
     return NextResponse.json({ error: 'Failed to update settings' }, { status: 500 })
   }
 }
 
 // Regenerate webhook secret
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
-    const supabase = await createClient()
-
-    // Get current user's workspace
-    const { data: { user: authUser } } = await supabase.auth.getUser()
-    if (!authUser) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const { data: user } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', authUser.id)
-      .maybeSingle()
-
+    const user = await getCurrentUser()
     if (!user?.workspace_id) {
-      return NextResponse.json({ error: 'No workspace found' }, { status: 404 })
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     // Generate new webhook secret
     const newSecret = 'whsec_' + crypto.randomUUID().replace(/-/g, '')
+
+    const supabase = await createClient()
 
     const { error } = await supabase
       .from('workspaces')
@@ -156,32 +124,21 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({ success: true, webhook_secret: newSecret })
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('Regenerate webhook secret error:', error)
     return NextResponse.json({ error: 'Failed to regenerate secret' }, { status: 500 })
   }
 }
 
 // Test webhook
-export async function PUT(request: NextRequest) {
+export async function PUT() {
   try {
-    const supabase = await createClient()
-
-    // Get current user's workspace
-    const { data: { user: authUser } } = await supabase.auth.getUser()
-    if (!authUser) {
+    const user = await getCurrentUser()
+    if (!user?.workspace_id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { data: user } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', authUser.id)
-      .maybeSingle()
-
-    if (!user?.workspace_id) {
-      return NextResponse.json({ error: 'No workspace found' }, { status: 404 })
-    }
+    const supabase = await createClient()
 
     // Get workspace webhook settings
     const { data: workspace } = await supabase
@@ -195,7 +152,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // Import and use webhook service
-    const { deliverWebhook, generateWebhookSignature } = await import('@/lib/services/webhook.service')
+    const { deliverWebhook } = await import('@/lib/services/webhook.service')
 
     const testPayload = {
       event: 'test',
@@ -217,7 +174,7 @@ export async function PUT(request: NextRequest) {
       status_code: result.statusCode,
       error: result.error,
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('Test webhook error:', error)
     return NextResponse.json({ error: 'Failed to test webhook' }, { status: 500 })
   }

@@ -157,7 +157,6 @@ async function executeRetry(job: any): Promise<boolean> {
 
     default:
       // Unknown job type - can't retry automatically
-      // Unknown job type - can't retry automatically
       return false
   }
 
