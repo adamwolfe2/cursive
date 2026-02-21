@@ -282,10 +282,14 @@ export async function POST(req: NextRequest) {
         leadUpdate.status = 'callback_scheduled'
       }
 
-      await supabase
+      let leadQuery = supabase
         .from('leads')
         .update(leadUpdate)
         .eq('id', metadata.lead_id)
+      if (metadata.workspace_id) {
+        leadQuery = leadQuery.eq('workspace_id', metadata.workspace_id)
+      }
+      await leadQuery
     }
 
     // Update campaign stats if provided
@@ -302,12 +306,16 @@ export async function POST(req: NextRequest) {
       }
 
       // Simple increment instead of RPC if not available
-      await supabase
+      let campaignQuery = supabase
         .from('voice_campaigns')
         .update({
           updated_at: new Date().toISOString(),
         })
         .eq('id', metadata.campaign_id)
+      if (metadata.workspace_id) {
+        campaignQuery = campaignQuery.eq('workspace_id', metadata.workspace_id)
+      }
+      await campaignQuery
     }
 
     // Log activity

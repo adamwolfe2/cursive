@@ -120,13 +120,17 @@ export async function POST(request: NextRequest) {
 
     // If we matched an email send, update it
     if (emailSend) {
-      await supabase
+      let sendQuery = supabase
         .from('email_sends')
         .update({
           status: 'replied',
           replied_at: new Date().toISOString(),
         })
         .eq('id', emailSend.id)
+      if (workspaceId) {
+        sendQuery = sendQuery.eq('workspace_id', workspaceId)
+      }
+      await sendQuery
 
       // Update campaign stats
       if (emailSend.campaign_id) {
@@ -153,13 +157,17 @@ export async function POST(request: NextRequest) {
       })
 
       // Update lead as interested (can be overridden by sentiment analysis)
-      await supabase
+      let leadUpdateQuery = supabase
         .from('leads')
         .update({
           is_interested: true,
           last_engagement_at: new Date().toISOString(),
         })
         .eq('id', leadId)
+      if (workspaceId) {
+        leadUpdateQuery = leadUpdateQuery.eq('workspace_id', workspaceId)
+      }
+      await leadUpdateQuery
     }
 
     return NextResponse.json({

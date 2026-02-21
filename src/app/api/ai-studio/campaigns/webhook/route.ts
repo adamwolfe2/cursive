@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
         }
 
         // Update campaign payment status
-        const { error: updateError } = await supabase
+        let updateQuery = supabase
           .from('ad_campaigns')
           .update({
             payment_status: 'paid',
@@ -90,6 +90,13 @@ export async function POST(req: NextRequest) {
             updated_at: new Date().toISOString(),
           })
           .eq('id', campaignId)
+
+        // Defense-in-depth: scope to workspace if present in metadata
+        if (session.metadata?.workspace_id) {
+          updateQuery = updateQuery.eq('workspace_id', session.metadata.workspace_id)
+        }
+
+        const { error: updateError } = await updateQuery
 
         if (updateError) {
           safeError('[Campaign Webhook] Failed to update campaign:', updateError)

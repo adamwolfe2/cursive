@@ -61,12 +61,13 @@ export const processSequenceEnrollment = inngest.createFunction(
     const enrollment = await step.run('create-enrollment', async () => {
       const supabase = createAdminClient()
 
-      // Check if already enrolled
+      // Check if already enrolled (scope to workspace to prevent cross-tenant interference)
       const { data: existing } = await supabase
         .from('email_sequence_enrollments')
         .select('id, status')
         .eq('sequence_id', sequence_id)
         .eq('lead_id', lead_id)
+        .eq('workspace_id', workspace_id)
         .maybeSingle()
 
       if (existing) {

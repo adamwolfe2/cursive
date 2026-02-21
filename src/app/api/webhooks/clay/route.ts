@@ -256,7 +256,7 @@ export async function POST(req: NextRequest) {
 
     // Update enrichment job if provided
     if (enrichment_job_id) {
-      await supabase
+      let jobQuery = supabase
         .from('enrichment_jobs')
         .update({
           status: 'completed',
@@ -264,6 +264,10 @@ export async function POST(req: NextRequest) {
           result_lead_id: lead.id,
         })
         .eq('id', enrichment_job_id)
+      if (targetWorkspaceId) {
+        jobQuery = jobQuery.eq('workspace_id', targetWorkspaceId)
+      }
+      await jobQuery
     }
 
     // Prepare successful response
