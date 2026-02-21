@@ -175,7 +175,7 @@ export async function POST(request: NextRequest) {
             required: totalPrice,
             available: balance,
           },
-          { status: 400 }
+          { status: 402 }
         )
       }
 
@@ -285,7 +285,7 @@ export async function POST(request: NextRequest) {
         safeError('[Purchase] Failed to queue confirmation email:', emailError)
       }
 
-      if (purchasedLeads.length > 0) {
+      if (purchasedLeads && purchasedLeads.length > 0) {
         try {
           const { inngest: inngestClient } = await import('@/inngest/client')
           // Batch all webhook events in a single Inngest call instead of N separate calls

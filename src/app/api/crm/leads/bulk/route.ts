@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
       case 'add_tags': {
         const tagsToAdd = z.array(z.string()).parse(validated.data.tags)
 
-        // Batch-fetch all leads in one query, then update in parallel
+        // Fetch all leads first, then update sequentially to avoid race conditions
         const supabase = await createClient()
         const { data: leads } = await supabase
           .from('leads')
@@ -87,17 +87,16 @@ export async function POST(request: NextRequest) {
           .eq('workspace_id', workspaceId)
 
         if (leads && leads.length > 0) {
-          await Promise.all(
-            leads.map((lead) => {
-              const currentTags = (lead.tags as string[]) || []
-              const newTags = Array.from(new Set([...currentTags, ...tagsToAdd]))
-              return supabase
-                .from('leads')
-                .update({ tags: newTags })
-                .eq('id', lead.id)
-                .eq('workspace_id', workspaceId)
-            })
-          )
+          // Use sequential updates to avoid race conditions on concurrent bulk operations
+          for (const lead of leads) {
+            const currentTags = (lead.tags as string[]) || []
+            const newTags = Array.from(new Set([...currentTags, ...tagsToAdd]))
+            await supabase
+              .from('leads')
+              .update({ tags: newTags })
+              .eq('id', lead.id)
+              .eq('workspace_id', workspaceId)
+          }
         }
 
         return NextResponse.json({
@@ -110,7 +109,7 @@ export async function POST(request: NextRequest) {
       case 'remove_tags': {
         const tagsToRemove = z.array(z.string()).parse(validated.data.tags)
 
-        // Batch-fetch all leads in one query, then update in parallel
+        // Fetch all leads first, then update sequentially to avoid race conditions
         const supabase = await createClient()
         const { data: leads } = await supabase
           .from('leads')
@@ -119,17 +118,16 @@ export async function POST(request: NextRequest) {
           .eq('workspace_id', workspaceId)
 
         if (leads && leads.length > 0) {
-          await Promise.all(
-            leads.map((lead) => {
-              const currentTags = (lead.tags as string[]) || []
-              const newTags = currentTags.filter((tag) => !tagsToRemove.includes(tag))
-              return supabase
-                .from('leads')
-                .update({ tags: newTags })
-                .eq('id', lead.id)
-                .eq('workspace_id', workspaceId)
-            })
-          )
+          // Use sequential updates to avoid race conditions on concurrent bulk operations
+          for (const lead of leads) {
+            const currentTags = (lead.tags as string[]) || []
+            const newTags = currentTags.filter((tag) => !tagsToRemove.includes(tag))
+            await supabase
+              .from('leads')
+              .update({ tags: newTags })
+              .eq('id', lead.id)
+              .eq('workspace_id', workspaceId)
+          }
         }
 
         return NextResponse.json({
