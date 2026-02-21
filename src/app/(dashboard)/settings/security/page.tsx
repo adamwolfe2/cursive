@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
@@ -12,11 +13,30 @@ import { FormField } from '@/components/ui/form-field'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton, SkeletonCard } from '@/components/ui/skeleton'
 import { useToast } from '@/lib/hooks/use-toast'
+import { createClient } from '@/lib/supabase/client'
+
+type EnrollStep = 'idle' | 'setup' | 'verify' | 'complete'
+
+interface EnrollData {
+  qr_code: string
+  secret: string
+  id: string
+}
 
 export default function SecuritySettingsPage() {
   const router = useRouter()
   const toast = useToast()
   const queryClient = useQueryClient()
+
+  // MFA state
+  const [mfaEnabled, setMfaEnabled] = useState(false)
+  const [mfaLoading, setMfaLoading] = useState(true)
+  const [mfaFactorId, setMfaFactorId] = useState<string | null>(null)
+  const [enrollStep, setEnrollStep] = useState<EnrollStep>('idle')
+  const [enrollData, setEnrollData] = useState<EnrollData | null>(null)
+  const [totpCode, setTotpCode] = useState('')
+  const [mfaError, setMfaError] = useState<string | null>(null)
+  const [mfaWorking, setMfaWorking] = useState(false)
 
   // Fetch current user
   const { data: userData, isLoading } = useQuery({
@@ -86,6 +106,106 @@ export default function SecuritySettingsPage() {
 
   const onSubmit = (data: PasswordUpdateFormData) => {
     changePasswordMutation.mutate(data)
+  }
+
+  // MFA functions
+  const checkMfaStatus = async () => {
+    setMfaLoading(true)
+    const supabase = createClient()
+    const { data } = await supabase.auth.mfa.listFactors()
+    if (data) {
+      const totp = data.totp.find((f) => f.factor_type === 'totp' && f.status === 'verified')
+      if (totp) {
+        setMfaEnabled(true)
+        setMfaFactorId(totp.id)
+      } else {
+        setMfaEnabled(false)
+        setMfaFactorId(null)
+      }
+    }
+    setMfaLoading(false)
+  }
+
+  useEffect(() => {
+    checkMfaStatus()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const startEnrollment = async () => {
+    setMfaError(null)
+    setMfaWorking(true)
+    const supabase = createClient()
+    const { data, error } = await supabase.auth.mfa.enroll({ factorType: 'totp' })
+    if (error || !data) {
+      setMfaError(error?.message || 'Failed to start enrollment. Please try again.')
+      setMfaWorking(false)
+      return
+    }
+    setEnrollData({
+      qr_code: data.totp.qr_code,
+      secret: data.totp.secret,
+      id: data.id,
+    })
+    setEnrollStep('setup')
+    setMfaWorking(false)
+  }
+
+  const verifyEnrollment = async () => {
+    if (!enrollData) return
+    setMfaError(null)
+    setMfaWorking(true)
+    const supabase = createClient()
+
+    const { data: challengeData, error: challengeError } = await supabase.auth.mfa.challenge({
+      factorId: enrollData.id,
+    })
+
+    if (challengeError || !challengeData) {
+      setMfaError(challengeError?.message || 'Failed to initiate challenge. Please try again.')
+      setMfaWorking(false)
+      return
+    }
+
+    const { error: verifyError } = await supabase.auth.mfa.verify({
+      factorId: enrollData.id,
+      challengeId: challengeData.id,
+      code: totpCode,
+    })
+
+    if (verifyError) {
+      setMfaError(verifyError.message || 'Invalid code. Please check your authenticator and try again.')
+      setMfaWorking(false)
+      return
+    }
+
+    setMfaEnabled(true)
+    setMfaFactorId(enrollData.id)
+    setEnrollStep('complete')
+    setTotpCode('')
+    setMfaWorking(false)
+    toast.success('2FA enabled successfully')
+  }
+
+  const disableMfa = async () => {
+    if (!mfaFactorId) return
+    setMfaError(null)
+    setMfaWorking(true)
+    const supabase = createClient()
+
+    const { error } = await supabase.auth.mfa.unenroll({ factorId: mfaFactorId })
+
+    if (error) {
+      setMfaError(error.message || 'Failed to disable 2FA. Please try again.')
+      setMfaWorking(false)
+      return
+    }
+
+    setMfaEnabled(false)
+    setMfaFactorId(null)
+    setEnrollStep('idle')
+    setEnrollData(null)
+    setMfaWorking(false)
+    toast.success('2FA disabled')
   }
 
   if (isLoading) {
@@ -164,47 +284,172 @@ export default function SecuritySettingsPage() {
         </CardContent>
       </Card>
 
-      {/* Two-Factor Authentication (Placeholder) */}
+      {/* Two-Factor Authentication */}
       <Card>
         <CardHeader>
           <div className="flex items-start justify-between">
             <div>
               <CardTitle>Two-Factor Authentication</CardTitle>
               <p className="text-sm text-muted-foreground mt-1">
-                Add an extra layer of security to your account by requiring a second form
-                of authentication.
+                Add an extra layer of security with a time-based one-time password (TOTP).
               </p>
             </div>
-            <Button variant="outline" disabled>
-              Enable 2FA
-            </Button>
+            <Badge variant={mfaEnabled ? 'success' : 'secondary'} dot={mfaEnabled}>
+              {mfaEnabled ? 'Enabled' : 'Disabled'}
+            </Badge>
           </div>
         </CardHeader>
         <CardContent>
-          <div className="rounded-lg bg-muted p-4">
-            <div className="flex items-start gap-3">
-              <svg
-                className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <div>
-                <p className="text-sm font-medium text-foreground">Coming Soon</p>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Two-factor authentication will be available in a future update. We
-                  recommend using a strong, unique password in the meantime.
-                </p>
-              </div>
+          {mfaLoading ? (
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-64" />
+              <Skeleton className="h-9 w-28" />
             </div>
-          </div>
+          ) : (
+            <div className="space-y-4">
+              {/* Error display */}
+              {mfaError && (
+                <div className="rounded-md bg-red-50 p-3">
+                  <p className="text-sm text-red-800">{mfaError}</p>
+                </div>
+              )}
+
+              {/* MFA enabled state */}
+              {mfaEnabled && enrollStep !== 'setup' && enrollStep !== 'verify' && (
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 text-sm text-foreground">
+                    <svg
+                      className="h-5 w-5 text-success flex-shrink-0"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                      />
+                    </svg>
+                    <span>2FA is active on your account. Your account is protected with an authenticator app.</span>
+                  </div>
+                  <div>
+                    <Button
+                      variant="outline"
+                      onClick={disableMfa}
+                      disabled={mfaWorking}
+                      className="text-destructive hover:text-destructive border-destructive/30 hover:bg-destructive/5"
+                    >
+                      {mfaWorking ? 'Disabling...' : 'Disable 2FA'}
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              {/* Idle — not enabled */}
+              {!mfaEnabled && enrollStep === 'idle' && (
+                <div>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Use an authenticator app like Google Authenticator, Authy, or 1Password to generate time-based codes.
+                  </p>
+                  <Button onClick={startEnrollment} disabled={mfaWorking}>
+                    {mfaWorking ? 'Starting...' : 'Enable 2FA'}
+                  </Button>
+                </div>
+              )}
+
+              {/* Setup step — show QR code */}
+              {enrollStep === 'setup' && enrollData && (
+                <div className="space-y-5">
+                  <div>
+                    <p className="text-sm font-medium text-foreground mb-2">
+                      Step 1: Scan this QR code with your authenticator app
+                    </p>
+                    <div className="inline-block border border-border rounded-lg p-3 bg-white">
+                      <img
+                        src={enrollData.qr_code}
+                        alt="QR code for authenticator app"
+                        className="w-48 h-48"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="text-sm font-medium text-foreground mb-1">
+                      Or enter this key manually:
+                    </p>
+                    <code className="font-mono text-xs bg-muted px-2 py-1 rounded break-all">
+                      {enrollData.secret}
+                    </code>
+                  </div>
+
+                  <div className="space-y-3">
+                    <p className="text-sm font-medium text-foreground">
+                      Step 2: Enter the 6-digit code from your app to verify
+                    </p>
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      maxLength={6}
+                      autoFocus
+                      autoComplete="one-time-code"
+                      value={totpCode}
+                      onChange={(e) => setTotpCode(e.target.value.replace(/\D/g, ''))}
+                      disabled={mfaWorking}
+                      placeholder="000000"
+                      className="block w-40 rounded-md border-0 px-3 py-2 text-center text-lg tracking-widest text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary"
+                    />
+                    <div className="flex gap-3">
+                      <Button
+                        onClick={verifyEnrollment}
+                        disabled={mfaWorking || totpCode.length !== 6}
+                      >
+                        {mfaWorking ? 'Verifying...' : 'Verify & Enable'}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setEnrollStep('idle')
+                          setEnrollData(null)
+                          setTotpCode('')
+                          setMfaError(null)
+                        }}
+                        disabled={mfaWorking}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Complete state */}
+              {enrollStep === 'complete' && (
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2 text-sm text-foreground">
+                    <svg
+                      className="h-5 w-5 text-success flex-shrink-0"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <span className="font-medium">2FA is now active on your account.</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    You will be prompted for a code from your authenticator app each time you sign in.
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
         </CardContent>
       </Card>
 

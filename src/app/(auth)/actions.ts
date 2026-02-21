@@ -67,6 +67,12 @@ export async function loginAction(formData: FormData) {
     return { error: signInError.message }
   }
 
+  // Check if MFA is required
+  const { data: aalData } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel()
+  if (aalData?.nextLevel === 'aal2' && aalData?.currentLevel !== 'aal2') {
+    redirect(`/mfa-challenge?next=${encodeURIComponent(redirectTo)}`)
+  }
+
   // Redirect will trigger middleware with cookies now set
   redirect(redirectTo)
 }
