@@ -8,6 +8,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Shield, Award, Crown, Trophy, Loader2, Download } from 'lucide-react'
@@ -197,8 +198,8 @@ export function PartnerLeaderboard({ month, isAdmin = false }: PartnerLeaderboar
       document.body.removeChild(a)
       URL.revokeObjectURL(url)
     } catch (err: unknown) {
-      // Silent fail — the download simply won't trigger
       safeError('[Leaderboard] Export error:', err)
+      toast.error(err instanceof Error ? err.message : 'Failed to export leaderboard. Please try again.')
     } finally {
       setExporting(false)
     }
