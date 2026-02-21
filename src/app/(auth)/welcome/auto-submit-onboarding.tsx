@@ -152,7 +152,7 @@ export function AutoSubmitOnboarding({ isMarketplace, isReturning }: AutoSubmitO
         // 2. Auto-provision their SuperPixel so website visitor tracking is ready
         const email = onboardingData.email || ''
         const emailDomain = email.includes('@') ? email.split('@')[1] : null
-        const businessName = onboardingData.businessName || onboardingData.fullName || 'My Business'
+        const businessName = onboardingData.companyName || onboardingData.businessName || onboardingData.fullName || 'My Business'
 
         await Promise.allSettled([
           // Populate leads immediately (don't wait for 8am cron)

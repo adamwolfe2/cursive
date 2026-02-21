@@ -464,7 +464,7 @@ export default function MarketplacePage() {
                       <label className="flex items-center gap-2 cursor-pointer">
                         <input
                           type="checkbox"
-                          checked={filters.hasVerifiedEmail}
+                          checked={!!filters.hasVerifiedEmail}
                           onChange={() => setFilters((prev) => ({ ...prev, hasVerifiedEmail: !prev.hasVerifiedEmail }))}
                           className="w-3.5 h-3.5 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-500"
                           aria-label="Filter by verified email only"
@@ -474,7 +474,7 @@ export default function MarketplacePage() {
                       <label className="flex items-center gap-2 cursor-pointer">
                         <input
                           type="checkbox"
-                          checked={filters.hasPhone}
+                          checked={!!filters.hasPhone}
                           onChange={() => setFilters((prev) => ({ ...prev, hasPhone: !prev.hasPhone }))}
                           className="w-3.5 h-3.5 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-500"
                           aria-label="Filter by has phone number"
@@ -654,7 +654,7 @@ export default function MarketplacePage() {
                           <label className="flex items-center gap-3 cursor-pointer">
                             <input
                               type="checkbox"
-                              checked={filters.hasVerifiedEmail}
+                              checked={!!filters.hasVerifiedEmail}
                               onChange={() => setFilters((prev) => ({ ...prev, hasVerifiedEmail: !prev.hasVerifiedEmail }))}
                               className="w-4 h-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-500"
                               aria-label="Filter by verified email only"
@@ -664,7 +664,7 @@ export default function MarketplacePage() {
                           <label className="flex items-center gap-3 cursor-pointer">
                             <input
                               type="checkbox"
-                              checked={filters.hasPhone}
+                              checked={!!filters.hasPhone}
                               onChange={() => setFilters((prev) => ({ ...prev, hasPhone: !prev.hasPhone }))}
                               className="w-4 h-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-500"
                               aria-label="Filter by has phone number"
