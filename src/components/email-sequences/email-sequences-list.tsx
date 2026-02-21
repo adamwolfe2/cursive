@@ -41,9 +41,11 @@ import {
   Users,
   BarChart3,
   Zap,
+  Copy,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 interface EmailSequence {
   id: string
@@ -77,9 +79,30 @@ const triggerIcons = {
 }
 
 export function EmailSequencesList() {
+  const router = useRouter()
   const [statusFilter, setStatusFilter] = useState<string>('active')
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
+  const [duplicatingId, setDuplicatingId] = useState<string | null>(null)
   const queryClient = useQueryClient()
+
+  const handleDuplicate = async (id: string) => {
+    setDuplicatingId(id)
+    try {
+      const response = await fetch(`/api/email-sequences/${id}/duplicate`, { method: 'POST' })
+      if (response.ok) {
+        const result = await response.json()
+        toast.success(`Sequence duplicated as "${result.sequence.name}"`)
+        router.push(`/email-sequences/${result.sequence.id}`)
+      } else {
+        const result = await response.json()
+        toast.error(result.error || 'Failed to duplicate sequence')
+      }
+    } catch {
+      toast.error('Failed to duplicate sequence')
+    } finally {
+      setDuplicatingId(null)
+    }
+  }
 
   const { data, isLoading } = useQuery({
     queryKey: ['email-sequences', statusFilter],
@@ -241,6 +264,13 @@ export function EmailSequencesList() {
                             Edit
                           </DropdownMenuItem>
                         </Link>
+                        <DropdownMenuItem
+                          onClick={() => handleDuplicate(sequence.id)}
+                          disabled={duplicatingId === sequence.id}
+                        >
+                          <Copy className="mr-2 h-4 w-4" />
+                          {duplicatingId === sequence.id ? 'Duplicating…' : 'Duplicate'}
+                        </DropdownMenuItem>
                         {sequence.status === 'active' && (
                           <DropdownMenuItem
                             onClick={() =>
