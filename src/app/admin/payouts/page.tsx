@@ -41,7 +41,7 @@ interface PayoutTotals {
 }
 
 export default function AdminPayoutsPage() {
-  const toast = useToast()
+  const { toast } = useToast()
   const [isAdmin, setIsAdmin] = useState(false)
   const [authChecked, setAuthChecked] = useState(false)
   const [payouts, setPayouts] = useState<Payout[]>([])
@@ -124,13 +124,13 @@ export default function AdminPayoutsPage() {
       const data = await response.json()
 
       if (data.success) {
-        toast.success(data.message || 'Payout approved successfully')
+        toast({ type: 'success', message: data.message || 'Payout approved successfully' })
         fetchPayouts()
       } else {
-        toast.error(`Failed to approve payout: ${data.error}`)
+        toast({ type: 'error', message: `Failed to approve payout: ${data.error}` })
       }
     } catch (error: any) {
-      toast.error(`Error: ${error.message}`)
+      toast({ type: 'error', message: `Error: ${error.message}` })
     } finally {
       setProcessingPayoutId(null)
     }
@@ -143,7 +143,7 @@ export default function AdminPayoutsPage() {
 
   const handleReject = async (payoutId: string) => {
     if (!rejectReason.trim()) {
-      toast.warning('Please provide a rejection reason')
+      toast({ type: 'warning', message: 'Please provide a rejection reason' })
       return
     }
 
@@ -158,15 +158,15 @@ export default function AdminPayoutsPage() {
       const data = await response.json()
 
       if (data.success) {
-        toast.success(data.message || 'Payout rejected successfully')
+        toast({ type: 'success', message: data.message || 'Payout rejected successfully' })
         setRejectDialogOpen(null)
         setRejectReason('')
         fetchPayouts()
       } else {
-        toast.error(`Failed to reject payout: ${data.error}`)
+        toast({ type: 'error', message: `Failed to reject payout: ${data.error}` })
       }
     } catch (error: any) {
-      toast.error(`Error: ${error.message}`)
+      toast({ type: 'error', message: `Error: ${error.message}` })
     } finally {
       setProcessingPayoutId(null)
     }

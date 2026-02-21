@@ -27,7 +27,7 @@ export default function AdminSupportPage() {
   const [filter, setFilter] = useState<string>('all')
   const [isAdmin, setIsAdmin] = useState(false)
   const [authChecked, setAuthChecked] = useState(false)
-  const toast = useToast()
+  const { toast } = useToast()
   const supabase = createClient()
 
   // Admin role check - prevent non-admins from accessing
@@ -67,7 +67,7 @@ export default function AdminSupportPage() {
       const data = await response.json()
       setMessages(data.messages)
     } catch (error) {
-      toast.error('Failed to load support messages')
+      toast({ type: 'error', message: 'Failed to load support messages' })
       safeError('[AdminSupport]', error)
     } finally {
       setLoading(false)
@@ -84,14 +84,14 @@ export default function AdminSupportPage() {
 
       if (!response.ok) throw new Error('Failed to update message')
 
-      toast.success('Message status updated')
+      toast({ type: 'success', message: 'Message status updated' })
       fetchMessages()
 
       if (selectedMessage?.id === id) {
         setSelectedMessage({ ...selectedMessage, status: status as any })
       }
     } catch (error) {
-      toast.error('Failed to update message')
+      toast({ type: 'error', message: 'Failed to update message' })
       safeError('[AdminSupport]', error)
     }
   }

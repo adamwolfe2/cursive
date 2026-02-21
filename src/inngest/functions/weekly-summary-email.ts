@@ -541,7 +541,7 @@ function buildWeeklySummaryEmail({
               <table cellpadding="0" cellspacing="0" role="presentation" style="margin: 28px 0 8px;">
                 <tr>
                   <td class="cta-button" style="background-color: #4f46e5; border-radius: 6px;">
-                    <a href="${dashboardUrl}" target="_blank" style="display: inline-block; padding: 12px 28px; font-size: 14px; font-weight: 600; color: #ffffff; text-decoration: none; border-radius: 6px;">View Your Dashboard</a>
+                    <a href="${dashboardUrl}" target="_blank" rel="noopener noreferrer" style="display: inline-block; padding: 12px 28px; font-size: 14px; font-weight: 600; color: #ffffff; text-decoration: none; border-radius: 6px;">View Your Dashboard</a>
                   </td>
                 </tr>
               </table>

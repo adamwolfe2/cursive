@@ -184,7 +184,7 @@ export function ctaButton(text: string, href: string): string {
   return `<table cellpadding="0" cellspacing="0" role="presentation" style="margin: 24px 0;">
   <tr>
     <td class="cta-button" style="background-color: ${BRAND.primary}; border-radius: 6px;">
-      <a href="${href}" target="_blank" style="display: inline-block; padding: 12px 28px; font-size: 14px; font-weight: 600; color: #ffffff; text-decoration: none; border-radius: 6px;">${escapeHtml(text)}</a>
+      <a href="${href}" target="_blank" rel="noopener noreferrer" style="display: inline-block; padding: 12px 28px; font-size: 14px; font-weight: 600; color: #ffffff; text-decoration: none; border-radius: 6px;">${escapeHtml(text)}</a>
     </td>
   </tr>
 </table>`
@@ -192,7 +192,7 @@ export function ctaButton(text: string, href: string): string {
 
 /** Secondary/ghost button */
 export function secondaryButton(text: string, href: string): string {
-  return `<a href="${href}" target="_blank" style="display: inline-block; padding: 10px 24px; font-size: 13px; font-weight: 500; color: ${BRAND.primary}; text-decoration: none; border: 1px solid ${BRAND.border}; border-radius: 6px;">${escapeHtml(text)}</a>`
+  return `<a href="${href}" target="_blank" rel="noopener noreferrer" style="display: inline-block; padding: 10px 24px; font-size: 13px; font-weight: 500; color: ${BRAND.primary}; text-decoration: none; border: 1px solid ${BRAND.border}; border-radius: 6px;">${escapeHtml(text)}</a>`
 }
 
 /** Horizontal divider */

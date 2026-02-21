@@ -36,7 +36,7 @@ interface UploadResult {
 }
 
 export default function AdminLeadsPage() {
-  const toast = useToast()
+  const { toast } = useToast()
   const [activeTab, setActiveTab] = useState<'view' | 'upload' | 'verify'>('view')
   const [uploadResult, setUploadResult] = useState<UploadResult | null>(null)
   const [uploading, setUploading] = useState(false)
@@ -134,9 +134,9 @@ export default function AdminLeadsPage() {
 
       await refetchQueue()
       await refetch()
-      toast.success('Lead approved successfully')
+      toast({ type: 'success', message: 'Lead approved successfully' })
     } catch (error: any) {
-      toast.error(error.message || 'Failed to approve lead')
+      toast({ type: 'error', message: error.message || 'Failed to approve lead' })
     } finally {
       setActionLoading(null)
     }
@@ -145,7 +145,7 @@ export default function AdminLeadsPage() {
   // Handle reject lead
   const handleReject = async (leadId: string) => {
     if (!rejectReason.trim()) {
-      toast.warning('Please provide a rejection reason')
+      toast({ type: 'warning', message: 'Please provide a rejection reason' })
       return
     }
 
@@ -170,9 +170,9 @@ export default function AdminLeadsPage() {
       setRejectCode('invalid_data')
       await refetchQueue()
       await refetch()
-      toast.success('Lead rejected successfully')
+      toast({ type: 'success', message: 'Lead rejected successfully' })
     } catch (error: any) {
-      toast.error(error.message || 'Failed to reject lead')
+      toast({ type: 'error', message: error.message || 'Failed to reject lead' })
     } finally {
       setActionLoading(null)
     }

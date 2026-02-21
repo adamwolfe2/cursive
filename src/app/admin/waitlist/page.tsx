@@ -17,7 +17,7 @@ export default function AdminWaitlistPage() {
   })
   const [isAdmin, setIsAdmin] = useState(false)
   const [authChecked, setAuthChecked] = useState(false)
-  const toast = useToast()
+  const { toast } = useToast()
   const supabase = createClient()
 
   // Admin role check - prevent non-admins from accessing
@@ -70,7 +70,7 @@ export default function AdminWaitlistPage() {
 
       setStats({ total, converted, industries })
     } catch (error) {
-      toast.error('Failed to load waitlist signups')
+      toast({ type: 'error', message: 'Failed to load waitlist signups' })
       safeError('[AdminWaitlist]', error)
     } finally {
       setLoading(false)
@@ -98,7 +98,7 @@ export default function AdminWaitlistPage() {
     a.download = `waitlist-${new Date().toISOString().split('T')[0]}.csv`
     a.click()
 
-    toast.success('Waitlist exported to CSV')
+    toast({ type: 'success', message: 'Waitlist exported to CSV' })
   }
 
   if (!authChecked) {
