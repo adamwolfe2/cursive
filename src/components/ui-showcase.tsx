@@ -132,7 +132,7 @@ export function UIShowcase() {
             </p>
             <ErrorDisplay
               error="Failed to load data. Please try again."
-              retry={() => alert('Retry clicked')}
+              retry={() => {}}
               variant="inline"
             />
           </div>
@@ -143,7 +143,7 @@ export function UIShowcase() {
             </p>
             <ErrorDisplay
               error="Unable to connect to the server"
-              retry={() => alert('Retry clicked')}
+              retry={() => {}}
               variant="card"
               title="Connection Error"
             />

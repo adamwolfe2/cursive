@@ -7,6 +7,7 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { toast } from 'sonner'
 import type { PremiumFeatureRequest, FeatureType } from '@/types/premium'
 import { safeError } from '@/lib/utils/log-sanitizer'
@@ -21,6 +22,8 @@ export function PremiumRequestsClient({ initialRequests }: PremiumRequestsClient
   const [filter, setFilter] = useState<string>('all')
   const [selectedRequest, setSelectedRequest] = useState<any | null>(null)
   const [processing, setProcessing] = useState(false)
+  const [pendingAction, setPendingAction] = useState<{ requestId: string; type: 'approve' | 'reject' } | null>(null)
+  const [actionNotes, setActionNotes] = useState('')
 
   const filteredRequests = requests.filter((req) =>
     filter === 'all' ? true : req.status === filter
@@ -34,76 +37,53 @@ export function PremiumRequestsClient({ initialRequests }: PremiumRequestsClient
     rejected: requests.filter((r) => r.status === 'rejected').length,
   }
 
-  async function handleApprove(requestId: string) {
-    const notes = prompt('Add approval notes (optional):')
-    if (notes === null) return // User cancelled
-
-    setProcessing(true)
-    try {
-      const response = await fetch(`/api/admin/premium-requests/${requestId}/approve`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ notes }),
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error || 'Failed to approve request')
-      }
-
-      toast.success('Request approved and feature access granted!')
-
-      // Update local state
-      setRequests((prev) =>
-        prev.map((req) =>
-          req.id === requestId
-            ? { ...req, status: 'approved', reviewed_at: new Date().toISOString() }
-            : req
-        )
-      )
-      setSelectedRequest(null)
-    } catch (error) {
-      safeError('[PremiumRequests]', 'Failed to approve request:', error)
-      toast.error(error instanceof Error ? error.message : 'Failed to approve request')
-    } finally {
-      setProcessing(false)
-    }
+  function handleApprove(requestId: string) {
+    setActionNotes('')
+    setPendingAction({ requestId, type: 'approve' })
   }
 
-  async function handleReject(requestId: string) {
-    const notes = prompt('Rejection reason:')
-    if (!notes) {
+  function handleReject(requestId: string) {
+    setActionNotes('')
+    setPendingAction({ requestId, type: 'reject' })
+  }
+
+  async function handleConfirmAction() {
+    if (!pendingAction) return
+    const { requestId, type } = pendingAction
+
+    if (type === 'reject' && !actionNotes.trim()) {
       toast.error('Please provide a reason for rejection')
       return
     }
 
+    setPendingAction(null)
     setProcessing(true)
     try {
-      const response = await fetch(`/api/admin/premium-requests/${requestId}/reject`, {
+      const endpoint = type === 'approve' ? 'approve' : 'reject'
+      const response = await fetch(`/api/admin/premium-requests/${requestId}/${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ notes }),
+        body: JSON.stringify({ notes: actionNotes.trim() || undefined }),
       })
 
       if (!response.ok) {
         const error = await response.json()
-        throw new Error(error.error || 'Failed to reject request')
+        throw new Error(error.error || `Failed to ${type} request`)
       }
 
-      toast.success('Request rejected')
+      toast.success(type === 'approve' ? 'Request approved and feature access granted!' : 'Request rejected')
 
-      // Update local state
       setRequests((prev) =>
         prev.map((req) =>
           req.id === requestId
-            ? { ...req, status: 'rejected', reviewed_at: new Date().toISOString() }
+            ? { ...req, status: type === 'approve' ? 'approved' : 'rejected', reviewed_at: new Date().toISOString() }
             : req
         )
       )
       setSelectedRequest(null)
     } catch (error) {
-      safeError('[PremiumRequests]', 'Failed to reject request:', error)
-      toast.error(error instanceof Error ? error.message : 'Failed to reject request')
+      safeError('[PremiumRequests]', `Failed to ${pendingAction?.type} request:`, error)
+      toast.error(error instanceof Error ? error.message : `Failed to ${type} request`)
     } finally {
       setProcessing(false)
     }
@@ -353,6 +333,37 @@ export function PremiumRequestsClient({ initialRequests }: PremiumRequestsClient
           </div>
         </div>
       )}
+
+      {/* Approve / Reject Notes Dialog */}
+      <Dialog open={!!pendingAction} onOpenChange={(open) => { if (!open) setPendingAction(null) }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{pendingAction?.type === 'approve' ? 'Approve Request' : 'Reject Request'}</DialogTitle>
+            <DialogDescription>
+              {pendingAction?.type === 'approve'
+                ? 'Optionally add notes before granting access.'
+                : 'Please provide a reason for rejection (required).'}
+            </DialogDescription>
+          </DialogHeader>
+          <textarea
+            value={actionNotes}
+            onChange={(e) => setActionNotes(e.target.value)}
+            rows={3}
+            placeholder={pendingAction?.type === 'approve' ? 'Notes (optional)...' : 'Rejection reason (required)...'}
+            className="mt-2 block w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+          />
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setPendingAction(null)}>Cancel</Button>
+            <Button
+              variant={pendingAction?.type === 'reject' ? 'destructive' : 'default'}
+              onClick={handleConfirmAction}
+              disabled={processing}
+            >
+              {pendingAction?.type === 'approve' ? 'Approve & Grant Access' : 'Reject Request'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
