@@ -46,8 +46,21 @@ export async function POST(request: NextRequest) {
       .eq('id', userData.workspace_id)
       .maybeSingle()
 
-    const body = await request.json()
-    const validated = requestSchema.parse(body)
+    let body: unknown
+    try {
+      body = await request.json()
+    } catch {
+      return NextResponse.json({ error: 'Invalid JSON in request body' }, { status: 400 })
+    }
+
+    const parseResult = requestSchema.safeParse(body)
+    if (!parseResult.success) {
+      return NextResponse.json(
+        { error: 'Invalid request data', details: parseResult.error.flatten() },
+        { status: 400 }
+      )
+    }
+    const validated = parseResult.data
 
     const adminSupabase = createAdminClient()
 

@@ -42,21 +42,12 @@ export async function GET(request: NextRequest) {
     const supabase = await createClient()
 
     // Verify brand workspace belongs to user's workspace
-    const { data: userData } = await supabase
-      .from('users')
-      .select('workspace_id')
-      .eq('auth_user_id', user.id)
-      .maybeSingle()
-
-    if (!userData) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-    }
-
+    // getCurrentUser() already returns workspace_id — no extra users table query needed
     const { data: brandWorkspace } = await supabase
       .from('brand_workspaces')
       .select('id')
       .eq('id', workspaceId)
-      .eq('workspace_id', userData.workspace_id)
+      .eq('workspace_id', user.workspace_id)
       .maybeSingle()
 
     if (!brandWorkspace) {
