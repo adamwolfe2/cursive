@@ -1,8 +1,9 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { Copy, Trash2, MoreHorizontal } from 'lucide-react'
 import { PageContainer, PageHeader } from '@/components/layout'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -12,6 +13,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { useTier } from '@/lib/hooks/use-tier'
 import { InlineFeatureLock } from '@/components/gates/FeatureLock'
 import { ServiceLimitBanner } from '@/components/limits/ServiceLimitBanner'
+import { useToast } from '@/lib/hooks/use-toast'
 
 interface Campaign {
   id: string
@@ -41,15 +43,27 @@ const STATUS_COLORS: Record<string, { variant: 'default' | 'secondary' | 'destru
 
 export function CampaignsList() {
   const router = useRouter()
+  const toast = useToast()
   const { hasFeature, limits, tierName, canUpgrade, isLoading: tierLoading } = useTier()
   const [campaigns, setCampaigns] = useState<Campaign[]>([])
   const [usage, setUsage] = useState<CampaignUsage | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState('all')
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null)
+  const [actionLoading, setActionLoading] = useState<string | null>(null)
+  const menuRef = useRef<HTMLDivElement>(null)
 
   const hasCampaignsFeature = hasFeature('campaigns')
   const campaignLimit = limits.campaigns
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    if (!openMenuId) return
+    const handleClick = () => setOpenMenuId(null)
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [openMenuId])
 
   useEffect(() => {
     async function fetchCampaigns() {
@@ -105,6 +119,51 @@ export function CampaignsList() {
       day: 'numeric',
       year: 'numeric',
     })
+  }
+
+  const handleDuplicate = async (e: React.MouseEvent, campaignId: string) => {
+    e.stopPropagation()
+    setOpenMenuId(null)
+    setActionLoading(campaignId + '-dup')
+    try {
+      const response = await fetch(`/api/campaigns/${campaignId}/duplicate`, { method: 'POST' })
+      if (response.ok) {
+        const result = await response.json()
+        toast.success(`Campaign duplicated`)
+        router.push(`/campaigns/${result.data.id}`)
+      } else {
+        const result = await response.json()
+        toast.error(result.error || 'Failed to duplicate campaign')
+      }
+    } catch {
+      toast.error('Failed to duplicate campaign')
+    } finally {
+      setActionLoading(null)
+    }
+  }
+
+  const handleDelete = async (e: React.MouseEvent, campaign: Campaign) => {
+    e.stopPropagation()
+    setOpenMenuId(null)
+    if (!['draft', 'rejected'].includes(campaign.status)) {
+      toast.error('Only draft or rejected campaigns can be deleted')
+      return
+    }
+    setActionLoading(campaign.id + '-del')
+    try {
+      const response = await fetch(`/api/campaigns/${campaign.id}`, { method: 'DELETE' })
+      if (response.ok) {
+        toast.success('Campaign deleted')
+        setCampaigns((prev) => prev.filter((c) => c.id !== campaign.id))
+      } else {
+        const result = await response.json()
+        toast.error(result.error || 'Failed to delete campaign')
+      }
+    } catch {
+      toast.error('Failed to delete campaign')
+    } finally {
+      setActionLoading(null)
+    }
   }
 
   // If campaigns feature is not available, show upgrade prompt
@@ -257,14 +316,54 @@ export function CampaignsList() {
               {campaigns.map((campaign) => (
                 <Card
                   key={campaign.id}
-                  className="p-6 cursor-pointer hover:border-primary/50 transition-colors"
+                  className="p-6 cursor-pointer hover:border-primary/50 transition-colors relative"
                   onClick={() => router.push(`/campaigns/${campaign.id}`)}
                 >
                   <div className="flex items-start justify-between mb-3">
                     <h3 className="font-medium text-foreground truncate pr-2">{campaign.name}</h3>
-                    <Badge variant={STATUS_COLORS[campaign.status]?.variant || 'secondary'}>
-                      {STATUS_COLORS[campaign.status]?.label || campaign.status}
-                    </Badge>
+                    <div className="flex items-center gap-1.5 flex-shrink-0">
+                      <Badge variant={STATUS_COLORS[campaign.status]?.variant || 'secondary'}>
+                        {STATUS_COLORS[campaign.status]?.label || campaign.status}
+                      </Badge>
+                      {/* Quick actions menu */}
+                      <div className="relative" ref={openMenuId === campaign.id ? menuRef : null}>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setOpenMenuId(openMenuId === campaign.id ? null : campaign.id)
+                          }}
+                          className="p-1 rounded hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+                          title="More actions"
+                        >
+                          <MoreHorizontal className="h-4 w-4" />
+                        </button>
+                        {openMenuId === campaign.id && (
+                          <div
+                            className="absolute right-0 top-7 z-20 min-w-[140px] rounded-lg border border-border bg-background shadow-md py-1"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <button
+                              onClick={(e) => handleDuplicate(e, campaign.id)}
+                              disabled={actionLoading === campaign.id + '-dup'}
+                              className="flex items-center gap-2 w-full px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors disabled:opacity-50"
+                            >
+                              <Copy className="h-3.5 w-3.5" />
+                              {actionLoading === campaign.id + '-dup' ? 'Duplicating…' : 'Duplicate'}
+                            </button>
+                            {['draft', 'rejected'].includes(campaign.status) && (
+                              <button
+                                onClick={(e) => handleDelete(e, campaign)}
+                                disabled={actionLoading === campaign.id + '-del'}
+                                className="flex items-center gap-2 w-full px-3 py-2 text-sm text-destructive hover:bg-destructive/10 transition-colors disabled:opacity-50"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                                {actionLoading === campaign.id + '-del' ? 'Deleting…' : 'Delete'}
+                              </button>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
 
                   {campaign.description && (
