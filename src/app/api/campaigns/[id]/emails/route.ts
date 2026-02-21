@@ -68,6 +68,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
         )
       `, { count: 'estimated' })
       .eq('campaign_id', campaignId)
+      .eq('workspace_id', user.workspace_id) // Defense-in-depth
       .order('created_at', { ascending: false })
       .range(params.offset, params.offset + params.limit - 1)
 

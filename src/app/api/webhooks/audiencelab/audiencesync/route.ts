@@ -171,12 +171,14 @@ export async function POST(request: NextRequest) {
     const firstRow = rows[0] || {}
     const audienceId = firstRow.audience_id || firstRow.audienceId
     if (audienceId) {
-      // Check if this audience_id maps to a workspace via audiencelab_pixels
+      // Check if this audience_id matches a pixel_id in audiencelab_pixels.
+      // SECURITY: Must filter by audienceId — never use limit(1) without a specific filter
+      // as that would route to a random workspace (cross-tenant contamination).
       const { data: pixelData } = await supabase
         .from('audiencelab_pixels')
         .select('workspace_id')
+        .eq('pixel_id', audienceId)
         .eq('is_active', true)
-        .limit(1)
         .maybeSingle()
       if (pixelData?.workspace_id) workspaceId = pixelData.workspace_id
     }

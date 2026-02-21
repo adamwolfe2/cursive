@@ -288,7 +288,23 @@ export class CampaignRepository {
       throw new DatabaseError('Campaign not found or does not belong to workspace')
     }
 
-    const campaignLeads = leadIds.map((leadId) => ({
+    // SECURITY: Verify all leads belong to the same workspace before adding to campaign
+    const { data: verifiedLeads, error: verifyError } = await supabase
+      .from('leads')
+      .select('id')
+      .eq('workspace_id', workspaceId)
+      .in('id', leadIds)
+
+    if (verifyError) throw new DatabaseError(verifyError.message)
+
+    const verifiedLeadIds = new Set((verifiedLeads || []).map((l) => l.id))
+    const validLeadIds = leadIds.filter((id) => verifiedLeadIds.has(id))
+
+    if (validLeadIds.length === 0) {
+      throw new DatabaseError('None of the specified leads belong to this workspace')
+    }
+
+    const campaignLeads = validLeadIds.map((leadId) => ({
       campaign_id: campaignId,
       lead_id: leadId,
     }))

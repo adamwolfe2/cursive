@@ -3,7 +3,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { requireAdmin } from '@/lib/auth/admin'
 import { handleApiError } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'
-import { safeError } from '@/lib/utils/log-sanitizer'
+import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
 
 const suspendSchema = z.object({
   action: z.enum(['suspend', 'unsuspend']),
@@ -78,7 +78,7 @@ export async function PATCH(
       },
     })
 
-    safeError(
+    safeLog(
       `[Admin] Workspace ${action}ed: ${workspaceId} by ${admin.email}`
     )
 

@@ -312,6 +312,7 @@ async function handleUnsubscribe(
     .from('leads')
     .select('id, workspace_id')
     .eq('email', data.email)
+    .limit(50)
 
   if (leads && leads.length > 0) {
     const leadIds = leads.map((l) => l.id)
@@ -351,6 +352,7 @@ async function handleBounce(
     .from('leads')
     .select('id')
     .eq('email', data.email)
+    .limit(50)
 
   if (leads && leads.length > 0) {
     const leadIds = leads.map((l) => l.id)
