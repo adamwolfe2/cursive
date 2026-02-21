@@ -16,7 +16,7 @@ const updateSchema = z.object({
   primary_color: z.string().regex(hexColorRegex, 'Must be a valid hex color').optional(),
   secondary_color: z.string().regex(hexColorRegex, 'Must be a valid hex color').optional(),
   accent_color: z.string().regex(hexColorRegex, 'Must be a valid hex color').nullable().optional(),
-  logo_url: z.string().url().nullable().optional(),
+  logo_url: z.string().url().startsWith('https://', 'Logo URL must use HTTPS').nullable().optional(),
 })
 
 /**

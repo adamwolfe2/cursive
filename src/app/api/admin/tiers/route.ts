@@ -7,9 +7,25 @@
 
 
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { requireAdmin, logAdminAction } from '@/lib/auth/admin'
 import { createClient } from '@/lib/supabase/server'
+
+const assignTierSchema = z.object({
+  workspaceId: z.string().uuid(),
+  tierSlug: z.string().min(1).max(100),
+  billingCycle: z.enum(['monthly', 'yearly']).default('monthly'),
+  notes: z.string().max(1000).optional(),
+})
+
+const overrideSchema = z.object({
+  workspaceId: z.string().uuid(),
+  dailyLeadLimitOverride: z.number().int().min(0).max(1_000_000).nullable().optional(),
+  monthlyLeadLimitOverride: z.number().int().min(0).max(10_000_000).nullable().optional(),
+  featureOverrides: z.record(z.unknown()).optional(),
+  notes: z.string().max(1000).optional(),
+})
 
 // GET - List all product tiers
 export async function GET() {
@@ -45,14 +61,14 @@ export async function POST(request: NextRequest) {
     await requireAdmin()
 
     const body = await request.json()
-    const { workspaceId, tierSlug, billingCycle = 'monthly', notes } = body
-
-    if (!workspaceId || !tierSlug) {
+    const parsed = assignTierSchema.safeParse(body)
+    if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Workspace ID and tier slug are required' },
+        { error: 'Validation failed', details: parsed.error.flatten().fieldErrors },
         { status: 400 }
       )
     }
+    const { workspaceId, tierSlug, billingCycle, notes } = parsed.data
 
     const supabase = await createClient()
 
@@ -137,20 +153,14 @@ export async function PATCH(request: NextRequest) {
     await requireAdmin()
 
     const body = await request.json()
-    const {
-      workspaceId,
-      dailyLeadLimitOverride,
-      monthlyLeadLimitOverride,
-      featureOverrides,
-      notes,
-    } = body
-
-    if (!workspaceId) {
+    const parsed = overrideSchema.safeParse(body)
+    if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Workspace ID is required' },
+        { error: 'Validation failed', details: parsed.error.flatten().fieldErrors },
         { status: 400 }
       )
     }
+    const { workspaceId, dailyLeadLimitOverride, monthlyLeadLimitOverride, featureOverrides, notes } = parsed.data
 
     const supabase = await createClient()
 

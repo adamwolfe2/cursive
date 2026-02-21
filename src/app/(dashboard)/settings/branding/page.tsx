@@ -81,9 +81,14 @@ export default function BrandingSettingsPage() {
     setHasChanges(true)
   }
 
+  // Only allow https:// URLs for logo preview to prevent javascript: or data: URLs
+  const safeLogoPreviewUrl = logoUrl.startsWith('https://') ? logoUrl : null
+
   // Save mutation
   const saveMutation = useMutation({
     mutationFn: async () => {
+      // Reject non-https logo URLs to prevent protocol injection
+      const safeLogoUrl = logoUrl && logoUrl.startsWith('https://') ? logoUrl : null
       const response = await fetch('/api/workspace/branding', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -91,7 +96,7 @@ export default function BrandingSettingsPage() {
           primary_color: primaryColor,
           secondary_color: secondaryColor,
           accent_color: accentColor || null,
-          logo_url: logoUrl || null,
+          logo_url: safeLogoUrl,
         }),
       })
       if (!response.ok) {
@@ -261,16 +266,24 @@ export default function BrandingSettingsPage() {
             {logoUrl && (
               <div className="flex items-center gap-4 p-4 rounded-lg bg-muted">
                 <div className="relative h-12 w-12 overflow-hidden rounded-lg border border-border bg-white">
-                  <img
-                    src={logoUrl}
-                    alt="Logo preview"
-                    className="h-full w-full object-contain"
-                    onError={(e) => {
-                      ;(e.target as HTMLImageElement).style.display = 'none'
-                    }}
-                  />
+                  {safeLogoPreviewUrl ? (
+                    <img
+                      src={safeLogoPreviewUrl}
+                      alt="Logo preview"
+                      className="h-full w-full object-contain"
+                      onError={(e) => {
+                        ;(e.target as HTMLImageElement).style.display = 'none'
+                      }}
+                    />
+                  ) : (
+                    <div className="h-full w-full flex items-center justify-center">
+                      <span className="text-xs text-muted-foreground text-center leading-tight px-1">https only</span>
+                    </div>
+                  )}
                 </div>
-                <p className="text-sm text-muted-foreground">Logo preview</p>
+                <p className="text-sm text-muted-foreground">
+                  {safeLogoPreviewUrl ? 'Logo preview' : 'URL must start with https://'}
+                </p>
               </div>
             )}
           </div>
