@@ -117,6 +117,7 @@ export const platformUpload = inngest.createFunction(
           platform_name: platform,
         })
         .in('id', lead_ids)
+        .eq('workspace_id', workspace_id)
 
       // Log billing event for platform uploads
       await supabase.from('billing_events').insert({
