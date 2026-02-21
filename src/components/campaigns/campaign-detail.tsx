@@ -2,12 +2,14 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { Copy } from 'lucide-react'
 import { PageContainer, PageHeader } from '@/components/layout'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { CampaignAbTesting } from '@/components/campaigns/campaign-ab-testing'
+import { useToast } from '@/lib/hooks/use-toast'
 
 interface Campaign {
   id: string
@@ -43,9 +45,11 @@ const STATUS_COLORS: Record<string, { variant: 'default' | 'secondary' | 'destru
 
 export function CampaignDetail({ campaignId }: CampaignDetailProps) {
   const router = useRouter()
+  const toast = useToast()
   const [campaign, setCampaign] = useState<Campaign | null>(null)
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
+  const [duplicating, setDuplicating] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -90,6 +94,27 @@ export function CampaignDetail({ campaignId }: CampaignDetailProps) {
     }
   }
 
+  const handleDuplicate = async () => {
+    setDuplicating(true)
+    try {
+      const response = await fetch(`/api/campaigns/${campaignId}/duplicate`, {
+        method: 'POST',
+      })
+      if (response.ok) {
+        const result = await response.json()
+        toast.success(`Campaign duplicated as "${result.data.name}"`)
+        router.push(`/campaigns/${result.data.id}`)
+      } else {
+        const result = await response.json()
+        toast.error(result.error || 'Failed to duplicate campaign')
+      }
+    } catch {
+      toast.error('Failed to duplicate campaign')
+    } finally {
+      setDuplicating(false)
+    }
+  }
+
   if (loading) {
     return (
       <PageContainer>
@@ -130,6 +155,16 @@ export function CampaignDetail({ campaignId }: CampaignDetailProps) {
             <Badge variant={STATUS_COLORS[campaign.status]?.variant || 'secondary'} className="text-sm">
               {STATUS_COLORS[campaign.status]?.label || campaign.status}
             </Badge>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleDuplicate}
+              loading={duplicating}
+              disabled={duplicating}
+            >
+              <Copy className="h-4 w-4 mr-2" />
+              Duplicate
+            </Button>
             {campaign.status === 'draft' && (
               <Button onClick={submitForReview} loading={submitting}>
                 Submit for Review
