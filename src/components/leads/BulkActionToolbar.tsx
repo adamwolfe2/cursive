@@ -12,7 +12,7 @@ interface BulkActionToolbarProps {
   onSuccess?: () => void
 }
 
-type ActionState = 'idle' | 'archive' | 'unarchive' | 'tag' | 'export_csv'
+type ActionState = 'idle' | 'archive' | 'unarchive' | 'tag' | 'export_csv' | 'delete_confirm' | 'delete'
 
 export function BulkActionToolbar({
   selectedCount,
@@ -97,6 +97,23 @@ export function BulkActionToolbar({
     }
   }
 
+  async function handleDelete() {
+    setLoading(true)
+    setActionState('delete')
+    try {
+      await callBulkAPI('delete')
+      toast.success(`Deleted ${selectedCount} lead${selectedCount !== 1 ? 's' : ''}`)
+      onClear()
+      onSuccess?.()
+    } catch (err) {
+      safeError('[BulkActionToolbar] delete error:', err)
+      toast.error('Failed to delete leads. You may not have permission.')
+    } finally {
+      setLoading(false)
+      setActionState('idle')
+    }
+  }
+
   async function handleExportCSV() {
     setLoading(true)
     try {
@@ -153,8 +170,27 @@ export function BulkActionToolbar({
 
             <div className="h-4 w-px bg-zinc-200" />
 
-            {/* Inline tag input — shown when actionState === 'tag' */}
-            {actionState === 'tag' ? (
+            {/* Inline delete confirmation — shown when actionState === 'delete_confirm' */}
+            {actionState === 'delete_confirm' ? (
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-medium text-red-700">
+                  Permanently delete {selectedCount} lead{selectedCount !== 1 ? 's' : ''}?
+                </span>
+                <button
+                  onClick={() => { void handleDelete() }}
+                  disabled={loading}
+                  className="rounded-md bg-red-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-red-700 disabled:opacity-50 transition-colors"
+                >
+                  {loading ? 'Deleting…' : 'Yes, Delete'}
+                </button>
+                <button
+                  onClick={() => setActionState('idle')}
+                  className="text-xs text-zinc-500 hover:text-zinc-700"
+                >
+                  Cancel
+                </button>
+              </div>
+            ) : actionState === 'tag' ? (
               <div className="flex items-center gap-2">
                 <input
                   autoFocus
@@ -219,6 +255,15 @@ export function BulkActionToolbar({
                   className="rounded-md border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-medium text-blue-700 hover:bg-blue-100 disabled:opacity-50 transition-colors"
                 >
                   {loading ? 'Exporting…' : 'Export CSV'}
+                </button>
+
+                {/* Delete */}
+                <button
+                  onClick={() => setActionState('delete_confirm')}
+                  disabled={loading}
+                  className="rounded-md border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-100 disabled:opacity-50 transition-colors"
+                >
+                  Delete
                 </button>
 
                 {/* Clear */}
