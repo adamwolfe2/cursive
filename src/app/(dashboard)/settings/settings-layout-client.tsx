@@ -15,6 +15,7 @@ const settingsTabs = [
   { label: 'Integrations', href: '/settings/integrations' },
   { label: 'Pixel', href: '/settings/pixel' },
   { label: 'API Keys', href: '/settings/api-keys' },
+  { label: 'Webhooks', href: '/settings/webhooks' },
 ]
 
 export function SettingsLayoutClient({
