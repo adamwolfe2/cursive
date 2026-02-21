@@ -411,8 +411,8 @@ export default function WebhooksPage() {
                   <div className="flex items-center gap-2 flex-shrink-0">
                     <Switch
                       checked={webhook.is_active}
-                      onCheckedChange={(checked) =>
-                        toggleMutation.mutate({ id: webhook.id, is_active: checked })
+                      onChange={() =>
+                        toggleMutation.mutate({ id: webhook.id, is_active: !webhook.is_active })
                       }
                       aria-label={webhook.is_active ? 'Pause webhook' : 'Resume webhook'}
                     />
@@ -600,7 +600,7 @@ export default function WebhooksPage() {
               </div>
               <Switch
                 checked={editForm.is_active}
-                onCheckedChange={(checked) => setEditForm((prev) => ({ ...prev, is_active: checked }))}
+                onChange={() => setEditForm((prev) => ({ ...prev, is_active: !prev.is_active }))}
               />
             </div>
           </div>

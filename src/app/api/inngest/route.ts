@@ -180,5 +180,29 @@ export const { GET, POST, PUT } = serve({
 
     // Partner Stripe Connect Validation
     functions.partnerStripeValidation,
+
+    // Outbound Webhook Fan-out (delivers to all subscribed endpoints)
+    functions.deliverOutboundWebhooks,
+
+    // Post-Purchase Nurture Drip (3-email sequence after credit purchase)
+    functions.postPurchaseSequence,
+
+    // Credit Auto-Recharge (triggered on credits-low event)
+    functions.creditAutoRecharge,
+
+    // Inactive User Re-engagement (targets users who haven't logged in for 14+ days)
+    functions.inactiveUserReengagement,
+
+    // Abandoned Onboarding Recovery (re-engages users who haven't completed setup)
+    functions.abandonedOnboardingRecovery,
+
+    // Abandoned Cart Recovery (recovery emails for incomplete Stripe checkouts)
+    functions.abandonedCartRecovery,
+
+    // Weekly Summary Email (Monday 9am CT — activity digest per workspace)
+    functions.weeklySummaryEmail,
+
+    // Credit Alert Checker (twice daily — emails workspace owners on low balance)
+    functions.creditAlertChecker,
   ],
 })

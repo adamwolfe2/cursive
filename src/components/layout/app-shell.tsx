@@ -194,6 +194,17 @@ const navigationItems: NavItemConfig[] = [
     ],
   },
   {
+    name: 'Conversations',
+    href: '/conversations',
+    section: 'actions',
+    subText: 'Email replies & threads',
+    icon: (
+      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+      </svg>
+    ),
+  },
+  {
     name: 'Segment Builder',
     href: '/segment-builder',
     section: 'actions',
@@ -249,6 +260,7 @@ const navigationItems: NavItemConfig[] = [
       { name: 'Branding', href: '/settings/branding' },
       { name: 'Integrations', href: '/settings/integrations' },
       { name: 'Notifications', href: '/settings/notifications' },
+      { name: 'Webhooks', href: '/settings/webhooks' },
       { name: 'Security', href: '/settings/security' },
     ],
   },
