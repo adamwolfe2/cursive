@@ -49,6 +49,15 @@ interface PartnerRow {
   earnings: number
 }
 
+interface PartnerRevenueRow {
+  partner_id: string
+  name: string
+  leads_sold: number
+  revenue: number
+  avg_per_lead: number
+  pct_of_total: number
+}
+
 interface ChurnedWorkspace {
   workspace_id: string
   name: string
@@ -86,6 +95,7 @@ interface RevenueData {
   topSpenders: SpenderRow[]
   revenueByPackage: PackageRow[]
   topPartners: PartnerRow[]
+  partnerRevenueBreakdown: PartnerRevenueRow[]
 }
 
 // ─── Linear regression helper ─────────────────────────────────────────────
@@ -154,6 +164,8 @@ async function fetchRevenueData(): Promise<RevenueData | null> {
       purchasesForChurnAnalysis,
       // Recent purchases (last 30 days) for churn exclusion
       recentPurchasesForChurn,
+      // Partner revenue breakdown (top 10 by earnings this month)
+      partnerRevenueEarnings,
     ] = await Promise.all([
       supabase
         .from('credit_purchases')
@@ -227,6 +239,12 @@ async function fetchRevenueData(): Promise<RevenueData | null> {
         .select('workspace_id')
         .eq('status', 'completed')
         .gte('created_at', twentyDaysAgo),
+
+      // Partner revenue breakdown: all earnings this month (for top 10 by revenue)
+      supabase
+        .from('partner_earnings')
+        .select('partner_id, lead_id, amount, partners(name)')
+        .gte('created_at', monthStart),
     ])
 
     // ── MRR / ARR ────────────────────────────────────────────────────────────
@@ -364,6 +382,38 @@ async function fetchRevenueData(): Promise<RevenueData | null> {
       .sort((a, b) => b.earnings - a.earnings)
       .slice(0, 5)
 
+    // ── Partner Revenue Breakdown (top 10 by earnings this month) ────────────
+    const partnerRevenueMap: Record<string, { name: string; leads_sold: number; revenue: number }> = {}
+    const partnerRevenueRows = (partnerRevenueEarnings.data || []) as any[]
+    partnerRevenueRows.forEach((row) => {
+      const pid = row.partner_id
+      if (!partnerRevenueMap[pid]) {
+        partnerRevenueMap[pid] = {
+          name: row.partners?.name || pid.slice(0, 8),
+          leads_sold: 0,
+          revenue: 0,
+        }
+      }
+      partnerRevenueMap[pid].leads_sold += 1
+      partnerRevenueMap[pid].revenue += Number(row.amount || 0)
+    })
+    const partnerRevenueTotalThisMonth = Object.values(partnerRevenueMap).reduce(
+      (s, r) => s + r.revenue, 0
+    )
+    const partnerRevenueBreakdown: PartnerRevenueRow[] = Object.entries(partnerRevenueMap)
+      .map(([pid, data]) => ({
+        partner_id: pid,
+        name: data.name,
+        leads_sold: data.leads_sold,
+        revenue: Math.round(data.revenue * 100) / 100,
+        avg_per_lead: data.leads_sold > 0 ? Math.round((data.revenue / data.leads_sold) * 100) / 100 : 0,
+        pct_of_total: partnerRevenueTotalThisMonth > 0
+          ? Math.round((data.revenue / partnerRevenueTotalThisMonth) * 10000) / 100
+          : 0,
+      }))
+      .sort((a, b) => b.revenue - a.revenue)
+      .slice(0, 10)
+
     // ── Churn Analysis ───────────────────────────────────────────────────────
     // Recent workspace IDs (purchased in last 20 days) — NOT churned
     const recentWorkspaceIds = new Set(
@@ -444,6 +494,7 @@ async function fetchRevenueData(): Promise<RevenueData | null> {
       topSpenders,
       revenueByPackage,
       topPartners,
+      partnerRevenueBreakdown,
     }
   } catch (error) {
     safeError('Admin revenue page data fetch error:', error)
@@ -825,6 +876,53 @@ export default async function AdminRevenuePage() {
                 </table>
               )}
             </SectionCard>
+
+            {/* ── Partner Revenue Breakdown ─────────────────────────────────── */}
+            <div className="mt-6">
+              <SectionCard title="Partner Revenue Breakdown — Top 10 This Month">
+                {data.partnerRevenueBreakdown.length === 0 ? (
+                  <EmptyState message="No partner earnings recorded this month." />
+                ) : (
+                  <table className="w-full">
+                    <thead className="bg-zinc-50 border-b border-zinc-100">
+                      <tr>
+                        <th className="px-5 py-2.5 text-left text-[12px] font-medium text-zinc-500">#</th>
+                        <th className="px-5 py-2.5 text-left text-[12px] font-medium text-zinc-500">Partner</th>
+                        <th className="px-5 py-2.5 text-right text-[12px] font-medium text-zinc-500">Leads Sold</th>
+                        <th className="px-5 py-2.5 text-right text-[12px] font-medium text-zinc-500">Revenue</th>
+                        <th className="px-5 py-2.5 text-right text-[12px] font-medium text-zinc-500">Avg / Lead</th>
+                        <th className="px-5 py-2.5 text-right text-[12px] font-medium text-zinc-500">% of Total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {data.partnerRevenueBreakdown.map((row, i) => (
+                        <tr key={row.partner_id} className="border-b border-zinc-100 last:border-0 hover:bg-zinc-50">
+                          <td className="px-5 py-2.5 text-[12px] text-zinc-400">{i + 1}</td>
+                          <td className="px-5 py-2.5 text-[13px] text-zinc-800">{row.name}</td>
+                          <td className="px-5 py-2.5 text-[13px] text-zinc-600 text-right">{fmt(row.leads_sold)}</td>
+                          <td className="px-5 py-2.5 text-[13px] font-medium text-zinc-900 text-right">{fmtUSD(row.revenue)}</td>
+                          <td className="px-5 py-2.5 text-[13px] text-zinc-600 text-right">{fmtUSD(row.avg_per_lead)}</td>
+                          <td className="px-5 py-2.5 text-[13px] text-zinc-600 text-right">{row.pct_of_total.toFixed(1)}%</td>
+                        </tr>
+                      ))}
+                      <tr className="border-t-2 border-zinc-200 bg-zinc-50">
+                        <td className="px-5 py-2.5 text-[12px] font-semibold text-zinc-700" colSpan={2}>Totals</td>
+                        <td className="px-5 py-2.5 text-[12px] font-semibold text-zinc-700 text-right">
+                          {fmt(data.partnerRevenueBreakdown.reduce((s, r) => s + r.leads_sold, 0))}
+                        </td>
+                        <td className="px-5 py-2.5 text-[12px] font-semibold text-zinc-900 text-right">
+                          {fmtUSD(data.partnerRevenueBreakdown.reduce((s, r) => s + r.revenue, 0))}
+                        </td>
+                        <td className="px-5 py-2.5 text-[12px] text-zinc-400 text-right">—</td>
+                        <td className="px-5 py-2.5 text-[12px] font-semibold text-zinc-700 text-right">
+                          {data.partnerRevenueBreakdown.reduce((s, r) => s + r.pct_of_total, 0).toFixed(1)}%
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                )}
+              </SectionCard>
+            </div>
           </>
         )}
       </div>
