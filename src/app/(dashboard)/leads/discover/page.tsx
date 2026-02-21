@@ -116,6 +116,27 @@ const initialFilters: SearchFilters = {
   limit: 25,
 }
 
+function exportLeadsCSV(leads: LeadResult[]) {
+  const headers = ['First Name', 'Last Name', 'Email', 'Phone', 'Job Title', 'Company', 'Domain', 'Industry', 'Company Size', 'City', 'State', 'Country', 'Intent Score']
+  const rows = leads.map(l => [
+    l.firstName, l.lastName, l.email ?? '', l.phone ?? '',
+    l.jobTitle ?? '', l.companyName, l.companyDomain ?? '',
+    l.companyIndustry ?? '', l.companySize ?? '',
+    l.city ?? '', l.state ?? '', l.country ?? '',
+    l.intentScore != null ? String(l.intentScore) : '',
+  ])
+  const csv = [headers, ...rows]
+    .map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+    .join('\n')
+  const blob = new Blob([csv], { type: 'text/csv' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `cursive-leads-${new Date().toISOString().slice(0, 10)}.csv`
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
 export default function LeadDiscoveryPage() {
   const { limits, usage, isLoading: tierLoading, tierName, canUpgrade } = useTier()
   const [filters, setFilters] = useState<SearchFilters>(initialFilters)
@@ -623,13 +644,23 @@ export default function LeadDiscoveryPage() {
       {/* Search Results */}
       {searchResults.length > 0 && (
         <div className="bg-white border border-zinc-200 rounded-lg overflow-hidden">
-          <div className="p-4 border-b border-zinc-200">
+          <div className="p-4 border-b border-zinc-200 flex items-center justify-between gap-3">
             <h2 className="text-lg font-semibold text-zinc-900">
               Search Results
               <span className="ml-2 text-sm font-normal text-zinc-500">
                 ({searchResults.length} leads found)
               </span>
             </h2>
+            <button
+              type="button"
+              onClick={() => exportLeadsCSV(searchResults)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-zinc-600 border border-zinc-200 rounded-lg hover:bg-zinc-50 transition-colors"
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              Export CSV
+            </button>
           </div>
           <div className="divide-y divide-zinc-100">
             {searchResults.map((lead, index) => (

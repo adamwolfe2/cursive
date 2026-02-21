@@ -218,8 +218,77 @@ export default function ServicesPage() {
         ))}
       </div>
 
+      {/* Feature Comparison Table */}
+      <div className="mt-12 mb-0">
+        <h2 className="text-lg font-semibold text-foreground mb-1">What&apos;s included</h2>
+        <p className="text-sm text-muted-foreground mb-6">Every tier builds on the one before it.</p>
+        <div className="overflow-x-auto rounded-xl border border-border">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="bg-muted/50 border-b border-border">
+                <th className="text-left px-5 py-3.5 font-medium text-foreground w-1/2">Feature</th>
+                <th className="text-center px-4 py-3.5 font-medium text-foreground">
+                  <div>Data</div>
+                  <div className="text-xs font-normal text-muted-foreground">$1k–3k/mo</div>
+                </th>
+                <th className="text-center px-4 py-3.5 font-medium text-foreground">
+                  <div className="flex items-center justify-center gap-1.5">
+                    Outbound
+                    <span className="inline-flex items-center rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-primary-foreground leading-none">Popular</span>
+                  </div>
+                  <div className="text-xs font-normal text-muted-foreground">$3–5k/mo</div>
+                </th>
+                <th className="text-center px-4 py-3.5 font-medium text-foreground">
+                  <div>Pipeline</div>
+                  <div className="text-xs font-normal text-muted-foreground">$5–10k/mo</div>
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {[
+                { label: 'Custom ICP-matched lead lists', data: true, outbound: true, pipeline: true },
+                { label: 'Verified contact data (email + phone)', data: true, outbound: true, pipeline: true },
+                { label: 'Monthly delivery cadence', data: true, outbound: true, pipeline: true },
+                { label: 'Firmographic & technographic filters', data: true, outbound: true, pipeline: true },
+                { label: 'Dedicated data analyst', data: true, outbound: true, pipeline: true },
+                { label: 'CRM-ready CSV or direct integration', data: true, outbound: true, pipeline: true },
+                { label: 'AI-written email sequences', data: false, outbound: true, pipeline: true },
+                { label: 'Multi-channel outreach (email + LinkedIn)', data: false, outbound: true, pipeline: true },
+                { label: 'Managed mailbox infrastructure', data: false, outbound: true, pipeline: true },
+                { label: 'A/B testing & sequence optimization', data: false, outbound: true, pipeline: true },
+                { label: 'Weekly performance reporting', data: false, outbound: true, pipeline: true },
+                { label: 'Dedicated campaign manager', data: false, outbound: true, pipeline: true },
+                { label: 'AI SDR agent for lead qualification', data: false, outbound: false, pipeline: true },
+                { label: 'Automated meeting booking', data: false, outbound: false, pipeline: true },
+                { label: 'CRM pipeline management (GHL)', data: false, outbound: false, pipeline: true },
+                { label: 'Intent signal monitoring', data: false, outbound: false, pipeline: true },
+                { label: 'Slack channel for real-time updates', data: false, outbound: false, pipeline: true },
+                { label: 'Dedicated growth strategist', data: false, outbound: false, pipeline: true },
+              ].map((row) => (
+                <tr key={row.label} className="hover:bg-muted/20 transition-colors">
+                  <td className="px-5 py-3 text-foreground">{row.label}</td>
+                  {(['data', 'outbound', 'pipeline'] as const).map((tier) => (
+                    <td key={tier} className="text-center px-4 py-3">
+                      {row[tier] ? (
+                        <svg className="h-4 w-4 text-primary mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                        </svg>
+                      ) : (
+                        <svg className="h-4 w-4 text-muted-foreground/30 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                        </svg>
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       {/* Contact Sales Section */}
-      <div className="mt-12 rounded-xl border border-border bg-muted/30 p-8 text-center">
+      <div className="mt-10 rounded-xl border border-border bg-muted/30 p-8 text-center">
         <h2 className="text-xl font-semibold text-foreground mb-2">
           Need something custom?
         </h2>
