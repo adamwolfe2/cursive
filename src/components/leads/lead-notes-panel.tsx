@@ -7,6 +7,7 @@ import type { LeadNote, NoteType } from '@/types'
 import { NOTE_TYPES } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { useToast } from '@/lib/hooks/use-toast'
 
 interface LeadNotesPanelProps {
   leadId: string
@@ -90,6 +91,7 @@ export function LeadNotesPanel({ leadId, className }: LeadNotesPanelProps) {
   const [confirmDeleteNote, setConfirmDeleteNote] = useState<string | null>(null)
 
   const queryClient = useQueryClient()
+  const toast = useToast()
 
   const { data, isLoading } = useQuery({
     queryKey: ['lead-notes', leadId],
@@ -103,6 +105,10 @@ export function LeadNotesPanel({ leadId, className }: LeadNotesPanelProps) {
       queryClient.invalidateQueries({ queryKey: ['lead-activities', leadId] })
       setNewNoteContent('')
       setIsExpanded(false)
+      toast.success('Note added')
+    },
+    onError: () => {
+      toast.error('Failed to add note. Please try again.')
     },
   })
 
@@ -111,13 +117,21 @@ export function LeadNotesPanel({ leadId, className }: LeadNotesPanelProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['lead-notes', leadId] })
       queryClient.invalidateQueries({ queryKey: ['lead-activities', leadId] })
+      toast.success('Note deleted')
+    },
+    onError: () => {
+      toast.error('Failed to delete note. Please try again.')
     },
   })
 
   const pinMutation = useMutation({
     mutationFn: ({ noteId, isPinned }: { noteId: string; isPinned: boolean }) => togglePin(leadId, noteId, isPinned),
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['lead-notes', leadId] })
+      toast.success(variables.isPinned ? 'Note unpinned' : 'Note pinned')
+    },
+    onError: () => {
+      toast.error('Failed to update note. Please try again.')
     },
   })
 

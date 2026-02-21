@@ -120,6 +120,7 @@ export const creditAutoRecharge = inngest.createFunction(
           .from('users')
           .select('id, email, full_name, stripe_customer_id')
           .eq('id', user_id)
+          .eq('workspace_id', workspace_id) // defense-in-depth: ensure user belongs to workspace
           .maybeSingle()
 
         return fallbackUser

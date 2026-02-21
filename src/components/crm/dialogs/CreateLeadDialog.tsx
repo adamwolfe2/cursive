@@ -22,6 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select-radix'
+import { useToast } from '@/lib/hooks/use-toast'
 
 const createLeadSchema = z.object({
   email: z
@@ -70,6 +71,7 @@ interface CreateLeadDialogProps {
 
 export function CreateLeadDialog({ open, onOpenChange, onSuccess }: CreateLeadDialogProps) {
   const [error, setError] = React.useState<string | null>(null)
+  const toast = useToast()
 
   const {
     register,
@@ -96,6 +98,7 @@ export function CreateLeadDialog({ open, onOpenChange, onSuccess }: CreateLeadDi
         throw new Error(errorData.error || 'Failed to create lead')
       }
 
+      toast.success('Lead created successfully')
       onSuccess?.()
       onOpenChange(false)
       reset()

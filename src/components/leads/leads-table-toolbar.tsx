@@ -72,11 +72,16 @@ export function LeadsTableToolbar({
       if (!res.ok) throw new Error('Failed to add tags')
       return res.json()
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['leads'] })
       queryClient.invalidateQueries({ queryKey: ['lead-tags'] })
       table.resetRowSelection()
       setShowTagMenu(false)
+      toast({ type: 'success', message: `Tags added to ${data?.updated ?? selectedLeadIds.length} lead(s)` })
+    },
+    onError: (err) => {
+      safeError('[LeadsToolbar] Add tags failed:', err)
+      toast({ type: 'error', message: 'Failed to add tags. Please try again.' })
     },
   })
 
@@ -100,6 +105,11 @@ export function LeadsTableToolbar({
       queryClient.invalidateQueries({ queryKey: ['lead-tags'] })
       table.resetRowSelection()
       setShowTagMenu(false)
+      toast({ type: 'success', message: 'Tags removed successfully' })
+    },
+    onError: (err) => {
+      safeError('[LeadsToolbar] Remove tags failed:', err)
+      toast({ type: 'error', message: 'Failed to remove tags. Please try again.' })
     },
   })
 
@@ -118,10 +128,15 @@ export function LeadsTableToolbar({
       if (!res.ok) throw new Error('Failed to update status')
       return res.json()
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['leads'] })
       table.resetRowSelection()
       setShowStatusMenu(false)
+      toast({ type: 'success', message: `Status updated for ${data?.updated ?? selectedLeadIds.length} lead(s)` })
+    },
+    onError: (err) => {
+      safeError('[LeadsToolbar] Update status failed:', err)
+      toast({ type: 'error', message: 'Failed to update status. Please try again.' })
     },
   })
 

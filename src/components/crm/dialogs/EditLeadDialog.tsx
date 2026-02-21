@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from '@/components/ui/select-radix'
 import type { LeadTableRow } from '@/types/crm.types'
+import { useToast } from '@/lib/hooks/use-toast'
 
 interface EditLeadDialogProps {
   open: boolean
@@ -31,6 +32,7 @@ interface EditLeadDialogProps {
 export function EditLeadDialog({ open, onOpenChange, lead, onSuccess }: EditLeadDialogProps) {
   const [isSubmitting, setIsSubmitting] = React.useState(false)
   const [error, setError] = React.useState<string | null>(null)
+  const toast = useToast()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -67,6 +69,7 @@ export function EditLeadDialog({ open, onOpenChange, lead, onSuccess }: EditLead
         throw new Error(error.error || 'Failed to update lead')
       }
 
+      toast.success('Lead updated successfully')
       onSuccess?.()
       onOpenChange(false)
     } catch (err) {
