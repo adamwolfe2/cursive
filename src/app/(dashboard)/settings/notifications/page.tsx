@@ -117,7 +117,7 @@ export default function NotificationsSettingsPage() {
     },
   })
 
-  const isSaving = updateNotificationsMutation.isPending
+  const { mutate: mutateNotifications, isPending: isSaving } = updateNotificationsMutation
 
   // Debounce pref changes so rapid toggles batch into a single API call
   const pendingPrefsRef = useRef<Record<string, boolean | string> | null>(null)
@@ -135,11 +135,11 @@ export default function NotificationsSettingsPage() {
     if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current)
     debounceTimerRef.current = setTimeout(() => {
       if (pendingPrefsRef.current) {
-        updateNotificationsMutation.mutate(pendingPrefsRef.current)
+        mutateNotifications(pendingPrefsRef.current)
         pendingPrefsRef.current = null
       }
     }, 600)
-  }, [user?.notification_preferences, updateNotificationsMutation])
+  }, [user?.notification_preferences, mutateNotifications])
 
   if (isLoading) {
     return (
