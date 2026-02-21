@@ -107,6 +107,7 @@ export const processPartnerUpload = inngest.createFunction(
         .from('partner_upload_batches')
         .select('chunk_size')
         .eq('id', batch_id)
+        .eq('partner_id', partner_id) // Defense-in-depth: verify batch belongs to partner
         .maybeSingle()
 
       // Download file from storage
@@ -135,6 +136,7 @@ export const processPartnerUpload = inngest.createFunction(
           total_chunks: Math.ceil(totalRows / (batch?.chunk_size || 1000)),
         })
         .eq('id', batch_id)
+        .eq('partner_id', partner_id) // Defense-in-depth
 
       return {
         content,
