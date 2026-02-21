@@ -4,6 +4,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { ColumnDef } from '@tanstack/react-table'
 import { MoreHorizontal, ArrowUpDown } from 'lucide-react'
 import { format, formatDistanceToNow } from 'date-fns'
@@ -66,6 +67,7 @@ function formatPhone(phone: string | null): string {
 // Separate component so it can hold Dialog state (hooks cannot be called inside column defs)
 function LeadActionsCell({ lead, onRefresh }: { lead: LeadTableRow; onRefresh?: () => void }) {
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
+  const router = useRouter()
 
   return (
     <>
@@ -82,10 +84,10 @@ function LeadActionsCell({ lead, onRefresh }: { lead: LeadTableRow; onRefresh?: 
             Copy email
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => { window.location.href = `/crm/leads/${lead.id}` }}>
+          <DropdownMenuItem onClick={() => router.push(`/crm/leads/${lead.id}`)}>
             View details
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => { window.location.href = `/crm/leads/${lead.id}?edit=true` }}>
+          <DropdownMenuItem onClick={() => router.push(`/crm/leads/${lead.id}?edit=true`)}>
             Edit lead
           </DropdownMenuItem>
           <DropdownMenuSeparator />

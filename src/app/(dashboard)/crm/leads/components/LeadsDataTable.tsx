@@ -4,6 +4,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
+import { useRouter } from 'next/navigation'
 import {
   flexRender,
   getCoreRowModel,
@@ -59,6 +60,7 @@ export function LeadsDataTable({
     filters,
   } = useCRMStore()
 
+  const router = useRouter()
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 
@@ -146,9 +148,7 @@ export function LeadsDataTable({
                   : selectedLeadIds.filter(id => id !== lead.id)
                 setSelectedLeads(newSelection)
               }}
-              onView={() => {
-                window.location.href = `/crm/leads/${lead.id}`
-              }}
+              onView={() => router.push(`/crm/leads/${lead.id}`)}
             />
           ))
         )}
