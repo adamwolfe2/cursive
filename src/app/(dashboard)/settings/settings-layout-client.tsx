@@ -9,6 +9,7 @@ const settingsTabs = [
   { label: 'Client Profile', href: '/settings/client-profile' },
   { label: 'Branding', href: '/settings/branding' },
   { label: 'Billing', href: '/settings/billing' },
+  { label: 'Team', href: '/settings/team' },
   { label: 'Security', href: '/settings/security' },
   { label: 'Notifications', href: '/settings/notifications' },
   { label: 'Integrations', href: '/settings/integrations' },
