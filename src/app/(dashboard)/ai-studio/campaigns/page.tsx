@@ -5,7 +5,7 @@
 
 'use client'
 
-import { Suspense, useState, useEffect } from 'react'
+import { Suspense, useState, useEffect, useCallback } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -105,15 +105,7 @@ function CampaignsPageInner() {
   const [selectedProfiles, setSelectedProfiles] = useState<string[]>([])
   const [landingUrl, setLandingUrl] = useState('')
 
-  useEffect(() => {
-    if (!workspaceId) {
-      router.push('/ai-studio')
-      return
-    }
-    fetchData()
-  }, [workspaceId])
-
-  async function fetchData() {
+  const fetchData = useCallback(async () => {
     try {
       const [creativesRes, profilesRes] = await Promise.all([
         fetch(`/api/ai-studio/creatives?workspace=${workspaceId}`),
@@ -132,7 +124,15 @@ function CampaignsPageInner() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [workspaceId])
+
+  useEffect(() => {
+    if (!workspaceId) {
+      router.push('/ai-studio')
+      return
+    }
+    fetchData()
+  }, [workspaceId, fetchData, router])
 
   async function handleCreateCampaign() {
     if (!landingUrl.trim()) {

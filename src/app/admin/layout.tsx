@@ -81,6 +81,7 @@ export default async function AdminLayout({
                   { href: '/admin/audit-logs', label: 'Audit Logs' },
                   { href: '/admin/operations-health', label: 'Ops Health' },
                   { href: '/admin/failed-operations', label: 'Failed Ops' },
+                  { href: '/admin/failed-jobs', label: 'Failed Jobs' },
                   { href: '/admin/custom-audiences', label: 'Audiences' },
                   { href: '/admin/audiencelab/pixels', label: 'Pixels' },
                 ].map(({ href, label }) => (

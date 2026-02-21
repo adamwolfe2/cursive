@@ -5,7 +5,7 @@
 
 'use client'
 
-import { Suspense, useState, useEffect, useRef } from 'react'
+import { Suspense, useState, useEffect, useRef, useCallback } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { GradientCard, GradientBadge } from '@/components/ui/gradient-card'
@@ -58,6 +58,24 @@ function BrandingPageInner() {
   const pollAttemptsRef = useRef(0)
   const MAX_POLL_ATTEMPTS = 60
 
+  const fetchWorkspace = useCallback(async () => {
+    try {
+      const response = await fetch('/api/ai-studio/workspaces')
+      const data = await response.json()
+
+      const found = data.workspaces?.find((w: BrandWorkspace) => w.id === workspaceId)
+      if (found) {
+        setWorkspace(found)
+      } else {
+        setError('Workspace not found')
+      }
+    } catch (err: any) {
+      setError(err.message || 'Failed to load workspace')
+    } finally {
+      setIsLoading(false)
+    }
+  }, [workspaceId])
+
   useEffect(() => {
     if (!workspaceId) {
       router.push('/ai-studio')
@@ -82,25 +100,7 @@ function BrandingPageInner() {
     }, 3000)
 
     return () => clearInterval(interval)
-  }, [workspaceId, workspace?.extraction_status])
-
-  async function fetchWorkspace() {
-    try {
-      const response = await fetch('/api/ai-studio/workspaces')
-      const data = await response.json()
-
-      const found = data.workspaces?.find((w: BrandWorkspace) => w.id === workspaceId)
-      if (found) {
-        setWorkspace(found)
-      } else {
-        setError('Workspace not found')
-      }
-    } catch (err: any) {
-      setError(err.message || 'Failed to load workspace')
-    } finally {
-      setIsLoading(false)
-    }
-  }
+  }, [workspaceId, workspace?.extraction_status, fetchWorkspace, router])
 
   async function copyColor(color: string) {
     await navigator.clipboard.writeText(color)
