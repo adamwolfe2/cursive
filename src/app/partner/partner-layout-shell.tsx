@@ -13,6 +13,7 @@ import {
   LogOut,
   Menu,
   X,
+  Trophy,
 } from 'lucide-react'
 
 interface PartnerLayoutShellProps {
@@ -62,6 +63,11 @@ export function PartnerLayoutShell({ children }: PartnerLayoutShellProps) {
       label: 'Payouts',
       href: '/partner/payouts',
       icon: Banknote,
+    },
+    {
+      label: 'Leaderboard',
+      href: '/partner/leaderboard',
+      icon: Trophy,
     },
     {
       label: 'Settings',
