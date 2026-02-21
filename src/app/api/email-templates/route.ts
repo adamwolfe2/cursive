@@ -37,6 +37,7 @@ export async function GET(request: NextRequest) {
       .select('*')
       .eq('workspace_id', user.workspace_id)
       .order('created_at', { ascending: false })
+      .limit(500)
 
     if (status !== 'all') {
       query = query.eq('status', status)

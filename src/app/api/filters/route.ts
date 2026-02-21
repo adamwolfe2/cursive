@@ -61,6 +61,7 @@ export async function GET(request: NextRequest) {
     const { data: ownFilters, error: ownError } = await query
       .eq('workspace_id', user.workspace_id)
       .eq('user_id', user.id)
+      .limit(200)
 
     if (ownError) {
       safeError('[Filters API] Query error:', ownError)
@@ -86,7 +87,7 @@ export async function GET(request: NextRequest) {
         sharedQuery = sharedQuery.eq('filter_type', filterType)
       }
 
-      const { data, error } = await sharedQuery
+      const { data, error } = await sharedQuery.limit(100)
 
       if (!error && data) {
         sharedFilters = data
@@ -203,6 +204,7 @@ export async function PATCH(request: NextRequest) {
       .update(updates)
       .eq('id', id)
       .eq('user_id', user.id)
+      .eq('workspace_id', user.workspace_id) // Defense-in-depth
       .select()
       .maybeSingle()
 
@@ -251,12 +253,13 @@ export async function DELETE(request: NextRequest) {
 
     const supabase = await createClient()
 
-    // Delete the filter (RLS ensures user owns it)
+    // Delete the filter
     const { error } = await supabase
       .from('saved_filters')
       .delete()
       .eq('id', filterId)
       .eq('user_id', user.id)
+      .eq('workspace_id', user.workspace_id) // Defense-in-depth
 
     if (error) {
       safeError('[Filters API] Delete error:', error)
