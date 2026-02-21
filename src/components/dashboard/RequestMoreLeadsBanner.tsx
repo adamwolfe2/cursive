@@ -56,7 +56,7 @@ export function RequestMoreLeadsBanner({ currentLeads, leadLimit, workspaceName 
       setTimeout(() => setDismissed(true), 5000)
     } catch (error) {
       safeError('[RequestMoreLeadsBanner]', 'Failed to request more leads:', error)
-      toast({ title: 'Error', description: error instanceof Error ? error.message : 'Failed to submit request', variant: 'destructive' })
+      toast({ type: 'error', message: error instanceof Error ? error.message : 'Failed to submit request' })
     } finally {
       setRequesting(false)
     }

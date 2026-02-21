@@ -93,8 +93,8 @@ export async function POST(request: NextRequest) {
       .select('id, name')
       .maybeSingle()
 
-    if (workspaceError) {
-      throw new Error(`Failed to create workspace: ${workspaceError.message}`)
+    if (workspaceError || !workspace) {
+      throw new Error(`Failed to create workspace: ${workspaceError?.message || 'no data returned'}`)
     }
 
     // 5. Extract brand DNA with Firecrawl (async - don't await)
@@ -133,7 +133,8 @@ async function processBrandExtractionWithTimeout(
     ])
   } catch (error: any) {
     safeError('[Brand Extract] Background extraction failed:', error)
-    await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (supabase as any)
       .from('brand_workspaces')
       .update({
         extraction_status: 'error',
@@ -162,7 +163,8 @@ async function processBrandExtraction(
     )
 
     // Step 3: Update workspace with extracted data
-    await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (supabase as any)
       .from('brand_workspaces')
       .update({
         name: firecrawlResult.brandData.company_name,
@@ -204,7 +206,8 @@ async function processBrandExtraction(
       preferred_channels: profile.preferred_channels,
     }))
 
-    await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (supabase as any)
       .from('customer_profiles')
       .insert(profilesData)
 
@@ -218,7 +221,8 @@ async function processBrandExtraction(
     }))
 
     if (offersData.length > 0) {
-      await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (supabase as any)
         .from('offers')
         .insert(offersData)
     }

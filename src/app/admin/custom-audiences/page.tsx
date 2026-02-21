@@ -112,7 +112,7 @@ export default function CustomAudiencesAdminPage() {
 
     if (error) {
       safeError('[CustomAudiences]', 'Failed to update status:', error)
-      toast({ title: 'Error', description: 'Failed to update status', variant: 'destructive' })
+      toast({ type: 'error', message: 'Failed to update status' })
     } else {
       await fetchRequests()
       setSelectedRequest(null)

@@ -24,6 +24,14 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import {
   Mail,
   MoreVertical,
   Pause,
@@ -36,7 +44,6 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import Link from 'next/link'
-import { EmptyState } from '@/components/ui/empty-state'
 
 interface EmailSequence {
   id: string
@@ -71,6 +78,7 @@ const triggerIcons = {
 
 export function EmailSequencesList() {
   const [statusFilter, setStatusFilter] = useState<string>('active')
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
   const queryClient = useQueryClient()
 
   const { data, isLoading } = useQuery({
@@ -262,15 +270,7 @@ export function EmailSequencesList() {
                         )}
                         <DropdownMenuItem
                           className="text-red-600"
-                          onClick={() => {
-                            if (
-                              confirm(
-                                'Are you sure you want to delete this sequence?'
-                              )
-                            ) {
-                              deleteSequenceMutation.mutate(sequence.id)
-                            }
-                          }}
+                          onClick={() => setConfirmDeleteId(sequence.id)}
                         >
                           <Trash2 className="mr-2 h-4 w-4" />
                           Delete
@@ -322,6 +322,38 @@ export function EmailSequencesList() {
           })}
         </div>
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={confirmDeleteId !== null}
+        onOpenChange={(open) => { if (!open) setConfirmDeleteId(null) }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Sequence</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this sequence? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirmDeleteId(null)}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                if (confirmDeleteId) {
+                  deleteSequenceMutation.mutate(confirmDeleteId)
+                  setConfirmDeleteId(null)
+                }
+              }}
+              disabled={deleteSequenceMutation.isPending}
+            >
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

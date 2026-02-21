@@ -7,6 +7,15 @@ import Image from 'next/image'
 import { useToast } from '@/lib/hooks/use-toast'
 import { SlackIntegration } from '@/components/integrations/slack-integration'
 import { ZapierIntegration } from '@/components/integrations/zapier-integration'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
 
 // Integration logo configuration - using uploaded files from public folder
 const INTEGRATION_LOGOS: Record<string, { src: string; alt: string }> = {
@@ -269,6 +278,7 @@ function WebhookSubscriptions() {
   const [newName, setNewName] = useState('')
   const [newEvents, setNewEvents] = useState<OutboundEventKey[]>(['lead.received'])
   const [revealedSecret, setRevealedSecret] = useState<{ id: string; secret: string } | null>(null)
+  const [confirmDeleteWebhookId, setConfirmDeleteWebhookId] = useState<string | null>(null)
 
   const { data, isLoading } = useQuery<{ data: OutboundWebhook[] }>({
     queryKey: ['webhooks', 'outbound'],
@@ -369,9 +379,7 @@ function WebhookSubscriptions() {
   }
 
   const handleDelete = (id: string) => {
-    if (confirm('Delete this webhook? Deliveries will stop immediately.')) {
-      deleteMutation.mutate(id)
-    }
+    setConfirmDeleteWebhookId(id)
   }
 
   const lastDeliveryStatus = (deliveries: OutboundWebhook['recent_deliveries']) => {
@@ -630,6 +638,38 @@ function WebhookSubscriptions() {
           </div>
         </div>
       )}
+
+      {/* Delete Webhook Confirmation Dialog */}
+      <Dialog
+        open={confirmDeleteWebhookId !== null}
+        onOpenChange={(open) => { if (!open) setConfirmDeleteWebhookId(null) }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Webhook</DialogTitle>
+            <DialogDescription>
+              Delete this webhook? Deliveries will stop immediately.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirmDeleteWebhookId(null)}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                if (confirmDeleteWebhookId) {
+                  deleteMutation.mutate(confirmDeleteWebhookId)
+                  setConfirmDeleteWebhookId(null)
+                }
+              }}
+              disabled={deleteMutation.isPending}
+            >
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
@@ -646,6 +686,8 @@ export default function IntegrationsClient() {
   const [revealedSecret, setRevealedSecret] = useState<string | null>(null)
   const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null)
   const [webhookSettingsLoaded, setWebhookSettingsLoaded] = useState(false)
+  const [confirmRegenerateSecret, setConfirmRegenerateSecret] = useState(false)
+  const [confirmRegenerateApiKey, setConfirmRegenerateApiKey] = useState(false)
 
   // Fetch current user
   const { data: userData, isLoading } = useQuery({
@@ -814,9 +856,7 @@ export default function IntegrationsClient() {
   }
 
   const handleRegenerateSecret = () => {
-    if (confirm('Are you sure you want to regenerate your webhook secret? The old secret will stop working immediately. You must update your webhook consumer with the new secret.')) {
-      regenerateSecretMutation.mutate()
-    }
+    setConfirmRegenerateSecret(true)
   }
 
   const handleToggleEvent = (eventKey: string) => {
@@ -1207,15 +1247,7 @@ export default function IntegrationsClient() {
             </div>
 
             <button
-              onClick={() => {
-                if (
-                  confirm(
-                    'Are you sure you want to regenerate your API key? The old key will stop working immediately.'
-                  )
-                ) {
-                  generateApiKeyMutation.mutate()
-                }
-              }}
+              onClick={() => setConfirmRegenerateApiKey(true)}
               disabled={generateApiKeyMutation.isPending}
               className="text-sm text-red-600 hover:text-red-700 font-medium disabled:opacity-50"
             >
@@ -1432,6 +1464,61 @@ export default function IntegrationsClient() {
         </div>
       )}
 
+
+      {/* Regenerate Webhook Secret Confirmation Dialog */}
+      <Dialog open={confirmRegenerateSecret} onOpenChange={setConfirmRegenerateSecret}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Regenerate Webhook Secret</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to regenerate your webhook secret? The old secret will
+              stop working immediately. You must update your webhook consumer with the new secret.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirmRegenerateSecret(false)}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                regenerateSecretMutation.mutate()
+                setConfirmRegenerateSecret(false)
+              }}
+              disabled={regenerateSecretMutation.isPending}
+            >
+              Regenerate
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Regenerate API Key Confirmation Dialog */}
+      <Dialog open={confirmRegenerateApiKey} onOpenChange={setConfirmRegenerateApiKey}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Regenerate API Key</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to regenerate your API key? The old key will stop working immediately.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirmRegenerateApiKey(false)}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                generateApiKeyMutation.mutate()
+                setConfirmRegenerateApiKey(false)
+              }}
+              disabled={generateApiKeyMutation.isPending}
+            >
+              Regenerate
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

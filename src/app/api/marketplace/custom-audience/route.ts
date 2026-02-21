@@ -5,6 +5,7 @@ import { z } from 'zod'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { inngest } from '@/inngest/client'
+import { createClient } from '@/lib/supabase/server'
 
 const customAudienceSchema = z.object({
   industry: z.string().min(1),
@@ -27,6 +28,8 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json()
     const validated = customAudienceSchema.parse(body)
+
+    const supabase = await createClient()
 
     // Insert into custom_audience_requests table
     const { data: requestData, error: insertError } = await supabase

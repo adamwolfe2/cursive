@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     // Rate limiting
     const rateLimitResult = await withRateLimit(
       request,
-      'crm-bulk',
+      'default',
       `user:${user.id}`
     )
     if (rateLimitResult) return rateLimitResult

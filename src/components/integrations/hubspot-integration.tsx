@@ -5,6 +5,15 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
 import Image from 'next/image'
 import { toast } from 'sonner'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
 
 interface CrmConnectionStatus {
   connected: boolean
@@ -23,6 +32,7 @@ export function HubSpotIntegration({ workspaceId, isPro }: HubSpotIntegrationPro
   const queryClient = useQueryClient()
   const [logoError, setLogoError] = useState(false)
   const [connecting, setConnecting] = useState(false)
+  const [confirmDisconnect, setConfirmDisconnect] = useState(false)
 
   // Fetch HubSpot connection status from crm_connections table
   const { data: connectionData, isLoading } = useQuery({
@@ -67,9 +77,7 @@ export function HubSpotIntegration({ workspaceId, isPro }: HubSpotIntegrationPro
   }
 
   const handleDisconnect = () => {
-    if (confirm('Are you sure you want to disconnect HubSpot? Your sync configuration will be removed.')) {
-      disconnectMutation.mutate()
-    }
+    setConfirmDisconnect(true)
   }
 
   // Format connected date
@@ -274,6 +282,33 @@ export function HubSpotIntegration({ workspaceId, isPro }: HubSpotIntegrationPro
           </div>
         </div>
       )}
+
+      {/* Disconnect Confirmation Dialog */}
+      <Dialog open={confirmDisconnect} onOpenChange={setConfirmDisconnect}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Disconnect HubSpot</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to disconnect HubSpot? Your sync configuration will be removed.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirmDisconnect(false)}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                disconnectMutation.mutate()
+                setConfirmDisconnect(false)
+              }}
+              disabled={disconnectMutation.isPending}
+            >
+              Disconnect
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

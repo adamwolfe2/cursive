@@ -163,16 +163,15 @@ export default function AdminAccountsPage() {
       }
 
       toast({
-        title: 'Success',
-        description: `Workspace ${action === 'suspend' ? 'suspended' : 'unsuspended'} successfully`,
+        type: 'success',
+        message: `Workspace ${action === 'suspend' ? 'suspended' : 'unsuspended'} successfully`,
       })
       refetch()
     } catch (error) {
       safeError('[AdminAccounts]', 'Failed to toggle suspension:', error)
       toast({
-        title: 'Error',
-        description: error instanceof Error ? error.message : 'Failed to update workspace',
-        variant: 'destructive',
+        type: 'error',
+        message: error instanceof Error ? error.message : 'Failed to update workspace',
       })
     }
   }

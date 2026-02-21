@@ -119,7 +119,7 @@ export function RequestsManagementClient({ initialRequests }: RequestsManagement
       router.refresh()
     } catch (error) {
       safeError('[RequestsManagementClient]', 'Failed to update request:', error)
-      toast({ title: 'Error', description: 'Failed to update request', variant: 'destructive' })
+      toast({ type: 'error', message: 'Failed to update request' })
     } finally {
       setUpdating(false)
     }

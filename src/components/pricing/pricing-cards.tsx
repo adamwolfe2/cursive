@@ -85,7 +85,7 @@ export function PricingCards({ plans, currentPlan }: PricingCardsProps) {
       window.location.href = url
     } catch (error) {
       safeError('[PricingCards]', 'Checkout error:', error)
-      toast({ title: 'Error', description: error instanceof Error ? error.message : 'Failed to start checkout', variant: 'destructive' })
+      toast({ type: 'error', message: error instanceof Error ? error.message : 'Failed to start checkout' })
       setLoadingPlanId(null)
     }
   }

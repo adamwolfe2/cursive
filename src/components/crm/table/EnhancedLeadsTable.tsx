@@ -531,10 +531,10 @@ export const EnhancedLeadsTable = React.forwardRef<EnhancedLeadsTableHandle, Enh
                                   if (response.ok) {
                                     router.refresh()
                                   } else {
-                                    toast({ title: 'Error', description: 'Failed to delete lead', variant: 'destructive' })
+                                    toast({ type: 'error', message: 'Failed to delete lead' })
                                   }
                                 } catch (error) {
-                                  toast({ title: 'Error', description: 'Failed to delete lead', variant: 'destructive' })
+                                  toast({ type: 'error', message: 'Failed to delete lead' })
                                 }
                               }
                             }}

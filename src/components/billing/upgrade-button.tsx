@@ -61,7 +61,7 @@ export function UpgradeButton({
         const paymentUrl = getSubscriptionLink(plan, cycle)
         window.location.href = paymentUrl
       } catch {
-        toast({ title: 'Error', description: 'Failed to start checkout. Please try again or contact support.', variant: 'destructive' })
+        toast({ type: 'error', message: 'Failed to start checkout. Please try again or contact support.' })
         setLoading(false)
       }
     }

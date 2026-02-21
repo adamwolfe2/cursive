@@ -126,14 +126,14 @@ export default function FailedOperationsPage() {
       const result = await response.json()
 
       if (result.success) {
-        toast({ title: 'Success', description: 'Operation queued for retry' })
+        toast({ type: 'success', message: 'Operation queued for retry' })
         await loadOperations()
       } else {
-        toast({ title: 'Retry failed', description: result.error || 'Unknown error', variant: 'destructive' })
+        toast({ type: 'error', title: 'Retry failed', message: result.error || 'Unknown error' })
       }
     } catch (error) {
       safeError('[FailedOperations]', 'Failed to retry operation:', error)
-      toast({ title: 'Error', description: 'Failed to retry operation', variant: 'destructive' })
+      toast({ type: 'error', message: 'Failed to retry operation' })
     } finally {
       setRetrying(null)
     }
@@ -148,11 +148,11 @@ export default function FailedOperationsPage() {
 
       if (!response.ok) throw new Error('Failed to resolve operation')
 
-      toast({ title: 'Success', description: 'Operation marked as resolved' })
+      toast({ type: 'success', message: 'Operation marked as resolved' })
       await loadOperations()
     } catch (error) {
       safeError('[FailedOperations]', 'Failed to resolve operation:', error)
-      toast({ title: 'Error', description: 'Failed to resolve operation', variant: 'destructive' })
+      toast({ type: 'error', message: 'Failed to resolve operation' })
     } finally {
       setResolving(null)
     }

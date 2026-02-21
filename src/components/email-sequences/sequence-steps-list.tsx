@@ -16,6 +16,14 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { Mail, Clock, Trash2, Edit, ArrowDown } from 'lucide-react'
 import { toast } from 'sonner'
 import { EditStepDialog } from './edit-step-dialog'
@@ -54,6 +62,7 @@ export function SequenceStepsList({
 }: SequenceStepsListProps) {
   const queryClient = useQueryClient()
   const [editingStep, setEditingStep] = useState<Step | null>(null)
+  const [confirmDeleteStepId, setConfirmDeleteStepId] = useState<string | null>(null)
 
   const deleteStepMutation = useMutation({
     mutationFn: async (stepId: string) => {
@@ -146,13 +155,7 @@ export function SequenceStepsList({
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => {
-                      if (
-                        confirm('Are you sure you want to delete this step?')
-                      ) {
-                        deleteStepMutation.mutate(step.id)
-                      }
-                    }}
+                    onClick={() => setConfirmDeleteStepId(step.id)}
                     disabled={
                       sequenceStatus === 'active' ||
                       deleteStepMutation.isPending
@@ -202,6 +205,38 @@ export function SequenceStepsList({
           sequenceId={sequenceId}
         />
       )}
+
+      {/* Delete Step Confirmation Dialog */}
+      <Dialog
+        open={confirmDeleteStepId !== null}
+        onOpenChange={(open) => { if (!open) setConfirmDeleteStepId(null) }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Step</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this step? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirmDeleteStepId(null)}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                if (confirmDeleteStepId) {
+                  deleteStepMutation.mutate(confirmDeleteStepId)
+                  setConfirmDeleteStepId(null)
+                }
+              }}
+              disabled={deleteStepMutation.isPending}
+            >
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
