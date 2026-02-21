@@ -3,9 +3,15 @@
 
 
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 import { inngest } from '@/inngest/client'
 import { checkRateLimit, RATE_LIMIT_CONFIGS } from '@/lib/utils/rate-limit'
+
+const bodySchema = z.object({
+  query_id: z.string().uuid('query_id must be a valid UUID').optional(),
+  workspace_id: z.string().uuid('workspace_id must be a valid UUID').optional(),
+})
 
 export async function POST(request: NextRequest) {
   try {
@@ -34,11 +40,15 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { query_id, workspace_id } = body
+    const parsed = bodySchema.safeParse(body)
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 400 })
+    }
+    const { query_id, workspace_id } = parsed.data
 
     if (query_id) {
       if (!workspace_id) {
-        return NextResponse.json({ error: 'workspace_id is required' }, { status: 400 })
+        return NextResponse.json({ error: 'workspace_id is required when query_id is provided' }, { status: 400 })
       }
 
       await inngest.send({

@@ -1,10 +1,16 @@
 
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { requireAdmin } from '@/lib/auth/admin'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { safeError } from '@/lib/utils/log-sanitizer'
+
+const updateSchema = z.object({
+  status: z.enum(['open', 'in_progress', 'responded', 'resolved', 'closed']).optional(),
+  admin_notes: z.string().max(5000).optional(),
+})
 
 export async function PATCH(
   request: NextRequest,
@@ -19,7 +25,11 @@ export async function PATCH(
     const user = await getCurrentUser()
     if (!user) return unauthorized()
     const body = await request.json()
-    const { status, admin_notes } = body
+    const parsed = updateSchema.safeParse(body)
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 400 })
+    }
+    const { status, admin_notes } = parsed.data
 
     // Update message using admin client
     const adminSupabase = createAdminClient()

@@ -25,10 +25,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
     }
 
-    const data = JSON.parse(payload)
+    let data: unknown
+    try {
+      data = JSON.parse(payload)
+    } catch {
+      return NextResponse.json({ error: 'Invalid JSON payload' }, { status: 400 })
+    }
 
     // Handle different email provider formats
-    const inboundEmail = parseInboundEmail(data)
+    const inboundEmail = parseInboundEmail(data as Record<string, unknown>)
 
     if (!inboundEmail) {
       return NextResponse.json({ error: 'Could not parse email' }, { status: 400 })
