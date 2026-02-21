@@ -15,9 +15,9 @@ export async function GET(request: Request) {
     const offset = (page - 1) * limit
 
     const adminSupabase = createAdminClient()
-    const { data: messages, error } = await adminSupabase
+    const { data: messages, count, error } = await adminSupabase
       .from('support_messages')
-      .select('id, user_id, workspace_id, subject, message, status, priority, category, admin_notes, created_at, updated_at')
+      .select('id, user_id, workspace_id, subject, message, status, priority, category, admin_notes, created_at, updated_at', { count: 'exact' })
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1)
 
@@ -46,7 +46,10 @@ export async function GET(request: Request) {
       admin_notes: m.admin_notes ?? null,
     }))
 
-    return NextResponse.json({ messages: enriched })
+    return NextResponse.json({
+      messages: enriched,
+      pagination: { page, limit, total: count ?? 0, has_more: offset + limit < (count ?? 0) },
+    })
   } catch (error) {
     safeError('[Admin] Support messages fetch error:', error)
     return NextResponse.json(

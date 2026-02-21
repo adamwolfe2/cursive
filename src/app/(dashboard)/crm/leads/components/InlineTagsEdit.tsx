@@ -60,27 +60,38 @@ export function InlineTagsEdit({
     const trimmedTag = tag.trim().toLowerCase()
     if (!trimmedTag || tags.includes(trimmedTag)) return
 
+    const previousTags = tags
     const newTags = [...tags, trimmedTag]
     setTags(newTags)
     setInputValue('')
 
-    await updateMutation.mutateAsync({
-      id: leadId,
-      updates: { tags: newTags },
-    })
-
-    // Focus input after adding
-    setTimeout(() => inputRef.current?.focus(), 0)
+    try {
+      await updateMutation.mutateAsync({
+        id: leadId,
+        updates: { tags: newTags },
+      })
+      // Focus input after adding
+      setTimeout(() => inputRef.current?.focus(), 0)
+    } catch {
+      // Revert optimistic update on failure
+      setTags(previousTags)
+      setInputValue(trimmedTag)
+    }
   }
 
   const handleRemoveTag = async (tagToRemove: string) => {
+    const previousTags = tags
     const newTags = tags.filter((tag) => tag !== tagToRemove)
     setTags(newTags)
 
-    await updateMutation.mutateAsync({
-      id: leadId,
-      updates: { tags: newTags },
-    })
+    try {
+      await updateMutation.mutateAsync({
+        id: leadId,
+        updates: { tags: newTags },
+      })
+    } catch {
+      setTags(previousTags) // revert on failure
+    }
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {

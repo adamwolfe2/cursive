@@ -62,12 +62,18 @@ export function InlineAssignUserEdit({
       return
     }
 
-    setSelectedUser(user)
-    await updateMutation.mutateAsync({
-      id: leadId,
-      updates: { assigned_user_id: user?.id || null },
-    })
-    setIsOpen(false)
+    const previousUser = selectedUser
+    setSelectedUser(user) // optimistic update
+
+    try {
+      await updateMutation.mutateAsync({
+        id: leadId,
+        updates: { assigned_user_id: user?.id || null },
+      })
+      setIsOpen(false)
+    } catch {
+      setSelectedUser(previousUser) // revert on failure
+    }
   }
 
   // Handle keyboard navigation

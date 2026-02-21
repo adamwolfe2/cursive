@@ -23,14 +23,14 @@ export async function GET(req: NextRequest) {
     }
 
     const { searchParams } = new URL(req.url)
-    const page = parseInt(searchParams.get('page') ?? '1', 10)
-    const limit = Math.min(parseInt(searchParams.get('limit') ?? '25', 10), 100)
+    const page = Math.max(1, parseInt(searchParams.get('page') ?? '1', 10) || 1)
+    const limit = Math.min(Math.max(1, parseInt(searchParams.get('limit') ?? '25', 10) || 25), 100)
     const enrichmentFilter = searchParams.get('enrichment') // 'enriched' | 'unenriched' | null
-    const dateRange = searchParams.get('range') ?? '30' // days
+    const dateRange = Math.min(Math.max(1, parseInt(searchParams.get('range') ?? '30', 10) || 30), 365) // days (1-365)
     const offset = (page - 1) * limit
 
     const adminSupabase = createAdminClient()
-    const since = new Date(Date.now() - parseInt(dateRange, 10) * 86_400_000).toISOString()
+    const since = new Date(Date.now() - dateRange * 86_400_000).toISOString()
 
     // Build query for pixel-sourced leads
     let query = adminSupabase

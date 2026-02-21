@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -66,6 +66,11 @@ export function CreateDealDialog({ open, onOpenChange }: CreateDealDialogProps) 
       probability: 0,
     },
   })
+
+  // Reset form when dialog closes to prevent stale values on next open
+  useEffect(() => {
+    if (!open) reset()
+  }, [open, reset])
 
   const createMutation = useMutation({
     mutationFn: async (data: CreateDealFormData) => {

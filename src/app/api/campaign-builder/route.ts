@@ -26,8 +26,8 @@ export async function GET(req: NextRequest) {
     // Query params
     const searchParams = req.nextUrl.searchParams
     const status = searchParams.get('status') || undefined
-    const limit = parseInt(searchParams.get('limit') || '20')
-    const offset = parseInt(searchParams.get('offset') || '0')
+    const limit = Math.min(Math.max(1, parseInt(searchParams.get('limit') || '20')), 100)
+    const offset = Math.max(0, parseInt(searchParams.get('offset') || '0') || 0)
 
     // Get drafts
     const repo = new CampaignBuilderRepository()
