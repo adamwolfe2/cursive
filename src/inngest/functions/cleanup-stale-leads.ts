@@ -124,7 +124,7 @@ export const cleanupStaleLeads = inngest.createFunction(
             batches,
             cutoff_date: cutoffISO,
           },
-        }).catch(() => {})
+        }).catch((err) => safeError('[CleanupStaleLeads] Slack alert failed:', err))
       })
     }
 

@@ -372,7 +372,7 @@ export const audienceLabSegmentPuller = inngest.createFunction(
             skipped: totalSkipped,
             errors: errors.length,
           },
-        }).catch(() => {})
+        }).catch((err) => safeError('[AudienceLabPuller] Slack alert failed:', err))
       })
     }
 

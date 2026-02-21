@@ -390,7 +390,7 @@ export async function notifyNewLead(
         email: lead.email || 'none',
         source: lead.source || 'unknown',
       },
-    }).catch(() => {}) // Best-effort, don't block
+    }).catch((err) => safeError('[LeadNotifications] fire-and-forget failed:', err)) // Best-effort, don't block
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Unknown error'
     safeError(`${LOG_PREFIX} Unexpected error in notifyNewLead: ${message}`)

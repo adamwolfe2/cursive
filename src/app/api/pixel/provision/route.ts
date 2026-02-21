@@ -27,7 +27,7 @@ async function firePixelProvisionedEvent(data: {
       name: 'pixel/provisioned',
       data,
     }),
-  }).catch(() => {}) // fire-and-forget, never surface errors
+  }).catch((err) => safeError('[PixelProvision] Fire-and-forget failed:', err)) // fire-and-forget, errors logged only
 }
 
 const provisionSchema = z.object({

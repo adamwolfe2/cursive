@@ -244,7 +244,7 @@ export async function routeLeadsToMatchingUsers(
     for (const [workspaceId, notifs] of workspaceLeadNotifs) {
       for (const notif of notifs) {
         notifPromises.push(
-          notifyNewLead(workspaceId, notif).catch(() => {})
+          notifyNewLead(workspaceId, notif).catch((err) => safeError('[LeadRouting] notifyNewLead failed:', err))
         )
       }
     }
@@ -254,7 +254,7 @@ export async function routeLeadsToMatchingUsers(
       notifPromises.push(
         notifyUserNewLead(notif.user, notif.lead as any, notif.matchInfo)
           .then(r => { if (r.success) result.notified++ })
-          .catch(() => {})
+          .catch((err) => safeError('[LeadRouting] notifyUserNewLead failed:', err))
       )
     }
 

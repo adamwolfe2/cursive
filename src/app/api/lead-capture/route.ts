@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,7 +15,7 @@ export async function POST(req: NextRequest) {
           timestamp: new Date().toISOString(),
           source: 'superpixel_calculator',
         }),
-      }).catch(() => {})
+      }).catch((err) => safeError('[LeadCapture] Pixel notify failed:', err))
     }
 
     return NextResponse.json({ success: true })
