@@ -54,6 +54,10 @@ export function SalesforceIntegration({ workspaceId, isPro }: SalesforceIntegrat
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['crm', 'connections', 'salesforce'] })
       queryClient.invalidateQueries({ queryKey: ['crm', 'connections'] })
+      toast.success('Salesforce disconnected successfully')
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || 'Failed to disconnect Salesforce')
     },
   })
 

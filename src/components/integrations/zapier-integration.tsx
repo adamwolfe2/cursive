@@ -29,6 +29,10 @@ export function ZapierIntegration({ user, isPro }: ZapierIntegrationProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user', 'me'] })
       setShowWebhook(true)
+      toast.success('Webhook generated successfully')
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || 'Failed to generate webhook')
     },
   })
 
@@ -43,6 +47,10 @@ export function ZapierIntegration({ user, isPro }: ZapierIntegrationProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user', 'me'] })
       setShowWebhook(false)
+      toast.success('Webhook revoked successfully')
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || 'Failed to revoke webhook')
     },
   })
 

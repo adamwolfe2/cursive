@@ -28,6 +28,10 @@ export function SlackIntegration({ user, isPro }: SlackIntegrationProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user', 'me'] })
+      toast.success('Slack disconnected successfully')
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || 'Failed to disconnect Slack')
     },
   })
 

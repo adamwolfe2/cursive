@@ -54,6 +54,10 @@ export function GoogleSheetsIntegration({ workspaceId, isPro }: GoogleSheetsInte
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['crm', 'connections', 'google_sheets'] })
       queryClient.invalidateQueries({ queryKey: ['crm', 'connections'] })
+      toast.success('Google Sheets disconnected successfully')
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || 'Failed to disconnect Google Sheets')
     },
   })
 

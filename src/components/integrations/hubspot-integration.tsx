@@ -64,6 +64,10 @@ export function HubSpotIntegration({ workspaceId, isPro }: HubSpotIntegrationPro
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['crm', 'connections', 'hubspot'] })
       queryClient.invalidateQueries({ queryKey: ['crm', 'connections'] })
+      toast.success('HubSpot disconnected successfully')
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || 'Failed to disconnect HubSpot')
     },
   })
 
