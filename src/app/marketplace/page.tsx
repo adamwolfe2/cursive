@@ -119,7 +119,9 @@ export default function MarketplacePage() {
   const purchaseMutation = usePurchaseLeads()
 
   // Derived values from query results
-  const leads = leadsQuery.data?.leads ?? []
+  // Memoize leads to prevent new array reference on every render (which would
+  // invalidate downstream useMemo hooks unnecessarily)
+  const leads = useMemo(() => leadsQuery.data?.leads ?? [], [leadsQuery.data?.leads])
   const totalLeads = leadsQuery.data?.total ?? 0
   const isLoading = leadsQuery.isLoading
   const credits = creditsQuery.data?.balance ?? 0
