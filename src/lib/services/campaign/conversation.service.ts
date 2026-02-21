@@ -154,7 +154,9 @@ export async function getConversations(
   }
 
   if (filters.search) {
-    query = query.ilike('subject_normalized', `%${filters.search}%`)
+    // Escape SQL wildcard chars so literal % and _ don't act as wildcards
+    const escapedSearch = filters.search.replace(/[%_\\]/g, '\\$&')
+    query = query.ilike('subject_normalized', `%${escapedSearch}%`)
   }
 
   // Apply sorting and pagination

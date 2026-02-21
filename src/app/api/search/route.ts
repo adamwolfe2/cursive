@@ -57,8 +57,9 @@ export async function GET(request: NextRequest) {
     const { q, limit } = validated
     const workspaceId = user.workspace_id
 
-    // Use ilike for case-insensitive search
-    const pattern = `%${q}%`
+    // Escape SQL wildcard characters so literal % and _ in search terms are treated as literals
+    const escapedQ = q.replace(/[%_\\]/g, '\\$&')
+    const pattern = `%${escapedQ}%`
 
     // 3. Use createClient() (respects RLS, filters to user's workspace automatically)
     const supabase = await createClient()
