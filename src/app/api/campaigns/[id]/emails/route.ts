@@ -16,7 +16,7 @@ const querySchema = z.object({
   status: z.enum(['pending_approval', 'approved', 'sent', 'rejected', 'failed']).optional(),
   step: z.coerce.number().optional(),
   limit: z.coerce.number().min(1).max(100).default(50),
-  offset: z.coerce.number().min(0).default(0),
+  offset: z.coerce.number().min(0).max(100000).default(0),
 })
 
 export async function GET(request: NextRequest, context: RouteContext) {
