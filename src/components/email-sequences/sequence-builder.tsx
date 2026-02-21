@@ -21,7 +21,6 @@ import {
   Plus,
   Play,
   Pause,
-  Settings,
   Users,
   BarChart3,
   ArrowLeft,
