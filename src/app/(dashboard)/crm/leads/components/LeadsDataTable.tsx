@@ -185,6 +185,12 @@ export function LeadsDataTable({
                   key={row.id}
                   data-state={row.getIsSelected() && 'selected'}
                   className={cn(rowHeightClass, 'cursor-pointer')}
+                  onClick={(e) => {
+                    const target = e.target as HTMLElement
+                    if (!target.closest('button, a, input, [role="checkbox"], [role="combobox"], [role="listbox"], [data-radix-collection-item]')) {
+                      router.push(`/crm/leads/${row.original.id}`)
+                    }
+                  }}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
