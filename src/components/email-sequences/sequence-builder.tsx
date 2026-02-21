@@ -25,6 +25,7 @@ import {
   Users,
   BarChart3,
   ArrowLeft,
+  Copy,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { SequenceStepsList } from './sequence-steps-list'
@@ -39,6 +40,28 @@ export function SequenceBuilder({ sequenceId }: SequenceBuilderProps) {
   const router = useRouter()
   const queryClient = useQueryClient()
   const [showAddStep, setShowAddStep] = useState(false)
+  const [duplicating, setDuplicating] = useState(false)
+
+  const handleDuplicate = async () => {
+    setDuplicating(true)
+    try {
+      const response = await fetch(`/api/email-sequences/${sequenceId}/duplicate`, {
+        method: 'POST',
+      })
+      if (response.ok) {
+        const result = await response.json()
+        toast.success(`Sequence duplicated as "${result.sequence.name}"`)
+        router.push(`/email-sequences/${result.sequence.id}`)
+      } else {
+        const result = await response.json()
+        toast.error(result.error || 'Failed to duplicate sequence')
+      }
+    } catch {
+      toast.error('Failed to duplicate sequence')
+    } finally {
+      setDuplicating(false)
+    }
+  }
 
   const { data, isLoading } = useQuery({
     queryKey: ['email-sequence', sequenceId],
@@ -143,6 +166,15 @@ export function SequenceBuilder({ sequenceId }: SequenceBuilderProps) {
               <Users className="mr-2 h-4 w-4" />
               Enrollments
             </Link>
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleDuplicate}
+            disabled={duplicating}
+          >
+            <Copy className="mr-2 h-4 w-4" />
+            {duplicating ? 'Duplicating…' : 'Duplicate'}
           </Button>
           {sequence.status === 'active' ? (
             <Button
