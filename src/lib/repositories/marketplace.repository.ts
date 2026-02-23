@@ -377,6 +377,7 @@ export class MarketplaceRepository {
       .from('marketplace_purchase_items')
       .select('*')
       .eq('purchase_id', purchaseId)
+      .limit(500)
 
     if (error) throw new Error(`Failed to get purchase items: ${error.message}`)
     return (data || []) as MarketplacePurchaseItem[]
@@ -679,6 +680,7 @@ export class MarketplaceRepository {
       .from('leads')
       .select('company_industry')
       .eq('is_marketplace_listed', true)
+      .limit(10000)
 
     const totalByIndustry: Record<string, number> = {}
     industryData?.forEach((lead) => {

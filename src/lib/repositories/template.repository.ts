@@ -274,6 +274,7 @@ export class TemplateRepository {
       .eq('workspace_id', workspaceId)
       .eq('is_active', true)
       .gt('emails_sent', 0)
+      .limit(10000)
 
     if (error) {
       throw new DatabaseError(error.message)
@@ -346,6 +347,7 @@ export class TemplateRepository {
       .select('source')
       .eq('workspace_id', workspaceId)
       .eq('is_active', true)
+      .limit(10000)
 
     if (error) {
       throw new DatabaseError(error.message)

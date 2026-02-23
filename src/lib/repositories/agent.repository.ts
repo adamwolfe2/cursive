@@ -253,6 +253,7 @@ export class AgentRepository {
       .select('*')
       .eq('agent_id', agentId)
       .order('order_index', { ascending: true })
+      .limit(500)
 
     if (error) {
       throw new DatabaseError(error.message)
@@ -320,6 +321,7 @@ export class AgentRepository {
       .from('kb_entries')
       .select('*')
       .eq('agent_id', agentId)
+      .limit(500)
 
     if (error) {
       throw new DatabaseError(error.message)
@@ -440,6 +442,7 @@ export class AgentRepository {
       .select('*')
       .eq('thread_id', threadId)
       .order('created_at', { ascending: true })
+      .limit(200)
 
     if (messagesError) {
       throw new DatabaseError(messagesError.message)
@@ -470,6 +473,7 @@ export class AgentRepository {
       .eq('agent_id', agentId)
       .eq('status', 'ready')
       .order('created_at', { ascending: false })
+      .limit(200)
 
     if (error) {
       throw new DatabaseError(error.message)

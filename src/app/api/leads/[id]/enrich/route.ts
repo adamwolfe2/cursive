@@ -31,8 +31,8 @@ async function logEnrichment(
 ) {
   try {
     await adminSupabase.from('enrichment_log').insert(params)
-  } catch {
-    // Non-blocking — don't let logging failures disrupt enrichment
+  } catch (err) {
+    safeError('[enrich] Failed to write enrichment_log:', err)
   }
 }
 

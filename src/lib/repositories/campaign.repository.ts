@@ -417,6 +417,7 @@ export class CampaignRepository {
       .select('*')
       .eq('campaign_id', campaignId)
       .order('created_at', { ascending: false })
+      .limit(100)
 
     if (error) {
       throw new DatabaseError(error.message)
@@ -445,6 +446,7 @@ export class CampaignRepository {
       .eq('status', 'pending')
       .eq('email_campaigns.workspace_id', workspaceId)
       .order('created_at', { ascending: true })
+      .limit(200)
 
     if (error) {
       throw new DatabaseError(error.message)
