@@ -39,7 +39,47 @@ export const resetDailySendCounts = inngest.createFunction(
       return { success: true, method: 'database_function' }
     })
 
-    // Step 2: Log the reset for audit purposes
+    // Step 2: Requeue emails that were deferred due to rate limits yesterday
+    // These emails have status='rate_limited' and should be retried now that counts reset
+    const requeueResult = await step.run('requeue-rate-limited-emails', async () => {
+      const supabase = createAdminClient()
+
+      // Find rate_limited emails in active campaigns
+      const { data: rateLimitedEmails } = await supabase
+        .from('email_sends')
+        .select('id, campaign_lead_id, workspace_id')
+        .eq('status', 'rate_limited')
+        .limit(500) // Safety cap — large backlogs should process in batches
+
+      if (!rateLimitedEmails || rateLimitedEmails.length === 0) {
+        return { requeued: 0 }
+      }
+
+      // Reset status back to 'pending' so they get picked up
+      const ids = rateLimitedEmails.map((e) => e.id)
+      await supabase
+        .from('email_sends')
+        .update({ status: 'pending', send_metadata: null })
+        .in('id', ids)
+
+      // Re-fire the send events
+      const { inngest: inngestClient } = await import('../client')
+      await inngestClient.send(
+        rateLimitedEmails.map((email) => ({
+          name: 'campaign/send-email' as const,
+          data: {
+            email_send_id: email.id,
+            campaign_lead_id: email.campaign_lead_id,
+            workspace_id: email.workspace_id,
+          },
+        }))
+      )
+
+      logger.info(`Requeued ${rateLimitedEmails.length} rate-limited emails for retry`)
+      return { requeued: rateLimitedEmails.length }
+    })
+
+    // Step 3: Log the reset for audit purposes
     await step.run('log-reset', async () => {
       const supabase = createAdminClient()
 
@@ -69,6 +109,7 @@ export const resetDailySendCounts = inngest.createFunction(
     return {
       success: true,
       reset_date: today,
+      requeued_rate_limited: requeueResult.requeued,
       ...restWorkspaceResult,
     }
   }
