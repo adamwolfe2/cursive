@@ -63,6 +63,13 @@ export const RATE_LIMITS = {
     message: 'Too many submissions. Please wait before trying again.',
   },
 
+  // Partner payout requests - very strict to prevent abuse
+  'partner-payout': {
+    windowMs: 60 * 60 * 1000, // 1 hour
+    maxRequests: 5, // 5 payout requests per hour
+    message: 'Too many payout requests. Please wait before trying again.',
+  },
+
   // Default fallback
   'default': {
     windowMs: 60 * 1000, // 1 minute

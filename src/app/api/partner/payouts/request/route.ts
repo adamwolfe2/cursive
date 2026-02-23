@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server"
 import { safeError } from "@/lib/utils/log-sanitizer"
 import { getCurrentUser } from "@/lib/auth/helpers"
 import { handleApiError } from "@/lib/utils/api-error-handler"
+import { withRateLimit, getRequestIdentifier } from "@/lib/middleware/rate-limiter"
 
 // Request validation schema
 const payoutRequestSchema = z.object({
@@ -18,6 +19,10 @@ const payoutRequestSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limit payout requests to prevent abuse
+    const rateLimitResult = await withRateLimit(request, 'partner-payout', getRequestIdentifier(request))
+    if (rateLimitResult) return rateLimitResult
+
     const supabase = await createClient()
     const apiKey = request.headers.get("X-API-Key")
 
