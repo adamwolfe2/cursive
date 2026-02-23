@@ -21,8 +21,9 @@ import {
 } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
 import { format } from 'date-fns'
-import { Check, X, ExternalLink, Loader2, Eye } from 'lucide-react'
+import { Check, X, ExternalLink, Loader2, Eye, Search } from 'lucide-react'
 import Link from 'next/link'
+import { Input } from '@/components/ui/input'
 
 interface Partner {
   id: string
@@ -56,6 +57,18 @@ export function PartnerTable({
   const router = useRouter()
   const [loading, setLoading] = useState<string | null>(null)
   const [rejectReason, setRejectReason] = useState('')
+  const [search, setSearch] = useState('')
+
+  const filtered = search.trim()
+    ? partners.filter((p) => {
+        const q = search.toLowerCase()
+        return (
+          p.company_name.toLowerCase().includes(q) ||
+          p.contact_name.toLowerCase().includes(q) ||
+          p.contact_email.toLowerCase().includes(q)
+        )
+      })
+    : partners
 
   const handleApprove = async (partnerId: string) => {
     setLoading(partnerId)
@@ -90,7 +103,24 @@ export function PartnerTable({
     }
   }
 
+  const colCount = 3 + (showStats ? 2 : 0) + (showReason ? 1 : 0)
+
   return (
+    <div className="space-y-3">
+      <div className="relative max-w-sm">
+        <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          placeholder="Search by company, name, or email..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="pl-9"
+        />
+      </div>
+      {search && (
+        <p className="text-xs text-muted-foreground">
+          {filtered.length} of {partners.length} partners
+        </p>
+      )}
     <Table>
       <TableHeader>
         <TableRow>
@@ -104,7 +134,7 @@ export function PartnerTable({
         </TableRow>
       </TableHeader>
       <TableBody>
-        {partners.map((partner) => (
+        {filtered.map((partner) => (
           <TableRow key={partner.id}>
             <TableCell>
               <div>
@@ -204,14 +234,15 @@ export function PartnerTable({
             </TableCell>
           </TableRow>
         ))}
-        {partners.length === 0 && (
+        {filtered.length === 0 && (
           <TableRow>
-            <TableCell colSpan={7} className="py-8 text-center text-muted-foreground">
-              No partners found
+            <TableCell colSpan={colCount} className="py-8 text-center text-muted-foreground">
+              {search ? `No partners matching "${search}"` : 'No partners found'}
             </TableCell>
           </TableRow>
         )}
       </TableBody>
     </Table>
+    </div>
   )
 }
