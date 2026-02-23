@@ -3,6 +3,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 
 const onboardingSchema = z.object({
   subscription_id: z.string().uuid(),
@@ -38,42 +40,22 @@ const onboardingSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     // Verify authentication
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-
-    if (!user) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      )
-    }
-
-    // Get user's workspace
-    const { data: userData } = await supabase
-      .from('users')
-      .select('workspace_id, full_name')
-      .eq('auth_user_id', user.id)
-      .maybeSingle()
-
-    if (!userData || !userData.workspace_id) {
-      return NextResponse.json(
-        { error: 'Workspace not found' },
-        { status: 404 }
-      )
-    }
+    const currentUser = await getCurrentUser()
+    if (!currentUser) return unauthorized()
 
     // Parse and validate request body
     const body = await request.json()
     const validated = onboardingSchema.parse(body)
 
     // Verify subscription belongs to user's workspace
+    const supabase = await createClient()
     const { data: subscription } = await supabase
       .from('service_subscriptions')
       .select('id, workspace_id')
       .eq('id', validated.subscription_id)
       .maybeSingle()
 
-    if (!subscription || subscription.workspace_id !== userData.workspace_id) {
+    if (!subscription || subscription.workspace_id !== currentUser.workspace_id) {
       return NextResponse.json(
         { error: 'Subscription not found' },
         { status: 404 }
@@ -101,10 +83,10 @@ export async function POST(request: NextRequest) {
       await inngest.send({
         name: 'dfy/onboarding-completed',
         data: {
-          workspace_id: userData.workspace_id,
+          workspace_id: currentUser.workspace_id,
           subscription_id: validated.subscription_id,
-          user_email: user.email || '',
-          user_name: userData.full_name || user.email?.split('@')[0] || '',
+          user_email: currentUser.email || '',
+          user_name: currentUser.full_name || currentUser.email?.split('@')[0] || '',
           company_name: validated.onboarding_data.company_name,
           website_url: validated.onboarding_data.website_url,
           industries: validated.onboarding_data.industries,
@@ -121,17 +103,6 @@ export async function POST(request: NextRequest) {
       message: 'Onboarding completed successfully'
     })
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: error.errors[0].message },
-        { status: 400 }
-      )
-    }
-
-    safeError('[Service Onboarding] Error:', error)
-    return NextResponse.json(
-      { error: 'Failed to save onboarding' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }
