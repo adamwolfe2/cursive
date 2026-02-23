@@ -293,26 +293,10 @@ export const abandonedOnboardingRecovery = inngest.createFunction(
 
         for (const user of batchUsers) {
           try {
-            // Send the recovery email
-            const html = buildRecoveryEmailHtml(user)
-            const result = await sendEmail({
-              to: user.email,
-              subject: "You're almost there -- finish setting up Cursive",
-              html,
-              tags: [
-                { name: 'category', value: 'onboarding' },
-                { name: 'type', value: 'abandoned_recovery' },
-              ],
-            })
-
-            if (!result.success) {
-              safeError(`${LOG_PREFIX} Failed to send email to ${user.email}`, result.error)
-              skipped++
-              continue
-            }
-
-            // Track that the email was sent via notifications table
-            const { error: notifError } = await supabase
+            // Record dedup notification BEFORE sending to prevent duplicate emails on retry.
+            // If Inngest retries this step after a partial run, the dedup record ensures
+            // we don't re-send to users that were already emailed.
+            const { data: insertedNotif, error: notifError } = await supabase
               .from('notifications')
               .insert({
                 workspace_id: user.workspace_id,
@@ -327,13 +311,42 @@ export const abandonedOnboardingRecovery = inngest.createFunction(
                 metadata: {
                   missing_steps: user.missingSteps,
                   email_sent_at: new Date().toISOString(),
-                  email_message_id: result.messageId,
                 },
               })
+              .select('id')
+              .maybeSingle()
 
             if (notifError) {
+              if (notifError.code === '23505') {
+                // Unique constraint — already sent, skip
+                skipped++
+                continue
+              }
               safeError(`${LOG_PREFIX} Failed to create notification record for ${user.email}`, notifError)
-              // Don't skip the count -- email was still sent
+              skipped++
+              continue
+            }
+
+            // Send the recovery email
+            const html = buildRecoveryEmailHtml(user)
+            const result = await sendEmail({
+              to: user.email,
+              subject: "You're almost there -- finish setting up Cursive",
+              html,
+              tags: [
+                { name: 'category', value: 'onboarding' },
+                { name: 'type', value: 'abandoned_recovery' },
+              ],
+            })
+
+            if (!result.success) {
+              safeError(`${LOG_PREFIX} Failed to send email to ${user.email}`, result.error)
+              // Delete the dedup record so a future retry can attempt this user again
+              if (insertedNotif?.id) {
+                await supabase.from('notifications').delete().eq('id', insertedNotif.id)
+              }
+              skipped++
+              continue
             }
 
             sent++
