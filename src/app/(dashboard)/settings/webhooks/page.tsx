@@ -136,7 +136,7 @@ export default function WebhooksPage() {
         body: JSON.stringify({ name: form.name || undefined, url: form.url, events: form.events }),
       })
       if (!res.ok) {
-        const err = await res.json()
+        const err = await res.json().catch(() => ({}))
         throw new Error(err.error ?? 'Failed to create webhook')
       }
       return res.json()
@@ -167,7 +167,7 @@ export default function WebhooksPage() {
         }),
       })
       if (!res.ok) {
-        const err = await res.json()
+        const err = await res.json().catch(() => ({}))
         throw new Error(err.error ?? 'Failed to update webhook')
       }
       return res.json()

@@ -157,7 +157,7 @@ function CreateExperimentModal({ open, onOpenChange, campaignId, onCreated }: Cr
         body: JSON.stringify(payload),
       })
       if (!res.ok) {
-        const err = await res.json()
+        const err = await res.json().catch(() => ({}))
         throw new Error(err.error || 'Failed to create experiment')
       }
       return res.json()
@@ -380,7 +380,7 @@ function ExperimentCard({ experiment, campaignId }: ExperimentCardProps) {
         }
       )
       if (!res.ok) {
-        const err = await res.json()
+        const err = await res.json().catch(() => ({}))
         throw new Error(err.error || 'Action failed')
       }
       return res.json()

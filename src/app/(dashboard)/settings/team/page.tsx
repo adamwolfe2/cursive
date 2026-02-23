@@ -71,7 +71,7 @@ async function createInvite(data: { email: string; role: string }) {
     body: JSON.stringify(data),
   })
   if (!res.ok) {
-    const error = await res.json()
+    const error = await res.json().catch(() => ({}))
     throw new Error(error.error || 'Failed to create invite')
   }
   return res.json()
@@ -80,7 +80,7 @@ async function createInvite(data: { email: string; role: string }) {
 async function cancelInvite(id: string) {
   const res = await fetch(`/api/team/invites/${id}`, { method: 'DELETE' })
   if (!res.ok) {
-    const error = await res.json()
+    const error = await res.json().catch(() => ({}))
     throw new Error(error.error || 'Failed to cancel invite')
   }
   return res.json()
@@ -93,7 +93,7 @@ async function updateMemberRole(id: string, role: string) {
     body: JSON.stringify({ role }),
   })
   if (!res.ok) {
-    const error = await res.json()
+    const error = await res.json().catch(() => ({}))
     throw new Error(error.error || 'Failed to update role')
   }
   return res.json()
@@ -102,7 +102,7 @@ async function updateMemberRole(id: string, role: string) {
 async function removeMember(id: string) {
   const res = await fetch(`/api/team/members/${id}`, { method: 'DELETE' })
   if (!res.ok) {
-    const error = await res.json()
+    const error = await res.json().catch(() => ({}))
     throw new Error(error.error || 'Failed to remove member')
   }
   return res.json()

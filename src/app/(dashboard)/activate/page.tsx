@@ -421,7 +421,7 @@ function AudienceWizard({
         body: JSON.stringify(form),
       })
       if (!res.ok) {
-        const data = await res.json()
+        const data = await res.json().catch(() => ({}))
         throw new Error(data.error || 'Failed to submit')
       }
       onSuccess()
@@ -737,7 +737,7 @@ function CampaignWizard({
         body: JSON.stringify(form),
       })
       if (!res.ok) {
-        const data = await res.json()
+        const data = await res.json().catch(() => ({}))
         throw new Error(data.error || 'Failed to submit')
       }
       onSuccess()

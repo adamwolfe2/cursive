@@ -52,7 +52,7 @@ export function CreateOfferDialog({
       })
 
       if (!res.ok) {
-        const error = await res.json()
+        const error = await res.json().catch(() => ({}))
         throw new Error(error.error || 'Failed to create offer')
       }
 

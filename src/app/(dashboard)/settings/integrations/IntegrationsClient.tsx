@@ -299,7 +299,7 @@ function WebhookSubscriptions() {
         body: JSON.stringify({ url: newUrl, events: newEvents, name: newName || undefined }),
       })
       if (!res.ok) {
-        const err = await res.json()
+        const err = await res.json().catch(() => ({}))
         throw new Error(err.error || 'Failed to create webhook')
       }
       return res.json()
@@ -324,7 +324,7 @@ function WebhookSubscriptions() {
     mutationFn: async (id: string) => {
       const res = await fetch(`/api/webhooks/outbound/${id}`, { method: 'DELETE' })
       if (!res.ok) {
-        const err = await res.json()
+        const err = await res.json().catch(() => ({}))
         throw new Error(err.error || 'Failed to delete webhook')
       }
     },
@@ -345,7 +345,7 @@ function WebhookSubscriptions() {
         body: JSON.stringify({ is_active }),
       })
       if (!res.ok) {
-        const err = await res.json()
+        const err = await res.json().catch(() => ({}))
         throw new Error(err.error || 'Failed to update webhook')
       }
       return res.json()

@@ -92,7 +92,7 @@ export function LeadNotes({ leadId }: LeadNotesProps) {
         body: JSON.stringify(params),
       })
       if (!res.ok) {
-        const err = await res.json()
+        const err = await res.json().catch(() => ({}))
         throw new Error(err.error || 'Failed to create note')
       }
       return res.json()
@@ -119,7 +119,7 @@ export function LeadNotes({ leadId }: LeadNotesProps) {
         body: JSON.stringify(updates),
       })
       if (!res.ok) {
-        const err = await res.json()
+        const err = await res.json().catch(() => ({}))
         throw new Error(err.error || 'Failed to update note')
       }
       return res.json()
@@ -141,7 +141,7 @@ export function LeadNotes({ leadId }: LeadNotesProps) {
         method: 'DELETE',
       })
       if (!res.ok) {
-        const err = await res.json()
+        const err = await res.json().catch(() => ({}))
         throw new Error(err.error || 'Failed to delete note')
       }
       return res.json()

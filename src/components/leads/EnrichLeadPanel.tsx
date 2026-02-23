@@ -95,7 +95,7 @@ export function EnrichLeadPanel({
         throw Object.assign(new Error('no_credits'), { data })
       }
       if (!res.ok) {
-        const data = await res.json()
+        const data = await res.json().catch(() => ({}))
         throw new Error(data.error || 'Enrichment failed')
       }
       return res.json() as Promise<EnrichResult>

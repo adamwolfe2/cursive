@@ -119,7 +119,7 @@ export function OnboardingFlow({ isMarketplace }: OnboardingFlowProps) {
       }
 
       if (!res.ok) {
-        const body = await res.json()
+        const body = await res.json().catch(() => ({}))
         setError(body.error || 'Failed to create account')
         setIsSubmitting(false)
         return
@@ -196,7 +196,7 @@ export function OnboardingFlow({ isMarketplace }: OnboardingFlowProps) {
       }
 
       if (!res.ok) {
-        const body = await res.json()
+        const body = await res.json().catch(() => ({}))
         setError(body.error || 'Failed to create account')
         setIsSubmitting(false)
         return
