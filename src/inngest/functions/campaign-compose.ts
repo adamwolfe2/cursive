@@ -52,7 +52,8 @@ export const composeCampaignEmail = inngest.createFunction(
             .from('email_templates')
             .select('*')
             .eq('workspace_id', workspace_id)
-            .eq('is_active', true),
+            .eq('is_active', true)
+            .limit(1000),
           supabase
             .from('workspaces')
             .select('name, sales_co_settings')

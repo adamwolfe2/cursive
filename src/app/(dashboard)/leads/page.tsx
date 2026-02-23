@@ -46,7 +46,8 @@ export default async function DailyLeadsPage() {
       .eq('workspace_id', userProfile.workspace_id)
       .gte('delivered_at', `${today}T00:00:00`)
       .lte('delivered_at', `${today}T23:59:59`)
-      .order('delivered_at', { ascending: false }),
+      .order('delivered_at', { ascending: false })
+      .limit(500),
     // This week's count (head-only)
     supabase
       .from('leads')
