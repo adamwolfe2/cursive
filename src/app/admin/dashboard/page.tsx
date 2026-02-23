@@ -68,6 +68,7 @@ export default function AdminDashboard() {
         .from('lead_routing_rules')
         .select('*')
         .order('priority', { ascending: false })
+        .limit(200)
       if (data) setRules(data)
     } catch (error) {
       safeError('[AdminDashboard]', 'Failed to fetch rules:', error)
