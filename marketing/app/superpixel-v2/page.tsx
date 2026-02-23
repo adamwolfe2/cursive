@@ -157,10 +157,10 @@ export default function SuperPixelV2Page() {
           <div className="max-w-lg mx-auto bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
             <div className="bg-[#007AFF] px-6 py-4 flex items-center justify-between">
               <span className="text-white font-semibold text-sm uppercase tracking-wide">Sample Lead Record</span>
-              <span className="flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-green-400 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow-sm">
+              <span className="flex items-center gap-2 text-emerald-400 text-xs font-semibold">
                 <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
                 </span>
                 Live Visitor
               </span>
