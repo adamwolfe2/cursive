@@ -44,7 +44,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify the authenticated user owns this partner record
-    if (partner.user_id !== user.id) {
+    // Also check linked_partner_id as defense-in-depth against partner ID enumeration
+    if (partner.user_id !== user.id || (user.linked_partner_id && user.linked_partner_id !== partnerId)) {
       return NextResponse.json(
         { error: 'Forbidden' },
         { status: 403 }

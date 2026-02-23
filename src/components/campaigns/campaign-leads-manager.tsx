@@ -82,18 +82,19 @@ export function CampaignLeadsManager({ campaignId }: CampaignLeadsManagerProps) 
   const [addModalOpen, setAddModalOpen] = useState(false)
   const [adding, setAdding] = useState(false)
 
-  // Fetch campaign details and current leads
+  // Fetch campaign details and current leads in parallel
   useEffect(() => {
     async function fetchData() {
       try {
-        // Fetch campaign
-        const campaignRes = await fetch(`/api/campaigns/${campaignId}`)
+        const [campaignRes, leadsRes] = await Promise.all([
+          fetch(`/api/campaigns/${campaignId}`),
+          fetch(`/api/campaigns/${campaignId}/leads`),
+        ])
+
         if (!campaignRes.ok) throw new Error('Failed to fetch campaign')
         const campaignData = await campaignRes.json()
         setCampaign(campaignData.data)
 
-        // Fetch campaign leads
-        const leadsRes = await fetch(`/api/campaigns/${campaignId}/leads`)
         if (leadsRes.ok) {
           const leadsData = await leadsRes.json()
           setCampaignLeads(leadsData.data || [])

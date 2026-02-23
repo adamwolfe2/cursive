@@ -413,18 +413,29 @@ async function processLeadImport(
     (existingInCampaign || []).map((cl: any) => cl.leads?.email?.toLowerCase())
   )
 
-  // Check which emails are in other active campaigns
-  const { data: inOtherCampaigns } = await supabase
-    .from('campaign_leads')
-    .select('leads!inner(email), campaign:email_campaigns!inner(status)')
-    .neq('campaign_id', campaignId)
-    .in('status', ['pending', 'enriching', 'ready', 'in_sequence', 'awaiting_approval'])
+  // Check which emails are in other active campaigns within this workspace only
+  // First get workspace campaign IDs to ensure workspace isolation
+  const { data: workspaceCampaigns } = await supabase
+    .from('email_campaigns')
+    .select('id')
+    .eq('workspace_id', workspaceId)
+    .eq('status', 'active')
+    .neq('id', campaignId)
 
-  const otherActiveCampaignEmails = new Set(
-    (inOtherCampaigns || [])
-      .filter((cl: any) => cl.campaign?.status === 'active')
-      .map((cl: any) => cl.leads?.email?.toLowerCase())
-  )
+  const workspaceCampaignIds = (workspaceCampaigns || []).map((c: any) => c.id)
+
+  let otherActiveCampaignEmails = new Set<string>()
+  if (workspaceCampaignIds.length > 0) {
+    const { data: inOtherCampaigns } = await supabase
+      .from('campaign_leads')
+      .select('leads!inner(email)')
+      .in('campaign_id', workspaceCampaignIds)
+      .in('status', ['pending', 'enriching', 'ready', 'in_sequence', 'awaiting_approval'])
+
+    otherActiveCampaignEmails = new Set(
+      (inOtherCampaigns || []).map((cl: any) => cl.leads?.email?.toLowerCase())
+    )
+  }
 
   // Categorize leads
   const leadsToAdd: LeadToImport[] = []

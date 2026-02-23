@@ -7,6 +7,7 @@ import { z } from 'zod'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 import { inngest } from '@/inngest/client'
 import { checkRateLimit, RATE_LIMIT_CONFIGS } from '@/lib/utils/rate-limit'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 const bodySchema = z.object({
   lead_id: z.string().uuid('lead_id must be a valid UUID'),
@@ -45,6 +46,22 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 400 })
     }
     const { lead_id, workspace_id } = parsed.data
+
+    // Verify the lead belongs to the specified workspace before queuing
+    const adminSupabase = createAdminClient()
+    const { data: lead } = await adminSupabase
+      .from('leads')
+      .select('id')
+      .eq('id', lead_id)
+      .eq('workspace_id', workspace_id)
+      .maybeSingle()
+
+    if (!lead) {
+      return NextResponse.json(
+        { error: 'Lead not found in the specified workspace' },
+        { status: 404 }
+      )
+    }
 
     await inngest.send({
       name: 'lead/enrich' as const,

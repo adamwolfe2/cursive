@@ -199,9 +199,9 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
 
     // Optionally recalculate optimal times after settings change
     if (Object.keys(updateData).length > 0) {
-      // Run recalculation in background
-      updateCampaignLeadOptimalTimes(campaignId).catch(() => {
-        // Ignore errors in background task
+      // Run recalculation in background — log failures so they don't go unnoticed
+      updateCampaignLeadOptimalTimes(campaignId).catch((err) => {
+        safeError('[Campaign Schedule] Background optimal-time recalculation failed:', err)
       })
     }
 
