@@ -27,11 +27,12 @@ export async function GET() {
       .eq('status', 'completed')
       .gte('created_at', thirtyDaysAgoISO)
 
-    // ── All-time totals ────────────────────────────────────────────────────────
+    // ── All-time totals (cap at 500k rows — sufficient for platform-scale total) ──
     const { data: allPurchases } = await adminClient
       .from('marketplace_purchases')
       .select('credits_used, total_price')
       .eq('status', 'completed')
+      .limit(500000)
 
     // ── Previous 30-day period for anomaly comparison (days 31-60) ─────────────
     const { data: prevPurchases } = await adminClient

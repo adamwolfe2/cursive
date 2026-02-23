@@ -44,11 +44,12 @@ export async function GET(request: NextRequest, context: RouteContext) {
       return NextResponse.json({ error: 'Failed to fetch campaign stats' }, { status: 500 })
     }
 
-    // Fetch email stats
+    // Fetch email stats (limit 100k — sufficient for any campaign)
     const { data: emailStats } = await supabase
       .from('email_sends')
       .select('status')
       .eq('campaign_id', campaignId)
+      .limit(100000)
 
     const emailCounts = {
       emails_sent: emailStats?.filter(e => e.status === 'sent').length || 0,
@@ -56,11 +57,12 @@ export async function GET(request: NextRequest, context: RouteContext) {
       emails_approved: emailStats?.filter(e => e.status === 'approved').length || 0,
     }
 
-    // Fetch reply stats
+    // Fetch reply stats (limit 50k — replies are much fewer than sends)
     const { data: replyStats } = await supabase
       .from('email_replies')
       .select('sentiment')
       .eq('campaign_id', campaignId)
+      .limit(50000)
 
     const replyCounts = {
       replies_total: replyStats?.length || 0,
@@ -69,7 +71,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
       replies_negative: replyStats?.filter(r => ['negative', 'not_interested'].includes(r.sentiment || '')).length || 0,
     }
 
-    // Fetch template performance
+    // Fetch template performance (limit 100k)
     const { data: templateData } = await supabase
       .from('email_sends')
       .select(`
@@ -79,6 +81,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
       `)
       .eq('campaign_id', campaignId)
       .not('template_id', 'is', null)
+      .limit(100000)
 
     const templateMap = new Map<string, {
       template_id: string
@@ -111,7 +114,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
       }
     }
 
-    // Get reply counts by template (via email_sends join)
+    // Get reply counts by template (via email_sends join) (limit 50k)
     const { data: replyTemplateData } = await supabase
       .from('email_replies')
       .select(`
@@ -119,6 +122,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
         email_send:email_sends!email_send_id(template_id)
       `)
       .eq('campaign_id', campaignId)
+      .limit(50000)
 
     if (replyTemplateData) {
       for (const reply of replyTemplateData) {
@@ -184,13 +188,14 @@ export async function GET(request: NextRequest, context: RouteContext) {
       }
     }
 
-    // Get emails sent per value prop
+    // Get emails sent per value prop (limit 100k)
     const { data: vpEmailData } = await supabase
       .from('email_sends')
       .select('value_prop_id')
       .eq('campaign_id', campaignId)
       .eq('status', 'sent')
       .not('value_prop_id', 'is', null)
+      .limit(100000)
 
     const vpEmailCounts = new Map<string, number>()
     if (vpEmailData) {
@@ -207,12 +212,13 @@ export async function GET(request: NextRequest, context: RouteContext) {
       reply_rate: vp.leads_assigned > 0 ? vp.replies / vp.leads_assigned : 0,
     })).sort((a, b) => b.reply_rate - a.reply_rate)
 
-    // Fetch step performance
+    // Fetch step performance (limit 100k)
     const { data: stepData } = await supabase
       .from('email_sends')
       .select('step_number, status')
       .eq('campaign_id', campaignId)
       .not('step_number', 'is', null)
+      .limit(100000)
 
     const stepMap = new Map<number, { emails_sent: number; replies: number }>()
 
@@ -228,13 +234,14 @@ export async function GET(request: NextRequest, context: RouteContext) {
       }
     }
 
-    // Get replies per step (via email_sends)
+    // Get replies per step (via email_sends) (limit 50k)
     const { data: stepReplyData } = await supabase
       .from('email_replies')
       .select(`
         email_send:email_sends!email_send_id(step_number)
       `)
       .eq('campaign_id', campaignId)
+      .limit(50000)
 
     if (stepReplyData) {
       for (const reply of stepReplyData) {

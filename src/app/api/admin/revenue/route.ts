@@ -52,17 +52,19 @@ export async function GET() {
         .gte('created_at', thirtyDaysAgo)
         .order('created_at', { ascending: true }),
 
-      // Top 10 spenders all-time with workspace info
+      // Top 10 spenders all-time with workspace info (cap at 100k rows)
       supabase
         .from('credit_purchases')
         .select('workspace_id, amount_paid, workspaces(name)')
-        .eq('status', 'completed'),
+        .eq('status', 'completed')
+        .limit(100000),
 
-      // All packages breakdown (all-time completed)
+      // All packages breakdown (all-time completed, cap at 100k rows)
       supabase
         .from('credit_purchases')
         .select('package_name, credits, amount_paid')
-        .eq('status', 'completed'),
+        .eq('status', 'completed')
+        .limit(100000),
 
       // Credits redeemed this month via marketplace purchases
       supabase

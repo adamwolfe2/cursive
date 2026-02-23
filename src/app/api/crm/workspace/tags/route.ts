@@ -28,13 +28,14 @@ export async function GET(request: NextRequest) {
 
     const supabase = await createClient()
 
-    // Fetch all unique tags used in the workspace
+    // Fetch unique tags used in the workspace (sample up to 10,000 leads)
     // Tags are stored as JSON arrays in leads table
     const { data: leads, error } = await supabase
       .from('leads')
       .select('tags')
       .eq('workspace_id', user.workspace_id)
       .not('tags', 'is', null)
+      .limit(10000)
 
     if (error) {
       safeError('[Workspace Tags] Error:', error)
