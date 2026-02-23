@@ -51,6 +51,7 @@ function ProfilesPageInner() {
   async function fetchProfiles() {
     try {
       const response = await fetch(`/api/ai-studio/profiles?workspace=${workspaceId}`)
+      if (!response.ok) throw new Error(`HTTP ${response.status}`)
       const data = await response.json()
       setProfiles(data.profiles || [])
       if (data.profiles?.length > 0) {

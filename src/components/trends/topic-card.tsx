@@ -40,6 +40,7 @@ export function TopicCard({ topic, onTrackTopic }: TopicCardProps) {
       setLoadingChart(true)
       try {
         const response = await fetch(`/api/trends/${topic.id}`)
+        if (!response.ok) throw new Error(`HTTP ${response.status}`)
         const data = await response.json()
         if (data.success) {
           setChartData(data.data)

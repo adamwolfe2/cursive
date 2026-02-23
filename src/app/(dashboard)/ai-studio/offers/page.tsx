@@ -46,6 +46,7 @@ function OffersPageInner() {
   async function fetchOffers() {
     try {
       const response = await fetch(`/api/ai-studio/offers?workspace=${workspaceId}`)
+      if (!response.ok) throw new Error(`HTTP ${response.status}`)
       const data = await response.json()
       setOffers(data.offers || [])
     } catch (error) {

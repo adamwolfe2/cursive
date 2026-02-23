@@ -22,11 +22,12 @@ export function LeadCaptureForm({ domain, monthlyVisitors, dealSize, industry, r
     }
     setStatus('loading')
     try {
-      await fetch('/api/lead-capture', {
+      const res = await fetch('/api/lead-capture', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, domain, monthly_visitors: monthlyVisitors, deal_size: dealSize, industry, revenue_leak_annual: revenueLeak, cursive_advantage_annual: cursiveAdvantage }),
       })
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
       setStatus('success')
     } catch {
       setStatus('error')
