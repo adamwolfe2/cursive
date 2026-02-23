@@ -58,7 +58,7 @@ export async function GET() {
       throw purchaseError
     }
 
-    // Get recent purchases for trend
+    // Get recent purchases for trend (limit to 1000 — we only need the sum)
     const thirtyDaysAgo = new Date()
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
@@ -67,6 +67,7 @@ export async function GET() {
       .select('purchased_at, price_paid')
       .eq('buyer_workspace_id', workspaceId)
       .gte('purchased_at', thirtyDaysAgo.toISOString())
+      .limit(1000)
 
     if (recentError) {
       throw recentError
@@ -78,13 +79,13 @@ export async function GET() {
       0
     ) || 0
 
-    // Get average lead price (sample up to 5000 for performance)
+    // Get average lead price (sample 100 rows — this is an approximation used for display only)
     const { data: avgPriceData, error: avgError } = await supabase
       .from('leads')
       .select('price')
       .neq('workspace_id', workspaceId)
       .eq('status', 'available')
-      .limit(5000)
+      .limit(100)
 
     if (avgError) {
       throw avgError
