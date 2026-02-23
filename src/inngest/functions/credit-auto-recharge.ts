@@ -209,6 +209,9 @@ export const creditAutoRecharge = inngest.createFunction(
             package_id: recharge_amount,
             credits: String(packageDetails.credits),
           },
+        }, {
+          // Use Inngest event ID as idempotency key so retries don't double-charge
+          idempotencyKey: `autorecharge-${event.id}`,
         })
 
         if (paymentIntent.status === 'succeeded') {

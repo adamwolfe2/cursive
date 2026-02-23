@@ -176,8 +176,8 @@ export default function AdminEmailDeliverabilityPage() {
         setHealth(healthJson.data)
       }
 
-      if (domainsJson.success) setDomains(domainsJson.data)
-      if (alertsJson.success) setAlerts(alertsJson.data)
+      if (domainsRes.ok && domainsJson.success) setDomains(domainsJson.data)
+      if (alertsRes.ok && alertsJson.success) setAlerts(alertsJson.data)
 
       setLastUpdated(new Date())
     } catch (err) {

@@ -510,7 +510,7 @@ function buildWeeklySummaryEmail({
                   <td style="padding: 14px 20px; border-bottom: 1px solid #f3f4f6; background-color: #f9fafb;">
                     <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
                       <tr>
-                        <td style="font-size: 13px; color: #6b7280; line-height: 1.4;">Credits Used Today</td>
+                        <td style="font-size: 13px; color: #6b7280; line-height: 1.4;">Credits Used (Today)</td>
                         <td style="font-size: 22px; font-weight: 700; color: #111827; text-align: right; line-height: 1.4;">${stats.creditsUsed}</td>
                       </tr>
                     </table>
