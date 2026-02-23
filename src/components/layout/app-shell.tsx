@@ -148,6 +148,7 @@ const navigationItems: NavItemConfig[] = [
       { name: 'Contacts', href: '/crm/contacts' },
       { name: 'Companies', href: '/crm/companies' },
       { name: 'Deals', href: '/crm/deals' },
+      { name: 'Activities', href: '/crm/activities' },
     ],
   },
   {

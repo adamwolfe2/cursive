@@ -14,6 +14,8 @@ const createDraftSchema = z.object({
   name: z.string().min(1, 'Campaign name is required').max(200),
 })
 
+const campaignStatusSchema = z.enum(['draft', 'active', 'archived']).optional()
+
 /**
  * GET /api/campaign-builder
  * List campaign drafts for workspace
@@ -25,7 +27,14 @@ export async function GET(req: NextRequest) {
 
     // Query params
     const searchParams = req.nextUrl.searchParams
-    const status = searchParams.get('status') || undefined
+    const statusParsed = campaignStatusSchema.safeParse(searchParams.get('status') || undefined)
+    if (!statusParsed.success) {
+      return NextResponse.json(
+        { error: 'Invalid status. Must be one of: draft, active, archived' },
+        { status: 400 }
+      )
+    }
+    const status = statusParsed.data
     const limit = Math.min(Math.max(1, parseInt(searchParams.get('limit') || '20')), 100)
     const offset = Math.max(0, parseInt(searchParams.get('offset') || '0') || 0)
 
