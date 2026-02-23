@@ -518,7 +518,7 @@ export default function BillingClient() {
                 }}
               />
             </div>
-            <p className="mt-1.5 text-xs text-muted-foreground">Each enrichment reveals phone, email & LinkedIn. Resets daily at 8am CT (Central Time).</p>
+            <p className="mt-1.5 text-xs text-muted-foreground">Each enrichment reveals phone, email & LinkedIn. Resets daily at midnight CT.</p>
 
             {/* Credit system explanation */}
             <div className="mt-3 rounded-lg border border-border bg-muted/30 px-4 py-3">
@@ -547,7 +547,7 @@ export default function BillingClient() {
                   <div>
                     <p className="text-sm font-medium text-red-800">No credits remaining</p>
                     <p className="text-xs text-red-700 mt-0.5">
-                      Your daily enrichment credits are used up. They reset at midnight UTC.
+                      Your daily enrichment credits are used up. They reset at midnight CT.
                       {!isPro && ' Upgrade to Pro for 1,000 credits/day.'}
                     </p>
                   </div>
