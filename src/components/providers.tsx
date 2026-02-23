@@ -8,14 +8,25 @@
  */
 
 import { ReactNode, useEffect, useState } from 'react'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { QueryClient, QueryClientProvider, QueryCache, MutationCache } from '@tanstack/react-query'
 import { ErrorBoundary } from './error-boundary'
 import { initGlobalErrorHandler } from '@/lib/utils/global-error-handler'
 import { ToastProvider } from '@/lib/contexts/toast-context'
 
+// Redirect to login when any query/mutation returns 401 (expired JWT)
+function handle401(error: unknown) {
+  if (typeof window === 'undefined') return
+  const status = (error as any)?.status ?? (error as any)?.statusCode
+  if (status === 401) {
+    window.location.href = '/login'
+  }
+}
+
 // Create a client
 function makeQueryClient() {
   return new QueryClient({
+    queryCache: new QueryCache({ onError: handle401 }),
+    mutationCache: new MutationCache({ onError: handle401 }),
     defaultOptions: {
       queries: {
         // With SSR, we usually want to set some default staleTime

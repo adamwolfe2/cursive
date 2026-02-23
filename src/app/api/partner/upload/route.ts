@@ -478,7 +478,7 @@ export async function POST(request: NextRequest) {
         invalid_rows: results.validation_errors,
         duplicate_rows: results.duplicates_cross_partner + results.duplicates_platform_owned,
         marketplace_listed: results.successful,
-        error_log: rejections.slice(0, 100), // Store first 100 errors
+        error_log: rejections.slice(0, 100), // First 100 errors in DB; full list in rejected_rows_url
         rejected_rows_url: rejectedRowsUrl,
         completed_at: new Date().toISOString(),
       })
