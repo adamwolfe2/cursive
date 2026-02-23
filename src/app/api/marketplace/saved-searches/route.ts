@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getCurrentUser } from '@/lib/auth/helpers'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 const saveSearchSchema = z.object({
@@ -13,29 +14,15 @@ const saveSearchSchema = z.object({
   filters: z.record(z.unknown()), // The filter object as JSON
 })
 
-// ── Helper: resolve authenticated user + workspace ──────────────────────────
-
-async function resolveUser() {
-  const user = await getCurrentUser()
-
-  if (!user) {
-    return { user: null, error: 'Unauthorized' }
-  }
-
-  if (!user.workspace_id) {
-    return { user: null, error: 'No workspace found' }
-  }
-
-  return { user, error: null }
-}
 // ── GET: List saved searches ─────────────────────────────────────────────────
 
 export async function GET() {
   try {
-    const { user, error } = await resolveUser()
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
 
-    if (error || !user) {
-      return NextResponse.json({ error: error ?? 'Unauthorized' }, { status: 401 })
+    if (!user.workspace_id) {
+      return NextResponse.json({ error: 'No workspace found' }, { status: 404 })
     }
 
     const admin = createAdminClient()
@@ -55,8 +42,7 @@ export async function GET() {
 
     return NextResponse.json({ savedSearches: savedSearches ?? [] })
   } catch (error) {
-    safeError('[SavedSearches GET] Unexpected error:', error)
-    return NextResponse.json({ error: 'Failed to fetch saved searches' }, { status: 500 })
+    return handleApiError(error)
   }
 }
 
@@ -64,10 +50,11 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const { user, error } = await resolveUser()
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
 
-    if (error || !user) {
-      return NextResponse.json({ error: error ?? 'Unauthorized' }, { status: 401 })
+    if (!user.workspace_id) {
+      return NextResponse.json({ error: 'No workspace found' }, { status: 404 })
     }
 
     let body: unknown
@@ -111,7 +98,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ savedSearch }, { status: 201 })
   } catch (error) {
-    safeError('[SavedSearches POST] Unexpected error:', error)
-    return NextResponse.json({ error: 'Failed to save search' }, { status: 500 })
+    return handleApiError(error)
   }
 }
