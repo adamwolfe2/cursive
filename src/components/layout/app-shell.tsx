@@ -254,6 +254,7 @@ const navigationItems: NavItemConfig[] = [
     children: [
       { name: 'Profile', href: '/settings' },
       { name: 'Billing', href: '/settings/billing' },
+      { name: 'Credit History', href: '/settings/billing/usage' },
       { name: 'Team', href: '/settings/team' },
       { name: 'API Keys', href: '/settings/api-keys' },
       { name: 'Pixel & Tracking', href: '/settings/pixel' },
