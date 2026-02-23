@@ -9,60 +9,16 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
-import { createServerClient } from '@supabase/ssr'
+import { getCurrentUser } from '@/lib/auth/helpers'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 // Google OAuth Configuration
 const GOOGLE_OAUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth'
 
-/**
- * Get authenticated user from session
- */
-async function getAuthenticatedUser() {
-  const cookieStore = await cookies()
-
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll()
-        },
-        setAll(cookiesToSet: any[]) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
-            )
-          } catch {
-            // Ignore
-          }
-        },
-      },
-    }
-  )
-
-  const {
-    data: { user: authUser },
-  } = await supabase.auth.getUser()
-
-  if (!authUser) {
-    return null
-  }
-
-  const { data: user } = await supabase
-    .from('users')
-    .select('id, workspace_id, email')
-    .eq('auth_user_id', authUser.id)
-    .maybeSingle()
-
-  return user
-}
-
 export async function GET(req: NextRequest) {
   try {
     // Authenticate user
-    const user = await getAuthenticatedUser()
+    const user = await getCurrentUser()
     if (!user) {
       return NextResponse.redirect(
         new URL('/login?error=unauthorized&redirect=/settings/integrations', req.url)
@@ -124,7 +80,7 @@ export async function GET(req: NextRequest) {
     oauthUrl.searchParams.set('prompt', 'consent')
 
     return NextResponse.redirect(oauthUrl.toString())
-  } catch (error: any) {
+  } catch (error) {
     safeError('[Google Sheets OAuth] Authorization error:', error)
     return NextResponse.redirect(
       new URL('/settings/integrations?error=gs_oauth_failed', req.url)
