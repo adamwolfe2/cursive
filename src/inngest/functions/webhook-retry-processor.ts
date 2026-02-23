@@ -118,11 +118,14 @@ async function processWebhookEvent(event: Stripe.Event, supabase: any) {
       }
 
       // Complete the marketplace purchase
+      const paymentIntentId = typeof session.payment_intent === 'string'
+        ? session.payment_intent
+        : (session.payment_intent as { id?: string } | null)?.id ?? null
       await supabase
         .from('marketplace_purchases')
         .update({
           status: 'completed',
-          stripe_payment_intent_id: session.payment_intent as string,
+          stripe_payment_intent_id: paymentIntentId,
           completed_at: new Date().toISOString(),
         })
         .eq('id', purchaseId)
