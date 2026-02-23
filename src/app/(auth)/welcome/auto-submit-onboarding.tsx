@@ -112,7 +112,19 @@ export function AutoSubmitOnboarding({ isMarketplace, isReturning }: AutoSubmitO
           })
 
           // 401 = session not ready yet; retry
+          // After 2 retries, verify session is still valid to avoid wasting time on expired auth
           if (lastResponse.status === 401 && attempt < MAX_RETRIES) {
+            if (attempt === 2) {
+              try {
+                const sessionCheck = await fetch('/api/auth/user')
+                if (!sessionCheck.ok) {
+                  // Session is genuinely invalid — stop retrying
+                  break
+                }
+              } catch {
+                // Network error — let retry logic continue
+              }
+            }
             continue
           }
 
