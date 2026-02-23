@@ -79,14 +79,23 @@ export const deliverLeadWebhook = inngest.createFunction(
       return data
     })
 
-    // Attempt delivery
+    // Attempt delivery — catch exceptions so update-delivery-record always runs
     const result = await step.run('deliver-webhook', async () => {
       const payload = formatLeadPayload(lead)
-      return await deliverWebhook(
-        workspace.webhook_url!,
-        payload,
-        workspace.webhook_secret
-      )
+      try {
+        return await deliverWebhook(
+          workspace.webhook_url!,
+          payload,
+          workspace.webhook_secret
+        )
+      } catch (err) {
+        return {
+          success: false,
+          error: err instanceof Error ? err.message : 'Delivery threw unexpected exception',
+          statusCode: 0,
+          responseBody: null as string | null,
+        }
+      }
     })
 
     // Update delivery record

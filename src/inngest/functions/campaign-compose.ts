@@ -81,6 +81,11 @@ export const composeCampaignEmail = inngest.createFunction(
       }
     )
 
+    if (!campaignLead || !campaign || !lead) {
+      logger.warn(`[campaign-compose] Required data missing — lead:${!!lead} campaign:${!!campaign} campaignLead:${!!campaignLead}`)
+      return { success: false, error: 'Required data not found', campaign_lead_id }
+    }
+
     logger.info(
       `Composing email for campaign lead ${campaign_lead_id}, step ${campaignLead.current_step + 1}`
     )

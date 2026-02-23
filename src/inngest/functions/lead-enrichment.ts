@@ -17,6 +17,7 @@ export const leadEnrichment = inngest.createFunction(
   async ({ event, step, logger }) => {
     const { lead_id, workspace_id } = event.data
 
+    try {
     // Step 1: Fetch lead from database
     const lead = await step.run('fetch-lead', async () => {
       const supabase = createAdminClient()
@@ -232,6 +233,15 @@ export const leadEnrichment = inngest.createFunction(
       success: true,
       lead_id,
       contacts_found: enrichmentResult.contacts.length,
+    }
+    } catch (error) {
+      // Trigger the failure handler to mark the lead as failed.
+      // step.sendEvent is memoized — only fires once even across retries.
+      await step.sendEvent('send-failure-notification', {
+        name: 'lead/enrich.failed',
+        data: { lead_id, workspace_id },
+      })
+      throw error
     }
   }
 )
