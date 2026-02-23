@@ -24,13 +24,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Input } from '@/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { Select } from '@/components/ui/select'
 import {
   Dialog,
   DialogContent,
@@ -449,37 +443,29 @@ export default function ContactDetailPage() {
                 <label className="text-xs font-medium text-muted-foreground">Status</label>
                 <Select
                   value={form.status}
-                  onValueChange={(v) => setForm({ ...form, status: v })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Prospect">Prospect</SelectItem>
-                    <SelectItem value="Active">Active</SelectItem>
-                    <SelectItem value="Inactive">Inactive</SelectItem>
-                    <SelectItem value="Lost">Lost</SelectItem>
-                  </SelectContent>
-                </Select>
+                  options={[
+                    { value: 'Prospect', label: 'Prospect' },
+                    { value: 'Active', label: 'Active' },
+                    { value: 'Inactive', label: 'Inactive' },
+                    { value: 'Lost', label: 'Lost' },
+                  ]}
+                  onChange={(e) => setForm({ ...form, status: e.target.value })}
+                />
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-muted-foreground">Seniority Level</label>
                 <Select
                   value={form.seniority_level || 'none'}
-                  onValueChange={(v) => setForm({ ...form, seniority_level: v === 'none' ? '' : v })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select level" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">None</SelectItem>
-                    <SelectItem value="C-Level">C-Level</SelectItem>
-                    <SelectItem value="VP">VP</SelectItem>
-                    <SelectItem value="Director">Director</SelectItem>
-                    <SelectItem value="Manager">Manager</SelectItem>
-                    <SelectItem value="Individual Contributor">Individual Contributor</SelectItem>
-                  </SelectContent>
-                </Select>
+                  options={[
+                    { value: 'none', label: 'None' },
+                    { value: 'C-Level', label: 'C-Level' },
+                    { value: 'VP', label: 'VP' },
+                    { value: 'Director', label: 'Director' },
+                    { value: 'Manager', label: 'Manager' },
+                    { value: 'Individual Contributor', label: 'Individual Contributor' },
+                  ]}
+                  onChange={(e) => setForm({ ...form, seniority_level: e.target.value === 'none' ? '' : e.target.value })}
+                />
               </div>
             </div>
           )}

@@ -15,8 +15,7 @@ export default function ConversationsError({ error, reset }: ConversationsErrorP
   const router = useRouter()
 
   useEffect(() => {
-    const safe = safeError(error)
-    console.error('[ConversationsPage] Error:', safe)
+    safeError('[ConversationsPage] Error:', error.message)
   }, [error])
 
   return (

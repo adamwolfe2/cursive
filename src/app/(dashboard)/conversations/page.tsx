@@ -19,13 +19,7 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { Select } from '@/components/ui/select'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -444,19 +438,10 @@ export default function ConversationsPage() {
         <div className="flex flex-wrap items-center gap-3">
           <Select
             value={currentPriority}
-            onValueChange={(val) => updateParams({ priority: val })}
-          >
-            <SelectTrigger className="h-9 w-[160px]">
-              <SelectValue placeholder="All Priorities" />
-            </SelectTrigger>
-            <SelectContent>
-              {PRIORITY_OPTIONS.map((opt) => (
-                <SelectItem key={opt.value} value={opt.value}>
-                  {opt.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            options={PRIORITY_OPTIONS}
+            onChange={(e) => updateParams({ priority: e.target.value })}
+            className="h-9 w-[160px]"
+          />
 
           <form onSubmit={handleSearchSubmit} className="flex items-center gap-2">
             <div className="relative">

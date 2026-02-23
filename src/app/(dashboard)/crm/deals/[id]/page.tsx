@@ -21,13 +21,7 @@ import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { Select } from '@/components/ui/select'
 import {
   Dialog,
   DialogContent,
@@ -426,19 +420,15 @@ export default function DealDetailPage() {
                 <label className="text-xs font-medium text-muted-foreground">Stage</label>
                 <Select
                   value={form.stage}
-                  onValueChange={(v) => setForm({ ...form, stage: v })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Qualified">Qualified</SelectItem>
-                    <SelectItem value="Proposal">Proposal</SelectItem>
-                    <SelectItem value="Negotiation">Negotiation</SelectItem>
-                    <SelectItem value="Closed Won">Closed Won</SelectItem>
-                    <SelectItem value="Closed Lost">Closed Lost</SelectItem>
-                  </SelectContent>
-                </Select>
+                  options={[
+                    { value: 'Qualified', label: 'Qualified' },
+                    { value: 'Proposal', label: 'Proposal' },
+                    { value: 'Negotiation', label: 'Negotiation' },
+                    { value: 'Closed Won', label: 'Closed Won' },
+                    { value: 'Closed Lost', label: 'Closed Lost' },
+                  ]}
+                  onChange={(e) => setForm({ ...form, stage: e.target.value })}
+                />
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-muted-foreground">

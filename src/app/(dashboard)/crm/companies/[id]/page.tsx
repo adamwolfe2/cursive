@@ -23,13 +23,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Input } from '@/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { Select } from '@/components/ui/select'
 import {
   Dialog,
   DialogContent,
@@ -544,18 +538,14 @@ export default function CompanyDetailPage() {
                 <label className="text-xs font-medium text-muted-foreground">Status</label>
                 <Select
                   value={form.status}
-                  onValueChange={(v) => setForm({ ...form, status: v })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Prospect">Prospect</SelectItem>
-                    <SelectItem value="Active">Active</SelectItem>
-                    <SelectItem value="Inactive">Inactive</SelectItem>
-                    <SelectItem value="Lost">Lost</SelectItem>
-                  </SelectContent>
-                </Select>
+                  options={[
+                    { value: 'Prospect', label: 'Prospect' },
+                    { value: 'Active', label: 'Active' },
+                    { value: 'Inactive', label: 'Inactive' },
+                    { value: 'Lost', label: 'Lost' },
+                  ]}
+                  onChange={(e) => setForm({ ...form, status: e.target.value })}
+                />
               </div>
             </div>
           )}

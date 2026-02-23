@@ -17,13 +17,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Skeleton } from '@/components/ui/skeleton'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { Select } from '@/components/ui/select'
 import {
   Dialog,
   DialogContent,
@@ -480,22 +474,9 @@ export default function ActivitiesPage() {
               <label className="text-xs font-medium text-muted-foreground">Activity Type</label>
               <Select
                 value={form.activity_type}
-                onValueChange={(v) => setForm({ ...form, activity_type: v as ActivityType })}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {ACTIVITY_TYPES.map((t) => (
-                    <SelectItem key={t} value={t}>
-                      <span className="flex items-center gap-2">
-                        <ActivityIcon type={t} className="h-3.5 w-3.5" />
-                        {TYPE_LABELS[t]}
-                      </span>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                options={ACTIVITY_TYPES.map((t) => ({ value: t, label: TYPE_LABELS[t] }))}
+                onChange={(e) => setForm({ ...form, activity_type: e.target.value as ActivityType })}
+              />
             </div>
 
             <div className="space-y-1.5">
