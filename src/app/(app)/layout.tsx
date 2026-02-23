@@ -24,10 +24,10 @@ export default async function AppLayout({
 
   const supabase = await createClient()
 
+  // SECURITY: Use getUser() for server-side JWT verification (not getSession which reads local cache)
   const {
-    data: { session },
-  } = await supabase.auth.getSession()
-  const user = session?.user ?? null
+    data: { user },
+  } = await supabase.auth.getUser()
 
   // Development-only: admin bypass cookie for local testing
   if (process.env.NODE_ENV === 'development') {
