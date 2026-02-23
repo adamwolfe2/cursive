@@ -39,38 +39,35 @@ export function CalculatorForm({ onSubmit }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Domain */}
       <div>
-        <label className="block text-sm font-semibold text-white/70 mb-2 uppercase tracking-wider">Your Website</label>
+        <label className="block text-sm font-semibold text-gray-700 mb-2">Your Website</label>
         <input
           type="text"
           value={domain}
           onChange={e => setDomain(e.target.value)}
           placeholder="yourcompany.com"
-          className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/30 focus:outline-none focus:border-emerald-400/60 focus:ring-1 focus:ring-emerald-400/30 transition-all"
+          className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#007AFF]/60 focus:ring-1 focus:ring-[#007AFF]/30 transition-all"
         />
-        {errors.domain && <p className="mt-1 text-red-400 text-sm">{errors.domain}</p>}
+        {errors.domain && <p className="mt-1 text-red-600 text-sm">{errors.domain}</p>}
       </div>
 
-      {/* Traffic */}
       <div>
-        <label className="block text-sm font-semibold text-white/70 mb-2 uppercase tracking-wider">Monthly Website Visitors</label>
+        <label className="block text-sm font-semibold text-gray-700 mb-2">Monthly Website Visitors</label>
         <select
           value={trafficRange}
           onChange={e => setTrafficRange(e.target.value)}
-          className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-emerald-400/60 focus:ring-1 focus:ring-emerald-400/30 transition-all appearance-none"
+          className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:border-[#007AFF]/60 focus:ring-1 focus:ring-[#007AFF]/30 transition-all appearance-none"
         >
-          <option value="" className="bg-gray-900">Select traffic range...</option>
+          <option value="">Select traffic range...</option>
           {Object.keys(TRAFFIC_RANGES).map(r => (
-            <option key={r} value={r} className="bg-gray-900">{r}</option>
+            <option key={r} value={r}>{r}</option>
           ))}
         </select>
-        {errors.traffic && <p className="mt-1 text-red-400 text-sm">{errors.traffic}</p>}
+        {errors.traffic && <p className="mt-1 text-red-600 text-sm">{errors.traffic}</p>}
       </div>
 
-      {/* Deal Size */}
       <div>
-        <label className="block text-sm font-semibold text-white/70 mb-2 uppercase tracking-wider">Average Deal Size</label>
+        <label className="block text-sm font-semibold text-gray-700 mb-2">Average Deal Size</label>
         <div className="flex flex-wrap gap-2 mb-3">
           {DEAL_SIZE_CHIPS.map(chip => (
             <button
@@ -79,8 +76,8 @@ export function CalculatorForm({ onSubmit }: Props) {
               onClick={() => { setDealSize(chip); setCustomDeal('') }}
               className={`px-3 py-1.5 rounded-md text-sm font-medium border transition-all ${
                 dealSize === chip
-                  ? 'bg-emerald-400/20 border-emerald-400/60 text-emerald-300'
-                  : 'bg-white/5 border-white/10 text-white/60 hover:border-white/30'
+                  ? 'bg-[#007AFF]/10 border-[#007AFF]/60 text-[#007AFF]'
+                  : 'bg-gray-50 border-gray-200 text-gray-600 hover:border-gray-400'
               }`}
             >
               ${chip.toLocaleString()}
@@ -92,32 +89,31 @@ export function CalculatorForm({ onSubmit }: Props) {
           value={customDeal}
           onChange={e => { setCustomDeal(e.target.value); setDealSize('') }}
           placeholder="Custom amount..."
-          className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/30 focus:outline-none focus:border-emerald-400/60 focus:ring-1 focus:ring-emerald-400/30 transition-all"
+          className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#007AFF]/60 focus:ring-1 focus:ring-[#007AFF]/30 transition-all"
         />
-        {errors.deal && <p className="mt-1 text-red-400 text-sm">{errors.deal}</p>}
+        {errors.deal && <p className="mt-1 text-red-600 text-sm">{errors.deal}</p>}
       </div>
 
-      {/* Industry */}
       <div>
-        <label className="block text-sm font-semibold text-white/70 mb-2 uppercase tracking-wider">Industry</label>
+        <label className="block text-sm font-semibold text-gray-700 mb-2">Industry</label>
         <select
           value={industry}
           onChange={e => setIndustry(e.target.value)}
-          className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-emerald-400/60 focus:ring-1 focus:ring-emerald-400/30 transition-all appearance-none"
+          className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:border-[#007AFF]/60 focus:ring-1 focus:ring-[#007AFF]/30 transition-all appearance-none"
         >
-          <option value="" className="bg-gray-900">Select your industry...</option>
+          <option value="">Select your industry...</option>
           {INDUSTRIES.map(i => (
-            <option key={i} value={i} className="bg-gray-900">{i}</option>
+            <option key={i} value={i}>{i}</option>
           ))}
         </select>
-        {errors.industry && <p className="mt-1 text-red-400 text-sm">{errors.industry}</p>}
+        {errors.industry && <p className="mt-1 text-red-600 text-sm">{errors.industry}</p>}
       </div>
 
       <button
         type="submit"
-        className="w-full py-4 px-8 bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-lg rounded-lg transition-all duration-200 shadow-lg shadow-emerald-500/25 hover:shadow-emerald-400/40"
+        className="w-full py-4 px-8 bg-[#007AFF] hover:bg-[#0066DD] text-white font-bold text-lg rounded-lg transition-all duration-200 shadow-lg shadow-[#007AFF]/25 hover:shadow-[#007AFF]/40"
       >
-        See My Revenue Leak &rarr;
+        Calculate My Revenue Leak →
       </button>
     </form>
   )

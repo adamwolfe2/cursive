@@ -1,589 +1,483 @@
 import type { Metadata } from 'next'
+import { CheckCircle2, Shield, Database, Globe, Clock, Users, TrendingUp } from 'lucide-react'
+import { Container } from '@/components/ui/container'
+import { Button } from '@/components/ui/button'
 import { RevenueCalculator } from '@/components/revenue-calculator/RevenueCalculator'
 import { CalInlineEmbed } from '@/components/cal-inline-embed'
+import { DashboardCTA } from '@/components/dashboard-cta'
+import { FaqAccordion } from './FaqAccordion'
 
 export const metadata: Metadata = {
-  title: "Cursive Super Pixel — See How Much Revenue You're Losing | Free Calculator",
-  description:
-    '97% of your website visitors leave without converting. The Cursive Super Pixel identifies 70% of them with verified contact data, intent scoring, and a 0.05% bounce rate. Calculate your revenue leak now.',
+  title: "Super Pixel Revenue Calculator — See What You're Losing | Cursive",
+  description: "97% of your website visitors leave without converting. Calculate exactly how much revenue you're losing — and see how the Cursive Super Pixel recovers it with 70% visitor ID rates and 0.05% bounce rates.",
   robots: { index: true, follow: true },
 }
 
 const BOOK_ANCHOR = '#book-demo'
-
-// ─── Sample Lead Record Data ─────────────────────────────────────────────────
+const CAL_LINK = 'https://cal.com/gotdarrenhill/30min'
 
 const SAMPLE_LEAD = {
-  name: 'Michael Torres',
-  title: 'VP of Operations',
-  company: 'Apex Home Solutions',
-  location: 'Austin, TX',
-  email: 'm.torres@apexhomesolutions.com',
-  phone: '(512) 847-3921',
-  linkedin: 'linkedin.com/in/michaeltorres-ops',
-  intent: 'HIGH',
-  intentScore: 94,
-  pages: ['Pricing', 'Enterprise Features', 'Case Studies'],
-  visitedAt: '2 minutes ago',
-  source: 'Organic Search',
+  name: 'James Sullivan',
+  title: 'VP of Sales',
+  company: 'Meridian Technology Group',
+  email: 'j.sullivan@meridiantech.com',
+  phone: '+1 (512) 847-2391',
+  pageVisited: '/pricing',
+  visitTime: 'Today at 2:14 PM CST',
+  intentScore: 'High — 7-day spike detected',
 }
-
-// ─── FAQ Data ─────────────────────────────────────────────────────────────────
-
-const FAQS = [
-  {
-    q: 'How does the Super Pixel identify 70% of visitors when competitors only get 15%?',
-    a: 'Most pixel vendors rely on third-party cookie matching with stale databases. Cursive uses a proprietary first-party identity graph built on 420M+ verified US consumer records, refreshed via 30-day NCOA updates. We match on multiple signals simultaneously — device fingerprint, email hash, IP intelligence, and behavioral patterns — giving us dramatically higher match rates on real, reachable people.',
-  },
-  {
-    q: 'What makes the 0.05% bounce rate possible?',
-    a: 'Every email address in our database is validated in real-time against live mailbox checks, not just format validation. We remove role addresses, catch-alls, and known spam traps before they ever reach you. Our 30-day NCOA cycle ensures we flag addresses the moment someone moves or changes providers.',
-  },
-  {
-    q: 'How is this different from Clearbit, 6sense, or RB2B?',
-    a: "B2B intent tools like 6sense identify company-level traffic — you get the organization, not the person. RB2B focuses on LinkedIn identification only. Clearbit enriches data you already have. Cursive's Super Pixel uniquely provides person-level identification with full contact data (email, phone, LinkedIn), intent scoring at the individual level, and CAN-SPAM/CCPA-compliant outreach data — all in one.",
-  },
-  {
-    q: 'Is this CAN-SPAM and CCPA compliant?',
-    a: 'Yes. All data originates from consumer-consented sources. Our identity graph is built on opt-in data partnerships. Every contact includes suppression flags for do-not-contact registries. We provide DNC list management and unsubscribe handling as part of the platform. We recommend consulting your legal counsel for your specific use case.',
-  },
-  {
-    q: 'What does the pixel actually collect?',
-    a: "The Super Pixel is a lightweight JavaScript snippet (~3KB) that fires on page load. It collects anonymized first-party signals: page URL, referrer, session ID, and a hashed device fingerprint. No personally identifiable information is collected by the pixel itself — the identity resolution happens server-side against our identity graph. Your visitors' raw PII never leaves your domain.",
-  },
-  {
-    q: 'How quickly do identified leads appear in my dashboard?',
-    a: 'Real-time. Most matches resolve within 30 seconds of a visitor landing on your page. High-intent visitors (multiple pages, pricing views, return visits) are flagged immediately and can trigger Slack notifications or CRM webhooks.',
-  },
-  {
-    q: 'Do I need a developer to install it?',
-    a: 'No. The pixel is a single line of HTML you paste into your website head tag — identical to installing Google Analytics or the Meta Pixel. For Shopify, WordPress, Webflow, and most CMSs, we have one-click integrations. Average install time is under 5 minutes.',
-  },
-  {
-    q: "What happens to the 30% of visitors you can't identify?",
-    a: "No technology identifies 100% — anonymous browsers, VPNs, and privacy tools will always create a floor. The 70% we do identify are real, verified, reachable people. Compare this to your current form conversion rate of 1–3%: even a 70% partial identification rate is 23x more pipeline than the status quo.",
-  },
-]
-
-// ─── How It Works Steps ──────────────────────────────────────────────────────
 
 const HOW_IT_WORKS = [
   {
-    step: '01',
-    title: 'Pixel Fires on Page Load',
-    description:
-      'A 3KB script fires instantly on any page visit, collecting anonymized first-party signals — page path, referrer, session ID, and device fingerprint. No PII leaves your domain.',
+    step: '1',
+    title: 'Book Demo Call',
+    desc: '15-minute call to understand your website, goals, and CRM. We scope the installation and answer every question.',
   },
   {
-    step: '02',
-    title: 'Identity Resolution Against 420M Records',
-    description:
-      'Our server-side identity graph matches the anonymized signals against 420M+ verified US consumer records. We cross-reference device graphs, email hashes, and IP intelligence simultaneously.',
+    step: '2',
+    title: 'We Install & Configure',
+    desc: 'Our team installs the Super Pixel, configures CRM sync, sets up bot/internal traffic filters, and connects your integrations.',
   },
   {
-    step: '03',
-    title: 'Intent Scoring & Enrichment',
-    description:
-      'Matched visitors receive an intent score (High / Medium / Low) based on pages visited, time on site, return visits, and behavioral signals against 60B+ daily intent data points.',
-  },
-  {
-    step: '04',
-    title: 'Verified Contact Data Delivered',
-    description:
-      "You receive the visitor's full name, verified email (0.05% bounce rate), phone number, LinkedIn profile, company, job title, and location — ready for outreach or CRM sync.",
+    step: '3',
+    title: 'Leads Start Flowing',
+    desc: "Within 24–48 hours you'll see verified, enriched, intent-scored visitor records in your dashboard and CRM — automatically.",
   },
 ]
-
-// ─── Tech Differentiators ────────────────────────────────────────────────────
 
 const DIFFERENTIATORS = [
-  {
-    icon: '&#x26A1;',
-    title: '420M+ Verified US Records',
-    description: 'The largest consumer identity graph purpose-built for lead identification. Updated continuously, not quarterly.',
-  },
-  {
-    icon: '&#x1F3AF;',
-    title: '60B+ Daily Intent Signals',
-    description: 'Real-time behavioral data from across the open web, mapped to individual identities for precision scoring.',
-  },
-  {
-    icon: '&#x1F504;',
-    title: '30-Day NCOA Refresh',
-    description: 'National Change of Address verification runs every 30 days, not quarterly. Stale data is flagged and removed before you touch it.',
-  },
-  {
-    icon: '&#x1F4CA;',
-    title: '98% US Household Coverage',
-    description: 'Our identity graph covers 98% of US households, giving you reach into virtually every market segment and geography.',
-  },
-  {
-    icon: '&#x1F512;',
-    title: 'Multi-Signal Matching',
-    description: 'We match on device fingerprint + email hash + IP intelligence + behavioral signals simultaneously — not a single vector like competitors.',
-  },
-  {
-    icon: '&#x2705;',
-    title: 'Real-Time Email Validation',
-    description: 'Every address undergoes live mailbox verification before delivery. Role addresses, catch-alls, and spam traps are removed automatically.',
-  },
+  { icon: Shield, title: 'Proprietary Identity Graph', desc: "Built and owned outright — sourced from the same primary providers others can't access directly." },
+  { icon: Database, title: 'Primary Source Licensing', desc: 'We license directly from primary data providers. Data that passes through multiple hands decays — ours doesn\'t. 0.05% bounce rate.' },
+  { icon: Globe, title: 'UID2 Integration', desc: 'The only universal identifier dispersed across every website in the United States. Competitors without UID2 simply don\'t have the infrastructure.' },
+  { icon: Clock, title: 'NCOA Refreshed Every 30 Days', desc: '12–15% of the US population moves annually. We verify addresses monthly so your data never goes stale.' },
+  { icon: Users, title: '98% US Household Coverage', desc: '7 billion historic hashed emails tied to UID2 and cookies. 98% of US households observed.' },
+  { icon: TrendingUp, title: '50,000 Records/Second', desc: 'Stateless worker architecture. Your data flows don\'t time out, bottleneck, or fall behind.' },
 ]
-
-// ─── Testimonials ─────────────────────────────────────────────────────────────
 
 const TESTIMONIALS = [
   {
-    quote:
-      "We were converting 1.8% of our traffic through forms. The Super Pixel identified 67% of our visitors in the first week. That's not an improvement — that's a different business.",
-    author: 'Sarah K.',
-    title: 'Head of Growth',
-    company: 'Series B SaaS Platform',
+    quote: "We were converting 1.8% of our traffic through forms. The Super Pixel identified 67% of our visitors in the first week. That's not an improvement — that's a different business.",
+    author: 'Sarah K.', title: 'Head of Growth', company: 'Series B SaaS Platform',
   },
   {
-    quote:
-      "I've tried RB2B, Clearbit, and three other pixel vendors. The bounce rates were killing our sender score. Cursive's 0.05% bounce rate is the only one that actually holds up in practice.",
-    author: 'Marcus R.',
-    title: 'VP Sales',
-    company: 'Home Services Franchise',
+    quote: "I've tried RB2B, Clearbit, and three other pixel vendors. The bounce rates were killing our sender score. Cursive's 0.05% bounce rate is the only one that actually holds up in practice.",
+    author: 'Marcus R.', title: 'VP Sales', company: 'Home Services Franchise',
   },
   {
-    quote:
-      'Our CAC dropped 40% in 90 days. Instead of buying ads to reach people who might be interested, we\'re now calling the people who already visited our pricing page.',
-    author: 'Jennifer L.',
-    title: 'CMO',
-    company: 'Financial Services Firm',
+    quote: "Our CAC dropped 40% in 90 days. Instead of buying ads to reach people who might be interested, we're now calling the people who already visited our pricing page.",
+    author: 'Jennifer L.', title: 'CMO', company: 'Financial Services Firm',
   },
 ]
 
-// ─── Page Component ───────────────────────────────────────────────────────────
-
 export default function SuperPixelV2Page() {
   return (
-    <main className="min-h-screen bg-[#0a0f1a]">
-      {/* ── Minimal Nav ─────────────────────────────────────────────────── */}
-      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/5 bg-[#0a0f1a]/90 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <a href="https://meetcursive.com" className="text-white font-bold text-lg tracking-tight">
-            Cursive
-          </a>
-          <a
-            href={BOOK_ANCHOR}
-            className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-sm rounded-lg transition-all"
-          >
-            Book a Demo
-          </a>
-        </div>
-      </nav>
-
-      {/* ── Hero: Revenue Calculator ─────────────────────────────────────── */}
-      <section className="pt-32 pb-20 px-6">
-        <div className="max-w-4xl mx-auto">
-          {/* Badge */}
-          <div className="flex justify-center mb-8">
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-emerald-400/30 bg-emerald-400/10 text-emerald-300 text-sm font-medium">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+    <>
+      {/* ── HERO ──────────────────────────────────────────── */}
+      <section className="relative py-24 bg-white">
+        <Container>
+          <div className="text-center max-w-4xl mx-auto">
+            <div className="inline-flex items-center gap-2 bg-[#007AFF]/8 border border-[#007AFF]/20 text-[#007AFF] text-sm font-medium px-4 py-2 rounded-full mb-8">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#007AFF] opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#007AFF]" />
+              </span>
               Super Pixel Revenue Calculator
-            </span>
-          </div>
+            </div>
 
-          {/* Headline */}
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white text-center leading-tight mb-6">
-            How Much Revenue Is{' '}
-            <span className="text-red-400">Walking Out</span>{' '}
-            Your Front Door?
-          </h1>
+            <h1 className="text-5xl lg:text-7xl font-light text-gray-900 mb-6 leading-tight">
+              97% of Your Visitors Leave
+              <span className="block font-cursive text-6xl lg:text-7xl text-gray-500 mt-2">
+                Without a Name.
+              </span>
+            </h1>
 
-          <p className="text-white/60 text-lg md:text-xl text-center max-w-2xl mx-auto mb-12 leading-relaxed">
-            97% of your website visitors leave without a trace. Enter your details to see exactly how much
-            pipeline you&apos;re losing — and how the Super Pixel recovers it.
-          </p>
-
-          {/* Calculator Card */}
-          <div className="bg-white/[0.04] border border-white/10 rounded-2xl p-8 md:p-10 shadow-2xl shadow-black/40">
-            <RevenueCalculator />
-          </div>
-
-          {/* Trust indicators */}
-          <div className="flex flex-wrap items-center justify-center gap-6 mt-8 text-white/40 text-sm">
-            <span className="flex items-center gap-1.5">
-              <span className="text-emerald-400">&#10003;</span>
-              No credit card required
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span className="text-emerald-400">&#10003;</span>
-              Free 14-day trial
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span className="text-emerald-400">&#10003;</span>
-              Setup in under 5 minutes
-            </span>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Sample Lead Record ───────────────────────────────────────────── */}
-      <section className="py-20 px-6 border-t border-white/5">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-black text-white mb-4">
-              This Is What You&apos;re Missing
-            </h2>
-            <p className="text-white/50 text-lg max-w-2xl mx-auto">
-              Every visitor who leaves your site without converting is a real person with a name, email, and phone number.
-              Here&apos;s what a Super Pixel lead record looks like:
+            <p className="text-xl text-gray-600 mb-4 max-w-3xl mx-auto">
+              Enter your details below to see exactly how much pipeline you&apos;re losing every month — and what the{' '}
+              <strong className="text-gray-900 font-semibold">Cursive Super Pixel</strong> can recover for your business.
             </p>
-          </div>
 
-          <div className="max-w-2xl mx-auto">
-            <div className="bg-white/[0.04] border border-white/10 rounded-2xl overflow-hidden shadow-xl shadow-black/30">
-              <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="text-white/50 text-sm font-medium">New Visitor Identified</span>
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-6 text-sm text-gray-600">
+              {[
+                'Identifies 70% of US Web Visitors',
+                '0.05% Email Bounce Rate',
+                '420M+ Verified Contacts',
+              ].map(item => (
+                <div key={item} className="flex items-center gap-2">
+                  <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0" />
+                  <span>{item}</span>
                 </div>
-                <span className="text-white/30 text-xs">{SAMPLE_LEAD.visitedAt}</span>
-              </div>
-
-              <div className="p-6 space-y-6">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-400/30 to-blue-400/30 border border-white/10 flex items-center justify-center text-white font-bold text-lg shrink-0">
-                    {SAMPLE_LEAD.name.split(' ').map(n => n[0]).join('')}
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 flex-wrap">
-                      <h3 className="text-white font-bold text-lg">{SAMPLE_LEAD.name}</h3>
-                      <span className="px-2 py-0.5 rounded-md text-xs font-bold bg-emerald-400/20 text-emerald-300 border border-emerald-400/30">
-                        INTENT: {SAMPLE_LEAD.intent} ({SAMPLE_LEAD.intentScore})
-                      </span>
-                    </div>
-                    <p className="text-white/60 text-sm">{SAMPLE_LEAD.title} at {SAMPLE_LEAD.company}</p>
-                    <p className="text-white/40 text-xs mt-0.5">{SAMPLE_LEAD.location} &middot; via {SAMPLE_LEAD.source}</p>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="bg-white/[0.03] border border-white/5 rounded-lg p-3">
-                    <p className="text-white/40 text-xs mb-1 uppercase tracking-wider">Email</p>
-                    <p className="text-emerald-300 text-sm font-medium">{SAMPLE_LEAD.email}</p>
-                    <p className="text-white/30 text-xs mt-0.5">&#10003; Verified &middot; 0% bounce risk</p>
-                  </div>
-                  <div className="bg-white/[0.03] border border-white/5 rounded-lg p-3">
-                    <p className="text-white/40 text-xs mb-1 uppercase tracking-wider">Phone</p>
-                    <p className="text-white text-sm font-medium">{SAMPLE_LEAD.phone}</p>
-                    <p className="text-white/30 text-xs mt-0.5">&#10003; Mobile &middot; Direct line</p>
-                  </div>
-                  <div className="bg-white/[0.03] border border-white/5 rounded-lg p-3">
-                    <p className="text-white/40 text-xs mb-1 uppercase tracking-wider">LinkedIn</p>
-                    <p className="text-blue-400 text-sm font-medium">{SAMPLE_LEAD.linkedin}</p>
-                  </div>
-                  <div className="bg-white/[0.03] border border-white/5 rounded-lg p-3">
-                    <p className="text-white/40 text-xs mb-1 uppercase tracking-wider">Pages Visited</p>
-                    <div className="flex flex-wrap gap-1">
-                      {SAMPLE_LEAD.pages.map(page => (
-                        <span key={page} className="px-2 py-0.5 rounded text-xs bg-white/5 text-white/60">{page}</span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-red-500/5 border border-red-500/20 rounded-lg p-3 text-center">
-                  <p className="text-red-400/80 text-sm">
-                    Without the Super Pixel, Michael would have just been <strong>1 more anonymous bounce</strong> in your analytics.
-                  </p>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
-        </div>
+        </Container>
       </section>
 
-      {/* ── How It Works ─────────────────────────────────────────────────── */}
-      <section className="py-20 px-6 border-t border-white/5">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-black text-white mb-4">
-              How the Super Pixel Works
-            </h2>
-            <p className="text-white/50 text-lg max-w-xl mx-auto">
-              From anonymous visit to verified, intent-scored lead record — in under 30 seconds.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {HOW_IT_WORKS.map((step) => (
-              <div key={step.step} className="bg-white/[0.03] border border-white/8 rounded-2xl p-6 hover:border-white/15 transition-colors">
-                <div className="text-emerald-400/40 font-black text-5xl leading-none mb-4">{step.step}</div>
-                <h3 className="text-white font-bold text-lg mb-2">{step.title}</h3>
-                <p className="text-white/50 leading-relaxed">{step.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Tech Differentiators ─────────────────────────────────────────── */}
-      <section className="py-20 px-6 border-t border-white/5">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-black text-white mb-4">
-              Why 70% vs. Everyone Else&apos;s 15%
-            </h2>
-            <p className="text-white/50 text-lg max-w-2xl mx-auto">
-              The gap isn&apos;t luck. It&apos;s the result of purpose-built technology that competitors simply haven&apos;t invested in.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {DIFFERENTIATORS.map((d) => (
-              <div key={d.title} className="bg-white/[0.03] border border-white/8 rounded-xl p-5 hover:border-emerald-400/20 hover:bg-white/[0.05] transition-all group">
-                <div className="text-2xl mb-3" dangerouslySetInnerHTML={{ __html: d.icon }} />
-                <h3 className="text-white font-bold mb-2 group-hover:text-emerald-300 transition-colors">{d.title}</h3>
-                <p className="text-white/50 text-sm leading-relaxed">{d.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Comparison Table ─────────────────────────────────────────────── */}
-      <section className="py-20 px-6 border-t border-white/5">
-        <div className="max-w-5xl mx-auto">
+      {/* ── REVENUE CALCULATOR ────────────────────────────── */}
+      <section className="py-24 bg-[#F7F9FB]">
+        <Container>
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-black text-white mb-4">
+            <span className="text-sm text-[#007AFF] mb-4 block font-medium tracking-wide uppercase">
+              Your Numbers
+            </span>
+            <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
+              Calculate Your Revenue Leak
+              <span className="block font-cursive text-5xl lg:text-6xl text-gray-500 mt-2">
+                In 60 Seconds
+              </span>
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Enter your website traffic, average deal size, and industry. We&apos;ll show you exactly what you&apos;re leaving on the table.
+            </p>
+          </div>
+
+          <div className="max-w-2xl mx-auto bg-white rounded-2xl p-10 border border-gray-200 shadow-lg">
+            <RevenueCalculator />
+          </div>
+        </Container>
+      </section>
+
+      {/* ── SAMPLE LEAD RECORD ────────────────────────────── */}
+      <section className="py-24 bg-white">
+        <Container>
+          <div className="text-center mb-14">
+            <span className="text-sm text-[#007AFF] mb-4 block font-medium tracking-wide uppercase">
+              See It In Action
+            </span>
+            <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
+              This Is What You Receive
+              <span className="block font-cursive text-5xl lg:text-6xl text-gray-500 mt-2">
+                For Every Visitor
+              </span>
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              A real enriched lead record delivered to your CRM, inbox, or platform within minutes of a visit.
+            </p>
+          </div>
+
+          <div className="max-w-lg mx-auto bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
+            <div className="bg-[#007AFF] px-6 py-4 flex items-center justify-between">
+              <span className="text-white font-semibold text-sm uppercase tracking-wide">Sample Lead Record</span>
+              <span className="flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-green-400 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow-sm">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
+                </span>
+                Live Visitor
+              </span>
+            </div>
+            <div className="p-6 space-y-4">
+              <div>
+                <p className="text-2xl font-semibold text-gray-900">{SAMPLE_LEAD.name}</p>
+                <p className="text-gray-500 text-sm mt-0.5">{SAMPLE_LEAD.title} · {SAMPLE_LEAD.company}</p>
+              </div>
+              <div className="border-t border-gray-100 pt-4 space-y-3">
+                {[
+                  { label: 'Email', value: SAMPLE_LEAD.email },
+                  { label: 'Mobile', value: SAMPLE_LEAD.phone },
+                  { label: 'Company', value: SAMPLE_LEAD.company },
+                  { label: 'Page Visited', value: SAMPLE_LEAD.pageVisited },
+                  { label: 'Visit Time', value: SAMPLE_LEAD.visitTime },
+                  { label: 'Intent Score', value: SAMPLE_LEAD.intentScore },
+                ].map(row => (
+                  <div key={row.label} className="flex items-center gap-4">
+                    <span className="text-sm text-gray-500 w-28 flex-shrink-0">{row.label}</span>
+                    <span className="text-sm text-gray-900 font-medium flex-1">{row.value}</span>
+                    <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="px-6 pb-5">
+              <p className="text-xs text-gray-400 text-center">* Sample record — actual fields vary by match quality</p>
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      {/* ── HOW IT WORKS ──────────────────────────────────── */}
+      <section className="py-24 bg-[#F7F9FB]">
+        <Container>
+          <div className="text-center mb-16">
+            <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
+              We Handle Everything
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Book a call, we set everything up. First leads typically arrive within 24–48 hours.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-12 max-w-5xl mx-auto">
+            {HOW_IT_WORKS.map((step, i) => (
+              <div key={i} className="flex flex-col items-center text-center">
+                <div className="w-20 h-20 rounded-2xl bg-white border border-gray-200 flex items-center justify-center mb-6 shadow-sm">
+                  <span className="text-3xl font-light text-[#007AFF]">{step.step}</span>
+                </div>
+                <div className="text-sm text-[#007AFF] font-medium mb-2">Step {step.step}</div>
+                <h3 className="text-2xl text-gray-900 mb-3 font-medium">{step.title}</h3>
+                <p className="text-gray-600 leading-relaxed">{step.desc}</p>
+              </div>
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      {/* ── TECH DIFFERENTIATORS ──────────────────────────── */}
+      <section className="py-24 bg-white">
+        <Container>
+          <div className="text-center mb-16">
+            <span className="text-sm text-[#007AFF] mb-4 block font-medium tracking-wide uppercase">
+              The Technology
+            </span>
+            <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
+              Cheap Data Costs More.
+              <span className="block font-cursive text-5xl lg:text-6xl text-gray-500 mt-2">
+                Ours Comes From the Source.
+              </span>
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Diluted data that&apos;s passed through multiple hands bounces, wastes budget, and erodes your sender reputation.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+            {DIFFERENTIATORS.map((card, i) => (
+              <div key={i} className="bg-white rounded-xl p-6 border border-gray-200 hover:border-[#007AFF] hover:shadow-lg transition-all flex gap-4">
+                <div className="flex-shrink-0 w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
+                  <card.icon className="w-6 h-6 text-[#007AFF]" />
+                </div>
+                <div>
+                  <h3 className="font-medium text-gray-900 mb-1">{card.title}</h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">{card.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      {/* ── STATS ─────────────────────────────────────────── */}
+      <section className="py-24 bg-[#F7F9FB]">
+        <Container>
+          <div className="max-w-5xl mx-auto bg-white rounded-2xl p-8 shadow-xl border border-gray-200">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+              {[
+                { number: '98%', label: 'US Households Covered' },
+                { number: '60B+', label: 'Daily Intent Signals' },
+                { number: '0.05%', label: 'Email Bounce Rate' },
+                { number: '70%', label: 'Average ID Rate' },
+                { number: '30 days', label: 'NCOA Refresh Cycle' },
+                { number: '10–15M', label: 'Daily Email Verifications' },
+                { number: '50,000', label: 'Records Per Second' },
+                { number: '7B', label: 'Historic Hashed Emails' },
+              ].map(stat => (
+                <div key={stat.label} className="bg-[#F7F9FB] rounded-xl p-5 text-center">
+                  <div className="text-3xl font-light text-[#007AFF] mb-1">{stat.number}</div>
+                  <div className="text-sm text-gray-600">{stat.label}</div>
+                </div>
+              ))}
+            </div>
+            <div className="border-l-4 border-[#007AFF] bg-blue-50 rounded-r-xl p-5">
+              <p className="text-gray-800 text-sm">
+                <span className="font-semibold">What competitors don&apos;t tell you:</span> A claimed 60% match rate typically yields only ~15% usable contacts after data decay. Our geo-framed, NCOA-verified methodology means every match we deliver is a real, contactable person.
+              </p>
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      {/* ── COMPARISON TABLE ──────────────────────────────── */}
+      <section className="py-24 bg-white">
+        <Container>
+          <div className="text-center mb-12">
+            <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
               The Status Quo Is Costing You Every Day
             </h2>
-            <p className="text-white/50 text-lg max-w-xl mx-auto">
+            <p className="text-lg text-gray-600 max-w-xl mx-auto">
               See what you&apos;re working with vs. what&apos;s possible.
             </p>
           </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-white/10">
-                  <th className="text-left py-4 px-4 text-white/40 font-medium text-sm w-1/3">Capability</th>
-                  <th className="text-center py-4 px-4 text-white/40 font-medium text-sm">No Pixel</th>
-                  <th className="text-center py-4 px-4 text-white/40 font-medium text-sm">Standard Pixel</th>
-                  <th className="text-center py-4 px-4 text-emerald-300 font-bold text-sm">Cursive Super Pixel</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/5">
-                {[
-                  ['Visitor ID Rate', '~2% (forms only)', '~15%', '70%'],
-                  ['Email Bounce Rate', 'N/A', '~20%', '0.05%'],
-                  ['Intent Scoring', 'None', 'None', 'High / Med / Low'],
-                  ['Data Freshness', 'N/A', 'Quarterly', '30-Day NCOA'],
-                  ['Phone Numbers', 'No', 'Rarely', 'Yes'],
-                  ['LinkedIn Profiles', 'No', 'Sometimes', 'Yes'],
-                  ['Real-Time Delivery', 'N/A', 'Batch (24h)', 'Under 30 seconds'],
-                  ['CRM / Webhook Integration', 'N/A', 'Limited', 'Full'],
-                  ['Compliance (CAN-SPAM/CCPA)', 'N/A', 'Varies', 'Built-in'],
-                ].map(([cap, none, std, cursive]) => (
-                  <tr key={cap}>
-                    <td className="py-3 px-4 text-white/60 text-sm">{cap}</td>
-                    <td className="py-3 px-4 text-center text-white/30 text-sm">{none}</td>
-                    <td className="py-3 px-4 text-center text-white/30 text-sm">{std}</td>
-                    <td className="py-3 px-4 text-center text-emerald-400 font-semibold text-sm">{cursive}</td>
+          <div className="max-w-4xl mx-auto bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="bg-[#F7F9FB] border-b border-gray-200">
+                    <th className="text-left py-4 px-4 text-gray-600 font-medium w-1/3">Capability</th>
+                    <th className="text-center py-4 px-4 text-gray-500 font-medium">No Pixel</th>
+                    <th className="text-center py-4 px-4 text-gray-500 font-medium">Standard Pixel</th>
+                    <th className="text-center py-4 px-4 text-[#007AFF] font-bold">Cursive Super Pixel</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {[
+                    ['Visitor ID Rate', '~2% (forms only)', '~15%', '70%'],
+                    ['Email Bounce Rate', 'N/A', '~20%', '0.05%'],
+                    ['Intent Scoring', 'None', 'None', 'High / Med / Low'],
+                    ['Data Freshness', 'N/A', 'Quarterly', '30-Day NCOA'],
+                    ['Phone Numbers', 'No', 'Rarely', 'Yes'],
+                    ['LinkedIn Profiles', 'No', 'Sometimes', 'Yes'],
+                    ['Real-Time Delivery', 'N/A', 'Batch (24h)', 'Under 30 seconds'],
+                    ['CRM / Webhook Integration', 'N/A', 'Limited', 'Full'],
+                    ['Compliance (CAN-SPAM/CCPA)', 'N/A', 'Varies', 'Built-in'],
+                  ].map(([cap, none, std, cursive]) => (
+                    <tr key={cap}>
+                      <td className="py-3 px-4 text-gray-600">{cap}</td>
+                      <td className="py-3 px-4 text-center text-gray-400">{none}</td>
+                      <td className="py-3 px-4 text-center text-gray-400">{std}</td>
+                      <td className="py-3 px-4 text-center text-[#007AFF] font-semibold">{cursive}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
+        </Container>
       </section>
 
-      {/* ── Testimonials ─────────────────────────────────────────────────── */}
-      <section className="py-20 px-6 border-t border-white/5">
-        <div className="max-w-5xl mx-auto">
+      {/* ── TESTIMONIALS ──────────────────────────────────── */}
+      <section className="py-24 bg-[#F7F9FB]">
+        <Container>
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-black text-white mb-4">
+            <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
               From Teams Who Made the Switch
             </h2>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {TESTIMONIALS.map((t) => (
-              <div key={t.author} className="bg-white/[0.03] border border-white/8 rounded-2xl p-6">
-                <div className="text-emerald-400 text-2xl mb-4">&ldquo;</div>
-                <p className="text-white/70 leading-relaxed mb-6 text-sm">{t.quote}</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            {TESTIMONIALS.map((t, i) => (
+              <div key={i} className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+                <div className="text-[#007AFF] text-3xl mb-4">&ldquo;</div>
+                <p className="text-gray-700 leading-relaxed mb-6 text-sm">{t.quote}</p>
                 <div>
-                  <p className="text-white font-semibold text-sm">{t.author}</p>
-                  <p className="text-white/40 text-xs">{t.title}, {t.company}</p>
+                  <p className="text-gray-900 font-semibold text-sm">{t.author}</p>
+                  <p className="text-gray-500 text-xs">{t.title}, {t.company}</p>
                 </div>
               </div>
             ))}
           </div>
-        </div>
+        </Container>
       </section>
 
-      {/* ── Pricing ───────────────────────────────────────────────────────── */}
-      <section className="py-20 px-6 border-t border-white/5" id="pricing">
-        <div className="max-w-4xl mx-auto">
+      {/* ── PRICING ───────────────────────────────────────── */}
+      <section className="py-24 bg-white">
+        <Container>
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-black text-white mb-4">
+            <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
               Simple, Transparent Pricing
             </h2>
-            <p className="text-white/50 text-lg">
+            <p className="text-lg text-gray-600">
               Start free. Scale as you grow. No setup fees, no contracts.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Trial */}
-            <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-6">
-              <div className="text-white/50 text-sm font-semibold uppercase tracking-wider mb-3">Free Trial</div>
-              <div className="text-4xl font-black text-white mb-1">$0</div>
-              <div className="text-white/40 text-sm mb-6">14 days, no credit card</div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+              <div className="text-gray-500 text-sm font-semibold uppercase tracking-wider mb-3">Free Trial</div>
+              <div className="text-4xl font-light text-gray-900 mb-1">$0</div>
+              <div className="text-gray-500 text-sm mb-6">14 days, no credit card</div>
               <ul className="space-y-3 mb-8">
-                {[
-                  'Up to 500 visitor identifications',
-                  'Full contact data on every match',
-                  'Intent scoring',
-                  'CSV export',
-                  'Email support',
-                ].map(f => (
-                  <li key={f} className="flex items-start gap-2 text-white/60 text-sm">
-                    <span className="text-emerald-400 shrink-0 mt-0.5">&#10003;</span>
+                {['Up to 500 visitor identifications', 'Full contact data on every match', 'Intent scoring', 'CSV export', 'Email support'].map(f => (
+                  <li key={f} className="flex items-start gap-2 text-gray-600 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
                     {f}
                   </li>
                 ))}
               </ul>
-              <a
-                href="https://leads.meetcursive.com/signup"
-                className="block text-center py-3 px-6 bg-white/10 hover:bg-white/15 text-white font-semibold rounded-lg border border-white/15 transition-all"
-              >
+              <Button href="https://leads.meetcursive.com/signup" variant="outline" className="w-full text-center">
                 Start Free Trial
-              </a>
+              </Button>
             </div>
 
-            {/* Pro */}
-            <div className="bg-emerald-400/10 border-2 border-emerald-400/40 rounded-2xl p-6 relative">
+            <div className="bg-white border-2 border-[#007AFF] rounded-2xl p-6 shadow-lg relative">
               <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                <span className="px-3 py-1 bg-emerald-400 text-black text-xs font-bold rounded-full">
-                  MOST POPULAR
-                </span>
+                <span className="px-3 py-1 bg-[#007AFF] text-white text-xs font-bold rounded-full">MOST POPULAR</span>
               </div>
-              <div className="text-emerald-300 text-sm font-semibold uppercase tracking-wider mb-3">Pro</div>
-              <div className="text-4xl font-black text-white mb-1">$299<span className="text-lg font-normal text-white/50">/mo</span></div>
-              <div className="text-white/40 text-sm mb-6">Up to 5,000 identifications/mo</div>
+              <div className="text-[#007AFF] text-sm font-semibold uppercase tracking-wider mb-3">Pro</div>
+              <div className="text-4xl font-light text-gray-900 mb-1">$299<span className="text-lg font-normal text-gray-500">/mo</span></div>
+              <div className="text-gray-500 text-sm mb-6">Up to 5,000 identifications/mo</div>
               <ul className="space-y-3 mb-8">
-                {[
-                  '5,000 visitor identifications/month',
-                  'Full contact data + intent scores',
-                  'CRM integrations (HubSpot, Salesforce)',
-                  'Slack & webhook alerts',
-                  'Email sequence triggers',
-                  'Priority support',
-                ].map(f => (
-                  <li key={f} className="flex items-start gap-2 text-white/70 text-sm">
-                    <span className="text-emerald-400 shrink-0 mt-0.5">&#10003;</span>
+                {['5,000 visitor identifications/month', 'Full contact data + intent scores', 'CRM integrations (HubSpot, Salesforce)', 'Slack & webhook alerts', 'Email sequence triggers', 'Priority support'].map(f => (
+                  <li key={f} className="flex items-start gap-2 text-gray-700 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
                     {f}
                   </li>
                 ))}
               </ul>
-              <a
-                href={BOOK_ANCHOR}
-                className="block w-full text-center py-3 px-6 bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-lg transition-all"
-              >
+              <Button href={BOOK_ANCHOR} className="w-full text-center bg-[#007AFF] text-white hover:bg-[#0066DD]">
                 Get Started
-              </a>
+              </Button>
             </div>
 
-            {/* Enterprise */}
-            <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-6">
-              <div className="text-white/50 text-sm font-semibold uppercase tracking-wider mb-3">Enterprise</div>
-              <div className="text-4xl font-black text-white mb-1">Custom</div>
-              <div className="text-white/40 text-sm mb-6">Unlimited volume</div>
+            <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+              <div className="text-gray-500 text-sm font-semibold uppercase tracking-wider mb-3">Enterprise</div>
+              <div className="text-4xl font-light text-gray-900 mb-1">Custom</div>
+              <div className="text-gray-500 text-sm mb-6">Unlimited volume</div>
               <ul className="space-y-3 mb-8">
-                {[
-                  'Unlimited identifications',
-                  'Dedicated identity graph segment',
-                  'Custom data enrichment fields',
-                  'SLA guarantee',
-                  'Dedicated success manager',
-                  'White-label options',
-                ].map(f => (
-                  <li key={f} className="flex items-start gap-2 text-white/60 text-sm">
-                    <span className="text-emerald-400 shrink-0 mt-0.5">&#10003;</span>
+                {['Unlimited identifications', 'Dedicated identity graph segment', 'Custom data enrichment fields', 'SLA guarantee', 'Dedicated success manager', 'White-label options'].map(f => (
+                  <li key={f} className="flex items-start gap-2 text-gray-600 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
                     {f}
                   </li>
                 ))}
               </ul>
-              <a
-                href={BOOK_ANCHOR}
-                className="block w-full text-center py-3 px-6 bg-white/10 hover:bg-white/15 text-white font-semibold rounded-lg border border-white/15 transition-all"
-              >
+              <Button href={BOOK_ANCHOR} variant="outline" className="w-full text-center">
                 Talk to Sales
-              </a>
+              </Button>
             </div>
           </div>
-        </div>
+        </Container>
       </section>
 
-      {/* ── FAQ ───────────────────────────────────────────────────────────── */}
-      <section className="py-20 px-6 border-t border-white/5">
-        <div className="max-w-3xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-black text-white mb-4">
-              Frequently Asked Questions
-            </h2>
+      {/* ── FAQ ───────────────────────────────────────────── */}
+      <section className="py-24 bg-[#F7F9FB]">
+        <Container>
+          <div className="max-w-3xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
+                Frequently Asked Questions
+              </h2>
+            </div>
+            <FaqAccordion />
           </div>
-
-          <div className="space-y-4">
-            {FAQS.map((faq) => (
-              <div key={faq.q} className="bg-white/[0.03] border border-white/8 rounded-xl p-6">
-                <h3 className="text-white font-semibold mb-3 leading-snug">{faq.q}</h3>
-                <p className="text-white/55 leading-relaxed text-sm">{faq.a}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+        </Container>
       </section>
 
-      {/* ── Book a Demo (Cal.com Inline) ──────────────────────────────────── */}
-      <section id="book-demo" className="py-24 px-6 border-t border-white/5">
-        <div className="max-w-4xl mx-auto">
+      {/* ── BOOK A DEMO ───────────────────────────────────── */}
+      <section id="book-demo" className="py-24 bg-white">
+        <Container>
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-black text-white mb-4">
-              Book a Free Demo With Darren
+            <span className="text-sm text-[#007AFF] mb-4 block font-medium tracking-wide uppercase">
+              Get Started
+            </span>
+            <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
+              Ready to Stop Losing
+              <span className="block font-cursive text-5xl lg:text-6xl text-gray-500 mt-2">
+                Your Website Traffic?
+              </span>
             </h2>
-            <p className="text-white/50 text-lg max-w-xl mx-auto">
-              See the Super Pixel running live on your website. Pick a time that works for you — no pressure, no sales pitch.
+            <p className="text-lg text-gray-600 max-w-xl mx-auto mb-6">
+              Book a free 30-minute demo with Darren. See the Super Pixel running live on your website — no pressure, no commitment.
             </p>
-            <div className="flex flex-wrap items-center justify-center gap-6 mt-6 text-white/40 text-sm">
-              <span className="flex items-center gap-1.5">
-                <span className="text-emerald-400">&#10003;</span>
-                30 minutes
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="text-emerald-400">&#10003;</span>
-                Live demo on your site
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="text-emerald-400">&#10003;</span>
-                No credit card required
-              </span>
+            <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-gray-600 mb-10">
+              {['30 minutes', 'Live demo on your site', 'No credit card required'].map(item => (
+                <div key={item} className="flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-green-600 flex-shrink-0" />
+                  <span>{item}</span>
+                </div>
+              ))}
             </div>
           </div>
 
-          {/* Cal.com inline embed */}
-          <div className="bg-white rounded-2xl overflow-hidden shadow-2xl shadow-black/40">
+          <div className="max-w-3xl mx-auto bg-white rounded-2xl border border-gray-200 shadow-xl overflow-hidden">
             <CalInlineEmbed />
           </div>
-        </div>
+        </Container>
       </section>
 
-      {/* ── Footer ────────────────────────────────────────────────────────── */}
-      <footer className="border-t border-white/5 py-10 px-6">
-        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-white/30 text-sm">
-          <span>&#169; 2026 Cursive. All rights reserved.</span>
-          <div className="flex gap-6">
-            <a href="/privacy" className="hover:text-white/60 transition-colors">Privacy</a>
-            <a href="/terms" className="hover:text-white/60 transition-colors">Terms</a>
-            <a href="mailto:hello@meetcursive.com" className="hover:text-white/60 transition-colors">Contact</a>
-          </div>
-        </div>
-      </footer>
-    </main>
+      {/* ── DASHBOARD CTA ─────────────────────────────────── */}
+      <DashboardCTA
+        headline="Install the Super Pixel."
+        subheadline="Start getting leads."
+        description="Book a call and we'll set up the Super Pixel on your website within 48 hours. Start seeing verified, enriched, intent-scored visitors flowing into your CRM automatically."
+        ctaText="Book Your Free Demo Call"
+        ctaUrl={CAL_LINK}
+      />
+    </>
   )
 }
