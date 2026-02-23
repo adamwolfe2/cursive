@@ -15,7 +15,8 @@ export async function GET() {
     } = await supabase.auth.getUser()
 
     if (error) {
-      return NextResponse.json({ user: null, error: error.message }, { status: 401 })
+      safeError('[API /auth/user] Auth error:', error.message)
+      return NextResponse.json({ user: null, error: 'Not authenticated' }, { status: 401 })
     }
 
     if (!user) {
