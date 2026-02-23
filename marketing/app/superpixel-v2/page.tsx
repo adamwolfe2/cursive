@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import { RevenueCalculator } from '@/components/revenue-calculator/RevenueCalculator'
-import { BookDemoButton } from '@/components/ui/cal-inline-booking'
 
 export const metadata: Metadata = {
   title: "Cursive Super Pixel — See How Much Revenue You're Losing | Free Calculator",
@@ -8,6 +7,8 @@ export const metadata: Metadata = {
     '97% of your website visitors leave without converting. The Cursive Super Pixel identifies 70% of them with verified contact data, intent scoring, and a 0.05% bounce rate. Calculate your revenue leak now.',
   robots: { index: true, follow: true },
 }
+
+const CAL_LINK = 'https://cal.com/cursive/30min'
 
 // ─── Sample Lead Record Data ─────────────────────────────────────────────────
 
@@ -58,8 +59,8 @@ const FAQS = [
     a: 'No. The pixel is a single line of HTML you paste into your website head tag — identical to installing Google Analytics or the Meta Pixel. For Shopify, WordPress, Webflow, and most CMSs, we have one-click integrations. Average install time is under 5 minutes.',
   },
   {
-    q: 'What happens to the 30% of visitors you can\'t identify?',
-    a: 'No technology identifies 100% — anonymous browsers, VPNs, and privacy tools will always create a floor. The 70% we do identify are real, verified, reachable people. Compare this to your current form conversion rate of 1–3%: even a 70% partial identification rate is 23x more pipeline than the status quo.',
+    q: "What happens to the 30% of visitors you can't identify?",
+    a: "No technology identifies 100% — anonymous browsers, VPNs, and privacy tools will always create a floor. The 70% we do identify are real, verified, reachable people. Compare this to your current form conversion rate of 1–3%: even a 70% partial identification rate is 23x more pipeline than the status quo.",
   },
 ]
 
@@ -88,7 +89,7 @@ const HOW_IT_WORKS = [
     step: '04',
     title: 'Verified Contact Data Delivered',
     description:
-      'You receive the visitor\'s full name, verified email (0.05% bounce rate), phone number, LinkedIn profile, company, job title, and location — ready for outreach or CRM sync.',
+      "You receive the visitor's full name, verified email (0.05% bounce rate), phone number, LinkedIn profile, company, job title, and location — ready for outreach or CRM sync.",
   },
 ]
 
@@ -98,38 +99,32 @@ const DIFFERENTIATORS = [
   {
     icon: '&#x26A1;',
     title: '420M+ Verified US Records',
-    description:
-      'The largest consumer identity graph purpose-built for lead identification. Updated continuously, not quarterly.',
+    description: 'The largest consumer identity graph purpose-built for lead identification. Updated continuously, not quarterly.',
   },
   {
     icon: '&#x1F3AF;',
     title: '60B+ Daily Intent Signals',
-    description:
-      'Real-time behavioral data from across the open web, mapped to individual identities for precision scoring.',
+    description: 'Real-time behavioral data from across the open web, mapped to individual identities for precision scoring.',
   },
   {
     icon: '&#x1F504;',
     title: '30-Day NCOA Refresh',
-    description:
-      'National Change of Address verification runs every 30 days, not quarterly. Stale data is flagged and removed before you touch it.',
+    description: 'National Change of Address verification runs every 30 days, not quarterly. Stale data is flagged and removed before you touch it.',
   },
   {
     icon: '&#x1F4CA;',
     title: '98% US Household Coverage',
-    description:
-      'Our identity graph covers 98% of US households, giving you reach into virtually every market segment and geography.',
+    description: 'Our identity graph covers 98% of US households, giving you reach into virtually every market segment and geography.',
   },
   {
     icon: '&#x1F512;',
     title: 'Multi-Signal Matching',
-    description:
-      'We match on device fingerprint + email hash + IP intelligence + behavioral signals simultaneously — not a single vector like competitors.',
+    description: 'We match on device fingerprint + email hash + IP intelligence + behavioral signals simultaneously — not a single vector like competitors.',
   },
   {
     icon: '&#x2705;',
     title: 'Real-Time Email Validation',
-    description:
-      'Every address undergoes live mailbox verification before delivery. Role addresses, catch-alls, and spam traps are removed automatically.',
+    description: 'Every address undergoes live mailbox verification before delivery. Role addresses, catch-alls, and spam traps are removed automatically.',
   },
 ]
 
@@ -152,7 +147,7 @@ const TESTIMONIALS = [
   },
   {
     quote:
-      "Our CAC dropped 40% in 90 days. Instead of buying ads to reach people who might be interested, we're now calling the people who already visited our pricing page.",
+      'Our CAC dropped 40% in 90 days. Instead of buying ads to reach people who might be interested, we\'re now calling the people who already visited our pricing page.',
     author: 'Jennifer L.',
     title: 'CMO',
     company: 'Financial Services Firm',
@@ -170,10 +165,14 @@ export default function SuperPixelV2Page() {
           <a href="https://meetcursive.com" className="text-white font-bold text-lg tracking-tight">
             Cursive
           </a>
-          <BookDemoButton
-            label="Book a Demo"
+          <a
+            href={CAL_LINK}
+            target="_blank"
+            rel="noopener noreferrer"
             className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-sm rounded-lg transition-all"
-          />
+          >
+            Book a Demo
+          </a>
         </div>
       </nav>
 
@@ -237,9 +236,7 @@ export default function SuperPixelV2Page() {
           </div>
 
           <div className="max-w-2xl mx-auto">
-            {/* Lead card */}
             <div className="bg-white/[0.04] border border-white/10 rounded-2xl overflow-hidden shadow-xl shadow-black/30">
-              {/* Card header */}
               <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
@@ -248,9 +245,7 @@ export default function SuperPixelV2Page() {
                 <span className="text-white/30 text-xs">{SAMPLE_LEAD.visitedAt}</span>
               </div>
 
-              {/* Card body */}
               <div className="p-6 space-y-6">
-                {/* Identity */}
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-400/30 to-blue-400/30 border border-white/10 flex items-center justify-center text-white font-bold text-lg shrink-0">
                     {SAMPLE_LEAD.name.split(' ').map(n => n[0]).join('')}
@@ -267,7 +262,6 @@ export default function SuperPixelV2Page() {
                   </div>
                 </div>
 
-                {/* Contact details */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="bg-white/[0.03] border border-white/5 rounded-lg p-3">
                     <p className="text-white/40 text-xs mb-1 uppercase tracking-wider">Email</p>
@@ -293,7 +287,6 @@ export default function SuperPixelV2Page() {
                   </div>
                 </div>
 
-                {/* Without pixel note */}
                 <div className="bg-red-500/5 border border-red-500/20 rounded-lg p-3 text-center">
                   <p className="text-red-400/80 text-sm">
                     Without the Super Pixel, Michael would have just been <strong>1 more anonymous bounce</strong> in your analytics.
@@ -353,7 +346,7 @@ export default function SuperPixelV2Page() {
         </div>
       </section>
 
-      {/* ── Comparison Banner ─────────────────────────────────────────────── */}
+      {/* ── Comparison Table ─────────────────────────────────────────────── */}
       <section className="py-20 px-6 border-t border-white/5">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
@@ -479,20 +472,24 @@ export default function SuperPixelV2Page() {
                   '5,000 visitor identifications/month',
                   'Full contact data + intent scores',
                   'CRM integrations (HubSpot, Salesforce)',
-                  'Slack &amp; webhook alerts',
+                  'Slack & webhook alerts',
                   'Email sequence triggers',
                   'Priority support',
                 ].map(f => (
                   <li key={f} className="flex items-start gap-2 text-white/70 text-sm">
                     <span className="text-emerald-400 shrink-0 mt-0.5">&#10003;</span>
-                    <span dangerouslySetInnerHTML={{ __html: f }} />
+                    {f}
                   </li>
                 ))}
               </ul>
-              <BookDemoButton
-                label="Get Started"
+              <a
+                href={CAL_LINK}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="block w-full text-center py-3 px-6 bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-lg transition-all"
-              />
+              >
+                Get Started
+              </a>
             </div>
 
             {/* Enterprise */}
@@ -515,10 +512,14 @@ export default function SuperPixelV2Page() {
                   </li>
                 ))}
               </ul>
-              <BookDemoButton
-                label="Talk to Sales"
+              <a
+                href={CAL_LINK}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="block w-full text-center py-3 px-6 bg-white/10 hover:bg-white/15 text-white font-semibold rounded-lg border border-white/15 transition-all"
-              />
+              >
+                Talk to Sales
+              </a>
             </div>
           </div>
         </div>
@@ -555,10 +556,14 @@ export default function SuperPixelV2Page() {
             — no credit card, no commitment, just results.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <BookDemoButton
-              label="Book a Free Demo"
+            <a
+              href={CAL_LINK}
+              target="_blank"
+              rel="noopener noreferrer"
               className="px-10 py-4 bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-lg rounded-lg transition-all shadow-lg shadow-emerald-500/25 hover:shadow-emerald-400/40"
-            />
+            >
+              Book a Free Demo
+            </a>
             <a
               href="https://leads.meetcursive.com/signup"
               className="px-10 py-4 bg-white/10 hover:bg-white/15 text-white font-semibold text-lg rounded-lg border border-white/15 transition-all"
@@ -577,8 +582,8 @@ export default function SuperPixelV2Page() {
         <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-white/30 text-sm">
           <span>&#169; 2026 Cursive. All rights reserved.</span>
           <div className="flex gap-6">
-            <a href="https://meetcursive.com/privacy" className="hover:text-white/60 transition-colors">Privacy</a>
-            <a href="https://meetcursive.com/terms" className="hover:text-white/60 transition-colors">Terms</a>
+            <a href="/privacy" className="hover:text-white/60 transition-colors">Privacy</a>
+            <a href="/terms" className="hover:text-white/60 transition-colors">Terms</a>
             <a href="mailto:hello@meetcursive.com" className="hover:text-white/60 transition-colors">Contact</a>
           </div>
         </div>
