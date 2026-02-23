@@ -56,6 +56,7 @@ export const leadDelivery = inngest.createFunction(
           .from('users')
           .select('email, full_name')
           .eq('workspace_id', workspace_id)
+          .limit(100)
 
         return {
           lead: leadData,

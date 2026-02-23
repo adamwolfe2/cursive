@@ -122,6 +122,7 @@ export const audienceLabSegmentPuller = inngest.createFunction(
         .from('user_targeting')
         .select('target_industries, target_states, workspace_id')
         .eq('is_active', true)
+        .limit(10000)
 
       if (error || !targetingRows?.length) {
         safeLog(`${LOG_PREFIX} No active targeting found`)
@@ -261,6 +262,7 @@ export const audienceLabSegmentPuller = inngest.createFunction(
           .eq('source', 'audiencelab_pull')
           .gte('created_at', fifteenMinAgo)
           .is('assigned_user_id', null)
+          .limit(500)
 
         if (!newLeads?.length) return
 
@@ -272,6 +274,7 @@ export const audienceLabSegmentPuller = inngest.createFunction(
             .select('user_id, target_industries, target_states, target_cities, target_zips, daily_lead_cap, daily_lead_count, weekly_lead_cap, weekly_lead_count, monthly_lead_cap, monthly_lead_count')
             .eq('workspace_id', lead.workspace_id)
             .eq('is_active', true)
+            .limit(200)
 
           if (!targetingUsers?.length) continue
 

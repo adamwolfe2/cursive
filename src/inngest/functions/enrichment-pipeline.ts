@@ -206,6 +206,7 @@ export const processEnrichmentJob = inngest.createFunction(
         .eq('lead_id', lead_id)
         .eq('workspace_id', workspace_id)
         .in('status', ['pending', 'in_progress'])
+        .limit(50)
 
       if (!pendingJobs || pendingJobs.length === 0) {
         // All enrichment complete, trigger delivery

@@ -48,6 +48,7 @@ export const distributeDailyLeads = inngest.createFunction(
         .select('id, email, full_name, workspace_id, plan, daily_lead_limit, industry_segment, location_segment, ghl_sub_account_id')
         .eq('is_active', true)
         .not('workspace_id', 'is', null)
+        .limit(10000)
 
       if (error) {
         throw new Error(`Failed to fetch users: ${error.message}`)

@@ -116,6 +116,7 @@ export const dailyPartnerScoreCalculation = inngest.createFunction(
         .from('partners')
         .select('id')
         .eq('is_active', true)
+        .limit(1000)
 
       if (error || !data) {
         throw new Error(`Failed to fetch partners: ${error?.message}`)
@@ -244,6 +245,7 @@ export const monthlyVolumeBonusUpdate = inngest.createFunction(
         .from('partners')
         .select('id')
         .eq('is_active', true)
+        .limit(1000)
 
       if (error || !data) {
         throw new Error(`Failed to fetch partners: ${error?.message}`)
@@ -305,6 +307,7 @@ export const processReferralMilestones = inngest.createFunction(
         .select('id')
         .eq('referral_type', 'partner_to_partner')
         .neq('status', 'rewarded')
+        .limit(5000)
 
       if (error || !data) {
         return []
@@ -356,6 +359,7 @@ export const updatePartnerDataCompleteness = inngest.createFunction(
         .from('partners')
         .select('id')
         .eq('is_active', true)
+        .limit(1000)
 
       if (error || !data) {
         return []
