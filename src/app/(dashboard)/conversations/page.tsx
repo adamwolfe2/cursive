@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useCallback, Suspense } from 'react'
+import Link from 'next/link'
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
 import { formatDistanceToNow } from 'date-fns'
@@ -184,8 +185,9 @@ function ConversationRow({ conversation }: { conversation: Conversation }) {
   const hasUnread = conversation.unread_count > 0
 
   return (
-    <div
-      className={`flex items-start gap-4 px-5 py-4 transition-colors hover:bg-muted/40 ${
+    <Link
+      href={`/conversations/${conversation.id}`}
+      className={`flex items-start gap-4 px-5 py-4 transition-colors hover:bg-muted/40 cursor-pointer block ${
         hasUnread ? 'bg-blue-50/30' : ''
       }`}
     >
@@ -252,7 +254,7 @@ function ConversationRow({ conversation }: { conversation: Conversation }) {
           </span>
         </div>
       </div>
-    </div>
+    </Link>
   )
 }
 
