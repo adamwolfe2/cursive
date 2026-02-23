@@ -261,7 +261,11 @@ async function handleReplyReceived(
   }
 
   // Update campaign_lead status
-  const campaignLeadId = (emailSend.campaign_lead as { id: string }[])?.[0]?.id
+  // Supabase may return the join as a single object or array depending on FK cardinality
+  const clRaw = emailSend.campaign_lead as unknown
+  const campaignLeadId = Array.isArray(clRaw)
+    ? (clRaw[0] as { id: string } | undefined)?.id
+    : (clRaw as { id: string } | null)?.id
   if (campaignLeadId) {
     await supabase
       .from('campaign_leads')

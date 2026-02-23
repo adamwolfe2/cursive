@@ -70,8 +70,12 @@ export async function POST(req: NextRequest) {
 
     // Verify all creatives belong to user's workspace
     for (const creative of creatives) {
-      const brandWorkspace = creative.brand_workspaces as unknown as { workspace_id: string }
-      if (brandWorkspace.workspace_id !== user.workspace_id) {
+      const bwRaw = creative.brand_workspaces as unknown
+      // Supabase may return the join as a single object or array depending on FK cardinality
+      const brandWorkspace = Array.isArray(bwRaw)
+        ? (bwRaw[0] as { workspace_id: string } | undefined)
+        : (bwRaw as { workspace_id: string } | null)
+      if (!brandWorkspace?.workspace_id || brandWorkspace.workspace_id !== user.workspace_id) {
         return NextResponse.json(
           { error: 'Creative access denied' },
           { status: 403 }
@@ -153,10 +157,15 @@ export async function POST(req: NextRequest) {
     }
 
     // 9. Store Stripe session ID on campaign
-    await supabase
+    const { error: sessionUpdateError } = await supabase
       .from('ad_campaigns')
       .update({ stripe_session_id: session.id })
       .eq('id', campaign.id)
+
+    if (sessionUpdateError) {
+      // Non-fatal — Stripe webhook metadata has the campaign_id as fallback
+      safeError('[Campaign Checkout] Failed to store Stripe session ID:', sessionUpdateError)
+    }
 
     return NextResponse.json({
       sessionUrl: session.url,
