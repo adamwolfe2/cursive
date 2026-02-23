@@ -55,6 +55,7 @@ export class LeadActivityRepository {
     query = query
       .order('is_pinned', { ascending: false })
       .order('created_at', { ascending: false })
+      .limit(500)
 
     const { data, error } = await query
 
@@ -173,6 +174,7 @@ export class LeadActivityRepository {
       .eq('lead_id', leadId)
       .eq('workspace_id', workspaceId)
       .order('created_at', { ascending: false })
+      .limit(200)
 
     if (error) {
       safeError('[LeadActivityRepository] Get status history error:', error)
