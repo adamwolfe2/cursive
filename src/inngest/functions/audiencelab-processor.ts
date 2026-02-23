@@ -368,12 +368,13 @@ export const processAudienceLabEvent = inngest.createFunction(
 
           if (!lead) return
 
-          // Get all active user targeting for this workspace
+          // Get all active user targeting for this workspace (cap at 200 users)
           const { data: targetingUsers } = await supabase
             .from('user_targeting')
             .select('user_id, target_industries, target_states, target_cities, target_zips, daily_lead_cap, daily_lead_count, weekly_lead_cap, weekly_lead_count, monthly_lead_cap, monthly_lead_count')
             .eq('workspace_id', targetWorkspaceId)
             .eq('is_active', true)
+            .limit(200)
 
           if (!targetingUsers?.length) return
 
