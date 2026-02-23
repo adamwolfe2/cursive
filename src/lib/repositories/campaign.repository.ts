@@ -265,6 +265,7 @@ export class CampaignRepository {
       .select('*')
       .eq('campaign_id', campaignId)
       .order('created_at', { ascending: false })
+      .limit(10000)
 
     if (error) {
       throw new DatabaseError(error.message)
