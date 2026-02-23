@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { RevenueCalculator } from '@/components/revenue-calculator/RevenueCalculator'
+import { CalInlineEmbed } from '@/components/cal-inline-embed'
 
 export const metadata: Metadata = {
   title: "Cursive Super Pixel — See How Much Revenue You're Losing | Free Calculator",
@@ -8,7 +9,7 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 }
 
-const CAL_LINK = 'https://cal.com/cursive/30min'
+const BOOK_ANCHOR = '#book-demo'
 
 // ─── Sample Lead Record Data ─────────────────────────────────────────────────
 
@@ -166,9 +167,7 @@ export default function SuperPixelV2Page() {
             Cursive
           </a>
           <a
-            href={CAL_LINK}
-            target="_blank"
-            rel="noopener noreferrer"
+            href={BOOK_ANCHOR}
             className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-sm rounded-lg transition-all"
           >
             Book a Demo
@@ -483,9 +482,7 @@ export default function SuperPixelV2Page() {
                 ))}
               </ul>
               <a
-                href={CAL_LINK}
-                target="_blank"
-                rel="noopener noreferrer"
+                href={BOOK_ANCHOR}
                 className="block w-full text-center py-3 px-6 bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-lg transition-all"
               >
                 Get Started
@@ -513,9 +510,7 @@ export default function SuperPixelV2Page() {
                 ))}
               </ul>
               <a
-                href={CAL_LINK}
-                target="_blank"
-                rel="noopener noreferrer"
+                href={BOOK_ANCHOR}
                 className="block w-full text-center py-3 px-6 bg-white/10 hover:bg-white/15 text-white font-semibold rounded-lg border border-white/15 transition-all"
               >
                 Talk to Sales
@@ -545,35 +540,36 @@ export default function SuperPixelV2Page() {
         </div>
       </section>
 
-      {/* ── Final CTA ─────────────────────────────────────────────────────── */}
-      <section className="py-24 px-6 border-t border-white/5">
-        <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-black text-white mb-6 leading-tight">
-            Every Day Without the Super Pixel Is Revenue You&apos;ll Never Recover
-          </h2>
-          <p className="text-white/50 text-lg mb-10 max-w-xl mx-auto leading-relaxed">
-            Your competitors are learning who visits their site. You should be too. Start your free 14-day trial
-            — no credit card, no commitment, just results.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a
-              href={CAL_LINK}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-10 py-4 bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-lg rounded-lg transition-all shadow-lg shadow-emerald-500/25 hover:shadow-emerald-400/40"
-            >
-              Book a Free Demo
-            </a>
-            <a
-              href="https://leads.meetcursive.com/signup"
-              className="px-10 py-4 bg-white/10 hover:bg-white/15 text-white font-semibold text-lg rounded-lg border border-white/15 transition-all"
-            >
-              Start Free Trial
-            </a>
+      {/* ── Book a Demo (Cal.com Inline) ──────────────────────────────────── */}
+      <section id="book-demo" className="py-24 px-6 border-t border-white/5">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-black text-white mb-4">
+              Book a Free Demo With Darren
+            </h2>
+            <p className="text-white/50 text-lg max-w-xl mx-auto">
+              See the Super Pixel running live on your website. Pick a time that works for you — no pressure, no sales pitch.
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-6 mt-6 text-white/40 text-sm">
+              <span className="flex items-center gap-1.5">
+                <span className="text-emerald-400">&#10003;</span>
+                30 minutes
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="text-emerald-400">&#10003;</span>
+                Live demo on your site
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="text-emerald-400">&#10003;</span>
+                No credit card required
+              </span>
+            </div>
           </div>
-          <p className="text-white/30 text-sm mt-6">
-            Setup takes under 5 minutes. Cancel anytime.
-          </p>
+
+          {/* Cal.com inline embed */}
+          <div className="bg-white rounded-2xl overflow-hidden shadow-2xl shadow-black/40">
+            <CalInlineEmbed />
+          </div>
         </div>
       </section>
 
