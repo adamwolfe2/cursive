@@ -210,7 +210,8 @@ export async function getNotifications(
  */
 export async function markNotificationsRead(
   notificationIds: string[],
-  userId: string
+  userId: string,
+  workspaceId?: string
 ): Promise<{ success: boolean; markedCount: number }> {
   const supabase = await createClient()
 
@@ -221,13 +222,18 @@ export async function markNotificationsRead(
   })
 
   if (error) {
-    // Fallback to direct update
-    const { data: updated } = await supabase
+    // Fallback to direct update — scope to workspace when available
+    let query = supabase
       .from('notifications')
       .update({ is_read: true, read_at: new Date().toISOString() })
       .in('id', notificationIds)
       .or(`user_id.is.null,user_id.eq.${userId}`)
-      .select('id')
+
+    if (workspaceId) {
+      query = query.eq('workspace_id', workspaceId)
+    }
+
+    const { data: updated } = await query.select('id')
 
     return { success: true, markedCount: updated?.length || 0 }
   }
@@ -261,15 +267,22 @@ export async function markAllNotificationsRead(
  */
 export async function dismissNotification(
   notificationId: string,
-  userId: string
+  userId: string,
+  workspaceId?: string
 ): Promise<{ success: boolean }> {
   const supabase = await createClient()
 
-  const { error } = await supabase
+  let query = supabase
     .from('notifications')
     .update({ is_dismissed: true, dismissed_at: new Date().toISOString() })
     .eq('id', notificationId)
     .or(`user_id.is.null,user_id.eq.${userId}`)
+
+  if (workspaceId) {
+    query = query.eq('workspace_id', workspaceId)
+  }
+
+  const { error } = await query
 
   return { success: !error }
 }

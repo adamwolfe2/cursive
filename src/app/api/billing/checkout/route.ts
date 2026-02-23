@@ -57,10 +57,7 @@ export async function POST(request: NextRequest) {
 
     if (!finalPriceId) {
       return NextResponse.json(
-        {
-          error: 'Stripe Price ID not configured for this plan. Please contact support.',
-          details: 'The administrator needs to configure Stripe Price IDs in the subscription_plans table.'
-        },
+        { error: 'This plan is not currently available. Please contact support.' },
         { status: 500 }
       )
     }

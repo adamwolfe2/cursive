@@ -442,17 +442,12 @@ export const processAudienceLabEvent = inngest.createFunction(
               .eq('workspace_id', targetWorkspaceId)
               .is('assigned_user_id', null)
 
-            // Increment user lead counts
-            await supabase
-              .from('user_targeting')
-              .update({
-                daily_lead_count: (ut.daily_lead_count || 0) + 1,
-                weekly_lead_count: (ut.weekly_lead_count || 0) + 1,
-                monthly_lead_count: (ut.monthly_lead_count || 0) + 1,
-                updated_at: new Date().toISOString(),
-              })
-              .eq('user_id', ut.user_id)
-              .eq('workspace_id', targetWorkspaceId)
+            // Increment user lead counts atomically to avoid race conditions
+            // when multiple Inngest invocations process leads simultaneously
+            await supabase.rpc('increment_user_targeting_counts', {
+              p_user_id: ut.user_id,
+              p_workspace_id: targetWorkspaceId,
+            })
 
             assignedCount++
           }

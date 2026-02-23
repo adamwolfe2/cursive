@@ -38,14 +38,14 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     const updates: string[] = []
 
     if (validated.is_read === true) {
-      const result = await markNotificationsRead([notificationId], user.id)
+      const result = await markNotificationsRead([notificationId], user.id, user.workspace_id)
       if (result.markedCount > 0) {
         updates.push('marked as read')
       }
     }
 
     if (validated.is_dismissed === true) {
-      const result = await dismissNotification(notificationId, user.id)
+      const result = await dismissNotification(notificationId, user.id, user.workspace_id)
       if (result.success) {
         updates.push('dismissed')
       }
@@ -74,7 +74,7 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
     const user = await getCurrentUser()
     if (!user) return unauthorized()
 
-    const result = await dismissNotification(notificationId, user.id)
+    const result = await dismissNotification(notificationId, user.id, user.workspace_id)
 
     if (!result.success) {
       return badRequest('Failed to dismiss notification')

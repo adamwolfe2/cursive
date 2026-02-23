@@ -338,6 +338,46 @@ export const abandonedCartRecovery = inngest.createFunction(
             customerName: displayName,
           })
 
+          // Record dedup notification BEFORE sending to prevent duplicate emails on retry.
+          // If Inngest retries this step after a partial run, the dedup record ensures
+          // we don't re-send to sessions that were already emailed.
+          const notificationPayload: Record<string, any> = {
+            type: 'system' as const,
+            category: 'info' as const,
+            title: NOTIFICATION_TITLE,
+            message: `Abandoned cart recovery email sent for checkout session.`,
+            metadata: {
+              stripe_session_id: session.sessionId,
+              customer_email: session.customerEmail,
+              amount_total: session.amountTotal,
+              purchase_type: session.metadata?.type || 'unknown',
+              email_sent_at: new Date().toISOString(),
+            },
+          }
+
+          if (user?.workspace_id) {
+            notificationPayload.workspace_id = user.workspace_id
+            notificationPayload.user_id = user.id
+          }
+
+          const { data: insertedNotif, error: notifError } = await supabase
+            .from('notifications')
+            .insert(notificationPayload)
+            .select('id')
+            .maybeSingle()
+
+          if (notifError) {
+            if (notifError.code === '23505') {
+              // Duplicate — already sent, skip
+              continue
+            }
+            safeError(
+              `${LOG_PREFIX} Failed to record dedup notification for session ${session.sessionId}`,
+              notifError
+            )
+            // Continue to send — dedup write failed but we should still attempt delivery
+          }
+
           const result = await sendEmail({
             to: session.customerEmail,
             subject: 'You left something behind -- your leads are waiting!',
@@ -350,42 +390,12 @@ export const abandonedCartRecovery = inngest.createFunction(
               `${LOG_PREFIX} Failed to send recovery email to ${session.customerEmail}`,
               result.error
             )
+            // Delete the dedup record so a future retry can attempt this session again
+            if (insertedNotif?.id) {
+              await supabase.from('notifications').delete().eq('id', insertedNotif.id)
+            }
             failed++
             continue
-          }
-
-          // Record the sent email in notifications for deduplication
-          // Use the user's workspace_id if we found them, otherwise use a system workspace
-          const notificationPayload: Record<string, any> = {
-            type: 'system' as const,
-            category: 'info' as const,
-            title: NOTIFICATION_TITLE,
-            message: `Abandoned cart recovery email sent for checkout session.`,
-            metadata: {
-              stripe_session_id: session.sessionId,
-              customer_email: session.customerEmail,
-              amount_total: session.amountTotal,
-              purchase_type: session.metadata?.type || 'unknown',
-              email_sent_at: new Date().toISOString(),
-              email_message_id: result.messageId,
-            },
-          }
-
-          if (user?.workspace_id) {
-            notificationPayload.workspace_id = user.workspace_id
-            notificationPayload.user_id = user.id
-          }
-
-          const { error: notifError } = await supabase
-            .from('notifications')
-            .insert(notificationPayload)
-
-          if (notifError) {
-            safeError(
-              `${LOG_PREFIX} Failed to record notification for session ${session.sessionId}`,
-              notifError
-            )
-            // Email was still sent, count as success
           }
 
           sent++

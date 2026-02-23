@@ -440,18 +440,29 @@ async function handleChargeDisputeCreated(event: Stripe.Event): Promise<void> {
   const adminClient = createAdminClient()
 
   // Create a high-priority admin notification
-  // Find an admin user to associate the notification with
-  const { data: adminUsers } = await adminClient
-    .from('users')
-    .select('id, workspace_id')
-    .eq('role', 'admin')
+  // Find a platform admin (not a random customer admin) to route this to
+  const { data: platformAdmin } = await adminClient
+    .from('platform_admins')
+    .select('email')
+    .eq('is_active', true)
     .limit(1)
+    .maybeSingle()
 
-  if (adminUsers && adminUsers.length > 0) {
-    const admin = adminUsers[0]
+  const platformAdminUser = platformAdmin
+    ? await adminClient
+        .from('users')
+        .select('id, workspace_id')
+        .eq('email', platformAdmin.email)
+        .maybeSingle()
+        .then(({ data }) => data)
+    : null
+
+  const notificationTarget = platformAdminUser
+
+  if (notificationTarget) {
     await adminClient.from('notifications').insert({
-      workspace_id: admin.workspace_id,
-      user_id: admin.id,
+      workspace_id: notificationTarget.workspace_id,
+      user_id: notificationTarget.id,
       type: 'system',
       category: 'error',
       title: `Dispute filed: $${amountFormatted}`,
