@@ -227,13 +227,23 @@ export default function DealDetailPage() {
 
   const handleSave = () => {
     if (!form) return
+    const parsedValue = parseFloat(form.value)
+    const parsedProbability = parseInt(form.probability, 10)
+    if (isNaN(parsedValue)) {
+      toast.error('Invalid value', { description: 'Deal value must be a valid number.' })
+      return
+    }
+    if (isNaN(parsedProbability)) {
+      toast.error('Invalid probability', { description: 'Probability must be a valid number between 0 and 100.' })
+      return
+    }
     updateMutation.mutate({
       name: form.name,
       description: form.description || undefined,
-      value: parseFloat(form.value) || 0,
+      value: parsedValue,
       currency: form.currency,
       stage: form.stage,
-      probability: parseInt(form.probability, 10) || 0,
+      probability: parsedProbability,
       close_date: form.close_date || undefined,
       company_id: form.company_id || undefined,
       contact_id: form.contact_id || undefined,
@@ -388,6 +398,7 @@ export default function DealDetailPage() {
               <div className="space-y-1.5 col-span-2">
                 <label className="text-xs font-medium text-muted-foreground">Deal Name</label>
                 <Input
+                  disabled={updateMutation.isPending}
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
                 />
@@ -395,6 +406,7 @@ export default function DealDetailPage() {
               <div className="space-y-1.5 col-span-2">
                 <label className="text-xs font-medium text-muted-foreground">Description</label>
                 <Textarea
+                  disabled={updateMutation.isPending}
                   value={form.description}
                   rows={3}
                   onChange={(e) => setForm({ ...form, description: e.target.value })}
@@ -403,6 +415,7 @@ export default function DealDetailPage() {
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-muted-foreground">Value</label>
                 <Input
+                  disabled={updateMutation.isPending}
                   type="number"
                   value={form.value}
                   onChange={(e) => setForm({ ...form, value: e.target.value })}
@@ -411,6 +424,7 @@ export default function DealDetailPage() {
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-muted-foreground">Currency</label>
                 <Input
+                  disabled={updateMutation.isPending}
                   value={form.currency}
                   maxLength={3}
                   onChange={(e) => setForm({ ...form, currency: e.target.value.toUpperCase() })}
@@ -419,6 +433,7 @@ export default function DealDetailPage() {
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-muted-foreground">Stage</label>
                 <Select
+                  disabled={updateMutation.isPending}
                   value={form.stage}
                   options={[
                     { value: 'Qualified', label: 'Qualified' },
@@ -435,6 +450,7 @@ export default function DealDetailPage() {
                   Probability (0–100)
                 </label>
                 <Input
+                  disabled={updateMutation.isPending}
                   type="number"
                   min={0}
                   max={100}
@@ -445,6 +461,7 @@ export default function DealDetailPage() {
               <div className="space-y-1.5 col-span-2">
                 <label className="text-xs font-medium text-muted-foreground">Close Date</label>
                 <Input
+                  disabled={updateMutation.isPending}
                   type="date"
                   value={form.close_date}
                   onChange={(e) => setForm({ ...form, close_date: e.target.value })}
@@ -455,6 +472,7 @@ export default function DealDetailPage() {
                   Link to Company ID
                 </label>
                 <Input
+                  disabled={updateMutation.isPending}
                   value={form.company_id}
                   placeholder="UUID"
                   onChange={(e) => setForm({ ...form, company_id: e.target.value })}
@@ -465,6 +483,7 @@ export default function DealDetailPage() {
                   Link to Contact ID
                 </label>
                 <Input
+                  disabled={updateMutation.isPending}
                   value={form.contact_id}
                   placeholder="UUID"
                   onChange={(e) => setForm({ ...form, contact_id: e.target.value })}

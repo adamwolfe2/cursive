@@ -422,6 +422,7 @@ export default function CompanyDetailPage() {
               <div className="space-y-1.5 col-span-2">
                 <label className="text-xs font-medium text-muted-foreground">Company Name</label>
                 <Input
+                  disabled={updateMutation.isPending}
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
                 />
@@ -429,6 +430,7 @@ export default function CompanyDetailPage() {
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-muted-foreground">Domain</label>
                 <Input
+                  disabled={updateMutation.isPending}
                   value={form.domain}
                   onChange={(e) => setForm({ ...form, domain: e.target.value })}
                 />
@@ -436,6 +438,7 @@ export default function CompanyDetailPage() {
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-muted-foreground">Industry</label>
                 <Input
+                  disabled={updateMutation.isPending}
                   value={form.industry}
                   onChange={(e) => setForm({ ...form, industry: e.target.value })}
                 />
@@ -443,6 +446,7 @@ export default function CompanyDetailPage() {
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-muted-foreground">Employees Range</label>
                 <Input
+                  disabled={updateMutation.isPending}
                   value={form.employees_range}
                   placeholder="e.g. 50-200"
                   onChange={(e) => setForm({ ...form, employees_range: e.target.value })}
@@ -451,6 +455,7 @@ export default function CompanyDetailPage() {
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-muted-foreground">Revenue Range</label>
                 <Input
+                  disabled={updateMutation.isPending}
                   value={form.revenue_range}
                   placeholder="e.g. $1M-$10M"
                   onChange={(e) => setForm({ ...form, revenue_range: e.target.value })}
@@ -459,6 +464,7 @@ export default function CompanyDetailPage() {
               <div className="space-y-1.5 col-span-2">
                 <label className="text-xs font-medium text-muted-foreground">Website</label>
                 <Input
+                  disabled={updateMutation.isPending}
                   value={form.website}
                   onChange={(e) => setForm({ ...form, website: e.target.value })}
                 />
@@ -466,6 +472,7 @@ export default function CompanyDetailPage() {
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-muted-foreground">Phone</label>
                 <Input
+                  disabled={updateMutation.isPending}
                   value={form.phone}
                   onChange={(e) => setForm({ ...form, phone: e.target.value })}
                 />
@@ -473,6 +480,7 @@ export default function CompanyDetailPage() {
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-muted-foreground">Email</label>
                 <Input
+                  disabled={updateMutation.isPending}
                   type="email"
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
@@ -481,6 +489,7 @@ export default function CompanyDetailPage() {
               <div className="space-y-1.5 col-span-2">
                 <label className="text-xs font-medium text-muted-foreground">Address Line 1</label>
                 <Input
+                  disabled={updateMutation.isPending}
                   value={form.address_line1}
                   onChange={(e) => setForm({ ...form, address_line1: e.target.value })}
                 />
@@ -488,6 +497,7 @@ export default function CompanyDetailPage() {
               <div className="space-y-1.5 col-span-2">
                 <label className="text-xs font-medium text-muted-foreground">Address Line 2</label>
                 <Input
+                  disabled={updateMutation.isPending}
                   value={form.address_line2}
                   onChange={(e) => setForm({ ...form, address_line2: e.target.value })}
                 />
@@ -495,6 +505,7 @@ export default function CompanyDetailPage() {
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-muted-foreground">City</label>
                 <Input
+                  disabled={updateMutation.isPending}
                   value={form.city}
                   onChange={(e) => setForm({ ...form, city: e.target.value })}
                 />
@@ -502,6 +513,7 @@ export default function CompanyDetailPage() {
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-muted-foreground">State</label>
                 <Input
+                  disabled={updateMutation.isPending}
                   value={form.state}
                   onChange={(e) => setForm({ ...form, state: e.target.value })}
                 />
@@ -509,6 +521,7 @@ export default function CompanyDetailPage() {
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-muted-foreground">Zip Code</label>
                 <Input
+                  disabled={updateMutation.isPending}
                   value={form.zip_code}
                   onChange={(e) => setForm({ ...form, zip_code: e.target.value })}
                 />
@@ -516,6 +529,7 @@ export default function CompanyDetailPage() {
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-muted-foreground">Country</label>
                 <Input
+                  disabled={updateMutation.isPending}
                   value={form.country}
                   onChange={(e) => setForm({ ...form, country: e.target.value })}
                 />
@@ -523,6 +537,7 @@ export default function CompanyDetailPage() {
               <div className="space-y-1.5 col-span-2">
                 <label className="text-xs font-medium text-muted-foreground">LinkedIn URL</label>
                 <Input
+                  disabled={updateMutation.isPending}
                   value={form.linkedin_url}
                   onChange={(e) => setForm({ ...form, linkedin_url: e.target.value })}
                 />
@@ -530,6 +545,7 @@ export default function CompanyDetailPage() {
               <div className="space-y-1.5 col-span-2">
                 <label className="text-xs font-medium text-muted-foreground">Twitter URL</label>
                 <Input
+                  disabled={updateMutation.isPending}
                   value={form.twitter_url}
                   onChange={(e) => setForm({ ...form, twitter_url: e.target.value })}
                 />
@@ -537,6 +553,7 @@ export default function CompanyDetailPage() {
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-muted-foreground">Status</label>
                 <Select
+                  disabled={updateMutation.isPending}
                   value={form.status}
                   options={[
                     { value: 'Prospect', label: 'Prospect' },

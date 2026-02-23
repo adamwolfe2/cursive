@@ -385,6 +385,7 @@ export default function ContactDetailPage() {
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-muted-foreground">First Name</label>
                 <Input
+                  disabled={updateMutation.isPending}
                   value={form.first_name}
                   onChange={(e) => setForm({ ...form, first_name: e.target.value })}
                 />
@@ -392,6 +393,7 @@ export default function ContactDetailPage() {
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-muted-foreground">Last Name</label>
                 <Input
+                  disabled={updateMutation.isPending}
                   value={form.last_name}
                   onChange={(e) => setForm({ ...form, last_name: e.target.value })}
                 />
@@ -399,6 +401,7 @@ export default function ContactDetailPage() {
               <div className="space-y-1.5 col-span-2">
                 <label className="text-xs font-medium text-muted-foreground">Title</label>
                 <Input
+                  disabled={updateMutation.isPending}
                   value={form.title}
                   onChange={(e) => setForm({ ...form, title: e.target.value })}
                 />
@@ -406,6 +409,7 @@ export default function ContactDetailPage() {
               <div className="space-y-1.5 col-span-2">
                 <label className="text-xs font-medium text-muted-foreground">Email</label>
                 <Input
+                  disabled={updateMutation.isPending}
                   type="email"
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
@@ -414,6 +418,7 @@ export default function ContactDetailPage() {
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-muted-foreground">Phone</label>
                 <Input
+                  disabled={updateMutation.isPending}
                   value={form.phone}
                   onChange={(e) => setForm({ ...form, phone: e.target.value })}
                 />
@@ -421,6 +426,7 @@ export default function ContactDetailPage() {
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-muted-foreground">Mobile</label>
                 <Input
+                  disabled={updateMutation.isPending}
                   value={form.mobile}
                   onChange={(e) => setForm({ ...form, mobile: e.target.value })}
                 />
@@ -428,6 +434,7 @@ export default function ContactDetailPage() {
               <div className="space-y-1.5 col-span-2">
                 <label className="text-xs font-medium text-muted-foreground">LinkedIn URL</label>
                 <Input
+                  disabled={updateMutation.isPending}
                   value={form.linkedin_url}
                   onChange={(e) => setForm({ ...form, linkedin_url: e.target.value })}
                 />
@@ -435,6 +442,7 @@ export default function ContactDetailPage() {
               <div className="space-y-1.5 col-span-2">
                 <label className="text-xs font-medium text-muted-foreground">Twitter URL</label>
                 <Input
+                  disabled={updateMutation.isPending}
                   value={form.twitter_url}
                   onChange={(e) => setForm({ ...form, twitter_url: e.target.value })}
                 />
@@ -442,6 +450,7 @@ export default function ContactDetailPage() {
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-muted-foreground">Status</label>
                 <Select
+                  disabled={updateMutation.isPending}
                   value={form.status}
                   options={[
                     { value: 'Prospect', label: 'Prospect' },
@@ -455,6 +464,7 @@ export default function ContactDetailPage() {
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-muted-foreground">Seniority Level</label>
                 <Select
+                  disabled={updateMutation.isPending}
                   value={form.seniority_level || 'none'}
                   options={[
                     { value: 'none', label: 'None' },

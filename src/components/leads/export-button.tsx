@@ -44,6 +44,9 @@ export function ExportButton({
         throw new Error(error.error || 'Export failed')
       }
 
+      // Check for truncation before consuming the body
+      const truncated = response.headers.get('X-Export-Truncated') === 'true'
+
       // Download file
       const blob = await response.blob()
       const url = window.URL.createObjectURL(blob)
@@ -55,9 +58,13 @@ export function ExportButton({
       document.body.removeChild(a)
       window.URL.revokeObjectURL(url)
 
-      toast.success('Export complete!', {
-        description: 'CSV file downloaded successfully',
-      })
+      if (truncated) {
+        toast.warning('Export limited to 10,000 records. Apply filters to narrow your results.')
+      } else {
+        toast.success('Export complete!', {
+          description: 'CSV file downloaded successfully',
+        })
+      }
     } catch (error: any) {
       const isTimeout = error instanceof DOMException && error.name === 'AbortError'
       toast.error(

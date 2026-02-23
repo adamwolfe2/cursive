@@ -42,12 +42,21 @@ export async function POST(request: NextRequest) {
     const csv = await leadRepo.exportToCSV(user.workspace_id, filters || {})
 
     // 4. Return CSV file response
+    // Count data rows (subtract 1 for header row) to detect truncation at 10k limit
+    const rowCount = csv.split('\n').length - 1
+    const truncated = rowCount >= 10000
+
+    const responseHeaders: Record<string, string> = {
+      'Content-Type': 'text/csv',
+      'Content-Disposition': `attachment; filename="leads-export-${new Date().toISOString().split('T')[0]}.csv"`,
+    }
+    if (truncated) {
+      responseHeaders['X-Export-Truncated'] = 'true'
+    }
+
     return new NextResponse(csv, {
       status: 200,
-      headers: {
-        'Content-Type': 'text/csv',
-        'Content-Disposition': `attachment; filename="leads-export-${new Date().toISOString().split('T')[0]}.csv"`,
-      },
+      headers: responseHeaders,
     })
   } catch (error) {
     return handleApiError(error)
