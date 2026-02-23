@@ -140,7 +140,7 @@ export default function PartnerUploadPage() {
     }
   }
 
-  // Parse CSV line handling quotes
+  // Parse CSV line handling quotes and escaped quotes ("")
   const parseCSVLine = (line: string): string[] => {
     const result: string[] = []
     let current = ''
@@ -149,7 +149,13 @@ export default function PartnerUploadPage() {
     for (let i = 0; i < line.length; i++) {
       const char = line[i]
       if (char === '"') {
-        inQuotes = !inQuotes
+        // Handle escaped quotes: "" inside a quoted field = literal "
+        if (inQuotes && line[i + 1] === '"') {
+          current += '"'
+          i++ // skip next quote
+        } else {
+          inQuotes = !inQuotes
+        }
       } else if (char === ',' && !inQuotes) {
         result.push(current.trim())
         current = ''
@@ -157,6 +163,7 @@ export default function PartnerUploadPage() {
         current += char
       }
     }
+    // Push final field; if inQuotes never closed, treat remainder as literal content
     result.push(current.trim())
     return result
   }
