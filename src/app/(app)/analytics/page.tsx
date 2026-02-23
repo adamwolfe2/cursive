@@ -487,7 +487,7 @@ export default function AnalyticsPage() {
                       {segmentPerf.map((segment: any) => (
                         <tr key={segment.segment_id} className="border-b">
                           <td className="py-3 px-4 font-medium">{segment.segment_name}</td>
-                          <td className="py-3 px-4 text-right">{segment.total_runs}</td>
+                          <td className="py-3 px-4 text-right">{segment.total_runs ?? '-'}</td>
                           <td className="py-3 px-4 text-right">
                             {segment.last_count?.toLocaleString() || '-'}
                           </td>
@@ -555,7 +555,7 @@ export default function AnalyticsPage() {
                         <tr key={pixel.pixel_id} className="border-b">
                           <td className="py-3 px-4 font-medium">{pixel.website_name}</td>
                           <td className="py-3 px-4 text-right">
-                            {pixel.total_events?.toLocaleString()}
+                            {pixel.total_events?.toLocaleString() ?? '-'}
                           </td>
                           <td className="py-3 px-4 text-right">
                             {pixel.events_7d?.toLocaleString()}

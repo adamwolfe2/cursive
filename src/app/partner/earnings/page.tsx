@@ -14,13 +14,14 @@ export const metadata = {
 
 async function getEarningsData() {
   const supabase = await createClient()
-  const { data: { session } } = await supabase.auth.getSession()
-  if (!session?.user) redirect('/login')
+  // SECURITY: Use getUser() for server-side JWT verification
+  const { data: { user: authUser } } = await supabase.auth.getUser()
+  if (!authUser) redirect('/login')
 
   const { data: user } = await supabase
     .from('users')
     .select('linked_partner_id')
-    .eq('auth_user_id', session.user.id)
+    .eq('auth_user_id', authUser.id)
     .maybeSingle()
 
   if (!user?.linked_partner_id) redirect('/login')

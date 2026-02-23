@@ -54,7 +54,7 @@ function ContactSalesPageInner() {
           tier_slug: tierSlug,
           name: user?.full_name || 'Unknown',
           email: user?.email || '',
-          company: user?.workspaces?.name || 'Unknown',
+          company: user?.email?.split('@')[1]?.replace(/\.[^.]+$/, '') || '',
           message,
           phone: phone || undefined,
           website: website || undefined,
@@ -160,7 +160,7 @@ function ContactSalesPageInner() {
           <label className="block text-sm font-medium text-zinc-700 mb-2">Company</label>
           <input
             type="text"
-            value={user?.workspaces?.name || ''}
+            value={user?.email?.split('@')[1]?.replace(/\.[^.]+$/, '') || ''}
             readOnly
             className="block w-full rounded-lg border-zinc-300 bg-zinc-50 shadow-sm text-sm"
           />

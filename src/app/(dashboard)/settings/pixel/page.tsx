@@ -154,7 +154,9 @@ export default function PixelSettingsPage() {
       if (data.pixel!.install_url) {
         return `<script src="${data.pixel!.install_url}" defer></script>`
       }
-      return `<script src="https://cdn.v3.identitypxl.app/pixels/${data.pixel!.pixel_id}/p.js" defer></script>`
+      return data.pixel!.pixel_id
+        ? `<script src="https://cdn.v3.identitypxl.app/pixels/${data.pixel!.pixel_id}/p.js" defer></script>`
+        : ''
     })()
     const hasSnippet = true // We can always generate a snippet from pixel_id
 

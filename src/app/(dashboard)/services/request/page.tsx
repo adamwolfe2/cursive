@@ -63,7 +63,7 @@ function ServiceRequestPageInner() {
           tier_slug: tier,
           name: user?.full_name || 'Unknown',
           email: user?.email || '',
-          company: user?.workspaces?.name || 'Unknown',
+          company: user?.email?.split('@')[1]?.replace(/\.[^.]+$/, '') || '',
           message: `Service Tier: ${tier}\nWebsite: ${website || 'Not provided'}\nMonthly Budget: ${budget || 'Not specified'}\n\nGoals:\n${goals}`,
           phone: phone || undefined,
           website: website || undefined,
@@ -156,7 +156,7 @@ function ServiceRequestPageInner() {
           </label>
           <input
             type="text"
-            value={user?.workspaces?.name || ''}
+            value={user?.email?.split('@')[1]?.replace(/\.[^.]+$/, '') || ''}
             readOnly
             className="block w-full rounded-lg border-zinc-300 bg-zinc-50 shadow-sm text-sm"
           />
