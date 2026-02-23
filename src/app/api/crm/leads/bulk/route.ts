@@ -80,11 +80,15 @@ export async function POST(request: NextRequest) {
 
         // Fetch all leads first, then update sequentially to avoid race conditions
         const supabase = await createClient()
-        const { data: leads } = await supabase
+        const { data: leads, error: fetchError } = await supabase
           .from('leads')
           .select('id, tags')
           .in('id', validated.ids)
           .eq('workspace_id', workspaceId)
+
+        if (fetchError) {
+          throw new Error(`Failed to fetch leads for tag update: ${fetchError.message}`)
+        }
 
         if (leads && leads.length > 0) {
           // Use sequential updates to avoid race conditions on concurrent bulk operations
@@ -111,11 +115,15 @@ export async function POST(request: NextRequest) {
 
         // Fetch all leads first, then update sequentially to avoid race conditions
         const supabase = await createClient()
-        const { data: leads } = await supabase
+        const { data: leads, error: fetchError } = await supabase
           .from('leads')
           .select('id, tags')
           .in('id', validated.ids)
           .eq('workspace_id', workspaceId)
+
+        if (fetchError) {
+          throw new Error(`Failed to fetch leads for tag update: ${fetchError.message}`)
+        }
 
         if (leads && leads.length > 0) {
           // Use sequential updates to avoid race conditions on concurrent bulk operations

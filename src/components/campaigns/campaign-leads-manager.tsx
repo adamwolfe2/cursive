@@ -185,8 +185,12 @@ export function CampaignLeadsManager({ campaignId }: CampaignLeadsManagerProps) 
         throw new Error(data.error || 'Failed to add leads')
       }
 
-      const data = await response.json()
-      setCampaignLeads(data.data || [])
+      // Refetch full list so we have all leads including previously loaded ones
+      const updatedLeadsRes = await fetch(`/api/campaigns/${campaignId}/leads`)
+      if (updatedLeadsRes.ok) {
+        const updatedLeadsData = await updatedLeadsRes.json()
+        setCampaignLeads(updatedLeadsData.data || [])
+      }
       setAddModalOpen(false)
       setSelectedLeadIds(new Set())
       setSearchQuery('')
@@ -200,8 +204,10 @@ export function CampaignLeadsManager({ campaignId }: CampaignLeadsManagerProps) 
   // Remove lead from campaign
   const removeFromCampaign = async (campaignLeadId: string) => {
     try {
-      const response = await fetch(`/api/campaigns/${campaignId}/leads?lead_id=${campaignLeadId}`, {
+      const response = await fetch(`/api/campaigns/${campaignId}/leads`, {
         method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ lead_id: campaignLeadId }),
       })
 
       if (response.ok) {
