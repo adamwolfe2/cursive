@@ -29,8 +29,9 @@ type ConversationPriority = 'low' | 'normal' | 'high' | 'urgent'
 interface ConversationLead {
   id: string
   email: string
-  first_name: string
-  last_name: string
+  name: string
+  company?: string
+  title?: string
 }
 
 interface ConversationCampaign {
@@ -132,7 +133,16 @@ async function fetchConversations(params: Record<string, string>): Promise<Conve
     const text = await res.text().catch(() => 'Unknown error')
     throw new Error(text || `Request failed with status ${res.status}`)
   }
-  return res.json()
+  // API wraps response in { success: true, data: { conversations, pagination } }
+  const json = await res.json()
+  const { conversations, pagination } = json.data
+  return {
+    conversations,
+    total: pagination.total,
+    page: pagination.page,
+    limit: pagination.limit,
+    total_pages: pagination.total_pages,
+  }
 }
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -159,9 +169,7 @@ function StatusBadge({ status }: { status: ConversationStatus }) {
 }
 
 function ConversationRow({ conversation }: { conversation: Conversation }) {
-  const leadName = [conversation.lead.first_name, conversation.lead.last_name]
-    .filter(Boolean)
-    .join(' ') || conversation.lead.email
+  const leadName = conversation.lead.name || conversation.lead.email
 
   const timeAgo = (() => {
     try {
