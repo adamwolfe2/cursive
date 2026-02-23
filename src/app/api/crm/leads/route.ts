@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
       data: { lead_id: lead.id, workspace_id: user.workspace_id, source: validated.source },
     }).catch((err) => safeError('[Create Lead] Inngest send failed:', err))
 
-    return NextResponse.json({ success: true, lead })
+    return NextResponse.json({ success: true, data: lead })
   } catch (error) {
     safeError('[Create Lead] Error:', error)
     return handleApiError(error)
