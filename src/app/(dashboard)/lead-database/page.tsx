@@ -60,7 +60,7 @@ export default function LeadDatabasePage() {
       } else {
         toast.error(data.error || 'Failed to preview')
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error('Failed to preview leads')
     } finally {
       setLoading(false)
@@ -103,7 +103,7 @@ export default function LeadDatabasePage() {
           toast.error(data.error || 'Failed to pull leads')
         }
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error('Failed to pull leads')
     } finally {
       setPulling(false)

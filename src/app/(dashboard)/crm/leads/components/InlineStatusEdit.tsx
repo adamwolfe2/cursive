@@ -86,7 +86,7 @@ export function InlineStatusEdit({ leadId, currentStatus }: InlineStatusEditProp
         setShowSuccess(false)
         successTimeoutRef.current = null
       }, 2000)
-    } catch (error) {
+    } catch (_error) {
       // Revert on error
       setSelectedStatus(currentStatus)
     }

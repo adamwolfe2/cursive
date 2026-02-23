@@ -55,7 +55,7 @@ export default function AdminPixelsPage() {
       const data = await response.json()
       setPixels(data.pixels || [])
       setOrphaned(data.orphaned || [])
-    } catch (error) {
+    } catch (_error) {
       toast.error('Failed to load pixels')
     } finally {
       setLoading(false)
@@ -88,7 +88,7 @@ export default function AdminPixelsPage() {
       } else {
         toast.error(data.error || 'Failed to map pixel')
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error('Failed to map pixel')
     }
   }

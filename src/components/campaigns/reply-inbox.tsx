@@ -140,7 +140,7 @@ export function ReplyInbox({ campaignId }: ReplyInboxProps) {
         prev.map((r) => (r.id === replyId ? { ...r, status: 'reviewed' } : r))
       )
       toast.success('Reply marked as reviewed')
-    } catch (error) {
+    } catch (_error) {
       toast.error('Failed to update reply')
     }
   }
@@ -161,7 +161,7 @@ export function ReplyInbox({ campaignId }: ReplyInboxProps) {
       )
       setSelectedReply(null)
       toast.success('Reply marked as ignored')
-    } catch (error) {
+    } catch (_error) {
       toast.error('Failed to update reply')
     }
   }

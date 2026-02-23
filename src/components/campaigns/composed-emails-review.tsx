@@ -178,7 +178,7 @@ export function ComposedEmailsReview({ campaignId }: ComposedEmailsReviewProps) 
         prev.map((e) => (e.id === emailId ? { ...e, status: 'rejected' } : e))
       )
       toast.success('Email rejected')
-    } catch (error) {
+    } catch (_error) {
       toast.error('Failed to reject email')
     }
   }
