@@ -49,6 +49,9 @@ export async function POST(
     if (!userProfile) return unauthorized()
 
     // Credit gate
+    // NOTE: TOCTOU risk — check and deduction are separate operations. Two concurrent requests
+    // from the same user could both pass this check before either deducts. To fully close this,
+    // the `increment_credits` RPC should perform an atomic "check AND increment" with a limit guard.
     const creditsUsed = userProfile.daily_credits_used ?? 0
     const creditLimit = userProfile.daily_credit_limit ?? 3
     const creditsRemaining = Math.max(0, creditLimit - creditsUsed)

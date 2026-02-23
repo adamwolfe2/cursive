@@ -89,6 +89,26 @@ export async function POST(request: NextRequest) {
       })
     }
 
+    // Idempotency check: email providers retry on failure, so deduplicate by email_send_id + from_email
+    // (same message re-delivered should not create duplicate records or inflate campaign metrics)
+    if (emailSend?.id) {
+      const { data: existingMessage } = await supabase
+        .from('inbound_messages')
+        .select('id')
+        .eq('email_send_id', emailSend.id)
+        .eq('from_email', inboundEmail.from)
+        .maybeSingle()
+
+      if (existingMessage) {
+        return NextResponse.json({
+          success: true,
+          message_id: existingMessage.id,
+          matched: true,
+          duplicate: true,
+        })
+      }
+    }
+
     // Store the inbound message (only if we have a valid workspace)
     const { data: inboundMessage, error: insertError } = await supabase
       .from('inbound_messages')
