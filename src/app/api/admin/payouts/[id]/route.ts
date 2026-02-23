@@ -64,7 +64,7 @@ export async function PATCH(
           )
         }
 
-        await supabase
+        const { error: approveError } = await supabase
           .from('payout_requests')
           .update({
             status: 'approved',
@@ -74,6 +74,11 @@ export async function PATCH(
             updated_at: now,
           })
           .eq('id', payoutId)
+
+        if (approveError) {
+          safeError('[Admin Payouts] Failed to approve:', approveError)
+          return NextResponse.json({ error: 'Failed to approve payout request' }, { status: 500 })
+        }
 
         break
       }
@@ -94,7 +99,7 @@ export async function PATCH(
         }
 
         // Update payout request
-        await supabase
+        const { error: rejectError } = await supabase
           .from('payout_requests')
           .update({
             status: 'rejected',
@@ -106,15 +111,25 @@ export async function PATCH(
           })
           .eq('id', payoutId)
 
+        if (rejectError) {
+          safeError('[Admin Payouts] Failed to reject:', rejectError)
+          return NextResponse.json({ error: 'Failed to reject payout request' }, { status: 500 })
+        }
+
         // Refund the amount back to partner's available balance
         const partner = payout.partner as PayoutPartner
-        await supabase
+        const { error: refundError } = await supabase
           .from('partners')
           .update({
             available_balance: Number(partner.available_balance || 0) + Number(payout.amount),
             updated_at: now,
           })
           .eq('id', partner.id)
+
+        if (refundError) {
+          safeError('[Admin Payouts] Failed to refund balance after rejection:', refundError)
+          // Don't fail the request — payout was rejected but balance refund failed; alert needed
+        }
 
         break
       }
@@ -160,7 +175,7 @@ export async function PATCH(
           })
 
           // Update payout request with Stripe transfer ID
-          await supabase
+          const { error: completeError } = await supabase
             .from('payout_requests')
             .update({
               status: 'completed',
@@ -169,6 +184,20 @@ export async function PATCH(
               updated_at: now,
             })
             .eq('id', payoutId)
+
+          if (completeError) {
+            // Stripe transfer succeeded but DB update failed — critical: money sent but record shows 'processing'
+            safeError('[Admin Payouts] CRITICAL: Stripe transfer succeeded but DB update failed:', {
+              payoutId,
+              stripeTransferId: transfer.id,
+              error: completeError,
+            })
+            // Still return an error so admin knows to manually reconcile
+            return NextResponse.json(
+              { error: 'Transfer sent but status update failed — manual reconciliation required', stripe_transfer_id: transfer.id },
+              { status: 500 }
+            )
+          }
 
           // Update partner earnings to paid_out status
           await supabase
