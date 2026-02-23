@@ -290,7 +290,7 @@ export function TwentyStyleTable({ data, onRowClick }: TwentyStyleTableProps) {
                           {faviconUrl ? (
                             <img
                               src={faviconUrl}
-                              alt=""
+                              alt={`${lead.company_name} logo`}
                               className="h-4 w-4 rounded"
                               onError={(e) => {
                                 e.currentTarget.style.display = 'none'

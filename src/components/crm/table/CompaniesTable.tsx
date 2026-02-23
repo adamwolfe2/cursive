@@ -255,7 +255,7 @@ export function CompaniesTable({ data, onRowClick, onCreateClick }: CompaniesTab
                         {faviconUrl ? (
                           <img
                             src={faviconUrl}
-                            alt=""
+                            alt={`${company.name} logo`}
                             className="h-6 w-6 rounded"
                             onError={(e) => {
                               e.currentTarget.style.display = 'none'
