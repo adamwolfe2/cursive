@@ -155,7 +155,7 @@ export function AutoSubmitOnboarding({ isMarketplace, isReturning }: AutoSubmitO
         }
 
         if (!lastResponse.ok) {
-          const body = await lastResponse.json()
+          const body = await lastResponse.json().catch(() => ({}))
           throw new Error(body.error || 'Failed to create workspace')
         }
 
