@@ -15,7 +15,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return [
     {
-      url: `${baseUrl}/superpixel-v2`,
+      url: `${baseUrl}/superpixel`,
       lastModified: now,
       changeFrequency: 'weekly',
       priority: 1,
