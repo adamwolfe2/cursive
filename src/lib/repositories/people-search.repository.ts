@@ -57,6 +57,7 @@ export class PeopleSearchRepository {
       .select('*')
       .eq('workspace_id', workspaceId)
       .order('created_at', { ascending: false })
+      .limit(500)
 
     if (error) {
       safeError('[PeopleSearchRepository] Find saved searches error:', error)
@@ -239,7 +240,7 @@ export class PeopleSearchRepository {
       query = query.lte('created_at', endDate)
     }
 
-    const { data, error } = await query.order('created_at', { ascending: false })
+    const { data, error } = await query.order('created_at', { ascending: false }).limit(10000)
 
     if (error) {
       safeError('[PeopleSearchRepository] Get credit usage error:', error)

@@ -184,6 +184,7 @@ export class WaitlistRepository {
       .select('*')
       .eq('industry', industry)
       .order('created_at', { ascending: false })
+      .limit(1000)
 
     if (error) {
       safeError('[WaitlistRepository] Find by industry error:', error)
