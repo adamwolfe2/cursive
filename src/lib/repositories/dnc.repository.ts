@@ -30,6 +30,7 @@ export class DncRepository {
       .select('*')
       .eq('workspace_id', workspaceId)
       .order('added_at', { ascending: false })
+      .limit(10000)
     return (data || []) as DncEntry[]
   }
 

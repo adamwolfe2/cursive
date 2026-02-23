@@ -28,6 +28,7 @@ export class AgentRepository {
       .select('*')
       .eq('workspace_id', workspaceId)
       .order('created_at', { ascending: false })
+      .limit(500)
 
     if (error) {
       throw new DatabaseError(error.message)

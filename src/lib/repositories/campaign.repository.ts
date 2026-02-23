@@ -25,6 +25,7 @@ export class CampaignRepository {
       .select('*')
       .eq('workspace_id', workspaceId)
       .order('created_at', { ascending: false })
+      .limit(500)
 
     if (error) {
       throw new DatabaseError(error.message)
@@ -45,6 +46,7 @@ export class CampaignRepository {
       .eq('workspace_id', workspaceId)
       .eq('status', status)
       .order('created_at', { ascending: false })
+      .limit(500)
 
     if (error) {
       throw new DatabaseError(error.message)

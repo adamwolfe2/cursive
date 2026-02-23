@@ -53,7 +53,7 @@ export class TemplateRepository {
       query = query.eq('is_active', filters.is_active)
     }
 
-    const { data, error } = await query.order('created_at', { ascending: false })
+    const { data, error } = await query.order('created_at', { ascending: false }).limit(1000)
 
     if (error) {
       throw new DatabaseError(error.message)
