@@ -1,21 +1,15 @@
 import { NextResponse } from "next/server"
-import { createClient } from "@/lib/supabase/server"
 import { createAdminClient } from "@/lib/supabase/admin"
-import { getUserWithRole } from "@/lib/auth/roles"
-import { safeError } from "@/lib/utils/log-sanitizer"
+import { getCurrentUser } from "@/lib/auth/helpers"
+import { requireAdmin } from "@/lib/auth/admin"
+import { handleApiError, unauthorized } from "@/lib/utils/api-error-handler"
 
 export async function GET() {
   try {
-    // Auth check — must be admin/owner
-    const supabase = await createClient()
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-    }
-    const userWithRole = await getUserWithRole(session.user)
-    if (!userWithRole || (userWithRole.role !== "owner" && userWithRole.role !== "admin")) {
-      return NextResponse.json({ error: "Admin required" }, { status: 403 })
-    }
+    // Auth check — must be platform admin
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
+    await requireAdmin()
 
     const adminClient = createAdminClient()
     const now = new Date()
@@ -49,7 +43,8 @@ export async function GET() {
         .from("credit_transactions")
         .select("amount")
         .eq("transaction_type", "purchase")
-        .gte("created_at", monthStart),
+        .gte("created_at", monthStart)
+        .limit(5000),
       adminClient
         .from("failed_operations")
         .select("id", { count: "exact", head: true })
@@ -85,7 +80,6 @@ export async function GET() {
       failedOpsToday,
     })
   } catch (error) {
-    safeError("[AdminDashboardStats] Error:", error)
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    return handleApiError(error)
   }
 }
