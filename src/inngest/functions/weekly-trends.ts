@@ -32,6 +32,7 @@ export const weeklyTrends = inngest.createFunction(
       const { data, error } = await supabase
         .from('global_topics')
         .select('id, topic, current_volume')
+        .limit(500)
 
       if (error) {
         throw new Error(`Failed to fetch topics: ${error.message}`)

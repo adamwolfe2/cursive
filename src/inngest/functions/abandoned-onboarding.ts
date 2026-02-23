@@ -187,6 +187,7 @@ export const abandonedOnboardingRecovery = inngest.createFunction(
         .lt('created_at', oneDayAgo)
         .gte('created_at', sevenDaysAgo)
         .order('created_at', { ascending: true })
+        .limit(500)
 
       if (usersError) {
         safeError(`${LOG_PREFIX} Failed to query users`, usersError)
