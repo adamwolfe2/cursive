@@ -132,7 +132,7 @@ export function FeatureLock({
               <ArrowRight className="h-4 w-4" />
             </a>
             <Link
-              href="/pricing"
+              href="/settings/billing"
               className="inline-flex items-center justify-center gap-2 px-6 py-3 border-2 border-zinc-300 hover:border-zinc-400 text-zinc-700 font-medium rounded-lg transition-colors"
               onClick={() => trackFeatureLock('upgrade_clicked', feature, requiredTier)}
             >
@@ -206,7 +206,7 @@ export function InlineFeatureLock({
               <ArrowRight className="h-4 w-4" />
             </a>
             <Link
-              href="/pricing"
+              href="/settings/billing"
               className="inline-flex items-center gap-2 px-4 py-2 border border-zinc-300 hover:border-zinc-400 text-zinc-700 font-medium rounded-lg transition-colors text-sm"
             >
               Compare All Plans

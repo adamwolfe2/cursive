@@ -206,10 +206,10 @@ export function SearchResults({
               </h3>
               <div className="mt-2 text-[13px] text-amber-800">
                 <p>
-                  You&apos;ve used all your credits for today. Credits reset at midnight,
+                  You&apos;ve used all your credits for today. Credits reset at 8am CT,
                   or{' '}
                   <a
-                    href="/pricing"
+                    href="/settings/billing"
                     className="font-medium underline hover:text-amber-900"
                   >
                     upgrade to Pro

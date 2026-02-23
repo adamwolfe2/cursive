@@ -116,7 +116,7 @@ export function ServiceLimitBanner({
               </Link>
             )}
             <Link
-              href="/pricing"
+              href="/settings/billing"
               className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:text-primary/90 transition-colors"
             >
               View Pricing

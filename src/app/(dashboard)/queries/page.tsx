@@ -69,7 +69,7 @@ export default async function QueriesPage() {
             </p>
           </div>
           {user.plan === 'free' && activeCount >= queryLimit && (
-            <Link href="/pricing">
+            <Link href="/settings/billing">
               <Button variant="outline" size="sm">
                 Upgrade to Pro
               </Button>

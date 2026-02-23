@@ -56,7 +56,7 @@ export async function requireBusinessAccess(): Promise<AccessControlUser> {
   }
 
   if (!user.active_subscription) {
-    redirect('/pricing') // Business users need subscription
+    redirect('/settings/billing') // Business users need subscription
   }
 
   return user
