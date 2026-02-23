@@ -133,6 +133,7 @@ export default function TeamSettingsPage() {
   const [inviteError, setInviteError] = useState<string | null>(null)
   const [cancelingIds, setCancelingIds] = useState<Set<string>>(new Set())
   const [removingIds, setRemovingIds] = useState<Set<string>>(new Set())
+  const [updatingRoleId, setUpdatingRoleId] = useState<string | null>(null)
   const [pendingAction, setPendingAction] = useState<{ type: string; label: string; onConfirm: () => void } | null>(null)
 
   const queryClient = useQueryClient()
@@ -197,13 +198,18 @@ export default function TeamSettingsPage() {
   })
 
   const updateRoleMutation = useMutation({
-    mutationFn: ({ id, role }: { id: string; role: string }) => updateMemberRole(id, role),
+    mutationFn: ({ id, role }: { id: string; role: string }) => {
+      setUpdatingRoleId(id)
+      return updateMemberRole(id, role)
+    },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['team-members'] })
+      setUpdatingRoleId(null)
       setPendingAction(null)
       toast.success(`Role updated to ${roleLabels[variables.role as keyof typeof roleLabels] || variables.role}.`)
     },
     onError: (err: Error) => {
+      setUpdatingRoleId(null)
       setPendingAction(null)
       toast.error(err.message || 'Failed to update role.')
     },
@@ -350,7 +356,7 @@ export default function TeamSettingsPage() {
                 {members.map((member) => {
                   const isCurrentUser = member.id === currentUser?.id
                   const isRemoving = removingIds.has(member.id)
-                  const isUpdatingRole = updateRoleMutation.isPending
+                  const isUpdatingRole = updatingRoleId === member.id
 
                   return (
                     <tr key={member.id} className="hover:bg-zinc-50 transition-colors">
@@ -616,40 +622,14 @@ export default function TeamSettingsPage() {
       })()}
 
       {/* Invite Modal */}
-      {showInviteModal && (
-        <div className="fixed inset-0 z-50 overflow-y-auto">
-          <div className="flex min-h-full items-center justify-center p-4">
-            <div
-              className="fixed inset-0 bg-zinc-900/50 backdrop-blur-sm"
-              onClick={() => {
-                if (!inviteMutation.isPending) {
-                  setShowInviteModal(false)
-                  setInviteError(null)
-                }
-              }}
-            />
-            <div className="relative w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <h3 className="text-lg font-semibold text-zinc-900">Invite Team Member</h3>
-                  <p className="mt-1 text-sm text-zinc-500">
-                    Send an invitation email to join your workspace.
-                  </p>
-                </div>
-                <button
-                  onClick={() => {
-                    setShowInviteModal(false)
-                    setInviteError(null)
-                  }}
-                  disabled={inviteMutation.isPending}
-                  className="p-1 text-zinc-400 hover:text-zinc-600 transition-colors rounded-md disabled:opacity-50"
-                  aria-label="Close"
-                >
-                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
+      <Dialog open={showInviteModal} onOpenChange={(open) => { if (!open && !inviteMutation.isPending) { setShowInviteModal(false); setInviteError(null) } }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Invite Team Member</DialogTitle>
+            <DialogDescription>
+              Send an invitation email to join your workspace.
+            </DialogDescription>
+          </DialogHeader>
 
               <form onSubmit={handleInvite} className="space-y-4">
                 {inviteError && (
@@ -728,10 +708,8 @@ export default function TeamSettingsPage() {
                   </button>
                 </div>
               </form>
-            </div>
-          </div>
-        </div>
-      )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

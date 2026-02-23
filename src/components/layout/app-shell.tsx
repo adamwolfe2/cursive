@@ -218,7 +218,7 @@ const navigationItems: NavItemConfig[] = [
   },
   {
     name: 'Refer & Earn',
-    href: '/marketplace/referrals',
+    href: '/referrals',
     section: 'actions',
     subText: 'Earn credits for referrals',
     icon: (

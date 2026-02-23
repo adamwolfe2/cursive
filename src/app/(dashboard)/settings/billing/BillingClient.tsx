@@ -63,7 +63,7 @@ export default function BillingClient() {
   const [alertSaving, setAlertSaving] = useState(false)
 
   // Fetch current user data
-  const { data: userData, isLoading } = useQuery({
+  const { data: userData, isLoading, isError, error } = useQuery({
     queryKey: ['user', 'me'],
     queryFn: async () => {
       const response = await fetch('/api/users/me')
@@ -256,6 +256,8 @@ export default function BillingClient() {
       // Redirect to Stripe Customer Portal
       if (data.url) {
         window.location.href = data.url
+      } else {
+        setLoading(false)
       }
     } catch (error: any) {
       toast.error(error.message || 'Failed to open billing portal')
@@ -269,6 +271,23 @@ export default function BillingClient() {
         <Skeleton className="h-8 w-48" />
         <SkeletonCard />
         <SkeletonCard />
+      </div>
+    )
+  }
+
+  if (isError) {
+    return (
+      <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-6 text-center">
+        <p className="text-sm text-destructive font-medium mb-2">Failed to load billing information</p>
+        <p className="text-xs text-muted-foreground mb-4">
+          {(error as Error)?.message || 'An unexpected error occurred. Please try again.'}
+        </p>
+        <button
+          onClick={() => window.location.reload()}
+          className="text-sm font-medium underline text-foreground hover:text-primary"
+        >
+          Reload page
+        </button>
       </div>
     )
   }
@@ -499,7 +518,7 @@ export default function BillingClient() {
                 }}
               />
             </div>
-            <p className="mt-1.5 text-xs text-muted-foreground">Each enrichment reveals phone, email & LinkedIn. Resets daily at midnight CT (Central Time).</p>
+            <p className="mt-1.5 text-xs text-muted-foreground">Each enrichment reveals phone, email & LinkedIn. Resets daily at 8am CT (Central Time).</p>
 
             {/* Credit system explanation */}
             <div className="mt-3 rounded-lg border border-border bg-muted/30 px-4 py-3">

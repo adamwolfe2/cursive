@@ -264,7 +264,7 @@ export default function ProfileSettingsPage() {
                       {user?.plan === 'pro' ? 'Pro' : 'Free'}
                     </Badge>
                     {user?.plan === 'free' && (
-                      <Link href="/pricing">
+                      <Link href="/settings/billing">
                         <Button variant="link" size="sm" className="px-0">
                           Upgrade
                         </Button>
@@ -317,8 +317,9 @@ export default function ProfileSettingsPage() {
                   />
                   <Button
                     variant="outline"
+                    disabled={!user?.referral_code}
                     onClick={() =>
-                      copyToClipboard(user?.referral_code, 'Referral code copied!')
+                      copyToClipboard(user?.referral_code ?? '', 'Referral code copied!')
                     }
                   >
                     Copy
@@ -339,9 +340,10 @@ export default function ProfileSettingsPage() {
                   />
                   <Button
                     variant="outline"
+                    disabled={!user?.referral_code}
                     onClick={() =>
                       copyToClipboard(
-                        `${window.location.origin}/signup?ref=${user?.referral_code}`,
+                        `${window.location.origin}/signup?ref=${user?.referral_code ?? ''}`,
                         'Referral link copied!'
                       )
                     }
