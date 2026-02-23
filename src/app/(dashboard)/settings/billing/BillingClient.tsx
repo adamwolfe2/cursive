@@ -547,7 +547,7 @@ export default function BillingClient() {
                   <div>
                     <p className="text-sm font-medium text-red-800">No credits remaining</p>
                     <p className="text-xs text-red-700 mt-0.5">
-                      Your daily enrichment credits are used up. They reset at midnight CT.
+                      Your daily enrichment credits are used up. They reset at midnight UTC.
                       {!isPro && ' Upgrade to Pro for 1,000 credits/day.'}
                     </p>
                   </div>

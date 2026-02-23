@@ -206,7 +206,7 @@ export function SearchResults({
               </h3>
               <div className="mt-2 text-[13px] text-amber-800">
                 <p>
-                  You&apos;ve used all your credits for today. Credits reset at 8am CT,
+                  You&apos;ve used all your credits for today. Credits reset at midnight UTC,
                   or{' '}
                   <a
                     href="/settings/billing"
