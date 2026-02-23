@@ -7,7 +7,7 @@ import { CrispChat } from '@/components/crisp-chat'
 import './globals.css'
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://leads.meetcursive.com'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://leads.meetcursive.com'),
   title: 'Cursive - AI Intent Systems That Never Sleep',
   description:
     'Cursive identifies real people actively searching for your service, enriches them with verified contact data, and activates them through automated outbound.',

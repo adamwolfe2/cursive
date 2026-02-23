@@ -180,15 +180,11 @@ async function processPartnerPayout(partner: {
     })
 
     if (balanceError) {
-      safeError('[Payout] Failed to update partner balance atomically:', balanceError)
-      // Fallback: direct update (still better than read-then-write)
-      await supabase
-        .from('partners')
-        .update({
-          available_balance: 0,
-          last_payout_at: new Date().toISOString(),
-        })
-        .eq('id', partner.partnerId)
+      // Do NOT fall back to a direct balance=0 update — that would lose any commissions
+      // that arrived between when we read the balance and when the RPC ran.
+      // Instead, throw so Inngest retries the entire step with a fresh balance read.
+      safeError('[Payout] Failed to update partner balance atomically — will retry:', balanceError)
+      throw new Error(`Atomic payout RPC failed for partner ${partner.partnerId}: ${balanceError.message}`)
     }
 
     // Mark commissions as paid

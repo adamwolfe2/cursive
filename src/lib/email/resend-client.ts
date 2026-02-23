@@ -32,11 +32,11 @@ export const EMAIL_CONFIG = {
     border: '#e4e4e7', // zinc-200
   },
 
-  // Logo
-  logoUrl: 'https://leads.meetcursive.com/cursive-logo.png',
+  // Base URL — used for email links and logo references
+  baseUrl: process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_BASE_URL || 'https://leads.meetcursive.com',
 
-  // Base URL
-  baseUrl: process.env.NEXT_PUBLIC_BASE_URL || 'https://leads.meetcursive.com',
+  // Logo (derived from baseUrl at runtime — set after this object)
+  logoUrl: `${process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_BASE_URL || 'https://leads.meetcursive.com'}/cursive-logo.png`,
 }
 
 /**
