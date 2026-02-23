@@ -13,6 +13,7 @@ import { syncLeadsToGHL } from '@/lib/services/ghl.service'
 import { sendEmail } from '@/lib/email/service'
 import { meetsQualityBar } from '@/lib/services/lead-quality.service'
 import { checkWorkspaceDuplicates, logDedupRejections } from '@/lib/services/deduplication.service'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 /**
  * Score a lead based on data completeness.
@@ -328,18 +329,18 @@ export const distributeDailyLeads = inngest.createFunction(
                 title: lead.JOB_TITLE || lead.HEADLINE,
               }))
 
-              const synced = await syncLeadsToGHL(
+              await syncLeadsToGHL(
                 user.ghl_sub_account_id!,
                 ghlLeads,
                 ['cursive-daily-lead', user.industry_segment]
               )
-
             })
           }
         }
 
         successCount++
-      } catch {
+      } catch (err) {
+        safeError(`[DailyLeads] Failed to distribute leads for user ${user.id}:`, err)
         failedCount++
       }
     }

@@ -169,8 +169,7 @@ export function formatError(
   const errorDef = ERROR_MESSAGES[errorKey]
 
   if (typeof errorDef === 'function') {
-    // @ts-ignore - Dynamic function call
-    const result = errorDef(...args)
+    const result = (errorDef as (...args: unknown[]) => { message: string; help?: string; action?: string })(...args)
     return {
       error: errorKey,
       message: result.message,
