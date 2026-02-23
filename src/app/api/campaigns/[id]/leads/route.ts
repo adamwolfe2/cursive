@@ -2,7 +2,7 @@
 // Manage leads within a campaign
 
 
-import { type NextRequest } from 'next/server'
+import { NextResponse, type NextRequest } from 'next/server'
 import { CampaignRepository } from '@/lib/repositories/campaign.repository'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized, notFound, badRequest, success, created } from '@/lib/utils/api-error-handler'
@@ -11,6 +11,12 @@ import { z } from 'zod'
 interface RouteContext {
   params: Promise<{ id: string }>
 }
+
+// Schema for paginating campaign leads
+const listLeadsSchema = z.object({
+  limit: z.coerce.number().min(1).max(200).default(100),
+  offset: z.coerce.number().min(0).max(100000).default(0),
+})
 
 // Schema for adding leads to campaign
 const addLeadsSchema = z.object({
@@ -23,7 +29,7 @@ const removeLeadSchema = z.object({
 })
 
 /**
- * GET - Get all leads in this campaign
+ * GET - Get leads in this campaign (paginated)
  */
 export async function GET(request: NextRequest, context: RouteContext) {
   try {
@@ -31,15 +37,28 @@ export async function GET(request: NextRequest, context: RouteContext) {
     const user = await getCurrentUser()
     if (!user) return unauthorized()
 
+    const { searchParams } = new URL(request.url)
+    const params = listLeadsSchema.parse({
+      limit: searchParams.get('limit') || 100,
+      offset: searchParams.get('offset') || 0,
+    })
+
     const repo = new CampaignRepository()
 
     // Verify campaign exists
     const campaign = await repo.findById(id, user.workspace_id)
     if (!campaign) return notFound('Campaign not found')
 
-    const leads = await repo.getCampaignLeads(id, user.workspace_id)
+    const { data, count } = await repo.getCampaignLeads(id, user.workspace_id, params.limit, params.offset)
 
-    return success(leads)
+    return NextResponse.json({
+      data,
+      pagination: {
+        total: count,
+        limit: params.limit,
+        offset: params.offset,
+      },
+    })
   } catch (error: unknown) {
     return handleApiError(error)
   }

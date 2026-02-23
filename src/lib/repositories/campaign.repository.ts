@@ -251,7 +251,12 @@ export class CampaignRepository {
    * Get leads for a campaign
    * Verifies campaign belongs to the specified workspace before returning leads
    */
-  async getCampaignLeads(campaignId: string, workspaceId: string): Promise<CampaignLead[]> {
+  async getCampaignLeads(
+    campaignId: string,
+    workspaceId: string,
+    limit: number = 100,
+    offset: number = 0
+  ): Promise<{ data: CampaignLead[]; count: number }> {
     const supabase = await createClient()
 
     // Verify campaign belongs to workspace
@@ -260,18 +265,18 @@ export class CampaignRepository {
       throw new DatabaseError('Campaign not found or does not belong to workspace')
     }
 
-    const { data, error } = await supabase
+    const { data, error, count } = await supabase
       .from('campaign_leads')
-      .select('*')
+      .select('*', { count: 'estimated' })
       .eq('campaign_id', campaignId)
       .order('created_at', { ascending: false })
-      .limit(10000)
+      .range(offset, offset + limit - 1)
 
     if (error) {
       throw new DatabaseError(error.message)
     }
 
-    return data as CampaignLead[]
+    return { data: data as CampaignLead[], count: count ?? 0 }
   }
 
   /**
