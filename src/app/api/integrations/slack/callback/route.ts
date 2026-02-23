@@ -11,7 +11,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { cookies } from 'next/headers'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { createClient } from '@/lib/supabase/server'
+import { getCurrentUser } from '@/lib/auth/helpers'
 
 // Slack OAuth Token URL
 const SLACK_TOKEN_URL = 'https://slack.com/api/oauth.v2.access'
@@ -106,27 +106,12 @@ export async function GET(req: NextRequest) {
     }
 
     // CRITICAL: Validate context against authenticated user to prevent context injection
-    const authSupabase = await createClient()
-    const { data: { user: authUser } } = await authSupabase.auth.getUser()
+    const userData = await getCurrentUser()
 
-    if (!authUser) {
+    if (!userData) {
       safeError('[Slack OAuth] No authenticated user during callback')
       return NextResponse.redirect(
         new URL('/login?error=unauthorized&redirect=/settings/integrations', req.url)
-      )
-    }
-
-    // Get authenticated user's workspace
-    const { data: userData } = await authSupabase
-      .from('users')
-      .select('id, workspace_id')
-      .eq('auth_user_id', authUser.id)
-      .maybeSingle()
-
-    if (!userData) {
-      safeError('[Slack OAuth] User record not found for authenticated session')
-      return NextResponse.redirect(
-        new URL('/settings/integrations?error=slack_user_not_found', req.url)
       )
     }
 
