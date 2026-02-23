@@ -29,24 +29,26 @@ export async function GET() {
     const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1)
     const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0)
 
-    // Fetch current month stats
+    // Fetch current month stats (limit to 5000 — sufficient for display metrics)
     const { data: currentMonthLeads, error: currentError } = await supabase
       .from('leads')
       .select('status, created_at')
       .eq('workspace_id', workspaceId)
       .gte('created_at', currentMonthStart.toISOString())
+      .limit(5000)
 
     if (currentError) {
       throw currentError
     }
 
-    // Fetch last month stats for comparison
+    // Fetch last month stats for comparison (limit to 5000)
     const { data: lastMonthLeads, error: lastError } = await supabase
       .from('leads')
       .select('status, created_at')
       .eq('workspace_id', workspaceId)
       .gte('created_at', lastMonthStart.toISOString())
       .lte('created_at', lastMonthEnd.toISOString())
+      .limit(5000)
 
     if (lastError) {
       throw lastError
@@ -98,6 +100,7 @@ export async function GET() {
       .eq('workspace_id', workspaceId)
       .gte('created_at', thirtyDaysAgo.toISOString())
       .order('created_at', { ascending: true })
+      .limit(2000)
 
     if (growthError) {
       throw growthError
