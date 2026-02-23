@@ -97,31 +97,35 @@ export function HeaderNotificationBell() {
 
   const handleMarkRead = async (id: string) => {
     try {
-      await fetch(`/api/notifications/${id}`, {
+      const res = await fetch(`/api/notifications/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ is_read: true }),
       })
-      setNotifications((prev) =>
-        prev.map((n) => (n.id === id ? { ...n, is_read: true } : n))
-      )
-      setUnreadCount((prev) => Math.max(0, prev - 1))
+      if (res.ok) {
+        setNotifications((prev) =>
+          prev.map((n) => (n.id === id ? { ...n, is_read: true } : n))
+        )
+        setUnreadCount((prev) => Math.max(0, prev - 1))
+      }
     } catch {
-      // Silent fail
+      // Silent fail — non-critical
     }
   }
 
   const handleMarkAllRead = async () => {
     try {
-      await fetch('/api/notifications', {
+      const res = await fetch('/api/notifications', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'mark_all_read' }),
       })
-      setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })))
-      setUnreadCount(0)
+      if (res.ok) {
+        setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })))
+        setUnreadCount(0)
+      }
     } catch {
-      // Silent fail
+      // Silent fail — non-critical
     }
   }
 

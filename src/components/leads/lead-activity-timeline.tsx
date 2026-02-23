@@ -111,7 +111,8 @@ const activityIcons: Record<ActivityType, { icon: React.ReactNode; bg: string }>
 async function fetchActivities(leadId: string): Promise<{ activities: LeadActivity[] }> {
   const res = await fetch(`/api/leads/${leadId}/activities`)
   if (!res.ok) throw new Error('Failed to fetch activities')
-  return res.json()
+  const json = await res.json()
+  return json.data ?? json
 }
 
 export function LeadActivityTimeline({ leadId, className }: LeadActivityTimelineProps) {
