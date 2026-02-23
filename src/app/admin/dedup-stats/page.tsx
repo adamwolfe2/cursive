@@ -280,7 +280,7 @@ export default function DedupStatsPage() {
           )}
           <div className="flex justify-between text-xs text-zinc-400 mt-2">
             <span>{statsData?.daily_trend[0]?.day ?? ''}</span>
-            <span>{statsData?.daily_trend[statsData.daily_trend.length - 1]?.day ?? ''}</span>
+            <span>{statsData?.daily_trend?.[statsData.daily_trend.length - 1]?.day ?? ''}</span>
           </div>
         </CardContent>
       </Card>
