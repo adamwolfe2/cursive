@@ -13,6 +13,7 @@ import { inngest } from '@/inngest/client'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 import { STRIPE_CONFIG } from '@/lib/stripe/config'
 import { TIMEOUTS, getDaysFromNow } from '@/lib/constants/timeouts'
+import { sendSlackAlert } from '@/lib/monitoring/alerts'
 
 // Validation schemas for webhook metadata
 const creditPurchaseMetadataSchema = z.object({
@@ -93,6 +94,17 @@ async function handleCreditPurchaseCompleted(session: Stripe.Checkout.Session): 
       errors: metadataValidation.error.format(),
       metadata: session.metadata,
     })
+    // Alert ops — this payment will NOT be processed without manual intervention
+    await sendSlackAlert({
+      type: 'stripe_payment',
+      severity: 'critical',
+      message: `Credit purchase webhook dropped: Stripe session ${session.id} has invalid metadata and could not be processed.`,
+      metadata: {
+        session_id: session.id,
+        amount: session.amount_total ? `$${(session.amount_total / 100).toFixed(2)}` : 'unknown',
+        validation_errors: JSON.stringify(metadataValidation.error.format()),
+      },
+    }).catch(() => {}) // Never fail the webhook handler over an alert
     return
   }
 
@@ -173,6 +185,17 @@ async function handleLeadPurchaseCompleted(session: Stripe.Checkout.Session): Pr
       errors: metadataValidation.error.format(),
       metadata: session.metadata,
     })
+    // Alert ops — this payment will NOT be processed without manual intervention
+    await sendSlackAlert({
+      type: 'stripe_payment',
+      severity: 'critical',
+      message: `Lead purchase webhook dropped: Stripe session ${session.id} has invalid metadata and could not be processed.`,
+      metadata: {
+        session_id: session.id,
+        amount: session.amount_total ? `$${(session.amount_total / 100).toFixed(2)}` : 'unknown',
+        validation_errors: JSON.stringify(metadataValidation.error.format()),
+      },
+    }).catch(() => {}) // Never fail the webhook handler over an alert
     return
   }
 
