@@ -131,6 +131,7 @@ export function LeadDetailClient({ initialLead }: LeadDetailClientProps) {
             <Button
               variant="ghost"
               size="icon"
+              aria-label="Back to leads"
               onClick={() => router.push('/crm/leads')}
             >
               <ArrowLeft className="h-5 w-5" />
@@ -173,7 +174,7 @@ export function LeadDetailClient({ initialLead }: LeadDetailClientProps) {
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="icon">
+                <Button variant="outline" size="icon" aria-label="More actions">
                   <MoreVertical className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>

@@ -1,6 +1,7 @@
 // Lead Details Page
 // Full details view for a single lead
 
+import { Suspense } from 'react'
 import { notFound, redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { LeadRepository } from '@/lib/repositories/lead.repository'
@@ -69,7 +70,9 @@ export default async function LeadDetailPage({ params }: PageProps) {
 
   return (
     <QueryProvider>
-      <LeadDetailClient initialLead={leadTableRow} />
+      <Suspense fallback={<div className="h-64 animate-pulse rounded bg-muted" />}>
+        <LeadDetailClient initialLead={leadTableRow} />
+      </Suspense>
     </QueryProvider>
   )
 }

@@ -220,6 +220,7 @@ export function BulkActionsToolbar({
               variant="ghost"
               size="icon"
               className="ml-auto"
+              aria-label="Clear selection"
               onClick={clearSelection}
             >
               <X className="h-4 w-4" />

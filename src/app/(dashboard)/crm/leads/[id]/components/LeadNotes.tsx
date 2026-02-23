@@ -323,6 +323,7 @@ export function LeadNotes({ leadId }: LeadNotesProps) {
                       variant="ghost"
                       size="icon"
                       className="h-6 w-6"
+                      aria-label="Edit note"
                       onClick={() => {
                         setEditingNoteId(note.id)
                         setEditContent(note.content)
@@ -334,6 +335,7 @@ export function LeadNotes({ leadId }: LeadNotesProps) {
                       variant="ghost"
                       size="icon"
                       className="h-6 w-6"
+                      aria-label="Delete note"
                       onClick={() => setConfirmDeleteNote(note.id)}
                     >
                       <Trash2 className="h-3 w-3 text-gray-400" />

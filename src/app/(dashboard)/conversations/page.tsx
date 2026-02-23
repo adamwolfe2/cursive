@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, Suspense } from 'react'
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
 import { formatDistanceToNow } from 'date-fns'
@@ -281,7 +281,7 @@ function EmptyState({
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
-export default function ConversationsPage() {
+function ConversationsPageInner() {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -565,5 +565,13 @@ export default function ConversationsPage() {
         </div>
       )}
     </div>
+  )
+}
+
+export default function ConversationsPage() {
+  return (
+    <Suspense fallback={<div className="space-y-4 animate-pulse"><div className="h-8 w-48 rounded bg-muted" /><div className="h-64 rounded bg-muted" /></div>}>
+      <ConversationsPageInner />
+    </Suspense>
   )
 }

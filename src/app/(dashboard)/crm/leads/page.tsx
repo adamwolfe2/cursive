@@ -1,6 +1,7 @@
 // CRM Leads Page - Twenty CRM Inspired
 // Updated with professional three-column layout and view switching
 
+import { Suspense } from 'react'
 import { QueryProvider } from '@/components/providers/query-provider'
 import { LeadsPageClient } from './components/LeadsPageClient'
 import { createClient } from '@/lib/supabase/server'
@@ -42,12 +43,14 @@ export default async function CRMLeadsPage({ searchParams }: CRMLeadsPageProps) 
 
   return (
     <QueryProvider>
-      <LeadsPageClient
-        initialData={leads}
-        currentPage={page}
-        perPage={perPage}
-        totalCount={total}
-      />
+      <Suspense fallback={<div className="h-64 animate-pulse rounded bg-muted" />}>
+        <LeadsPageClient
+          initialData={leads}
+          currentPage={page}
+          perPage={perPage}
+          totalCount={total}
+        />
+      </Suspense>
     </QueryProvider>
   )
 }
