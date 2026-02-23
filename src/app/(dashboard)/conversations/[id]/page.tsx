@@ -25,6 +25,7 @@ import { Badge } from '@/components/ui/badge'
 import { Select } from '@/components/ui/select'
 import { useToast } from '@/lib/hooks/use-toast'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import DOMPurify from 'isomorphic-dompurify'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -465,7 +466,7 @@ function MessageBubble({ message }: { message: Message }) {
           {message.body_html ? (
             <div
               className="prose prose-sm max-w-none text-foreground"
-              dangerouslySetInnerHTML={{ __html: message.body_html }}
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(message.body_html) }}
             />
           ) : message.body_text ? (
             <pre className="text-sm text-foreground whitespace-pre-wrap font-sans">
