@@ -132,9 +132,13 @@ export function TemplateBrowser() {
         if (response.ok) {
           const data = await response.json()
           setTemplates(data.data || [])
+        } else {
+          toast.error('Failed to load templates')
+          safeError('[TemplateBrowser] Failed to fetch templates', new Error(`HTTP ${response.status}`))
         }
       } catch (error) {
-        safeError('[TemplateBrowser]', 'Failed to fetch templates:', error)
+        toast.error('Failed to load templates')
+        safeError('[TemplateBrowser] Failed to fetch templates', error)
       } finally {
         setLoading(false)
       }

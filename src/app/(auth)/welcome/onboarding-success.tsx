@@ -46,6 +46,7 @@ export function OnboardingSuccess({ userType, email, isMarketplace }: Onboarding
 
   // Confirmation polling state
   const [confirmed, setConfirmed] = useState(false)
+  const [pollExpired, setPollExpired] = useState(false)
 
   // Redirect when no confirmation needed
   useEffect(() => {
@@ -81,6 +82,7 @@ export function OnboardingSuccess({ userType, email, isMarketplace }: Onboarding
       checks++
       if (checks > MAX_POLL_CHECKS) {
         clearInterval(interval)
+        setPollExpired(true)
         return
       }
       const { data: { session } } = await supabase.auth.getSession()
@@ -266,6 +268,25 @@ export function OnboardingSuccess({ userType, email, isMarketplace }: Onboarding
                 contact support
               </a>
             </p>
+
+            {/* Poll expired guidance */}
+            {pollExpired && (
+              <motion.div
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-2 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800"
+              >
+                <strong>Still waiting?</strong> If you&apos;ve confirmed your email, try{' '}
+                <a href="/login" className="font-medium underline hover:text-amber-900">
+                  signing in
+                </a>{' '}
+                directly, or{' '}
+                <a href="mailto:hello@meetcursive.com" className="font-medium underline hover:text-amber-900">
+                  contact support
+                </a>{' '}
+                if you need help.
+              </motion.div>
+            )}
           </motion.div>
         )}
 
