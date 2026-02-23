@@ -310,6 +310,7 @@ export async function getScheduledCampaignsToActivate(): Promise<
     .select('id, workspace_id, name')
     .eq('status', 'scheduled')
     .lte('scheduled_start_at', now)
+    .limit(100) // Process up to 100 per cron tick; remainder handled next run
 
   if (error) {
     safeError('[Campaign] Error fetching scheduled campaigns:', error)
@@ -326,11 +327,12 @@ export async function autoCompleteCampaigns(): Promise<string[]> {
   const supabase = await createClient()
   const completedIds: string[] = []
 
-  // Find active campaigns where all leads have finished
+  // Find active campaigns where all leads have finished (process 200 per cron tick)
   const { data: activeCampaigns, error } = await supabase
     .from('email_campaigns')
     .select('id, workspace_id, sequence_steps')
     .eq('status', 'active')
+    .limit(200)
 
   if (error || !activeCampaigns) {
     return completedIds
