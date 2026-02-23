@@ -4,7 +4,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
-import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
+import { handleApiError, unauthorized, notFound } from '@/lib/utils/api-error-handler'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 import { safeError } from '@/lib/utils/log-sanitizer'
@@ -50,6 +50,7 @@ export async function PATCH(
       .maybeSingle()
 
     if (error) throw error
+    if (!data) return notFound('Lead not found')
 
     return NextResponse.json({ success: true, lead: data })
   } catch (error) {
