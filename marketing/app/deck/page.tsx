@@ -755,20 +755,190 @@ function S8() {
   )
 }
 
-// ─── SLIDE 9 — CLOSE ──────────────────────────────────────────────────────────
-function S9() {
-  const [showSnippet, setShowSnippet] = useState(false)
-  const [copied, setCopied] = useState(false)
-  const PIXEL_SNIPPET = `<script src="https://cdn.cursive.io/px.js" async></script>`
+// ─── PIXEL INSTALL MODAL ──────────────────────────────────────────────────────
+type InstallStep = 'url' | 'provisioning' | 'done' | 'error'
 
-  const copySnippet = () => {
-    navigator.clipboard.writeText(PIXEL_SNIPPET)
+interface PixelResult { pixel_id: string; snippet: string; domain: string }
+
+const PROVISION_STEPS = [
+  'Validating your domain...',
+  'Connecting to identity graph...',
+  'Generating your custom pixel...',
+  'Finalizing configuration...',
+]
+
+function PixelInstallModal({ onClose }: { onClose: () => void }) {
+  const [step, setStep] = useState<InstallStep>('url')
+  const [url, setUrl] = useState('')
+  const [urlError, setUrlError] = useState('')
+  const [provStep, setProvStep] = useState(0)
+  const [result, setResult] = useState<PixelResult | null>(null)
+  const [copied, setCopied] = useState(false)
+  const [apiError, setApiError] = useState('')
+
+  const provision = async () => {
+    setUrlError('')
+    if (!url.trim()) { setUrlError('Enter your website URL to continue'); return }
+    setStep('provisioning')
+    setProvStep(0)
+
+    // Animate provision steps while API call runs
+    const stepTimer = setInterval(() => setProvStep(p => Math.min(p + 1, PROVISION_STEPS.length - 1)), 900)
+
+    try {
+      const res = await fetch('/api/provision-demo-pixel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ websiteUrl: url.trim() }),
+      })
+      const data = await res.json()
+      clearInterval(stepTimer)
+      if (!res.ok) { setApiError(data.error || 'Something went wrong'); setStep('error'); return }
+      // Ensure we show all steps before revealing result
+      await new Promise(r => setTimeout(r, 400))
+      setResult(data)
+      setStep('done')
+    } catch {
+      clearInterval(stepTimer)
+      setApiError('Network error — please try again')
+      setStep('error')
+    }
+  }
+
+  const copy = () => {
+    if (!result) return
+    navigator.clipboard.writeText(result.snippet)
     setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+    setTimeout(() => setCopied(false), 2500)
   }
 
   return (
+    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={e => { if (e.target === e.currentTarget) onClose() }}>
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden">
+
+        {/* Header */}
+        <div className="bg-[#007AFF] px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <img src="/cursive-logo.png" alt="Cursive" className="h-5 w-auto brightness-0 invert" />
+            <span className="text-white/80 text-sm font-mono">Super Pixel · Live Setup</span>
+          </div>
+          <button onClick={onClose} className="text-white/60 hover:text-white text-xl leading-none transition-colors">×</button>
+        </div>
+
+        {/* Step: URL input */}
+        {step === 'url' && (
+          <div className="p-6">
+            <h3 className="text-xl font-semibold text-gray-900 mb-1">Generate your custom pixel</h3>
+            <p className="text-gray-500 text-sm mb-5">Enter the website you want to start identifying visitors on. We&apos;ll generate a unique pixel for that domain right now.</p>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Website URL</label>
+            <input
+              type="text"
+              value={url}
+              onChange={e => { setUrl(e.target.value); setUrlError('') }}
+              onKeyDown={e => e.key === 'Enter' && provision()}
+              placeholder="yourcompany.com"
+              autoFocus
+              className="w-full px-4 py-3 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#007AFF]/60 focus:ring-1 focus:ring-[#007AFF]/30 transition-all font-mono text-sm"
+            />
+            {urlError && <p className="mt-1.5 text-red-500 text-sm">{urlError}</p>}
+            <div className="mt-3 text-[11px] text-gray-400 space-y-0.5">
+              <p>✓ Works on WordPress, Webflow, Shopify, React — any stack</p>
+              <p>✓ No webhook setup required to get started</p>
+            </div>
+            <button
+              onClick={provision}
+              className="mt-5 w-full py-3 bg-[#007AFF] hover:bg-[#0066DD] text-white font-bold rounded-lg transition-colors"
+            >
+              Generate Pixel →
+            </button>
+          </div>
+        )}
+
+        {/* Step: Provisioning */}
+        {step === 'provisioning' && (
+          <div className="p-6 text-center">
+            <div className="flex justify-center mb-5">
+              <div className="relative w-14 h-14">
+                <svg className="animate-spin w-14 h-14 text-[#007AFF]/20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" /></svg>
+                <svg className="animate-spin w-14 h-14 text-[#007AFF] absolute inset-0" viewBox="0 0 24 24" fill="none" style={{ animationDuration: '0.75s' }}><path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" /></svg>
+              </div>
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Setting up your pixel...</h3>
+            <div className="space-y-2 text-sm text-left max-w-xs mx-auto">
+              {PROVISION_STEPS.map((s, i) => (
+                <div key={i} className={`flex items-center gap-2.5 transition-all duration-300 ${i <= provStep ? 'opacity-100' : 'opacity-25'}`}>
+                  <span className={`flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center text-[10px] ${i < provStep ? 'bg-emerald-100 text-emerald-600' : i === provStep ? 'bg-[#007AFF] text-white' : 'bg-gray-100 text-gray-400'}`}>
+                    {i < provStep ? '✓' : i + 1}
+                  </span>
+                  <span className={i <= provStep ? 'text-gray-700' : 'text-gray-400'}>{s}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Step: Done */}
+        {step === 'done' && result && (
+          <div className="p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <span className="text-[10px] font-semibold bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded">✓ PIXEL GENERATED</span>
+              <span className="text-[10px] font-mono text-gray-400">{result.domain} · {result.pixel_id}</span>
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-1">Your pixel is ready</h3>
+            <p className="text-gray-500 text-sm mb-4">Paste this one line into the <code className="bg-gray-100 px-1 rounded text-[11px]">&lt;head&gt;</code> of <strong>{result.domain}</strong>:</p>
+
+            <div className="bg-gray-900 rounded-xl p-4 mb-4 relative">
+              <code className="text-emerald-400 text-xs font-mono break-all leading-relaxed block pr-14">{result.snippet}</code>
+              <button
+                onClick={copy}
+                className={`absolute top-3 right-3 text-[11px] font-mono px-3 py-1.5 rounded-lg transition-all ${copied ? 'bg-emerald-600 text-white' : 'bg-gray-700 hover:bg-gray-600 text-gray-300'}`}
+              >
+                {copied ? '✓ Copied!' : 'Copy'}
+              </button>
+            </div>
+
+            <div className="bg-[#007AFF]/5 border border-[#007AFF]/20 rounded-lg p-3 mb-4 text-xs text-gray-600 space-y-1">
+              <p className="font-semibold text-gray-700 mb-1.5">What happens after install:</p>
+              <p>→ Pixel begins matching anonymous visitors to real contacts</p>
+              <p>→ First identified leads appear within minutes</p>
+              <p>→ Set up your Cursive account to receive leads in your CRM</p>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={copy}
+                className={`flex-1 py-2.5 font-bold rounded-lg transition-colors ${copied ? 'bg-emerald-600 text-white' : 'bg-[#007AFF] hover:bg-[#0066DD] text-white'}`}
+              >
+                {copied ? '✓ Copied to Clipboard' : 'Copy Snippet'}
+              </button>
+              <button onClick={onClose} className="px-4 py-2.5 border border-gray-200 hover:border-gray-400 text-gray-500 rounded-lg text-sm transition-colors">Done</button>
+            </div>
+          </div>
+        )}
+
+        {/* Step: Error */}
+        {step === 'error' && (
+          <div className="p-6 text-center">
+            <div className="text-4xl mb-3">⚠️</div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Something went wrong</h3>
+            <p className="text-gray-500 text-sm mb-5">{apiError}</p>
+            <button onClick={() => setStep('url')} className="w-full py-3 bg-[#007AFF] hover:bg-[#0066DD] text-white font-bold rounded-lg transition-colors">
+              ← Try Again
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// ─── SLIDE 9 — CLOSE ──────────────────────────────────────────────────────────
+function S9() {
+  const [showModal, setShowModal] = useState(false)
+
+  return (
     <Slide>
+      {showModal && <PixelInstallModal onClose={() => setShowModal(false)} />}
       <div className="max-w-4xl mx-auto w-full">
         <div className="bg-amber-50 border border-amber-200 rounded-xl px-5 py-3 mb-6 flex items-center gap-3">
           <span className="relative flex h-2.5 w-2.5 flex-shrink-0"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" /><span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500" /></span>
@@ -783,54 +953,26 @@ function S9() {
           <div className="border-2 border-[#007AFF] rounded-xl p-6 bg-white">
             <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-[#007AFF] mb-4">Start Today</p>
             <h3 className="text-xl font-semibold text-gray-900 mb-3">Install on this call</h3>
-            {!showSnippet ? (
-              <>
-                <p className="text-gray-600 text-sm leading-relaxed mb-5">One script tag. We&apos;ll walk you through it right now — 90 seconds and you&apos;re live. You&apos;ll see your first identified visitors before we hang up.</p>
-                <div className="space-y-2 mb-6">
-                  {[
-                    'No engineering sprint required',
-                    'Works on any website stack',
-                    'First leads identified within minutes',
-                    '1-on-1 onboarding support included',
-                  ].map(item => (
-                    <div key={item} className="flex items-center gap-2 text-xs text-gray-600">
-                      <span className="text-[#007AFF] font-bold">✓</span>
-                      {item}
-                    </div>
-                  ))}
+            <p className="text-gray-600 text-sm leading-relaxed mb-5">Enter your website URL and we&apos;ll generate a custom pixel for your domain right now — one script tag, 90 seconds, and you&apos;re identifying visitors live.</p>
+            <div className="space-y-2 mb-6">
+              {[
+                'No engineering sprint required',
+                'Works on any website stack',
+                'First leads identified within minutes',
+                '1-on-1 onboarding support included',
+              ].map(item => (
+                <div key={item} className="flex items-center gap-2 text-xs text-gray-600">
+                  <span className="text-[#007AFF] font-bold">✓</span>
+                  {item}
                 </div>
-                <button
-                  onClick={() => setShowSnippet(true)}
-                  className="block w-full text-center px-6 py-3 bg-[#007AFF] hover:bg-[#0066DD] text-white font-bold rounded-lg transition-colors"
-                >
-                  Install the Pixel on This Call →
-                </button>
-              </>
-            ) : (
-              <>
-                <p className="text-gray-600 text-sm mb-3">Paste this one line into the <code className="bg-gray-100 px-1 rounded text-xs">&lt;head&gt;</code> of your website — or hand it to your developer:</p>
-                <div className="bg-gray-900 rounded-lg p-4 mb-4 relative">
-                  <code className="text-emerald-400 text-xs font-mono break-all leading-relaxed">{PIXEL_SNIPPET}</code>
-                  <button
-                    onClick={copySnippet}
-                    className="absolute top-2 right-2 text-[10px] font-mono bg-gray-700 hover:bg-gray-600 text-gray-300 px-2 py-1 rounded transition-colors"
-                  >
-                    {copied ? '✓ Copied!' : 'Copy'}
-                  </button>
-                </div>
-                <div className="space-y-1.5 text-xs text-gray-500 mb-4">
-                  <p>✓ Works on WordPress, Webflow, Shopify, React, any stack</p>
-                  <p>✓ No configuration needed — auto-detects your domain</p>
-                  <p>✓ First leads appear within minutes of install</p>
-                </div>
-                <button
-                  onClick={() => setShowSnippet(false)}
-                  className="block w-full text-center px-6 py-2 border border-gray-200 hover:border-gray-400 text-gray-500 text-sm rounded-lg transition-colors"
-                >
-                  ← Back
-                </button>
-              </>
-            )}
+              ))}
+            </div>
+            <button
+              onClick={() => setShowModal(true)}
+              className="block w-full text-center px-6 py-3 bg-[#007AFF] hover:bg-[#0066DD] text-white font-bold rounded-lg transition-colors"
+            >
+              Install the Pixel on This Call →
+            </button>
           </div>
           <div className="border border-gray-200 rounded-xl p-6 bg-white">
             <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-gray-400 mb-4">Need More Time</p>
