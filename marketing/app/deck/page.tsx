@@ -280,13 +280,28 @@ function S1() {
         <div>
           <Label>Cursive Super Pixel</Label>
           <h1 className="text-5xl lg:text-6xl font-light text-gray-900 leading-[1.05] mb-6">
-            Your website is generating leads.
-            <span className="block font-cursive text-gray-500 mt-1">You just can&apos;t see them.</span>
+            Your website generated pipeline last month.
+            <span className="block font-cursive text-gray-500 mt-1">You just didn&apos;t capture it.</span>
           </h1>
-          <p className="text-xl text-gray-600 leading-relaxed mb-8">
-            The Cursive Super Pixel identifies up to <strong className="text-gray-900">70% of anonymous B2B visitors</strong> — name, email, phone, company, and intent — in real time, before they ever leave your site.
+          <p className="text-xl text-gray-600 leading-relaxed mb-6">
+            The average B2B website loses <strong className="text-gray-900">97% of visitors</strong> without capturing their identity. The Cursive Super Pixel recovers <strong className="text-gray-900">70% of them</strong> — automatically enriched with:
           </p>
-          <p className="text-sm text-gray-400 font-mono tracking-wide">Use ↓ or → to walk through the story</p>
+          <div className="space-y-2 mb-8">
+            {[
+              'Full name & verified direct email',
+              'Mobile phone number',
+              'Company, role & seniority',
+              'Real-time intent signals & page history',
+              'Account-level buying signals',
+            ].map(item => (
+              <div key={item} className="flex items-center gap-2.5 text-sm text-gray-700">
+                <svg className="w-4 h-4 text-[#007AFF] flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
+                </svg>
+                {item}
+              </div>
+            ))}
+          </div>
         </div>
         <div className="hidden lg:block">
           <VisitorDemo />
@@ -303,17 +318,43 @@ function S2() {
       <div className="max-w-4xl mx-auto w-full">
         <Label>The Problem</Label>
         <h2 className="text-5xl font-light text-gray-900 leading-[1.05] mb-4">
-          You&apos;re paying for traffic
-          <span className="block font-cursive text-gray-500 text-6xl">you can&apos;t follow up with.</span>
+          Here&apos;s what&apos;s happening on your website
+          <span className="block font-cursive text-gray-500 text-5xl">right now.</span>
         </h2>
-        <p className="text-xl text-gray-600 mb-12">Every month, thousands of buyers visit your site, evaluate your product, and leave — without you knowing who they are.</p>
-        <div className="grid grid-cols-2 gap-px bg-gray-200 border border-gray-200">
+        <p className="text-lg text-gray-600 mb-8 leading-relaxed">Every month, thousands of your ideal buyers visit your site. They read your content, view your pricing, compare you to competitors — and <strong className="text-gray-900">97% leave without filling a form.</strong> You never learn who they were.</p>
+
+        <div className="grid grid-cols-2 gap-px bg-gray-200 border border-gray-200 mb-8">
           {PROBLEM_STATS.map((s, i) => (
             <div key={i} className="bg-white p-8 lg:p-10">
               <div className="text-5xl lg:text-6xl font-light text-gray-900 mb-3">{s.number}</div>
               <p className="text-gray-500 text-sm leading-relaxed">{s.label}</p>
             </div>
           ))}
+        </div>
+
+        <div className="bg-white border border-gray-200 rounded-xl p-6">
+          <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-gray-400 mb-3">The recoverable pipeline formula</p>
+          <div className="flex flex-wrap items-center gap-2 text-sm">
+            <span className="bg-gray-50 border border-gray-200 px-3 py-1.5 rounded font-mono text-gray-700">Monthly visitors</span>
+            <span className="text-gray-400">×</span>
+            <span className="bg-[#007AFF]/8 border border-[#007AFF]/20 px-3 py-1.5 rounded font-mono text-[#007AFF]">70% ID rate</span>
+            <span className="text-gray-400">×</span>
+            <span className="bg-gray-50 border border-gray-200 px-3 py-1.5 rounded font-mono text-gray-700">Avg deal size</span>
+            <span className="text-gray-400">×</span>
+            <span className="bg-gray-50 border border-gray-200 px-3 py-1.5 rounded font-mono text-gray-700">Close rate</span>
+            <span className="text-gray-400">=</span>
+            <span className="bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded font-mono text-emerald-700 font-semibold">Recoverable pipeline / mo</span>
+          </div>
+          <div className="mt-4 grid grid-cols-2 gap-3 text-xs text-gray-500">
+            <div className="bg-gray-50 rounded-lg p-3">
+              <p className="font-medium text-gray-700 mb-1">10K visitors · $50K deal</p>
+              <p className="font-mono text-emerald-600 font-semibold">$175K/mo recoverable</p>
+            </div>
+            <div className="bg-gray-50 rounded-lg p-3">
+              <p className="font-medium text-gray-700 mb-1">50K visitors · $25K deal</p>
+              <p className="font-mono text-emerald-600 font-semibold">$437K/mo recoverable</p>
+            </div>
+          </div>
         </div>
       </div>
     </Slide>
@@ -325,19 +366,41 @@ function S3() {
   return (
     <Slide>
       <div className="max-w-5xl mx-auto w-full">
-        <Label>Why It Happens</Label>
-        <h2 className="text-5xl font-light text-gray-900 leading-[1.05] mb-12">
-          Three structural flaws
-          <span className="block font-cursive text-gray-500 text-5xl">in how tracking works today.</span>
+        <Label>Root Cause</Label>
+        <h2 className="text-5xl font-light text-gray-900 leading-[1.05] mb-3">
+          Why 97% of B2B visitors
+          <span className="block font-cursive text-gray-500 text-5xl">stay anonymous.</span>
         </h2>
-        <div className="grid md:grid-cols-3 gap-px bg-gray-200 border border-gray-200">
-          {PROBLEMS.map((p, i) => (
+        <p className="text-gray-500 text-lg mb-10">This isn&apos;t your fault — it&apos;s three structural failures in how B2B tracking works today.</p>
+        <div className="grid md:grid-cols-3 gap-px bg-gray-200 border border-gray-200 mb-8">
+          {[
+            {
+              n: '01',
+              title: 'Forms Are Dead',
+              body: 'Only 3% of B2B visitors fill out a form. The other 97% have trust concerns, hate spam, and experience too much friction. Your best leads never self-identify.',
+            },
+            {
+              n: '02',
+              title: 'Cookies Failed',
+              body: "iOS blocks third-party cookies by default. Chrome is following. GDPR and CCPA created legal risk. Cookie-based tracking only captures behavior — not identity.",
+            },
+            {
+              n: '03',
+              title: 'Your CRM Is Blind',
+              body: "You can see traffic in Google Analytics, but you can't see who. You can't prioritize hot leads. Your sales team wastes time on cold outbound while warm leads bounce.",
+            },
+          ].map((p, i) => (
             <div key={i} className="bg-white p-8">
-              <div className="text-4xl font-light text-gray-200 mb-5">0{i + 1}</div>
-              <h3 className="text-xl font-medium text-gray-900 mb-3">{p.title}</h3>
+              <div className="text-4xl font-light text-gray-200 mb-5">{p.n}</div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">{p.title}</h3>
               <p className="text-gray-500 text-sm leading-relaxed">{p.body}</p>
             </div>
           ))}
+        </div>
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-5">
+          <p className="text-amber-900 text-sm font-medium leading-relaxed">
+            <strong>The result:</strong> Your sales team is making 100 cold calls when 30 hot leads visited your pricing page yesterday — and you had no idea.
+          </p>
         </div>
       </div>
     </Slide>
@@ -349,27 +412,55 @@ function S4() {
   return (
     <Slide bg="bg-[#F7F9FB]">
       <div className="max-w-5xl mx-auto w-full">
-        <Label>How the Super Pixel Works</Label>
-        <h2 className="text-5xl font-light text-gray-900 leading-[1.05] mb-12">
-          Four phases.
-          <span className="block font-cursive text-gray-500 text-6xl">One script tag.</span>
+        <Label>How It Works</Label>
+        <h2 className="text-5xl font-light text-gray-900 leading-[1.05] mb-3">
+          Three steps. No forms.
+          <span className="block font-cursive text-gray-500 text-6xl">No changes to your site.</span>
         </h2>
-        <div className="grid md:grid-cols-4 gap-px bg-gray-200 border border-gray-200">
-          {PHASES.map((p, i) => (
+        <p className="text-gray-500 text-lg mb-10">Works exactly like Google Analytics — one script tag, and you&apos;re live.</p>
+        <div className="grid md:grid-cols-3 gap-px bg-gray-200 border border-gray-200 mb-8">
+          {[
+            {
+              num: '01',
+              title: 'They Visit',
+              desc: 'A visitor lands on any page of your site — completely anonymous. No form. No popup. No friction.',
+              detail: 'Works on every page, every device',
+            },
+            {
+              num: '02',
+              title: 'Cursive Identifies',
+              desc: 'Our Super Pixel matches their IP and digital fingerprint to our 420M+ contact database in under 200ms.',
+              detail: '70% identification rate · No cookies',
+            },
+            {
+              num: '03',
+              title: 'You Get the Lead',
+              desc: 'Full contact details and intent data flow instantly to your CRM — name, email, phone, company, role, and every page they viewed.',
+              detail: 'HubSpot · Salesforce · Slack · Webhook',
+            },
+          ].map((p, i) => (
             <div key={i} className="bg-white p-6 lg:p-8">
               <div className="text-4xl font-light text-[#007AFF]/20 mb-5">{p.num}</div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">{p.title}</h3>
               <p className="text-gray-500 text-xs leading-relaxed mb-4">{p.desc}</p>
-              <code className="text-[10px] bg-gray-50 border border-gray-200 px-2 py-1 rounded text-gray-400 block leading-snug">{p.code}</code>
+              <code className="text-[10px] bg-gray-50 border border-gray-200 px-2 py-1 rounded text-gray-400 block leading-snug">{p.detail}</code>
             </div>
           ))}
+        </div>
+        <div className="flex items-center justify-between bg-white border border-gray-200 rounded-xl px-6 py-4">
+          <p className="text-sm text-gray-700 font-medium">From installation to first identified lead: <strong className="text-[#007AFF]">under 5 minutes.</strong></p>
+          <div className="flex items-center gap-4 text-[11px] text-gray-400 font-mono">
+            <span>✓ GDPR Compliant</span>
+            <span>✓ CCPA Compliant</span>
+            <span>✓ No PII stored</span>
+          </div>
         </div>
       </div>
     </Slide>
   )
 }
 
-// ─── SLIDE 5 — UNDER THE HOOD ─────────────────────────────────────────────────
+// ─── SLIDE 5 — IDENTITY GRAPH ─────────────────────────────────────────────────
 function S5() {
   return (
     <Slide>
@@ -380,22 +471,39 @@ function S5() {
             420 million reasons
             <span className="block font-cursive text-gray-500 text-5xl">it actually works.</span>
           </h2>
-          <div className="space-y-4 text-gray-600 leading-relaxed">
-            <p>Most identification tools match visitors to companies using IP address lookup. That&apos;s a 1995 solution to a 2025 problem.</p>
-            <p>Cursive maintains a first-party identity graph of <strong className="text-gray-900">420M+ verified US contacts</strong>, refreshed every 30 days via NCOA. When a visitor lands on your site, we cross-reference device signals, session data, and behavioral patterns against this graph in under 200ms.</p>
-            <p>No cookies. No fingerprinting. No privacy violations. Just a match rate that&apos;s <strong className="text-gray-900">4× higher than any competitor</strong>.</p>
+          <div className="space-y-4 text-gray-600 leading-relaxed mb-6">
+            <p>Most tools match visitors to companies using IP lookup. That&apos;s a 1995 solution. Cursive cross-references device signals, session patterns, and behavioral fingerprints against a <strong className="text-gray-900">420M+ first-party identity graph</strong> — no cookies, no fingerprinting.</p>
           </div>
-          <div className="mt-8 grid grid-cols-3 gap-3">
-            {[
-              { v: '420M+', l: 'Verified contacts' },
-              { v: '98%', l: 'US household coverage' },
-              { v: '<200ms', l: 'Match latency' },
-            ].map(s => (
-              <div key={s.l} className="text-center p-4 bg-gray-50 border border-gray-200 rounded-lg">
-                <div className="text-2xl font-light text-[#007AFF] mb-1">{s.v}</div>
-                <div className="text-[11px] text-gray-500">{s.l}</div>
-              </div>
-            ))}
+
+          <div className="border border-gray-200 rounded-xl overflow-hidden">
+            <div className="bg-gray-50 px-4 py-2 border-b border-gray-200">
+              <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-gray-400">How we compare</p>
+            </div>
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="border-b border-gray-100">
+                  <th className="text-left py-2.5 px-4 text-gray-400 font-medium">Metric</th>
+                  <th className="text-center py-2.5 px-3 text-gray-400 font-medium">Others</th>
+                  <th className="text-center py-2.5 px-3 text-[#007AFF] font-bold">Cursive</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {[
+                  ['ID Rate', '15–35%', '70%'],
+                  ['Email Accuracy', '~78%', '95%+'],
+                  ['Phone Numbers', 'Add-on', '✓ Included'],
+                  ['Intent Signals', 'Basic/None', '✓ Real-time'],
+                  ['Data Refresh', 'Quarterly', '30-Day NCOA'],
+                  ['Setup Time', '1–2 weeks', '5 minutes'],
+                ].map(([metric, others, cursive]) => (
+                  <tr key={metric}>
+                    <td className="py-2.5 px-4 text-gray-600">{metric}</td>
+                    <td className="py-2.5 px-3 text-center text-gray-400">{others}</td>
+                    <td className="py-2.5 px-3 text-center text-[#007AFF] font-semibold">{cursive}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
         <div className="hidden lg:block">
@@ -424,28 +532,28 @@ function S6() {
   )
 }
 
-// ─── SLIDE 7 — SAMPLE LEAD RECORD ────────────────────────────────────────────
+// ─── SLIDE 7 — LEAD RECORD ────────────────────────────────────────────────────
 function S7() {
   return (
     <Slide>
-      <div className="grid lg:grid-cols-2 gap-12 items-center max-w-5xl mx-auto w-full">
+      <div className="grid lg:grid-cols-[1fr_1.2fr] gap-10 items-start max-w-5xl mx-auto w-full">
         <div>
-          <Label>What You&apos;ll Receive</Label>
+          <Label>What You&apos;ll See in Your CRM</Label>
           <h2 className="text-5xl font-light text-gray-900 leading-[1.05] mb-6">
             Not a company name.
-            <span className="block font-cursive text-gray-500 text-5xl">A real person.</span>
+            <span className="block font-cursive text-gray-500 text-5xl">A real person, ready to call.</span>
           </h2>
-          <p className="text-gray-600 text-lg leading-relaxed mb-5">Every identified visitor arrives as a full, verified contact record — enriched with company data, intent score, and the exact page that triggered the match.</p>
-          <p className="text-gray-600 text-lg leading-relaxed">Delivered in real-time to your CRM, inbox, or webhook. No export. No CSV. No delay.</p>
-          <div className="mt-8 space-y-3">
+          <p className="text-gray-600 text-lg leading-relaxed mb-6">Every identified visitor arrives as a full, verified contact record — with company firmographics, intent signals, and every page they visited.</p>
+          <div className="space-y-2.5">
             {[
-              'Name, title, direct work email, and mobile',
-              'Company firmographics and LinkedIn',
-              'Page visited, time on site, and intent score',
-              'Delivered to HubSpot, Salesforce, or Slack',
+              '40+ enrichment data points per contact',
+              'Real-time Slack + CRM notification',
+              'Automatic lead scoring by intent',
+              'Auto-sync to HubSpot, Salesforce, Pipedrive',
+              'Pages visited + time on each page',
             ].map(item => (
-              <div key={item} className="flex items-start gap-2.5 text-sm text-gray-700">
-                <svg className="w-4 h-4 text-[#007AFF] mt-0.5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+              <div key={item} className="flex items-center gap-2.5 text-sm text-gray-700">
+                <svg className="w-4 h-4 text-[#007AFF] flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
                 </svg>
                 {item}
@@ -454,43 +562,53 @@ function S7() {
           </div>
         </div>
         <div>
-          <div className="border border-gray-200 rounded-xl overflow-hidden shadow-sm">
-            <div className="bg-[#007AFF] px-5 py-3.5 flex items-center justify-between">
-              <span className="text-white font-semibold text-sm uppercase tracking-wide">Sample Lead Record</span>
+          <div className="border border-gray-200 rounded-xl overflow-hidden shadow-sm text-sm">
+            <div className="bg-[#007AFF] px-5 py-3 flex items-center justify-between">
+              <span className="text-white font-semibold text-xs uppercase tracking-wide">New Lead Identified</span>
               <span className="flex items-center gap-1.5 text-emerald-300 text-xs font-semibold">
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-300 opacity-75" />
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
                 </span>
-                Live Visitor
+                High Intent · Score 94
               </span>
             </div>
-            <div className="p-6 space-y-4">
+            <div className="p-5 space-y-4">
               <div>
-                <p className="text-2xl font-semibold text-gray-900">{SAMPLE_LEAD.name}</p>
-                <p className="text-gray-500 text-sm mt-0.5">{SAMPLE_LEAD.title} · {SAMPLE_LEAD.company}</p>
+                <p className="text-xl font-semibold text-gray-900">{SAMPLE_LEAD.name}</p>
+                <p className="text-gray-500 text-xs mt-0.5">{SAMPLE_LEAD.title} · {SAMPLE_LEAD.company}</p>
               </div>
-              <div className="space-y-3">
+
+              <div className="grid grid-cols-2 gap-x-4 gap-y-2">
                 {([
                   ['Email', SAMPLE_LEAD.email],
                   ['Mobile', SAMPLE_LEAD.phone],
-                  ['Company', SAMPLE_LEAD.company],
-                  ['Page Visited', SAMPLE_LEAD.page],
-                  ['Visit Time', SAMPLE_LEAD.visitTime],
-                  ['Intent Score', SAMPLE_LEAD.intent],
+                  ['Employees', '150–200'],
+                  ['Revenue', '$15M–$25M ARR'],
+                  ['Industry', 'B2B SaaS'],
+                  ['Tech Stack', 'Salesforce, HubSpot'],
                 ] as [string, string][]).map(([l, v]) => (
-                  <div key={l} className="flex justify-between items-center text-sm">
-                    <span className="text-gray-400">{l}</span>
-                    <div className="flex items-center gap-2">
-                      <span className="text-gray-800">{v}</span>
-                      <svg className="w-4 h-4 text-emerald-500 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
-                      </svg>
-                    </div>
+                  <div key={l}>
+                    <p className="text-[10px] text-gray-400 mb-0.5">{l}</p>
+                    <p className="text-gray-800 text-xs font-medium truncate">{v}</p>
                   </div>
                 ))}
               </div>
-              <p className="text-[11px] text-gray-400 text-center pt-3 border-t border-gray-100">* Sample record — actual fields vary by match quality</p>
+
+              <div className="border-t border-gray-100 pt-3">
+                <p className="text-[10px] font-mono uppercase tracking-[0.12em] text-gray-400 mb-2">Pages visited this week</p>
+                <div className="space-y-1 text-xs font-mono text-gray-500">
+                  <div className="flex justify-between"><span className="text-[#007AFF]">/pricing</span><span>3× · 4 min avg</span></div>
+                  <div className="flex justify-between"><span>/enterprise-features</span><span>2×</span></div>
+                  <div className="flex justify-between"><span>/integrations/salesforce</span><span>1×</span></div>
+                  <div className="flex justify-between text-emerald-600 font-semibold"><span>→ /book-demo</span><span>viewing now</span></div>
+                </div>
+              </div>
+
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                <p className="text-[10px] font-mono uppercase tracking-[0.12em] text-amber-600 mb-1">Recommended Action</p>
+                <p className="text-amber-900 text-xs font-medium">Call within 30 minutes — 3.5× higher connect rate while on-site</p>
+              </div>
             </div>
           </div>
         </div>
@@ -499,25 +617,80 @@ function S7() {
   )
 }
 
-// ─── SLIDE 8 — DIFFERENTIATORS ────────────────────────────────────────────────
+// ─── SLIDE 8 — WHY CURSIVE ────────────────────────────────────────────────────
 function S8() {
   return (
     <Slide bg="bg-[#F7F9FB]">
       <div className="max-w-5xl mx-auto w-full">
         <Label>Why Cursive</Label>
-        <h2 className="text-5xl font-light text-gray-900 leading-[1.05] mb-12">
+        <h2 className="text-5xl font-light text-gray-900 leading-[1.05] mb-10">
           We&apos;re not just better.
           <span className="block font-cursive text-gray-500 text-5xl">We&apos;re structurally different.</span>
         </h2>
-        <div className="grid grid-cols-2 gap-px bg-gray-200 border border-gray-200">
-          {DIFFS.map((d, i) => (
-            <div key={i} className="bg-white p-8">
-              <div className="flex items-baseline gap-3 mb-4">
-                <div className="text-4xl font-light text-[#007AFF]">{d.metric}</div>
-                <div className="text-xs text-gray-400 font-mono">vs {d.vs}</div>
+        <div className="grid grid-cols-3 gap-px bg-gray-200 border border-gray-200">
+          {[
+            {
+              label: 'Other Visitor ID Tools',
+              accent: 'text-gray-400',
+              bg: 'bg-white',
+              items: [
+                { ok: false, text: '30–40% identification rate' },
+                { ok: false, text: 'Company-level only, no contacts' },
+                { ok: false, text: 'Stale data, quarterly refresh' },
+                { ok: false, text: 'No intent signals included' },
+                { ok: false, text: 'Complex setup (weeks)' },
+                { ok: false, text: 'Phone numbers as paid add-on' },
+              ],
+            },
+            {
+              label: 'Cursive Super Pixel',
+              accent: 'text-[#007AFF]',
+              bg: 'bg-white',
+              highlight: true,
+              items: [
+                { ok: true, text: '70% identification rate' },
+                { ok: true, text: 'Individual contact + verified email' },
+                { ok: true, text: '30-day NCOA data refresh' },
+                { ok: true, text: 'Real-time intent scoring' },
+                { ok: true, text: '5-minute setup, one script tag' },
+                { ok: true, text: 'Mobile phone number included' },
+              ],
+            },
+            {
+              label: 'Traditional Lead Gen',
+              accent: 'text-gray-400',
+              bg: 'bg-white',
+              items: [
+                { ok: false, text: '3% form conversion rate' },
+                { ok: false, text: '$200–$500 cost per lead' },
+                { ok: false, text: 'No real-time intent data' },
+                { ok: false, text: 'Slow follow-up, cold outbound' },
+                { ok: false, text: 'Generic contacts, poor quality' },
+                { ok: false, text: 'No page-level behavior data' },
+              ],
+            },
+          ].map((col, ci) => (
+            <div key={ci} className={`${col.bg} p-6 ${col.highlight ? 'ring-2 ring-[#007AFF] ring-inset' : ''}`}>
+              <p className={`text-[10px] font-mono uppercase tracking-[0.15em] mb-4 ${col.accent} ${col.highlight ? 'font-bold' : ''}`}>{col.label}</p>
+              <div className="space-y-2.5">
+                {col.items.map((item, ii) => (
+                  <div key={ii} className="flex items-start gap-2 text-xs">
+                    <span className={`flex-shrink-0 font-bold mt-0.5 ${item.ok ? 'text-[#007AFF]' : 'text-gray-300'}`}>{item.ok ? '✓' : '✕'}</span>
+                    <span className={item.ok ? 'text-gray-700' : 'text-gray-400'}>{item.text}</span>
+                  </div>
+                ))}
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">{d.title}</h3>
-              <p className="text-gray-500 text-sm leading-relaxed">{d.body}</p>
+            </div>
+          ))}
+        </div>
+        <div className="mt-6 grid grid-cols-4 gap-4">
+          {DIFFS.map((d, i) => (
+            <div key={i} className="bg-white border border-gray-200 rounded-lg p-4">
+              <div className="flex items-baseline gap-2 mb-1">
+                <span className="text-2xl font-light text-[#007AFF]">{d.metric}</span>
+                <span className="text-[10px] text-gray-400 font-mono">vs {d.vs}</span>
+              </div>
+              <p className="text-xs font-semibold text-gray-700">{d.title}</p>
             </div>
           ))}
         </div>
@@ -526,35 +699,73 @@ function S8() {
   )
 }
 
-// ─── SLIDE 9 — CLOSING CTA ────────────────────────────────────────────────────
+// ─── SLIDE 9 — CLOSE ──────────────────────────────────────────────────────────
 function S9() {
   return (
     <Slide>
-      <div className="text-center max-w-3xl mx-auto w-full">
+      <div className="max-w-4xl mx-auto w-full">
         <Label>What Happens Next</Label>
-        <h2 className="text-6xl lg:text-7xl font-light text-gray-900 leading-[1.02] mb-6">
+        <h2 className="text-5xl font-light text-gray-900 leading-[1.05] mb-10">
           We can have this live
-          <span className="block font-cursive text-gray-500">on your site today.</span>
+          <span className="block font-cursive text-gray-500 text-6xl">on your site today.</span>
         </h2>
-        <p className="text-xl text-gray-600 mb-10 max-w-xl mx-auto leading-relaxed">
-          One script tag. No engineering sprint. We&apos;ll drop it on your site right now and you&apos;ll see your first identified visitors before we hang up.
-        </p>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
-          <a
-            href="https://leads.meetcursive.com/sign-up"
-            className="inline-block px-10 py-4 bg-[#007AFF] hover:bg-[#0066DD] text-white font-bold text-lg rounded-lg transition-colors shadow-lg shadow-[#007AFF]/25"
-          >
-            Let&apos;s Get You Set Up →
-          </a>
-          <a href="/superpixel" className="text-[#007AFF] font-medium hover:underline">
-            Share the ROI calculator
-          </a>
+        <div className="grid md:grid-cols-2 gap-6 mb-8">
+          <div className="border-2 border-[#007AFF] rounded-xl p-6 bg-white">
+            <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-[#007AFF] mb-4">Start Today</p>
+            <h3 className="text-xl font-semibold text-gray-900 mb-3">Install on this call</h3>
+            <p className="text-gray-600 text-sm leading-relaxed mb-5">One script tag. We&apos;ll walk you through it right now — 90 seconds and you&apos;re live. You&apos;ll see your first identified visitors before we hang up.</p>
+            <div className="space-y-2 mb-6">
+              {[
+                'No engineering sprint required',
+                'Works on any website stack',
+                'First leads identified within minutes',
+                '1-on-1 onboarding support included',
+              ].map(item => (
+                <div key={item} className="flex items-center gap-2 text-xs text-gray-600">
+                  <span className="text-[#007AFF] font-bold">✓</span>
+                  {item}
+                </div>
+              ))}
+            </div>
+            <a
+              href="https://leads.meetcursive.com/sign-up"
+              className="block text-center px-6 py-3 bg-[#007AFF] hover:bg-[#0066DD] text-white font-bold rounded-lg transition-colors"
+            >
+              Let&apos;s Get You Set Up →
+            </a>
+          </div>
+          <div className="border border-gray-200 rounded-xl p-6 bg-white">
+            <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-gray-400 mb-4">Need More Time</p>
+            <h3 className="text-xl font-semibold text-gray-900 mb-3">Technical deep dive</h3>
+            <p className="text-gray-600 text-sm leading-relaxed mb-5">For teams requiring enterprise SSO, custom integrations, multi-site deployment, or volume pricing — we&apos;ll get the right people in a room.</p>
+            <div className="space-y-2 mb-6">
+              {[
+                'Enterprise SSO & security review',
+                'Custom CRM integration support',
+                'Multi-site and sub-domain setup',
+                'Volume pricing discussion',
+              ].map(item => (
+                <div key={item} className="flex items-center gap-2 text-xs text-gray-600">
+                  <span className="text-gray-400">→</span>
+                  {item}
+                </div>
+              ))}
+            </div>
+            <a
+              href={CAL_LINK}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block text-center px-6 py-3 border border-gray-300 hover:border-[#007AFF] hover:text-[#007AFF] text-gray-700 font-semibold rounded-lg transition-colors"
+            >
+              Schedule Technical Demo
+            </a>
+          </div>
         </div>
-        <div className="grid grid-cols-3 gap-8 pt-10 border-t border-gray-200 max-w-md mx-auto">
+        <div className="grid grid-cols-3 gap-4 pt-6 border-t border-gray-200">
           {[
             { v: '70%', l: 'Visitor ID Rate' },
-            { v: '0.05%', l: 'Bounce Rate' },
-            { v: '420M+', l: 'Verified Contacts' },
+            { v: '0.05%', l: 'Email Bounce Rate' },
+            { v: '5 min', l: 'Time to First Lead' },
           ].map(s => (
             <div key={s.l} className="text-center">
               <div className="text-2xl font-light text-gray-900">{s.v}</div>
@@ -566,6 +777,7 @@ function S9() {
     </Slide>
   )
 }
+
 
 // ─── DECK SHELL ───────────────────────────────────────────────────────────────
 const SLIDE_COMPONENTS = [S1, S2, S3, S4, S5, S6, S7, S8, S9]
