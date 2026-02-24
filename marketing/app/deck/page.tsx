@@ -786,7 +786,7 @@ function PixelInstallModal({ onClose }: { onClose: () => void }) {
     const stepTimer = setInterval(() => setProvStep(p => Math.min(p + 1, PROVISION_STEPS.length - 1)), 900)
 
     try {
-      const res = await fetch('/api/provision-demo-pixel', {
+      const res = await fetch('https://leads.meetcursive.com/api/pixel/provision-demo', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ websiteUrl: url.trim() }),

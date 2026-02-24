@@ -1,11 +1,23 @@
 /**
  * Public endpoint for generating a demo pixel during live sales calls.
- * No authentication required — called from the marketing site deck.
+ * No authentication required — called directly from the marketing site deck browser.
  * Does NOT store in DB (prospect hasn't signed up yet).
  */
 import { NextRequest, NextResponse } from 'next/server'
 import { provisionCustomerPixel } from '@/lib/audiencelab/api-client'
 import { safeError } from '@/lib/utils/log-sanitizer'
+
+export const maxDuration = 60 // Vercel Pro allows up to 60s
+
+const CORS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+}
+
+export async function OPTIONS() {
+  return new NextResponse(null, { status: 204, headers: CORS })
+}
 
 function parsePublicUrl(raw: string): { domain: string; fullUrl: string } | null {
   try {
@@ -30,14 +42,14 @@ export async function POST(req: NextRequest) {
     const { websiteUrl } = body as { websiteUrl?: string }
 
     if (!websiteUrl) {
-      return NextResponse.json({ error: 'Website URL is required' }, { status: 400 })
+      return NextResponse.json({ error: 'Website URL is required' }, { status: 400, headers: CORS })
     }
 
     const parsed = parsePublicUrl(websiteUrl)
     if (!parsed) {
       return NextResponse.json(
         { error: 'Please enter a valid public website URL (e.g. yourcompany.com)' },
-        { status: 400 }
+        { status: 400, headers: CORS }
       )
     }
 
@@ -55,14 +67,15 @@ export async function POST(req: NextRequest) {
       (installUrl ? `<script src="${installUrl}" async></script>` :
         `<script src="https://cdn.v3.identitypxl.app/pixels/${result.pixel_id}/p.js" async></script>`)
 
-    return NextResponse.json({
-      pixel_id: result.pixel_id,
-      snippet,
-      install_url: installUrl,
-      domain,
-    })
+    return NextResponse.json(
+      { pixel_id: result.pixel_id, snippet, install_url: installUrl, domain },
+      { headers: CORS }
+    )
   } catch (err) {
     safeError('[provision-demo] error:', err)
-    return NextResponse.json({ error: 'Failed to generate pixel — please try again' }, { status: 502 })
+    return NextResponse.json(
+      { error: 'Failed to generate pixel — please try again' },
+      { status: 502, headers: CORS }
+    )
   }
 }
