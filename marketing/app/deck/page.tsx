@@ -757,6 +757,16 @@ function S8() {
 
 // ─── SLIDE 9 — CLOSE ──────────────────────────────────────────────────────────
 function S9() {
+  const [showSnippet, setShowSnippet] = useState(false)
+  const [copied, setCopied] = useState(false)
+  const PIXEL_SNIPPET = `<script src="https://cdn.cursive.io/px.js" async></script>`
+
+  const copySnippet = () => {
+    navigator.clipboard.writeText(PIXEL_SNIPPET)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
   return (
     <Slide>
       <div className="max-w-4xl mx-auto w-full">
@@ -773,26 +783,54 @@ function S9() {
           <div className="border-2 border-[#007AFF] rounded-xl p-6 bg-white">
             <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-[#007AFF] mb-4">Start Today</p>
             <h3 className="text-xl font-semibold text-gray-900 mb-3">Install on this call</h3>
-            <p className="text-gray-600 text-sm leading-relaxed mb-5">One script tag. We&apos;ll walk you through it right now — 90 seconds and you&apos;re live. You&apos;ll see your first identified visitors before we hang up.</p>
-            <div className="space-y-2 mb-6">
-              {[
-                'No engineering sprint required',
-                'Works on any website stack',
-                'First leads identified within minutes',
-                '1-on-1 onboarding support included',
-              ].map(item => (
-                <div key={item} className="flex items-center gap-2 text-xs text-gray-600">
-                  <span className="text-[#007AFF] font-bold">✓</span>
-                  {item}
+            {!showSnippet ? (
+              <>
+                <p className="text-gray-600 text-sm leading-relaxed mb-5">One script tag. We&apos;ll walk you through it right now — 90 seconds and you&apos;re live. You&apos;ll see your first identified visitors before we hang up.</p>
+                <div className="space-y-2 mb-6">
+                  {[
+                    'No engineering sprint required',
+                    'Works on any website stack',
+                    'First leads identified within minutes',
+                    '1-on-1 onboarding support included',
+                  ].map(item => (
+                    <div key={item} className="flex items-center gap-2 text-xs text-gray-600">
+                      <span className="text-[#007AFF] font-bold">✓</span>
+                      {item}
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-            <a
-              href="https://leads.meetcursive.com/sign-up"
-              className="block text-center px-6 py-3 bg-[#007AFF] hover:bg-[#0066DD] text-white font-bold rounded-lg transition-colors"
-            >
-              Install the Pixel on This Call →
-            </a>
+                <button
+                  onClick={() => setShowSnippet(true)}
+                  className="block w-full text-center px-6 py-3 bg-[#007AFF] hover:bg-[#0066DD] text-white font-bold rounded-lg transition-colors"
+                >
+                  Install the Pixel on This Call →
+                </button>
+              </>
+            ) : (
+              <>
+                <p className="text-gray-600 text-sm mb-3">Paste this one line into the <code className="bg-gray-100 px-1 rounded text-xs">&lt;head&gt;</code> of your website — or hand it to your developer:</p>
+                <div className="bg-gray-900 rounded-lg p-4 mb-4 relative">
+                  <code className="text-emerald-400 text-xs font-mono break-all leading-relaxed">{PIXEL_SNIPPET}</code>
+                  <button
+                    onClick={copySnippet}
+                    className="absolute top-2 right-2 text-[10px] font-mono bg-gray-700 hover:bg-gray-600 text-gray-300 px-2 py-1 rounded transition-colors"
+                  >
+                    {copied ? '✓ Copied!' : 'Copy'}
+                  </button>
+                </div>
+                <div className="space-y-1.5 text-xs text-gray-500 mb-4">
+                  <p>✓ Works on WordPress, Webflow, Shopify, React, any stack</p>
+                  <p>✓ No configuration needed — auto-detects your domain</p>
+                  <p>✓ First leads appear within minutes of install</p>
+                </div>
+                <button
+                  onClick={() => setShowSnippet(false)}
+                  className="block w-full text-center px-6 py-2 border border-gray-200 hover:border-gray-400 text-gray-500 text-sm rounded-lg transition-colors"
+                >
+                  ← Back
+                </button>
+              </>
+            )}
           </div>
           <div className="border border-gray-200 rounded-xl p-6 bg-white">
             <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-gray-400 mb-4">Need More Time</p>
