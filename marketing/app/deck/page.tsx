@@ -257,8 +257,11 @@ function VisitorDemo({ compact = false }: { compact?: boolean }) {
 // ─── SLIDE + LABEL PRIMITIVES ─────────────────────────────────────────────────
 function Slide({ children, bg = 'bg-white' }: { children: React.ReactNode; bg?: string }) {
   return (
-    <div className={`${bg} min-h-[calc(100vh-52px)]`}>
-      <div className="max-w-6xl mx-auto px-6 sm:px-12 py-16 w-full flex flex-col justify-center min-h-[calc(100vh-52px)]">
+    <div
+      className={`${bg} flex items-center`}
+      style={{ height: 'calc(100vh - 52px)', overflowY: 'auto' }}
+    >
+      <div className="max-w-6xl mx-auto px-6 sm:px-12 py-10 w-full">
         {children}
       </div>
     </div>
@@ -596,7 +599,7 @@ export default function DeckPage() {
   const pct = ((current + 1) / SLIDE_COUNT) * 100
 
   return (
-    <div className="relative bg-white" style={{ minHeight: '100vh' }}>
+    <div className="bg-white" style={{ position: 'fixed', inset: 0, zIndex: 100, overflowY: 'auto' }}>
       <style>{`
         @keyframes deckSlideIn {
           from { opacity: 0; transform: translateY(10px); }
@@ -606,7 +609,7 @@ export default function DeckPage() {
       `}</style>
 
       {/* ── TOP CHROME ── */}
-      <div className="fixed top-0 left-0 right-0 z-50">
+      <div className="fixed top-0 left-0 right-0 z-[110]">
         <div className="h-1 bg-gray-100">
           <div className="h-full bg-[#007AFF] transition-all duration-500" style={{ width: `${pct}%` }} />
         </div>
@@ -635,7 +638,7 @@ export default function DeckPage() {
       <button
         onClick={prev}
         disabled={current === 0}
-        className="fixed left-3 top-1/2 -translate-y-1/2 z-50 w-9 h-9 flex items-center justify-center rounded-full bg-white border border-gray-200 shadow-sm hover:border-[#007AFF] hover:text-[#007AFF] transition-all disabled:opacity-0 text-gray-500 text-lg"
+        className="fixed left-3 top-1/2 -translate-y-1/2 z-[110] w-9 h-9 flex items-center justify-center rounded-full bg-white border border-gray-200 shadow-sm hover:border-[#007AFF] hover:text-[#007AFF] transition-all disabled:opacity-0 text-gray-500 text-lg"
         aria-label="Previous slide"
       >
         ‹
@@ -645,14 +648,14 @@ export default function DeckPage() {
       <button
         onClick={next}
         disabled={current === SLIDE_COUNT - 1}
-        className="fixed right-3 top-1/2 -translate-y-1/2 z-50 w-9 h-9 flex items-center justify-center rounded-full bg-white border border-gray-200 shadow-sm hover:border-[#007AFF] hover:text-[#007AFF] transition-all disabled:opacity-0 text-gray-500 text-lg"
+        className="fixed right-3 top-1/2 -translate-y-1/2 z-[110] w-9 h-9 flex items-center justify-center rounded-full bg-white border border-gray-200 shadow-sm hover:border-[#007AFF] hover:text-[#007AFF] transition-all disabled:opacity-0 text-gray-500 text-lg"
         aria-label="Next slide"
       >
         ›
       </button>
 
       {/* ── DOT NAV ── */}
-      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1.5 bg-white/95 backdrop-blur-sm border border-gray-200 rounded-full px-4 py-2 shadow-sm">
+      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-[110] flex items-center gap-1.5 bg-white/95 backdrop-blur-sm border border-gray-200 rounded-full px-4 py-2 shadow-sm">
         {SLIDE_COMPONENTS.map((_, i) => (
           <button
             key={i}
