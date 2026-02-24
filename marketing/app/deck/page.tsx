@@ -560,8 +560,8 @@ function S6() {
           How much are you leaving on the table?
           <span className="block font-cursive text-gray-500 text-5xl">Let&apos;s run your numbers live.</span>
         </h2>
-        <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6 lg:p-8">
-          <RevenueCalculator />
+        <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-5">
+          <RevenueCalculator deck />
         </div>
       </div>
     </Slide>
@@ -713,7 +713,14 @@ function S8() {
             },
           ].map((col, ci) => (
             <div key={ci} className={`${col.bg} p-6 ${col.highlight ? 'ring-2 ring-[#007AFF] ring-inset bg-[#007AFF]/4' : ''}`}>
-              <p className={`text-[10px] font-mono uppercase tracking-[0.15em] mb-4 ${col.accent} ${col.highlight ? 'font-black text-[#007AFF]' : ''}`}>{col.highlight ? '⭐ ' : ''}{col.label}</p>
+              {col.highlight ? (
+                <div className="flex items-center gap-1.5 mb-4">
+                  <img src="/cursive-logo.png" alt="Cursive" className="h-3.5 w-auto" />
+                  <p className="text-[10px] font-mono uppercase tracking-[0.15em] font-black text-[#007AFF]">Super Pixel</p>
+                </div>
+              ) : (
+                <p className={`text-[10px] font-mono uppercase tracking-[0.15em] mb-4 ${col.accent}`}>{col.label}</p>
+              )}
               <div className="space-y-2.5">
                 {col.items.map((item, ii) => (
                   <div key={ii} className="flex items-start gap-2 text-xs">

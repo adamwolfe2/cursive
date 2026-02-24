@@ -14,7 +14,7 @@ interface FormData {
   industry: string
 }
 
-export function RevenueCalculator() {
+export function RevenueCalculator({ deck = false }: { deck?: boolean } = {}) {
   const [step, setStep] = useState<Step>('form')
   const [formData, setFormData] = useState<FormData | null>(null)
   const [results, setResults] = useState<ReturnType<typeof calculateScenarios> | null>(null)
@@ -58,6 +58,7 @@ export function RevenueCalculator() {
           industry={formData.industry}
           siteData={siteData}
           onReset={handleReset}
+          deck={deck}
         />
       )}
     </div>
