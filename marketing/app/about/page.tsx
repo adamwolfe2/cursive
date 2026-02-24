@@ -217,10 +217,10 @@ export default function AboutPage() {
                       transition={{ delay: 0.6 }}
                       className="flex items-center gap-3 pt-2"
                     >
-                      <div className="w-6 h-6 bg-gray-900 rounded-full flex items-center justify-center flex-shrink-0">
+                      <div className="w-6 h-6 bg-[#007AFF] rounded-full flex items-center justify-center flex-shrink-0">
                         <span className="text-xs text-white">↻</span>
                       </div>
-                      <span className="text-gray-900 font-semibold italic">REPEAT SMARTER</span>
+                      <span className="text-[#007AFF] font-semibold italic">REPEAT SMARTER</span>
                     </motion.div>
                   </div>
                 </div>
@@ -245,9 +245,9 @@ export default function AboutPage() {
                       <li>Repeat (without learning)</li>
                     </ul>
                   </div>
-                  <div className="bg-gray-900 rounded-xl p-6">
+                  <div className="bg-[#007AFF]/8 border border-[#007AFF]/20 rounded-xl p-6">
                     <h4 className="text-sm font-semibold text-[#007AFF] tracking-widest mb-4">CURSIVE BUSINESSES</h4>
-                    <ul className="space-y-3 text-sm text-gray-300">
+                    <ul className="space-y-3 text-sm text-gray-700">
                       <li>Identify who&apos;s already interested</li>
                       <li>Enrich with real-time context</li>
                       <li>Reach through channels that work</li>
@@ -258,11 +258,11 @@ export default function AboutPage() {
                 </div>
 
                 {/* Quote */}
-                <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl p-6 text-white">
-                  <p className="text-lg font-light leading-relaxed">
-                    &ldquo;While your competitors treat every lead like the first lead they&apos;ve ever gotten, Cursive treats every lead like the thousandth. <em>Because it is.</em>&rdquo;
+                <div className="bg-white border border-[#007AFF]/20 rounded-xl p-6">
+                  <p className="text-lg font-light text-gray-800 leading-relaxed">
+                    &ldquo;While your competitors treat every lead like the first lead they&apos;ve ever gotten, Cursive treats every lead like the thousandth. <em className="text-[#007AFF]">Because it is.</em>&rdquo;
                   </p>
-                  <p className="text-sm text-gray-400 mt-3">The result: your CAC drops, your LTV rises, your growth compounds instead of plateaus.</p>
+                  <p className="text-sm text-gray-500 mt-3">The result: your CAC drops, your LTV rises, your growth compounds instead of plateaus.</p>
                 </div>
 
                 {/* Caption */}
