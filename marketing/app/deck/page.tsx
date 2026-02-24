@@ -281,16 +281,9 @@ function S1() {
             <span className="block font-cursive text-gray-500 mt-1">You just can&apos;t see them.</span>
           </h1>
           <p className="text-xl text-gray-600 leading-relaxed mb-8">
-            The Cursive Super Pixel identifies up to <strong className="text-gray-900">70% of anonymous B2B visitors</strong> — name, email, phone, company, and intent — before they leave your site.
+            The Cursive Super Pixel identifies up to <strong className="text-gray-900">70% of anonymous B2B visitors</strong> — name, email, phone, company, and intent — in real time, before they ever leave your site.
           </p>
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-            <a href={CAL_LINK} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 bg-[#007AFF] hover:bg-[#0066DD] text-white font-semibold px-6 py-3 rounded-lg transition-colors shadow-lg shadow-[#007AFF]/20">
-              Book a Live Demo
-            </a>
-            <a href="/superpixel" className="text-[#007AFF] font-medium text-sm hover:underline">
-              Calculate your revenue leak →
-            </a>
-          </div>
+          <p className="text-sm text-gray-400 font-mono tracking-wide">Use ↓ or → to walk through the story</p>
         </div>
         <div className="hidden lg:block">
           <VisitorDemo />
@@ -418,7 +411,7 @@ function S6() {
         <Label>Revenue Impact Calculator</Label>
         <h2 className="text-4xl font-light text-gray-900 leading-[1.05] mb-8">
           How much are you leaving on the table?
-          <span className="block font-cursive text-gray-500 text-5xl">Enter your domain to find out.</span>
+          <span className="block font-cursive text-gray-500 text-5xl">Let&apos;s run your numbers live.</span>
         </h2>
         <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6 lg:p-8">
           <RevenueCalculator />
@@ -535,25 +528,23 @@ function S9() {
   return (
     <Slide>
       <div className="text-center max-w-3xl mx-auto w-full">
-        <Label>Ready to See It Live?</Label>
+        <Label>What Happens Next</Label>
         <h2 className="text-6xl lg:text-7xl font-light text-gray-900 leading-[1.02] mb-6">
-          See it running
-          <span className="block font-cursive text-gray-500">on your site.</span>
+          We can have this live
+          <span className="block font-cursive text-gray-500">on your site today.</span>
         </h2>
         <p className="text-xl text-gray-600 mb-10 max-w-xl mx-auto leading-relaxed">
-          Book a 30-minute demo. We&apos;ll install the pixel live on your site and show you exactly who&apos;s visiting — before the call ends.
+          One script tag. No engineering sprint. We&apos;ll drop it on your site right now and you&apos;ll see your first identified visitors before we hang up.
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
           <a
-            href={CAL_LINK}
-            target="_blank"
-            rel="noopener noreferrer"
+            href="https://leads.meetcursive.com/sign-up"
             className="inline-block px-10 py-4 bg-[#007AFF] hover:bg-[#0066DD] text-white font-bold text-lg rounded-lg transition-colors shadow-lg shadow-[#007AFF]/25"
           >
-            Book a Free Demo →
+            Let&apos;s Get You Set Up →
           </a>
           <a href="/superpixel" className="text-[#007AFF] font-medium hover:underline">
-            Calculate your revenue leak first
+            Share the ROI calculator
           </a>
         </div>
         <div className="grid grid-cols-3 gap-8 pt-10 border-t border-gray-200 max-w-md mx-auto">
@@ -620,24 +611,16 @@ export default function DeckPage() {
           <div className="h-full bg-[#007AFF] transition-all duration-500" style={{ width: `${pct}%` }} />
         </div>
         <div className="bg-white/95 backdrop-blur-sm border-b border-gray-100 px-6 h-12 flex items-center justify-between">
-          <a href="/" className="font-cursive text-2xl text-gray-900 hover:text-[#007AFF] transition-colors leading-none">
-            Cursive
+          <a href="/">
+            <img src="/cursive-logo.png" alt="Cursive" className="h-6 w-auto" />
           </a>
-          <div className="hidden sm:flex items-center gap-2 text-[11px] font-mono text-gray-400">
-            <span className="text-gray-300">Super Pixel</span>
-            <span className="text-gray-200">·</span>
-            <span>{SLIDE_LABELS[current]}</span>
-            <span className="text-gray-200">·</span>
+          <div className="flex items-center gap-2 text-[11px] font-mono text-gray-400">
+            <span className="hidden sm:inline text-gray-300">Super Pixel</span>
+            <span className="hidden sm:inline text-gray-200">·</span>
+            <span className="hidden sm:inline">{SLIDE_LABELS[current]}</span>
+            <span className="hidden sm:inline text-gray-200">·</span>
             <span>{String(current + 1).padStart(2, '0')} / {String(SLIDE_COUNT).padStart(2, '0')}</span>
           </div>
-          <a
-            href={CAL_LINK}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs font-semibold text-white bg-[#007AFF] hover:bg-[#0066DD] px-3 py-1.5 rounded transition-colors"
-          >
-            Book Demo
-          </a>
         </div>
       </div>
 
