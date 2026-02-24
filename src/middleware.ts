@@ -144,6 +144,7 @@ export async function middleware(req: NextRequest) {
       pathname.startsWith('/api/analyze-site') ||
       pathname.startsWith('/api/lead-capture') ||
       pathname.startsWith('/api/similarweb') ||
+      pathname.startsWith('/api/pixel/provision-demo') ||
       pathname === '/' ||
       pathname.startsWith('/_next') ||
       pathname.startsWith('/api/webhooks') ||
