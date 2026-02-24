@@ -278,7 +278,7 @@ function S1() {
           <Label>Cursive Super Pixel</Label>
           <h1 className="text-5xl lg:text-6xl font-light text-gray-900 leading-[1.05] mb-6">
             Your website is generating leads.
-            <span className="block font-cursive text-[#007AFF] mt-1">You just can&apos;t see them.</span>
+            <span className="block font-cursive text-gray-500 mt-1">You just can&apos;t see them.</span>
           </h1>
           <p className="text-xl text-gray-600 leading-relaxed mb-8">
             The Cursive Super Pixel identifies up to <strong className="text-gray-900">70% of anonymous B2B visitors</strong> — name, email, phone, company, and intent — before they leave your site.
@@ -308,7 +308,7 @@ function S2() {
         <Label>The Problem</Label>
         <h2 className="text-5xl font-light text-gray-900 leading-[1.05] mb-4">
           You&apos;re paying for traffic
-          <span className="block font-cursive text-[#007AFF] text-6xl">you can&apos;t follow up with.</span>
+          <span className="block font-cursive text-gray-500 text-6xl">you can&apos;t follow up with.</span>
         </h2>
         <p className="text-xl text-gray-600 mb-12">Every month, thousands of buyers visit your site, evaluate your product, and leave — without you knowing who they are.</p>
         <div className="grid grid-cols-2 gap-px bg-gray-200 border border-gray-200">
@@ -356,7 +356,7 @@ function S4() {
         <Label>How the Super Pixel Works</Label>
         <h2 className="text-5xl font-light text-gray-900 leading-[1.05] mb-12">
           Four phases.
-          <span className="block font-cursive text-[#007AFF] text-6xl">One script tag.</span>
+          <span className="block font-cursive text-gray-500 text-6xl">One script tag.</span>
         </h2>
         <div className="grid md:grid-cols-4 gap-px bg-gray-200 border border-gray-200">
           {PHASES.map((p, i) => (
@@ -416,10 +416,10 @@ function S6() {
     <Slide bg="bg-[#F7F9FB]">
       <div className="max-w-4xl mx-auto w-full">
         <Label>Revenue Impact Calculator</Label>
-        <h2 className="text-4xl font-light text-gray-900 mb-2">
+        <h2 className="text-4xl font-light text-gray-900 leading-[1.05] mb-8">
           How much are you leaving on the table?
+          <span className="block font-cursive text-gray-500 text-5xl">Enter your domain to find out.</span>
         </h2>
-        <p className="text-gray-500 text-lg mb-8">Enter any domain and we&apos;ll calculate the revenue your anonymous traffic is costing you right now.</p>
         <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6 lg:p-8">
           <RevenueCalculator />
         </div>
@@ -437,7 +437,7 @@ function S7() {
           <Label>What You&apos;ll Receive</Label>
           <h2 className="text-5xl font-light text-gray-900 leading-[1.05] mb-6">
             Not a company name.
-            <span className="block font-cursive text-[#007AFF] text-5xl">A real person.</span>
+            <span className="block font-cursive text-gray-500 text-5xl">A real person.</span>
           </h2>
           <p className="text-gray-600 text-lg leading-relaxed mb-5">Every identified visitor arrives as a full, verified contact record — enriched with company data, intent score, and the exact page that triggered the match.</p>
           <p className="text-gray-600 text-lg leading-relaxed">Delivered in real-time to your CRM, inbox, or webhook. No export. No CSV. No delay.</p>
@@ -538,7 +538,7 @@ function S9() {
         <Label>Ready to See It Live?</Label>
         <h2 className="text-6xl lg:text-7xl font-light text-gray-900 leading-[1.02] mb-6">
           See it running
-          <span className="block font-cursive text-[#007AFF]">on your site.</span>
+          <span className="block font-cursive text-gray-500">on your site.</span>
         </h2>
         <p className="text-xl text-gray-600 mb-10 max-w-xl mx-auto leading-relaxed">
           Book a 30-minute demo. We&apos;ll install the pixel live on your site and show you exactly who&apos;s visiting — before the call ends.
