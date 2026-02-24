@@ -473,93 +473,75 @@ function S4() {
 function S5() {
   return (
     <Slide>
-      <div className="grid lg:grid-cols-2 gap-12 items-center max-w-5xl mx-auto w-full">
-        <div>
-          <Label>The Identity Graph</Label>
-          <h2 className="text-5xl font-light text-gray-900 leading-[1.05] mb-6">
-            420 million reasons
-            <span className="block font-cursive text-gray-500 text-5xl">it actually works.</span>
-          </h2>
-          <div className="space-y-4 text-gray-600 leading-relaxed mb-6">
-            <p>Most tools match visitors to companies using IP lookup. That&apos;s a 1995 solution. Cursive cross-references device signals, session patterns, and behavioral fingerprints against a <strong className="text-gray-900">420M+ first-party identity graph</strong> — no cookies, no fingerprinting.</p>
-          </div>
+      <div className="max-w-4xl mx-auto w-full">
+        <Label>The Identity Graph</Label>
+        <h2 className="text-5xl font-light text-gray-900 leading-[1.05] mb-4">
+          420 million reasons
+          <span className="block font-cursive text-gray-500 text-5xl">it actually works.</span>
+        </h2>
+        <p className="text-gray-500 text-lg mb-6">Most tools give you a company name. Cursive cross-references device signals against a <strong className="text-gray-900">420M+ first-party identity graph</strong> to give you the actual person — no cookies required.</p>
 
-          <div className="border border-gray-200 rounded-xl overflow-hidden">
-            <div className="bg-gray-50 px-4 py-2 border-b border-gray-200">
-              <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-gray-400">How we compare</p>
-            </div>
-            <table className="w-full text-xs">
-              <thead>
-                <tr className="border-b border-gray-100">
-                  <th className="text-left py-2.5 px-4 text-gray-400 font-medium">Metric</th>
-                  <th className="text-center py-2.5 px-3 text-gray-400 font-medium">Others</th>
-                  <th className="text-center py-2.5 px-3 text-[#007AFF] font-bold">Cursive</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50">
-                {[
-                  ['ID Rate', '15–35%', '70%'],
-                  ['Email Accuracy', '~78%', '95%+'],
-                  ['Phone Numbers', 'Add-on', '✓ Included'],
-                  ['Intent Signals', 'Basic/None', '✓ Real-time'],
-                  ['Data Refresh', 'Quarterly', '30-Day NCOA'],
-                  ['Setup Time', '1–2 weeks', '5 minutes'],
-                ].map(([metric, others, cursive]) => (
-                  <tr key={metric}>
-                    <td className="py-2.5 px-4 text-gray-600">{metric}</td>
-                    <td className="py-2.5 px-3 text-center text-gray-400">{others}</td>
-                    <td className="py-2.5 px-3 text-center text-[#007AFF] font-semibold">{cursive}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        <div className="border border-gray-200 rounded-xl overflow-hidden mb-5">
+          <div className="bg-gray-50 px-4 py-2 border-b border-gray-200">
+            <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-gray-400">How we compare</p>
           </div>
+          <table className="w-full text-xs">
+            <thead>
+              <tr className="border-b border-gray-100">
+                <th className="text-left py-2 px-4 text-gray-400 font-medium">Metric</th>
+                <th className="text-center py-2 px-3 text-gray-400 font-medium">Others</th>
+                <th className="text-center py-2 px-3 text-[#007AFF] font-bold">Cursive</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-50">
+              {[
+                ['ID Rate', '15–35%', '70%'],
+                ['Email Accuracy', '~78%', '95%+'],
+                ['Phone Numbers', 'Add-on', '✓ Included'],
+                ['Intent Signals', 'Basic/None', '✓ Real-time'],
+                ['Data Refresh', 'Quarterly', '30-Day NCOA'],
+                ['Setup Time', '1–2 weeks', '5 minutes'],
+              ].map(([metric, others, cursive]) => (
+                <tr key={metric}>
+                  <td className="py-2 px-4 text-gray-600">{metric}</td>
+                  <td className="py-2 px-3 text-center text-gray-400">{others}</td>
+                  <td className="py-2 px-3 text-center text-[#007AFF] font-semibold">{cursive}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-        <div className="hidden lg:block">
-          <div className="border border-gray-200 rounded-xl overflow-hidden bg-white shadow-sm">
-            <div className="bg-[#007AFF] px-4 py-2.5 flex items-center justify-between">
-              <div className="flex items-center gap-1.5">
-                <div className="w-2.5 h-2.5 rounded-full bg-white/25" /><div className="w-2.5 h-2.5 rounded-full bg-white/25" /><div className="w-2.5 h-2.5 rounded-full bg-white/25" />
-                <span className="text-white/70 text-xs ml-2">cursive.io · pixel monitor</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="relative flex h-2 w-2"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-300 opacity-75" /><span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" /></span>
-                <span className="text-white/80 text-xs">1,863 today</span>
-              </div>
+
+        <div className="border border-gray-200 rounded-xl overflow-hidden bg-white shadow-sm">
+          <div className="bg-[#007AFF] px-4 py-2.5 flex items-center justify-between">
+            <div className="flex items-center gap-1.5">
+              <div className="w-2.5 h-2.5 rounded-full bg-white/25" /><div className="w-2.5 h-2.5 rounded-full bg-white/25" /><div className="w-2.5 h-2.5 rounded-full bg-white/25" />
+              <span className="text-white/70 text-xs ml-2">cursive.io · pixel monitor</span>
             </div>
-            <div className="p-5">
-              <div className="flex items-center gap-2 mb-3">
-                <span className="text-[10px] font-semibold bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded">✓ IDENTITY CONFIRMED</span>
-                <span className="text-[10px] font-semibold bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded">HIGH INTENT</span>
-              </div>
-              <div className="space-y-2 mb-3">
-                {([
-                  ['Name', 'Sarah Okonkwo'],
-                  ['Title', 'Director of Growth'],
-                  ['Company', 'Apex Revenue Co.'],
-                  ['Email', 's.okonkwo@apexrevenue.com'],
-                  ['Phone', '+1 (312) 555-9832'],
-                  ['Intent Signal', 'Visited /pricing + /integrations same session'],
-                ] as [string, string][]).map(([l, v]) => (
-                  <div key={l} className="flex justify-between text-xs">
-                    <span className="text-gray-400">{l}</span>
-                    <span className={`${l === 'Email' || l === 'Phone' ? 'font-mono text-[11px]' : ''} ${l === 'Intent Signal' ? 'text-[#007AFF]' : 'text-gray-900 font-medium'}`}>{v}</span>
-                  </div>
-                ))}
-              </div>
-              <div className="pt-2 border-t border-gray-100">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] text-gray-400">Intent Score</span>
-                  <div className="flex items-center gap-2">
-                    <div className="w-20 bg-gray-200 rounded-full h-1.5 overflow-hidden"><div className="bg-[#007AFF] h-full rounded-full" style={{ width: '89%' }} /></div>
-                    <span className="text-[#007AFF] font-bold text-xs">89</span>
-                  </div>
+            <div className="flex items-center gap-1.5">
+              <span className="relative flex h-2 w-2"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-300 opacity-75" /><span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" /></span>
+              <span className="text-white/80 text-xs">1,863 today</span>
+            </div>
+          </div>
+          <div className="px-5 py-4 flex flex-wrap items-center gap-6">
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <span className="text-[10px] font-semibold bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded">✓ IDENTITY CONFIRMED</span>
+              <span className="text-[10px] font-semibold bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded">HIGH INTENT · 89</span>
+            </div>
+            <div className="flex flex-wrap gap-x-8 gap-y-1 text-xs flex-1">
+              {([
+                ['Name', 'Sarah Okonkwo'],
+                ['Title', 'Director of Growth'],
+                ['Company', 'Apex Revenue Co.'],
+                ['Email', 's.okonkwo@apexrevenue.com'],
+                ['Phone', '+1 (312) 555-9832'],
+                ['Signal', 'Visited /pricing + /integrations same session'],
+              ] as [string, string][]).map(([l, v]) => (
+                <div key={l} className="flex items-baseline gap-1.5">
+                  <span className="text-gray-400 text-[10px]">{l}</span>
+                  <span className={`${l === 'Email' || l === 'Phone' ? 'font-mono text-[11px]' : ''} ${l === 'Signal' ? 'text-[#007AFF]' : 'text-gray-900 font-medium'}`}>{v}</span>
                 </div>
-              </div>
-            </div>
-            <div className="border-t border-gray-100 px-5 py-2.5 flex items-center justify-between bg-gray-50/50">
-              <span className="text-[10px] text-gray-400">Live identification stream</span>
-              <div className="flex gap-1.5">{[0,1,2,3].map(i => <div key={i} className={`w-1.5 h-1.5 rounded-full ${i === 1 ? 'bg-[#007AFF]' : 'bg-gray-300'}`} />)}</div>
+              ))}
             </div>
           </div>
         </div>
