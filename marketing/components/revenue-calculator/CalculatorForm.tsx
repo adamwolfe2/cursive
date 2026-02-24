@@ -7,7 +7,7 @@ const INDUSTRIES = [
   'Ecommerce', 'Education', 'Real Estate', 'Healthcare', 'Other',
 ]
 
-const DEAL_SIZE_CHIPS = [500, 1000, 2500, 5000, 10000]
+const DEAL_SIZE_CHIPS = [1000, 2500, 5000, 25000, 50000]
 
 interface Props {
   onSubmit: (data: { domain: string; monthlyVisitors: number; dealSize: number; industry: string }) => void
@@ -18,7 +18,7 @@ export function CalculatorForm({ onSubmit }: Props) {
   const [trafficRange, setTrafficRange] = useState<string>('')
   const [dealSize, setDealSize] = useState<number | ''>('')
   const [customDeal, setCustomDeal] = useState('')
-  const [industry, setIndustry] = useState('')
+  const [industry, setIndustry] = useState('B2B SaaS')
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   const handleSubmit = (e: React.FormEvent) => {

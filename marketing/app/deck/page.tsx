@@ -38,10 +38,10 @@ const PHASES = [
 ]
 
 const PROBLEM_STATS = [
-  { number: '97%', label: 'of B2B visitors leave without ever identifying themselves' },
-  { number: '<2%', label: 'of your traffic you can currently contact' },
-  { number: '$47', label: 'avg cost-per-click lost to anonymous sessions every day' },
-  { number: '8×', label: 'more identified contacts after Super Pixel install' },
+  { number: '97%', label: 'of B2B visitors leave without ever identifying themselves', color: 'text-red-500' },
+  { number: '<2%', label: 'of your traffic you can currently contact', color: 'text-red-500' },
+  { number: '$47', label: 'avg cost-per-click lost to anonymous sessions every day', color: 'text-amber-500' },
+  { number: '8×', label: 'more identified contacts after Super Pixel install', color: 'text-[#007AFF]' },
 ]
 
 const PROBLEMS = [
@@ -94,7 +94,7 @@ function VisitorDemo({ compact = false }: { compact?: boolean }) {
       if (iv.current) clearInterval(iv.current)
     }
     if (phase === 'idle') {
-      t.current = setTimeout(() => setPhase('detected'), 1800)
+      t.current = setTimeout(() => setPhase('detected'), 700)
     } else if (phase === 'detected') {
       t.current = setTimeout(() => { setProgress(0); setPhase('matching') }, 1400)
     } else if (phase === 'matching') {
@@ -261,7 +261,7 @@ function Slide({ children, bg = 'bg-white' }: { children: React.ReactNode; bg?: 
       className={`${bg} flex items-center`}
       style={{ height: 'calc(100vh - 52px)', overflowY: 'auto' }}
     >
-      <div className="max-w-6xl mx-auto px-6 sm:px-12 py-10 w-full">
+      <div className="max-w-6xl mx-auto px-6 sm:px-12 py-6 w-full">
         {children}
       </div>
     </div>
@@ -286,7 +286,7 @@ function S1() {
           <p className="text-xl text-gray-600 leading-relaxed mb-6">
             The average B2B website loses <strong className="text-gray-900">97% of visitors</strong> without capturing their identity. The Cursive Super Pixel recovers <strong className="text-gray-900">70% of them</strong> — automatically enriched with:
           </p>
-          <div className="space-y-2 mb-8">
+          <div className="space-y-2 mb-6">
             {[
               'Full name & verified direct email',
               'Mobile phone number',
@@ -300,6 +300,11 @@ function S1() {
                 </svg>
                 {item}
               </div>
+            ))}
+          </div>
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 pt-4 border-t border-gray-100">
+            {['✓ GDPR Compliant', '✓ CCPA Compliant', '✓ No PII Stored', '✓ SOC 2 Ready'].map(t => (
+              <span key={t} className="text-[11px] font-mono text-gray-400">{t}</span>
             ))}
           </div>
         </div>
@@ -326,7 +331,7 @@ function S2() {
         <div className="grid grid-cols-2 gap-px bg-gray-200 border border-gray-200 mb-8">
           {PROBLEM_STATS.map((s, i) => (
             <div key={i} className="bg-white p-8 lg:p-10">
-              <div className="text-5xl lg:text-6xl font-light text-gray-900 mb-3">{s.number}</div>
+              <div className={`text-5xl lg:text-6xl font-light mb-3 ${s.color}`}>{s.number}</div>
               <p className="text-gray-500 text-sm leading-relaxed">{s.label}</p>
             </div>
           ))}
@@ -345,14 +350,18 @@ function S2() {
             <span className="text-gray-400">=</span>
             <span className="bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded font-mono text-emerald-700 font-semibold">Recoverable pipeline / mo</span>
           </div>
-          <div className="mt-4 grid grid-cols-2 gap-3 text-xs text-gray-500">
+          <div className="mt-4 grid grid-cols-3 gap-3 text-xs text-gray-500">
             <div className="bg-gray-50 rounded-lg p-3">
-              <p className="font-medium text-gray-700 mb-1">10K visitors · $50K deal</p>
-              <p className="font-mono text-emerald-600 font-semibold">$175K/mo recoverable</p>
+              <p className="font-medium text-gray-700 mb-1">2K visitors · $5K deal</p>
+              <p className="font-mono text-emerald-600 font-semibold">$35K/mo recoverable</p>
             </div>
             <div className="bg-gray-50 rounded-lg p-3">
-              <p className="font-medium text-gray-700 mb-1">50K visitors · $25K deal</p>
-              <p className="font-mono text-emerald-600 font-semibold">$437K/mo recoverable</p>
+              <p className="font-medium text-gray-700 mb-1">10K visitors · $25K deal</p>
+              <p className="font-mono text-emerald-600 font-semibold">$87K/mo recoverable</p>
+            </div>
+            <div className="bg-gray-50 rounded-lg p-3">
+              <p className="font-medium text-gray-700 mb-1">50K visitors · $50K deal</p>
+              <p className="font-mono text-emerald-600 font-semibold">$875K/mo recoverable</p>
             </div>
           </div>
         </div>
@@ -507,7 +516,52 @@ function S5() {
           </div>
         </div>
         <div className="hidden lg:block">
-          <VisitorDemo compact />
+          <div className="border border-gray-200 rounded-xl overflow-hidden bg-white shadow-sm">
+            <div className="bg-[#007AFF] px-4 py-2.5 flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <div className="w-2.5 h-2.5 rounded-full bg-white/25" /><div className="w-2.5 h-2.5 rounded-full bg-white/25" /><div className="w-2.5 h-2.5 rounded-full bg-white/25" />
+                <span className="text-white/70 text-xs ml-2">cursive.io · pixel monitor</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="relative flex h-2 w-2"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-300 opacity-75" /><span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" /></span>
+                <span className="text-white/80 text-xs">1,863 today</span>
+              </div>
+            </div>
+            <div className="p-5">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-[10px] font-semibold bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded">✓ IDENTITY CONFIRMED</span>
+                <span className="text-[10px] font-semibold bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded">HIGH INTENT</span>
+              </div>
+              <div className="space-y-2 mb-3">
+                {([
+                  ['Name', 'Sarah Okonkwo'],
+                  ['Title', 'Director of Growth'],
+                  ['Company', 'Apex Revenue Co.'],
+                  ['Email', 's.okonkwo@apexrevenue.com'],
+                  ['Phone', '+1 (312) 555-9832'],
+                  ['Intent Signal', 'Visited /pricing + /integrations same session'],
+                ] as [string, string][]).map(([l, v]) => (
+                  <div key={l} className="flex justify-between text-xs">
+                    <span className="text-gray-400">{l}</span>
+                    <span className={`${l === 'Email' || l === 'Phone' ? 'font-mono text-[11px]' : ''} ${l === 'Intent Signal' ? 'text-[#007AFF]' : 'text-gray-900 font-medium'}`}>{v}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="pt-2 border-t border-gray-100">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] text-gray-400">Intent Score</span>
+                  <div className="flex items-center gap-2">
+                    <div className="w-20 bg-gray-200 rounded-full h-1.5 overflow-hidden"><div className="bg-[#007AFF] h-full rounded-full" style={{ width: '89%' }} /></div>
+                    <span className="text-[#007AFF] font-bold text-xs">89</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="border-t border-gray-100 px-5 py-2.5 flex items-center justify-between bg-gray-50/50">
+              <span className="text-[10px] text-gray-400">Live identification stream</span>
+              <div className="flex gap-1.5">{[0,1,2,3].map(i => <div key={i} className={`w-1.5 h-1.5 rounded-full ${i === 1 ? 'bg-[#007AFF]' : 'bg-gray-300'}`} />)}</div>
+            </div>
+          </div>
         </div>
       </div>
     </Slide>
@@ -598,10 +652,16 @@ function S7() {
               <div className="border-t border-gray-100 pt-3">
                 <p className="text-[10px] font-mono uppercase tracking-[0.12em] text-gray-400 mb-2">Pages visited this week</p>
                 <div className="space-y-1 text-xs font-mono text-gray-500">
-                  <div className="flex justify-between"><span className="text-[#007AFF]">/pricing</span><span>3× · 4 min avg</span></div>
-                  <div className="flex justify-between"><span>/enterprise-features</span><span>2×</span></div>
+                  <div className="flex justify-between"><span className="text-[#007AFF]">/pricing</span><span className="text-red-500 font-semibold">3× · 4 min avg</span></div>
+                  <div className="flex justify-between"><span>/enterprise-features</span><span className="text-amber-500 font-medium">2×</span></div>
                   <div className="flex justify-between"><span>/integrations/salesforce</span><span>1×</span></div>
-                  <div className="flex justify-between text-emerald-600 font-semibold"><span>→ /book-demo</span><span>viewing now</span></div>
+                  <div className="flex justify-between text-emerald-600 font-semibold items-center">
+                    <span>→ /book-demo</span>
+                    <span className="flex items-center gap-1.5">
+                      <span className="relative flex h-2 w-2"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" /><span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" /></span>
+                      viewing now
+                    </span>
+                  </div>
                 </div>
               </div>
 
@@ -670,12 +730,12 @@ function S8() {
               ],
             },
           ].map((col, ci) => (
-            <div key={ci} className={`${col.bg} p-6 ${col.highlight ? 'ring-2 ring-[#007AFF] ring-inset' : ''}`}>
-              <p className={`text-[10px] font-mono uppercase tracking-[0.15em] mb-4 ${col.accent} ${col.highlight ? 'font-bold' : ''}`}>{col.label}</p>
+            <div key={ci} className={`${col.bg} p-6 ${col.highlight ? 'ring-2 ring-[#007AFF] ring-inset bg-[#007AFF]/4' : ''}`}>
+              <p className={`text-[10px] font-mono uppercase tracking-[0.15em] mb-4 ${col.accent} ${col.highlight ? 'font-black text-[#007AFF]' : ''}`}>{col.highlight ? '⭐ ' : ''}{col.label}</p>
               <div className="space-y-2.5">
                 {col.items.map((item, ii) => (
                   <div key={ii} className="flex items-start gap-2 text-xs">
-                    <span className={`flex-shrink-0 font-bold mt-0.5 ${item.ok ? 'text-[#007AFF]' : 'text-gray-300'}`}>{item.ok ? '✓' : '✕'}</span>
+                    <span className={`flex-shrink-0 font-bold mt-0.5 ${item.ok ? 'text-[#007AFF]' : 'text-red-400'}`}>{item.ok ? '✓' : '✕'}</span>
                     <span className={item.ok ? 'text-gray-700' : 'text-gray-400'}>{item.text}</span>
                   </div>
                 ))}
@@ -694,6 +754,13 @@ function S8() {
             </div>
           ))}
         </div>
+        <div className="mt-4 bg-white border border-gray-200 rounded-xl p-5 flex items-start gap-4">
+          <svg className="w-6 h-6 text-[#007AFF]/40 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M11.192 15.757c0-.88-.23-1.618-.69-2.217-.326-.412-.768-.683-1.327-.812-.55-.128-1.07-.137-1.54-.028-.16-.95.1-1.95.78-3 .53-.81 1.24-1.48 2.13-2.02L9.027 6c-.75.506-1.4 1.11-1.94 1.81-.54.7-.95 1.44-1.23 2.22-.28.78-.41 1.58-.4 2.39.02.8.2 1.56.55 2.27.34.71.83 1.27 1.47 1.68.64.41 1.36.62 2.18.62.77 0 1.43-.19 1.98-.57.55-.38.83-.92.83-1.63zm8 0c0-.88-.23-1.618-.69-2.217-.326-.42-.77-.695-1.327-.825-.56-.13-1.07-.14-1.54-.022-.16-.95.1-1.95.78-3 .53-.81 1.24-1.48 2.13-2.02L17.027 6c-.75.506-1.4 1.11-1.94 1.81-.54.7-.95 1.44-1.23 2.22-.28.78-.41 1.58-.4 2.39.02.8.2 1.56.55 2.27.34.71.83 1.27 1.47 1.68.64.41 1.36.62 2.18.62.77 0 1.43-.19 1.98-.57.55-.38.83-.92.83-1.63z"/></svg>
+          <div>
+            <p className="text-gray-700 text-sm leading-relaxed italic">"We installed it on a Friday. By Monday we had 47 identified leads from the weekend traffic we would have completely lost. Within two weeks it was our highest-volume lead source."</p>
+            <p className="text-[11px] text-gray-400 font-mono mt-2">— VP of Sales · Series B B2B SaaS · 12K monthly visitors</p>
+          </div>
+        </div>
       </div>
     </Slide>
   )
@@ -704,8 +771,12 @@ function S9() {
   return (
     <Slide>
       <div className="max-w-4xl mx-auto w-full">
+        <div className="bg-amber-50 border border-amber-200 rounded-xl px-5 py-3 mb-6 flex items-center gap-3">
+          <span className="relative flex h-2.5 w-2.5 flex-shrink-0"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" /><span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500" /></span>
+          <p className="text-amber-900 text-sm font-medium">Every day without the pixel = more warm leads walking out your door unidentified. <strong>Right now, someone is on your site.</strong></p>
+        </div>
         <Label>What Happens Next</Label>
-        <h2 className="text-5xl font-light text-gray-900 leading-[1.05] mb-10">
+        <h2 className="text-5xl font-light text-gray-900 leading-[1.05] mb-8">
           We can have this live
           <span className="block font-cursive text-gray-500 text-6xl">on your site today.</span>
         </h2>
@@ -731,7 +802,7 @@ function S9() {
               href="https://leads.meetcursive.com/sign-up"
               className="block text-center px-6 py-3 bg-[#007AFF] hover:bg-[#0066DD] text-white font-bold rounded-lg transition-colors"
             >
-              Let&apos;s Get You Set Up →
+              Install the Pixel on This Call →
             </a>
           </div>
           <div className="border border-gray-200 rounded-xl p-6 bg-white">
@@ -850,20 +921,20 @@ export default function DeckPage() {
       <button
         onClick={prev}
         disabled={current === 0}
-        className="fixed left-3 top-1/2 -translate-y-1/2 z-[110] w-9 h-9 flex items-center justify-center rounded-full bg-white border border-gray-200 shadow-sm hover:border-[#007AFF] hover:text-[#007AFF] transition-all disabled:opacity-0 text-gray-500 text-lg"
+        className="fixed left-3 top-1/2 -translate-y-1/2 z-[110] w-12 h-12 flex items-center justify-center rounded-full bg-white border border-gray-200 shadow-md hover:border-[#007AFF] hover:text-[#007AFF] hover:shadow-lg transition-all disabled:opacity-0 text-gray-500"
         aria-label="Previous slide"
       >
-        ‹
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
       </button>
 
       {/* ── NEXT ARROW ── */}
       <button
         onClick={next}
         disabled={current === SLIDE_COUNT - 1}
-        className="fixed right-3 top-1/2 -translate-y-1/2 z-[110] w-9 h-9 flex items-center justify-center rounded-full bg-white border border-gray-200 shadow-sm hover:border-[#007AFF] hover:text-[#007AFF] transition-all disabled:opacity-0 text-gray-500 text-lg"
+        className="fixed right-3 top-1/2 -translate-y-1/2 z-[110] w-12 h-12 flex items-center justify-center rounded-full bg-white border border-gray-200 shadow-md hover:border-[#007AFF] hover:text-[#007AFF] hover:shadow-lg transition-all disabled:opacity-0 text-gray-500"
         aria-label="Next slide"
       >
-        ›
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
       </button>
 
       {/* ── DOT NAV ── */}
