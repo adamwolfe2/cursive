@@ -278,21 +278,25 @@ function S1() {
     <Slide>
       <div className="grid lg:grid-cols-[1fr_1.1fr] gap-12 lg:gap-16 items-center">
         <div>
-          <Label>Cursive Super Pixel</Label>
+          <div className="flex items-center gap-2 mb-2">
+            <Label>Cursive Super Pixel v4</Label>
+            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-[#007AFF] text-white font-mono -mt-4">NEW</span>
+          </div>
           <h1 className="text-5xl lg:text-6xl font-light text-gray-900 leading-[1.05] mb-6">
             Your website generated pipeline last month.
             <span className="block font-cursive text-gray-500 mt-1">You just didn&apos;t capture it.</span>
           </h1>
           <p className="text-xl text-gray-600 leading-relaxed mb-6">
-            The average B2B website loses <strong className="text-gray-900">97% of visitors</strong> without capturing their identity. The Cursive Super Pixel recovers <strong className="text-gray-900">70% of them</strong> — automatically enriched with:
+            The average B2B website loses <strong className="text-gray-900">97% of visitors</strong> without capturing their identity. The Cursive Super Pixel v4 recovers <strong className="text-gray-900">70% of them</strong> — automatically enriched with:
           </p>
           <div className="space-y-2 mb-6">
             {[
-              'Full name & verified direct email',
-              'Mobile phone number',
-              'Company, role & seniority',
-              'Real-time intent signals & page history',
-              'Account-level buying signals',
+              'Full name, verified email + mobile phone',
+              'Department, seniority level & career history',
+              'Company revenue, headcount & industry',
+              'URL-based intent score from page visited',
+              'DNC compliance flags (mobile + landline)',
+              'Income range, net worth & household data',
             ].map(item => (
               <div key={item} className="flex items-center gap-2.5 text-sm text-gray-700">
                 <svg className="w-4 h-4 text-[#007AFF] flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
@@ -482,15 +486,16 @@ function S5() {
         <p className="text-gray-500 text-lg mb-6">Most tools give you a company name. Cursive cross-references device signals against a <strong className="text-gray-900">420M+ first-party identity graph</strong> to give you the actual person — no cookies required.</p>
 
         <div className="border border-gray-200 rounded-xl overflow-hidden mb-5">
-          <div className="bg-gray-50 px-4 py-2 border-b border-gray-200">
+          <div className="bg-gray-50 px-4 py-2 border-b border-gray-200 flex items-center justify-between">
             <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-gray-400">How we compare</p>
+            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-[#007AFF] text-white font-mono">v4</span>
           </div>
           <table className="w-full text-xs">
             <thead>
               <tr className="border-b border-gray-100">
                 <th className="text-left py-2 px-4 text-gray-400 font-medium">Metric</th>
                 <th className="text-center py-2 px-3 text-gray-400 font-medium">Others</th>
-                <th className="text-center py-2 px-3 text-[#007AFF] font-bold">Cursive</th>
+                <th className="text-center py-2 px-3 text-[#007AFF] font-bold">Cursive v4</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
@@ -498,7 +503,10 @@ function S5() {
                 ['ID Rate', '15–35%', '70%'],
                 ['Email Accuracy', '~78%', '95%+'],
                 ['Phone Numbers', 'Add-on', '✓ Included'],
-                ['Intent Signals', 'Basic/None', '✓ Real-time'],
+                ['URL Intent Score', 'Not available', '✓ Real-time v4'],
+                ['DNC Compliance', 'Not available', '✓ Mobile + Landline'],
+                ['Dept + Career Data', 'Add-on / None', '✓ v4 Included'],
+                ['Household Signals', 'Not available', '✓ Income + Net Worth'],
                 ['Data Refresh', 'Quarterly', '30-Day NCOA'],
                 ['Setup Time', '1–2 weeks', '5 minutes'],
               ].map(([metric, others, cursive]) => (
@@ -582,11 +590,12 @@ function S7() {
           <p className="text-gray-600 text-lg leading-relaxed mb-6">Every identified visitor arrives as a full, verified contact record — with company firmographics, intent signals, and every page they visited.</p>
           <div className="space-y-2.5">
             {[
-              '40+ enrichment data points per contact',
+              '50+ v4 enrichment data points per contact',
+              'DNC compliance flags — mobile + landline',
+              'Department, seniority & career history',
+              'URL-based intent score from page visited',
               'Real-time Slack + CRM notification',
-              'Automatic lead scoring by intent',
               'Auto-sync to HubSpot, Salesforce, Pipedrive',
-              'Pages visited + time on each page',
             ].map(item => (
               <div key={item} className="flex items-center gap-2.5 text-sm text-gray-700">
                 <svg className="w-4 h-4 text-[#007AFF] flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
@@ -619,16 +628,27 @@ function S7() {
                 {([
                   ['Email', SAMPLE_LEAD.email],
                   ['Mobile', SAMPLE_LEAD.phone],
+                  ['Department', 'Sales'],
+                  ['Seniority', 'VP Level'],
                   ['Employees', '150–200'],
                   ['Revenue', '$15M–$25M ARR'],
-                  ['Industry', 'B2B SaaS'],
-                  ['Tech Stack', 'Salesforce, HubSpot'],
                 ] as [string, string][]).map(([l, v]) => (
                   <div key={l}>
                     <p className="text-[10px] text-gray-400 mb-0.5">{l}</p>
                     <p className="text-gray-800 text-xs font-medium truncate">{v}</p>
                   </div>
                 ))}
+              </div>
+
+              <div className="border border-gray-100 rounded-lg p-2.5 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-mono text-gray-400 uppercase tracking-wide">DNC Status</span>
+                  <span className="text-[10px] font-semibold bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded">✓ Clean</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-mono text-gray-400 uppercase tracking-wide">Intent URL</span>
+                  <span className="text-[10px] font-mono text-[#007AFF] font-semibold">/pricing · score 90</span>
+                </div>
               </div>
 
               <div className="border-t border-gray-100 pt-3">
@@ -685,17 +705,17 @@ function S8() {
               ],
             },
             {
-              label: 'Cursive Super Pixel',
+              label: 'Cursive Super Pixel v4',
               accent: 'text-[#007AFF]',
               bg: 'bg-white',
               highlight: true,
               items: [
                 { ok: true, text: '70% identification rate' },
                 { ok: true, text: 'Individual contact + verified email' },
-                { ok: true, text: '30-day NCOA data refresh' },
-                { ok: true, text: 'Real-time intent scoring' },
-                { ok: true, text: '5-minute setup, one script tag' },
-                { ok: true, text: 'Mobile phone number included' },
+                { ok: true, text: 'DNC compliance flags (mobile + landline)' },
+                { ok: true, text: 'Department, seniority & career history' },
+                { ok: true, text: 'URL-based intent score from page visited' },
+                { ok: true, text: '30-day NCOA · income + net worth data' },
               ],
             },
             {
@@ -716,7 +736,8 @@ function S8() {
               {col.highlight ? (
                 <div className="flex items-center gap-1.5 mb-4">
                   <img src="/cursive-logo.png" alt="Cursive" className="h-3.5 w-auto" />
-                  <p className="text-[10px] font-mono uppercase tracking-[0.15em] font-black text-[#007AFF]">Super Pixel</p>
+                  <p className="text-[10px] font-mono uppercase tracking-[0.15em] font-black text-[#007AFF]">Super Pixel v4</p>
+                  <span className="text-[8px] font-bold px-1 py-0.5 rounded bg-[#007AFF] text-white font-mono leading-none">NEW</span>
                 </div>
               ) : (
                 <p className={`text-[10px] font-mono uppercase tracking-[0.15em] mb-4 ${col.accent}`}>{col.label}</p>
