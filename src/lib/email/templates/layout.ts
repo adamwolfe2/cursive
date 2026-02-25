@@ -44,7 +44,7 @@ export const BRAND = {
 export const URLS = {
   base: BASE_URL,
   myLeads: `${BASE_URL}/my-leads`,
-  billing: `${BASE_URL}/billing`,
+  billing: `${BASE_URL}/settings/billing`,
   preferences: `${BASE_URL}/preferences`,
   dashboard: `${BASE_URL}/dashboard`,
   services: `${BASE_URL}/services`,

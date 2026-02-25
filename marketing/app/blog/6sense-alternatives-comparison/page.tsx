@@ -1122,7 +1122,7 @@ export default function BlogPost() {
                 <Link href="/free-audit">Get Your Free AI Audit</Link>
               </Button>
               <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10" asChild>
-                <a href="https://cal.com/cursive/30min" target="_blank" rel="noopener noreferrer">Book a Demo</a>
+                <a href="https://cal.com/gotdarrenhill/30min" target="_blank" rel="noopener noreferrer">Book a Demo</a>
               </Button>
             </div>
           </div>
@@ -1500,7 +1500,7 @@ export default function BlogPost() {
               Ready to replace 6sense with an affordable alternative that delivers results?
             </p>
             <MachineList items={[
-              { label: "Book a Demo", href: "https://cal.com/cursive/30min", description: "See Cursive in action (30-minute call)" },
+              { label: "Book a Demo", href: "https://cal.com/gotdarrenhill/30min", description: "See Cursive in action (30-minute call)" },
               { label: "Get Free AI Audit", href: "/free-audit", description: "Analyze your current setup and see what's missing" },
               { label: "View Pricing", href: "/pricing", description: "Self-serve credits from $99 or managed campaigns from $1k/mo" },
               { label: "Try Cursive Platform", href: "/platform", description: "Person-level visitor ID + intent scoring + AI SDR outreach" }

@@ -18,7 +18,7 @@ export function DashboardCTA({
   subheadline = "your pipeline starts here",
   description = "Identify 70% of your anonymous website visitors and turn them into pipeline — automatically.",
   ctaText = "Book Your Free AI Audit Now",
-  ctaUrl = "https://cal.com/cursive/30min",
+  ctaUrl = "https://cal.com/gotdarrenhill/30min",
 }: DashboardCTAProps = {}) {
   return (
     <section className="relative py-32 bg-white overflow-hidden">

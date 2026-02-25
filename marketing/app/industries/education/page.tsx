@@ -59,7 +59,7 @@ export default function EducationPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
               >
-                <Button size="lg" href="https://cal.com/cursive/30min">
+                <Button size="lg" href="https://cal.com/gotdarrenhill/30min">
                   Schedule a Strategy Call
                 </Button>
               </motion.div>
@@ -179,7 +179,7 @@ export default function EducationPage() {
 
               <Button
                 size="lg"
-                href="https://cal.com/cursive/30min"
+                href="https://cal.com/gotdarrenhill/30min"
                 target="_blank"
                 className="bg-[#007AFF] text-white hover:bg-[#0066DD] text-lg px-10 py-5 mb-4"
               >
@@ -309,7 +309,7 @@ export default function EducationPage() {
           <MachineList items={[
             {
               label: "Schedule Strategy Call",
-              href: "https://cal.com/cursive/30min",
+              href: "https://cal.com/gotdarrenhill/30min",
               description: "Discuss student recruitment goals and pricing"
             },
             {

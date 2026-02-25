@@ -917,7 +917,7 @@ export default function BlogPost() {
                 To see how many warm, intent-ready leads your site is currently generating without being captured,{" "}
                 <Link href="/free-audit">request a free AI audit</Link>. We will show you your last 100 identified
                 visitors with intent scores and outreach-ready contact data. Or{" "}
-                <a href="https://cal.com/cursive/30min" target="_blank" rel="noopener noreferrer">book a 30-minute demo</a>{" "}
+                <a href="https://cal.com/gotdarrenhill/30min" target="_blank" rel="noopener noreferrer">book a 30-minute demo</a>{" "}
                 to see how the platform works for your specific ICP and traffic volume.
               </p>
 
@@ -1000,7 +1000,7 @@ export default function BlogPost() {
                   <Link href="/free-audit">Get Your Free AI Audit</Link>
                 </Button>
                 <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10" asChild>
-                  <a href="https://cal.com/cursive/30min" target="_blank" rel="noopener noreferrer">Book a Demo</a>
+                  <a href="https://cal.com/gotdarrenhill/30min" target="_blank" rel="noopener noreferrer">Book a Demo</a>
                 </Button>
               </div>
             </div>
@@ -1150,7 +1150,7 @@ export default function BlogPost() {
               { label: "Best AI SDR Tools 2026", href: "/blog/best-ai-sdr-tools-2026", description: "9 AI sales development rep platforms ranked with pricing" },
               { label: "Visitor Identification", href: "/visitor-identification", description: "How Cursive identifies 70% of anonymous website visitors" },
               { label: "Intent Audiences", href: "/intent-audiences", description: "60B+ weekly behavioral signals across 30,000+ categories" },
-              { label: "Book a Demo", href: "https://cal.com/cursive/30min", description: "See Cursive in action with your traffic data" }
+              { label: "Book a Demo", href: "https://cal.com/gotdarrenhill/30min", description: "See Cursive in action with your traffic data" }
             ]} />
           </MachineSection>
 

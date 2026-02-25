@@ -251,7 +251,7 @@ export default function HomePage() {
               <MachineList items={[
                 {
                   label: "Book a Demo",
-                  href: "https://cal.com/cursive/30min",
+                  href: "https://cal.com/gotdarrenhill/30min",
                   description: "See Cursive identify your website visitors in real-time with a personalized walkthrough"
                 },
                 {
@@ -325,7 +325,7 @@ export default function HomePage() {
             <MachineList items={[
               { label: "Website", href: "https://www.meetcursive.com" },
               { label: "Email", href: "mailto:hello@meetcursive.com" },
-              { label: "Schedule Demo", href: "https://cal.com/cursive/30min" },
+              { label: "Schedule Demo", href: "https://cal.com/gotdarrenhill/30min" },
               { label: "LinkedIn", href: "https://linkedin.com/company/cursive" },
               { label: "Twitter", href: "https://twitter.com/meetcursive" },
             ]} />

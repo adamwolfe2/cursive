@@ -139,7 +139,7 @@ export function CompetitiveAdvantagesSection() {
             See the difference for yourself
           </p>
           <a
-            href="https://cal.com/cursive/30min"
+            href="https://cal.com/gotdarrenhill/30min"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-6 py-3 bg-white text-[#007AFF] border-2 border-[#007AFF] rounded-lg font-medium hover:bg-[#007AFF] hover:text-white transition-all group"

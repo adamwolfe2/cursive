@@ -214,8 +214,8 @@ export function Header() {
 
             {/* Desktop CTA Buttons */}
             <div className="hidden md:flex items-center gap-4">
-              <Button size="sm" variant="outline" href="/superpixel">
-                See the Pixel
+              <Button size="sm" variant="outline" href="/free-audit">
+                Get Free Audit
               </Button>
               <Button size="sm" href="https://cal.com/gotdarrenhill/30min" target="_blank">
                 Book a Call
@@ -313,10 +313,10 @@ export function Header() {
                 <Button
                   variant="outline"
                   className="w-full"
-                  href="/superpixel"
+                  href="/free-audit"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  See the Pixel
+                  Get Free Audit
                 </Button>
                 <Button
                   className="w-full"

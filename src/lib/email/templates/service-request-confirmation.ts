@@ -108,7 +108,7 @@ export function serviceRequestConfirmationEmail(
     ${ctaButton('Book a Call', URLS.bookCall)}
 
     <p style="margin: 0 0 0; font-size: 14px; color: ${BRAND.textSecondary}; line-height: 1.5;">
-      Questions in the meantime? Just reply to this email &mdash; it goes straight to Adam.
+      Questions in the meantime? Just reply to this email — our team responds within 24 hours.
     </p>
 
     ${footnote('You can view your active services anytime at <a href="' + URLS.services + '" style="color: ' + BRAND.textMuted + '; text-decoration: underline;">Services</a>.')}
@@ -131,7 +131,7 @@ export function serviceRequestConfirmationEmail(
     '',
     `Don't want to wait? Book a call: ${URLS.bookCall}`,
     '',
-    `Questions? Reply to this email -- it goes straight to Adam.`,
+    `Questions? Reply to this email — our team responds within 24 hours.`,
   ]
     .filter((line): line is string => line !== null)
     .join('\n')

@@ -31,7 +31,7 @@ const VISITORS = [
 ]
 
 const PHASES = [
-  { num: '01', title: 'Install', desc: 'One script tag on your site. Works on WordPress, Webflow, React, Shopify — any stack. No engineering sprint.', code: '<script src="cdn.cursive.io/px.js">' },
+  { num: '01', title: 'Install', desc: 'One script tag on your site. Works on WordPress, Webflow, React, Shopify — any stack. No engineering sprint.', code: '<script src="https://cdn.meetcursive.com/pixel.js">' },
   { num: '02', title: 'Match', desc: 'Every visitor cross-referenced against 420M+ verified contacts in real-time. No cookies. No fingerprinting.', code: '420M+ profiles · <200ms match' },
   { num: '03', title: 'Score', desc: 'Intent AI scores each visitor on page visited, scroll depth, return frequency, and session behavior.', code: '60B+ daily intent signals' },
   { num: '04', title: 'Deliver', desc: 'Verified name, email, phone, and intent score delivered to your CRM or inbox before the session ends.', code: 'HubSpot · Salesforce · Slack' },

@@ -29,7 +29,7 @@ export default function CaseStudiesPage() {
               </p>
               <Button
                 size="lg"
-                href="https://cal.com/cursive/30min"
+                href="https://cal.com/gotdarrenhill/30min"
                 className="bg-[#007AFF] hover:bg-[#0066DD]"
               >
                 Get Results Like These
@@ -575,7 +575,7 @@ export default function CaseStudiesPage() {
 
           <MachineSection title="Get Started">
             <MachineList items={[
-              { label: "Book a Demo", href: "https://cal.com/cursive/30min", description: "See how Cursive can drive results for your business" },
+              { label: "Book a Demo", href: "https://cal.com/gotdarrenhill/30min", description: "See how Cursive can drive results for your business" },
               { label: "Free Website Visitor Audit", href: "/free-audit", description: "See which companies are visiting your site right now" },
               { label: "Pricing", href: "/pricing", description: "Explore self-serve and done-for-you plans" },
             ]} />

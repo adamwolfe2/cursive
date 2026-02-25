@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     images: ['https://www.meetcursive.com/og-image.png'],
   },
   alternates: { canonical: 'https://www.meetcursive.com/oldsuperpixel' },
-  robots: { index: true, follow: true },
+  robots: { index: false, follow: false },
 }
 
 const superpixelFAQs = [

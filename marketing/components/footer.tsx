@@ -313,7 +313,7 @@ export function Footer() {
                 </a>
               </li>
               <li>
-                <a href="https://cal.com/cursive/30min" target="_blank" rel="noopener noreferrer" className="hover:text-[#007AFF] transition-colors">
+                <a href="https://cal.com/gotdarrenhill/30min" target="_blank" rel="noopener noreferrer" className="hover:text-[#007AFF] transition-colors">
                   Book a Demo
                 </a>
               </li>

@@ -114,7 +114,7 @@ async function sendContactEmail(formData: ContactFormData): Promise<void> {
         <ul style="margin: 12px 0; padding-left: 20px; color: #666;">
           <li>Check out our <a href="https://www.meetcursive.com/faq" style="color: #007aff; text-decoration: none;">FAQ page</a> for quick answers</li>
           <li>Visit our <a href="https://www.meetcursive.com/platform" style="color: #007aff; text-decoration: none;">platform page</a> to learn more</li>
-          <li>Book a demo at <a href="https://cal.com/cursive/30min" style="color: #007aff; text-decoration: none;">our calendar</a></li>
+          <li>Book a demo at <a href="https://cal.com/gotdarrenhill/30min" style="color: #007aff; text-decoration: none;">our calendar</a></li>
         </ul>
       </div>
 

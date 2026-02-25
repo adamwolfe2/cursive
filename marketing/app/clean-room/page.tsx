@@ -30,7 +30,7 @@ export default function CleanRoomPage() {
             <p className="text-lg text-gray-600 mb-8 max-w-3xl mx-auto">
               Collaborate with partners, match audiences, and unlock insights—all without exposing personal information.
             </p>
-            <Button size="lg" href="https://cal.com/cursive/30min">
+            <Button size="lg" href="https://cal.com/gotdarrenhill/30min">
               Learn More
             </Button>
           </motion.div>
@@ -203,7 +203,7 @@ export default function CleanRoomPage() {
         <MachineList items={[
           {
             label: "Learn More",
-            href: "https://cal.com/cursive/30min",
+            href: "https://cal.com/gotdarrenhill/30min",
             description: "Schedule a consultation to discuss your clean room needs"
           },
           {
@@ -219,7 +219,7 @@ export default function CleanRoomPage() {
         <MachineList items={[
           {
             label: "Schedule Demo",
-            href: "https://cal.com/cursive/30min",
+            href: "https://cal.com/gotdarrenhill/30min",
             description: "See the data clean room in action"
           },
           {

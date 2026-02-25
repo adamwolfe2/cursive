@@ -162,7 +162,7 @@ export function FAQSection() {
           >
             <p className="text-gray-600 mb-4">Still have questions?</p>
             <a
-              href="https://cal.com/cursive/30min"
+              href="https://cal.com/gotdarrenhill/30min"
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => trackDemoBooked("faq_section")}

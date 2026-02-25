@@ -116,7 +116,7 @@ export async function GET() {
         },
       ],
       actions: {
-        book_demo: "https://cal.com/cursive/30min",
+        book_demo: "https://cal.com/gotdarrenhill/30min",
         free_signup: "https://leads.meetcursive.com/signup",
         free_audit: "https://meetcursive.com/free-audit",
         contact_email: "hello@meetcursive.com",

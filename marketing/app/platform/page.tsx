@@ -45,7 +45,7 @@ export default function PlatformPage() {
                 Try the Platform
                 <ArrowRight className="w-5 h-5" />
               </Button>
-              <Button size="lg" variant="outline" href="https://cal.com/cursive/30min" target="_blank">
+              <Button size="lg" variant="outline" href="https://cal.com/gotdarrenhill/30min" target="_blank">
                 Book a Demo
               </Button>
             </div>
@@ -479,7 +479,7 @@ export default function PlatformPage() {
                 </div>
               </div>
 
-              <Button size="lg" href="https://cal.com/cursive/30min" target="_blank">
+              <Button size="lg" href="https://cal.com/gotdarrenhill/30min" target="_blank">
                 Schedule a Demo
                 <ArrowRight className="w-5 h-5" />
               </Button>
@@ -541,7 +541,7 @@ export default function PlatformPage() {
                 <p className="text-gray-600 text-sm">Includes pixel installation and setup</p>
               </div>
 
-              <Button size="lg" href="https://cal.com/cursive/30min" target="_blank">
+              <Button size="lg" href="https://cal.com/gotdarrenhill/30min" target="_blank">
                 Add Visitor Tracking
                 <ArrowRight className="w-5 h-5" />
               </Button>
@@ -786,7 +786,7 @@ export default function PlatformPage() {
           },
           {
             label: "Book a Demo",
-            href: "https://cal.com/cursive/30min",
+            href: "https://cal.com/gotdarrenhill/30min",
             description: "See personalized walkthrough of Campaign Manager and Visitor Intelligence"
           },
           {

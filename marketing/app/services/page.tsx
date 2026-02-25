@@ -99,7 +99,7 @@ export default function ServicesPage() {
               Not sure where to start? Book a call and we'll build a custom plan.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Button size="lg" href="https://cal.com/cursive/30min" target="_blank">
+              <Button size="lg" href="https://cal.com/gotdarrenhill/30min" target="_blank">
                 Book a Strategy Call
                 <ArrowRight className="w-5 h-5" />
               </Button>
@@ -517,7 +517,7 @@ export default function ServicesPage() {
               <div className="text-2xl font-light text-[#007AFF] mb-4">
                 $1,500/mo
               </div>
-              <Button className="w-full" href="https://cal.com/cursive/30min" target="_blank">
+              <Button className="w-full" href="https://cal.com/gotdarrenhill/30min" target="_blank">
                 Add Visitor Campaigns
               </Button>
               <p className="text-xs text-gray-500 mt-3">Requires Visitor Tracking add-on</p>
@@ -552,7 +552,7 @@ export default function ServicesPage() {
               <div className="text-2xl font-light text-[#007AFF] mb-4">
                 $2,000/mo
               </div>
-              <Button className="w-full" href="https://cal.com/cursive/30min" target="_blank">
+              <Button className="w-full" href="https://cal.com/gotdarrenhill/30min" target="_blank">
                 Request White Label
               </Button>
               <p className="text-xs text-gray-500 mt-3">Includes up to 10 user seats</p>
@@ -599,7 +599,7 @@ export default function ServicesPage() {
           <div className="text-center mt-12">
             <p className="text-gray-600 mb-6">Still unsure? Book a call and we'll recommend the right plan.</p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Button size="lg" href="https://cal.com/cursive/30min" target="_blank">
+              <Button size="lg" href="https://cal.com/gotdarrenhill/30min" target="_blank">
                 Book a Strategy Call
                 <ArrowRight className="w-5 h-5" />
               </Button>
@@ -731,7 +731,7 @@ export default function ServicesPage() {
         <MachineList items={[
           {
             label: "Book Strategy Call",
-            href: "https://cal.com/cursive/30min",
+            href: "https://cal.com/gotdarrenhill/30min",
             description: "15-minute call to discuss your needs and recommend the right service"
           },
           {

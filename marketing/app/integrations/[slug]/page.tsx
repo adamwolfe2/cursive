@@ -439,7 +439,7 @@ export default async function IntegrationPage({
                 Get Free Audit
               </Link>
               <Link
-                href="https://cal.com/cursive/30min"
+                href="https://cal.com/gotdarrenhill/30min"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-8 py-3 text-base text-gray-700 transition-colors hover:bg-gray-50"

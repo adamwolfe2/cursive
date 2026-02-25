@@ -11,7 +11,7 @@ import {
 import { DashboardCTA } from "@/components/dashboard-cta"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
 
-const CAL_LINK = "https://cal.com/cursive/30min"
+const CAL_LINK = "https://cal.com/gotdarrenhill/30min"
 
 const faqs = [
   {
@@ -759,7 +759,7 @@ export default function SuperPixelPage() {
 
           <MachineSection title="Get Started">
             <MachineList items={[
-              { label: "Book Free Demo Call", href: "https://cal.com/cursive/30min", description: "See the Super Pixel running on your website live." },
+              { label: "Book Free Demo Call", href: "https://cal.com/gotdarrenhill/30min", description: "See the Super Pixel running on your website live." },
               { label: "See the Standard Pixel", href: "https://www.meetcursive.com/pixel", description: "Done-for-you pixel setup at $1,000/month." },
               { label: "View All Services", href: "https://www.meetcursive.com/services", description: "Full-stack AI SDR and lead generation services." },
             ]} />

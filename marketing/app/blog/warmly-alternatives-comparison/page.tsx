@@ -1110,7 +1110,7 @@ export default function BlogPost() {
                 <Link href="/free-audit">Get Your Free AI Audit</Link>
               </Button>
               <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10" asChild>
-                <a href="https://cal.com/cursive/30min" target="_blank" rel="noopener noreferrer">Book a Demo</a>
+                <a href="https://cal.com/gotdarrenhill/30min" target="_blank" rel="noopener noreferrer">Book a Demo</a>
               </Button>
             </div>
           </div>
@@ -1467,7 +1467,7 @@ export default function BlogPost() {
               { label: "AI SDR", href: "/what-is-ai-sdr", description: "Automated multi-channel outreach" },
               { label: "Direct Mail", href: "/direct-mail", description: "Physical touchpoints at scale" },
               { label: "Free AI Audit", href: "/free-audit", description: "See who's visiting your site right now" },
-              { label: "Book a Demo", href: "https://cal.com/cursive/30min", description: "30-minute product walkthrough" }
+              { label: "Book a Demo", href: "https://cal.com/gotdarrenhill/30min", description: "30-minute product walkthrough" }
             ]} />
           </MachineSection>
 

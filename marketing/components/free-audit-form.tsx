@@ -48,7 +48,7 @@ export function FreeAuditForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: formData.email,
-          company: formData.websiteUrl,
+          website_url: formData.websiteUrl,
           source: "free_audit_page",
           timestamp: new Date().toISOString(),
         }),
@@ -131,8 +131,6 @@ export function FreeAuditForm() {
     <form
       onSubmit={handleSubmit}
       className="space-y-6"
-      toolname="requestFreeAudit"
-      tooldescription="Request a free audit of your last 100 website visitors. Includes visitor identification, intent scores, and personalized outreach templates. Results delivered within 24 hours."
     >
       <div>
         <label htmlFor="websiteUrl" className="block text-sm font-medium text-gray-700 mb-2">
@@ -148,7 +146,6 @@ export function FreeAuditForm() {
           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007AFF] focus:border-transparent outline-none transition-all"
           required
           disabled={isSubmitting}
-          toolparamdescription="The website URL to analyze for visitor identification"
         />
       </div>
 
@@ -166,12 +163,11 @@ export function FreeAuditForm() {
           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007AFF] focus:border-transparent outline-none transition-all"
           required
           disabled={isSubmitting}
-          toolparamdescription="Work email address to receive the audit report"
         />
       </div>
 
       {error && (
-        <div className="bg-gray-50 border border-gray-200 text-gray-700 px-4 py-3 rounded-lg text-sm">
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
           {error}
         </div>
       )}

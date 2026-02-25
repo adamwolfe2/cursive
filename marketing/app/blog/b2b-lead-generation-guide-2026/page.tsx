@@ -412,7 +412,7 @@ export default function BlogPost() {
               </p>
 
               <p>
-                To see how many warm leads you are currently missing, <Link href="https://cal.com/cursive/30min">book
+                To see how many warm leads you are currently missing, <Link href="https://cal.com/gotdarrenhill/30min">book
                 a demo</Link> or start with the <Link href="https://leads.meetcursive.com">Cursive self-serve
                 marketplace</Link> at $0.60/lead with no monthly commitment.
               </p>
@@ -484,7 +484,7 @@ export default function BlogPost() {
                   <Link href="/free-audit">Get Your Free AI Audit</Link>
                 </Button>
                 <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10" asChild>
-                  <a href="https://cal.com/cursive/30min" target="_blank" rel="noopener noreferrer">Book a Demo</a>
+                  <a href="https://cal.com/gotdarrenhill/30min" target="_blank" rel="noopener noreferrer">Book a Demo</a>
                 </Button>
               </div>
             </div>

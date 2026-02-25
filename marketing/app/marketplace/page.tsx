@@ -547,7 +547,7 @@ export default function MarketplacePage() {
               },
               {
                 label: "Book a Strategy Call",
-                href: "https://cal.com/cursive/30min",
+                href: "https://cal.com/gotdarrenhill/30min",
                 description: "Talk to our team about your lead generation needs"
               }
             ]} />

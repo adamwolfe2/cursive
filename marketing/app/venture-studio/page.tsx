@@ -146,7 +146,7 @@ export default function VentureStudioPage() {
                 <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                   <Button
                     size="lg"
-                    href="https://cal.com/cursive/30min"
+                    href="https://cal.com/gotdarrenhill/30min"
                     target="_blank"
                   >
                     Apply for Venture Studio
@@ -312,7 +312,7 @@ export default function VentureStudioPage() {
                 </p>
                 <Button
                   size="lg"
-                  href="https://cal.com/cursive/30min"
+                  href="https://cal.com/gotdarrenhill/30min"
                   target="_blank"
                   className="bg-[#007AFF] text-white hover:bg-[#0066DD] text-lg px-10 py-5"
                 >
@@ -420,7 +420,7 @@ export default function VentureStudioPage() {
             <MachineList items={[
               {
                 label: "Apply for Venture Studio",
-                href: "https://cal.com/cursive/30min",
+                href: "https://cal.com/gotdarrenhill/30min",
                 description: "Schedule a call to discuss your growth goals and assess fit"
               },
               {

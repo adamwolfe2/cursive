@@ -282,7 +282,7 @@ export default function BlogPost() {
             </p>
 
             <p>
-              If you want Cursive to identify who&apos;s visiting <em>your</em> site &mdash; human or agent &mdash; <a href="https://cal.com/cursive/30min" target="_blank" rel="noopener noreferrer">book a free AI audit</a>. We&apos;ll show you exactly which companies are on your site right now, what pages they&apos;re viewing, and how to reach them before your competitors do.
+              If you want Cursive to identify who&apos;s visiting <em>your</em> site &mdash; human or agent &mdash; <a href="https://cal.com/gotdarrenhill/30min" target="_blank" rel="noopener noreferrer">book a free AI audit</a>. We&apos;ll show you exactly which companies are on your site right now, what pages they&apos;re viewing, and how to reach them before your competitors do.
             </p>
 
             <p>

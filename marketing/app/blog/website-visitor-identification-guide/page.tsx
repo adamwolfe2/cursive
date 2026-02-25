@@ -34,7 +34,7 @@ const faqs = [
   },
   {
     question: "How do I implement website visitor identification?",
-    answer: "Implementing website visitor identification takes less than 15 minutes: (1) Sign up with a visitor identification provider (Cursive offers a demo at cal.com/cursive/30min); (2) Install the tracking pixel — a one-line JavaScript snippet added to your website's <head> tag, or deployed through Google Tag Manager without touching your codebase; (3) Configure your ICP filters — set the criteria for which identified visitors should trigger alerts or outreach (company size, industry, job title filters); (4) Connect your CRM — integrate with HubSpot, Salesforce, or your CRM of choice using native integrations; (5) Set up outreach automation — configure which visitor actions should trigger outreach sequences and through which channels."
+    answer: "Implementing website visitor identification takes less than 15 minutes: (1) Sign up with a visitor identification provider (Cursive offers a demo at cal.com/gotdarrenhill/30min); (2) Install the tracking pixel — a one-line JavaScript snippet added to your website's <head> tag, or deployed through Google Tag Manager without touching your codebase; (3) Configure your ICP filters — set the criteria for which identified visitors should trigger alerts or outreach (company size, industry, job title filters); (4) Connect your CRM — integrate with HubSpot, Salesforce, or your CRM of choice using native integrations; (5) Set up outreach automation — configure which visitor actions should trigger outreach sequences and through which channels."
   },
   {
     question: "How should I use identified visitors for outreach?",
@@ -396,7 +396,7 @@ export default function BlogPost() {
 
               <p>
                 To see your actual identification rate against your real traffic before making any commitment,
-                <Link href="https://cal.com/cursive/30min"> book a demo</Link>. Or explore the
+                <Link href="https://cal.com/gotdarrenhill/30min"> book a demo</Link>. Or explore the
                 <Link href="https://leads.meetcursive.com"> Cursive self-serve marketplace</Link> to purchase
                 identified leads at $0.60 each with no monthly commitment.
               </p>
@@ -468,7 +468,7 @@ export default function BlogPost() {
                   <Link href="/free-audit">Get Your Free AI Audit</Link>
                 </Button>
                 <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10" asChild>
-                  <a href="https://cal.com/cursive/30min" target="_blank" rel="noopener noreferrer">Book a Demo</a>
+                  <a href="https://cal.com/gotdarrenhill/30min" target="_blank" rel="noopener noreferrer">Book a Demo</a>
                 </Button>
               </div>
             </div>
@@ -561,7 +561,7 @@ export default function BlogPost() {
 
           <MachineSection title="Get Started with Cursive">
             <MachineList items={[
-              { label: "Book a Demo", href: "https://cal.com/cursive/30min", description: "See your actual identification rate against your real traffic" },
+              { label: "Book a Demo", href: "https://cal.com/gotdarrenhill/30min", description: "See your actual identification rate against your real traffic" },
               { label: "Marketplace (Self-Serve)", href: "https://leads.meetcursive.com", description: "Buy identified leads at $0.60 each, no monthly commitment" },
               { label: "Free AI Audit", href: "/free-audit", description: "See which visitors you are missing and the pipeline you could generate" },
               { label: "Visitor Identification Feature", href: "/visitor-identification", description: "Learn how Cursive's 70% person-level identification works" }

@@ -176,7 +176,7 @@ export default function IntentAudiencesPage() {
                 Skip the manual list building. Launch campaigns in minutes with audiences already showing purchase intent. No research, no guessing—just ready-to-convert prospects.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <Button size="lg" href="https://cal.com/cursive/30min">
+                <Button size="lg" href="https://cal.com/gotdarrenhill/30min">
                   Explore Intent Audiences
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
@@ -748,7 +748,7 @@ export default function IntentAudiencesPage() {
 
               <Button
                 size="lg"
-                href="https://cal.com/cursive/30min"
+                href="https://cal.com/gotdarrenhill/30min"
                 target="_blank"
                 className="bg-[#007AFF] text-white hover:bg-[#0066DD] text-lg px-10 py-5 mb-4"
               >
@@ -946,7 +946,7 @@ export default function IntentAudiencesPage() {
             },
             {
               label: "Explore Intent Audiences",
-              href: "https://cal.com/cursive/30min",
+              href: "https://cal.com/gotdarrenhill/30min",
               description: "Schedule a demo"
             }
           ]} />
@@ -957,7 +957,7 @@ export default function IntentAudiencesPage() {
           <MachineList items={[
             {
               label: "Schedule Demo",
-              href: "https://cal.com/cursive/30min",
+              href: "https://cal.com/gotdarrenhill/30min",
               description: "See how intent audiences work"
             },
             {

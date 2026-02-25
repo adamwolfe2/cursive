@@ -903,7 +903,7 @@ export default function BlogPost() {
                 <div className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm shrink-0">6</div>
                 <div>
                   <h4 className="font-bold mb-1">Run Parallel for One Week, Then Cut Over</h4>
-                  <p className="text-sm text-gray-600">Keep Instantly running for any active campaigns while you ramp Cursive. After one week of comparing results, most teams see significantly higher reply rates from intent-based outreach and fully switch over. Book a <a href="https://cal.com/cursive/30min" className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">free consultation</a> if you need help with migration.</p>
+                  <p className="text-sm text-gray-600">Keep Instantly running for any active campaigns while you ramp Cursive. After one week of comparing results, most teams see significantly higher reply rates from intent-based outreach and fully switch over. Book a <a href="https://cal.com/gotdarrenhill/30min" className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">free consultation</a> if you need help with migration.</p>
                 </div>
               </div>
             </div>
@@ -1013,7 +1013,7 @@ export default function BlogPost() {
                 <Link href="/free-audit">Get Your Free AI Audit</Link>
               </Button>
               <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10" asChild>
-                <a href="https://cal.com/cursive/30min" target="_blank" rel="noopener noreferrer">Book a Demo</a>
+                <a href="https://cal.com/gotdarrenhill/30min" target="_blank" rel="noopener noreferrer">Book a Demo</a>
               </Button>
             </div>
           </div>
@@ -1238,7 +1238,7 @@ export default function BlogPost() {
               { label: "AI SDR", href: "/what-is-ai-sdr", description: "AI-powered sales development representative" },
               { label: "Direct Mail Automation", href: "/what-is-direct-mail-automation", description: "Automated direct mail for high-value prospects" },
               { label: "Free AI Audit", href: "/free-audit", description: "See who is visiting your website right now" },
-              { label: "Book Demo", href: "https://cal.com/cursive/30min", description: "30-minute live platform walkthrough" }
+              { label: "Book Demo", href: "https://cal.com/gotdarrenhill/30min", description: "30-minute live platform walkthrough" }
             ]} />
           </MachineSection>
 

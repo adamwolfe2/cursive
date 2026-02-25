@@ -426,7 +426,7 @@ export default function PricingPage() {
                     </li>
                   </ul>
 
-                  <Button className="w-full" href="https://cal.com/cursive/30min" target="_blank">
+                  <Button className="w-full" href="https://cal.com/gotdarrenhill/30min" target="_blank">
                     Book a Demo
                     <ArrowRight className="w-4 h-4" />
                   </Button>
@@ -985,7 +985,7 @@ export default function PricingPage() {
               <div className="text-center">
                 <Button
                   size="lg"
-                  href="https://cal.com/cursive/30min"
+                  href="https://cal.com/gotdarrenhill/30min"
                   target="_blank"
                 >
                   Contact Sales
@@ -1096,7 +1096,7 @@ export default function PricingPage() {
 
             <Button
               size="lg"
-              href="https://cal.com/cursive/30min"
+              href="https://cal.com/gotdarrenhill/30min"
               target="_blank"
               className="bg-[#007AFF] text-white hover:bg-[#0066DD] text-lg px-10 py-5 mb-4"
             >
@@ -1332,7 +1332,7 @@ export default function PricingPage() {
           },
           {
             label: "Book Free Audit",
-            href: "https://cal.com/cursive/30min",
+            href: "https://cal.com/gotdarrenhill/30min",
             description: "15-minute call to review your lead gen and recommend the right plan"
           },
           {

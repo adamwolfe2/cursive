@@ -46,7 +46,7 @@ export default function AudienceBuilderPage() {
                 Stop paying per contact or hitting export limits. Build audiences of any size and launch campaigns in minutes, not weeks.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <Button size="lg" href="https://cal.com/cursive/30min">
+                <Button size="lg" href="https://cal.com/gotdarrenhill/30min">
                   Build Your First Audience
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
@@ -545,7 +545,7 @@ export default function AudienceBuilderPage() {
 
               <Button
                 size="lg"
-                href="https://cal.com/cursive/30min"
+                href="https://cal.com/gotdarrenhill/30min"
                 target="_blank"
                 className="bg-[#007AFF] text-white hover:bg-[#0066DD] text-lg px-10 py-5 mb-4"
               >
@@ -761,7 +761,7 @@ export default function AudienceBuilderPage() {
             },
             {
               label: "Schedule Demo",
-              href: "https://cal.com/cursive/30min",
+              href: "https://cal.com/gotdarrenhill/30min",
               description: "Book a personalized walkthrough of the platform"
             }
           ]} />
@@ -772,7 +772,7 @@ export default function AudienceBuilderPage() {
           <MachineList items={[
             {
               label: "Build First Audience",
-              href: "https://cal.com/cursive/30min",
+              href: "https://cal.com/gotdarrenhill/30min",
               description: "Schedule a demo to see the platform in action"
             },
             {

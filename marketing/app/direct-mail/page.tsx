@@ -169,7 +169,7 @@ export default function DirectMailPage() {
                 Trigger personalized postcards when visitors view your pricing page. Re-engage no-shows with event invitations. Win back churned customers with targeted offers. All automated.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <Button size="lg" href="https://cal.com/cursive/30min">
+                <Button size="lg" href="https://cal.com/gotdarrenhill/30min">
                   Launch Your First Campaign
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
@@ -758,7 +758,7 @@ export default function DirectMailPage() {
 
               <Button
                 size="lg"
-                href="https://cal.com/cursive/30min"
+                href="https://cal.com/gotdarrenhill/30min"
                 target="_blank"
                 className="bg-[#007AFF] text-white hover:bg-[#0066DD] text-lg px-10 py-5 mb-4"
               >
@@ -961,7 +961,7 @@ export default function DirectMailPage() {
           <MachineList items={[
             {
               label: "Launch First Campaign",
-              href: "https://cal.com/cursive/30min",
+              href: "https://cal.com/gotdarrenhill/30min",
               description: "Schedule a demo to see direct mail automation in action"
             },
             {

@@ -516,7 +516,7 @@ export default function BlogPost() {
               </p>
 
               <p>
-                To see how many visitors you are currently missing with your existing setup, <Link href="https://cal.com/cursive/30min">book a demo</Link>.
+                To see how many visitors you are currently missing with your existing setup, <Link href="https://cal.com/gotdarrenhill/30min">book a demo</Link>.
                 We will show you the identification rate against your actual traffic before you make any decision.
               </p>
 
@@ -587,7 +587,7 @@ export default function BlogPost() {
                   <Link href="/free-audit">Get Your Free AI Audit</Link>
                 </Button>
                 <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10" asChild>
-                  <a href="https://cal.com/cursive/30min" target="_blank" rel="noopener noreferrer">Book a Demo</a>
+                  <a href="https://cal.com/gotdarrenhill/30min" target="_blank" rel="noopener noreferrer">Book a Demo</a>
                 </Button>
               </div>
             </div>
