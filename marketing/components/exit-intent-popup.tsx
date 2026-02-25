@@ -185,12 +185,26 @@ export function ExitIntentPopup() {
                     </svg>
                   </div>
                   <h3 className="text-2xl font-medium text-gray-900 mb-2">
-                    Thank You!
+                    You&apos;re on the list!
                   </h3>
-                  <p className="text-gray-600">
-                    We'll send your free {selectedAudit === 'ai' ? 'AI audit' : 'visitor audit'} to{" "}
+                  <p className="text-gray-600 mb-6">
+                    Your free {selectedAudit === 'ai' ? 'AI audit' : 'visitor audit'} is on its way to{" "}
                     <span className="font-medium text-gray-900">{email}</span>
                   </p>
+                  <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 text-left">
+                    <p className="text-sm font-semibold text-gray-900 mb-1">Want results faster?</p>
+                    <p className="text-sm text-gray-600 mb-3">
+                      Book a 30-min call and we&apos;ll generate your pixel and show you identified visitors <strong>live</strong>.
+                    </p>
+                    <a
+                      href="https://cal.com/gotdarrenhill/30min"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block w-full text-center py-2.5 bg-[#007AFF] hover:bg-[#0066DD] text-white text-sm font-semibold rounded-lg transition-colors"
+                    >
+                      Book a Free 30-min Call →
+                    </a>
+                  </div>
                 </div>
               ) : selectedAudit === null ? (
                 // Quiz State - Choose Audit Type

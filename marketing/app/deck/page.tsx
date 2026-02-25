@@ -1047,10 +1047,117 @@ function S9() {
 }
 
 
+// ─── DECK GATE ────────────────────────────────────────────────────────────────
+function DeckGate({ onUnlock }: { onUnlock: () => void }) {
+  const [showAdminInput, setShowAdminInput] = useState(false)
+  const [pw, setPw] = useState('')
+  const [pwError, setPwError] = useState(false)
+
+  const tryUnlock = () => {
+    if (pw === 'recursive!') {
+      sessionStorage.setItem('deck_unlocked', '1')
+      onUnlock()
+    } else {
+      setPwError(true)
+      setTimeout(() => setPwError(false), 2000)
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-white flex flex-col">
+      {/* Header */}
+      <div className="border-b border-gray-100 px-6 h-14 flex items-center justify-between">
+        <a href="/"><img src="/cursive-logo.png" alt="Cursive" className="h-7 w-auto" /></a>
+        <span className="text-xs text-gray-400 font-mono hidden sm:block">Free SuperPixel · 30-min call</span>
+      </div>
+
+      {/* Main: two-column on md+ */}
+      <div className="flex-1 flex flex-col md:grid md:grid-cols-2">
+
+        {/* Left — copy */}
+        <div className="flex flex-col justify-center px-8 py-10 md:px-14 md:border-r md:border-gray-100">
+          <div className="max-w-md mx-auto md:mx-0">
+            <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.18em] text-[#007AFF] bg-[#007AFF]/8 px-3 py-1.5 rounded-full mb-6">
+              <span className="relative flex h-1.5 w-1.5"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#007AFF] opacity-75" /><span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#007AFF]" /></span>
+              Live slots available today
+            </div>
+            <h1 className="text-4xl md:text-5xl font-light text-gray-900 leading-tight mb-4">
+              Book a call.<br />
+              <span className="font-cursive text-5xl md:text-6xl text-gray-500">Get your pixel free.</span>
+            </h1>
+            <p className="text-gray-600 leading-relaxed mb-8 text-base">
+              In 30 minutes we&apos;ll identify your anonymous visitors live, generate your custom SuperPixel, and set it up on your site before the call ends. First leads in 5 minutes.
+            </p>
+            <div className="space-y-3 mb-8">
+              {[
+                'Works on WordPress, Webflow, Shopify — any stack',
+                'No engineering sprint. One script tag in your <head>.',
+                'See your first identified visitor within 5 minutes',
+                '14-day free trial. No credit card required.',
+              ].map(item => (
+                <div key={item} className="flex items-start gap-2.5 text-sm text-gray-600">
+                  <span className="text-[#007AFF] font-bold flex-shrink-0 mt-0.5">✓</span>
+                  <span>{item}</span>
+                </div>
+              ))}
+            </div>
+            <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
+              <p className="text-sm text-gray-700 italic leading-relaxed">
+                &ldquo;We had 47 identified leads by Monday from the weekend traffic we would have completely lost. Within two weeks it was our highest-volume lead source.&rdquo;
+              </p>
+              <p className="text-xs text-gray-400 font-mono mt-2">— VP of Sales · Series B B2B SaaS</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Right — calendar embed */}
+        <div className="min-h-[500px] md:min-h-0 flex flex-col">
+          <iframe
+            src="https://cal.com/gotdarrenhill/30min?embed=true&hideEventTypeDetails=false&layout=month_view"
+            className="flex-1 w-full border-0"
+            title="Book a 30-minute call with Cursive"
+          />
+        </div>
+      </div>
+
+      {/* Admin footer */}
+      <div className="border-t border-gray-100 py-3 flex justify-center items-center gap-2">
+        {!showAdminInput ? (
+          <button
+            onClick={() => setShowAdminInput(true)}
+            className="text-[11px] text-gray-300 hover:text-gray-400 transition-colors"
+          >
+            Continue as Admin ›
+          </button>
+        ) : (
+          <div className="flex items-center gap-2">
+            <input
+              type="password"
+              value={pw}
+              onChange={e => { setPw(e.target.value); setPwError(false) }}
+              onKeyDown={e => e.key === 'Enter' && tryUnlock()}
+              placeholder="Password"
+              autoFocus
+              className={`px-3 py-1.5 text-xs border rounded-lg outline-none transition-all w-36 ${
+                pwError ? 'border-red-300 bg-red-50 text-red-600 placeholder-red-300' : 'border-gray-200 focus:border-gray-400'
+              }`}
+            />
+            <button
+              onClick={tryUnlock}
+              className="text-xs text-gray-400 hover:text-gray-600 px-2 py-1.5 transition-colors"
+            >→</button>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 // ─── DECK SHELL ───────────────────────────────────────────────────────────────
 const SLIDE_COMPONENTS = [S1, S2, S3, S4, S5, S6, S7, S8, S9]
 
 export default function DeckPage() {
+  const [unlocked, setUnlocked] = useState(false)
   const [current, setCurrent] = useState(0)
   const [slideKey, setSlideKey] = useState(0)
   const busy = useRef(false)
@@ -1067,6 +1174,12 @@ export default function DeckPage() {
   const prev = useCallback(() => go(Math.max(current - 1, 0)), [current, go])
 
   useEffect(() => {
+    if (typeof window !== 'undefined' && sessionStorage.getItem('deck_unlocked') === '1') {
+      setUnlocked(true)
+    }
+  }, [])
+
+  useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); next() }
       if (e.key === 'ArrowLeft') { e.preventDefault(); prev() }
@@ -1074,6 +1187,10 @@ export default function DeckPage() {
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
   }, [next, prev])
+
+  if (!unlocked) {
+    return <DeckGate onUnlock={() => setUnlocked(true)} />
+  }
 
   const SlideComponent = SLIDE_COMPONENTS[current]
   const pct = ((current + 1) / SLIDE_COUNT) * 100

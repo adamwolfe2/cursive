@@ -217,7 +217,7 @@ export function Header() {
               <Button size="sm" variant="outline" href="/superpixel">
                 See the Pixel
               </Button>
-              <Button size="sm" href="https://cal.com/cursive/30min" target="_blank">
+              <Button size="sm" href="https://cal.com/gotdarrenhill/30min" target="_blank">
                 Book a Call
               </Button>
             </div>
@@ -320,7 +320,7 @@ export function Header() {
                 </Button>
                 <Button
                   className="w-full"
-                  href="https://cal.com/cursive/30min"
+                  href="https://cal.com/gotdarrenhill/30min"
                   target="_blank"
                   onClick={() => setMobileMenuOpen(false)}
                 >
