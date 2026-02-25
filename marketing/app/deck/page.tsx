@@ -1113,7 +1113,7 @@ function DeckGate({ onUnlock }: { onUnlock: () => void }) {
         {/* Right — calendar embed */}
         <div className="min-h-[500px] md:min-h-0 flex flex-col">
           <iframe
-            src="https://cal.com/gotdarrenhill/30min?embed=true&hideEventTypeDetails=false&layout=month_view"
+            src="https://cal.com/gotdarrenhill/30min?embed=true&hideEventTypeDetails=true&layout=month_view&theme=light"
             className="flex-1 w-full border-0"
             title="Book a 30-minute call with Cursive"
           />
