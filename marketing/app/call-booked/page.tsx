@@ -573,7 +573,7 @@ export default function CallBookedPage() {
                         ))}
                       </ul>
                       <Button
-                        href="https://cal.com/cursive/30min"
+                        href="https://cal.com/gotdarrenhill/30min"
                         target="_blank"
                         className="w-full"
                         variant={tier.popular ? "default" : "outline"}
@@ -1384,7 +1384,7 @@ export default function CallBookedPage() {
 
           <MachineSection title="Get Started">
             <MachineList items={[
-              { label: "Book a Call", href: "https://cal.com/cursive/30min", description: "30-minute strategy call to review your ICP and see matching leads" },
+              { label: "Book a Call", href: "https://cal.com/gotdarrenhill/30min", description: "30-minute strategy call to review your ICP and see matching leads" },
               { label: "Lead Marketplace (Free Gift)", href: "https://leads.meetcursive.com/signup?source=call-booked-gift", description: "Try the marketplace free with 100 credits — no credit card required" },
               { label: "View Pricing", href: "https://www.meetcursive.com/pricing", description: "See all plans and pricing details" },
               { label: "Contact Us", href: "https://www.meetcursive.com/contact", description: "Email hello@meetcursive.com for questions" },

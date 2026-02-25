@@ -44,18 +44,20 @@ export const EMAIL_CONFIG = {
  */
 export async function sendEmail({
   to,
+  from,
   subject,
   html,
   text,
 }: {
   to: string | string[]
+  from?: string
   subject: string
   html: string
   text?: string
 }) {
   try {
     const result = await getResend().emails.send({
-      from: EMAIL_CONFIG.from,
+      from: from ?? EMAIL_CONFIG.from,
       replyTo: EMAIL_CONFIG.replyTo,
       to,
       subject,
