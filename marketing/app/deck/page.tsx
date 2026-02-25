@@ -1177,8 +1177,8 @@ function DeckGate({ onUnlock }: { onUnlock: () => void }) {
         </div>
 
         {/* Right — calendar embed */}
-        <div className="flex flex-col" style={{ minHeight: 600 }}>
-          <div id="cal-deck-embed" style={{ flex: 1, width: '100%', minHeight: 600, overflow: 'scroll' }} />
+        <div className="flex flex-col" style={{ minHeight: 600, alignSelf: 'stretch' }}>
+          <div id="cal-deck-embed" style={{ flex: 1, width: '100%', height: '100%', minHeight: 650 }} />
         </div>
       </div>
 
