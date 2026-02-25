@@ -1053,6 +1053,50 @@ function DeckGate({ onUnlock }: { onUnlock: () => void }) {
   const [pw, setPw] = useState('')
   const [pwError, setPwError] = useState(false)
 
+  useEffect(() => {
+    // Cal.com inline embed — queue-based initialization (their standard pattern).
+    // The queue object must be created FIRST; it self-loads embed.js and then
+    // processes queued commands. Do NOT load the script manually first.
+    const w = window as any
+    if (!w.Cal) {
+      w.Cal = function () {
+        const cal = w.Cal
+        const ar = arguments as any
+        if (!cal.loaded) {
+          cal.ns = {}
+          cal.q = cal.q || []
+          const s = document.createElement('script')
+          s.src = 'https://app.cal.com/embed/embed.js'
+          s.async = true
+          document.head.appendChild(s)
+          cal.loaded = true
+        }
+        if (ar[0] === 'init') {
+          const api: any = function () { api.q.push(arguments) }
+          const ns = ar[1]
+          api.q = api.q || []
+          if (typeof ns === 'string') { cal.ns[ns] = api; api.q.push(ar) } else { cal.q.push(ar) }
+          return
+        }
+        cal.q.push(ar)
+      }
+      w.Cal.ns = {}
+      w.Cal.q = w.Cal.q || []
+    }
+
+    const Cal = w.Cal
+    Cal('init', 'deck-gate', { origin: 'https://cal.com' })
+    Cal.ns['deck-gate']('inline', {
+      elementOrSelector: '#cal-deck-embed',
+      config: { layout: 'month_view', theme: 'light' },
+      calLink: 'gotdarrenhill/30min',
+    })
+    Cal.ns['deck-gate']('ui', {
+      hideEventTypeDetails: true,
+      layout: 'month_view',
+      theme: 'light',
+    })
+  }, [])
 
   const tryUnlock = () => {
     if (pw === 'recursive!') {
@@ -1111,20 +1155,9 @@ function DeckGate({ onUnlock }: { onUnlock: () => void }) {
           </div>
         </div>
 
-        {/* Right — calendar embed (overflow:hidden clips Cal.com header) */}
-        <div className="min-h-[500px] md:min-h-0 flex flex-col overflow-hidden relative">
-          <iframe
-            src="https://cal.com/gotdarrenhill/30min?embed=true&layout=month_view&theme=light"
-            style={{
-              position: 'absolute',
-              top: -235,
-              left: 0,
-              width: '100%',
-              height: 'calc(100% + 235px)',
-              border: 'none',
-            }}
-            title="Book a 30-minute call with Cursive"
-          />
+        {/* Right — calendar embed */}
+        <div className="min-h-[500px] md:min-h-0 flex flex-col">
+          <div id="cal-deck-embed" className="flex-1 w-full" style={{ minHeight: 500 }} />
         </div>
       </div>
 
