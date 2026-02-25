@@ -252,10 +252,32 @@ export function createLeadsTableColumns(
   {
     accessorKey: 'phone',
     header: 'Phone',
-    cell: ({ row }) => (
-      <span className="text-xs font-normal">{formatPhone(row.getValue('phone'))}</span>
-    ),
-    size: 140,
+    cell: ({ row }) => {
+      const phone = row.getValue('phone') as string | null
+      const dncMobile = row.original.dnc_mobile
+      const dncLandline = row.original.dnc_landline
+      const hasDnc = dncMobile || dncLandline
+      return (
+        <div className="flex flex-col gap-0.5">
+          <span className="text-xs font-normal">{formatPhone(phone)}</span>
+          {hasDnc && (
+            <div className="flex items-center gap-1">
+              {dncMobile && (
+                <span className="inline-flex items-center rounded px-1 py-0 text-[9px] font-semibold bg-red-100 text-red-700 border border-red-200">
+                  Mobile DNC
+                </span>
+              )}
+              {dncLandline && (
+                <span className="inline-flex items-center rounded px-1 py-0 text-[9px] font-semibold bg-amber-100 text-amber-700 border border-amber-200">
+                  Landline DNC
+                </span>
+              )}
+            </div>
+          )}
+        </div>
+      )
+    },
+    size: 160,
     enableSorting: false,
   },
 

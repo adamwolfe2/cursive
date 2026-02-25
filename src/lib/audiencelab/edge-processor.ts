@@ -314,6 +314,13 @@ export async function processEventInline(
       }
       if (normalized.city) updateFields.city = normalized.city
       if (normalized.company_industry) updateFields.company_industry = normalized.company_industry
+      if (normalized.department) updateFields.department = normalized.department
+      if (normalized.seniority_level) updateFields.seniority_level = normalized.seniority_level
+      if (normalized.company_revenue) updateFields.company_revenue = normalized.company_revenue
+      if (normalized.company_employee_count) updateFields.company_employee_count = normalized.company_employee_count
+      if (normalized.landing_url) updateFields.page_url = normalized.landing_url
+      if (normalized.dnc_mobile) updateFields.dnc_mobile = normalized.dnc_mobile
+      if (normalized.dnc_landline) updateFields.dnc_landline = normalized.dnc_landline
 
       await supabase
         .from('leads')
@@ -375,6 +382,14 @@ export async function processEventInline(
               hash_key: dedupResult.hashKey,
               qualification_score: normalized.deliverability_score,
               status: 'new',
+                  // v4 enrichment fields (present when AL resolution data is rich)
+                  ...(normalized.department && { department: normalized.department }),
+                  ...(normalized.seniority_level && { seniority_level: normalized.seniority_level }),
+                  ...(normalized.company_revenue && { company_revenue: normalized.company_revenue }),
+                  ...(normalized.company_employee_count && { company_employee_count: normalized.company_employee_count }),
+                  ...(normalized.landing_url && { page_url: normalized.landing_url }),
+                  ...(normalized.dnc_mobile && { dnc_mobile: normalized.dnc_mobile }),
+                  ...(normalized.dnc_landline && { dnc_landline: normalized.dnc_landline }),
             })
             .select('id')
             .maybeSingle()

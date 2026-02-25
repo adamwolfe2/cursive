@@ -240,3 +240,6 @@ export { creditAlertChecker } from './credit-alert-checker'
 
 // Cal.com no-show recovery (2-email sequence when prospect misses the call)
 export { calNoShowRecovery } from './no-show-recovery'
+
+// Pixel V4 Pull-Sync (every 2h — enriches leads with DNC flags, intent scores, department)
+export { pixelV4Sync } from './pixel-v4-sync'

@@ -486,6 +486,120 @@ export async function fetchAudienceRecords(
 }
 
 // ============================================================================
+// PIXEL V4 LOOKUP (Richer resolution data)
+// ============================================================================
+
+/**
+ * Resolution object from the v4 pixel lookup API.
+ * Includes DNC flags, department, career history, psychographics.
+ */
+export interface ALPixelResolutionV4 {
+  // Personal
+  FIRST_NAME?: string
+  LAST_NAME?: string
+  PERSONAL_ADDRESS?: string
+  PERSONAL_CITY?: string
+  PERSONAL_STATE?: string
+  PERSONAL_ZIP?: string
+  PERSONAL_ZIP4?: string
+  AGE_RANGE?: string
+  CHILDREN?: string
+  GENDER?: string
+  HOMEOWNER?: string
+  MARRIED?: string
+  NET_WORTH?: string
+  INCOME_RANGE?: string
+
+  // Contact — v4 consolidates phones into ALL_LANDLINES / ALL_MOBILES
+  ALL_LANDLINES?: string
+  LANDLINE_DNC?: string | boolean // "true"/"false" or boolean
+  ALL_MOBILES?: string
+  MOBILE_DNC?: string | boolean   // "true"/"false" or boolean
+  PERSONAL_EMAILS?: string
+  PERSONAL_VERIFIED_EMAILS?: string
+  SHA256_PERSONAL_EMAIL?: string
+
+  // Company
+  COMPANY_NAME?: string
+  COMPANY_DESCRIPTION?: string
+  COMPANY_EMPLOYEE_COUNT?: string
+  COMPANY_DOMAIN?: string
+  COMPANY_ADDRESS?: string
+  COMPANY_CITY?: string
+  COMPANY_STATE?: string
+  COMPANY_ZIP?: string
+  COMPANY_PHONE?: string
+  COMPANY_REVENUE?: string
+  COMPANY_SIC?: string
+  COMPANY_NAICS?: string
+  COMPANY_INDUSTRY?: string
+
+  // Professional
+  BUSINESS_EMAIL?: string
+  BUSINESS_VERIFIED_EMAILS?: string
+  SHA256_BUSINESS_EMAIL?: string
+  JOB_TITLE?: string
+  HEADLINE?: string
+  DEPARTMENT?: string
+  SENIORITY_LEVEL?: string
+  INFERRED_YEARS_EXPERIENCE?: string
+  COMPANY_NAME_HISTORY?: string
+  JOB_TITLE_HISTORY?: string
+
+  // Education & Social
+  EDUCATION_HISTORY?: string
+  COMPANY_LINKEDIN_URL?: string
+  INDIVIDUAL_LINKEDIN_URL?: string
+  INDIVIDUAL_TWITTER_URL?: string
+  INDIVIDUAL_FACEBOOK_URL?: string
+  SKILLS?: string
+  INTERESTS?: string
+
+  [key: string]: unknown
+}
+
+export interface ALPixelEventV4 {
+  pixel_id: string
+  hem_sha256: string
+  event_timestamp: string
+  referrer_url?: string
+  full_url?: string
+  edid?: string
+  resolution: ALPixelResolutionV4
+}
+
+export interface ALPixelEventsV4Response {
+  total_records: number
+  page_size: number
+  page: number
+  total_pages: number
+  events: ALPixelEventV4[]
+}
+
+/**
+ * Fetch v4 pixel events with richer resolution data (DNC flags, department,
+ * career history, psychographics, URL tracking).
+ *
+ * @param pixelId - AudienceLab pixel UUID
+ * @param page - 1-indexed page number
+ * @param pageSize - Events per page (max 1000)
+ */
+export async function fetchPixelEventsV4(
+  pixelId: string,
+  page = 1,
+  pageSize = 500
+): Promise<ALPixelEventsV4Response> {
+  const params = new URLSearchParams({
+    page: String(page),
+    page_size: String(Math.min(pageSize, 1000)),
+  })
+  return alFetch<ALPixelEventsV4Response>(
+    `/pixels/${pixelId}/v4?${params.toString()}`,
+    { method: 'GET' }
+  )
+}
+
+// ============================================================================
 // BATCH ENRICHMENT
 // ============================================================================
 

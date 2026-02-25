@@ -231,6 +231,13 @@ export interface LeadTableRow {
   next_follow_up_at?: string
   notes?: string
   linkedin_url?: string
+  // AudienceLab v4 enrichment fields
+  dnc_mobile?: boolean
+  dnc_landline?: boolean
+  department?: string
+  seniority_level?: string
+  page_url?: string
+  intent_signal?: string
 }
 
 // Column visibility settings for the leads table

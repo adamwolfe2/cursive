@@ -125,6 +125,17 @@ export interface NormalizedIdentity {
   company_industry: string | null
   landing_url: string | null
   referrer: string | null
+  // v4-specific enrichment fields
+  department: string | null
+  seniority_level: string | null
+  company_revenue: string | null
+  company_employee_count: string | null
+  net_worth: string | null
+  income_range: string | null
+  dnc_mobile: boolean
+  dnc_landline: boolean
+  individual_linkedin_url: string | null
+  job_title_history: string | null
 }
 
 // ============ Validation Status Priority ============
@@ -401,6 +412,16 @@ export function normalizeALPayload(raw: Record<string, any>): NormalizedIdentity
     deliverability_score: deliverabilityScore,
     landing_url: flat.landing_url || flat.page_url || null,
     referrer: flat.referrer || null,
+    department: flat.DEPARTMENT || flat.department || null,
+    seniority_level: flat.SENIORITY_LEVEL || flat.seniority_level || null,
+    company_revenue: flat.COMPANY_REVENUE || flat.company_revenue || null,
+    company_employee_count: flat.COMPANY_EMPLOYEE_COUNT || flat.company_employee_count || null,
+    net_worth: flat.NET_WORTH || flat.net_worth || null,
+    income_range: flat.INCOME_RANGE || flat.income_range || null,
+    dnc_mobile: String(flat.MOBILE_DNC || flat.mobile_dnc || '').toLowerCase() === 'true',
+    dnc_landline: String(flat.LANDLINE_DNC || flat.landline_dnc || '').toLowerCase() === 'true',
+    individual_linkedin_url: flat.INDIVIDUAL_LINKEDIN_URL || flat.individual_linkedin_url || flat.COMPANY_LINKEDIN_URL || flat.LINKEDIN_URL || null,
+    job_title_history: flat.JOB_TITLE_HISTORY || flat.job_title_history || null,
   }
 }
 

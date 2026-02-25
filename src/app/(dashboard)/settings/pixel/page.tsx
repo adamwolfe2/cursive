@@ -247,15 +247,21 @@ export default function PixelSettingsPage() {
             </div>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-4">
             <div>
               <p className="text-xs font-medium text-zinc-500 mb-1">Domain</p>
               <p className="text-sm font-medium text-zinc-900">{data.pixel.domain}</p>
             </div>
             <div>
               <p className="text-xs font-medium text-zinc-500 mb-1">Events (last 24h)</p>
-              <p className="text-sm font-medium text-zinc-900">{data.recent_events}</p>
+              <p className="text-sm font-medium text-zinc-900">{data.recent_events.toLocaleString()}</p>
             </div>
+            {data.pixel.visitor_count_identified != null && (
+              <div>
+                <p className="text-xs font-medium text-zinc-500 mb-1">Leads Identified</p>
+                <p className="text-sm font-semibold text-primary">{data.pixel.visitor_count_identified.toLocaleString()}</p>
+              </div>
+            )}
             <div>
               <p className="text-xs font-medium text-zinc-500 mb-1">Pixel ID</p>
               <p className="text-sm font-mono text-zinc-600 truncate">{data.pixel.pixel_id}</p>
@@ -384,6 +390,44 @@ export default function PixelSettingsPage() {
               )}
             </div>
           )}
+        </div>
+
+        {/* V4 Data Quality Card */}
+        <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
+          <div className="mb-5">
+            <h2 className="text-lg font-semibold text-zinc-900">What Your Pixel Captures</h2>
+            <p className="text-sm text-zinc-500 mt-1">
+              Every identified visitor includes enriched B2B + consumer data automatically.
+            </p>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2">
+            {[
+              { icon: '👤', label: 'Full Name + Job Title', desc: 'First name, last name, seniority level' },
+              { icon: '🏢', label: 'Company Intelligence', desc: 'Revenue, headcount, industry, domain' },
+              { icon: '📧', label: 'Verified Email', desc: 'Personal + business email, validated' },
+              { icon: '📞', label: 'Phone + DNC Status', desc: 'Mobile & landline with Do Not Call flags' },
+              { icon: '🎯', label: 'Intent Score', desc: 'Scored from the page they visited on your site' },
+              { icon: '💼', label: 'Department + Career', desc: 'Department, job history, LinkedIn profile' },
+              { icon: '💰', label: 'Household Data', desc: 'Net worth range, income, homeowner status' },
+              { icon: '📍', label: 'Location', desc: 'City, state, zip — personal + company' },
+            ].map(({ icon, label, desc }) => (
+              <div key={label} className="flex items-start gap-3 p-3 rounded-lg bg-zinc-50 border border-zinc-100">
+                <span className="text-lg shrink-0">{icon}</span>
+                <div>
+                  <p className="text-sm font-medium text-zinc-900">{label}</p>
+                  <p className="text-xs text-zinc-500 mt-0.5">{desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-4 flex items-start gap-2.5 rounded-lg bg-primary/5 border border-primary/20 p-3">
+            <span className="text-primary shrink-0 mt-0.5">ℹ</span>
+            <p className="text-xs text-zinc-600">
+              Data is pulled from AudienceLab&apos;s identity graph of 280M+ verified US consumers and enriched automatically every 2 hours via the v4 API.
+            </p>
+          </div>
         </div>
 
         {/* Installation Instructions */}
