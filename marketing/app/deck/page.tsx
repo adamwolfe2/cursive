@@ -1053,30 +1053,6 @@ function DeckGate({ onUnlock }: { onUnlock: () => void }) {
   const [pw, setPw] = useState('')
   const [pwError, setPwError] = useState(false)
 
-  useEffect(() => {
-    const script = document.createElement('script')
-    script.src = 'https://app.cal.com/embed/embed.js'
-    script.async = true
-    script.onload = () => {
-      const Cal = (window as any).Cal
-      if (!Cal) return
-      Cal('init', 'deck-gate', { origin: 'https://cal.com' })
-      Cal.ns['deck-gate']('inline', {
-        elementOrSelector: '#cal-deck-embed',
-        config: { layout: 'month_view', theme: 'light' },
-        calLink: 'gotdarrenhill/30min',
-      })
-      Cal.ns['deck-gate']('ui', {
-        hideEventTypeDetails: true,
-        layout: 'month_view',
-        theme: 'light',
-      })
-    }
-    document.head.appendChild(script)
-    return () => {
-      if (document.head.contains(script)) document.head.removeChild(script)
-    }
-  }, [])
 
   const tryUnlock = () => {
     if (pw === 'recursive!') {
@@ -1135,9 +1111,20 @@ function DeckGate({ onUnlock }: { onUnlock: () => void }) {
           </div>
         </div>
 
-        {/* Right — calendar embed */}
-        <div className="min-h-[500px] md:min-h-0 flex flex-col overflow-hidden">
-          <div id="cal-deck-embed" className="flex-1 w-full" style={{ minHeight: 500 }} />
+        {/* Right — calendar embed (overflow:hidden clips Cal.com header) */}
+        <div className="min-h-[500px] md:min-h-0 flex flex-col overflow-hidden relative">
+          <iframe
+            src="https://cal.com/gotdarrenhill/30min?embed=true&layout=month_view&theme=light"
+            style={{
+              position: 'absolute',
+              top: -235,
+              left: 0,
+              width: '100%',
+              height: 'calc(100% + 235px)',
+              border: 'none',
+            }}
+            title="Book a 30-minute call with Cursive"
+          />
         </div>
       </div>
 
