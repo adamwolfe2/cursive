@@ -2,8 +2,11 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Loader2 } from "lucide-react"
+import { Loader2, CheckCircle } from "lucide-react"
 import { trackLeadCaptured, trackFormSubmission } from "@/lib/analytics"
+import Link from "next/link"
+
+const PROVISION_DEMO_URL = "https://leads.meetcursive.com/api/pixel/provision-demo"
 
 export function FreeAuditForm() {
   const [formData, setFormData] = useState({
@@ -12,6 +15,7 @@ export function FreeAuditForm() {
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [pixelProvisioned, setPixelProvisioned] = useState(false)
   const [error, setError] = useState("")
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -36,29 +40,41 @@ export function FreeAuditForm() {
       if (!url.startsWith("http://") && !url.startsWith("https://")) {
         url = "https://" + url
       }
-
-      // Attempt to validate URL
       try {
         new URL(url)
       } catch {
         throw new Error("Please enter a valid website URL")
       }
 
-      const response = await fetch("/api/leads/capture", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          company: formData.websiteUrl,
-          source: "free_audit_page",
-          timestamp: new Date().toISOString(),
+      // Lead capture + pixel provision run in parallel
+      const [leadResponse] = await Promise.all([
+        fetch("/api/leads/capture", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: formData.email,
+            company: formData.websiteUrl,
+            source: "free_audit_page",
+            timestamp: new Date().toISOString(),
+          }),
         }),
-      })
+        // Fire-and-forget pixel provision — sends them the snippet via email
+        fetch(PROVISION_DEMO_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            websiteUrl: url,
+            prospectEmail: formData.email,
+          }),
+        }).then(r => {
+          if (r.ok) setPixelProvisioned(true)
+        }).catch(() => {
+          // Non-blocking — don't fail the form if pixel provision fails
+        }),
+      ])
 
-      if (!response.ok) {
-        const data = await response.json()
+      if (!leadResponse.ok) {
+        const data = await leadResponse.json()
         throw new Error(data.error || "Failed to submit. Please try again.")
       }
 
@@ -76,32 +92,80 @@ export function FreeAuditForm() {
 
   if (submitted) {
     return (
-      <div className="text-center py-8">
-        <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <svg
-            className="w-8 h-8 text-blue-600"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M5 13l4 4L19 7"
-            />
-          </svg>
+      <div className="py-6">
+        {/* Main success header */}
+        <div className="text-center mb-6">
+          <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <CheckCircle className="w-7 h-7 text-emerald-600" />
+          </div>
+          <h3 className="text-2xl font-semibold text-gray-900 mb-2">
+            You&apos;re all set!
+          </h3>
+          <p className="text-gray-600">
+            We&apos;re preparing your visitor audit now — results within 24 hours at{" "}
+            <span className="font-medium text-gray-900">{formData.email}</span>
+          </p>
         </div>
-        <h3 className="text-2xl font-medium text-gray-900 mb-2">
-          Success! Check Your Email
-        </h3>
-        <p className="text-gray-600 mb-6">
-          We're analyzing your website visitors now. You'll receive your complete audit report within 24 hours at{" "}
-          <span className="font-medium text-gray-900">{formData.email}</span>
-        </p>
-        <p className="text-sm text-gray-500">
-          Keep an eye out for an email from us with next steps and your free strategy call link.
-        </p>
+
+        {/* Two-step next actions */}
+        <div className="space-y-3">
+          {/* Step 1: Check email for pixel */}
+          {pixelProvisioned ? (
+            <div className="flex gap-3 p-4 bg-[#007AFF]/5 border border-[#007AFF]/20 rounded-xl">
+              <div className="flex-shrink-0 w-8 h-8 bg-[#007AFF] text-white rounded-full flex items-center justify-center text-sm font-bold">1</div>
+              <div>
+                <p className="font-semibold text-sm text-gray-900">Check your email — your pixel is ready</p>
+                <p className="text-sm text-gray-600 mt-0.5">
+                  We&apos;ve sent you a pixel snippet. Install it on your site
+                  <strong> before your call</strong> so we have live data to show you.
+                  Takes 60 seconds.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="flex gap-3 p-4 bg-gray-50 border border-gray-200 rounded-xl">
+              <div className="flex-shrink-0 w-8 h-8 bg-gray-400 text-white rounded-full flex items-center justify-center text-sm font-bold">1</div>
+              <div>
+                <p className="font-semibold text-sm text-gray-900">Check your email</p>
+                <p className="text-sm text-gray-600 mt-0.5">Your audit is being prepared — results within 24 hours.</p>
+              </div>
+            </div>
+          )}
+
+          {/* Step 2: Sign up for trial */}
+          <div className="flex gap-3 p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
+            <div className="flex-shrink-0 w-8 h-8 bg-emerald-600 text-white rounded-full flex items-center justify-center text-sm font-bold">2</div>
+            <div className="flex-1">
+              <p className="font-semibold text-sm text-gray-900">Start your 14-day free trial</p>
+              <p className="text-sm text-gray-600 mt-0.5 mb-2">
+                Sign up at <strong>leads.meetcursive.com</strong> to see your identified leads in
+                real time — no credit card required.
+              </p>
+              <a
+                href="https://leads.meetcursive.com/signup"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-lg transition-colors"
+              >
+                Start Free Trial →
+              </a>
+            </div>
+          </div>
+
+          {/* Step 3: Book a call */}
+          <div className="flex gap-3 p-4 bg-gray-50 border border-gray-200 rounded-xl">
+            <div className="flex-shrink-0 w-8 h-8 bg-gray-600 text-white rounded-full flex items-center justify-center text-sm font-bold">3</div>
+            <div>
+              <p className="font-semibold text-sm text-gray-900">Book your strategy call (optional)</p>
+              <p className="text-sm text-gray-600 mt-0.5">
+                We&apos;ll review your visitor data together and show you exactly which visitors to target first.{" "}
+                <a href="https://cal.com/gotdarrenhill/30min" target="_blank" rel="noopener noreferrer" className="text-[#007AFF] hover:underline">
+                  Book 30 minutes →
+                </a>
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     )
   }
