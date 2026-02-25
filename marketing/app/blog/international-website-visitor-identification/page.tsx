@@ -434,10 +434,10 @@ export default function BlogPost() {
             {/* CTA */}
             <div className="max-w-3xl mx-auto mt-16">
               <DashboardCTA
-                heading="See What You're Missing from International Traffic"
-                subheading="Get a free audit showing exactly which EU, UK, and APAC visitors your current tool is missing — and how much pipeline that represents."
-                cta="Get My Free Audit"
-                href="/free-audit"
+                headline="See What You're Missing from International Traffic"
+                description="Get a free audit showing exactly which EU, UK, and APAC visitors your current tool is missing — and how much pipeline that represents."
+                ctaText="Get My Free Audit"
+                ctaUrl="/free-audit"
               />
             </div>
 
