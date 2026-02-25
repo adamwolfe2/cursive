@@ -6,9 +6,12 @@ import type { calculateScenarios } from '@/lib/superpixel-constants'
 interface Props {
   results: ReturnType<typeof calculateScenarios>
   monthlyVisitors: number
+  view?: 'annual' | 'monthly'
 }
 
-export function ComparisonTable({ results, monthlyVisitors: _monthlyVisitors }: Props) {
+export function ComparisonTable({ results, monthlyVisitors: _monthlyVisitors, view = 'annual' }: Props) {
+  const isMonthly = view === 'monthly'
+
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
@@ -64,11 +67,19 @@ export function ComparisonTable({ results, monthlyVisitors: _monthlyVisitors }: 
             <td className="py-3 px-4 text-center text-[#007AFF] font-semibold">${results.cursive.monthlyRevenue.toLocaleString()}</td>
           </tr>
           <tr className="bg-[#007AFF]/5 border-t-2 border-[#007AFF]/20">
-            <td className="py-4 px-4 text-gray-900 font-semibold">Est. Annual Revenue</td>
-            <td className="py-4 px-4 text-center text-gray-500 font-semibold">${results.noPixel.annualRevenue.toLocaleString()}</td>
-            <td className="py-4 px-4 text-center text-gray-500 font-semibold">${results.competitor.annualRevenue.toLocaleString()}</td>
+            <td className="py-4 px-4 text-gray-900 font-semibold">{isMonthly ? 'Est. Monthly Revenue' : 'Est. Annual Revenue'}</td>
+            <td className="py-4 px-4 text-center text-gray-500 font-semibold">
+              ${(isMonthly ? results.noPixel.monthlyRevenue : results.noPixel.annualRevenue).toLocaleString()}
+            </td>
+            <td className="py-4 px-4 text-center text-gray-500 font-semibold">
+              ${(isMonthly ? results.competitor.monthlyRevenue : results.competitor.annualRevenue).toLocaleString()}
+            </td>
             <td className="py-4 px-4 text-center font-bold text-lg">
-              <CountUpNumber value={results.cursive.annualRevenue} prefix="$" className="text-[#007AFF]" />
+              <CountUpNumber
+                value={isMonthly ? results.cursive.monthlyRevenue : results.cursive.annualRevenue}
+                prefix="$"
+                className="text-[#007AFF]"
+              />
             </td>
           </tr>
         </tbody>

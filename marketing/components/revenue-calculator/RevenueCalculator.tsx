@@ -12,6 +12,7 @@ interface FormData {
   monthlyVisitors: number
   dealSize: number
   industry: string
+  closeRate: number
 }
 
 export function RevenueCalculator({ deck = false }: { deck?: boolean } = {}) {
@@ -25,14 +26,13 @@ export function RevenueCalculator({ deck = false }: { deck?: boolean } = {}) {
     setStep('loading')
 
     const [calcResults] = await Promise.all([
-      Promise.resolve(calculateScenarios(data.monthlyVisitors, data.dealSize, data.industry)),
+      Promise.resolve(calculateScenarios(data.monthlyVisitors, data.dealSize, data.industry, data.closeRate)),
       fetch(`/api/analyze-site?domain=${encodeURIComponent(data.domain)}`)
         .then(r => r.json())
         .then(d => setSiteData(d.error ? null : d))
         .catch(() => { /* site analysis is optional */ }),
     ])
 
-    // Minimum loading time of 2s for UX
     await new Promise(r => setTimeout(r, 2000))
     setResults(calcResults)
     setStep('results')

@@ -40,8 +40,8 @@ export const TRAFFIC_RANGES: Record<string, number> = {
   '100,000+': 150000,
 }
 
-export function calculateScenarios(monthlyVisitors: number, dealSize: number, industry: string) {
-  const closeRate = CLOSE_RATES[industry] ?? 0.08
+export function calculateScenarios(monthlyVisitors: number, dealSize: number, industry: string, closeRateOverride?: number) {
+  const closeRate = closeRateOverride !== undefined ? closeRateOverride : (CLOSE_RATES[industry] ?? 0.08)
 
   // Scenario A: No Pixel
   const noPixelLeads = monthlyVisitors * STATUS_QUO.organicConversionRate
