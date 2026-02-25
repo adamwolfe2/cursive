@@ -263,11 +263,20 @@ export default function SuperPixelPage() {
               </div>
             ))}
           </div>
-          <div className="mt-12 max-w-3xl mx-auto bg-white border border-gray-200 rounded-xl p-5 flex flex-wrap items-center justify-between gap-4">
-            <p className="text-gray-700 font-medium text-sm">Works with your existing CRM, email tools, and workflows.</p>
-            <div className="flex flex-wrap items-center gap-3 text-xs text-gray-400 font-mono">
-              {['GHL', 'HubSpot', 'Salesforce', 'Klaviyo', 'Make', 'Slack'].map(t => (
-                <span key={t} className="bg-gray-50 border border-gray-200 px-2 py-1 rounded">{t}</span>
+          <div className="mt-12 max-w-3xl mx-auto bg-white border border-gray-200 rounded-xl px-6 py-5 text-center">
+            <p className="text-gray-700 font-medium text-sm mb-4">Works with your existing CRM, email tools, and workflows.</p>
+            <div className="flex flex-wrap items-center justify-center gap-5">
+              {[
+                { name: 'HubSpot', src: '/integrations/hubspot-svgrepo-com.svg' },
+                { name: 'Salesforce', src: '/integrations/salesforce.svg' },
+                { name: 'Klaviyo', src: '/integrations/klaviyo.svg' },
+                { name: 'Slack', src: '/integrations/slack-svgrepo-com.svg' },
+                { name: 'Zapier', src: '/integrations/zapier.svg' },
+                { name: 'Shopify', src: '/integrations/shopify.svg' },
+                { name: 'Webflow', src: '/integrations/Webflow_id2IyfqSKv_0.svg' },
+                { name: 'WordPress', src: '/integrations/icons8-wordpress.svg' },
+              ].map(({ name, src }) => (
+                <img key={name} src={src} alt={name} title={name} className="h-8 w-auto opacity-50 hover:opacity-100 transition-opacity grayscale hover:grayscale-0" />
               ))}
             </div>
           </div>
@@ -450,10 +459,19 @@ export default function SuperPixelPage() {
 
           {/* Integration logos */}
           <div className="mt-10 text-center">
-            <p className="text-xs text-gray-400 font-mono uppercase tracking-widest mb-4">Works with your existing tools</p>
-            <div className="flex flex-wrap items-center justify-center gap-3">
-              {['GHL', 'HubSpot', 'Salesforce', 'Pipedrive', 'Klaviyo', 'Make', 'Slack', 'Zapier'].map(tool => (
-                <span key={tool} className="bg-white border border-gray-200 text-gray-600 text-xs font-medium px-4 py-2 rounded-lg shadow-sm">{tool}</span>
+            <p className="text-xs text-gray-400 font-mono uppercase tracking-widest mb-5">Works with your existing tools</p>
+            <div className="flex flex-wrap items-center justify-center gap-6">
+              {[
+                { name: 'HubSpot', src: '/integrations/hubspot-svgrepo-com.svg' },
+                { name: 'Salesforce', src: '/integrations/salesforce.svg' },
+                { name: 'Klaviyo', src: '/integrations/klaviyo.svg' },
+                { name: 'Slack', src: '/integrations/slack-svgrepo-com.svg' },
+                { name: 'Zapier', src: '/integrations/zapier.svg' },
+                { name: 'Shopify', src: '/integrations/shopify.svg' },
+                { name: 'Webflow', src: '/integrations/Webflow_id2IyfqSKv_0.svg' },
+                { name: 'WordPress', src: '/integrations/icons8-wordpress.svg' },
+              ].map(({ name, src }) => (
+                <img key={name} src={src} alt={name} title={name} className="h-8 w-auto opacity-50 hover:opacity-100 transition-opacity grayscale hover:grayscale-0" />
               ))}
             </div>
           </div>
