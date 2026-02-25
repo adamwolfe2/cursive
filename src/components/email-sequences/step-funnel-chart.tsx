@@ -55,9 +55,9 @@ const METRICS: MetricConfig[] = [
     key: 'clicked_count',
     label: 'Clicked',
     icon: MousePointerClick,
-    color: 'text-violet-600',
-    bgColor: 'bg-violet-50',
-    barColor: 'bg-violet-500',
+    color: 'text-sky-600',
+    bgColor: 'bg-sky-50',
+    barColor: 'bg-sky-500',
   },
   {
     key: 'replied_count',

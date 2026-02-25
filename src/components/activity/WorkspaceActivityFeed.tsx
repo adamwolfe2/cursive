@@ -39,14 +39,14 @@ function actionIcon(action: string): LucideIcon {
 }
 
 function actionColor(action: string): string {
-  if (action.includes('export')) return 'bg-blue-100 text-blue-600'
+  if (action.includes('export')) return 'bg-primary/10 text-primary'
   if (action.includes('purchase')) return 'bg-emerald-100 text-emerald-600'
-  if (action.includes('campaign')) return 'bg-violet-100 text-violet-600'
+  if (action.includes('campaign')) return 'bg-primary/10 text-primary'
   if (action.includes('credit')) return 'bg-amber-100 text-amber-600'
-  if (action.includes('member') || action.includes('invite')) return 'bg-pink-100 text-pink-600'
-  if (action.includes('api_key') || action.includes('webhook')) return 'bg-zinc-100 text-zinc-600'
-  if (action.includes('integration')) return 'bg-indigo-100 text-indigo-600'
-  return 'bg-slate-100 text-slate-600'
+  if (action.includes('member') || action.includes('invite')) return 'bg-primary/10 text-primary'
+  if (action.includes('api_key') || action.includes('webhook')) return 'bg-primary/10 text-primary'
+  if (action.includes('integration')) return 'bg-primary/10 text-primary'
+  return 'bg-muted text-muted-foreground'
 }
 
 export function WorkspaceActivityFeed() {
@@ -58,6 +58,7 @@ export function WorkspaceActivityFeed() {
       return res.json() as Promise<{ data: ActivityEvent[] }>
     },
     refetchInterval: 60_000,
+    staleTime: 60_000,
   })
 
   const events = data?.data ?? []

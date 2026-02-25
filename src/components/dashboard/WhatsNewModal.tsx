@@ -16,7 +16,7 @@ const FEATURES = [
   },
   {
     icon: Webhook,
-    color: 'text-violet-600 bg-violet-50',
+    color: 'text-primary bg-primary/10',
     title: 'Webhook delivery logs',
     desc: 'See delivery history, response codes, and retry status for each webhook endpoint.',
   },
@@ -28,7 +28,7 @@ const FEATURES = [
   },
   {
     icon: Globe,
-    color: 'text-orange-600 bg-orange-50',
+    color: 'text-primary bg-primary/10',
     title: 'Integration sync health',
     desc: 'HubSpot & Salesforce now show last sync time and error counts in real time.',
   },
@@ -40,7 +40,7 @@ const FEATURES = [
   },
   {
     icon: Sparkles,
-    color: 'text-pink-600 bg-pink-50',
+    color: 'text-primary bg-primary/10',
     title: 'AI email sequence generator',
     desc: 'Generate a full 5-step email sequence from a single prompt in AI Studio.',
   },

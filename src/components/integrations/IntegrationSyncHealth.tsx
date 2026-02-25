@@ -107,6 +107,7 @@ export function IntegrationSyncHealth({ connectedIntegrations }: { connectedInte
       return res.json() as Promise<{ data: SyncStatus[] }>
     },
     refetchInterval: 60_000,
+    staleTime: 60_000,
     enabled: connectedIntegrations.length > 0,
   })
 

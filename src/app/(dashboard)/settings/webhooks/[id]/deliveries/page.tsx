@@ -121,6 +121,7 @@ export default function WebhookDeliveriesPage() {
       return res.json() as Promise<{ data: WebhookWithDeliveries }>
     },
     refetchInterval: 30_000,
+    staleTime: 30_000,
   })
 
   const testMutation = useMutation({
