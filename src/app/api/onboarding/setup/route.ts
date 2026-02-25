@@ -411,8 +411,63 @@ export async function POST(request: NextRequest) {
 
     safeLog('[Onboarding] Returning success.')
 
+    // 11. Auto-claim demo pixel if one exists for this email domain (from /deck or /free-audit)
+    let pixelClaimed = false
+    if (validated.role === 'business') {
+      const GENERIC_DOMAINS = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'aol.com', 'icloud.com', 'protonmail.com', 'mail.com', 'live.com', 'msn.com']
+      const signupDomain = validated.email.split('@')[1]?.toLowerCase()
+      if (signupDomain && !GENERIC_DOMAINS.includes(signupDomain)) {
+        try {
+          const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
+          const { data: demoPixel } = await admin
+            .from('audiencelab_pixels')
+            .select('id, pixel_id')
+            .is('workspace_id', null)
+            .eq('domain', signupDomain)
+            .eq('trial_status', 'demo')
+            .gte('created_at', thirtyDaysAgo)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .maybeSingle()
+
+          if (demoPixel) {
+            const trialEndsAt = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
+            const { error: claimError } = await admin
+              .from('audiencelab_pixels')
+              .update({
+                workspace_id: workspace.id,
+                trial_status: 'trial',
+                trial_ends_at: trialEndsAt,
+              })
+              .eq('id', demoPixel.id)
+              .is('workspace_id', null) // Atomic — only claim if still unclaimed
+
+            if (!claimError) {
+              pixelClaimed = true
+              safeLog('[Onboarding] Demo pixel claimed:', { pixelId: demoPixel.pixel_id, domain: signupDomain })
+              // Fire trial drip email sequence (fire-and-forget)
+              fireInngestEvent({
+                name: 'pixel/provisioned',
+                data: {
+                  workspace_id: workspace.id,
+                  pixel_id: demoPixel.pixel_id,
+                  domain: signupDomain,
+                  trial_ends_at: trialEndsAt,
+                },
+              })
+            } else {
+              safeError('[Onboarding] Demo pixel claim failed (non-fatal):', claimError.message)
+            }
+          }
+        } catch (pixelError) {
+          // Non-fatal — user can set up pixel from dashboard
+          safeError('[Onboarding] Demo pixel claim failed (non-fatal):', pixelError instanceof Error ? pixelError.message : pixelError)
+        }
+      }
+    }
+
     // Build the response FIRST, then fire non-blocking side effects
-    const response = NextResponse.json({ workspace_id: workspace.id })
+    const response = NextResponse.json({ workspace_id: workspace.id, pixel_claimed: pixelClaimed })
 
     // Non-blocking logo fetch from email domain — runs after response via next/server after()
     const GENERIC_DOMAINS = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'aol.com', 'icloud.com', 'protonmail.com', 'mail.com', 'live.com', 'msn.com']
