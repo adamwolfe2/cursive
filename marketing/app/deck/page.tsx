@@ -1109,15 +1109,15 @@ function DeckGate({ onUnlock }: { onUnlock: () => void }) {
   }
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="bg-white flex flex-col" style={{ position: 'fixed', inset: 0, overflow: 'auto' }}>
       {/* Header */}
-      <div className="border-b border-gray-100 px-6 h-14 flex items-center justify-between">
+      <div className="border-b border-gray-100 px-6 h-14 flex-shrink-0 flex items-center justify-between">
         <a href="/"><img src="/cursive-logo.png" alt="Cursive" className="h-7 w-auto" /></a>
         <span className="text-xs text-gray-400 font-mono hidden sm:block">Free SuperPixel · 30-min call</span>
       </div>
 
-      {/* Main: two-column on md+ */}
-      <div className="flex-1 flex flex-col md:grid md:grid-cols-2">
+      {/* Main: two-column on md+ — fills remaining viewport height */}
+      <div className="flex-1 flex flex-col md:grid md:grid-cols-2" style={{ minHeight: 'calc(100vh - 56px)' }}>
 
         {/* Left — copy */}
         <div className="flex flex-col justify-center px-8 py-10 md:px-14 md:border-r md:border-gray-100">
@@ -1156,13 +1156,13 @@ function DeckGate({ onUnlock }: { onUnlock: () => void }) {
         </div>
 
         {/* Right — calendar embed */}
-        <div className="min-h-[500px] md:min-h-0 flex flex-col">
-          <div id="cal-deck-embed" className="flex-1 w-full" style={{ minHeight: 500 }} />
+        <div className="flex flex-col" style={{ minHeight: 600 }}>
+          <div id="cal-deck-embed" style={{ flex: 1, width: '100%', minHeight: 600, overflow: 'scroll' }} />
         </div>
       </div>
 
       {/* Admin footer */}
-      <div className="border-t border-gray-100 py-3 flex justify-center items-center gap-2">
+      <div className="flex-shrink-0 border-t border-gray-100 py-3 flex justify-center items-center gap-2">
         {!showAdminInput ? (
           <button
             onClick={() => setShowAdminInput(true)}
