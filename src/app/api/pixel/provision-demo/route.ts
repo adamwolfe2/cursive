@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { provisionCustomerPixel } from '@/lib/audiencelab/api-client'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { sendPixelDeliveryEmail } from '@/lib/email/templates/pixel-delivery'
 
 export const maxDuration = 60 // Vercel Pro allows up to 60s
 
@@ -40,7 +41,14 @@ function parsePublicUrl(raw: string): { domain: string; fullUrl: string } | null
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json().catch(() => ({}))
-    const { websiteUrl } = body as { websiteUrl?: string }
+    const { websiteUrl, prospectEmail } = body as { websiteUrl?: string; prospectEmail?: string }
+
+    // Validate email if provided
+    const emailToSend = prospectEmail?.trim() || null
+    const emailValid = emailToSend ? /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailToSend) : true
+    if (!emailValid) {
+      return NextResponse.json({ error: 'Invalid email address' }, { status: 400, headers: CORS })
+    }
 
     if (!websiteUrl) {
       return NextResponse.json({ error: 'Website URL is required' }, { status: 400, headers: CORS })
@@ -72,6 +80,15 @@ export async function POST(req: NextRequest) {
       .maybeSingle()
 
     if (existingDemo) {
+      // Re-send the email even for existing pixels (e.g. second call with a new contact)
+      if (emailToSend && existingDemo.snippet) {
+        sendPixelDeliveryEmail({
+          to: emailToSend,
+          domain: existingDemo.domain,
+          snippet: existingDemo.snippet,
+          pixelId: existingDemo.pixel_id,
+        }).catch(err => safeError('[provision-demo] email send failed:', err))
+      }
       return NextResponse.json(
         {
           pixel_id: existingDemo.pixel_id,
@@ -79,6 +96,7 @@ export async function POST(req: NextRequest) {
           install_url: existingDemo.install_url,
           domain: existingDemo.domain,
           demo_claimed: false,
+          email_sent: !!emailToSend,
         },
         { headers: CORS }
       )
@@ -116,8 +134,18 @@ export async function POST(req: NextRequest) {
       safeError('[provision-demo] DB insert failed (pixel still usable):', insertError)
     }
 
+    // Send pixel delivery email to prospect if provided
+    if (emailToSend) {
+      sendPixelDeliveryEmail({
+        to: emailToSend,
+        domain,
+        snippet,
+        pixelId: result.pixel_id,
+      }).catch(err => safeError('[provision-demo] email send failed:', err))
+    }
+
     return NextResponse.json(
-      { pixel_id: result.pixel_id, snippet, install_url: installUrl, domain, demo_claimed: false },
+      { pixel_id: result.pixel_id, snippet, install_url: installUrl, domain, demo_claimed: false, email_sent: !!emailToSend },
       { headers: CORS }
     )
   } catch (err) {

@@ -758,7 +758,7 @@ function S8() {
 // ─── PIXEL INSTALL MODAL ──────────────────────────────────────────────────────
 type InstallStep = 'url' | 'provisioning' | 'done' | 'error'
 
-interface PixelResult { pixel_id: string; snippet: string; domain: string }
+interface PixelResult { pixel_id: string; snippet: string; domain: string; email_sent?: boolean }
 
 const PROVISION_STEPS = [
   'Validating your domain...',
@@ -770,6 +770,7 @@ const PROVISION_STEPS = [
 function PixelInstallModal({ onClose }: { onClose: () => void }) {
   const [step, setStep] = useState<InstallStep>('url')
   const [url, setUrl] = useState('')
+  const [email, setEmail] = useState('')
   const [urlError, setUrlError] = useState('')
   const [provStep, setProvStep] = useState(0)
   const [result, setResult] = useState<PixelResult | null>(null)
@@ -789,7 +790,10 @@ function PixelInstallModal({ onClose }: { onClose: () => void }) {
       const res = await fetch('https://leads.meetcursive.com/api/pixel/provision-demo', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ websiteUrl: url.trim() }),
+        body: JSON.stringify({
+          websiteUrl: url.trim(),
+          ...(email.trim() ? { prospectEmail: email.trim() } : {}),
+        }),
       })
       const data = await res.json()
       clearInterval(stepTimer)
@@ -845,11 +849,25 @@ function PixelInstallModal({ onClose }: { onClose: () => void }) {
               <p>✓ Works on WordPress, Webflow, Shopify, React — any stack</p>
               <p>✓ No webhook setup required to get started</p>
             </div>
+
+            <label className="block text-sm font-semibold text-gray-700 mb-2 mt-4">
+              Prospect&apos;s Email <span className="font-normal text-gray-400">(optional — sends them the pixel)</span>
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && provision()}
+              placeholder="prospect@theircompany.com"
+              className="w-full px-4 py-3 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#007AFF]/60 focus:ring-1 focus:ring-[#007AFF]/30 transition-all text-sm"
+            />
+            <p className="mt-1.5 text-[11px] text-gray-400">We&apos;ll email them the snippet + a link to sign up and see their leads.</p>
+
             <button
               onClick={provision}
               className="mt-5 w-full py-3 bg-[#007AFF] hover:bg-[#0066DD] text-white font-bold rounded-lg transition-colors"
             >
-              Generate Pixel →
+              {email.trim() ? 'Generate & Email Pixel →' : 'Generate Pixel →'}
             </button>
           </div>
         )}
@@ -880,9 +898,12 @@ function PixelInstallModal({ onClose }: { onClose: () => void }) {
         {/* Step: Done */}
         {step === 'done' && result && (
           <div className="p-6">
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center gap-2 mb-4 flex-wrap">
               <span className="text-[10px] font-semibold bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded">✓ PIXEL GENERATED</span>
               <span className="text-[10px] font-mono text-gray-400">{result.domain} · {result.pixel_id}</span>
+              {result.email_sent && (
+                <span className="text-[10px] font-semibold bg-blue-50 text-[#007AFF] px-2 py-0.5 rounded">📧 Email sent to prospect</span>
+              )}
             </div>
             <h3 className="text-lg font-semibold text-gray-900 mb-1">Your pixel is ready</h3>
             <p className="text-gray-500 text-sm mb-4">Paste this one line into the <code className="bg-gray-100 px-1 rounded text-[11px]">&lt;head&gt;</code> of <strong>{result.domain}</strong>:</p>
@@ -897,11 +918,18 @@ function PixelInstallModal({ onClose }: { onClose: () => void }) {
               </button>
             </div>
 
+            {result.email_sent && (
+              <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3 mb-4 text-xs text-emerald-800">
+                <p className="font-semibold mb-0.5">📧 Email sent to prospect</p>
+                <p className="text-emerald-700">They&apos;ll receive the snippet + a link to sign up at leads.meetcursive.com to see their identified leads.</p>
+              </div>
+            )}
+
             <div className="bg-[#007AFF]/5 border border-[#007AFF]/20 rounded-lg p-3 mb-4 text-xs text-gray-600 space-y-1">
-              <p className="font-semibold text-gray-700 mb-1.5">What happens after install:</p>
-              <p>→ Pixel begins matching anonymous visitors to real contacts</p>
-              <p>→ First identified leads appear within minutes</p>
-              <p>→ Set up your Cursive account to receive leads in your CRM</p>
+              <p className="font-semibold text-gray-700 mb-1.5">What happens next:</p>
+              <p>→ Prospect installs snippet before &lt;/head&gt; on their site</p>
+              <p>→ They sign up at <strong>leads.meetcursive.com</strong> to claim their trial</p>
+              <p>→ Identified leads appear in their dashboard within minutes</p>
             </div>
 
             <div className="flex gap-3">
