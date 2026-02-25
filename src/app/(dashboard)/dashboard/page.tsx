@@ -382,7 +382,7 @@ export default async function DashboardPage({
                 <span className="text-sm text-gray-500">Enrichment Credits</span>
               </div>
               <div className={`text-3xl font-bold ${creditsRemaining <= 3 ? 'text-amber-600' : 'text-gray-900'}`}>{creditsRemaining}</div>
-              <p className="text-xs text-gray-500 mt-1">of {creditLimit}/day ({isFree ? 'Free' : 'Pro'}) · resets 8am CT</p>
+              <p className="text-xs text-gray-500 mt-1">of {creditLimit}/day ({isFree ? 'Free' : 'Pro'}) · resets daily</p>
             </div>
           </Link>
 
@@ -606,7 +606,7 @@ export default async function DashboardPage({
 
           {/* Refer & Earn CTA */}
           <AnimatedSection delay={0.23}>
-            <Link href="/marketplace/referrals" className="block rounded-xl bg-gradient-to-r from-violet-50 to-indigo-50 border border-violet-200 p-5 hover:shadow-sm transition-all group">
+            <Link href="/referrals" className="block rounded-xl bg-gradient-to-r from-violet-50 to-indigo-50 border border-violet-200 p-5 hover:shadow-sm transition-all group">
               <div className="flex items-center gap-3 mb-1.5">
                 <div className="p-2 rounded-lg bg-violet-100 group-hover:bg-violet-200 transition-colors">
                   <Gift className="h-4 w-4 text-violet-600" />

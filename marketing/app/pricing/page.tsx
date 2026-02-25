@@ -50,10 +50,10 @@ export default function PricingPage() {
         "offers": {
           "@type": "Offer",
           "priceCurrency": "USD",
-          "price": "2000",
+          "price": "2500",
           "priceSpecification": {
             "@type": "UnitPriceSpecification",
-            "price": "2000",
+            "price": "2500",
             "priceCurrency": "USD",
             "unitText": "MONTH"
           },

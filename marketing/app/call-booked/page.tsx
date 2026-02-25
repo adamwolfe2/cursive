@@ -564,6 +564,7 @@ export default function CallBookedPage() {
                         <span className="text-3xl font-light text-gray-900">{tier.price}</span>
                         <span className="text-gray-500">{tier.period}</span>
                       </div>
+                      <p className="text-xs text-gray-400 mt-1">Save 20% on annual plans</p>
                       <ul className="space-y-3 mb-6">
                         {tier.features.map((feature, j) => (
                           <li key={j} className="flex items-start gap-3">
