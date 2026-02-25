@@ -269,14 +269,16 @@ export default function SuperPixelPage() {
               {[
                 { name: 'HubSpot', src: '/integrations/hubspot-svgrepo-com.svg' },
                 { name: 'Salesforce', src: '/integrations/salesforce.svg' },
-                { name: 'Klaviyo', src: '/integrations/klaviyo.svg' },
                 { name: 'Slack', src: '/integrations/slack-svgrepo-com.svg' },
                 { name: 'Zapier', src: '/integrations/zapier.svg' },
                 { name: 'Shopify', src: '/integrations/shopify.svg' },
                 { name: 'Webflow', src: '/integrations/Webflow_id2IyfqSKv_0.svg' },
                 { name: 'WordPress', src: '/integrations/icons8-wordpress.svg' },
+                { name: 'Typeform', src: '/integrations/typeform.svg' },
               ].map(({ name, src }) => (
-                <img key={name} src={src} alt={name} title={name} className="h-8 w-auto opacity-50 hover:opacity-100 transition-opacity grayscale hover:grayscale-0" />
+                <div key={name} className="flex items-center justify-center w-14 h-14 bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md hover:border-gray-300 transition-all p-3">
+                  <img src={src} alt={name} title={name} className="max-h-full max-w-full object-contain" />
+                </div>
               ))}
             </div>
           </div>
@@ -464,14 +466,16 @@ export default function SuperPixelPage() {
               {[
                 { name: 'HubSpot', src: '/integrations/hubspot-svgrepo-com.svg' },
                 { name: 'Salesforce', src: '/integrations/salesforce.svg' },
-                { name: 'Klaviyo', src: '/integrations/klaviyo.svg' },
                 { name: 'Slack', src: '/integrations/slack-svgrepo-com.svg' },
                 { name: 'Zapier', src: '/integrations/zapier.svg' },
                 { name: 'Shopify', src: '/integrations/shopify.svg' },
                 { name: 'Webflow', src: '/integrations/Webflow_id2IyfqSKv_0.svg' },
                 { name: 'WordPress', src: '/integrations/icons8-wordpress.svg' },
+                { name: 'Typeform', src: '/integrations/typeform.svg' },
               ].map(({ name, src }) => (
-                <img key={name} src={src} alt={name} title={name} className="h-8 w-auto opacity-50 hover:opacity-100 transition-opacity grayscale hover:grayscale-0" />
+                <div key={name} className="flex items-center justify-center w-14 h-14 bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md hover:border-gray-300 transition-all p-3">
+                  <img src={src} alt={name} title={name} className="max-h-full max-w-full object-contain" />
+                </div>
               ))}
             </div>
           </div>
