@@ -39,7 +39,7 @@ export default function PrivacyPage() {
             Privacy <span className="font-cursive text-gray-500">Policy</span>
           </h1>
 
-          <p className="text-gray-600 mb-8">Last updated: February 11, 2026</p>
+          <p className="text-gray-600 mb-8">Last updated: February 24, 2026</p>
 
           <p>
             At Cursive (&ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;), we take your privacy seriously.
@@ -94,9 +94,57 @@ export default function PrivacyPage() {
             <li>Social media platforms (where publicly available)</li>
           </ul>
 
-          <h2>2. Cookies and Tracking Technologies</h2>
+          <h2>2. Consent Management</h2>
 
-          <h3>2.1 What We Use</h3>
+          <h3>2.1 Our Consent Management Approach</h3>
+          <p>
+            Cursive uses a Consent Management Tool (CMT) on our websites to inform visitors about data
+            collection and obtain clear, documented consent before activating non-essential tracking technologies.
+            When you first visit our website, you will be presented with a cookie consent notice that describes
+            the categories of data we collect and gives you a choice to accept or decline.
+          </p>
+
+          <h3>2.2 What Happens When You Accept</h3>
+          <p>
+            If you click &ldquo;Accept,&rdquo; we activate analytics, visitor identification, and marketing technologies
+            as described in this policy. Your consent is recorded with a timestamp and stored in your browser
+            so you are not asked again on subsequent visits for a period of 12 months.
+          </p>
+
+          <h3>2.3 What Happens When You Decline</h3>
+          <p>
+            If you click &ldquo;Decline,&rdquo; we limit data collection to essential, functional cookies only.
+            Non-essential cookies, analytics scripts, and visitor identification pixels are <strong>not activated</strong>.
+            Your decline preference is stored and honored on subsequent visits.
+          </p>
+
+          <h3>2.4 Consent Records</h3>
+          <p>
+            We maintain records of consent decisions including the date, time, and version of the consent
+            notice presented. These records are retained for audit and compliance purposes. You may withdraw
+            your consent at any time by clearing your browser&apos;s local storage or contacting us at{" "}
+            <a href="mailto:privacy@meetcursive.com" className="text-[#007AFF]">privacy@meetcursive.com</a>.
+          </p>
+
+          <h3>2.5 Consent Requirements for Cursive Customers</h3>
+          <p>
+            If you are a Cursive customer who installs our SuperPixel on your website, you are required under
+            our Terms of Service and applicable law to:
+          </p>
+          <ul>
+            <li>Disclose use of visitor identification technology in your own website&apos;s privacy policy</li>
+            <li>Display a cookie consent or tracking notice to your visitors before the pixel activates</li>
+            <li>Use a Consent Management Platform (CMP) or Consent Management Tool (CMT) to log consent decisions</li>
+            <li>Honor opt-outs and withdrawal of consent from your visitors</li>
+            <li>Establish a lawful basis (e.g., legitimate interests or explicit consent) for visitor identification data processing</li>
+          </ul>
+          <p>
+            Cursive is not responsible for our customers&apos; consent management practices on their own websites.
+          </p>
+
+          <h2>3. Cookies and Tracking Technologies</h2>
+
+          <h3>3.1 What We Use</h3>
           <p>We use the following cookies and tracking technologies:</p>
           <ul>
             <li><strong>Essential cookies:</strong> Required for basic site functionality, authentication, and security</li>
@@ -106,22 +154,24 @@ export default function PrivacyPage() {
             <li><strong>Marketing cookies:</strong> To measure advertising effectiveness and deliver relevant content</li>
           </ul>
 
-          <h3>2.2 Third-Party Tracking Services</h3>
+          <h3>3.2 Third-Party Tracking Services</h3>
           <p>Our site uses the following third-party services that may set their own cookies:</p>
           <ul>
             <li><strong>Google Analytics (Google LLC):</strong> Web analytics service. <a href="https://policies.google.com/privacy" className="text-[#007AFF]">Google Privacy Policy</a></li>
             <li><strong>Crisp (Crisp IM SAS):</strong> Live chat and customer messaging. <a href="https://crisp.chat/en/privacy/" className="text-[#007AFF]">Crisp Privacy Policy</a></li>
             <li><strong>Stripe (Stripe Inc.):</strong> Payment processing. <a href="https://stripe.com/privacy" className="text-[#007AFF]">Stripe Privacy Policy</a></li>
+            <li><strong>AudienceLab (AudienceLab Inc.):</strong> Visitor identification and identity resolution technology. <a href="https://audiencelab.io/privacy" className="text-[#007AFF]">AudienceLab Privacy Policy</a></li>
           </ul>
 
-          <h3>2.3 Managing Cookies</h3>
+          <h3>3.3 Managing Cookies</h3>
           <p>
             You can manage your cookie preferences through the cookie consent banner displayed on our website.
+            Clicking &ldquo;Decline&rdquo; will prevent non-essential cookies and tracking technologies from loading.
             You can also configure your browser to refuse all cookies or alert you when cookies are being sent.
-            Note that disabling cookies may affect site functionality.
+            Note that disabling essential cookies may affect site functionality.
           </p>
 
-          <h2>3. How We Use Your Information</h2>
+          <h2>4. How We Use Your Information</h2>
           <p>We use the information we collect to:</p>
           <ul>
             <li>Provide, maintain, and improve our lead generation platform</li>
@@ -135,7 +185,7 @@ export default function PrivacyPage() {
             <li>Comply with legal obligations</li>
           </ul>
 
-          <h2>4. Data Sharing and Disclosure</h2>
+          <h2>5. Data Sharing and Disclosure</h2>
           <p>We do not sell your personal information to third parties for their own marketing purposes. We may share your information with:</p>
           <ul>
             <li><strong>Our customers:</strong> Lead data generated through our platform is delivered to customers who have purchased those leads through our marketplace</li>
@@ -146,7 +196,7 @@ export default function PrivacyPage() {
             <li><strong>Business transfers:</strong> In connection with a merger, acquisition, or sale of assets</li>
           </ul>
 
-          <h2>5. Data from Publicly Available Sources</h2>
+          <h2>6. Data from Publicly Available Sources</h2>
           <p>
             As a B2B data platform, Cursive aggregates and processes business information from publicly available
             sources. This includes business contact details, company information, job titles, and professional
@@ -154,21 +204,36 @@ export default function PrivacyPage() {
             business interests in providing our B2B lead generation services.
           </p>
 
-          <h2>6. Data Security</h2>
+          <h2>7. Legitimate Interests and Legal Basis (GDPR)</h2>
+          <p>
+            For individuals in the European Economic Area, we process personal data on the following legal bases:
+          </p>
+          <ul>
+            <li><strong>Consent (Art. 6(1)(a)):</strong> Analytics cookies, visitor identification pixels, and marketing technologies — only after you click &ldquo;Accept&rdquo; on our consent banner</li>
+            <li><strong>Contract (Art. 6(1)(b)):</strong> Processing necessary to fulfill your subscription, deliver leads, and manage your account</li>
+            <li><strong>Legitimate Interests (Art. 6(1)(f)):</strong> B2B marketing and lead generation using publicly available professional data; fraud prevention; platform security and improvement. Our legitimate interests are balanced against individuals&apos; rights — business professionals&apos; contact information used for relevant B2B outreach does not unduly override their privacy interests</li>
+            <li><strong>Legal Obligation (Art. 6(1)(c)):</strong> Tax records, compliance reporting, and responding to lawful government requests</li>
+          </ul>
+          <p>
+            You may request a copy of our Legitimate Interests Assessment (LIA) by contacting{" "}
+            <a href="mailto:privacy@meetcursive.com" className="text-[#007AFF]">privacy@meetcursive.com</a>.
+          </p>
+
+          <h2>8. Data Security</h2>
           <p>
             We implement appropriate technical and organizational measures to protect your personal information,
             including encryption in transit (TLS/SSL), secure data storage, access controls, and regular
             security assessments. However, no method of transmission over the internet is 100% secure.
           </p>
 
-          <h2>7. Data Retention</h2>
+          <h2>9. Data Retention</h2>
           <p>
             We retain personal information for as long as necessary to fulfill the purposes described in this
             policy, comply with legal obligations, resolve disputes, and enforce our agreements. Lead data is
             retained in accordance with our data processing agreements with customers.
           </p>
 
-          <h2>8. Your Rights</h2>
+          <h2>10. Your Rights</h2>
 
           <h3>8.1 All Users</h3>
           <p>You have the right to:</p>
@@ -205,27 +270,27 @@ export default function PrivacyPage() {
             <li>Contact us at <a href="mailto:privacy@meetcursive.com" className="text-[#007AFF]">privacy@meetcursive.com</a> to request removal from our database</li>
           </ul>
 
-          <h2>9. Children&apos;s Privacy</h2>
+          <h2>11. Children&apos;s Privacy</h2>
           <p>
             Our services are not directed to individuals under the age of 18. We do not knowingly collect
             personal information from children. If you believe we have collected information from a child,
             please contact us immediately.
           </p>
 
-          <h2>10. International Data Transfers</h2>
+          <h2>12. International Data Transfers</h2>
           <p>
             Your information may be transferred to and processed in countries other than your own. We ensure
             appropriate safeguards are in place for international data transfers in compliance with applicable law.
           </p>
 
-          <h2>11. Changes to This Policy</h2>
+          <h2>13. Changes to This Policy</h2>
           <p>
             We may update this Privacy Policy from time to time. We will notify you of material changes by
             posting the new Privacy Policy on this page and updating the &ldquo;Last updated&rdquo; date. Your continued
             use of our services after changes constitutes acceptance of the updated policy.
           </p>
 
-          <h2>12. Contact Us</h2>
+          <h2>14. Contact Us</h2>
           <p>
             If you have questions about this Privacy Policy or wish to exercise your privacy rights, please contact us at:
           </p>

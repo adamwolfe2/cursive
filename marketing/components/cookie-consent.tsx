@@ -1,11 +1,49 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import { Cookie, X } from "lucide-react"
 
 const CONSENT_KEY = "cursive-cookie-consent"
+const CONSENT_VERSION = "2" // Bump when consent notice text changes materially
+
+export type ConsentDecision = "accepted" | "declined"
+
+export interface ConsentRecord {
+  decision: ConsentDecision
+  timestamp: string // ISO 8601
+  version: string
+}
+
+/** Read the stored consent record (null = not yet decided) */
+export function getConsentRecord(): ConsentRecord | null {
+  if (typeof window === "undefined") return null
+  try {
+    const raw = localStorage.getItem(CONSENT_KEY)
+    if (!raw) return null
+    const parsed = JSON.parse(raw) as ConsentRecord
+    // Treat old format (plain string) as needing re-consent
+    if (typeof parsed !== "object" || !parsed.decision) return null
+    return parsed
+  } catch {
+    return null
+  }
+}
+
+/** True only when the user has explicitly accepted */
+export function hasConsentAccepted(): boolean {
+  return getConsentRecord()?.decision === "accepted"
+}
+
+function saveConsent(decision: ConsentDecision) {
+  const record: ConsentRecord = {
+    decision,
+    timestamp: new Date().toISOString(),
+    version: CONSENT_VERSION,
+  }
+  localStorage.setItem(CONSENT_KEY, JSON.stringify(record))
+}
 
 export function CookieConsent() {
   const [visible, setVisible] = useState(false)
@@ -13,23 +51,27 @@ export function CookieConsent() {
   useEffect(() => {
     // Small delay so it doesn't flash on page load
     const timer = setTimeout(() => {
-      const consent = localStorage.getItem(CONSENT_KEY)
-      if (!consent) {
+      const record = getConsentRecord()
+      // Re-show if never decided OR if the notice version changed
+      if (!record || record.version !== CONSENT_VERSION) {
         setVisible(true)
       }
     }, 1500)
     return () => clearTimeout(timer)
   }, [])
 
-  function accept() {
-    localStorage.setItem(CONSENT_KEY, "accepted")
+  const accept = useCallback(() => {
+    saveConsent("accepted")
     setVisible(false)
-  }
+    // Let the page know consent changed so analytics can initialize
+    window.dispatchEvent(new CustomEvent("cursive:consent", { detail: { decision: "accepted" } }))
+  }, [])
 
-  function decline() {
-    localStorage.setItem(CONSENT_KEY, "declined")
+  const decline = useCallback(() => {
+    saveConsent("declined")
     setVisible(false)
-  }
+    window.dispatchEvent(new CustomEvent("cursive:consent", { detail: { decision: "declined" } }))
+  }, [])
 
   return (
     <AnimatePresence>
@@ -42,7 +84,7 @@ export function CookieConsent() {
           className="fixed bottom-4 left-4 z-50 max-w-sm w-[calc(100%-2rem)] sm:w-auto"
         >
           <div className="bg-white rounded-xl border border-gray-200 shadow-2xl p-5">
-            {/* Close button */}
+            {/* Close button — treated as decline */}
             <button
               onClick={decline}
               className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 transition-colors"
@@ -57,15 +99,15 @@ export function CookieConsent() {
                 <Cookie className="w-4 h-4 text-[#007AFF]" />
               </div>
               <h3 className="text-sm font-medium text-gray-900">
-                We use cookies & tracking
+                We use cookies &amp; tracking
               </h3>
             </div>
 
             {/* Description */}
             <p className="text-sm text-gray-600 leading-relaxed mb-4">
-              We use cookies, pixels, and similar technologies to analyze site traffic,
-              identify visitors, and improve your experience. By clicking "Accept," you
-              consent to our use of these technologies. See our{" "}
+              We use cookies, visitor identification pixels, and analytics to
+              understand site traffic and improve your experience. Declining
+              disables non-essential tracking. See our{" "}
               <Link href="/privacy" className="text-[#007AFF] hover:underline">
                 Privacy Policy
               </Link>{" "}

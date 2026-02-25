@@ -8,7 +8,8 @@ import { generateMetadata } from "@/lib/seo/metadata";
 import { ClientLayout } from "@/components/client-layout";
 import { ExitIntentPopup } from "@/components/exit-intent-popup";
 import { CookieConsent } from "@/components/cookie-consent";
-import { WebMCPProvider } from "@/components/webmcp-provider";
+import { WebMCPProvider } from "@/components/webmcp-provider"
+import { ConsentGatedScripts } from "@/components/consent-gated-scripts";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -52,39 +53,7 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
         {/* RSS Feed discovery */}
         <link rel="alternate" type="application/rss+xml" title="Cursive Blog" href="https://www.meetcursive.com/feed.xml" />
-        {/* Google tag (gtag.js) */}
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-JZ9C4QKCX4"
-          strategy="afterInteractive"
-        />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-JZ9C4QKCX4');
-          `}
-        </Script>
-        {/* RB2B Pixel */}
-        <Script id="rb2b-pixel" strategy="afterInteractive">
-          {`
-            !function(key) {
-              if (window.reb2b) return;
-              window.reb2b = {loaded: true};
-              var s = document.createElement("script");
-              s.async = true;
-              s.src = "https://ddwl4m2hdecbv.cloudfront.net/b/" + key + "/" + key + ".js.gz";
-              document.getElementsByTagName("script")[0].parentNode.insertBefore(s, document.getElementsByTagName("script")[0]);
-            }("0NW1GHZ5RRO4");
-          `}
-        </Script>
-        {/* Visitor Identification Pixel */}
-        <Script
-          src="https://cdn.v3.identitypxl.app/pixels/59aee3ac-1427-495e-b796-9b2ed0153adb/p.js"
-          strategy="afterInteractive"
-          async
-        />
-        {/* Crisp Chat */}
+        {/* Crisp Chat — functional, loads unconditionally for support */}
         <Script id="crisp-chat" strategy="afterInteractive">
           {`
             window.$crisp=[];
@@ -108,6 +77,7 @@ export default function RootLayout({
           <Footer />
           <ExitIntentPopup />
           <CookieConsent />
+          <ConsentGatedScripts />
           <WebMCPProvider />
         </ClientLayout>
       </body>
