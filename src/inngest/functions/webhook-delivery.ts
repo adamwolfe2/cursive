@@ -304,21 +304,38 @@ export const sendLeadEmailNotification = inngest.createFunction(
   async ({ event, step }) => {
     const { lead_id, workspace_id } = event.data
 
-    // Get workspace settings
-    const workspace = await step.run('get-workspace', async () => {
-      const supabase = getSupabaseAdmin(); const { data, error } = await supabase
+    // Resolve recipient email: use workspace notification_email if configured,
+    // otherwise fall back to the workspace owner's email address
+    const recipientEmail = await step.run('resolve-recipient-email', async () => {
+      const supabase = getSupabaseAdmin()
+
+      // Try workspace-level notification email first
+      const { data: workspace } = await supabase
         .from('workspaces')
-        .select('id, name, email_notifications, notification_email')
+        .select('notification_email, email_notifications')
         .eq('id', workspace_id)
         .maybeSingle()
 
-      if (error) throw new Error(`Workspace not found: ${error.message}`)
-      return data
+      // If explicitly opted out, skip
+      if (workspace?.email_notifications === false) return null
+
+      if (workspace?.notification_email) return workspace.notification_email
+
+      // Fall back to workspace owner / first admin email
+      const { data: owner } = await supabase
+        .from('users')
+        .select('email')
+        .eq('workspace_id', workspace_id)
+        .in('role', ['owner', 'admin'])
+        .order('created_at', { ascending: true })
+        .limit(1)
+        .maybeSingle()
+
+      return owner?.email ?? null
     })
 
-    // Skip if workspace not found or email notifications not enabled
-    if (!workspace || !workspace.email_notifications || !workspace.notification_email) {
-      return { skipped: true, reason: 'Email notifications not enabled' }
+    if (!recipientEmail) {
+      return { skipped: true, reason: 'No recipient email found and notifications not opted out' }
     }
 
     // Get lead data
@@ -340,7 +357,7 @@ export const sendLeadEmailNotification = inngest.createFunction(
 
       const { error } = await resend.emails.send({
         from: 'Cursive <notifications@meetcursive.com>',
-        to: workspace.notification_email!,
+        to: recipientEmail,
         subject: `New Lead: ${lead.first_name} ${lead.last_name} - ${lead.company_name || 'Unknown Company'}`,
         html: `
           <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
@@ -398,13 +415,13 @@ export const sendLeadEmailNotification = inngest.createFunction(
         workspace_id: workspace_id,
         lead_id: lead_id,
         email_type: 'new_lead',
-        recipient_email: workspace.notification_email,
+        recipient_email: recipientEmail,
         subject: `New Lead: ${lead.first_name} ${lead.last_name}`,
         status: 'sent',
         sent_at: new Date().toISOString(),
-      })
+      }).then(() => null, () => null) // non-critical, swallow errors
     })
 
-    return { success: true, email: workspace.notification_email }
+    return { success: true, email: recipientEmail }
   }
 )

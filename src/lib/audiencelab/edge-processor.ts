@@ -11,10 +11,23 @@
 
 import { createAdminClient } from '@/lib/supabase/admin'
 import { normalizeALPayload, extractEventType, isLeadWorthy, isVerifiedEmail } from '@/lib/audiencelab/field-map'
-import { notifyNewLead } from '@/lib/services/lead-notifications.service'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 
 const LOG_PREFIX = '[AL EdgeProcessor]'
+
+/**
+ * Fire an Inngest event via the REST API (edge-safe, fire-and-forget).
+ * Used instead of the SDK import to maintain Edge runtime compatibility.
+ */
+function fireInngestEvent(name: string, data: Record<string, unknown>): void {
+  const eventKey = process.env.INNGEST_EVENT_KEY
+  if (!eventKey) return
+  fetch('https://inn.gs/e/' + eventKey, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, data }),
+  }).catch((err) => safeError(`${LOG_PREFIX} Inngest event fire failed (${name}):`, err))
+}
 
 // ============ Edge-Compatible Crypto Helpers ============
 
@@ -490,25 +503,38 @@ export async function processEventInline(
       }
     }
 
-    // Step 6: Send notifications (only for new leads)
+    // Step 6: Fire Inngest events for new leads (non-blocking, fire-and-forget)
+    // This triggers: email notification, Slack/Zapier, old+new webhook delivery (with retries)
     if (leadId && isNewLead) {
-      try {
-        await notifyNewLead(targetWorkspaceId, {
-          lead_id: leadId,
-          email: normalized.primary_email || undefined,
-          first_name: normalized.first_name || undefined,
-          last_name: normalized.last_name || undefined,
-          company_name: normalized.company_name || undefined,
-          title: normalized.job_title || undefined,
-          phone: normalized.phones[0] || undefined,
-          city: normalized.city || undefined,
-          state: normalized.state || undefined,
-          intent_score: normalized.deliverability_score,
-          source: `audiencelab_${source}`,
-        })
-      } catch (err) {
-        safeError(`${LOG_PREFIX} Notification failed`, err)
+      const leadPayload = {
+        id: leadId,
+        email: normalized.primary_email,
+        first_name: normalized.first_name,
+        last_name: normalized.last_name,
+        full_name: [normalized.first_name, normalized.last_name].filter(Boolean).join(' ') || null,
+        company_name: normalized.company_name,
+        company_domain: normalized.company_domain,
+        job_title: normalized.job_title,
+        phone: normalized.phones[0] || null,
+        city: normalized.city,
+        state: normalized.state,
+        source: `audiencelab_${source}`,
+        created_at: new Date().toISOString(),
       }
+
+      // Triggers: sendLeadEmailNotification, deliverLeadWebhook, sendLeadNotifications
+      fireInngestEvent('lead/created', {
+        lead_id: leadId,
+        workspace_id: targetWorkspaceId,
+        source: `audiencelab_${source}`,
+      })
+
+      // Triggers: deliverOutboundWebhooks (fan-out to all user-configured endpoints)
+      fireInngestEvent('outbound-webhook/deliver', {
+        workspace_id: targetWorkspaceId,
+        event_type: 'lead.received',
+        payload: leadPayload,
+      })
     }
 
     // Step 7: Mark event as processed
