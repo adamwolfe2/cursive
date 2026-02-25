@@ -1,10 +1,11 @@
 /**
  * Public endpoint for generating a demo pixel during live sales calls.
  * No authentication required — called directly from the marketing site deck browser.
- * Does NOT store in DB (prospect hasn't signed up yet).
+ * Stores the pixel in DB with workspace_id = null so it can be claimed on signup.
  */
 import { NextRequest, NextResponse } from 'next/server'
 import { provisionCustomerPixel } from '@/lib/audiencelab/api-client'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 export const maxDuration = 60 // Vercel Pro allows up to 60s
@@ -55,7 +56,35 @@ export async function POST(req: NextRequest) {
 
     const { domain, fullUrl } = parsed
     const websiteName = domain.replace(/^www\./, '')
+    const adminSupabase = createAdminClient()
 
+    // Idempotency: if a recent unclaimed demo pixel exists for this domain, return it
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
+    const { data: existingDemo } = await adminSupabase
+      .from('audiencelab_pixels')
+      .select('pixel_id, snippet, install_url, domain')
+      .is('workspace_id', null)
+      .eq('domain', domain)
+      .eq('trial_status', 'demo')
+      .gte('created_at', thirtyDaysAgo)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+
+    if (existingDemo) {
+      return NextResponse.json(
+        {
+          pixel_id: existingDemo.pixel_id,
+          snippet: existingDemo.snippet,
+          install_url: existingDemo.install_url,
+          domain: existingDemo.domain,
+          demo_claimed: false,
+        },
+        { headers: CORS }
+      )
+    }
+
+    // Create a new pixel via AudienceLab API
     const result = await provisionCustomerPixel({
       websiteName,
       websiteUrl: fullUrl,
@@ -67,8 +96,28 @@ export async function POST(req: NextRequest) {
       (installUrl ? `<script src="${installUrl}" async></script>` :
         `<script src="https://cdn.v3.identitypxl.app/pixels/${result.pixel_id}/p.js" async></script>`)
 
+    // Store in DB with workspace_id = null so it can be claimed on signup
+    const { error: insertError } = await adminSupabase
+      .from('audiencelab_pixels')
+      .insert({
+        pixel_id: result.pixel_id,
+        workspace_id: null,
+        domain,
+        label: websiteName,
+        is_active: true,
+        install_url: installUrl,
+        snippet,
+        trial_status: 'demo',
+        trial_ends_at: null, // trial clock starts when workspace claims it
+      })
+
+    if (insertError) {
+      // DB storage failed but pixel was created in AL — still return it, just log the failure
+      safeError('[provision-demo] DB insert failed (pixel still usable):', insertError)
+    }
+
     return NextResponse.json(
-      { pixel_id: result.pixel_id, snippet, install_url: installUrl, domain },
+      { pixel_id: result.pixel_id, snippet, install_url: installUrl, domain, demo_claimed: false },
       { headers: CORS }
     )
   } catch (err) {

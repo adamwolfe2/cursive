@@ -92,9 +92,72 @@ export async function POST(request: NextRequest) {
 
     // Extract domain from URL
     const domain = new URL(validated.website_url).hostname
+    const websiteName = validated.website_name || domain
+
+    // Check for an unclaimed demo pixel from a sales call — claim it instead of creating new
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
+    const { data: demoPixel } = await adminSupabase
+      .from('audiencelab_pixels')
+      .select('id, pixel_id, snippet, install_url, domain, label')
+      .is('workspace_id', null)
+      .eq('domain', domain)
+      .eq('trial_status', 'demo')
+      .gte('created_at', thirtyDaysAgo)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+
+    if (demoPixel) {
+      const trialEndsAt = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
+
+      const { error: claimError } = await adminSupabase
+        .from('audiencelab_pixels')
+        .update({
+          workspace_id: user.workspace_id,
+          trial_status: 'trial',
+          trial_ends_at: trialEndsAt,
+          label: demoPixel.label || websiteName,
+        })
+        .eq('id', demoPixel.id)
+        .is('workspace_id', null) // guard against race condition
+
+      if (!claimError) {
+        // Fire the same pixel provisioned event and Slack notification
+        firePixelProvisionedEvent({
+          workspace_id: user.workspace_id,
+          pixel_id: demoPixel.pixel_id,
+          domain: demoPixel.domain || domain,
+          trial_ends_at: trialEndsAt,
+        })
+
+        sendSlackAlert({
+          type: 'pipeline_update',
+          severity: 'info',
+          message: `Demo pixel claimed by ${domain} — trial ends ${trialEndsAt.split('T')[0]}`,
+          metadata: {
+            workspace_id: user.workspace_id,
+            user: user.full_name || user.email,
+            pixel_id: demoPixel.pixel_id,
+            domain,
+          },
+        }).catch((error) => {
+          safeError('[Pixel Provision] Slack notification failed:', error)
+        })
+
+        return NextResponse.json({
+          pixel_id: demoPixel.pixel_id,
+          snippet: demoPixel.snippet,
+          install_url: demoPixel.install_url,
+          domain: demoPixel.domain || domain,
+          claimed_from_demo: true,
+        })
+      }
+
+      // If claim failed (race condition — another request claimed it first), fall through to create new
+      safeError('[Pixel Provision] Demo pixel claim race condition:', claimError)
+    }
 
     // Provision pixel via AudienceLab API
-    const websiteName = validated.website_name || domain
     const result = await provisionCustomerPixel({
       websiteName,
       websiteUrl: validated.website_url,

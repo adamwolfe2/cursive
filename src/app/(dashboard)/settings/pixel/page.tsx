@@ -15,7 +15,7 @@ interface PixelStatus {
     label: string | null
     created_at: string
     trial_ends_at: string | null
-    trial_status: 'trial' | 'expired' | 'active' | 'cancelled' | null
+    trial_status: 'trial' | 'expired' | 'active' | 'cancelled' | 'demo' | null
     visitor_count_total: number | null
     visitor_count_identified: number | null
   } | null
@@ -91,9 +91,13 @@ export default function PixelSettingsPage() {
       }
       return response.json()
     },
-    onSuccess: () => {
+    onSuccess: (data: { claimed_from_demo?: boolean }) => {
       queryClient.invalidateQueries({ queryKey: ['pixel', 'status'] })
-      toast.success('Pixel created successfully!')
+      if (data.claimed_from_demo) {
+        toast.success('Your demo pixel has been activated! Your 14-day trial starts now.')
+      } else {
+        toast.success('Pixel created successfully!')
+      }
     },
     onError: (error: Error) => {
       toast.error(error.message || 'Failed to create pixel')
