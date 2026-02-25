@@ -129,7 +129,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/blog/smartlead-alternative',
     '/blog/apollo-io-vs-zoominfo',
     // Existing "cursive vs" pages
-    '/blog/cursive-vs-rb2b',
+    '/blog/cursive-vs-rb2b',       // ← page built Feb 24 2026
     '/blog/cursive-vs-leadfeeder',
     '/blog/cursive-vs-clearbit',
     '/blog/cursive-vs-instantly',
@@ -191,6 +191,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/blog/what-is-b2b-data',
     '/blog/b2b-lead-generation-guide-2026',
     '/blog/website-visitor-identification-guide',
+    // New compliance + international ID pages (created Feb 24 2026)
+    '/blog/gdpr-compliant-visitor-identification',
+    '/blog/international-website-visitor-identification',
   ].map(url => ({
     url,
     priority: 0.7,
