@@ -539,6 +539,23 @@ export type Events = {
     }
   }
 
+  // Cal.com Booking Events
+  'cal/booking.created': {
+    data: {
+      booking_uid: string
+      attendee_name: string
+      attendee_email: string
+      start_time: string
+      end_time: string
+    }
+  }
+  'cal/booking.cancelled': {
+    data: {
+      booking_uid: string
+      attendee_email: string
+    }
+  }
+
   // GHL Pipeline Lifecycle Events
   'ghl/pipeline.update': {
     data: {
