@@ -19,8 +19,10 @@ import {
   Image as ImageIcon,
   Sparkles,
   XCircle,
+  ChevronDown,
 } from 'lucide-react'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { PromptTemplateLibrary } from '@/components/ai-studio/PromptTemplateLibrary'
 
 interface Creative {
   id: string
@@ -70,6 +72,9 @@ function CreativesPageInner() {
   const [isLoading, setIsLoading] = useState(true)
   const [isGenerating, setIsGenerating] = useState(false)
   const [generationError, setGenerationError] = useState<string | null>(null)
+
+  // Prompt template library
+  const [showTemplates, setShowTemplates] = useState(false)
 
   // Generation inputs
   const [selectedStyle, setSelectedStyle] = useState<string>(STYLE_PRESETS[0])
@@ -210,6 +215,32 @@ function CreativesPageInner() {
       >
         <GradientCard variant="accent">
           <form onSubmit={(e) => { e.preventDefault(); handleGenerate(); }} className="space-y-6">
+            {/* Prompt Template Library */}
+            <div className="mb-2">
+              <button
+                type="button"
+                onClick={() => setShowTemplates(!showTemplates)}
+                className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <Sparkles className="h-4 w-4" />
+                {showTemplates ? 'Hide' : 'Browse'} prompt templates
+                <ChevronDown
+                  className={`h-4 w-4 transition-transform ${showTemplates ? 'rotate-180' : ''}`}
+                />
+              </button>
+
+              {showTemplates && (
+                <div className="mt-3 border border-border rounded-xl p-4 bg-muted/30">
+                  <PromptTemplateLibrary
+                    onSelectPrompt={(selectedPrompt) => {
+                      setPrompt(selectedPrompt)
+                      setShowTemplates(false)
+                    }}
+                  />
+                </div>
+              )}
+            </div>
+
             {/* Prompt Input */}
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">

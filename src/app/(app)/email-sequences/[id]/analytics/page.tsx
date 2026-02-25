@@ -2,18 +2,19 @@
 
 /**
  * Email Sequence Analytics Page
- * Shows per-sequence and per-step performance metrics
+ * Shows per-sequence and per-step performance metrics with funnel visualization
  */
 
 import { useParams } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
 import Link from 'next/link'
-import { ArrowLeft, Mail, MousePointerClick, MessageSquare, Users } from 'lucide-react'
+import { ArrowLeft, Mail, MousePointerClick, MessageSquare, Users, Eye } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { PageContainer, PageHeader } from '@/components/layout'
 import { SkeletonStatCard, SkeletonTable } from '@/components/ui/skeleton'
+import { StepFunnelChart } from '@/components/email-sequences/step-funnel-chart'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface EmailSequenceStep {
@@ -148,7 +149,7 @@ export default function SequenceAnalyticsPage() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Open Rate</CardTitle>
-                <Mail className="h-4 w-4 text-muted-foreground" />
+                <Eye className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{calcRate(totalOpened, totalSent)}</div>
@@ -187,6 +188,21 @@ export default function SequenceAnalyticsPage() {
         )}
       </div>
 
+      {/* Step Funnel Visualization */}
+      {!isLoading && steps.length > 0 && (
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle>Step Funnel</CardTitle>
+            <CardDescription>
+              Visual breakdown of engagement drop-off across each step
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <StepFunnelChart steps={steps} />
+          </CardContent>
+        </Card>
+      )}
+
       {/* Per-step performance table */}
       <Card>
         <CardHeader>
@@ -197,7 +213,7 @@ export default function SequenceAnalyticsPage() {
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <SkeletonTable rows={4} columns={8} />
+            <SkeletonTable rows={4} columns={9} />
           ) : isError ? (
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <p className="text-sm font-medium text-destructive mb-2">Failed to load analytics</p>
@@ -242,6 +258,7 @@ export default function SequenceAnalyticsPage() {
                     <th className="text-right py-3 px-4 font-medium text-muted-foreground">Opens</th>
                     <th className="text-right py-3 px-4 font-medium text-muted-foreground">Open Rate</th>
                     <th className="text-right py-3 px-4 font-medium text-muted-foreground">Clicks</th>
+                    <th className="text-right py-3 px-4 font-medium text-muted-foreground">Click Rate</th>
                     <th className="text-right py-3 px-4 font-medium text-muted-foreground">Replies</th>
                     <th className="text-right py-3 px-4 font-medium text-muted-foreground">Reply Rate</th>
                   </tr>
@@ -249,6 +266,7 @@ export default function SequenceAnalyticsPage() {
                 <tbody>
                   {steps.map((step) => {
                     const openRate = calcRateNum(step.opened_count, step.sent_count)
+                    const clickRate = calcRateNum(step.clicked_count, step.sent_count)
                     const replyRate = calcRateNum(step.replied_count, step.sent_count)
                     return (
                       <tr
@@ -282,6 +300,14 @@ export default function SequenceAnalyticsPage() {
                         </td>
                         <td className="py-3 px-4 text-right">
                           {step.clicked_count.toLocaleString()}
+                        </td>
+                        <td className="py-3 px-4 text-right">
+                          <Badge
+                            variant={clickRate >= 5 ? 'default' : 'secondary'}
+                            className="ml-auto"
+                          >
+                            {clickRate}%
+                          </Badge>
                         </td>
                         <td className="py-3 px-4 text-right">
                           {step.replied_count.toLocaleString()}

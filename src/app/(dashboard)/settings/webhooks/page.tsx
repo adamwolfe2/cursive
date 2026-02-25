@@ -7,6 +7,7 @@
  */
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -35,6 +36,8 @@ import {
   XCircle,
   Clock,
   Pencil,
+  FlaskConical,
+  Loader2,
 } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 
@@ -114,6 +117,7 @@ export default function WebhooksPage() {
   const [copiedSecret, setCopiedSecret] = useState(false)
   const [createForm, setCreateForm] = useState<CreateForm>(DEFAULT_CREATE_FORM)
   const [editForm, setEditForm] = useState<EditForm>({ name: '', url: '', events: [], is_active: true })
+  const [testingId, setTestingId] = useState<string | null>(null)
 
   // ── Fetch ──
   const { data, isLoading } = useQuery({
@@ -250,6 +254,23 @@ export default function WebhooksPage() {
       is_active: webhook.is_active,
     })
     setEditWebhook(webhook)
+  }
+
+  const handleTest = async (webhookId: string) => {
+    setTestingId(webhookId)
+    try {
+      const res = await fetch(`/api/webhooks/outbound/${webhookId}/test`, { method: 'POST' })
+      const result = await res.json()
+      if (result.success) {
+        toast({ type: 'success', message: `Test delivered — got ${result.response_status} response` })
+      } else {
+        toast({ type: 'error', message: `Test failed: ${result.response_body?.slice(0, 80) ?? 'Connection error'}` })
+      }
+    } catch {
+      toast({ type: 'error', message: 'Test request failed' })
+    } finally {
+      setTestingId(null)
+    }
   }
 
   const healthBadge = (webhook: WebhookEndpoint) => {
@@ -409,6 +430,16 @@ export default function WebhooksPage() {
 
                   {/* Actions */}
                   <div className="flex items-center gap-2 flex-shrink-0">
+                    <Link href={`/settings/webhooks/${webhook.id}/deliveries`}>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-muted-foreground hover:text-foreground gap-1"
+                      >
+                        <Clock className="h-3.5 w-3.5" />
+                        <span className="text-xs hidden sm:inline">Logs</span>
+                      </Button>
+                    </Link>
                     <Switch
                       checked={webhook.is_active}
                       onChange={() =>
@@ -423,6 +454,20 @@ export default function WebhooksPage() {
                       className="text-muted-foreground hover:text-foreground"
                     >
                       <Pencil className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleTest(webhook.id)}
+                      disabled={!webhook.is_active || testingId === webhook.id}
+                      className="text-muted-foreground hover:text-foreground"
+                      title="Send test delivery"
+                    >
+                      {testingId === webhook.id ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        <FlaskConical className="h-3.5 w-3.5" />
+                      )}
                     </Button>
                     <Button
                       variant="ghost"

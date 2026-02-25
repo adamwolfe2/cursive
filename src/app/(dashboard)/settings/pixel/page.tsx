@@ -3,6 +3,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState, useCallback } from 'react'
 import { useToast } from '@/lib/hooks/use-toast'
+import { CheckCircle } from 'lucide-react'
+import { PixelInstallTabs } from '@/components/pixel/PixelInstallTabs'
 
 interface PixelStatus {
   has_pixel: boolean
@@ -384,27 +386,17 @@ export default function PixelSettingsPage() {
           )}
         </div>
 
-        {/* Installation Snippet */}
+        {/* Installation Instructions */}
         {hasSnippet && (
           <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h2 className="text-lg font-semibold text-zinc-900">Installation Snippet</h2>
-                <p className="text-sm text-zinc-500 mt-1">
-                  Paste this code before the closing <code className="text-xs bg-zinc-100 px-1.5 py-0.5 rounded font-mono">&lt;/head&gt;</code> tag on your website.
-                </p>
-              </div>
-              <button
-                onClick={() => handleCopySnippet(installSnippet)}
-                className="rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 transition-colors"
-              >
-                {copied ? 'Copied!' : 'Copy'}
-              </button>
+            <div className="mb-4">
+              <h2 className="text-lg font-semibold text-zinc-900">Installation Instructions</h2>
+              <p className="text-sm text-zinc-500 mt-1">
+                Choose your platform below and follow the steps to install your Cursive pixel.
+              </p>
             </div>
 
-            <pre className="text-xs bg-zinc-100 text-zinc-800 border border-zinc-200 p-4 rounded-lg font-mono whitespace-pre-wrap break-all">
-              {installSnippet}
-            </pre>
+            <PixelInstallTabs pixelId={data.pixel!.pixel_id} />
 
             <div className="mt-4 rounded-lg bg-primary/5 border border-primary/20 p-4">
               <h3 className="text-sm font-semibold text-primary mb-2">How it works</h3>
@@ -422,6 +414,27 @@ export default function PixelSettingsPage() {
                   Matching leads appear in your My Leads dashboard automatically
                 </li>
               </ol>
+            </div>
+          </div>
+        )}
+
+        {/* Verify installation */}
+        {hasSnippet && (
+          <div className="rounded-lg border border-border p-4 bg-muted/30">
+            <div className="flex items-start gap-3">
+              <div className="p-2 bg-primary/10 rounded-lg shrink-0">
+                <CheckCircle className="h-4 w-4 text-primary" />
+              </div>
+              <div>
+                <h4 className="text-sm font-semibold text-foreground">Verify installation</h4>
+                <p className="text-sm text-muted-foreground mt-0.5">
+                  After adding the pixel to your site, visit any page and come back here.
+                  If the pixel is working, you&apos;ll see &ldquo;Active&rdquo; status below within 60 seconds.
+                </p>
+                <p className="text-xs text-muted-foreground mt-2">
+                  Your pixel ID: <code className="bg-muted px-1.5 py-0.5 rounded font-mono text-xs">{data.pixel!.pixel_id}</code>
+                </p>
+              </div>
             </div>
           </div>
         )}

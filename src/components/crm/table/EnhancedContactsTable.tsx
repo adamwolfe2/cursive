@@ -43,6 +43,7 @@ import {
 import { formatDistanceToNow } from 'date-fns'
 import type { Contact, ContactWithCompany } from '@/types/crm.types'
 import { cn } from '@/lib/utils'
+import { QuickFilterBar } from '@/components/crm/QuickFilterBar'
 
 interface EnhancedContactsTableProps {
   data: ContactWithCompany[]
@@ -64,11 +65,15 @@ export function EnhancedContactsTable({
   const [searchQuery, setSearchQuery] = React.useState('')
   const [statusFilter, setStatusFilter] = React.useState<string>('all')
   const [seniorityFilter, setSeniorityFilter] = React.useState<string>('all')
+  const [quickFilter, setQuickFilter] = React.useState<string>('all')
   const [currentPage, setCurrentPage] = React.useState(1)
   const [pageSize, setPageSize] = React.useState(20)
 
   // Multi-dimensional filtering
   const filteredContacts = React.useMemo(() => {
+    const now = new Date()
+    const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+
     return data.filter((contact) => {
       const fullName = contact.full_name ||
         [contact.first_name, contact.last_name].filter(Boolean).join(' ')
@@ -82,9 +87,37 @@ export function EnhancedContactsTable({
       const matchesStatus = statusFilter === 'all' || contact.status === statusFilter
       const matchesSeniority = seniorityFilter === 'all' || contact.seniority_level === seniorityFilter
 
-      return matchesSearch && matchesStatus && matchesSeniority
+      let matchesQuickFilter = true
+      if (quickFilter === 'recent') {
+        matchesQuickFilter = new Date(contact.created_at) >= sevenDaysAgo
+      } else if (quickFilter === 'no_email') {
+        matchesQuickFilter = !contact.email
+      } else if (quickFilter === 'no_phone') {
+        matchesQuickFilter = !contact.phone
+      } else if (quickFilter === 'enriched') {
+        // Contacts with email, phone, and linkedin are considered enriched
+        matchesQuickFilter = !!(contact.email && contact.phone && contact.linkedin_url)
+      } else if (quickFilter === 'not_enriched') {
+        matchesQuickFilter = !(contact.email && contact.phone && contact.linkedin_url)
+      }
+
+      return matchesSearch && matchesStatus && matchesSeniority && matchesQuickFilter
     })
-  }, [data, searchQuery, statusFilter, seniorityFilter])
+  }, [data, searchQuery, statusFilter, seniorityFilter, quickFilter])
+
+  // Compute counts for quick filter badges
+  const quickFilterCounts = React.useMemo(() => {
+    const now = new Date()
+    const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+    return {
+      all: data.length,
+      recent: data.filter((c) => new Date(c.created_at) >= sevenDaysAgo).length,
+      no_email: data.filter((c) => !c.email).length,
+      no_phone: data.filter((c) => !c.phone).length,
+      enriched: data.filter((c) => !!(c.email && c.phone && c.linkedin_url)).length,
+      not_enriched: data.filter((c) => !(c.email && c.phone && c.linkedin_url)).length,
+    }
+  }, [data])
 
   // Smart pagination
   const totalPages = Math.ceil(filteredContacts.length / pageSize)
@@ -97,16 +130,17 @@ export function EnhancedContactsTable({
   // Reset to page 1 when filters change
   React.useEffect(() => {
     setCurrentPage(1)
-  }, [searchQuery, statusFilter, seniorityFilter, pageSize])
+  }, [searchQuery, statusFilter, seniorityFilter, quickFilter, pageSize])
 
   // Check if filters are active
-  const hasActiveFilters = statusFilter !== 'all' || seniorityFilter !== 'all'
+  const hasActiveFilters = statusFilter !== 'all' || seniorityFilter !== 'all' || quickFilter !== 'all'
 
   // Clear all filters
   const clearFilters = () => {
     setStatusFilter('all')
     setSeniorityFilter('all')
     setSearchQuery('')
+    setQuickFilter('all')
   }
 
   // Get contact initials for avatar
@@ -261,8 +295,17 @@ export function EnhancedContactsTable({
           </div>
         </div>
 
+        {/* Quick Filter Bar */}
+        <div className="mt-4">
+          <QuickFilterBar
+            activeFilter={quickFilter}
+            onFilterChange={setQuickFilter}
+            counts={quickFilterCounts}
+          />
+        </div>
+
         {/* Search and Filters */}
-        <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
+        <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center">
           {/* Search */}
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
@@ -399,13 +442,14 @@ export function EnhancedContactsTable({
               <TableHead className="hidden xl:table-cell">Email</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="hidden sm:table-cell">Created</TableHead>
+              <TableHead className="hidden lg:table-cell">Last Activity</TableHead>
               <TableHead className="w-12"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {paginatedContacts.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="h-64 text-center">
+                <TableCell colSpan={9} className="h-64 text-center">
                   <div className="flex flex-col items-center justify-center gap-2">
                     <User className="h-12 w-12 text-gray-300" />
                     <p className="text-sm font-medium text-gray-900">No contacts found</p>
@@ -486,6 +530,11 @@ export function EnhancedContactsTable({
                     <TableCell className="hidden sm:table-cell">
                       <span className="text-xs text-gray-500">
                         {formatDistanceToNow(new Date(contact.created_at), { addSuffix: true })}
+                      </span>
+                    </TableCell>
+                    <TableCell className="hidden lg:table-cell">
+                      <span className="text-xs text-gray-500">
+                        {formatDistanceToNow(new Date(contact.updated_at), { addSuffix: true })}
                       </span>
                     </TableCell>
                     <TableCell onClick={(e) => e.stopPropagation()}>

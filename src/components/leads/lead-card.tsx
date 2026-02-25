@@ -7,6 +7,7 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/design-system'
 import { formatDistanceToNow } from 'date-fns'
+import { IntentScoreBadge } from './IntentScoreBadge'
 
 // ─── Types ─────────────────────────────────────────────────
 
@@ -162,8 +163,6 @@ export const LeadCard = memo(function LeadCard({
 }) {
   const name = lead.full_name || [lead.first_name, lead.last_name].filter(Boolean).join(' ') || 'Unknown Lead'
   const isEnriched = lead.enrichment_status === 'enriched'
-  const { bg, text } = intentColor(lead.intent_score_calculated)
-  const label = intentLabel(lead.intent_score_calculated)
 
   return (
     <div
@@ -210,10 +209,10 @@ export const LeadCard = memo(function LeadCard({
             </div>
 
             {/* Intent badge */}
-            {label && (
-              <span className={cn('shrink-0 text-xs font-semibold rounded-full px-2.5 py-1', bg, text)}>
-                {label} {lead.intent_score_calculated}
-              </span>
+            {lead.intent_score_calculated !== null && (
+              <div className="shrink-0">
+                <IntentScoreBadge score={lead.intent_score_calculated} />
+              </div>
             )}
           </div>
 

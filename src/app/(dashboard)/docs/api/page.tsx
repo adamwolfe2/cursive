@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { CodeExample } from '@/components/docs/CodeExample'
 
 export const metadata: Metadata = {
   title: 'API Documentation | Cursive',
@@ -207,6 +208,9 @@ export default function ApiDocsPage() {
             <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/60">
               Resources
             </p>
+            <a href="#authentication" className="block text-muted-foreground hover:text-foreground font-medium">
+              Authentication
+            </a>
             <a href="#marketplace" className="block text-muted-foreground hover:text-foreground">
               Marketplace
             </a>
@@ -227,6 +231,134 @@ export default function ApiDocsPage() {
 
         {/* Main content */}
         <main className="min-w-0 flex-1">
+
+          {/* ── AUTHENTICATION ────────────────────────────────────────── */}
+          <SectionHeader id="authentication" title="Authentication" />
+
+          {/* Auth overview */}
+          <div className="mb-6 space-y-4 text-[13px] text-muted-foreground">
+            <p>
+              The Cursive API supports two authentication methods. For server-to-server integrations,
+              use API keys. For browser-based requests, the session cookie is used automatically.
+            </p>
+
+            {/* API Key auth */}
+            <div className="rounded-lg border border-zinc-200 bg-white p-4">
+              <h3 className="text-sm font-semibold text-foreground mb-2">API Key Authentication</h3>
+              <p className="mb-3">
+                Generate an API key from <a href="/settings/api-keys" className="text-primary hover:underline">Settings → API Keys</a>.
+                Include it as a Bearer token in every request:
+              </p>
+              <pre className="bg-zinc-50 rounded p-3 font-mono text-[12px] text-foreground overflow-x-auto">
+                {`Authorization: Bearer csk_your_api_key_here`}
+              </pre>
+            </div>
+
+            {/* Scopes */}
+            <div className="rounded-lg border border-zinc-200 bg-white p-4">
+              <h3 className="text-sm font-semibold text-foreground mb-2">Scopes</h3>
+              <p className="mb-3">
+                Each API key is scoped to specific resources. Request only the scopes your integration needs.
+              </p>
+              <div className="space-y-1.5">
+                {[
+                  { scope: 'read:leads', desc: 'Read lead data and enrichment info' },
+                  { scope: 'write:leads', desc: 'Create, update, and delete leads' },
+                  { scope: 'read:marketplace', desc: 'Browse marketplace and view lead previews' },
+                  { scope: 'write:marketplace', desc: 'Purchase leads from the marketplace' },
+                  { scope: 'read:credits', desc: 'View credit balance and transaction history' },
+                  { scope: 'write:webhooks', desc: 'Create and manage webhook endpoints' },
+                  { scope: 'read:pixel', desc: 'Access pixel visitor and identification data' },
+                ].map(({ scope, desc }) => (
+                  <div key={scope} className="flex items-start gap-3">
+                    <code className="shrink-0 rounded bg-zinc-100 px-1.5 py-0.5 font-mono text-[11px] text-foreground">{scope}</code>
+                    <span className="text-[12px] text-muted-foreground">{desc}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Rate limits */}
+            <div className="rounded-lg border border-zinc-200 bg-white p-4">
+              <h3 className="text-sm font-semibold text-foreground mb-2">Rate Limits</h3>
+              <p className="mb-3">All API requests are rate-limited per key. Limits are returned in response headers:</p>
+              <div className="space-y-1.5">
+                {[
+                  { header: 'X-RateLimit-Limit', desc: 'The maximum number of requests allowed per window' },
+                  { header: 'X-RateLimit-Remaining', desc: 'The number of requests remaining in the current window' },
+                  { header: 'X-RateLimit-Reset', desc: 'Unix timestamp when the rate limit window resets' },
+                ].map(({ header, desc }) => (
+                  <div key={header} className="flex items-start gap-3">
+                    <code className="shrink-0 rounded bg-zinc-100 px-1.5 py-0.5 font-mono text-[11px] text-foreground">{header}</code>
+                    <span className="text-[12px] text-muted-foreground">{desc}</span>
+                  </div>
+                ))}
+              </div>
+              <p className="mt-3 text-[12px]">
+                When rate limited, you receive a <code className="bg-zinc-100 px-1 rounded">429 Too Many Requests</code> response.
+                Default limits: 60 req/minute per key, 10,000 req/day per key.
+              </p>
+            </div>
+
+            {/* Error format */}
+            <div className="rounded-lg border border-zinc-200 bg-white p-4">
+              <h3 className="text-sm font-semibold text-foreground mb-2">Error Format</h3>
+              <p className="mb-3">All errors follow a consistent JSON structure:</p>
+              <pre className="bg-zinc-50 rounded p-3 font-mono text-[12px] text-foreground overflow-x-auto">
+{`{
+  "error": "Insufficient credits to complete purchase",
+  "code": "INSUFFICIENT_CREDITS",
+  "status": 402
+}`}
+              </pre>
+            </div>
+          </div>
+
+          {/* Quick start code example */}
+          <div className="mb-8">
+            <h3 className="text-sm font-semibold text-foreground mb-3">Quick Start</h3>
+            <CodeExample
+              examples={[
+                {
+                  lang: 'cURL',
+                  code: `curl -X GET "https://leads.meetcursive.com/api/marketplace/leads?limit=5" \\
+  -H "Authorization: Bearer csk_your_api_key_here" \\
+  -H "Content-Type: application/json"`,
+                },
+                {
+                  lang: 'Node.js',
+                  code: `const response = await fetch(
+  'https://leads.meetcursive.com/api/marketplace/leads?limit=5',
+  {
+    headers: {
+      'Authorization': 'Bearer csk_your_api_key_here',
+      'Content-Type': 'application/json',
+    },
+  }
+)
+const data = await response.json()
+console.log(data.leads)`,
+                },
+                {
+                  lang: 'Python',
+                  code: `import requests
+
+headers = {
+    'Authorization': 'Bearer csk_your_api_key_here',
+    'Content-Type': 'application/json',
+}
+
+response = requests.get(
+    'https://leads.meetcursive.com/api/marketplace/leads',
+    headers=headers,
+    params={'limit': 5}
+)
+data = response.json()
+print(data['leads'])`,
+                },
+              ]}
+            />
+          </div>
 
           {/* ── MARKETPLACE ───────────────────────────────────────────── */}
           <SectionHeader id="marketplace" title="Marketplace" />
@@ -321,6 +453,48 @@ export default function ApiDocsPage() {
               { code: 500, description: 'Internal error' },
             ]}
           />
+
+          <div className="mb-8">
+            <CodeExample
+              examples={[
+                {
+                  lang: 'cURL',
+                  code: `curl -X POST "https://leads.meetcursive.com/api/marketplace/purchase" \\
+  -H "Authorization: Bearer csk_your_api_key_here" \\
+  -H "Content-Type: application/json" \\
+  -d '{"lead_id": "lead_abc123"}'`,
+                },
+                {
+                  lang: 'Node.js',
+                  code: `const response = await fetch(
+  'https://leads.meetcursive.com/api/marketplace/purchase',
+  {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer csk_your_api_key_here',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ lead_id: 'lead_abc123' }),
+  }
+)
+const data = await response.json()
+// data.lead contains full contact info`,
+                },
+                {
+                  lang: 'Python',
+                  code: `import requests
+
+response = requests.post(
+    'https://leads.meetcursive.com/api/marketplace/purchase',
+    headers={'Authorization': 'Bearer csk_your_api_key_here'},
+    json={'lead_id': 'lead_abc123'}
+)
+lead = response.json()['lead']
+print(f"Purchased: {lead['full_name']} at {lead['company_name']}")`,
+                },
+              ]}
+            />
+          </div>
 
           <EndpointBlock
             method="GET"
@@ -604,6 +778,76 @@ export default function ApiDocsPage() {
               { code: 500, description: 'Internal error' },
             ]}
           />
+
+          <div className="mb-8">
+            <h3 className="text-sm font-semibold text-foreground mb-3">Verifying webhook signatures</h3>
+            <p className="text-[13px] text-muted-foreground mb-3">
+              Every webhook delivery includes an <code className="bg-zinc-100 px-1 rounded">X-Cursive-Signature</code> header —
+              an HMAC-SHA256 digest of the raw request body signed with your webhook secret.
+              Always verify this before processing the payload.
+            </p>
+            <CodeExample
+              examples={[
+                {
+                  lang: 'Node.js',
+                  code: `import crypto from 'crypto'
+
+export function verifyWebhookSignature(
+  rawBody: string,
+  signature: string,
+  secret: string
+): boolean {
+  const expected = crypto
+    .createHmac('sha256', secret)
+    .update(rawBody, 'utf8')
+    .digest('hex')
+
+  return crypto.timingSafeEqual(
+    Buffer.from(signature),
+    Buffer.from(expected)
+  )
+}
+
+// In your request handler:
+const rawBody = await req.text()
+const sig = req.headers.get('x-cursive-signature') ?? ''
+if (!verifyWebhookSignature(rawBody, sig, process.env.CURSIVE_WEBHOOK_SECRET!)) {
+  return new Response('Invalid signature', { status: 401 })
+}
+const event = JSON.parse(rawBody)`,
+                },
+                {
+                  lang: 'Python',
+                  code: `import hmac
+import hashlib
+
+def verify_webhook_signature(raw_body: bytes, signature: str, secret: str) -> bool:
+    expected = hmac.new(
+        secret.encode('utf-8'),
+        raw_body,
+        hashlib.sha256
+    ).hexdigest()
+    return hmac.compare_digest(signature, expected)
+
+# In your Flask/FastAPI handler:
+raw_body = request.get_data()
+signature = request.headers.get('X-Cursive-Signature', '')
+if not verify_webhook_signature(raw_body, signature, CURSIVE_WEBHOOK_SECRET):
+    return jsonify({'error': 'Invalid signature'}), 401
+
+event = request.get_json()`,
+                },
+                {
+                  lang: 'cURL',
+                  code: `# Test your webhook endpoint manually:
+curl -X POST "https://your-server.com/webhooks/cursive" \\
+  -H "Content-Type: application/json" \\
+  -H "X-Cursive-Signature: <computed_hmac>" \\
+  -d '{"event":"lead.received","workspace_id":"ws_...","data":{}}'`,
+                },
+              ]}
+            />
+          </div>
 
           <div className="mb-8 rounded-lg border border-zinc-200 bg-white">
             <div className="border-b border-zinc-100 px-4 py-3">

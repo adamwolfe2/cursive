@@ -30,6 +30,14 @@ export function DealsPageClient({ initialData }: DealsPageClientProps) {
     }).format(value)
   }
 
+  // Compact deal value formatter: $1.2M, $50K, $999
+  const formatDealValue = (value: number | null): string => {
+    if (!value) return '—'
+    if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(1)}M`
+    if (value >= 1_000) return `$${(value / 1_000).toFixed(0)}K`
+    return `$${value.toLocaleString()}`
+  }
+
   // Kanban columns and data
   const { boardColumns, boardData } = useMemo(() => {
     const qualifiedDeals = deals.filter((d) => d.stage === 'Qualified')
@@ -118,7 +126,7 @@ export function DealsPageClient({ initialData }: DealsPageClientProps) {
     <div className="space-y-2">
       <div className="font-medium text-foreground">{deal.name}</div>
       <div className="flex items-center justify-between">
-        <span className="text-lg font-semibold text-foreground">{formatCurrency(deal.value || 0)}</span>
+        <span className="text-lg font-semibold text-foreground">{formatDealValue(deal.value)}</span>
         <span className="text-xs text-muted-foreground">{deal.probability || 0}%</span>
       </div>
       {deal.close_date && (

@@ -7,6 +7,7 @@ import Image from 'next/image'
 import { useToast } from '@/lib/hooks/use-toast'
 import { SlackIntegration } from '@/components/integrations/slack-integration'
 import { ZapierIntegration } from '@/components/integrations/zapier-integration'
+import { IntegrationSyncHealth } from '@/components/integrations/IntegrationSyncHealth'
 import {
   Dialog,
   DialogContent,
@@ -1464,6 +1465,8 @@ export default function IntegrationsClient() {
         </div>
       )}
 
+      {/* Sync Health — shown only when HubSpot or Salesforce is connected */}
+      <IntegrationSyncHealth connectedIntegrations={['hubspot', 'salesforce']} />
 
       {/* Regenerate Webhook Secret Confirmation Dialog */}
       <Dialog open={confirmRegenerateSecret} onOpenChange={setConfirmRegenerateSecret}>

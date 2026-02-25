@@ -4,6 +4,7 @@ import { useState, useCallback, useRef } from 'react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { EnhancedLeadsTable, type EnhancedLeadsTableHandle } from '@/components/crm/table/EnhancedLeadsTable'
 import { IntegrationExportBar } from '@/components/crm/export/IntegrationExportBar'
+import { EnrichAllButton } from '@/components/crm/EnrichAllButton'
 import { RecordDrawer } from '@/components/crm/drawer/RecordDrawer'
 import { Button } from '@/components/ui/button'
 import { formatDistanceToNow } from 'date-fns'
@@ -55,6 +56,11 @@ export function LeadsPageClient({ initialData, currentPage, perPage, totalCount 
 
   const selectedLeadData = leads.find((l) => l.id === selectedLead)
 
+  // Collect IDs of leads that haven't been enriched yet
+  const unenrichedLeadIds = leads
+    .filter((l) => (l as LeadTableRow & { enrichment_status?: string }).enrichment_status !== 'enriched')
+    .map((l) => l.id)
+
   return (
     <>
       <div className="flex h-full flex-col p-4 md:p-6 lg:p-8">
@@ -64,6 +70,16 @@ export function LeadsPageClient({ initialData, currentPage, perPage, totalCount 
             selectedLeadIds={selectedLeadIds}
             onClearSelection={handleClearSelection}
           />
+
+          {/* Enrich All unprocessed leads */}
+          {unenrichedLeadIds.length > 0 && (
+            <div className="mb-4 flex justify-end">
+              <EnrichAllButton
+                leadIds={unenrichedLeadIds}
+                onComplete={() => router.refresh()}
+              />
+            </div>
+          )}
 
           {/* Enhanced square-ui inspired table */}
           {totalCount === 0 ? (

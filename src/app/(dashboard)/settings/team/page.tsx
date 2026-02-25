@@ -6,6 +6,8 @@ import { cn, formatDateTime, formatDate, formatRelativeTime } from '@/lib/utils'
 import { useToast } from '@/lib/hooks/use-toast'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
+import { Activity } from 'lucide-react'
+import { WorkspaceActivityFeed } from '@/components/activity/WorkspaceActivityFeed'
 
 interface TeamMember {
   id: string
@@ -620,6 +622,20 @@ export default function TeamSettingsPage() {
           </Dialog>
         )
       })()}
+
+      {/* Recent Team Activity */}
+      <div className="rounded-xl border border-zinc-200 bg-white overflow-hidden">
+        <div className="px-6 py-4 border-b border-zinc-200 flex items-center gap-2">
+          <Activity className="h-4 w-4 text-zinc-500" />
+          <h2 className="font-semibold text-zinc-900">Recent Team Activity</h2>
+        </div>
+        <p className="px-6 pt-3 text-sm text-zinc-500">
+          What your team has been up to in the last 7 days.
+        </p>
+        <div className="px-6 py-4">
+          <WorkspaceActivityFeed />
+        </div>
+      </div>
 
       {/* Invite Modal */}
       <Dialog open={showInviteModal} onOpenChange={(open) => { if (!open && !inviteMutation.isPending) { setShowInviteModal(false); setInviteError(null) } }}>

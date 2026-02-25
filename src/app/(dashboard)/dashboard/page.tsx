@@ -12,6 +12,7 @@ import { sanitizeName, sanitizeCompanyName, sanitizeText } from '@/lib/utils/san
 import { DashboardAnimationWrapper, AnimatedSection } from '@/components/dashboard/dashboard-animation-wrapper'
 import { formatDistanceToNow } from 'date-fns'
 import { OnboardingChecklist } from '@/components/onboarding/OnboardingChecklist'
+import { WhatsNewModal } from '@/components/dashboard/WhatsNewModal'
 
 export const metadata: Metadata = {
   title: 'Dashboard | Cursive',
@@ -66,6 +67,14 @@ export default async function DashboardPage({
   startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay())
   const weekStart = startOfWeek.toISOString().split('T')[0]
 
+  const yesterdayDate = new Date()
+  yesterdayDate.setDate(yesterdayDate.getDate() - 1)
+  const yesterday = yesterdayDate.toISOString().split('T')[0]
+
+  const prevWeekStartDate = new Date()
+  prevWeekStartDate.setDate(prevWeekStartDate.getDate() - prevWeekStartDate.getDay() - 7)
+  const prevWeekStart = prevWeekStartDate.toISOString().split('T')[0]
+
   const [
     todayLeadsResult,
     weekLeadsResult,
@@ -77,6 +86,9 @@ export default async function DashboardPage({
     creditsData,
     recentEnrichmentsResult,
     activationResult,
+    yesterdayLeadsResult,
+    prevWeekLeadsResult,
+    sourceLeadsResult,
   ] = await Promise.all([
     // Today's lead count
     supabase
@@ -138,11 +150,46 @@ export default async function DashboardPage({
       .from('custom_audience_requests')
       .select('id', { count: 'exact', head: true })
       .eq('workspace_id', userProfile.workspace_id),
+    // Yesterday's leads (for trend vs today)
+    supabase
+      .from('leads')
+      .select('id', { count: 'exact', head: true })
+      .eq('workspace_id', userProfile.workspace_id)
+      .gte('delivered_at', `${yesterday}T00:00:00`)
+      .lt('delivered_at', `${today}T00:00:00`),
+    // Last week's leads (for trend vs this week)
+    supabase
+      .from('leads')
+      .select('id', { count: 'exact', head: true })
+      .eq('workspace_id', userProfile.workspace_id)
+      .gte('delivered_at', `${prevWeekStart}T00:00:00`)
+      .lt('delivered_at', `${weekStart}T00:00:00`),
+    // Lead source breakdown (this week)
+    supabase
+      .from('leads')
+      .select('source')
+      .eq('workspace_id', userProfile.workspace_id)
+      .gte('delivered_at', `${weekStart}T00:00:00`)
+      .limit(200),
   ])
 
   const todayCount = todayLeadsResult.count ?? 0
   const weekCount = weekLeadsResult.count ?? 0
   const totalCount = totalLeadsResult.count ?? 0
+  const yesterdayCount = yesterdayLeadsResult.count ?? 0
+  const prevWeekCount = prevWeekLeadsResult.count ?? 0
+
+  // Lead source attribution
+  const sourceLeads = sourceLeadsResult.data ?? []
+  const sourceCounts: Record<string, number> = {}
+  for (const l of sourceLeads) {
+    const src = l.source ?? 'unknown'
+    sourceCounts[src] = (sourceCounts[src] ?? 0) + 1
+  }
+  const topSources = Object.entries(sourceCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5)
+  const sourceTotal = topSources.reduce((s, [, n]) => s + n, 0)
   const recentLeads = recentLeadsResult.data ?? []
   const pixel = pixelResult.data
   const hasPixel = !!pixel
@@ -195,6 +242,14 @@ export default async function DashboardPage({
   const showChecklist = checklistProgress < checklistTotal
 
   const dailyLimit = userProfile.daily_lead_limit ?? 10
+
+  function trendBadge(current: number, previous: number) {
+    if (previous === 0) return null
+    const pct = Math.round(((current - previous) / previous) * 100)
+    if (Math.abs(pct) < 1) return null
+    const up = pct > 0
+    return { pct: Math.abs(pct), up }
+  }
 
   return (
     <div className="space-y-6 p-6">
@@ -357,6 +412,15 @@ export default async function DashboardPage({
                 <div className="h-full bg-primary rounded-full" style={{ width: `${Math.min((todayCount / Math.max(dailyLimit, 1)) * 100, 100)}%` }} />
               </div>
               <p className="text-xs text-gray-500 mt-1">{todayCount} of {dailyLimit} delivered</p>
+              {(() => {
+                const trend = trendBadge(todayCount, yesterdayCount)
+                if (!trend) return <p className="text-xs text-gray-400 mt-1">vs. yesterday</p>
+                return (
+                  <p className={`text-xs mt-1 font-medium ${trend.up ? 'text-emerald-600' : 'text-red-500'}`}>
+                    {trend.up ? '↑' : '↓'} {trend.pct}% vs. yesterday
+                  </p>
+                )
+              })()}
             </div>
           </Link>
 
@@ -369,7 +433,15 @@ export default async function DashboardPage({
               <span className="text-sm text-gray-500">This Week</span>
             </div>
             <div className="text-3xl font-bold text-gray-900">{weekCount}</div>
-            <p className="text-xs text-gray-500 mt-1">{(weekCount / 7).toFixed(1)} avg/day</p>
+            {(() => {
+              const trend = trendBadge(weekCount, prevWeekCount)
+              if (!trend) return <p className="text-xs text-gray-500 mt-1">{(weekCount / 7).toFixed(1)} avg/day</p>
+              return (
+                <p className={`text-xs mt-1 font-medium ${trend.up ? 'text-emerald-600' : 'text-red-500'}`}>
+                  {trend.up ? '↑' : '↓'} {trend.pct}% vs. last week
+                </p>
+              )
+            })()}
           </div>
 
           {/* Credits */}
@@ -396,6 +468,15 @@ export default async function DashboardPage({
             </div>
             <div className="text-3xl font-bold text-gray-900">{totalCount}</div>
             <p className="text-xs text-gray-500 mt-1">{enrichedCount} enriched</p>
+            {(() => {
+              const trend = trendBadge(weekCount, prevWeekCount)
+              if (!trend) return null
+              return (
+                <p className={`text-xs mt-0.5 font-medium ${trend.up ? 'text-emerald-600' : 'text-red-500'}`}>
+                  {trend.up ? '↑' : '↓'} {trend.pct}% weekly growth
+                </p>
+              )
+            })()}
           </div>
         </div>
       </AnimatedSection>
@@ -698,6 +779,42 @@ export default async function DashboardPage({
             </AnimatedSection>
           )}
 
+          {/* Lead Source Attribution */}
+          {topSources.length > 0 && (
+            <AnimatedSection delay={0.24}>
+              <div className="bg-white rounded-xl border border-gray-200 p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-semibold text-gray-900">Lead Sources</h3>
+                  <span className="text-xs text-gray-400">This week</span>
+                </div>
+                <div className="space-y-2">
+                  {topSources.map(([src, count]) => {
+                    const pct = sourceTotal > 0 ? Math.round((count / sourceTotal) * 100) : 0
+                    const label = src === 'audiencelab' ? 'SuperPixel'
+                      : src === 'marketplace' ? 'Marketplace'
+                      : src === 'query' ? 'Auto-Match'
+                      : src === 'import' ? 'Import'
+                      : src.charAt(0).toUpperCase() + src.slice(1)
+                    return (
+                      <div key={src}>
+                        <div className="flex items-center justify-between text-xs mb-1">
+                          <span className="text-gray-600">{label}</span>
+                          <span className="text-gray-900 font-medium">{count} ({pct}%)</span>
+                        </div>
+                        <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-primary rounded-full transition-all"
+                            style={{ width: `${pct}%` }}
+                          />
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            </AnimatedSection>
+          )}
+
           {/* Plan + upgrade CTA */}
           {isFree && (
             <AnimatedSection delay={0.25}>
@@ -727,6 +844,7 @@ export default async function DashboardPage({
         </div>
       </div>
 
+      <WhatsNewModal />
       </DashboardAnimationWrapper>
     </div>
   )

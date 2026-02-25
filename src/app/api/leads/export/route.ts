@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { LeadRepository } from '@/lib/repositories/lead.repository'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
+import { createAuditLog } from '@/lib/services/audit.service'
 import { z } from 'zod'
 
 // Allow up to 30s for large exports
@@ -45,6 +46,22 @@ export async function POST(request: NextRequest) {
     // Count data rows (subtract 1 for header row) to detect truncation at 10k limit
     const rowCount = csv.split('\n').length - 1
     const truncated = rowCount >= 10000
+
+    // Log the export to the audit trail (non-critical — fire and forget)
+    createAuditLog({
+      workspaceId: user.workspace_id,
+      userId: user.id,
+      action: 'export',
+      resourceType: 'lead',
+      metadata: {
+        count: rowCount,
+        filters: filters || {},
+        format: 'csv',
+        truncated,
+        exported_at: new Date().toISOString(),
+      },
+      severity: 'info',
+    }).catch(() => null)
 
     const responseHeaders: Record<string, string> = {
       'Content-Type': 'text/csv',
