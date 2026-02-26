@@ -170,6 +170,7 @@ export const provisionWorkspaceAudience = inngest.createFunction(
       const supabase = createAdminClient()
       let inserted = 0
       let skipped = 0
+      const sampleLeads: Array<{ name: string; company: string; title: string }> = []
       const maxPages = Math.ceil(MAX_INITIAL_LEADS / 100)
 
       for (let page = 1; page <= maxPages; page++) {
@@ -181,9 +182,6 @@ export const provisionWorkspaceAudience = inngest.createFunction(
           const recordsResponse = await fetchAudienceRecords(audienceResult.audienceId!, page, pageSize)
           records = recordsResponse.data || []
           if (records.length === 0) break
-          if (page >= (recordsResponse.total_pages || 1)) {
-            // process these then stop
-          }
         } catch (err) {
           safeError(`${LOG_PREFIX} Failed to fetch page ${page}`, err)
           break
@@ -270,15 +268,23 @@ export const provisionWorkspaceAudience = inngest.createFunction(
             })
 
           if (insertErr) {
-            if (insertErr.code !== '23505') { // ignore dupes
+            if (insertErr.code !== '23505') {
               safeError(`${LOG_PREFIX} Insert failed for ${email}`, insertErr)
             }
             skipped++
             continue
           }
 
+          // Collect sample leads for activation email (first 3 only)
+          if (sampleLeads.length < 3 && fullName) {
+            sampleLeads.push({
+              name: fullName,
+              company: record.COMPANY_NAME || '',
+              title: record.JOB_TITLE || '',
+            })
+          }
+
           // Create user_lead_assignment so the lead appears in "My Leads"
-          // Fetch the lead we just inserted to get its ID
           const { data: newLead } = await supabase
             .from('leads')
             .select('id')
@@ -300,7 +306,7 @@ export const provisionWorkspaceAudience = inngest.createFunction(
                 status: 'new',
               })
               .select()
-              .maybeSingle() // ignore duplicate conflicts via upsert fallback
+              .maybeSingle()
           }
 
           inserted++
@@ -309,12 +315,111 @@ export const provisionWorkspaceAudience = inngest.createFunction(
         if (records.length < pageSize) break
       }
 
-      return { inserted, skipped }
+      return { inserted, skipped, sampleLeads }
     })
 
     safeLog(`${LOG_PREFIX} Workspace ${workspace_id}: ${insertResult.inserted} leads inserted, ${insertResult.skipped} skipped`)
 
-    // Step 4: Notify if meaningful results
+    // Step 4: Send "first leads arrived" activation email
+    if (insertResult.inserted > 0) {
+      await step.run('send-activation-email', async () => {
+        try {
+          const supabase = createAdminClient()
+
+          // Get user's email and name
+          const { data: userRow } = await supabase
+            .from('users')
+            .select('email, full_name')
+            .eq('id', user_id)
+            .maybeSingle()
+
+          if (!userRow?.email) return
+
+          const firstName = userRow.full_name?.split(' ')[0] || 'there'
+          const dashboardUrl = 'https://leads.meetcursive.com/leads'
+          const RESEND_API_KEY = process.env.RESEND_API_KEY
+          const FROM_EMAIL = process.env.EMAIL_FROM || 'Cursive <notifications@meetcursive.com>'
+
+          if (!RESEND_API_KEY) return
+
+          const sampleHtml = insertResult.sampleLeads?.length
+            ? insertResult.sampleLeads.map(l =>
+                `<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #f0f0f0;">
+                  <div style="width:36px;height:36px;background:#007AFF;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:14px;flex-shrink:0;">${l.name.charAt(0)}</div>
+                  <div>
+                    <div style="font-weight:600;color:#111;font-size:14px;">${l.name}</div>
+                    <div style="color:#666;font-size:13px;">${[l.title, l.company].filter(Boolean).join(' at ')}</div>
+                  </div>
+                </div>`
+              ).join('')
+            : ''
+
+          const html = `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f7f9fb;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+<div style="max-width:560px;margin:40px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
+  <div style="background:#007AFF;padding:28px 32px;">
+    <p style="color:rgba(255,255,255,0.8);font-size:13px;margin:0 0 6px;">Cursive Super Pixel</p>
+    <h1 style="color:#fff;font-size:24px;font-weight:600;margin:0;line-height:1.3;">Your first ${insertResult.inserted} leads just arrived.</h1>
+  </div>
+  <div style="padding:32px;">
+    <p style="color:#444;font-size:15px;line-height:1.6;margin:0 0 20px;">Hi ${firstName},</p>
+    <p style="color:#444;font-size:15px;line-height:1.6;margin:0 0 24px;">
+      We just pulled <strong>${insertResult.inserted} verified, intent-matched leads</strong> from our database and loaded them directly into your Cursive dashboard — matched to your industry and target locations.
+    </p>
+    ${sampleHtml ? `
+    <p style="color:#888;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin:0 0 12px;">A few of them:</p>
+    <div style="background:#fafafa;border-radius:12px;padding:4px 16px;margin-bottom:24px;">
+      ${sampleHtml}
+    </div>
+    ` : ''}
+    <a href="${dashboardUrl}" style="display:block;background:#007AFF;color:#fff;text-decoration:none;text-align:center;padding:16px;border-radius:10px;font-weight:700;font-size:16px;margin-bottom:24px;">
+      View All ${insertResult.inserted} Leads →
+    </a>
+    <p style="color:#666;font-size:14px;line-height:1.6;margin:0 0 8px;">From here you can:</p>
+    <ul style="color:#666;font-size:14px;line-height:1.9;margin:0 0 24px;padding-left:20px;">
+      <li>Export to your CRM (HubSpot, Salesforce, Slack)</li>
+      <li>Launch an outbound email campaign</li>
+      <li>Enrich any lead with 40+ verified data points</li>
+      <li>Filter by industry, location, seniority, and more</li>
+    </ul>
+    <p style="color:#666;font-size:14px;line-height:1.6;margin:0;">Your lead pipeline refreshes automatically every 6 hours. Questions? Reply to this email.</p>
+  </div>
+  <div style="background:#f7f9fb;padding:20px 32px;text-align:center;">
+    <p style="color:#aaa;font-size:12px;margin:0;">Cursive · <a href="https://leads.meetcursive.com/settings/notifications" style="color:#aaa;">Manage notifications</a></p>
+  </div>
+</div>
+</body>
+</html>`
+
+          await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${RESEND_API_KEY}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              from: FROM_EMAIL,
+              to: userRow.email,
+              subject: `Your first ${insertResult.inserted} leads just arrived`,
+              html,
+              headers: {
+                'List-Unsubscribe': '<https://leads.meetcursive.com/settings/notifications>',
+                'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+              },
+            }),
+          })
+
+          safeLog(`${LOG_PREFIX} Activation email sent to ${userRow.email}`)
+        } catch (emailErr) {
+          safeError(`${LOG_PREFIX} Activation email failed (non-fatal)`, emailErr)
+        }
+      })
+    }
+
+    // Step 5: Notify if meaningful results
     if (insertResult.inserted > 0) {
       await step.run('notify', async () => {
         sendSlackAlert({

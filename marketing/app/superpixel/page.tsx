@@ -8,6 +8,7 @@ import { DashboardCTA } from '@/components/dashboard-cta'
 import { FaqAccordion } from './FaqAccordion'
 import { SuperPixelPopup } from './SuperPixelPopup'
 import { SampleLeadModal } from './SampleLeadModal'
+import { LeadCaptureStrip } from './LeadCaptureStrip'
 
 export const metadata: Metadata = {
   title: "Identify 70% of Website Visitors — Cursive Super Pixel",
@@ -515,8 +516,8 @@ export default function SuperPixelPage() {
                   </li>
                 ))}
               </ul>
-              <Button href={BOOK_ANCHOR} variant="outline" className="w-full text-center">
-                Get Started
+              <Button href="https://leads.meetcursive.com/signup" className="w-full text-center bg-[#007AFF] text-white hover:bg-[#0066DD]">
+                Start Free Trial →
               </Button>
             </div>
 
@@ -544,7 +545,7 @@ export default function SuperPixelPage() {
                 ))}
               </ul>
               <Button href={BOOK_ANCHOR} className="w-full text-center bg-[#007AFF] text-white hover:bg-[#0066DD]">
-                Get Started
+                Book a Demo →
               </Button>
             </div>
 
@@ -580,6 +581,13 @@ export default function SuperPixelPage() {
             </p>
           </div>
         </Container>
+      </section>
+
+      {/* ── EMAIL CAPTURE ─────────────────────────────────── */}
+      <section className="py-16 bg-white">
+        <div className="max-w-3xl mx-auto px-4">
+          <LeadCaptureStrip />
+        </div>
       </section>
 
       {/* ── FAQ ───────────────────────────────────────────── */}
