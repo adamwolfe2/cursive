@@ -197,6 +197,11 @@ export async function POST(request: NextRequest) {
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '')
 
+    // Fallback if slug is empty (company name was all special chars)
+    if (!slug || slug.length < 2) {
+      slug = `workspace-${Math.random().toString(36).slice(2, 8)}`
+    }
+
     safeLog('[Onboarding] Generated base slug:', slug)
 
     // 6. Check slug availability — auto-append short suffix on collision
@@ -356,7 +361,8 @@ export async function POST(request: NextRequest) {
         throw new Error(`Failed to record credit grant: ${grantError.message}`)
       }
     } catch (creditError) {
-      // Rollback: delete user and workspace
+      // Rollback: delete workspace_credits, user, and workspace
+      await admin.from('workspace_credits').delete().eq('workspace_id', workspace.id)
       await admin.from('users').delete().eq('id', userProfile.id)
       await admin.from('workspaces').delete().eq('id', workspace.id)
       safeError('[Onboarding] Credit grant FAILED:', creditError instanceof Error ? creditError.message : creditError)

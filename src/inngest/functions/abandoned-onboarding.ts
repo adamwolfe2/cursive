@@ -38,9 +38,9 @@ interface IncompleteUser {
 function buildRecoveryEmailHtml(user: IncompleteUser): string {
   const firstName = user.full_name?.split(' ')[0] || 'there'
   const dashboardUrl = `${APP_URL}/dashboard`
-  const targetingUrl = `${APP_URL}/dashboard/settings/targeting`
-  const pixelUrl = `${APP_URL}/dashboard/pixel`
-  const leadsUrl = `${APP_URL}/dashboard/my-leads`
+  const targetingUrl = `${APP_URL}/leads/preferences`
+  const pixelUrl = `${APP_URL}/settings/pixel`
+  const leadsUrl = `${APP_URL}/leads`
 
   const stepItems = user.missingSteps.map((step) => {
     let label = ''
@@ -225,6 +225,7 @@ export const abandonedOnboardingRecovery = inngest.createFunction(
           .from('audiencelab_pixels')
           .select('id', { count: 'exact', head: true })
           .eq('workspace_id', user.workspace_id)
+          .eq('is_active', true)
 
         if (!pixelCount || pixelCount === 0) {
           missingSteps.push('pixel')

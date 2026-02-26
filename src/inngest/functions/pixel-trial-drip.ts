@@ -275,6 +275,7 @@ export const checkPixelTrialExpiry = inngest.createFunction(
         .eq('trial_status', 'trial')
         .eq('is_active', true)
         .lt('trial_ends_at', new Date().toISOString())
+        .gte('trial_ends_at', cutoff)
 
       if (error) throw error
       return data ?? []

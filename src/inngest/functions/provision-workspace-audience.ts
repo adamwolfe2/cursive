@@ -203,9 +203,12 @@ export const provisionWorkspaceAudience = inngest.createFunction(
             continue
           }
 
-          const personalEmails = parseCSV(record.PERSONAL_EMAILS)
-          const businessEmails = parseCSV(record.BUSINESS_EMAIL)
-          const email = personalEmails[0] || businessEmails[0]
+          const email =
+            record.BUSINESS_VERIFIED_EMAILS?.[0] ||
+            record.PERSONAL_VERIFIED_EMAILS?.[0] ||
+            parseCSV(record.PERSONAL_EMAILS)[0] ||
+            record.BUSINESS_EMAIL ||
+            null
 
           if (!email) {
             skipped++
@@ -367,7 +370,8 @@ export const provisionWorkspaceAudience = inngest.createFunction(
           if (!userRow?.email) return
 
           const firstName = userRow.full_name?.split(' ')[0] || 'there'
-          const dashboardUrl = 'https://leads.meetcursive.com/leads'
+          const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://leads.meetcursive.com'
+          const dashboardUrl = `${appUrl}/leads`
           const RESEND_API_KEY = process.env.RESEND_API_KEY
           const FROM_EMAIL = process.env.EMAIL_FROM || 'Cursive <notifications@meetcursive.com>'
 
@@ -419,7 +423,7 @@ export const provisionWorkspaceAudience = inngest.createFunction(
     <p style="color:#666;font-size:14px;line-height:1.6;margin:0;">Your lead pipeline refreshes automatically every 6 hours. Questions? Reply to this email.</p>
   </div>
   <div style="background:#f7f9fb;padding:20px 32px;text-align:center;">
-    <p style="color:#aaa;font-size:12px;margin:0;">Cursive · <a href="https://leads.meetcursive.com/settings/notifications" style="color:#aaa;">Manage notifications</a></p>
+    <p style="color:#aaa;font-size:12px;margin:0;">Cursive · <a href="${appUrl}/settings/notifications" style="color:#aaa;">Manage notifications</a></p>
   </div>
 </div>
 </body>
@@ -437,7 +441,7 @@ export const provisionWorkspaceAudience = inngest.createFunction(
               subject: `Your first ${insertResult.inserted} leads just arrived`,
               html,
               headers: {
-                'List-Unsubscribe': '<https://leads.meetcursive.com/settings/notifications>',
+                'List-Unsubscribe': `<${appUrl}/settings/notifications>`,
                 'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
               },
             }),

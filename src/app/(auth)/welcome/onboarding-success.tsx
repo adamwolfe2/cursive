@@ -6,7 +6,7 @@
 
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Check, Mail, RefreshCw } from 'lucide-react'
@@ -32,14 +32,18 @@ interface OnboardingSuccessProps {
   isMarketplace: boolean
   targetIndustry?: string
   targetLocations?: string
+  requiresConfirmation?: boolean  // NEW: true = show "check your email", false = show success/redirect
 }
 
-export function OnboardingSuccess({ userType, email, isMarketplace, targetIndustry, targetLocations }: OnboardingSuccessProps) {
+export function OnboardingSuccess({ userType, email, isMarketplace, targetIndustry, targetLocations, requiresConfirmation }: OnboardingSuccessProps) {
   const router = useRouter()
   const isBusinessPath = userType === 'business'
 
-  // Check if email confirmation is needed (no auto-session means confirmation required)
-  const needsConfirmation = !!email
+  // Check if email confirmation is needed
+  const needsConfirmation = requiresConfirmation ?? !!email
+
+  // Stable Supabase client — created once, outside the polling effect
+  const supabaseRef = useRef(createClient())
 
   // Resend state
   const [resendCount, setResendCount] = useState(0)
@@ -78,7 +82,6 @@ export function OnboardingSuccess({ userType, email, isMarketplace, targetIndust
   // Poll for email confirmation
   useEffect(() => {
     if (!needsConfirmation || confirmed) return
-    const supabase = createClient()
     let checks = 0
     const interval = setInterval(async () => {
       checks++
@@ -87,8 +90,8 @@ export function OnboardingSuccess({ userType, email, isMarketplace, targetIndust
         setPollExpired(true)
         return
       }
-      const { data: { session } } = await supabase.auth.getSession()
-      if (session) {
+      const { data } = await supabaseRef.current.auth.getUser()
+      if (data.user) {
         setConfirmed(true)
         clearInterval(interval)
         setTimeout(() => {

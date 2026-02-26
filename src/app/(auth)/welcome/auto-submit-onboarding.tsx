@@ -60,7 +60,17 @@ export function AutoSubmitOnboarding({ isMarketplace, isReturning }: AutoSubmitO
         const stored = localStorage.getItem('cursive_onboarding')
         let onboardingData: any
 
-        if (!stored) {
+        let parsedStored: any = null
+        if (stored) {
+          try {
+            parsedStored = JSON.parse(stored)
+          } catch {
+            // Malformed data — clear it and fall through to fetch from auth
+            localStorage.removeItem('cursive_onboarding')
+          }
+        }
+
+        if (!parsedStored) {
           // No stored data means user came directly from OAuth (clicked "Sign in with Google")
           // Fetch their Google account info and create a basic workspace
           const userResponse = await fetch('/api/auth/user')
@@ -106,9 +116,8 @@ export function AutoSubmitOnboarding({ isMarketplace, isReturning }: AutoSubmitO
             monthlyLeadNeed: '25-50 leads', // sensible default for OAuth direct signups
           }
         } else {
-          const data = JSON.parse(stored)
           // Remove the isMarketplace flag before sending to API
-          const { isMarketplace: _, ...rest } = data
+          const { isMarketplace: _, ...rest } = parsedStored
           onboardingData = rest
         }
 
@@ -163,7 +172,7 @@ export function AutoSubmitOnboarding({ isMarketplace, isReturning }: AutoSubmitO
           if (body409.workspace_id) {
             // Already has workspace — redirect to dashboard
             localStorage.removeItem('cursive_onboarding')
-            router.push(isMarketplace ? '/marketplace' : '/dashboard')
+            router.push(isMarketplace ? '/marketplace' : '/dashboard?onboarding=complete')
             return
           }
           // Slug collision — show specific error
@@ -198,13 +207,18 @@ export function AutoSubmitOnboarding({ isMarketplace, isReturning }: AutoSubmitO
             .finally(() => clearTimeout(id))
         }
 
+        const CONSUMER_EMAIL_DOMAINS = ['gmail.com', 'googlemail.com', 'yahoo.com', 'yahoo.co.uk', 'hotmail.com', 'hotmail.co.uk', 'outlook.com', 'live.com', 'icloud.com', 'me.com', 'aol.com', 'msn.com', 'protonmail.com', 'proton.me']
+
         await Promise.allSettled([
           // Populate leads immediately (don't wait for 8am cron)
-          fetchWithTimeout('/api/leads/populate-initial', { method: 'POST' }),
+          // Only for business users — partner role has no industry_segment and returns 400
+          onboardingData.role === 'business' || !onboardingData.role
+            ? fetchWithTimeout('/api/leads/populate-initial', { method: 'POST' })
+            : Promise.resolve(),
 
           // Auto-provision SuperPixel using email domain as the website URL
           // If no valid domain, skip silently — user can do it from /settings/pixel
-          emailDomain && !emailDomain.includes('gmail') && !emailDomain.includes('yahoo') && !emailDomain.includes('hotmail')
+          emailDomain && !CONSUMER_EMAIL_DOMAINS.includes(emailDomain.toLowerCase())
             ? fetchWithTimeout('/api/pixel/provision', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -218,7 +232,7 @@ export function AutoSubmitOnboarding({ isMarketplace, isReturning }: AutoSubmitO
 
         // Clear storage and redirect to dashboard
         localStorage.removeItem('cursive_onboarding')
-        router.push(isMarketplace ? '/marketplace' : '/dashboard')
+        router.push(isMarketplace ? '/marketplace' : '/dashboard?onboarding=complete')
       } catch (err: any) {
         // Provide specific error messages based on error type
         if (err instanceof TypeError && err.message === 'Failed to fetch') {

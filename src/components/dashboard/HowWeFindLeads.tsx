@@ -27,7 +27,7 @@ export function HowWeFindLeads() {
         <div className="px-4 pb-3 pt-0.5 text-xs text-blue-800 space-y-1.5">
           <p>
             We match verified leads from our database to your industry and target
-            locations, then score them for quality. New leads arrive every 6 hours.
+            locations, then score them for quality. New leads arrive every morning at 8am CT.
           </p>
           <p>
             <Link href="/settings" className="font-medium underline underline-offset-1 hover:text-blue-900 transition-colors">

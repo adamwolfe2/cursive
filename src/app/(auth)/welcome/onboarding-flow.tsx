@@ -51,6 +51,7 @@ export function OnboardingFlow({ isMarketplace }: OnboardingFlowProps) {
   const [submittedEmail, setSubmittedEmail] = useState('')
   const [submittedIndustry, setSubmittedIndustry] = useState('')
   const [submittedLocations, setSubmittedLocations] = useState('')
+  const [submittedRequiresConfirmation, setSubmittedRequiresConfirmation] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -69,10 +70,11 @@ export function OnboardingFlow({ isMarketplace }: OnboardingFlowProps) {
       // Use NEXT_PUBLIC_SITE_URL for consistent redirect (must match Supabase allowed redirects)
       const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || window.location.origin).replace(/\/+$/, '')
       // Trigger Google OAuth
+      const nextUrl = isMarketplace ? '/welcome?returning=true&source=marketplace' : '/welcome?returning=true'
       const { error: oauthError } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${siteUrl}/auth/callback?next=${encodeURIComponent('/welcome?returning=true')}`,
+          redirectTo: `${siteUrl}/auth/callback?next=${encodeURIComponent(nextUrl)}`,
         },
       })
       if (oauthError) {
@@ -106,6 +108,7 @@ export function OnboardingFlow({ isMarketplace }: OnboardingFlowProps) {
         setSubmittedEmail(data.email)
         setSubmittedIndustry(data.industry || '')
         setSubmittedLocations(data.targetLocations || '')
+        setSubmittedRequiresConfirmation(true)
         goToScreen('business-success')
         return
       }
@@ -132,6 +135,8 @@ export function OnboardingFlow({ isMarketplace }: OnboardingFlowProps) {
       setSubmittedEmail(data.email)
       setSubmittedIndustry(data.industry || '')
       setSubmittedLocations(data.targetLocations || '')
+      setSubmittedRequiresConfirmation(false)
+      localStorage.removeItem('cursive_onboarding')
       goToScreen('business-success')
     } catch (err: any) {
       setError(err.message || 'Something went wrong')
@@ -186,6 +191,7 @@ export function OnboardingFlow({ isMarketplace }: OnboardingFlowProps) {
 
       if (!authData.session) {
         setSubmittedEmail(data.email)
+        setSubmittedRequiresConfirmation(true)
         goToScreen('partner-success')
         return
       }
@@ -209,6 +215,7 @@ export function OnboardingFlow({ isMarketplace }: OnboardingFlowProps) {
       }
 
       setSubmittedEmail(data.email)
+      setSubmittedRequiresConfirmation(false)
       goToScreen('partner-success')
     } catch (err: any) {
       setError(err.message || 'Something went wrong')
@@ -288,6 +295,7 @@ export function OnboardingFlow({ isMarketplace }: OnboardingFlowProps) {
             isMarketplace={isMarketplace}
             targetIndustry={submittedIndustry}
             targetLocations={submittedLocations}
+            requiresConfirmation={submittedRequiresConfirmation}
           />
         )
 
@@ -356,6 +364,7 @@ export function OnboardingFlow({ isMarketplace }: OnboardingFlowProps) {
             userType="partner"
             email={submittedEmail}
             isMarketplace={isMarketplace}
+            requiresConfirmation={submittedRequiresConfirmation}
           />
         )
 
