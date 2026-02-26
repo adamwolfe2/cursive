@@ -21,6 +21,7 @@ import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/design-system'
 import { formatDistanceToNow } from 'date-fns'
 import { EnrichLeadPanel } from '@/components/leads/EnrichLeadPanel'
+import { AskYourDataSlideOver } from '@/components/intelligence'
 
 // ─── Types ─────────────────────────────────────────────────
 
@@ -868,6 +869,9 @@ export default function WebsiteVisitorsPage() {
           onEnriched={handleEnrichSuccess}
         />
       )}
+
+      {/* Ask Your Data — floating AI query button */}
+      <AskYourDataSlideOver />
     </div>
   )
 }

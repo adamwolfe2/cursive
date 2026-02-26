@@ -10,6 +10,7 @@ import { LeadActivityTimeline } from './lead-activity-timeline'
 import { formatDate, cn } from '@/lib/utils'
 import { formatPhone } from './lead-card'
 import { useToast } from '@/lib/hooks/use-toast'
+import { IntelligenceTab, TechStackChips } from '@/components/intelligence'
 
 interface LeadDetailPanelProps {
   lead: Lead
@@ -355,6 +356,17 @@ export function LeadDetailPanel({
                               <p className="text-sm font-medium text-zinc-900">{intentTopic}</p>
                             </div>
                           </div>
+                          {((lead as any).company_tech_stack?.technologies?.length ?? 0) > 0 && (
+                            <div className="flex items-start gap-3">
+                              <svg className="h-5 w-5 text-zinc-400 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" />
+                              </svg>
+                              <div>
+                                <p className="text-xs text-zinc-500 mb-1.5">Tech Stack</p>
+                                <TechStackChips techStack={(lead as any).company_tech_stack} max={8} />
+                              </div>
+                            </div>
+                          )}
                           <div className="flex items-start gap-3">
                             <CalendarIcon className="h-5 w-5 text-zinc-400 mt-0.5" />
                             <div>
@@ -378,7 +390,7 @@ export function LeadDetailPanel({
                         />
                       </div>
 
-                      {/* Additional Tabs: Notes & Activity */}
+                      {/* Additional Tabs: Notes, Activity & Intelligence */}
                       <Tab.Group>
                         <Tab.List className="flex border-b border-zinc-200 -mx-6 px-6">
                           <Tab
@@ -405,6 +417,18 @@ export function LeadDetailPanel({
                           >
                             Activity
                           </Tab>
+                          <Tab
+                            className={({ selected }) =>
+                              cn(
+                                'px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors focus:outline-none',
+                                selected
+                                  ? 'border-blue-500 text-blue-600'
+                                  : 'border-transparent text-zinc-500 hover:text-zinc-700 hover:border-zinc-300'
+                              )
+                            }
+                          >
+                            Intelligence
+                          </Tab>
                         </Tab.List>
 
                         <Tab.Panels className="mt-4">
@@ -413,6 +437,13 @@ export function LeadDetailPanel({
                           </Tab.Panel>
                           <Tab.Panel>
                             <LeadActivityTimeline leadId={lead.id} />
+                          </Tab.Panel>
+                          <Tab.Panel>
+                            <IntelligenceTab
+                              leadId={lead.id}
+                              workspaceId={(lead as any).workspace_id ?? ''}
+                              initialTier={(lead as any).intelligence_tier ?? 'none'}
+                            />
                           </Tab.Panel>
                         </Tab.Panels>
                       </Tab.Group>

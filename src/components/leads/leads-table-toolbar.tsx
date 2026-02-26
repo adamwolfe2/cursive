@@ -7,6 +7,7 @@ import { debounce } from '@/lib/utils'
 import Link from 'next/link'
 import { useToast } from '@/lib/hooks/use-toast'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { BulkIntelligenceAction } from '@/components/intelligence'
 
 interface Tag {
   id: string
@@ -337,6 +338,12 @@ export function LeadsTableToolbar({
                   </>
                 )}
               </div>
+
+              {/* Bulk Intelligence Enrichment */}
+              <BulkIntelligenceAction
+                selectedLeadIds={selectedLeadIds}
+                onComplete={() => table.resetRowSelection()}
+              />
 
               {/* Delete Button */}
               <button
