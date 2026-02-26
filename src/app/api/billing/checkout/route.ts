@@ -56,6 +56,14 @@ export async function POST(request: NextRequest) {
     }
 
     if (!finalPriceId) {
+      // Yearly Stripe price ID is not yet configured in the database or request.
+      // Monthly billing is fully supported. Yearly billing is coming soon.
+      if (billingPeriod === 'yearly') {
+        return NextResponse.json(
+          { error: 'Annual billing is coming soon. Monthly billing is available now — select Monthly to continue.' },
+          { status: 400 }
+        )
+      }
       return NextResponse.json(
         { error: 'This plan is not currently available. Please contact support.' },
         { status: 500 }

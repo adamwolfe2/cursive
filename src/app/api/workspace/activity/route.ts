@@ -1,23 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { getCurrentUser } from '@/lib/auth/helpers'
 
 export async function GET(req: NextRequest) {
-  const supabase = await createClient()
-  const { data: { session } } = await supabase.auth.getSession()
-  if (!session?.user) {
+  const user = await getCurrentUser()
+  if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const { data: user } = await supabase
-    .from('users')
-    .select('workspace_id')
-    .eq('auth_user_id', session.user.id)
-    .maybeSingle()
-
-  if (!user?.workspace_id) {
+  if (!user.workspace_id) {
     return NextResponse.json({ data: [] })
   }
 
+  const supabase = await createClient()
   const { searchParams } = new URL(req.url)
   const limit = Math.min(parseInt(searchParams.get('limit') ?? '20'), 50)
 

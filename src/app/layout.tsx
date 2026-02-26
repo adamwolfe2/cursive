@@ -40,21 +40,12 @@ export const metadata: Metadata = {
     description:
       'Cursive identifies real people actively searching for your service, enriches them with verified contact data, and activates them through automated outbound.',
     siteName: 'Cursive',
-    images: [
-      {
-        url: '/cursive-logo.png',
-        width: 1200,
-        height: 630,
-        alt: 'Cursive - AI Intent Systems',
-      },
-    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Cursive - AI Intent Systems That Never Sleep',
     description:
       'Cursive identifies real people actively searching for your service, enriches them with verified contact data, and activates them through automated outbound.',
-    images: ['/cursive-logo.png'],
   },
 }
 

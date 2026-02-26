@@ -19,21 +19,21 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode
 }) {
-  // Use getSession() (local cookie read) instead of getUser() (network call that hangs)
+  // SECURITY: Use getUser() for server-side JWT verification (getSession() is not safe for server use)
   const supabase = await createClient()
-  const { data: { session } } = await supabase.auth.getSession()
+  const { data: { user } } = await supabase.auth.getUser()
 
-  if (!session?.user) {
+  if (!user) {
     redirect('/login?error=unauthorized')
   }
 
   // Get user with role in single DB query (isAdmin was making a redundant call)
-  const userWithRole = await getUserWithRole(session.user)
+  const userWithRole = await getUserWithRole(user)
   if (!userWithRole || (userWithRole.role !== 'owner' && userWithRole.role !== 'admin')) {
     redirect('/dashboard?error=admin_required')
   }
 
-  const adminEmail = userWithRole.email || session.user.email || 'Admin'
+  const adminEmail = userWithRole.email || user.email || 'Admin'
 
   let needsApprovalCount = 0
   try {

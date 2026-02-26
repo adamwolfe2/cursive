@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { getCurrentUser } from '@/lib/auth/helpers'
 import { createHmac } from 'crypto'
 
 export async function POST(
@@ -8,22 +9,16 @@ export async function POST(
 ) {
   const { id } = await params
 
-  const supabase = await createClient()
-  const { data: { session } } = await supabase.auth.getSession()
-  if (!session?.user) {
+  const user = await getCurrentUser()
+  if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  // Get workspace_id for the user
-  const { data: user } = await supabase
-    .from('users')
-    .select('workspace_id, role')
-    .eq('auth_user_id', session.user.id)
-    .maybeSingle()
-
-  if (!user?.workspace_id) {
+  if (!user.workspace_id) {
     return NextResponse.json({ error: 'Workspace not found' }, { status: 403 })
   }
+
+  const supabase = await createClient()
 
   // Fetch the webhook, verify it belongs to this workspace
   const { data: webhook } = await supabase

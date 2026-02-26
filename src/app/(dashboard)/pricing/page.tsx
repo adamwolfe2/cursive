@@ -60,8 +60,8 @@ export default function PricingPage() {
           }`}
         >
           Yearly
-          <span className="ml-1.5 inline-flex items-center rounded-full bg-primary/10 text-primary px-2 py-0.5 text-xs font-semibold">
-            Save 20%
+          <span className="ml-1.5 inline-flex items-center rounded-full bg-muted-foreground/20 text-muted-foreground px-2 py-0.5 text-xs font-semibold">
+            Coming Soon
           </span>
         </button>
       </div>
