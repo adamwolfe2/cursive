@@ -246,6 +246,30 @@ export const provisionWorkspaceAudience = inngest.createFunction(
               country_code: 'US',
               postal_code: record.PERSONAL_ZIP || record.COMPANY_ZIP || null,
               job_title: record.JOB_TITLE || null,
+              // Demographics (AL V4 fields)
+              age_range: record.AGE_RANGE || null,
+              gender: record.GENDER || null,
+              homeowner: record.HOMEOWNER ? ['Y','y','true','TRUE','Yes','yes'].includes(String(record.HOMEOWNER)) : null,
+              married: record.MARRIED ? ['Y','y','true','TRUE','Yes','yes'].includes(String(record.MARRIED)) : null,
+              // Professional
+              headline: record.HEADLINE || null,
+              // Company extended
+              company_address: record.COMPANY_ADDRESS || null,
+              company_city: record.COMPANY_CITY || null,
+              company_state: record.COMPANY_STATE || null,
+              company_zip: record.COMPANY_ZIP || null,
+              company_phone: record.COMPANY_PHONE || null,
+              company_sic: record.COMPANY_SIC || null,
+              company_naics: record.COMPANY_NAICS || null,
+              // Social
+              individual_twitter_url: record.INDIVIDUAL_TWITTER_URL || null,
+              individual_facebook_url: record.INDIVIDUAL_FACEBOOK_URL || null,
+              // Phone lists
+              all_mobiles: record.ALL_MOBILES ? String(record.ALL_MOBILES).split(',').map((s: string) => s.trim()).filter(Boolean) : undefined,
+              all_landlines: record.ALL_LANDLINES ? String(record.ALL_LANDLINES).split(',').map((s: string) => s.trim()).filter(Boolean) : undefined,
+              // Profile attributes
+              skills: record.SKILLS ? String(record.SKILLS).split(',').map((s: string) => s.trim()).filter(Boolean) : undefined,
+              interests: record.INTERESTS ? String(record.INTERESTS).split(',').map((s: string) => s.trim()).filter(Boolean) : undefined,
               lead_score: Math.min(qualityScore, 100),
               intent_score_calculated: Math.round(qualityScore * 0.8),
               freshness_score: 100,
@@ -382,7 +406,7 @@ export const provisionWorkspaceAudience = inngest.createFunction(
     <ul style="color:#666;font-size:14px;line-height:1.9;margin:0 0 24px;padding-left:20px;">
       <li>Export to your CRM (HubSpot, Salesforce, Slack)</li>
       <li>Launch an outbound email campaign</li>
-      <li>Enrich any lead with 40+ verified data points</li>
+      <li>Enrich any lead with 50+ verified data points</li>
       <li>Filter by industry, location, seniority, and more</li>
     </ul>
     <p style="color:#666;font-size:14px;line-height:1.6;margin:0;">Your lead pipeline refreshes automatically every 6 hours. Questions? Reply to this email.</p>

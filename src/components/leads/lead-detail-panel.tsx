@@ -322,6 +322,186 @@ export function LeadDetailPanel({
                         </div>
                       </div>
 
+                      {/* DEMOGRAPHICS & PROFILE Section — only shown when data is present */}
+                      {((lead as any).age_range || (lead as any).gender || (lead as any).homeowner != null || (lead as any).married != null || (lead as any).net_worth || (lead as any).income_range || (lead as any).headline || (lead as any).inferred_years_experience || ((lead as any).skills?.length > 0) || ((lead as any).interests?.length > 0) || ((lead as any).all_mobiles?.length > 0) || ((lead as any).all_landlines?.length > 0) || ((lead as any).company_name_history?.length > 0) || (lead as any).individual_twitter_url || (lead as any).individual_facebook_url) && (
+                        <div>
+                          <h3 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-4">
+                            Demographics &amp; Profile
+                          </h3>
+                          <div className="space-y-3">
+                            {/* Demographic row */}
+                            {((lead as any).age_range || (lead as any).gender || (lead as any).homeowner != null || (lead as any).married != null || (lead as any).net_worth || (lead as any).income_range) && (
+                              <div className="flex flex-wrap gap-2 items-center">
+                                {(lead as any).age_range && (
+                                  <span className="inline-flex items-center rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs font-medium text-zinc-700">
+                                    Age {(lead as any).age_range}
+                                  </span>
+                                )}
+                                {(lead as any).gender && (
+                                  <span className="inline-flex items-center rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs font-medium text-zinc-700">
+                                    {(lead as any).gender}
+                                  </span>
+                                )}
+                                {(lead as any).homeowner === true && (
+                                  <span className="inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700">
+                                    Homeowner
+                                  </span>
+                                )}
+                                {(lead as any).homeowner === false && (
+                                  <span className="inline-flex items-center rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs font-medium text-zinc-500">
+                                    Renter
+                                  </span>
+                                )}
+                                {(lead as any).married === true && (
+                                  <span className="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700">
+                                    Married
+                                  </span>
+                                )}
+                                {(lead as any).net_worth && (
+                                  <span className="inline-flex items-center rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-700">
+                                    Net Worth: {(lead as any).net_worth}
+                                  </span>
+                                )}
+                                {(lead as any).income_range && (
+                                  <span className="inline-flex items-center rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-700">
+                                    Income: {(lead as any).income_range}
+                                  </span>
+                                )}
+                              </div>
+                            )}
+                            {/* Headline (if different from job_title) */}
+                            {(lead as any).headline && (lead as any).headline !== jobTitle && (
+                              <div className="flex items-start gap-3">
+                                <BriefcaseIcon className="h-5 w-5 text-zinc-400 mt-0.5 flex-shrink-0" />
+                                <div>
+                                  <p className="text-xs text-zinc-500">Headline</p>
+                                  <p className="text-sm text-zinc-900">{(lead as any).headline}</p>
+                                </div>
+                              </div>
+                            )}
+                            {/* Years of experience */}
+                            {(lead as any).inferred_years_experience && (
+                              <div className="flex items-start gap-3">
+                                <CalendarIcon className="h-5 w-5 text-zinc-400 mt-0.5 flex-shrink-0" />
+                                <div>
+                                  <p className="text-xs text-zinc-500">Experience</p>
+                                  <p className="text-sm font-medium text-zinc-900">{(lead as any).inferred_years_experience} years</p>
+                                </div>
+                              </div>
+                            )}
+                            {/* Skills */}
+                            {(lead as any).skills?.length > 0 && (
+                              <div className="flex items-start gap-3">
+                                <LightBulbIcon className="h-5 w-5 text-zinc-400 mt-0.5 flex-shrink-0" />
+                                <div>
+                                  <p className="text-xs text-zinc-500 mb-1.5">Skills</p>
+                                  <div className="flex flex-wrap gap-1.5">
+                                    {(lead as any).skills.slice(0, 10).map((skill: string) => (
+                                      <span key={skill} className="inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700">
+                                        {skill}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                            {/* Interests */}
+                            {(lead as any).interests?.length > 0 && (
+                              <div className="flex items-start gap-3">
+                                <LightBulbIcon className="h-5 w-5 text-zinc-400 mt-0.5 flex-shrink-0" />
+                                <div>
+                                  <p className="text-xs text-zinc-500 mb-1.5">Interests</p>
+                                  <div className="flex flex-wrap gap-1.5">
+                                    {(lead as any).interests.slice(0, 10).map((interest: string) => (
+                                      <span key={interest} className="inline-flex items-center rounded-full bg-violet-50 px-2 py-0.5 text-xs font-medium text-violet-700">
+                                        {interest}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                            {/* All mobile numbers */}
+                            {(lead as any).all_mobiles?.length > 0 && (
+                              <div className="flex items-start gap-3">
+                                <PhoneIcon className="h-5 w-5 text-zinc-400 mt-0.5 flex-shrink-0" />
+                                <div>
+                                  <p className="text-xs text-zinc-500 mb-1">All Mobiles</p>
+                                  <div className="space-y-1">
+                                    {(lead as any).all_mobiles.map((num: string) => (
+                                      <a key={num} href={`tel:${num}`} className="block text-sm text-blue-600 hover:underline">
+                                        {formatPhone(num)}
+                                      </a>
+                                    ))}
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                            {/* All landline numbers */}
+                            {(lead as any).all_landlines?.length > 0 && (
+                              <div className="flex items-start gap-3">
+                                <PhoneIcon className="h-5 w-5 text-zinc-400 mt-0.5 flex-shrink-0" />
+                                <div>
+                                  <p className="text-xs text-zinc-500 mb-1">All Landlines</p>
+                                  <div className="space-y-1">
+                                    {(lead as any).all_landlines.map((num: string) => (
+                                      <a key={num} href={`tel:${num}`} className="block text-sm text-blue-600 hover:underline">
+                                        {formatPhone(num)}
+                                      </a>
+                                    ))}
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                            {/* Past Companies */}
+                            {(lead as any).company_name_history?.length > 0 && (
+                              <div className="flex items-start gap-3">
+                                <BuildingIcon className="h-5 w-5 text-zinc-400 mt-0.5 flex-shrink-0" />
+                                <div>
+                                  <p className="text-xs text-zinc-500 mb-1">Past Companies</p>
+                                  <div className="space-y-0.5">
+                                    {(lead as any).company_name_history.map((co: string) => (
+                                      <p key={co} className="text-sm text-zinc-700">{co}</p>
+                                    ))}
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                            {/* Social profiles */}
+                            {((lead as any).individual_twitter_url || (lead as any).individual_facebook_url) && (
+                              <div className="flex items-start gap-3">
+                                <ExternalLinkIcon className="h-5 w-5 text-zinc-400 mt-0.5 flex-shrink-0" />
+                                <div>
+                                  <p className="text-xs text-zinc-500 mb-1">Social Profiles</p>
+                                  <div className="flex flex-col gap-1">
+                                    {(lead as any).individual_twitter_url && (
+                                      <a
+                                        href={(lead as any).individual_twitter_url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-sm text-blue-600 hover:underline"
+                                      >
+                                        X / Twitter
+                                      </a>
+                                    )}
+                                    {(lead as any).individual_facebook_url && (
+                                      <a
+                                        href={(lead as any).individual_facebook_url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-sm text-blue-600 hover:underline"
+                                      >
+                                        Facebook
+                                      </a>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
                       {/* COMPANY DETAILS Section */}
                       <div>
                         <h3 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-4">
@@ -364,6 +544,30 @@ export function LeadDetailPanel({
                               <div>
                                 <p className="text-xs text-zinc-500 mb-1.5">Tech Stack</p>
                                 <TechStackChips techStack={(lead as any).company_tech_stack} max={8} />
+                              </div>
+                            </div>
+                          )}
+                          {/* Company SIC/NAICS codes */}
+                          {((lead as any).company_sic || (lead as any).company_naics) && (
+                            <div className="flex items-start gap-3">
+                              <BuildingIcon className="h-5 w-5 text-zinc-400 mt-0.5" />
+                              <div>
+                                <p className="text-xs text-zinc-500">Industry Codes</p>
+                                <p className="text-sm font-medium text-zinc-900">
+                                  {[(lead as any).company_sic && `SIC: ${(lead as any).company_sic}`, (lead as any).company_naics && `NAICS: ${(lead as any).company_naics}`].filter(Boolean).join(' · ')}
+                                </p>
+                              </div>
+                            </div>
+                          )}
+                          {/* Company address */}
+                          {((lead as any).company_address || (lead as any).company_city) && (
+                            <div className="flex items-start gap-3">
+                              <MapPinIcon className="h-5 w-5 text-zinc-400 mt-0.5" />
+                              <div>
+                                <p className="text-xs text-zinc-500">Company Address</p>
+                                <p className="text-sm font-medium text-zinc-900">
+                                  {[(lead as any).company_address, [(lead as any).company_city, (lead as any).company_state].filter(Boolean).join(', '), (lead as any).company_zip].filter(Boolean).join(', ')}
+                                </p>
                               </div>
                             </div>
                           )}

@@ -319,6 +319,49 @@ export const processAudienceLabEvent = inngest.createFunction(
             email_validation_status: identity.email_validation_status,
             source: source,
           },
+          // v4-specific enrichment fields (already in schema from prior migrations)
+          seniority_level: identity.seniority_level || null,
+          department: identity.department || null,
+          net_worth: identity.net_worth || null,
+          income_range: identity.income_range || null,
+          dnc_mobile: identity.dnc_mobile,
+          dnc_landline: identity.dnc_landline,
+          individual_linkedin_url: identity.individual_linkedin_url || null,
+          job_title_history: identity.job_title_history || null,
+          // Demographics (new in 20260226000001)
+          age_range: identity.age_range || null,
+          gender: identity.gender || null,
+          children: identity.children || null,
+          homeowner: identity.homeowner,
+          married: identity.married,
+          personal_zip4: identity.personal_zip4 || null,
+          // Phone lists (new in 20260226000001)
+          all_landlines: identity.all_landlines.length > 0 ? identity.all_landlines : undefined,
+          all_mobiles: identity.all_mobiles.length > 0 ? identity.all_mobiles : undefined,
+          // Professional (new in 20260226000001)
+          headline: identity.headline || null,
+          inferred_years_experience: identity.inferred_years_experience || null,
+          company_name_history: identity.company_name_history.length > 0 ? identity.company_name_history : undefined,
+          education_history: identity.education_history || null,
+          // Company extended (new in 20260226000001)
+          company_address: identity.company_address || null,
+          company_city: identity.company_city || null,
+          company_state: identity.company_state || null,
+          company_zip: identity.company_zip || null,
+          company_phone: identity.company_phone || null,
+          company_sic: identity.company_sic || null,
+          company_naics: identity.company_naics || null,
+          // Social (new in 20260226000001)
+          individual_twitter_url: identity.individual_twitter_url || null,
+          individual_facebook_url: identity.individual_facebook_url || null,
+          // Profile (new in 20260226000001)
+          skills: identity.skills.length > 0 ? identity.skills : undefined,
+          interests: identity.interests.length > 0 ? identity.interests : undefined,
+          // Identity hashes (new in 20260226000001)
+          sha256_personal_email: identity.sha256_personal_email || null,
+          sha256_business_email: identity.sha256_business_email || null,
+          personal_verified_emails: identity.personal_verified_emails.length > 0 ? identity.personal_verified_emails : undefined,
+          business_verified_emails: identity.business_verified_emails.length > 0 ? identity.business_verified_emails : undefined,
         })
         .select('id')
         .maybeSingle()

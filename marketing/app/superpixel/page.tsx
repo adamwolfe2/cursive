@@ -12,7 +12,7 @@ import { LeadCaptureStrip } from './LeadCaptureStrip'
 
 export const metadata: Metadata = {
   title: "Identify 70% of Website Visitors — Cursive Super Pixel",
-  description: "97% of your website visitors leave without buying. The Cursive Super Pixel identifies them in real time — name, email, phone, intent score, and 40+ data points. 10-minute setup. First leads in 24 hours.",
+  description: "97% of your website visitors leave without buying. The Cursive Super Pixel identifies them in real time — name, email, phone, intent score, and 50+ data points. 10-minute setup. First leads in 24 hours.",
   robots: { index: true, follow: true },
 }
 
@@ -231,7 +231,7 @@ export default function SuperPixelPage() {
           </div>
 
           <div className="mt-6 text-center">
-            <p className="text-sm text-gray-500">40+ data points per identified visitor. Every field verified against our identity graph.</p>
+            <p className="text-sm text-gray-500">50+ data points per identified visitor. Every field verified against our identity graph.</p>
           </div>
         </Container>
       </section>

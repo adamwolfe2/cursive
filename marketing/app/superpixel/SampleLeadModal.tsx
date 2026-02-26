@@ -53,7 +53,7 @@ export function SampleLeadModal() {
             </div>
 
             <div className="p-5 overflow-y-auto flex-1">
-              <p className="text-xs text-gray-500 mb-4 font-medium">40+ data points per identified visitor. Every field verified against our identity graph.</p>
+              <p className="text-xs text-gray-500 mb-4 font-medium">50+ data points per identified visitor. Every field verified against our identity graph.</p>
               <div className="space-y-2">
                 {FULL_PROFILE.map(row => (
                   <div key={row.label} className="flex items-center gap-3 py-1.5 border-b border-gray-50">

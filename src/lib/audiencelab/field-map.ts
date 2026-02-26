@@ -136,6 +136,40 @@ export interface NormalizedIdentity {
   dnc_landline: boolean
   individual_linkedin_url: string | null
   job_title_history: string | null
+  // demographics
+  age_range: string | null
+  gender: string | null
+  children: string | null
+  homeowner: boolean | null
+  married: boolean | null
+  personal_zip4: string | null
+  // phones (actual number lists)
+  all_landlines: string[]
+  all_mobiles: string[]
+  // professional
+  headline: string | null
+  inferred_years_experience: number | null
+  company_name_history: string[]
+  education_history: any | null
+  // company extended
+  company_address: string | null
+  company_city: string | null
+  company_state: string | null
+  company_zip: string | null
+  company_phone: string | null
+  company_sic: string | null
+  company_naics: string | null
+  // social
+  individual_twitter_url: string | null
+  individual_facebook_url: string | null
+  // profile
+  skills: string[]
+  interests: string[]
+  // identity hashes
+  sha256_personal_email: string | null
+  sha256_business_email: string | null
+  personal_verified_emails: string[]
+  business_verified_emails: string[]
 }
 
 // ============ Validation Status Priority ============
@@ -283,6 +317,31 @@ export function computeDeliverabilityScore(params: {
   return Math.min(score, 100)
 }
 
+// ============ Boolean / CSV Helpers ============
+
+/**
+ * Parse a boolean field from AL payload.
+ * Converts "Y", "YES", "TRUE", "true", "1" → true
+ * Converts "N", "NO", "FALSE", "false", "0" → false
+ * Returns null for missing / empty values.
+ */
+function parseBooleanField(val: any): boolean | null {
+  if (val === null || val === undefined || val === '') return null
+  const s = String(val).toLowerCase().trim()
+  if (['y', 'yes', 'true', '1'].includes(s)) return true
+  if (['n', 'no', 'false', '0'].includes(s)) return false
+  return null
+}
+
+/**
+ * Parse a CSV string (or array) into a deduplicated array of non-empty strings.
+ */
+function parseCsvToArray(val: any): string[] {
+  if (!val) return []
+  if (Array.isArray(val)) return val.map(String).filter(Boolean)
+  return String(val).split(',').map(s => s.trim()).filter(Boolean)
+}
+
 // ============ Field Normalization ============
 
 /**
@@ -422,6 +481,42 @@ export function normalizeALPayload(raw: Record<string, any>): NormalizedIdentity
     dnc_landline: String(flat.LANDLINE_DNC || flat.landline_dnc || '').toLowerCase() === 'true',
     individual_linkedin_url: flat.INDIVIDUAL_LINKEDIN_URL || flat.individual_linkedin_url || flat.COMPANY_LINKEDIN_URL || flat.LINKEDIN_URL || null,
     job_title_history: flat.JOB_TITLE_HISTORY || flat.job_title_history || null,
+    // demographics
+    age_range: flat.AGE_RANGE || flat.age_range || null,
+    gender: flat.GENDER || flat.gender || null,
+    children: flat.CHILDREN || flat.children || null,
+    homeowner: parseBooleanField(flat.HOMEOWNER ?? flat.homeowner),
+    married: parseBooleanField(flat.MARRIED ?? flat.married),
+    personal_zip4: flat.PERSONAL_ZIP4 || flat.personal_zip4 || null,
+    // phones (actual number lists)
+    all_landlines: parsePhoneList(flat.ALL_LANDLINES || flat.all_landlines),
+    all_mobiles: parsePhoneList(flat.ALL_MOBILES || flat.all_mobiles),
+    // professional
+    headline: flat.HEADLINE || flat.headline || null,
+    inferred_years_experience: flat.INFERRED_YEARS_EXPERIENCE
+      ? parseInt(String(flat.INFERRED_YEARS_EXPERIENCE), 10) || null
+      : flat.inferred_years_experience || null,
+    company_name_history: parseCsvToArray(flat.COMPANY_NAME_HISTORY || flat.company_name_history),
+    education_history: flat.EDUCATION_HISTORY || flat.education_history || null,
+    // company extended
+    company_address: flat.COMPANY_ADDRESS || flat.company_address || null,
+    company_city: flat.COMPANY_CITY || flat.company_city || null,
+    company_state: flat.COMPANY_STATE || flat.company_state || null,
+    company_zip: flat.COMPANY_ZIP || flat.company_zip || null,
+    company_phone: flat.COMPANY_PHONE || flat.company_phone || null,
+    company_sic: flat.COMPANY_SIC || flat.company_sic || null,
+    company_naics: flat.COMPANY_NAICS || flat.company_naics || null,
+    // social
+    individual_twitter_url: flat.INDIVIDUAL_TWITTER_URL || flat.individual_twitter_url || null,
+    individual_facebook_url: flat.INDIVIDUAL_FACEBOOK_URL || flat.individual_facebook_url || null,
+    // profile
+    skills: parseCsvToArray(flat.SKILLS || flat.skills),
+    interests: parseCsvToArray(flat.INTERESTS || flat.interests),
+    // identity hashes
+    sha256_personal_email: flat.SHA256_PERSONAL_EMAIL || flat.sha256_personal_email || null,
+    sha256_business_email: flat.SHA256_BUSINESS_EMAIL || flat.sha256_business_email || null,
+    personal_verified_emails: parseCsvToArray(flat.PERSONAL_VERIFIED_EMAILS || flat.personal_verified_emails),
+    business_verified_emails: parseCsvToArray(flat.BUSINESS_VERIFIED_EMAILS || flat.business_verified_emails),
   }
 }
 
