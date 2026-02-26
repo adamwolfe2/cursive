@@ -254,8 +254,7 @@ export function AddStepModal({ sequenceId, onClose }: AddStepModalProps) {
                   {...form.register('body')}
                 />
                 <p className="text-xs text-muted-foreground">
-                  Use {"{{first_name}}, {{company_name}}"}, etc. for
-                  personalization
+                  Available: {"{{first_name}}"}, {"{{last_name}}"}, {"{{company_name}}"}, {"{{title}}"}, {"{{research_brief}}"}, {"{{research_outreach_angle}}"}
                 </p>
               </div>
             </TabsContent>

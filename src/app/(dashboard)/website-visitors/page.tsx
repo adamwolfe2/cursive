@@ -21,7 +21,7 @@ import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/design-system'
 import { formatDistanceToNow } from 'date-fns'
 import { EnrichLeadPanel } from '@/components/leads/EnrichLeadPanel'
-import { AskYourDataSlideOver } from '@/components/intelligence'
+import { AskYourDataSlideOver, BulkIntelligenceAction } from '@/components/intelligence'
 
 // ─── Types ─────────────────────────────────────────────────
 
@@ -473,6 +473,7 @@ export default function WebsiteVisitorsPage() {
   const [enrichmentFilter, setEnrichmentFilter] = useState('')
   const [enrichTarget, setEnrichTarget] = useState<VisitorLead | null>(null)
   const [creditsRemaining, setCreditsRemaining] = useState(0)
+  const [selectedVisitorIds, setSelectedVisitorIds] = useState<string[]>([])
 
   // Fetch credits
   useQuery({
@@ -761,14 +762,50 @@ export default function WebsiteVisitorsPage() {
         <EmptyState hasPixel={!!pixel} />
       ) : (
         <>
+          {selectedVisitorIds.length > 0 && (
+            <div className="rounded-lg bg-blue-50 border border-blue-200 px-4 py-3 flex items-center justify-between mb-4">
+              <span className="text-sm font-medium text-blue-900">
+                {selectedVisitorIds.length} visitor{selectedVisitorIds.length !== 1 ? 's' : ''} selected
+              </span>
+              <div className="flex items-center gap-3">
+                <BulkIntelligenceAction
+                  selectedLeadIds={selectedVisitorIds}
+                  onComplete={() => {
+                    setSelectedVisitorIds([])
+                    queryClient.invalidateQueries({ queryKey: ['visitors'] })
+                  }}
+                />
+                <button
+                  onClick={() => setSelectedVisitorIds([])}
+                  className="text-sm font-medium text-blue-700 hover:text-blue-900"
+                >
+                  Clear
+                </button>
+              </div>
+            </div>
+          )}
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             {visitors.map((v) => (
-              <VisitorCard
-                key={v.id}
-                lead={v}
-                onEnrich={handleEnrich}
-                onView={(id) => router.push(`/crm/leads/${id}`)}
-              />
+              <div key={v.id} className="relative">
+                <input
+                  type="checkbox"
+                  checked={selectedVisitorIds.includes(v.id)}
+                  onChange={(e) => {
+                    setSelectedVisitorIds(prev =>
+                      e.target.checked
+                        ? [...prev, v.id]
+                        : prev.filter(id => id !== v.id)
+                    )
+                  }}
+                  className="absolute top-3 right-3 z-10 h-4 w-4 rounded border-zinc-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                  onClick={(e) => e.stopPropagation()}
+                />
+                <VisitorCard
+                  lead={v}
+                  onEnrich={handleEnrich}
+                  onView={(id) => router.push(`/crm/leads/${id}`)}
+                />
+              </div>
             ))}
           </div>
 

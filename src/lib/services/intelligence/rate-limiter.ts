@@ -13,14 +13,16 @@ export interface RateLimitResult {
 const requestCounts = new Map<string, number>()
 
 // Hard per-invocation limits (safety valve — external APIs enforce the real limits)
+// Override via environment variables to match your API plan
 const PER_INVOCATION_LIMITS: Record<string, number> = {
-  builtwith: 5,
-  proxycurl: 10,
-  fullcontact: 10,
-  serper: 20,
-  perplexity: 3,
-  perplexity_deep: 1,
-  emailrep: 20,
+  builtwith: parseInt(process.env.INTELLIGENCE_BUILTWITH_LIMIT ?? '5', 10),
+  emailrep: parseInt(process.env.INTELLIGENCE_EMAILREP_LIMIT ?? '20', 10),
+  proxycurl: parseInt(process.env.INTELLIGENCE_PROXYCURL_LIMIT ?? '10', 10),
+  fullcontact: parseInt(process.env.INTELLIGENCE_FULLCONTACT_LIMIT ?? '10', 10),
+  serper: parseInt(process.env.INTELLIGENCE_SERPER_LIMIT ?? '20', 10),
+  perplexity: parseInt(process.env.INTELLIGENCE_PERPLEXITY_LIMIT ?? '3', 10),
+  perplexity_deep: 1, // always 1 — deep research is expensive
+  openai: parseInt(process.env.INTELLIGENCE_OPENAI_LIMIT ?? '10', 10),
 }
 
 export function checkInvocationLimit(provider: string): RateLimitResult {

@@ -232,7 +232,7 @@ export function EditStepDialog({
                   required
                 />
                 <p className="text-xs text-gray-400 mt-1">
-                  Use {'{{first_name}}'}, {'{{company_name}}'}, {'{{title}}'} for personalization.
+                  Available: {'{{first_name}}'}, {'{{last_name}}'}, {'{{company_name}}'}, {'{{title}}'}, {'{{research_brief}}'}, {'{{research_outreach_angle}}'}
                 </p>
               </div>
             </>

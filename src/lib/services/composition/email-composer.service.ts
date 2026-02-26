@@ -213,6 +213,10 @@ export class EmailComposerService {
       sender_title: senderTitle || '',
       sender_company: senderCompany || '',
 
+      // Research intelligence variables
+      research_brief: (lead as any).research_brief ?? '',
+      research_outreach_angle: (lead as any).research_outreach_angle ?? '',
+
       // Common placeholders
       pain_point: 'operational efficiency',
       metric_area: 'key metrics',
