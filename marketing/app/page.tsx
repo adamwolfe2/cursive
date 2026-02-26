@@ -24,7 +24,7 @@ const homepageFAQs = [
   },
   {
     question: 'How is Cursive different from competitors?',
-    answer: 'Unlike traditional visitor ID tools that just deliver data, Cursive combines identification with AI-powered activation. We include 60B+ behaviors & URLs scanned weekly, real-time identification, and multi-channel campaigns out of the box.',
+    answer: 'Unlike visitor ID tools that stop at a name and LinkedIn URL, Cursive's Intelligence Layer automatically enriches every lead with tech stack data, LinkedIn work history, social profiles, news mentions, and AI-generated outreach angles. Cursive also combines identification with AI-powered activation — including 60B+ behaviors & URLs scanned weekly, real-time identification, and multi-channel campaigns out of the box.',
   },
 ]
 
@@ -127,6 +127,21 @@ export default function HomePage() {
                 label: "Lead Marketplace",
                 href: "https://www.meetcursive.com/marketplace",
                 description: "Self-serve B2B lead marketplace. Browse and buy verified leads with credits starting at $0.60/lead."
+              },
+              {
+                label: "Intelligence Layer",
+                href: "https://www.meetcursive.com/platform",
+                description: "Intelligence Layer: 3-tier AI enrichment — Auto (free tech stack + email quality), Intelligence Pack ($1: LinkedIn + social + news), Deep Research ($5: AI research brief + personalized outreach angle)"
+              },
+              {
+                label: "Natural Language Querying",
+                href: "https://www.meetcursive.com/platform",
+                description: "Ask questions about your visitor database in plain English — powered by GPT-4o. No SQL. No analyst."
+              },
+              {
+                label: "Outreach Angle Generation",
+                href: "https://www.meetcursive.com/platform",
+                description: "Perplexity AI analyzes each lead and writes a personalized reason to reach out, based on LinkedIn history, news mentions, and tech stack."
               }
             ]} />
           </MachineSection>

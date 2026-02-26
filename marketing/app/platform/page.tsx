@@ -596,6 +596,101 @@ export default function PlatformPage() {
         </Container>
       </section>
 
+      {/* Intelligence Layer Feature */}
+      <section className="py-24 bg-[#F7F9FB]">
+        <Container>
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+            >
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-100 text-purple-700 rounded-full text-sm mb-6 font-semibold">
+                AI Intelligence Layer
+              </div>
+              <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
+                Know Everything
+                <span className="block font-cursive text-6xl lg:text-7xl text-gray-500 mt-2">
+                  Before You Reach Out
+                </span>
+              </h2>
+              <p className="text-xl text-gray-600 mb-6">
+                Three enrichment tiers. One click. From anonymous visitor to fully-researched prospect with a personalized outreach angle — in under 5 minutes.
+              </p>
+
+              <div className="space-y-4 mb-8">
+                <div className="flex items-start gap-3">
+                  <div className="w-1.5 h-1.5 bg-purple-500 rounded-full mt-2 flex-shrink-0" />
+                  <div>
+                    <div className="text-gray-900">Auto-Tier (free)</div>
+                    <div className="text-gray-600 text-sm">Tech stack detection + email quality on every lead automatically</div>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0" />
+                  <div>
+                    <div className="text-gray-900">Intelligence Pack (2 credits ~$1)</div>
+                    <div className="text-gray-600 text-sm">LinkedIn history via Proxycurl, social profiles via FullContact, news mentions via Serper — ready in 60 seconds</div>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-1.5 h-1.5 bg-purple-600 rounded-full mt-2 flex-shrink-0" />
+                  <div>
+                    <div className="text-gray-900">Deep Research (10 credits ~$5)</div>
+                    <div className="text-gray-600 text-sm">Perplexity AI writes a personalized research brief and outreach angle — ready in 5 minutes</div>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full mt-2 flex-shrink-0" />
+                  <div>
+                    <div className="text-gray-900">Ask Your Data</div>
+                    <div className="text-gray-600 text-sm">Natural language querying — type any question about your visitor data in plain English</div>
+                  </div>
+                </div>
+              </div>
+
+              <Button size="lg" href="https://leads.meetcursive.com" target="_blank">
+                Try Intelligence Layer
+                <ArrowRight className="w-5 h-5" />
+              </Button>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="bg-white rounded-2xl shadow-sm p-6 border border-gray-200"
+            >
+              <div className="bg-[#F7F9FB] rounded-xl p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="text-gray-900">Intelligence Pack Result</h4>
+                  <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-semibold">Ready in 60s</span>
+                </div>
+
+                <div className="space-y-3">
+                  {[
+                    { label: "LinkedIn History", value: "VP Sales → 3 companies, 8 yrs exp", color: "bg-blue-50 border-blue-100" },
+                    { label: "Tech Stack", value: "HubSpot, Gong, Outreach, Salesforce", color: "bg-purple-50 border-purple-100" },
+                    { label: "News Mentions", value: "2 press mentions in last 30 days", color: "bg-green-50 border-green-100" },
+                    { label: "Email Quality", value: "Verified deliverable — 98% score", color: "bg-emerald-50 border-emerald-100" },
+                  ].map((row, i) => (
+                    <div key={i} className={`rounded-lg p-3 border ${row.color}`}>
+                      <div className="text-xs text-gray-500 mb-1">{row.label}</div>
+                      <div className="text-sm text-gray-900 font-medium">{row.value}</div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-4 bg-purple-50 border border-purple-200 rounded-lg p-3">
+                  <div className="text-xs text-purple-600 font-semibold mb-1">AI Outreach Angle</div>
+                  <div className="text-sm text-gray-700 italic">&ldquo;Mention their recent TechCrunch feature and tie it to how Cursive helped a similar VP scale pipeline by 3x...&rdquo;</div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </Container>
+      </section>
+
       {/* Explore Feature Pages */}
       <section className="py-20 bg-[#F7F9FB]">
         <Container>

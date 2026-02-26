@@ -286,6 +286,92 @@ export default function SuperPixelPage() {
         </Container>
       </section>
 
+      {/* ── Intelligence Layer Section ─────────────────────────── */}
+      <section className="py-20 bg-[#F8F8F4] border-t border-zinc-200">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center max-w-3xl mx-auto mb-14">
+            <span className="inline-block text-xs font-semibold tracking-widest uppercase text-purple-600 mb-4">
+              Stage 2 — Intelligence Layer
+            </span>
+            <h2 className="text-4xl lg:text-5xl font-light text-zinc-900 leading-tight mb-5">
+              After we identify them,
+              <br />
+              <span className="text-zinc-500 italic">we learn everything about them.</span>
+            </h2>
+            <p className="text-lg text-zinc-600">
+              Every other visitor ID tool stops at &ldquo;here&rsquo;s a name and LinkedIn URL.&rdquo; Cursive keeps going.
+              LinkedIn history, tech stack, news mentions, and an AI-written outreach angle — all automated.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6 mb-12">
+            {[
+              {
+                label: 'Auto-Tier',
+                price: 'Free on every lead',
+                color: 'bg-zinc-100 text-zinc-700',
+                items: [
+                  'Tech stack detection via BuiltWith',
+                  'Email deliverability quality score',
+                  'Runs automatically — zero credits',
+                ],
+              },
+              {
+                label: 'Intelligence Pack',
+                price: '2 credits (~$1)',
+                color: 'bg-blue-100 text-blue-700',
+                items: [
+                  'Full LinkedIn work history via Proxycurl',
+                  'Social profiles via FullContact',
+                  'News & press mentions via Serper',
+                  'Ready in ~60 seconds',
+                ],
+              },
+              {
+                label: 'Deep Research',
+                price: '10 credits (~$5)',
+                color: 'bg-purple-100 text-purple-700',
+                items: [
+                  'Everything in Intelligence Pack',
+                  'AI research brief via Perplexity',
+                  'Personalized outreach angle written by AI',
+                  'Ready in ~5 minutes',
+                ],
+              },
+            ].map((tier) => (
+              <div key={tier.label} className="bg-white rounded-2xl border border-zinc-200 p-7 shadow-sm">
+                <div className="flex items-center justify-between mb-5">
+                  <span className={`text-xs font-bold px-3 py-1 rounded-full ${tier.color}`}>
+                    {tier.label}
+                  </span>
+                  <span className="text-xs text-zinc-500 font-medium">{tier.price}</span>
+                </div>
+                <ul className="space-y-2.5">
+                  {tier.items.map((item) => (
+                    <li key={item} className="flex items-start gap-2 text-sm text-zinc-700">
+                      <span className="text-green-500 mt-0.5 shrink-0">✓</span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+
+          {/* Ask Your Data teaser */}
+          <div className="max-w-2xl mx-auto bg-white border border-zinc-200 rounded-2xl p-7 text-center">
+            <p className="text-xs font-semibold text-zinc-500 uppercase tracking-widest mb-3">Ask Your Data</p>
+            <div className="bg-zinc-50 border border-zinc-200 rounded-lg px-4 py-3 text-sm text-zinc-700 font-mono mb-4">
+              &ldquo;How many VPs of Engineering from SaaS companies visited my pricing page this week?&rdquo;
+            </div>
+            <p className="text-sm text-zinc-600">
+              Type any question about your visitor data and get an instant answer. No SQL. No analyst.
+              Just plain English — powered by GPT-4o.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* ── TECH DIFFERENTIATORS ──────────────────────────── */}
       <section className="py-24 bg-white">
         <Container>

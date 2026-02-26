@@ -905,6 +905,54 @@ export default function PricingPage() {
         </Container>
       </section>
 
+      {/* Intelligence Layer Credits */}
+      <section className="py-16 border-t border-zinc-200">
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-light text-zinc-900 mb-3">Intelligence Layer</h2>
+            <p className="text-lg text-zinc-500 max-w-2xl mx-auto">Per-lead AI enrichment. Pay only for the leads you research. Auto-Tier runs on every lead automatically — no credits needed.</p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="bg-white rounded-2xl border border-zinc-200 p-8">
+              <div className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-3">Auto-Tier</div>
+              <div className="text-4xl font-bold text-zinc-900 mb-1">Free</div>
+              <div className="text-sm text-zinc-500 mb-6">on every lead, always</div>
+              <ul className="space-y-3 text-sm text-zinc-600">
+                <li className="flex gap-2"><span className="text-green-500 shrink-0">✓</span> Tech stack detection (BuiltWith)</li>
+                <li className="flex gap-2"><span className="text-green-500 shrink-0">✓</span> Email quality scoring (EmailRep)</li>
+                <li className="flex gap-2"><span className="text-green-500 shrink-0">✓</span> Runs automatically on every new lead</li>
+              </ul>
+            </div>
+            <div className="bg-blue-50 rounded-2xl border border-blue-200 p-8 relative">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full">Most Used</div>
+              <div className="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-3">Intelligence Pack</div>
+              <div className="text-4xl font-bold text-zinc-900 mb-1">2 credits</div>
+              <div className="text-sm text-zinc-500 mb-1">~ per lead</div>
+              <div className="text-xs text-zinc-400 mb-6">1 credit = /bin/zsh.50</div>
+              <ul className="space-y-3 text-sm text-zinc-600">
+                <li className="flex gap-2"><span className="text-blue-500 shrink-0">✓</span> LinkedIn work history (Proxycurl)</li>
+                <li className="flex gap-2"><span className="text-blue-500 shrink-0">✓</span> Social profiles (FullContact)</li>
+                <li className="flex gap-2"><span className="text-blue-500 shrink-0">✓</span> News &amp; press mentions (Serper)</li>
+                <li className="flex gap-2"><span className="text-blue-500 shrink-0">✓</span> Ready in ~60 seconds</li>
+              </ul>
+            </div>
+            <div className="bg-purple-50 rounded-2xl border border-purple-200 p-8">
+              <div className="text-xs font-semibold text-purple-600 uppercase tracking-wider mb-3">Deep Research</div>
+              <div className="text-4xl font-bold text-zinc-900 mb-1">10 credits</div>
+              <div className="text-sm text-zinc-500 mb-1">~ per lead</div>
+              <div className="text-xs text-zinc-400 mb-6">AI research + outreach angle</div>
+              <ul className="space-y-3 text-sm text-zinc-600">
+                <li className="flex gap-2"><span className="text-purple-500 shrink-0">✓</span> Everything in Intelligence Pack</li>
+                <li className="flex gap-2"><span className="text-purple-500 shrink-0">✓</span> AI research brief (Perplexity)</li>
+                <li className="flex gap-2"><span className="text-purple-500 shrink-0">✓</span> Personalized outreach angle written by AI</li>
+                <li className="flex gap-2"><span className="text-purple-500 shrink-0">✓</span> Ready in ~5 minutes</li>
+              </ul>
+            </div>
+          </div>
+          <p className="text-center text-sm text-zinc-500 mt-8">Credits included with all plans. Buy additional credit bundles from your dashboard.</p>
+        </div>
+      </section>
+
 
       {/* FAQ Section */}
       <section className="py-24 bg-white">
