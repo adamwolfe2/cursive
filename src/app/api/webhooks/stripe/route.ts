@@ -135,6 +135,17 @@ async function handleCreditPurchaseCompleted(session: Stripe.Checkout.Session): 
   // Add credits to the workspace
   await repo.addCredits(workspace_id, creditsAmount, 'purchase')
 
+  // Emit Inngest event for downstream automation (e.g. email sequences, analytics)
+  await inngest.send({
+    name: 'marketplace/credit-purchased',
+    data: {
+      workspace_id,
+      credits_purchased: creditsAmount,
+      amount_paid_cents: session.amount_total ?? 0,
+      stripe_session_id: session.id,
+    },
+  })
+
   // Get the new balance
   const { data: creditsData } = await adminClient
     .from('workspace_credits')

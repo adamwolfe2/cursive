@@ -50,6 +50,8 @@ const updateCampaignSchema = z.object({
   days_between_steps: z.array(z.number().int().min(1)).optional(),
   // Scheduling
   scheduled_start_at: z.string().datetime().nullable().optional(),
+  // Automation
+  auto_send_approved: z.boolean().optional(),
 })
 
 export async function GET(request: NextRequest, context: RouteContext) {

@@ -506,6 +506,26 @@ export const processAudienceLabEvent = inngest.createFunction(
       })
     }
 
+    // Step 4b: Auto-enrich new leads with free intelligence tier (BuiltWith + EmailRep)
+    if (leadResult.lead_id && leadResult.is_new_lead) {
+      await step.run('auto-enrich-free-tier', async () => {
+        try {
+          await inngest.send({
+            name: 'enrichment/batch',
+            data: {
+              workspace_id: workspace_id || rawEvent.workspace_id,
+              lead_ids: [leadResult.lead_id!],
+              providers: ['builtwith', 'emailrep'],
+              priority: 'normal',
+            },
+          })
+        } catch (err) {
+          // Non-fatal — enrichment is background
+          safeError(`${LOG_PREFIX} Auto-enrich trigger failed`, err)
+        }
+      })
+    }
+
     // Step 5: Send notifications (only for new leads)
     if (leadResult.lead_id && leadResult.is_new_lead) {
       await step.run('notify', async () => {

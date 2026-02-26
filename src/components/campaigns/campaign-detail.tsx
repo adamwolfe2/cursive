@@ -27,6 +27,7 @@ interface Campaign {
   trust_signals: Array<{ id: string; type: string; content: string }>
   created_at: string
   scheduled_start_at?: string
+  auto_send_approved: boolean
 }
 
 interface CampaignDetailProps {
@@ -51,6 +52,7 @@ export function CampaignDetail({ campaignId }: CampaignDetailProps) {
   const [submitting, setSubmitting] = useState(false)
   const [duplicating, setDuplicating] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [autoSendUpdating, setAutoSendUpdating] = useState(false)
 
   useEffect(() => {
     async function fetchCampaign() {
@@ -112,6 +114,31 @@ export function CampaignDetail({ campaignId }: CampaignDetailProps) {
       toast.error('Failed to duplicate campaign')
     } finally {
       setDuplicating(false)
+    }
+  }
+
+  const handleAutoSendToggle = async () => {
+    if (!campaign || autoSendUpdating) return
+    const newValue = !campaign.auto_send_approved
+    setAutoSendUpdating(true)
+    try {
+      const response = await fetch(`/api/campaigns/${campaignId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ auto_send_approved: newValue }),
+      })
+      if (response.ok) {
+        const result = await response.json()
+        setCampaign(result.data)
+        toast.success(newValue ? 'Auto-send enabled' : 'Auto-send disabled')
+      } else {
+        const result = await response.json()
+        toast.error(result.error || 'Failed to update auto-send setting')
+      }
+    } catch {
+      toast.error('Failed to update auto-send setting')
+    } finally {
+      setAutoSendUpdating(false)
     }
   }
 
@@ -211,6 +238,26 @@ export function CampaignDetail({ campaignId }: CampaignDetailProps) {
                   </div>
                 )}
               </dl>
+              <div className="flex items-center justify-between py-3 border-t border-zinc-100 mt-3">
+                <div>
+                  <p className="text-sm font-medium text-zinc-900">Auto-send emails</p>
+                  <p className="text-xs text-zinc-500 mt-0.5">
+                    Automatically send follow-up emails without manual approval
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleAutoSendToggle}
+                  disabled={autoSendUpdating}
+                  className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors disabled:opacity-50 ${
+                    campaign.auto_send_approved ? 'bg-blue-600' : 'bg-zinc-200'
+                  }`}
+                >
+                  <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${
+                    campaign.auto_send_approved ? 'translate-x-5' : 'translate-x-1'
+                  }`} />
+                </button>
+              </div>
             </Card>
 
             {/* Targeting */}

@@ -104,6 +104,13 @@ export const provisionWorkspaceAudience = inngest.createFunction(
     })
 
     if (!apiKeyOk) {
+      // Send alert so ops knows this workspace got no leads
+      sendSlackAlert({
+        type: 'system_event',
+        severity: 'warning',
+        message: `Workspace ${workspace_id} provision SKIPPED — AUDIENCELAB_ACCOUNT_API_KEY not configured`,
+        metadata: { workspace_id, user_id },
+      }).catch(() => {}) // non-fatal
       safeLog(`${LOG_PREFIX} AUDIENCELAB_ACCOUNT_API_KEY not configured, skipping`)
       return { skipped: true, reason: 'No API key' }
     }
