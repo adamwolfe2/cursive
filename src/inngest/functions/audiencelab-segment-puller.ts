@@ -19,12 +19,11 @@
 import { inngest } from '@/inngest/client'
 import { createAdminClient } from '@/lib/supabase/admin'
 import {
-  getAudienceAttributes,
   previewAudience,
   createAudience,
   fetchAudienceRecords,
+  buildWorkspaceAudienceFilters,
   type ALEnrichedProfile,
-  type ALAudienceFilter,
 } from '@/lib/audiencelab/api-client'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
@@ -167,21 +166,21 @@ export const audienceLabSegmentPuller = inngest.createFunction(
 
       const result = await step.run(`pull-combo-${i}`, async () => {
         try {
-          // Build AL audience filter
-          const filters: ALAudienceFilter = {
-            days_back: 7, // Only recent data
-          }
-          if (combo.industries.length > 0) {
-            filters.industries = combo.industries
-          }
-          if (combo.states.length > 0) {
-            filters.state = combo.states
-          }
+          // Build AL audience segment filters (nested structure)
+          const segmentFilters = buildWorkspaceAudienceFilters({
+            industries: combo.industries.length > 0 ? combo.industries : undefined,
+            states: combo.states.length > 0 ? combo.states : undefined,
+          })
 
           // Try preview first to see count
           let previewCount = 0
           try {
-            const preview = await previewAudience({ filters })
+            const preview = await previewAudience({
+              days_back: 7,
+              filters: segmentFilters,
+              limit: 50,
+              include_dnc: false,
+            })
             previewCount = preview.count || 0
             safeLog(`${LOG_PREFIX} Preview for ${combo.industries.join(',')} in ${combo.states.join(',') || 'all states'}: ${previewCount} records`)
 
@@ -197,7 +196,7 @@ export const audienceLabSegmentPuller = inngest.createFunction(
           const audienceName = `cursive-pull-${combo.industries.join('-')}-${combo.states.join('-') || 'national'}-${Date.now()}`
           const audience = await createAudience({
             name: audienceName,
-            filters,
+            filters: segmentFilters,
           })
 
           const audienceId = audience.audienceId

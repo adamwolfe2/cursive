@@ -183,8 +183,76 @@ export interface ALEnrichedProfile {
   [key: string]: unknown
 }
 
-// --- Audience Builder types ---
+// --- Audience Segment API filter types (nested schema) ---
+// Source: AudienceLab Audience Segment API (POST /audiences/preview + POST /audiences)
 
+/** Business/professional targeting filters */
+export interface ALAudienceBusinessFilter {
+  jobTitle?: string[]
+  seniority?: Array<'C-Suite' | 'VP' | 'Director' | 'Manager' | 'Individual Contributor' | 'Entry Level'>
+  department?: string[]
+  /** Industry name strings — 130+ values available via GET /audiences/attributes/industries */
+  industry?: string[]
+  sic?: string[]
+  naics?: string[]
+  employeeCount?: { min?: number; max?: number }
+  companyRevenue?: { min?: number; max?: number }
+}
+
+/** Financial targeting filters */
+export interface ALAudienceFinancialFilter {
+  incomeRange?: string[]  // e.g. ["$50K-$75K", "$75K-$100K", "$100K-$150K"]
+  netWorth?: string[]
+  credit_rating?: Array<'Excellent' | 'Very Good' | 'Good' | 'Fair' | 'Poor'>
+}
+
+/** Housing/property targeting filters */
+export interface ALAudienceHousingFilter {
+  homeowner?: boolean
+  homeValue?: { min?: number; max?: number }
+  lengthOfResidence?: number  // years at current address
+}
+
+/** Personal/demographic targeting filters */
+export interface ALAudiencePersonalFilter {
+  ageRange?: { min?: number; max?: number }
+  gender?: Array<'M' | 'F'>
+  ethnic_code?: string[]
+  education?: string[]  // e.g. ["Bachelor's Degree", "Graduate Degree"]
+}
+
+/** Family/household targeting filters */
+export interface ALAudienceFamilyFilter {
+  married?: boolean
+  children?: boolean
+  numberOfChildren?: number
+}
+
+/** Geographic targeting filters — state uses 2-letter codes */
+export interface ALAudienceLocationFilter {
+  city?: string[]
+  state?: string[]  // 2-letter codes: ["TX", "CA", "FL"]
+  zip?: string[]
+}
+
+/**
+ * Full nested filter set for the Audience Segment API.
+ * Use this with previewAudience() and createAudience().
+ * All fields are optional — omit to match all.
+ */
+export interface ALAudienceSegmentFilters {
+  business?: ALAudienceBusinessFilter
+  financial?: ALAudienceFinancialFilter
+  housing?: ALAudienceHousingFilter
+  personal?: ALAudiencePersonalFilter
+  family?: ALAudienceFamilyFilter
+  location?: ALAudienceLocationFilter
+}
+
+/**
+ * @deprecated Use ALAudienceSegmentFilters with nested business/location/etc.
+ * Kept for backward compatibility with legacy code.
+ */
 export interface ALAudienceFilter {
   segment?: string[] | number[]
   industries?: string[]
@@ -198,9 +266,13 @@ export interface ALAudienceFilter {
   [key: string]: unknown
 }
 
+/**
+ * POST /audiences — Create a named audience segment.
+ * Returns { audienceId } for fetching paginated records.
+ */
 export interface ALAudienceCreateRequest {
-  name?: string
-  filters: ALAudienceFilter
+  name: string
+  filters: ALAudienceSegmentFilters
   description?: string
 }
 
@@ -210,15 +282,26 @@ export interface ALAudienceCreateResponse {
   [key: string]: unknown
 }
 
+/**
+ * POST /audiences/preview — Preview count + sample without creating.
+ * days_back: 1–10 (required), limit: 0–500, score: include quality scores,
+ * include_dnc: include DNC-flagged contacts.
+ */
 export interface ALAudiencePreviewRequest {
-  filters: ALAudienceFilter
+  days_back: number
+  filters?: ALAudienceSegmentFilters
+  segment?: number
+  limit?: number  // 0–500 sample records to return
+  score?: boolean
+  include_dnc?: boolean
 }
 
-/** POST /audiences/preview returns { job_id, result: [...], count } */
+/** POST /audiences/preview returns { job_id, result: [...], count, field_coverage } */
 export interface ALAudiencePreviewResponse {
   job_id?: string
   count: number
   result?: ALEnrichedProfile[]
+  field_coverage?: Record<string, number>
   [key: string]: unknown
 }
 
@@ -437,28 +520,45 @@ export async function getAudienceAttributes(
 /**
  * Preview an audience query — returns count + sample without creating.
  * Use this to validate filters before committing to a full pull.
- * API returns { job_id, result: [...], count }
+ *
+ * Request shape: { days_back, filters?: { business?, location?, ... }, limit?, score?, include_dnc? }
+ * Response: { job_id, count, result: [...], field_coverage }
  */
 export async function previewAudience(
   params: ALAudiencePreviewRequest
 ): Promise<ALAudiencePreviewResponse> {
+  const body: Record<string, unknown> = {
+    days_back: params.days_back,
+  }
+  if (params.filters) body.filters = params.filters
+  if (params.segment !== undefined) body.segment = params.segment
+  if (params.limit !== undefined) body.limit = params.limit
+  if (params.score !== undefined) body.score = params.score
+  if (params.include_dnc !== undefined) body.include_dnc = params.include_dnc
+
   return alFetch<ALAudiencePreviewResponse>('/audiences/preview', {
     method: 'POST',
-    body: JSON.stringify(params),
+    body: JSON.stringify(body),
   })
 }
 
 /**
  * Create a named audience with filters. Returns an audienceId
- * that can be used to fetch paginated records.
- * API returns { audienceId: "uuid" }
+ * that can be used to fetch paginated records via fetchAudienceRecords().
+ *
+ * Request shape: { name, filters: { business?, location?, ... } }
+ * Response: { audienceId: "uuid" }
  */
 export async function createAudience(
   params: ALAudienceCreateRequest
 ): Promise<ALAudienceCreateResponse> {
   return alFetch<ALAudienceCreateResponse>('/audiences', {
     method: 'POST',
-    body: JSON.stringify(params),
+    body: JSON.stringify({
+      name: params.name,
+      filters: params.filters,
+      ...(params.description && { description: params.description }),
+    }),
   })
 }
 
@@ -653,6 +753,42 @@ export async function provisionCustomerPixel(params: {
     websiteUrl: params.websiteUrl,
     webhookUrl,
   })
+}
+
+// ============================================================================
+// CONVENIENCE: Build audience filters from workspace targeting data
+// ============================================================================
+
+/**
+ * Build ALAudienceSegmentFilters from a workspace's targeting preferences.
+ * Used by the onboarding provisioner and the segment puller.
+ *
+ * @param industries Industry names from user_targeting.target_industries
+ * @param states 2-letter state codes from user_targeting.target_states
+ * @param cities Optional city names from user_targeting.target_cities
+ * @param zips Optional ZIP codes from user_targeting.target_zips
+ */
+export function buildWorkspaceAudienceFilters(params: {
+  industries?: string[]
+  states?: string[]
+  cities?: string[]
+  zips?: string[]
+}): ALAudienceSegmentFilters {
+  const filters: ALAudienceSegmentFilters = {}
+
+  if (params.industries?.length) {
+    filters.business = { industry: params.industries }
+  }
+
+  const hasGeo = params.states?.length || params.cities?.length || params.zips?.length
+  if (hasGeo) {
+    filters.location = {}
+    if (params.states?.length) filters.location.state = params.states
+    if (params.cities?.length) filters.location.city = params.cities
+    if (params.zips?.length) filters.location.zip = params.zips
+  }
+
+  return filters
 }
 
 // ============================================================================

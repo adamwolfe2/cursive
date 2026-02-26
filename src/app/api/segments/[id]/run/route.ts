@@ -14,7 +14,7 @@ import {
   previewAudience,
   createAudience,
   fetchAudienceRecords,
-  type ALAudienceFilter,
+  type ALAudienceSegmentFilters,
 } from '@/lib/audiencelab/api-client'
 
 const runSchema = z.object({
@@ -65,14 +65,17 @@ export async function POST(
       return NextResponse.json({ error: 'Workspace not found' }, { status: 404 })
     }
 
-    // Convert segment filters to AL format
-    const audienceQuery = segment.filters as ALAudienceFilter
+    // Convert segment filters to AL format (nested structure)
+    const audienceQuery = segment.filters as ALAudienceSegmentFilters
 
     if (action === 'preview') {
       // Preview mode
       try {
         const preview = await previewAudience({
+          days_back: 7,
           filters: audienceQuery,
+          limit: 25,
+          include_dnc: false,
         })
 
         const creditCostPerLead = 0.5
@@ -127,8 +130,8 @@ export async function POST(
       try {
         // Create audience and fetch records
         const audience = await createAudience({
-          filters: audienceQuery,
           name: `segment-${id}-${Date.now()}`,
+          filters: audienceQuery,
         })
 
         const recordsResponse = await fetchAudienceRecords(

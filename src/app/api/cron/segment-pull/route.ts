@@ -25,8 +25,8 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import {
   createAudience,
   fetchAudienceRecords,
+  buildWorkspaceAudienceFilters,
   type ALEnrichedProfile,
-  type ALAudienceFilter,
 } from '@/lib/audiencelab/api-client'
 import {
   normalizeALPayload,
@@ -111,13 +111,14 @@ export async function GET(request: NextRequest) {
       const combo = combos[i]
 
       try {
-        const filters: ALAudienceFilter = { days_back: 7 }
-        if (combo.industries.length > 0) filters.industries = combo.industries
-        if (combo.states.length > 0) filters.state = combo.states
+        const segmentFilters = buildWorkspaceAudienceFilters({
+          industries: combo.industries.length > 0 ? combo.industries : undefined,
+          states: combo.states.length > 0 ? combo.states : undefined,
+        })
 
         // Create audience
         const audienceName = `cursive-pull-${combo.industries.join('-').slice(0, 30)}-${combo.states.join('-') || 'national'}-${Date.now()}`
-        const audience = await createAudience({ name: audienceName, filters })
+        const audience = await createAudience({ name: audienceName, filters: segmentFilters })
 
         const audienceId = audience.audienceId
         if (!audienceId) {

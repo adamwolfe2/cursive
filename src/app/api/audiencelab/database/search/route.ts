@@ -17,7 +17,7 @@ import {
   previewAudience,
   createAudience,
   fetchAudienceRecords,
-  type ALAudienceFilter,
+  type ALAudienceSegmentFilters,
 } from '@/lib/audiencelab/api-client'
 
 const searchSchema = z.object({
@@ -71,7 +71,10 @@ export async function POST(request: NextRequest) {
       // Preview mode: just get count and sample
       try {
         const preview = await previewAudience({
+          days_back: 7,
           filters: audienceQuery,
+          limit: 25,
+          include_dnc: false,
         })
 
         // Calculate credit cost for 25 leads (or fewer if less available)
@@ -273,31 +276,29 @@ export async function POST(request: NextRequest) {
 /**
  * Build AL audience query from search parameters
  */
-function buildAudienceQuery(params: z.infer<typeof searchSchema>): ALAudienceFilter {
-  const query: ALAudienceFilter = {}
+function buildAudienceQuery(params: z.infer<typeof searchSchema>): ALAudienceSegmentFilters {
+  const query: ALAudienceSegmentFilters = {}
 
-  // Map industries
-  if (params.industries && params.industries.length > 0) {
-    query.industries = params.industries
+  const hasBusinessFilters = (params.industries?.length || 0) > 0 ||
+    (params.seniority_levels?.length || 0) > 0 ||
+    (params.job_titles?.length || 0) > 0
+
+  if (hasBusinessFilters) {
+    query.business = {}
+    if (params.industries && params.industries.length > 0) {
+      query.business.industry = params.industries
+    }
+    if (params.seniority_levels && params.seniority_levels.length > 0) {
+      query.business.seniority = params.seniority_levels as Array<'C-Suite' | 'VP' | 'Director' | 'Manager' | 'Individual Contributor' | 'Entry Level'>
+    }
+    if (params.job_titles && params.job_titles.length > 0) {
+      query.business.jobTitle = params.job_titles
+    }
   }
 
-  // Map states
   if (params.states && params.states.length > 0) {
-    query.state = params.states
+    query.location = { state: params.states }
   }
-
-  // Map seniority levels
-  if (params.seniority_levels && params.seniority_levels.length > 0) {
-    query.seniority = params.seniority_levels
-  }
-
-  // Map job titles to departments
-  if (params.job_titles && params.job_titles.length > 0) {
-    query.departments = params.job_titles
-  }
-
-  // Note: company_sizes not directly supported by ALAudienceFilter
-  // Would need to map to SIC codes or employee count ranges
 
   return query
 }

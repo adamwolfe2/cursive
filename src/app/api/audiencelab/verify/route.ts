@@ -106,11 +106,15 @@ export async function GET(request: NextRequest) {
   // Test 5: Preview audience (optional, triggered by ?preview=true)
   if (doPreview) {
     try {
-      const filters: Record<string, unknown> = {}
-      if (previewIndustry) filters.industries = [previewIndustry]
-      if (previewState) filters.state = [previewState]
-
-      const preview = await previewAudience({ filters })
+      const preview = await previewAudience({
+        days_back: 7,
+        filters: {
+          ...(previewIndustry && { business: { industry: [previewIndustry] } }),
+          ...(previewState && { location: { state: [previewState] } }),
+        },
+        limit: 10,
+        include_dnc: false,
+      })
       results.audience_preview = {
         count: preview.count,
         job_id: preview.job_id,

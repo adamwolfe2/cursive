@@ -369,9 +369,10 @@ export async function POST(request: NextRequest) {
     safeLog('[Onboarding] Credits granted.')
 
     // 10. Create user targeting for business users (enables lead routing)
+    let targetStatesForProvisioning: string[] = []
     if (validated.role === 'business') {
       try {
-        const targetStates = parseTargetLocations(validated.targetLocations)
+        targetStatesForProvisioning = parseTargetLocations(validated.targetLocations)
         const caps = LEAD_CAPS[validated.monthlyLeadNeed] || LEAD_CAPS['25-50 leads']
 
         const { error: targetingInsertError } = await admin
@@ -380,7 +381,7 @@ export async function POST(request: NextRequest) {
             user_id: userProfile.id,
             workspace_id: workspace.id,
             target_industries: [validated.industry],
-            target_states: targetStates,
+            target_states: targetStatesForProvisioning,
             target_cities: [],
             target_zips: [],
             target_sic_codes: [],
@@ -399,9 +400,22 @@ export async function POST(request: NextRequest) {
         } else {
           safeLog('[Onboarding] User targeting created:', {
             industries: [validated.industry],
-            states: targetStates,
+            states: targetStatesForProvisioning,
             caps,
           })
+
+          // 10b. Fire immediate audience provision — gives new user their first leads
+          // within minutes instead of waiting for the 6-hour segment puller cron.
+          fireInngestEvent({
+            name: 'audiencelab/provision-workspace-audience',
+            data: {
+              workspace_id: workspace.id,
+              user_id: userProfile.id,
+              industries: [validated.industry],
+              states: targetStatesForProvisioning,
+            },
+          })
+          safeLog('[Onboarding] Audience provision event fired for immediate lead pull')
         }
       } catch (targetingError) {
         // Non-fatal: user can set targeting later from dashboard

@@ -208,6 +208,9 @@ export { processAudienceLabEvent } from './audiencelab-processor'
 // Audience Labs Segment Puller (cron — pulls leads from AL Audiences API)
 export { audienceLabSegmentPuller } from './audiencelab-segment-puller'
 
+// Audience Labs Workspace Provisioner (event — immediate first-pull for new signups)
+export { provisionWorkspaceAudience } from './provision-workspace-audience'
+
 // Daily Lead Distribution (cron — distributes daily leads to users)
 export { distributeDailyLeads } from './distribute-daily-leads'
 
