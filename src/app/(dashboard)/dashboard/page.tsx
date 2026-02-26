@@ -236,6 +236,7 @@ export default async function DashboardPage({
     { id: 'prefs', label: 'Set lead preferences', done: hasPreferences, href: '/my-leads/preferences' },
     { id: 'enrich', label: 'Enrich your first lead', done: hasEnriched, href: '/leads' },
     { id: 'activate', label: 'Activate — run a campaign', done: hasActivated, href: '/activate' },
+    { id: 'intelligence', label: 'Try Intelligence Pack on a lead', done: false, href: '/leads' },
   ]
   const checklistProgress = checklistItems.filter((i) => i.done).length
   const checklistTotal = checklistItems.length

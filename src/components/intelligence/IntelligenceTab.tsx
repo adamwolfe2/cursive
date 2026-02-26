@@ -42,6 +42,7 @@ interface IntelligenceData {
   news_mentions?: NewsArticle[]
   research_brief?: string
   research_brief_at?: string
+  research_outreach_angle?: string
   intelligence_tier?: 'none' | 'auto' | 'intel' | 'deep_research'
 }
 
@@ -66,6 +67,7 @@ export function IntelligenceTab({ leadId, workspaceId: _workspaceId, initialTier
 
   const intel = data?.data as IntelligenceData | undefined
   const tier = intel?.intelligence_tier ?? initialTier
+  const creditsRemaining = data?.credits_remaining as number | undefined
 
   const enrichMutation = useMutation({
     mutationFn: async (requestTier: 'intel' | 'deep_research') => {
@@ -125,29 +127,49 @@ export function IntelligenceTab({ leadId, workspaceId: _workspaceId, initialTier
         <div>
           <h3 className="text-sm font-semibold text-gray-900">Intelligence</h3>
           <p className="text-xs text-gray-500 mt-0.5">{tierLabel[tier] ?? 'No enrichment'}</p>
+          <p className="text-xs text-zinc-500 mt-1">{creditsRemaining ?? '\u2014'} credits remaining</p>
         </div>
-        <div className="flex gap-2">
-          {tier !== 'intel' && tier !== 'deep_research' && (
-            <button
-              onClick={() => enrichMutation.mutate('intel')}
-              disabled={enrichMutation.isPending}
-              className="text-xs px-3 py-1.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-lg font-medium transition-colors"
-            >
-              {enrichMutation.isPending && enrichMutation.variables === 'intel'
-                ? 'Queuing...'
-                : 'Intel Pack (2 credits)'}
-            </button>
-          )}
-          {tier !== 'deep_research' && (
-            <button
-              onClick={() => enrichMutation.mutate('deep_research')}
-              disabled={enrichMutation.isPending}
-              className="text-xs px-3 py-1.5 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white rounded-lg font-medium transition-colors"
-            >
-              {enrichMutation.isPending && enrichMutation.variables === 'deep_research'
-                ? 'Queuing...'
-                : 'Deep Dive (10 credits)'}
-            </button>
+        <div className="flex gap-2 flex-wrap justify-end">
+          {tier === 'deep_research' ? (
+            <span className="text-xs text-purple-600 bg-purple-50 border border-purple-200 rounded-lg px-3 py-1.5 font-medium">
+              \u2746 Deep Research complete
+            </span>
+          ) : tier === 'intel' ? (
+            <>
+              <span className="text-xs text-blue-600 bg-blue-50 border border-blue-200 rounded-lg px-3 py-1.5 font-medium">
+                \u2713 Intel Pack active
+              </span>
+              <button
+                onClick={() => enrichMutation.mutate('deep_research')}
+                disabled={enrichMutation.isPending || (creditsRemaining !== undefined && creditsRemaining < 10)}
+                className="text-xs px-3 py-1.5 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white rounded-lg font-medium transition-colors"
+              >
+                {enrichMutation.isPending && enrichMutation.variables === 'deep_research'
+                  ? 'Queuing...'
+                  : 'Upgrade to Deep Research (10 credits)'}
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                onClick={() => enrichMutation.mutate('intel')}
+                disabled={enrichMutation.isPending || (creditsRemaining !== undefined && creditsRemaining < 2)}
+                className="text-xs px-3 py-1.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-lg font-medium transition-colors"
+              >
+                {enrichMutation.isPending && enrichMutation.variables === 'intel'
+                  ? 'Queuing...'
+                  : 'Intel Pack (2 credits)'}
+              </button>
+              <button
+                onClick={() => enrichMutation.mutate('deep_research')}
+                disabled={enrichMutation.isPending || (creditsRemaining !== undefined && creditsRemaining < 10)}
+                className="text-xs px-3 py-1.5 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white rounded-lg font-medium transition-colors"
+              >
+                {enrichMutation.isPending && enrichMutation.variables === 'deep_research'
+                  ? 'Queuing...'
+                  : 'Deep Dive (10 credits)'}
+              </button>
+            </>
           )}
         </div>
       </div>
@@ -257,7 +279,7 @@ export function IntelligenceTab({ leadId, workspaceId: _workspaceId, initialTier
                 <p className="text-xs font-medium text-gray-900 line-clamp-1">{article.title}</p>
                 <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">{article.snippet}</p>
                 <p className="text-xs text-gray-400 mt-1">
-                  {article.source} · {article.date}
+                  {article.source} \u00b7 {article.date}
                 </p>
               </a>
             ))}
@@ -282,6 +304,20 @@ export function IntelligenceTab({ leadId, workspaceId: _workspaceId, initialTier
         </section>
       )}
 
+      {/* Suggested Outreach Angle */}
+      {intel?.research_outreach_angle && (
+        <section className="mt-4">
+          <h4 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">
+            Suggested Outreach Angle
+          </h4>
+          <div className="bg-amber-50 rounded-xl p-4 border border-amber-200">
+            <p className="text-sm text-zinc-800 leading-relaxed font-medium italic">
+              &ldquo;{intel.research_outreach_angle}&rdquo;
+            </p>
+          </div>
+        </section>
+      )}
+
       {/* Empty state */}
       {!hasAnyIntel && !hasResearch && tier === 'none' && (
         <div className="text-center py-8">
@@ -292,7 +328,7 @@ export function IntelligenceTab({ leadId, workspaceId: _workspaceId, initialTier
         </div>
       )}
 
-      {/* Pending state — enrichment queued */}
+      {/* Pending state \u2014 enrichment queued */}
       {enrichMutation.isSuccess && (
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-xs text-blue-700">
           Enrichment queued. Results will appear here automatically.
