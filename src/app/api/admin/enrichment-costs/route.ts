@@ -18,7 +18,7 @@ export async function GET() {
       Date.now() - 30 * 24 * 60 * 60 * 1000
     ).toISOString()
 
-    const [byTierResult, byProviderResult, totalsResult] = await Promise.all([
+    const [byTierResult, byProviderResult, totalsResult, workspaceCostsResult] = await Promise.all([
       supabase
         .from('enrichment_costs')
         .select('tier, credits_charged, api_cost_usd')
@@ -30,6 +30,10 @@ export async function GET() {
       supabase
         .from('enrichment_costs')
         .select('credits_charged, api_cost_usd')
+        .gte('created_at', thirtyDaysAgo),
+      supabase
+        .from('enrichment_costs')
+        .select('workspace_id, credits_charged, api_cost_usd')
         .gte('created_at', thirtyDaysAgo),
     ])
 
@@ -79,6 +83,7 @@ export async function GET() {
       },
       by_tier: aggregateByTier,
       by_provider: aggregateByProvider,
+      raw_workspace_costs: workspaceCostsResult.data ?? [],
       period_days: 30,
     })
   } catch (error) {

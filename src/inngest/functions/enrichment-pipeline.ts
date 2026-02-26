@@ -23,6 +23,7 @@ import {
   getSocialIntel,
   getNewsMentions,
   deepResearchPerson,
+  trackCost,
 } from '@/lib/services/intelligence'
 import type { LeadContactData, LeadCompanyData } from '@/types'
 
@@ -219,6 +220,27 @@ export const processEnrichmentJob = inngest.createFunction(
         error_message: 'error' in enrichmentResult ? enrichmentResult.error : undefined,
         credits_used: enrichmentResult.creditsUsed || 0,
       })
+
+      // Track API cost for lead-specific providers
+      const PROVIDER_COSTS: Record<string, number> = {
+        builtwith: 0.01,
+        emailrep: 0.005,
+        proxycurl: 0.05,
+        fullcontact: 0.02,
+        serper_news: 0.01,
+        perplexity_deep: 0.10,
+      }
+      if (enrichmentResult.success && provider in PROVIDER_COSTS) {
+        trackCost({
+          workspace_id,
+          lead_id,
+          tier: 'auto',
+          provider,
+          credits_charged: enrichmentResult.creditsUsed || 0,
+          api_cost_usd: PROVIDER_COSTS[provider],
+          status: 'completed',
+        }).catch(() => {})
+      }
     })
 
     // Step 4: Trigger next enrichment or delivery if this was the last one

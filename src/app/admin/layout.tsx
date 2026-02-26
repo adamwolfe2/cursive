@@ -78,6 +78,7 @@ export default async function AdminLayout({
                   { href: '/admin/email-stats', label: 'Email Stats' },
                   { href: '/admin/dedup-stats', label: 'Dedup Stats' },
                   { href: '/admin/credit-usage', label: 'Credit Usage' },
+                  { href: '/admin/enrichment-costs', label: 'Intel Costs' },
                   { href: '/admin/audit-logs', label: 'Audit Logs' },
                   { href: '/admin/operations-health', label: 'Ops Health' },
                   { href: '/admin/failed-operations', label: 'Failed Ops' },

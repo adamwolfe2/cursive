@@ -135,20 +135,30 @@ export async function GET(
     const { id: leadId } = await params
     const supabase = createAdminClient()
 
-    const { data: lead } = await supabase
-      .from('leads')
-      .select(
-        'id, company_tech_stack, linkedin_data, social_intel, news_mentions, research_brief, research_brief_at, intelligence_tier'
-      )
-      .eq('id', leadId)
-      .eq('workspace_id', user.workspace_id)
-      .maybeSingle()
+    const [leadResult, creditsResult] = await Promise.all([
+      supabase
+        .from('leads')
+        .select(
+          'id, company_tech_stack, linkedin_data, social_intel, news_mentions, research_brief, research_brief_at, intelligence_tier, research_outreach_angle'
+        )
+        .eq('id', leadId)
+        .eq('workspace_id', user.workspace_id)
+        .maybeSingle(),
+      supabase
+        .from('workspace_credits')
+        .select('balance')
+        .eq('workspace_id', user.workspace_id)
+        .maybeSingle(),
+    ])
 
-    if (!lead) {
+    if (!leadResult.data) {
       return NextResponse.json({ error: 'Lead not found' }, { status: 404 })
     }
 
-    return NextResponse.json({ data: lead })
+    return NextResponse.json({
+      data: leadResult.data,
+      credits_remaining: creditsResult.data?.balance ?? 0,
+    })
   } catch (err) {
     return handleApiError(err)
   }

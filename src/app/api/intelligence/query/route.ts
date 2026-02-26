@@ -33,7 +33,8 @@ export async function POST(request: NextRequest) {
       workspace_id: user.workspace_id,
       tier: 'nl_query',
       provider: 'openai_gpt4o_mini',
-      credits_charged: 0, // Free for now — can add credit cost later
+      // Free by design — NL queries reduce friction. To charge in future: deduct 0.5 credits (same pattern as POST /api/leads/[id]/intelligence).
+      credits_charged: 0,
       api_cost_usd: 0.005,
       status: 'completed',
     }).catch(() => {})
