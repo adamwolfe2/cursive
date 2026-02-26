@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { toast } from 'sonner'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { BulkIntelligenceAction } from '@/components/intelligence'
 
 interface BulkActionToolbarProps {
   selectedCount: number
@@ -256,6 +257,12 @@ export function BulkActionToolbar({
                 >
                   {loading ? 'Exporting…' : 'Export CSV'}
                 </button>
+
+                {/* Bulk Intelligence Enrichment */}
+                <BulkIntelligenceAction
+                  selectedLeadIds={Array.from(selectedIds)}
+                  onComplete={onSuccess ?? (() => {})}
+                />
 
                 {/* Delete */}
                 <button

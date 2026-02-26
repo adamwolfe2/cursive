@@ -308,6 +308,33 @@ export function LeadsTable({ initialFilters }: LeadsTableProps) {
         },
         enableSorting: false,
       },
+      // Intelligence Tier column
+      {
+        accessorKey: 'intelligence_tier',
+        id: 'intelligence',
+        header: 'Intel',
+        enableSorting: false,
+        enableHiding: true,
+        cell: ({ row }: { row: any }) => {
+          const tier = row.original.intelligence_tier as string | undefined
+          const hasResearch = !!row.original.research_brief
+          if (!tier || tier === 'none') return <span className="text-xs text-zinc-300">—</span>
+          const TIER_CONFIG: Record<string, { label: string; className: string }> = {
+            auto: { label: 'Auto', className: 'bg-zinc-100 text-zinc-600' },
+            intel: { label: 'Intel', className: 'bg-blue-100 text-blue-700' },
+            deep_research: { label: 'Deep', className: 'bg-purple-100 text-purple-700' },
+          }
+          const config = TIER_CONFIG[tier] ?? { label: tier, className: 'bg-zinc-100 text-zinc-600' }
+          return (
+            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium ${config.className}`}>
+              {config.label}
+              {tier === 'deep_research' && hasResearch && (
+                <span title="Research brief available">✦</span>
+              )}
+            </span>
+          )
+        },
+      },
       // Location column (state code)
       {
         accessorKey: 'state_code',

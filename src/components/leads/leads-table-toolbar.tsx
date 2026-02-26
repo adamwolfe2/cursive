@@ -445,6 +445,21 @@ export function LeadsTableToolbar({
             <option value="failed">Failed</option>
           </select>
 
+          {/* Intelligence Tier Filter */}
+          <select
+            value={(table.getColumn('intelligence')?.getFilterValue() as string) || ''}
+            onChange={(e) =>
+              table.getColumn('intelligence')?.setFilterValue(e.target.value || undefined)
+            }
+            className="rounded-md border-zinc-300 px-3 py-2 text-[13px] shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          >
+            <option value="">All Intel</option>
+            <option value="intel">Intel Pack</option>
+            <option value="deep_research">Deep Research</option>
+            <option value="auto">Auto Only</option>
+            <option value="none">Not Enriched</option>
+          </select>
+
           {/* Clear Filters */}
           {hasActiveFilters && (
             <button
