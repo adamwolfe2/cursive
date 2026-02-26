@@ -5,6 +5,7 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import { useTier } from '@/lib/hooks/use-tier'
 import { TierGate, UsageIndicator } from '@/components/tier'
 import Link from 'next/link'
+import { AskYourDataSlideOver } from '@/components/intelligence'
 
 // Industry options for search
 const INDUSTRIES = [
@@ -775,6 +776,9 @@ export default function LeadDiscoveryPage() {
           </p>
         </div>
       )}
+
+      {/* Ask Your Data — floating slide-over */}
+      <AskYourDataSlideOver />
     </div>
   )
 }

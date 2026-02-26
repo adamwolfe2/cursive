@@ -16,6 +16,14 @@ import {
   analyzeIntentSignals,
 } from '@/lib/services/ai/claude.service'
 import { enrichLeadWithClay, enrichCompanyWithClay } from '@/lib/services/clay.service'
+import {
+  getCompanyTechStack,
+  getEmailQuality,
+  getLinkedInProfile,
+  getSocialIntel,
+  getNewsMentions,
+  deepResearchPerson,
+} from '@/lib/services/intelligence'
 import type { LeadContactData, LeadCompanyData } from '@/types'
 
 // ============================================================================
@@ -122,6 +130,24 @@ export const processEnrichmentJob = inngest.createFunction(
 
         case 'web_scrape':
           return await enrichWithWebScrape(lead)
+
+        case 'builtwith':
+          return await enrichWithBuiltWith(lead)
+
+        case 'emailrep':
+          return await enrichWithEmailRep(lead)
+
+        case 'proxycurl':
+          return await enrichWithProxyCurl(lead)
+
+        case 'fullcontact':
+          return await enrichWithFullContact(lead)
+
+        case 'serper_news':
+          return await enrichWithSerperNews(lead)
+
+        case 'perplexity_deep':
+          return await enrichWithPerplexityDeep(lead)
 
         default:
           throw new Error(`Unknown enrichment provider: ${provider}`)
@@ -553,6 +579,267 @@ async function enrichWithWebScrape(lead: LeadData): Promise<{
   }
 }
 
+/**
+ * BuiltWith tech stack enrichment (Tier 1)
+ */
+async function enrichWithBuiltWith(lead: LeadData): Promise<{
+  success: boolean
+  data?: Record<string, any>
+  error?: string
+  creditsUsed?: number
+}> {
+  const companyData = lead.company_data as LeadCompanyData | null
+  const domain = companyData?.domain
+
+  if (!domain) {
+    return { success: false, error: 'No company domain for BuiltWith enrichment' }
+  }
+
+  try {
+    const result = await getCompanyTechStack(domain)
+    if (!result) {
+      return { success: false, error: 'No tech stack data found' }
+    }
+
+    return {
+      success: true,
+      data: {
+        company_tech_stack: result,
+      },
+      creditsUsed: 0,
+    }
+  } catch (error: any) {
+    return { success: false, error: error.message || 'BuiltWith enrichment failed' }
+  }
+}
+
+/**
+ * EmailRep email quality enrichment (Tier 1)
+ */
+async function enrichWithEmailRep(lead: LeadData): Promise<{
+  success: boolean
+  data?: Record<string, any>
+  error?: string
+  creditsUsed?: number
+}> {
+  const contactData = lead.contact_data as LeadContactData | null
+  const email =
+    (lead as any).email ||
+    contactData?.contacts?.[0]?.email ||
+    contactData?.primary_contact?.email
+
+  if (!email) {
+    return { success: false, error: 'No email for EmailRep enrichment' }
+  }
+
+  try {
+    const result = await getEmailQuality(email)
+    if (!result) {
+      return { success: false, error: 'No email quality data found' }
+    }
+
+    return {
+      success: true,
+      data: {
+        metadata: {
+          ...(lead as any).metadata,
+          email_quality: result,
+        },
+      },
+      creditsUsed: 0,
+    }
+  } catch (error: any) {
+    return { success: false, error: error.message || 'EmailRep enrichment failed' }
+  }
+}
+
+/**
+ * ProxyCurl LinkedIn profile enrichment (Tier 2)
+ */
+async function enrichWithProxyCurl(lead: LeadData): Promise<{
+  success: boolean
+  data?: Record<string, any>
+  error?: string
+  creditsUsed?: number
+}> {
+  const contactData = lead.contact_data as LeadContactData | null
+  const companyData = lead.company_data as LeadCompanyData | null
+
+  const email =
+    (lead as any).email ||
+    contactData?.contacts?.[0]?.email ||
+    contactData?.primary_contact?.email
+  const linkedinUrl =
+    (lead as any).linkedin_url || contactData?.contacts?.[0]?.linkedin_url
+  const firstName =
+    (lead as any).first_name || contactData?.contacts?.[0]?.first_name
+  const lastName =
+    (lead as any).last_name || contactData?.contacts?.[0]?.last_name
+  const fullName =
+    (lead as any).full_name ||
+    (firstName && lastName ? `${firstName} ${lastName}` : undefined)
+  const companyName = companyData?.name || (lead as any).company_name
+
+  try {
+    const result = await getLinkedInProfile(linkedinUrl, email, fullName, companyName)
+    if (!result) {
+      return { success: false, error: 'No LinkedIn profile found' }
+    }
+
+    return {
+      success: true,
+      data: {
+        linkedin_data: result,
+      },
+      creditsUsed: 0,
+    }
+  } catch (error: any) {
+    return { success: false, error: error.message || 'ProxyCurl enrichment failed' }
+  }
+}
+
+/**
+ * FullContact social intelligence enrichment (Tier 2)
+ */
+async function enrichWithFullContact(lead: LeadData): Promise<{
+  success: boolean
+  data?: Record<string, any>
+  error?: string
+  creditsUsed?: number
+}> {
+  const contactData = lead.contact_data as LeadContactData | null
+  const email =
+    (lead as any).email ||
+    contactData?.contacts?.[0]?.email ||
+    contactData?.primary_contact?.email
+
+  if (!email) {
+    return { success: false, error: 'No email for FullContact enrichment' }
+  }
+
+  try {
+    const result = await getSocialIntel(email)
+    if (!result) {
+      return { success: false, error: 'No social intel found' }
+    }
+
+    return {
+      success: true,
+      data: {
+        social_intel: result,
+      },
+      creditsUsed: 0,
+    }
+  } catch (error: any) {
+    return { success: false, error: error.message || 'FullContact enrichment failed' }
+  }
+}
+
+/**
+ * Serper news mentions enrichment (Tier 2)
+ */
+async function enrichWithSerperNews(lead: LeadData): Promise<{
+  success: boolean
+  data?: Record<string, any>
+  error?: string
+  creditsUsed?: number
+}> {
+  const contactData = lead.contact_data as LeadContactData | null
+  const companyData = lead.company_data as LeadCompanyData | null
+
+  const firstName =
+    (lead as any).first_name || contactData?.contacts?.[0]?.first_name
+  const lastName =
+    (lead as any).last_name || contactData?.contacts?.[0]?.last_name
+  const fullName =
+    (lead as any).full_name ||
+    (firstName && lastName ? `${firstName} ${lastName}` : undefined)
+  const companyName = companyData?.name || (lead as any).company_name
+
+  if (!fullName || !companyName) {
+    return { success: false, error: 'Name and company name required for Serper news search' }
+  }
+
+  try {
+    const articles = await getNewsMentions(fullName, companyName)
+    if (!articles || articles.length === 0) {
+      return { success: false, error: 'No news mentions found' }
+    }
+
+    return {
+      success: true,
+      data: {
+        news_mentions: articles,
+      },
+      creditsUsed: 0,
+    }
+  } catch (error: any) {
+    return { success: false, error: error.message || 'Serper news enrichment failed' }
+  }
+}
+
+/**
+ * Perplexity deep research enrichment (Tier 3)
+ */
+async function enrichWithPerplexityDeep(lead: LeadData): Promise<{
+  success: boolean
+  data?: Record<string, any>
+  error?: string
+  creditsUsed?: number
+}> {
+  const contactData = lead.contact_data as LeadContactData | null
+  const companyData = lead.company_data as LeadCompanyData | null
+
+  const firstName =
+    (lead as any).first_name || contactData?.contacts?.[0]?.first_name
+  const lastName =
+    (lead as any).last_name || contactData?.contacts?.[0]?.last_name
+  const fullName =
+    (lead as any).full_name ||
+    (firstName && lastName ? `${firstName} ${lastName}` : undefined)
+  const companyName = companyData?.name || (lead as any).company_name
+  const jobTitle =
+    (lead as any).job_title || contactData?.contacts?.[0]?.title
+  const domain = companyData?.domain || (lead as any).company_domain
+
+  if (!fullName) {
+    return { success: false, error: 'Name required for deep research' }
+  }
+
+  try {
+    const result = await deepResearchPerson(
+      fullName,
+      companyName ?? '',
+      jobTitle ?? '',
+      domain ?? undefined,
+    )
+
+    if (!result) {
+      return { success: false, error: 'No deep research result found' }
+    }
+
+    const researchBrief =
+      result.brief +
+      (result.keyFacts.length > 0
+        ? '\n\nKey Facts:\n' + result.keyFacts.map((f: string) => `• ${f}`).join('\n')
+        : '') +
+      (result.outreachAngle ? `\n\nOutreach Angle: ${result.outreachAngle}` : '')
+
+    return {
+      success: true,
+      data: {
+        research_brief: researchBrief,
+        research_brief_at: new Date().toISOString(),
+        research_outreach_angle: result.outreachAngle,
+        research_sources: result.sources,
+      },
+      creditsUsed: 0,
+    }
+  } catch (error: any) {
+    return { success: false, error: error.message || 'Perplexity deep research failed' }
+  }
+}
+
 // ============================================================================
 // BATCH ENRICHMENT
 // ============================================================================
@@ -664,7 +951,7 @@ export const enrichNewLead = inngest.createFunction(
     }
 
     // Queue default enrichment providers
-    const defaultProviders = ['email_validation', 'ai_analysis', 'clay']
+    const defaultProviders = ['email_validation', 'ai_analysis', 'clay', 'builtwith', 'emailrep']
 
     await step.run('queue-enrichment', async () => {
       await inngest.send({

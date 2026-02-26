@@ -58,6 +58,13 @@ export type Events = {
       priority: string
     }
   }
+  'enrichment/intelligence-pack': {
+    data: {
+      lead_id: string
+      workspace_id: string
+      tier: 'intel' | 'deep_research'
+    }
+  }
 
   // Email Sequences
   'sequence/enroll': {

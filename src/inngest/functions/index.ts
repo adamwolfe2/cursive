@@ -246,3 +246,6 @@ export { calNoShowRecovery } from './no-show-recovery'
 
 // Pixel V4 Pull-Sync (every 2h — enriches leads with DNC flags, intent scores, department)
 export { pixelV4Sync } from './pixel-v4-sync'
+
+// Intelligence Pack (on-demand Tier 2 + Tier 3 enrichment)
+export { intelligencePack } from './intelligence-pack'

@@ -204,5 +204,8 @@ export const { GET, POST, PUT } = serve({
 
     // Credit Alert Checker (twice daily — emails workspace owners on low balance)
     functions.creditAlertChecker,
+
+    // Intelligence Pack (on-demand Tier 2 + Tier 3 enrichment)
+    functions.intelligencePack,
   ],
 })
