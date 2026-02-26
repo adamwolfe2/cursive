@@ -135,6 +135,45 @@ export function LeadDetailPanel({
   const toast = useToast()
   const [currentStatus, setCurrentStatus] = useState<LeadStatus>((lead.status as LeadStatus) || 'new')
 
+  // Quick Email modal state
+  const [showEmailModal, setShowEmailModal] = useState(false)
+  const [emailSubject, setEmailSubject] = useState('')
+  const [emailBody, setEmailBody] = useState('')
+  const [emailSending, setEmailSending] = useState(false)
+  const [emailError, setEmailError] = useState<string | null>(null)
+
+  const handleQuickSend = async () => {
+    if (!emailSubject.trim() || !emailBody.trim()) return
+    setEmailSending(true)
+    setEmailError(null)
+    try {
+      const res = await fetch('/api/email-sequences/quick-send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          lead_id: lead.id,
+          to_email: lead.email,
+          subject: emailSubject.trim(),
+          body: emailBody.trim(),
+        }),
+      })
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.error || 'Failed to send email')
+      }
+      toast.success('Email sent successfully')
+      setShowEmailModal(false)
+      setEmailSubject('')
+      setEmailBody('')
+      queryClient.invalidateQueries({ queryKey: ['lead-activities', lead.id] })
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to send email'
+      setEmailError(message)
+    } finally {
+      setEmailSending(false)
+    }
+  }
+
   // Get display values from lead data
   const personName = lead.full_name || `${lead.first_name || ''} ${lead.last_name || ''}`.trim() || 'Unknown'
   const jobTitle = lead.contact_title || lead.job_title || ''
@@ -217,13 +256,27 @@ export function LeadDetailPanel({
                             </p>
                           )}
                         </div>
-                        <button
-                          onClick={onClose}
-                          className="rounded-md p-1.5 text-zinc-400 hover:text-zinc-500 hover:bg-zinc-100 transition-colors"
-                        >
-                          <span className="sr-only">Close</span>
-                          <XMarkIcon className="h-5 w-5" />
-                        </button>
+                        <div className="flex items-center gap-2">
+                          {lead.email && (
+                            <button
+                              onClick={() => {
+                                setEmailError(null)
+                                setShowEmailModal(true)
+                              }}
+                              className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+                            >
+                              <EnvelopeIcon className="h-4 w-4" />
+                              Send Email
+                            </button>
+                          )}
+                          <button
+                            onClick={onClose}
+                            className="rounded-md p-1.5 text-zinc-400 hover:text-zinc-500 hover:bg-zinc-100 transition-colors"
+                          >
+                            <span className="sr-only">Close</span>
+                            <XMarkIcon className="h-5 w-5" />
+                          </button>
+                        </div>
                       </div>
                     </div>
 
@@ -659,6 +712,99 @@ export function LeadDetailPanel({
           </div>
         </div>
       </Dialog>
+
+      {/* Quick Email Modal */}
+      {showEmailModal && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-zinc-900/60 backdrop-blur-sm"
+            onClick={() => !emailSending && setShowEmailModal(false)}
+          />
+          {/* Modal */}
+          <div className="relative z-10 w-full max-w-lg mx-4 bg-white rounded-xl shadow-2xl">
+            <div className="px-6 py-4 border-b border-zinc-200 flex items-center justify-between">
+              <h2 className="text-base font-semibold text-zinc-900">Send Email</h2>
+              <button
+                onClick={() => !emailSending && setShowEmailModal(false)}
+                className="rounded-md p-1.5 text-zinc-400 hover:text-zinc-500 hover:bg-zinc-100 transition-colors"
+              >
+                <span className="sr-only">Close</span>
+                <XMarkIcon className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="px-6 py-4 space-y-4">
+              {/* To field */}
+              <div>
+                <label className="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1">
+                  To
+                </label>
+                <div className="w-full rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-500 select-none">
+                  {lead.email}
+                </div>
+              </div>
+              {/* Subject */}
+              <div>
+                <label className="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1">
+                  Subject
+                </label>
+                <input
+                  type="text"
+                  value={emailSubject}
+                  onChange={(e) => setEmailSubject(e.target.value)}
+                  placeholder="Enter subject..."
+                  disabled={emailSending}
+                  className="w-full rounded-md border border-zinc-300 px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-zinc-50 disabled:text-zinc-400"
+                />
+              </div>
+              {/* Body */}
+              <div>
+                <label className="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1">
+                  Message
+                </label>
+                <textarea
+                  value={emailBody}
+                  onChange={(e) => setEmailBody(e.target.value)}
+                  placeholder="Write your message..."
+                  disabled={emailSending}
+                  rows={6}
+                  className="w-full rounded-md border border-zinc-300 px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-zinc-50 disabled:text-zinc-400 resize-y"
+                />
+              </div>
+              {/* Inline error */}
+              {emailError && (
+                <p className="text-sm text-red-600">{emailError}</p>
+              )}
+            </div>
+            <div className="px-6 py-4 border-t border-zinc-200 flex items-center justify-end gap-3">
+              <button
+                onClick={() => setShowEmailModal(false)}
+                disabled={emailSending}
+                className="rounded-md px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-100 transition-colors disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleQuickSend}
+                disabled={emailSending || !emailSubject.trim() || !emailBody.trim()}
+                className="inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {emailSending ? (
+                  <>
+                    <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                    Sending...
+                  </>
+                ) : (
+                  'Send Email'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </Transition.Root>
   )
 }

@@ -316,6 +316,16 @@ export default async function DashboardPage({
                 <> While you wait, <Link href="/settings/pixel" className="font-medium underline">install the pixel</Link> to identify website visitors too.</>
               )}
             </p>
+            <p className="text-sm text-zinc-500 mt-2">
+              Questions?{' '}
+              <a href="/settings/pixel" className="text-blue-600 hover:underline">
+                Check your pixel setup
+              </a>
+              {' · '}
+              <a href="/settings" className="text-blue-600 hover:underline">
+                Review your targeting preferences
+              </a>
+            </p>
           </div>
         </div>
       )}

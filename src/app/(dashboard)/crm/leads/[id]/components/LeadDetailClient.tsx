@@ -165,12 +165,19 @@ export function LeadDetailClient({ initialLead }: LeadDetailClientProps) {
             })()}
 
             <Button
-              className="gap-2 bg-primary hover:bg-primary/90 text-white shadow-sm"
+              className="gap-2 bg-primary hover:bg-primary/90 text-white shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={() => setShowEnrichPanel(true)}
+              disabled={creditsData?.creditsRemaining === 0}
+              title={creditsData?.creditsRemaining === 0 ? 'You have 0 enrichment credits. Buy more to continue.' : undefined}
             >
               <Zap className="h-4 w-4" />
-              Enrich Lead
+              {creditsData?.creditsRemaining === 0 ? 'No credits' : 'Enrich Lead'}
             </Button>
+            {creditsData?.creditsRemaining === 0 && (
+              <a href="/settings/billing" className="text-xs text-blue-600 hover:underline ml-2">
+                Buy credits →
+              </a>
+            )}
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

@@ -1,6 +1,6 @@
 /**
  * Auto-Submit Onboarding
- * Handles post-OAuth redirect: reads form data from sessionStorage,
+ * Handles post-OAuth redirect: reads form data from localStorage,
  * submits to /api/onboarding/setup, shows loading, redirects to dashboard.
  *
  * Includes retry logic for 401 responses, since auth cookies may not be
@@ -36,7 +36,28 @@ export function AutoSubmitOnboarding({ isMarketplace, isReturning }: AutoSubmitO
 
     const submit = async () => {
       try {
-        const stored = sessionStorage.getItem('cursive_onboarding')
+        // If returning=true was set by the OAuth callback, verify whether the
+        // workspace was already created (e.g. user hit back after a successful
+        // onboarding, or the OAuth flow ran twice). Skip straight to dashboard
+        // rather than risking a duplicate-workspace attempt.
+        //
+        // We probe an endpoint that calls getCurrentUser() (which queries the
+        // users table). A 200 means a platform user profile already exists →
+        // workspace is set up → go to dashboard immediately.
+        if (isReturning) {
+          try {
+            const workspaceCheckRes = await fetch('/api/ai-studio/workspaces')
+            if (workspaceCheckRes.ok) {
+              // Platform user profile exists — workspace already set up
+              router.replace('/dashboard')
+              return
+            }
+          } catch {
+            // Network error — fall through to normal submit flow
+          }
+        }
+
+        const stored = localStorage.getItem('cursive_onboarding')
         let onboardingData: any
 
         if (!stored) {
@@ -141,7 +162,7 @@ export function AutoSubmitOnboarding({ isMarketplace, isReturning }: AutoSubmitO
           const body409 = await lastResponse.json()
           if (body409.workspace_id) {
             // Already has workspace — redirect to dashboard
-            sessionStorage.removeItem('cursive_onboarding')
+            localStorage.removeItem('cursive_onboarding')
             router.push(isMarketplace ? '/marketplace' : '/dashboard')
             return
           }
@@ -189,7 +210,7 @@ export function AutoSubmitOnboarding({ isMarketplace, isReturning }: AutoSubmitO
         ])
 
         // Clear storage and redirect to dashboard
-        sessionStorage.removeItem('cursive_onboarding')
+        localStorage.removeItem('cursive_onboarding')
         router.push(isMarketplace ? '/marketplace' : '/dashboard')
       } catch (err: any) {
         // Provide specific error messages based on error type
@@ -223,7 +244,7 @@ export function AutoSubmitOnboarding({ isMarketplace, isReturning }: AutoSubmitO
             </button>
             <button
               onClick={() => {
-                sessionStorage.removeItem('cursive_onboarding')
+                localStorage.removeItem('cursive_onboarding')
                 window.location.href = '/welcome'
               }}
               className="h-10 px-6 text-muted-foreground font-medium rounded-lg hover:text-foreground transition-colors"

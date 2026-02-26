@@ -13,7 +13,9 @@ import type { NextRequest } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
-// Add HTML loading page for better UX during callback
+// Add HTML loading page for better UX during callback.
+// The HTTP Refresh header drives the redirect; no JS redirect is used to avoid
+// a double-redirect race where both fire and the browser navigates twice.
 const LOADING_PAGE = `
 <!DOCTYPE html>
 <html lang="en">
@@ -53,9 +55,6 @@ const LOADING_PAGE = `
     <h1>Signing you in</h1>
     <p>Just a moment...</p>
   </div>
-  <script>
-    setTimeout(() => { window.location.href = '{{REDIRECT_URL}}'; }, 1500);
-  </script>
 </body>
 </html>
 `
@@ -72,20 +71,6 @@ function sanitizeRedirectPath(path: string): string {
   return path
 }
 
-/**
- * Escape a string for safe inclusion in a JavaScript string literal.
- * Prevents XSS when injecting into: window.location.href = '...'
- */
-function escapeForJsStringLiteral(str: string): string {
-  return str
-    .replace(/\\/g, '\\\\')   // backslashes first
-    .replace(/'/g, "\\'")      // single quotes
-    .replace(/"/g, '\\"')      // double quotes
-    .replace(/</g, '\\x3c')   // opening angle brackets (prevents </script> breakout)
-    .replace(/>/g, '\\x3e')   // closing angle brackets
-    .replace(/\n/g, '\\n')    // newlines
-    .replace(/\r/g, '\\r')    // carriage returns
-}
 
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url)
@@ -160,17 +145,16 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Show loading page with auto-redirect.
-    // Use a short delay (1s) to ensure the browser fully processes Set-Cookie
-    // headers before navigating away. An immediate redirect (Refresh: 0) can
-    // cause cookie loss on some browsers, breaking the session on the next page.
-    const safeRedirectUrl = escapeForJsStringLiteral(redirectUrl)
-    const loadingHtml = LOADING_PAGE.replace('{{REDIRECT_URL}}', safeRedirectUrl)
-    const response = new NextResponse(loadingHtml, {
+    // Show loading page with HTTP Refresh header redirect.
+    // 2s delay ensures the browser fully processes Set-Cookie headers before
+    // navigating away. An immediate redirect (Refresh: 0) can cause cookie loss
+    // on some browsers, breaking the session on the next page.
+    // The JS redirect was removed to prevent a double-redirect race condition.
+    const response = new NextResponse(LOADING_PAGE, {
       status: 200,
       headers: {
         'Content-Type': 'text/html',
-        'Refresh': `2; url=${encodeURI(redirectUrl)}`, // 2s delay for cookie propagation (JS fires at 1.5s)
+        'Refresh': `2; url=${encodeURI(redirectUrl)}`,
       },
     })
 

@@ -65,7 +65,7 @@ export default async function LeadDetailPage({ params }: PageProps) {
     status: lead.status,
     linkedin_url: lead.linkedin_url ?? undefined,
     created_at: lead.created_at,
-    updated_at: lead.created_at, // LeadWithRelations lacks updated_at; fall back to created_at
+    updated_at: lead.updated_at ?? lead.created_at,
   }
 
   return (

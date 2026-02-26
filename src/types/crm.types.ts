@@ -323,6 +323,7 @@ export interface LeadWithRelations {
   secondary_email: string | null
   mobile_phone: string | null
   work_phone: string | null
+  updated_at: string | null
   // Joined relations
   queries?: {
     name: string

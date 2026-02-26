@@ -392,10 +392,33 @@ export async function POST(request: NextRequest) {
           })
 
         if (targetingInsertError) {
-          safeError('[Onboarding] User targeting insert failed (non-fatal):', {
+          safeError('[Onboarding] CRITICAL: User targeting insert failed — provision event will NOT fire, user may receive zero leads:', {
             message: targetingInsertError.message,
             code: targetingInsertError.code,
             details: targetingInsertError.details,
+            workspace_id: workspace.id,
+            user_id: userProfile.id,
+            industry: validated.industry,
+            states: targetStatesForProvisioning,
+          })
+          // Alert ops — without targeting, the provision event is skipped and this
+          // user may receive zero leads until targeting is manually created.
+          sendSlackAlert({
+            type: 'system_error',
+            severity: 'critical',
+            message: `CRITICAL: user_targeting insert failed for new signup ${validated.email} (${validated.companyName}) — user will receive ZERO leads until targeting is fixed. workspace_id=${workspace.id}`,
+            metadata: {
+              workspace_id: workspace.id,
+              user_id: userProfile.id,
+              email: validated.email,
+              company: validated.companyName,
+              industry: validated.industry,
+              states: targetStatesForProvisioning,
+              db_error: targetingInsertError.message,
+              db_code: targetingInsertError.code,
+            },
+          }).catch((slackErr) => {
+            safeError('[Onboarding] Slack alert for targeting failure also failed:', slackErr)
           })
         } else {
           safeLog('[Onboarding] User targeting created:', {
@@ -418,8 +441,22 @@ export async function POST(request: NextRequest) {
           safeLog('[Onboarding] Audience provision event fired for immediate lead pull')
         }
       } catch (targetingError) {
-        // Non-fatal: user can set targeting later from dashboard
-        safeError('[Onboarding] User targeting creation failed (non-fatal):', targetingError instanceof Error ? targetingError.message : targetingError)
+        // Non-fatal: user can set targeting later from dashboard, but ops must know
+        safeError('[Onboarding] CRITICAL: User targeting creation threw unexpectedly — provision event skipped, user may receive zero leads:', targetingError instanceof Error ? targetingError.message : targetingError)
+        sendSlackAlert({
+          type: 'system_error',
+          severity: 'critical',
+          message: `CRITICAL: user_targeting creation threw for new signup ${validated.email} (${validated.companyName}) — provision event skipped, user may receive ZERO leads. workspace_id=${workspace.id}`,
+          metadata: {
+            workspace_id: workspace.id,
+            user_id: userProfile.id,
+            email: validated.email,
+            company: validated.companyName,
+            error: targetingError instanceof Error ? targetingError.message : String(targetingError),
+          },
+        }).catch((slackErr) => {
+          safeError('[Onboarding] Slack alert for targeting catch also failed:', slackErr)
+        })
       }
     }
 

@@ -58,8 +58,8 @@ export function OnboardingFlow({ isMarketplace }: OnboardingFlowProps) {
     const supabase = createClient()
 
     if (authMethod === 'google') {
-      // Save form data to sessionStorage for post-OAuth pickup
-      sessionStorage.setItem('cursive_onboarding', JSON.stringify({
+      // Save form data to localStorage so it survives OAuth window close / browser back navigation
+      localStorage.setItem('cursive_onboarding', JSON.stringify({
         role: 'business',
         ...data,
         isMarketplace,
@@ -139,7 +139,7 @@ export function OnboardingFlow({ isMarketplace }: OnboardingFlowProps) {
     const supabase = createClient()
 
     if (authMethod === 'google') {
-      sessionStorage.setItem('cursive_onboarding', JSON.stringify({
+      localStorage.setItem('cursive_onboarding', JSON.stringify({
         role: 'partner',
         ...data,
         isMarketplace,
