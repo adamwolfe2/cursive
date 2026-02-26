@@ -1,7 +1,7 @@
 'use client'
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { useToast } from '@/lib/hooks/use-toast'
 import { CheckCircle } from 'lucide-react'
 import { PixelInstallTabs } from '@/components/pixel/PixelInstallTabs'
@@ -31,6 +31,8 @@ interface VerifyResult {
   pixelId: string | null
 }
 
+type VerifyState = 'idle' | 'polling' | 'verified' | 'timeout'
+
 function formatRelativeTime(isoString: string): string {
   const diff = Date.now() - new Date(isoString).getTime()
   const minutes = Math.floor(diff / 60_000)
@@ -48,28 +50,67 @@ export default function PixelSettingsPage() {
   const [websiteUrl, setWebsiteUrl] = useState('')
   const [websiteName, setWebsiteName] = useState('')
   const [copied, setCopied] = useState(false)
-  const [verifying, setVerifying] = useState(false)
+  const [verifyState, setVerifyState] = useState<VerifyState>('idle')
   const [verifyResult, setVerifyResult] = useState<VerifyResult | null>(null)
   const [showTroubleshooting, setShowTroubleshooting] = useState(false)
+  const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const pollCountRef = useRef(0)
+
+  // Clean up polling interval on unmount
+  useEffect(() => {
+    return () => {
+      if (pollIntervalRef.current) clearInterval(pollIntervalRef.current)
+    }
+  }, [])
 
   const handleVerifyInstallation = useCallback(async () => {
-    setVerifying(true)
+    // Cancel any existing poll
+    if (pollIntervalRef.current) {
+      clearInterval(pollIntervalRef.current)
+      pollIntervalRef.current = null
+    }
+    pollCountRef.current = 0
+    setVerifyState('polling')
     setVerifyResult(null)
     setShowTroubleshooting(false)
-    try {
-      const response = await fetch('/api/pixel/verify')
-      if (!response.ok) throw new Error('Verification request failed')
-      const result: VerifyResult = await response.json()
-      setVerifyResult(result)
-      if (!result.verified) {
-        setShowTroubleshooting(true)
+
+    const doPoll = async () => {
+      try {
+        const response = await fetch('/api/pixel/verify')
+        if (!response.ok) throw new Error('Verification request failed')
+        const result: VerifyResult = await response.json()
+        pollCountRef.current += 1
+
+        if (result.verified) {
+          if (pollIntervalRef.current) {
+            clearInterval(pollIntervalRef.current)
+            pollIntervalRef.current = null
+          }
+          setVerifyResult(result)
+          setVerifyState('verified')
+          return
+        }
+
+        // 24 attempts × 5s = 2 minutes
+        if (pollCountRef.current >= 24) {
+          if (pollIntervalRef.current) {
+            clearInterval(pollIntervalRef.current)
+            pollIntervalRef.current = null
+          }
+          setVerifyResult(result)
+          setVerifyState('timeout')
+          setShowTroubleshooting(true)
+          return
+        }
+      } catch {
+        // Network error — keep polling, will hit timeout naturally
       }
-    } catch {
-      toast.error('Could not reach the verification service — please try again.')
-    } finally {
-      setVerifying(false)
     }
-  }, [toast])
+
+    // Run immediately, then every 5s
+    await doPoll()
+    pollIntervalRef.current = setInterval(doPoll, 5_000)
+  }, [])
 
   const { data, isLoading } = useQuery<PixelStatus>({
     queryKey: ['pixel', 'status'],
@@ -285,16 +326,16 @@ export default function PixelSettingsPage() {
 
             <button
               onClick={handleVerifyInstallation}
-              disabled={verifying}
+              disabled={verifyState === 'polling'}
               className="inline-flex items-center gap-2 rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              {verifying ? (
+              {verifyState === 'polling' ? (
                 <>
                   <svg className="h-4 w-4 animate-spin text-zinc-400" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
                   </svg>
-                  Checking...
+                  Listening for pixel events...
                 </>
               ) : (
                 <>
@@ -307,44 +348,51 @@ export default function PixelSettingsPage() {
             </button>
           </div>
 
-          {verifyResult !== null && (
+          {(verifyState === 'polling' || verifyState === 'verified' || verifyState === 'timeout') && (
             <div className="mt-3 space-y-3">
-              <div className={`flex items-center gap-2 rounded-lg px-4 py-3 text-sm font-medium ${
-                verifyResult.verified
-                  ? 'bg-green-50 text-green-800 border border-green-200'
-                  : 'bg-red-50 text-red-800 border border-red-200'
-              }`}>
-                {verifyResult.verified ? (
-                  <>
-                    <span className="text-green-600">&#10003;</span>
-                    <div>
-                      <span>Pixel verified and working</span>
-                      <span className="block text-xs font-normal text-green-700 mt-0.5">
-                        {verifyResult.eventCount} event{verifyResult.eventCount === 1 ? '' : 's'} in the last 7 days
-                        {verifyResult.lastEventAt && ` · Last event ${formatRelativeTime(verifyResult.lastEventAt)}`}
-                      </span>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <span className="text-red-600">&#10007;</span>
-                    <div className="flex-1">
-                      <span>No events detected yet</span>
-                      <span className="block text-xs font-normal text-red-700 mt-0.5">
-                        It can take up to 5 minutes for the first event to appear after installation.
-                      </span>
-                    </div>
-                    <button
-                      onClick={() => setShowTroubleshooting(!showTroubleshooting)}
-                      className="text-xs underline text-red-700 hover:text-red-900 shrink-0"
-                    >
-                      {showTroubleshooting ? 'Hide help' : 'Troubleshoot'}
-                    </button>
-                  </>
-                )}
-              </div>
+              {verifyState === 'polling' && (
+                <div className="flex items-center gap-2 rounded-lg px-4 py-3 text-sm font-medium bg-blue-50 text-blue-800 border border-blue-200">
+                  <svg className="h-4 w-4 animate-spin text-blue-500 shrink-0" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                  </svg>
+                  <span>Listening for pixel events... Visit your site in another tab to trigger the pixel.</span>
+                </div>
+              )}
 
-              {showTroubleshooting && !verifyResult.verified && (
+              {verifyState === 'verified' && verifyResult && (
+                <div className="flex items-center gap-2 rounded-lg px-4 py-3 text-sm font-medium bg-green-50 text-green-800 border border-green-200">
+                  <span className="text-green-600">&#10003;</span>
+                  <div>
+                    <span>Pixel verified! First leads arriving soon.</span>
+                    <span className="block text-xs font-normal text-green-700 mt-0.5">
+                      {verifyResult.eventCount} event{verifyResult.eventCount === 1 ? '' : 's'} in the last 7 days
+                      {verifyResult.lastEventAt && ` · Last event ${formatRelativeTime(verifyResult.lastEventAt)}`}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {verifyState === 'timeout' && (
+                <div className="flex items-center gap-2 rounded-lg px-4 py-3 text-sm font-medium bg-red-50 text-red-800 border border-red-200">
+                  <span className="text-red-600">&#10007;</span>
+                  <div className="flex-1">
+                    <span>No events received yet. Double-check your install.</span>
+                    <span className="block text-xs font-normal text-red-700 mt-0.5">
+                      It can take up to 5 minutes for the first event to appear after installation.{' '}
+                      <a href="mailto:support@meetcursive.com" className="underline">Get help</a>
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => setShowTroubleshooting(!showTroubleshooting)}
+                    className="text-xs underline text-red-700 hover:text-red-900 shrink-0"
+                  >
+                    {showTroubleshooting ? 'Hide help' : 'Troubleshoot'}
+                  </button>
+                </div>
+              )}
+
+              {showTroubleshooting && (
                 <div className="rounded-lg border border-amber-200 bg-amber-50 p-4">
                   <h4 className="text-sm font-semibold text-amber-900 mb-3">Troubleshooting Checklist</h4>
                   <ol className="text-sm text-amber-800 space-y-2.5">
@@ -440,6 +488,14 @@ export default function PixelSettingsPage() {
               </p>
             </div>
 
+            {/* Fix 4: Which install method guidance */}
+            <p className="text-sm text-zinc-500 mb-3">
+              Not sure which to use?{' '}
+              <span className="font-medium text-zinc-700">GTM</span> if you have Google Tag Manager ·{' '}
+              <span className="font-medium text-zinc-700">Shopify</span> for Shopify stores ·{' '}
+              <span className="font-medium text-zinc-700">HTML</span> for everything else
+            </p>
+
             <PixelInstallTabs pixelId={data.pixel!.pixel_id} />
 
             <div className="mt-4 rounded-lg bg-primary/5 border border-primary/20 p-4">
@@ -458,6 +514,32 @@ export default function PixelSettingsPage() {
                   Matching leads appear in your My Leads dashboard automatically
                 </li>
               </ol>
+            </div>
+
+            {/* Fix 2: What happens after install guide */}
+            <div className="mt-8 rounded-lg border border-zinc-200 bg-zinc-50 p-5">
+              <h3 className="text-sm font-semibold text-zinc-900 mb-3">What happens after you install?</h3>
+              <ol className="space-y-3">
+                {[
+                  { step: '1', title: 'Pixel fires on your first visitor', desc: 'Usually within minutes of install. AudienceLab identifies the visitor by matching their browser fingerprint to our database.' },
+                  { step: '2', title: 'Lead appears in your dashboard', desc: 'Identified visitors become leads automatically. Expect 5–25% identification rate depending on your traffic source.' },
+                  { step: '3', title: 'Free auto-enrichment runs', desc: 'Every lead gets tech stack and email quality scored automatically — no credits needed.' },
+                  { step: '4', title: 'Enrich for full contact details', desc: 'Use Intelligence Pack (2 credits) to unlock LinkedIn, phone, and social profiles. Deep Research (10 credits) for an AI-written outreach angle.' },
+                ].map(item => (
+                  <li key={item.step} className="flex gap-3">
+                    <span className="flex-shrink-0 w-5 h-5 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center">{item.step}</span>
+                    <div>
+                      <p className="text-sm font-medium text-zinc-900">{item.title}</p>
+                      <p className="text-xs text-zinc-500 mt-0.5">{item.desc}</p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+              <div className="mt-4 pt-4 border-t border-zinc-200">
+                <a href="/leads" className="text-sm text-blue-600 hover:underline font-medium">View your leads →</a>
+                <span className="mx-2 text-zinc-300">·</span>
+                <a href="/website-visitors" className="text-sm text-blue-600 hover:underline font-medium">See website visitors →</a>
+              </div>
             </div>
           </div>
         )}

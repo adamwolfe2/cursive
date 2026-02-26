@@ -30,9 +30,11 @@ interface OnboardingSuccessProps {
   userType: UserType
   email: string
   isMarketplace: boolean
+  targetIndustry?: string
+  targetLocations?: string
 }
 
-export function OnboardingSuccess({ userType, email, isMarketplace }: OnboardingSuccessProps) {
+export function OnboardingSuccess({ userType, email, isMarketplace, targetIndustry, targetLocations }: OnboardingSuccessProps) {
   const router = useRouter()
   const isBusinessPath = userType === 'business'
 
@@ -201,6 +203,44 @@ export function OnboardingSuccess({ userType, email, isMarketplace }: Onboarding
 
         {needsConfirmation && (
           <motion.div variants={staggerItemVariants} className="space-y-6">
+            {/* Targeting summary — reassures user their preferences are set */}
+            {isBusinessPath && targetIndustry && (
+              <div className="rounded-lg border border-blue-100 bg-blue-50 px-4 py-3 text-left">
+                <p className="text-xs font-semibold text-blue-700 uppercase tracking-wider mb-1.5">
+                  Your lead targeting is active
+                </p>
+                <p className="text-sm text-blue-900">
+                  We&apos;re finding leads in{' '}
+                  <strong>{targetIndustry}</strong>
+                  {targetLocations && (
+                    <> in <strong>{targetLocations}</strong></>
+                  )}
+                  . First batch arriving within the hour.
+                </p>
+                <a href="/settings" className="text-xs text-blue-600 hover:underline mt-1 block">
+                  Adjust targeting preferences →
+                </a>
+              </div>
+            )}
+
+            {/* Next step: Install pixel */}
+            {isBusinessPath && (
+              <div className="rounded-lg border border-violet-100 bg-violet-50 px-4 py-3 text-left">
+                <p className="text-xs font-semibold text-violet-700 uppercase tracking-wider mb-1.5">
+                  Next: Install your Superpixel
+                </p>
+                <p className="text-sm text-violet-900 mb-2">
+                  Track real-time visitors on your website and identify them as leads automatically.
+                </p>
+                <a
+                  href="/settings/pixel"
+                  className="inline-flex items-center gap-1 text-xs font-semibold text-violet-700 hover:underline"
+                >
+                  Install Pixel →
+                </a>
+              </div>
+            )}
+
             {/* Step-by-step instructions */}
             <div className="flex flex-col items-center gap-3 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">

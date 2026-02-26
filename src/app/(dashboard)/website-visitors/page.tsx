@@ -596,46 +596,63 @@ export default function WebsiteVisitorsPage() {
 
       {/* Stats */}
       {(stats || isLoading) && (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {isLoading ? (
-            Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="bg-white rounded-xl border border-gray-200 p-5 animate-pulse">
-                <div className="h-4 w-24 bg-gray-200 rounded mb-3" />
-                <div className="h-8 w-16 bg-gray-200 rounded" />
+        <div className="space-y-2">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {isLoading ? (
+              Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="bg-white rounded-xl border border-gray-200 p-5 animate-pulse">
+                  <div className="h-4 w-24 bg-gray-200 rounded mb-3" />
+                  <div className="h-8 w-16 bg-gray-200 rounded" />
+                </div>
+              ))
+            ) : (
+              <>
+                <StatCard
+                  icon={Users}
+                  label="Total Identified"
+                  value={(stats?.total ?? 0).toLocaleString()}
+                  sub={`last ${dateRange} days`}
+                  iconClass="bg-blue-100"
+                />
+                <StatCard
+                  icon={TrendingUp}
+                  label="This Week"
+                  value={(stats?.this_week ?? 0).toLocaleString()}
+                  sub="new visitors"
+                  iconClass="bg-emerald-100"
+                />
+                <StatCard
+                  icon={Zap}
+                  label="Enriched"
+                  value={(stats?.enriched ?? 0).toLocaleString()}
+                  sub={`${stats?.match_rate ?? 0}% match rate`}
+                  iconClass="bg-blue-100"
+                />
+                <StatCard
+                  icon={TrendingUp}
+                  label="Avg Intent Score"
+                  value={stats?.avg_score ?? 0}
+                  sub="out of 100"
+                  iconClass="bg-amber-100"
+                />
+              </>
+            )}
+          </div>
+
+          {/* Source breakdown */}
+          {!isLoading && visitors.length > 0 && (() => {
+            const pixelCount = visitors.filter((v) =>
+              v.source?.includes('pixel') || v.source?.includes('audiencelab')
+            ).length
+            const audienceCount = visitors.length - pixelCount
+            return (
+              <div className="flex gap-4 text-xs text-zinc-500 pl-1">
+                <span>From pixel: <strong className="text-zinc-700">{pixelCount}</strong></span>
+                <span>From audience: <strong className="text-zinc-700">{audienceCount}</strong></span>
+                <span className="text-zinc-400">(this page)</span>
               </div>
-            ))
-          ) : (
-            <>
-              <StatCard
-                icon={Users}
-                label="Total Identified"
-                value={(stats?.total ?? 0).toLocaleString()}
-                sub={`last ${dateRange} days`}
-                iconClass="bg-blue-100"
-              />
-              <StatCard
-                icon={TrendingUp}
-                label="This Week"
-                value={(stats?.this_week ?? 0).toLocaleString()}
-                sub="new visitors"
-                iconClass="bg-emerald-100"
-              />
-              <StatCard
-                icon={Zap}
-                label="Enriched"
-                value={(stats?.enriched ?? 0).toLocaleString()}
-                sub={`${stats?.match_rate ?? 0}% match rate`}
-                iconClass="bg-blue-100"
-              />
-              <StatCard
-                icon={TrendingUp}
-                label="Avg Intent Score"
-                value={stats?.avg_score ?? 0}
-                sub="out of 100"
-                iconClass="bg-amber-100"
-              />
-            </>
-          )}
+            )
+          })()}
         </div>
       )}
 
@@ -727,11 +744,11 @@ export default function WebsiteVisitorsPage() {
               </p>
               <a
                 href="/settings/billing"
-                className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white hover:bg-primary/90 transition-colors"
+                className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 transition-colors"
               >
-                <Sparkles className="h-4 w-4" />
-                Upgrade to Pro
+                Upgrade to continue →
               </a>
+              <p className="text-xs text-zinc-500 mt-2">Unlimited visitor identification · All 50+ data fields · Cancel anytime</p>
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 opacity-30 pointer-events-none select-none" aria-hidden="true">

@@ -6,13 +6,16 @@ import Link from 'next/link'
 import {
   Users, TrendingUp, Crown, ArrowRight, Sparkles,
   Zap, Star, Target, CheckCircle2, Circle,
-  Calendar, Eye, Rocket, Settings2, Clock, Gift,
+  Calendar, Eye, Rocket, Clock, Gift,
 } from 'lucide-react'
 import { sanitizeName, sanitizeCompanyName, sanitizeText } from '@/lib/utils/sanitize-text'
 import { DashboardAnimationWrapper, AnimatedSection } from '@/components/dashboard/dashboard-animation-wrapper'
 import { formatDistanceToNow } from 'date-fns'
 import { OnboardingChecklist } from '@/components/onboarding/OnboardingChecklist'
 import { WhatsNewModal } from '@/components/dashboard/WhatsNewModal'
+import { FirstLeadsBanner } from '@/components/dashboard/FirstLeadsBanner'
+import { TrialCountdown } from '@/components/dashboard/TrialCountdown'
+import { HowWeFindLeads } from '@/components/dashboard/HowWeFindLeads'
 
 export const metadata: Metadata = {
   title: 'Dashboard | Cursive',
@@ -41,7 +44,7 @@ export default async function DashboardPage({
   // Get user profile
   const { data: userData, error: userError } = await supabase
     .from('users')
-    .select('id, auth_user_id, workspace_id, email, full_name, plan, role, daily_lead_limit, industry_segment, location_segment, workspaces(id, name, industry_vertical)')
+    .select('id, auth_user_id, workspace_id, email, full_name, plan, role, daily_lead_limit, industry_segment, location_segment, workspaces(id, name, industry_vertical, created_at)')
     .eq('auth_user_id', user.id)
     .maybeSingle()
 
@@ -56,7 +59,7 @@ export default async function DashboardPage({
     daily_lead_limit: number | null
     industry_segment: string | null
     location_segment: string | null
-    workspaces: { id: string; name: string; industry_vertical: string | null } | null
+    workspaces: { id: string; name: string; industry_vertical: string | null; created_at: string } | null
   } | null
 
   if (userError || !userProfile?.workspace_id) redirect('/welcome')
@@ -89,6 +92,8 @@ export default async function DashboardPage({
     yesterdayLeadsResult,
     prevWeekLeadsResult,
     sourceLeadsResult,
+    intelligenceTierResult,
+    pixelEventsResult,
   ] = await Promise.all([
     // Today's lead count
     supabase
@@ -171,6 +176,18 @@ export default async function DashboardPage({
       .eq('workspace_id', userProfile.workspace_id)
       .gte('delivered_at', `${weekStart}T00:00:00`)
       .limit(200),
+    // Intelligence Pack used on any lead (for checklist)
+    supabase
+      .from('leads')
+      .select('id', { count: 'exact', head: true })
+      .eq('workspace_id', userProfile.workspace_id)
+      .neq('intelligence_tier', 'none'),
+    // Pixel events — count > 0 means pixel is verified and firing
+    supabase
+      .from('audiencelab_events')
+      .select('id', { count: 'exact', head: true })
+      .eq('workspace_id', userProfile.workspace_id)
+      .limit(1),
   ])
 
   const todayCount = todayLeadsResult.count ?? 0
@@ -197,7 +214,16 @@ export default async function DashboardPage({
   const hasPreferences = !!(targeting?.target_industries?.length || targeting?.target_states?.length)
   const enrichedCount = enrichedLeadsResult.count ?? 0
   const hasEnriched = enrichedCount > 0
+  const intelligenceTierCount = intelligenceTierResult.count ?? 0
+  const hasIntelligence = hasEnriched || intelligenceTierCount > 0
   const hasActivated = (activationResult.count ?? 0) > 0
+  const hasVerifiedPixel = hasPixel && (pixelEventsResult.count ?? 0) > 0
+
+  // Workspace age for first-leads banner
+  const workspaceCreatedAt = userProfile.workspaces?.created_at
+  const workspaceAgeHours = workspaceCreatedAt
+    ? (Date.now() - new Date(workspaceCreatedAt).getTime()) / 3_600_000
+    : 9999
   const credits = creditsData
   const creditsRemaining = credits?.remaining ?? 0
   const creditLimit = credits?.limit ?? 10
@@ -226,17 +252,17 @@ export default async function DashboardPage({
 
   // Pixel trial info
   const isOnTrial = pixel?.trial_status === 'trial'
-  const trialEndsAt = pixel?.trial_ends_at ? new Date(pixel.trial_ends_at) : null
-  const trialDaysLeft = trialEndsAt ? Math.max(0, Math.ceil((trialEndsAt.getTime() - Date.now()) / 86_400_000)) : null
+  const trialEndsAtStr = pixel?.trial_ends_at ?? null
 
   // Onboarding checklist
   const checklistItems = [
     { id: 'account', label: 'Create your account', done: true, href: null },
     { id: 'pixel', label: 'Install tracking pixel', done: hasPixel, href: '/settings/pixel' },
+    { id: 'pixel_verified', label: 'Verify your pixel is working', done: hasVerifiedPixel, href: '/settings/pixel' },
     { id: 'prefs', label: 'Set lead preferences', done: hasPreferences, href: '/my-leads/preferences' },
     { id: 'enrich', label: 'Enrich your first lead', done: hasEnriched, href: '/leads' },
     { id: 'activate', label: 'Activate — run a campaign', done: hasActivated, href: '/activate' },
-    { id: 'intelligence', label: 'Try Intelligence Pack on a lead', done: false, href: '/leads' },
+    { id: 'intelligence', label: 'Try Intelligence Pack on a lead', done: hasIntelligence, href: '/leads' },
   ]
   const checklistProgress = checklistItems.filter((i) => i.done).length
   const checklistTotal = checklistItems.length
@@ -374,36 +400,17 @@ export default async function DashboardPage({
         </div>
       )}
 
-      {/* Pixel trial banner */}
-      {isOnTrial && trialDaysLeft !== null && (
-        <div className={`rounded-xl border p-5 flex items-center justify-between gap-4 ${
-          trialDaysLeft <= 3 ? 'bg-red-50 border-red-200' : trialDaysLeft <= 7 ? 'bg-amber-50 border-amber-200' : 'bg-blue-50 border-blue-200'
-        }`}>
-          <div className="flex items-center gap-3">
-            <Target className={`h-6 w-6 shrink-0 ${trialDaysLeft <= 3 ? 'text-red-600' : trialDaysLeft <= 7 ? 'text-amber-600' : 'text-blue-600'}`} />
-            <div>
-              <p className={`font-semibold text-sm mb-1 ${trialDaysLeft <= 3 ? 'text-red-900' : trialDaysLeft <= 7 ? 'text-amber-900' : 'text-blue-900'}`}>
-                {trialDaysLeft === 0
-                  ? 'Pixel trial ends today!'
-                  : trialDaysLeft === 1
-                  ? 'Pixel trial ends tomorrow'
-                  : `${trialDaysLeft} days remaining in your free pixel trial`}
-              </p>
-              <p className={`text-xs ${trialDaysLeft <= 3 ? 'text-red-700' : trialDaysLeft <= 7 ? 'text-amber-700' : 'text-blue-700'}`}>
-                {pixel?.visitor_count_total ? `${pixel.visitor_count_total} visitors identified so far · ` : ''}
-                Upgrade to keep website visitor identification active.
-              </p>
-            </div>
-          </div>
-          <Link
-            href="/settings/billing"
-            className={`shrink-0 text-sm font-semibold rounded-lg px-4 py-2 transition-colors text-white ${
-              trialDaysLeft <= 3 ? 'bg-red-600 hover:bg-red-700' : trialDaysLeft <= 7 ? 'bg-amber-600 hover:bg-amber-700' : 'bg-blue-600 hover:bg-blue-700'
-            }`}
-          >
-            Upgrade Now
-          </Link>
-        </div>
+      {/* Pixel trial banner — client component for live countdown */}
+      {isOnTrial && trialEndsAtStr && (
+        <TrialCountdown
+          trialEndsAt={trialEndsAtStr}
+          visitorCountTotal={pixel?.visitor_count_total ?? null}
+        />
+      )}
+
+      {/* First leads celebration banner — client component handles localStorage dismiss */}
+      {totalCount > 0 && onboarding !== 'complete' && (
+        <FirstLeadsBanner count={totalCount} workspaceAgeHours={workspaceAgeHours} />
       )}
 
       {/* Stats row */}
@@ -462,10 +469,20 @@ export default async function DashboardPage({
                 <div className={`p-1.5 rounded-lg ${creditsRemaining <= 3 ? 'bg-amber-100' : 'bg-gray-100'}`}>
                   <Zap className={`h-4 w-4 ${creditsRemaining <= 3 ? 'text-amber-600' : 'text-gray-600'}`} />
                 </div>
-                <span className="text-sm text-gray-500">Enrichment Credits</span>
+                <span
+                  className="text-sm text-gray-500"
+                  title="2 credits per Intel Pack · 10 credits per Deep Research · Auto-enrichment is always free"
+                >
+                  Enrichment Credits
+                </span>
               </div>
               <div className={`text-3xl font-bold ${creditsRemaining <= 3 ? 'text-amber-600' : 'text-gray-900'}`}>{creditsRemaining}</div>
-              <p className="text-xs text-gray-500 mt-1">of {creditLimit}/day ({isFree ? 'Free' : 'Pro'}) · resets daily</p>
+              <p
+                className="text-xs text-gray-500 mt-1"
+                title="2 credits per Intel Pack · 10 credits per Deep Research · Auto-enrichment is always free"
+              >
+                of {creditLimit}/day ({isFree ? 'Free' : 'Pro'}) · resets daily
+              </p>
             </div>
           </Link>
 
@@ -564,9 +581,18 @@ export default async function DashboardPage({
                     Set preferences <ArrowRight className="h-3.5 w-3.5" />
                   </Link>
                 )}
+                <div className="mt-4 text-left">
+                  <HowWeFindLeads />
+                </div>
               </div>
             )}
           </div>
+          {/* How we find your leads — shown below leads list when there are leads */}
+          {recentLeads.length > 0 && (
+            <div className="mt-3">
+              <HowWeFindLeads />
+            </div>
+          )}
         </AnimatedSection>
 
         {/* Right column: Checklist + Quick Actions */}

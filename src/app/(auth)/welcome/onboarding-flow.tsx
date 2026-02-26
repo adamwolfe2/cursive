@@ -49,6 +49,8 @@ export function OnboardingFlow({ isMarketplace }: OnboardingFlowProps) {
   } = useWaitlistFlow()
 
   const [submittedEmail, setSubmittedEmail] = useState('')
+  const [submittedIndustry, setSubmittedIndustry] = useState('')
+  const [submittedLocations, setSubmittedLocations] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -102,6 +104,8 @@ export function OnboardingFlow({ isMarketplace }: OnboardingFlowProps) {
       if (!authData.session) {
         // Email confirmation required
         setSubmittedEmail(data.email)
+        setSubmittedIndustry(data.industry || '')
+        setSubmittedLocations(data.targetLocations || '')
         goToScreen('business-success')
         return
       }
@@ -126,6 +130,8 @@ export function OnboardingFlow({ isMarketplace }: OnboardingFlowProps) {
       }
 
       setSubmittedEmail(data.email)
+      setSubmittedIndustry(data.industry || '')
+      setSubmittedLocations(data.targetLocations || '')
       goToScreen('business-success')
     } catch (err: any) {
       setError(err.message || 'Something went wrong')
@@ -280,6 +286,8 @@ export function OnboardingFlow({ isMarketplace }: OnboardingFlowProps) {
             userType="business"
             email={submittedEmail}
             isMarketplace={isMarketplace}
+            targetIndustry={submittedIndustry}
+            targetLocations={submittedLocations}
           />
         )
 
