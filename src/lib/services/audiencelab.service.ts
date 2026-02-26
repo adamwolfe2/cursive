@@ -202,13 +202,17 @@ export async function fetchLeadsFromSegment(
       fetching: fetchSize,
     })
 
+    // 20s timeout — AL API can be slow but we don't want functions to hang
+    const abortController = new AbortController()
+    const timeoutId = setTimeout(() => abortController.abort(), 20000)
     const response = await fetch(url.toString(), {
       method: 'GET',
       headers: {
         'X-API-Key': API_KEY!,
         'Content-Type': 'application/json',
       },
-    })
+      signal: abortController.signal,
+    }).finally(() => clearTimeout(timeoutId))
 
     if (!response.ok) {
       const error = await response.text()

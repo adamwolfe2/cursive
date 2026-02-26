@@ -183,20 +183,29 @@ export function AutoSubmitOnboarding({ isMarketplace, isReturning }: AutoSubmitO
         // Fire both post-onboarding tasks in parallel (non-blocking):
         // 1. Populate initial leads immediately
         // 2. Auto-provision their SuperPixel so website visitor tracking is ready
+        //
+        // Both make external AudienceLab API calls that can be slow — cap at 12s
+        // so users are never stuck on the spinner waiting for a background task.
         const email = onboardingData.email || ''
         const emailDomain = email.includes('@') ? email.split('@')[1] : null
         const businessName = onboardingData.companyName || onboardingData.businessName || onboardingData.fullName || 'My Business'
 
+        function fetchWithTimeout(url: string, options: RequestInit, timeoutMs = 12000) {
+          const controller = new AbortController()
+          const id = setTimeout(() => controller.abort(), timeoutMs)
+          return fetch(url, { ...options, signal: controller.signal })
+            .catch(() => null)
+            .finally(() => clearTimeout(id))
+        }
+
         await Promise.allSettled([
           // Populate leads immediately (don't wait for 8am cron)
-          fetch('/api/leads/populate-initial', { method: 'POST' })
-            .then(r => r.ok ? r.json() : null)
-            .catch(() => null),
+          fetchWithTimeout('/api/leads/populate-initial', { method: 'POST' }),
 
           // Auto-provision SuperPixel using email domain as the website URL
           // If no valid domain, skip silently — user can do it from /settings/pixel
           emailDomain && !emailDomain.includes('gmail') && !emailDomain.includes('yahoo') && !emailDomain.includes('hotmail')
-            ? fetch('/api/pixel/provision', {
+            ? fetchWithTimeout('/api/pixel/provision', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -204,8 +213,6 @@ export function AutoSubmitOnboarding({ isMarketplace, isReturning }: AutoSubmitO
                   website_name: businessName,
                 }),
               })
-              .then(r => r.ok ? r.json() : null)
-              .catch(() => null)
             : Promise.resolve(),
         ])
 

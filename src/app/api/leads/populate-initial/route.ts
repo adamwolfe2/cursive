@@ -16,6 +16,9 @@ import { safeError } from '@/lib/utils/log-sanitizer'
 import { checkWorkspaceDuplicates, logDedupRejections } from '@/lib/services/deduplication.service'
 import { handleApiError } from '@/lib/utils/api-error-handler'
 
+// Cap at 30s — AL fetch has a 20s internal timeout, plus DB work
+export const maxDuration = 30
+
 export async function POST(req: NextRequest) {
   try {
     const currentUser = await getCurrentUser()
