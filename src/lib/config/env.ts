@@ -1,6 +1,6 @@
 /**
  * Environment Configuration
- * Cursive Platform
+ * Cursive Platform — updated 2026-02-27
  *
  * Type-safe environment variable access and validation.
  */
