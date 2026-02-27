@@ -24,7 +24,7 @@ const homepageFAQs = [
   },
   {
     question: 'How is Cursive different from competitors?',
-    answer: 'Unlike visitor ID tools that stop at a name and LinkedIn URL, Cursive's Intelligence Layer automatically enriches every lead with tech stack data, LinkedIn work history, social profiles, news mentions, and AI-generated outreach angles. Cursive also combines identification with AI-powered activation — including 60B+ behaviors & URLs scanned weekly, real-time identification, and multi-channel campaigns out of the box.',
+    answer: "Unlike visitor ID tools that stop at a name and LinkedIn URL, Cursive's Intelligence Layer automatically enriches every lead with tech stack data, LinkedIn work history, social profiles, news mentions, and AI-generated outreach angles. Cursive also combines identification with AI-powered activation — including 60B+ behaviors & URLs scanned weekly, real-time identification, and multi-channel campaigns out of the box.",
   },
 ]
 
