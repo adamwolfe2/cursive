@@ -109,7 +109,8 @@ export async function POST(request: NextRequest) {
       .maybeSingle()
 
     // 6. Send invitation email
-    const inviteUrl = `${process.env.NEXT_PUBLIC_APP_URL}/auth/accept-invite?token=${invite.token}`
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_SITE_URL || 'https://leads.meetcursive.com'
+    const inviteUrl = `${appUrl}/auth/accept-invite?token=${invite.token}`
 
     try {
       await getResend().emails.send({
