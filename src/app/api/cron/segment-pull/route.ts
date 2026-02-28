@@ -36,10 +36,67 @@ import {
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 
+// Allow up to 5 minutes — AL audience creation + record fetching can be slow
+export const maxDuration = 300
 
 const LOG_PREFIX = '[AL Segment Pull Cron]'
 const MAX_RECORDS_PER_RUN = 500
 const MAX_PAGES = 5
+
+/** US state name → 2-letter code normalization */
+const STATE_NAMES: Record<string, string> = {
+  'alabama': 'AL', 'alaska': 'AK', 'arizona': 'AZ', 'arkansas': 'AR',
+  'california': 'CA', 'colorado': 'CO', 'connecticut': 'CT', 'delaware': 'DE',
+  'florida': 'FL', 'georgia': 'GA', 'hawaii': 'HI', 'idaho': 'ID',
+  'illinois': 'IL', 'indiana': 'IN', 'iowa': 'IA', 'kansas': 'KS',
+  'kentucky': 'KY', 'louisiana': 'LA', 'maine': 'ME', 'maryland': 'MD',
+  'massachusetts': 'MA', 'michigan': 'MI', 'minnesota': 'MN', 'mississippi': 'MS',
+  'missouri': 'MO', 'montana': 'MT', 'nebraska': 'NE', 'nevada': 'NV',
+  'new hampshire': 'NH', 'new jersey': 'NJ', 'new mexico': 'NM', 'new york': 'NY',
+  'north carolina': 'NC', 'north dakota': 'ND', 'ohio': 'OH', 'oklahoma': 'OK',
+  'oregon': 'OR', 'pennsylvania': 'PA', 'rhode island': 'RI', 'south carolina': 'SC',
+  'south dakota': 'SD', 'tennessee': 'TN', 'texas': 'TX', 'utah': 'UT',
+  'vermont': 'VT', 'virginia': 'VA', 'washington': 'WA', 'west virginia': 'WV',
+  'wisconsin': 'WI', 'wyoming': 'WY',
+}
+
+/** Normalize state values to 2-letter codes, deduping the result */
+function normalizeStates(states: string[]): string[] {
+  const codes = new Set<string>()
+  for (const s of states) {
+    const upper = s.toUpperCase().trim()
+    if (upper.length === 2) {
+      codes.add(upper)
+    } else {
+      const code = STATE_NAMES[s.toLowerCase().trim()]
+      if (code) codes.add(code)
+    }
+  }
+  return Array.from(codes)
+}
+
+/**
+ * Poll for audience records with exponential backoff.
+ * AL audiences can take 5–30 seconds to finish processing after creation.
+ */
+async function fetchAudienceRecordsWithRetry(
+  audienceId: string,
+  page: number,
+  pageSize: number,
+  maxAttempts = 5,
+): Promise<Awaited<ReturnType<typeof fetchAudienceRecords>>> {
+  let delay = 5000 // start at 5 seconds
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    const response = await fetchAudienceRecords(audienceId, page, pageSize)
+    if ((response.data?.length ?? 0) > 0 || attempt === maxAttempts) {
+      return response
+    }
+    safeLog(`${LOG_PREFIX} Audience ${audienceId} not ready yet (attempt ${attempt}/${maxAttempts}), waiting ${delay}ms...`)
+    await new Promise(r => setTimeout(r, delay))
+    delay = Math.min(delay * 1.5, 20000) // cap at 20s
+  }
+  return await fetchAudienceRecords(audienceId, page, pageSize)
+}
 
 interface TargetingCombo {
   industries: string[]
@@ -85,11 +142,14 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ skipped: true, reason: 'No active targeting preferences' })
     }
 
-    // Group by unique industry+state combos
+    // Group by unique industry+state combos, normalizing state codes to 2-letter format
     const comboMap = new Map<string, TargetingCombo>()
     for (const row of targetingRows!) {
       const industries = (row.target_industries || []).sort()
-      const states = (row.target_states || []).sort()
+      const states = normalizeStates(row.target_states || []).sort()
+
+      if (industries.length === 0 && states.length === 0) continue // skip blank targeting
+
       const key = `${industries.join(',')}|${states.join(',')}`
 
       if (comboMap.has(key)) {
@@ -127,10 +187,7 @@ export async function GET(request: NextRequest) {
           continue
         }
 
-        // Brief wait for audience to finish processing
-        await new Promise(r => setTimeout(r, 2000))
-
-        // Fetch records page by page
+        // Fetch records page by page — poll with retry since AL takes time to build the audience
         let inserted = 0
         let skipped = 0
         const remaining = MAX_RECORDS_PER_RUN - totalInserted
@@ -139,7 +196,10 @@ export async function GET(request: NextRequest) {
           const pageSize = Math.min(500, remaining - inserted)
           if (pageSize <= 0) break
 
-          const response = await fetchAudienceRecords(audienceId, page, pageSize)
+          // First page uses retry logic; subsequent pages fetch directly (audience is ready)
+          const response = page === 1
+            ? await fetchAudienceRecordsWithRetry(audienceId, page, pageSize)
+            : await fetchAudienceRecords(audienceId, page, pageSize)
           const records = response.data || []
 
           if (records.length === 0) break
