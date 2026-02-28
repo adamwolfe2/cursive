@@ -27,32 +27,11 @@ export function TrialCountdown({ trialEndsAt, visitorCountTotal }: TrialCountdow
     return () => clearInterval(interval)
   }, [trialEndsAt])
 
-  const colorClass =
-    daysLeft <= 3
-      ? 'bg-red-50 border-red-200'
-      : daysLeft <= 7
-      ? 'bg-amber-50 border-amber-200'
-      : 'bg-blue-50 border-blue-200'
-
-  const iconColor =
-    daysLeft <= 3 ? 'text-red-600' : daysLeft <= 7 ? 'text-amber-600' : 'text-blue-600'
-
-  const headingColor =
-    daysLeft <= 3
-      ? 'text-red-900'
-      : daysLeft <= 7
-      ? 'text-amber-900'
-      : 'text-blue-900'
-
-  const bodyColor =
-    daysLeft <= 3 ? 'text-red-700' : daysLeft <= 7 ? 'text-amber-700' : 'text-blue-700'
-
-  const btnColor =
-    daysLeft <= 3
-      ? 'bg-red-600 hover:bg-red-700'
-      : daysLeft <= 7
-      ? 'bg-amber-600 hover:bg-amber-700'
-      : 'bg-blue-600 hover:bg-blue-700'
+  const colorClass = 'bg-blue-50 border-blue-200'
+  const iconColor = 'text-blue-600'
+  const headingColor = 'text-blue-900'
+  const bodyColor = 'text-blue-700'
+  const btnColor = 'bg-primary hover:bg-primary/90'
 
   const heading =
     daysLeft === 0

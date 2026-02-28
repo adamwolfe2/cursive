@@ -314,11 +314,11 @@ export default async function DashboardPage({
 
       {/* Onboarding complete banner */}
       {onboarding === 'complete' && (
-        <div className="rounded-xl bg-green-50 border border-green-200 p-4 flex items-start gap-3">
-          <CheckCircle2 className="h-5 w-5 text-green-600 shrink-0 mt-0.5" />
+        <div className="rounded-xl bg-blue-50 border border-blue-200 p-4 flex items-start gap-3">
+          <CheckCircle2 className="h-5 w-5 text-blue-600 shrink-0 mt-0.5" />
           <div>
-            <p className="font-semibold text-green-900">Setup complete!</p>
-            <p className="text-sm text-green-700">
+            <p className="font-semibold text-blue-900">Setup complete!</p>
+            <p className="text-sm text-blue-700">
               {totalCount > 0
                 ? `Your first ${totalCount} leads are ready — check them out below!`
                 : 'We\'re setting up your lead pipeline now. Your first leads will arrive shortly — check back in a few minutes or by 8am CT tomorrow.'}
@@ -358,42 +358,34 @@ export default async function DashboardPage({
 
       {/* Credits low banner */}
       {creditsRemaining <= 3 && (
-        <div className={`rounded-xl p-4 flex items-center justify-between gap-4 ${
-          isFree
-            ? 'bg-indigo-50 border border-indigo-200'
-            : 'bg-amber-50 border border-amber-200'
-        }`}>
+        <div className="rounded-xl p-4 flex items-center justify-between gap-4 bg-blue-50 border border-blue-200">
           <div className="flex items-center gap-3">
             {isFree ? (
-              <Rocket className="h-5 w-5 text-indigo-600 shrink-0" />
+              <Rocket className="h-5 w-5 text-blue-600 shrink-0" />
             ) : (
-              <Zap className="h-5 w-5 text-amber-600 shrink-0" />
+              <Zap className="h-5 w-5 text-blue-600 shrink-0" />
             )}
             <div>
               {isFree ? (
                 <>
-                  <p className="font-semibold text-indigo-900 text-sm">
+                  <p className="font-semibold text-blue-900 text-sm">
                     {creditsRemaining === 0 ? 'You\'ve used all your free credits today' : `Only ${creditsRemaining} free credit${creditsRemaining === 1 ? '' : 's'} left today`}
                   </p>
-                  <p className="text-xs text-indigo-700">Upgrade to Pro for 1,000 daily credits, priority enrichment, and full CRM access.</p>
+                  <p className="text-xs text-blue-700">Upgrade to Pro for 1,000 daily credits, priority enrichment, and full CRM access.</p>
                 </>
               ) : (
                 <>
-                  <p className="font-semibold text-amber-900 text-sm">
+                  <p className="font-semibold text-blue-900 text-sm">
                     {creditsRemaining === 0 ? 'You\'re out of enrichment credits' : `Only ${creditsRemaining} enrichment credit${creditsRemaining === 1 ? '' : 's'} left`}
                   </p>
-                  <p className="text-xs text-amber-700">Each lead enrichment (phone, email, LinkedIn) costs 1 credit.</p>
+                  <p className="text-xs text-blue-700">Each lead enrichment (phone, email, LinkedIn) costs 1 credit.</p>
                 </>
               )}
             </div>
           </div>
           <Link
             href="/settings/billing"
-            className={`shrink-0 text-sm font-semibold text-white rounded-lg px-3 py-1.5 transition-colors ${
-              isFree
-                ? 'bg-indigo-600 hover:bg-indigo-700'
-                : 'bg-amber-600 hover:bg-amber-700'
-            }`}
+            className="shrink-0 text-sm font-semibold text-white rounded-lg px-3 py-1.5 transition-colors bg-primary hover:bg-primary/90"
           >
             {isFree ? 'Upgrade to Pro' : 'Buy Credits'}
           </Link>
@@ -464,10 +456,10 @@ export default async function DashboardPage({
 
           {/* Credits */}
           <Link href="/settings/billing" className="group">
-            <div className={`bg-white rounded-xl border p-5 h-full transition-all ${creditsRemaining <= 3 ? 'border-amber-200 bg-amber-50/40' : 'border-gray-200 hover:border-gray-300'}`}>
+            <div className={`bg-white rounded-xl border p-5 h-full transition-all ${creditsRemaining <= 3 ? 'border-blue-200 bg-blue-50/40' : 'border-gray-200 hover:border-gray-300'}`}>
               <div className="flex items-center gap-2 mb-2">
-                <div className={`p-1.5 rounded-lg ${creditsRemaining <= 3 ? 'bg-amber-100' : 'bg-gray-100'}`}>
-                  <Zap className={`h-4 w-4 ${creditsRemaining <= 3 ? 'text-amber-600' : 'text-gray-600'}`} />
+                <div className={`p-1.5 rounded-lg ${creditsRemaining <= 3 ? 'bg-blue-100' : 'bg-gray-100'}`}>
+                  <Zap className={`h-4 w-4 ${creditsRemaining <= 3 ? 'text-blue-600' : 'text-gray-600'}`} />
                 </div>
                 <span
                   className="text-sm text-gray-500"
@@ -476,7 +468,7 @@ export default async function DashboardPage({
                   Enrichment Credits
                 </span>
               </div>
-              <div className={`text-3xl font-bold ${creditsRemaining <= 3 ? 'text-amber-600' : 'text-gray-900'}`}>{creditsRemaining}</div>
+              <div className={`text-3xl font-bold ${creditsRemaining <= 3 ? 'text-blue-600' : 'text-gray-900'}`}>{creditsRemaining}</div>
               <p
                 className="text-xs text-gray-500 mt-1"
                 title="2 credits per Intel Pack · 10 credits per Deep Research · Auto-enrichment is always free"
@@ -517,7 +509,7 @@ export default async function DashboardPage({
           <div className="bg-white rounded-xl border border-gray-200 p-5">
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-semibold text-gray-900 flex items-center gap-2">
-                <Star className="h-4 w-4 text-amber-400 fill-amber-400" />
+                <Star className="h-4 w-4 text-primary fill-primary" />
                 Recent Leads
               </h2>
               <Link href="/leads" className="text-sm text-primary hover:underline flex items-center gap-1">
@@ -648,18 +640,18 @@ export default async function DashboardPage({
                 : !hasEnriched && totalCount > 0
                 ? { label: 'Enrich your first lead', desc: 'Reveal verified email, phone & LinkedIn — it\u2019s free.', href: '/leads', icon: <Sparkles className="h-5 w-5 text-blue-600" />, color: 'border-blue-200 bg-blue-50' }
                 : !hasPixel
-                ? { label: 'Install tracking pixel', desc: 'Identify anonymous website visitors in real-time.', href: '/settings/pixel', icon: <Eye className="h-5 w-5 text-violet-600" />, color: 'border-violet-200 bg-violet-50' }
+                ? { label: 'Install tracking pixel', desc: 'Identify anonymous website visitors in real-time.', href: '/settings/pixel', icon: <Eye className="h-5 w-5 text-primary" />, color: 'border-primary/30 bg-primary/5' }
                 : !hasActivated
-                ? { label: 'Activate outreach', desc: 'Build a lookalike audience or launch managed outbound.', href: '/activate', icon: <Rocket className="h-5 w-5 text-green-600" />, color: 'border-green-200 bg-green-50' }
+                ? { label: 'Activate outreach', desc: 'Build a lookalike audience or launch managed outbound.', href: '/activate', icon: <Rocket className="h-5 w-5 text-primary" />, color: 'border-primary/30 bg-primary/5' }
                 : null
 
               if (!step) return (
-                <div className="rounded-xl border border-green-200 bg-green-50 p-5">
+                <div className="rounded-xl border border-blue-200 bg-blue-50 p-5">
                   <div className="flex items-center gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-green-600 shrink-0" />
+                    <CheckCircle2 className="h-5 w-5 text-blue-600 shrink-0" />
                     <div>
-                      <p className="text-sm font-semibold text-green-900">You&apos;re all set!</p>
-                      <p className="text-xs text-green-700">Check your leads for fresh matches every morning at 8am CT.</p>
+                      <p className="text-sm font-semibold text-blue-900">You&apos;re all set!</p>
+                      <p className="text-xs text-blue-700">Check your leads for fresh matches every morning at 8am CT.</p>
                     </div>
                   </div>
                 </div>
@@ -687,8 +679,8 @@ export default async function DashboardPage({
               <h3 className="font-semibold text-gray-900 text-sm mb-3">Quick Actions</h3>
               <div className="space-y-2">
                 <Link href="/leads" className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-gray-50 transition-colors group">
-                  <div className="p-1.5 rounded-lg bg-amber-50 group-hover:bg-amber-100 transition-colors">
-                    <Star className="h-3.5 w-3.5 text-amber-500" />
+                  <div className="p-1.5 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                    <Star className="h-3.5 w-3.5 text-primary" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-gray-800">Daily Leads</p>
@@ -724,17 +716,17 @@ export default async function DashboardPage({
 
           {/* Refer & Earn CTA */}
           <AnimatedSection delay={0.23}>
-            <Link href="/referrals" className="block rounded-xl bg-gradient-to-r from-violet-50 to-indigo-50 border border-violet-200 p-5 hover:shadow-sm transition-all group">
+            <Link href="/referrals" className="block rounded-xl bg-gradient-to-r from-blue-50 to-primary/5 border border-primary/20 p-5 hover:shadow-sm transition-all group">
               <div className="flex items-center gap-3 mb-1.5">
-                <div className="p-2 rounded-lg bg-violet-100 group-hover:bg-violet-200 transition-colors">
-                  <Gift className="h-4 w-4 text-violet-600" />
+                <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                  <Gift className="h-4 w-4 text-primary" />
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-gray-900">Refer & Earn</p>
                   <p className="text-xs text-gray-500">Earn $50 in credits for each referral</p>
                 </div>
               </div>
-              <span className="inline-flex items-center gap-1 text-xs font-medium text-violet-600">
+              <span className="inline-flex items-center gap-1 text-xs font-medium text-primary">
                 Share your link <ArrowRight className="h-3 w-3" />
               </span>
             </Link>
