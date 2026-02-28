@@ -87,10 +87,13 @@ export function OnboardingFlow({ isMarketplace }: OnboardingFlowProps) {
 
     // Email signup
     try {
+      const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || window.location.origin).replace(/\/+$/, '')
+      const nextUrl = isMarketplace ? '/welcome?returning=true&source=marketplace' : '/welcome?returning=true'
       const { data: authData, error: signUpError } = await supabase.auth.signUp({
         email: data.email,
         password: password!,
         options: {
+          emailRedirectTo: `${siteUrl}/auth/callback?next=${encodeURIComponent(nextUrl)}`,
           data: {
             full_name: `${data.firstName} ${data.lastName}`,
           },
@@ -104,7 +107,13 @@ export function OnboardingFlow({ isMarketplace }: OnboardingFlowProps) {
       }
 
       if (!authData.session) {
-        // Email confirmation required
+        // Email confirmation required — store form data so AutoSubmitOnboarding
+        // can complete workspace creation after the user confirms their email
+        localStorage.setItem('cursive_onboarding', JSON.stringify({
+          role: 'business',
+          ...data,
+          isMarketplace,
+        }))
         setSubmittedEmail(data.email)
         setSubmittedIndustry(data.industry || '')
         setSubmittedLocations(data.targetLocations || '')
@@ -173,10 +182,12 @@ export function OnboardingFlow({ isMarketplace }: OnboardingFlowProps) {
 
     // Email signup
     try {
+      const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || window.location.origin).replace(/\/+$/, '')
       const { data: authData, error: signUpError } = await supabase.auth.signUp({
         email: data.email,
         password: password!,
         options: {
+          emailRedirectTo: `${siteUrl}/auth/callback?next=${encodeURIComponent('/welcome?returning=true')}`,
           data: {
             full_name: `${data.firstName} ${data.lastName}`,
           },
@@ -190,6 +201,13 @@ export function OnboardingFlow({ isMarketplace }: OnboardingFlowProps) {
       }
 
       if (!authData.session) {
+        // Email confirmation required — store form data so AutoSubmitOnboarding
+        // can complete workspace creation after the user confirms their email
+        localStorage.setItem('cursive_onboarding', JSON.stringify({
+          role: 'partner',
+          ...data,
+          isMarketplace,
+        }))
         setSubmittedEmail(data.email)
         setSubmittedRequiresConfirmation(true)
         goToScreen('partner-success')
