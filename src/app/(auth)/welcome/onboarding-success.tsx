@@ -346,8 +346,28 @@ export function OnboardingSuccess({ userType, email, isMarketplace, targetIndust
         )}
 
         {!needsConfirmation && (
-          <motion.div variants={staggerItemVariants} className="flex justify-center">
-            <div className="w-8 h-8 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
+          <motion.div variants={staggerItemVariants} className="space-y-6">
+            {/* Cursive Data upsell — show while user is being redirected */}
+            {isBusinessPath && (
+              <div className="rounded-lg border border-amber-100 bg-amber-50 px-4 py-3 text-left">
+                <p className="text-xs font-semibold text-amber-700 uppercase tracking-wider mb-1.5">
+                  Want more leads faster?
+                </p>
+                <p className="text-sm text-amber-900 mb-2">
+                  Cursive Data gives you unlimited access to our full 300M+ B2B database — filtered by
+                  industry, location, intent, and seniority. From $1k/mo.
+                </p>
+                <a
+                  href="mailto:darren@meetcursive.com?subject=Cursive Data interest"
+                  className="text-xs font-semibold text-amber-700 hover:underline"
+                >
+                  Reply to Darren to learn more →
+                </a>
+              </div>
+            )}
+            <div className="flex justify-center">
+              <div className="w-8 h-8 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
+            </div>
           </motion.div>
         )}
       </motion.div>

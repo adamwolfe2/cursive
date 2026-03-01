@@ -217,7 +217,14 @@ export default async function DashboardPage({
   const intelligenceTierCount = intelligenceTierResult.count ?? 0
   const hasIntelligence = hasEnriched || intelligenceTierCount > 0
   const hasActivated = (activationResult.count ?? 0) > 0
-  const hasVerifiedPixel = hasPixel && (pixelEventsResult.count ?? 0) > 0
+  const pixelEventCount = pixelEventsResult.count ?? 0
+  const hasVerifiedPixel = hasPixel && pixelEventCount > 0
+
+  // Show Outbound upsell when pixel has identified 10+ visitors and user is not on Outbound/Pipeline tier
+  const outboundUpgradeTiers = ['outbound', 'pipeline', 'venture_studio']
+  const showOutboundUpsell =
+    pixelEventCount >= 10 &&
+    !outboundUpgradeTiers.includes(userProfile.plan ?? '')
 
   // Workspace age for first-leads banner
   const workspaceCreatedAt = userProfile.workspaces?.created_at
@@ -403,6 +410,34 @@ export default async function DashboardPage({
       {/* First leads celebration banner — client component handles localStorage dismiss */}
       {totalCount > 0 && onboarding !== 'complete' && (
         <FirstLeadsBanner count={totalCount} workspaceAgeHours={workspaceAgeHours} />
+      )}
+
+      {/* Outbound upsell banner — shown when pixel has identified 10+ visitors and user is not on Outbound */}
+      {showOutboundUpsell && (
+        <AnimatedSection delay={0.04}>
+          <div className="rounded-xl border border-violet-200 bg-violet-50 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-start gap-3">
+              <div className="p-1.5 rounded-lg bg-violet-100 shrink-0 mt-0.5">
+                <Rocket className="h-4 w-4 text-violet-700" />
+              </div>
+              <div>
+                <p className="font-semibold text-violet-900 text-sm">
+                  Your pixel has identified {pixelEventCount.toLocaleString()} visitors this week
+                </p>
+                <p className="text-xs text-violet-700 mt-0.5">
+                  Let Cursive Outbound email and follow up with every identified visitor — fully done-for-you, no extra work.
+                </p>
+              </div>
+            </div>
+            <a
+              href="mailto:darren@meetcursive.com?subject=Cursive Outbound interest"
+              className="inline-flex items-center gap-1.5 shrink-0 rounded-lg bg-violet-700 px-3 py-2 text-xs font-semibold text-white hover:bg-violet-800 transition-colors whitespace-nowrap"
+            >
+              <ArrowRight className="h-3 w-3" />
+              Talk to Darren
+            </a>
+          </div>
+        </AnimatedSection>
       )}
 
       {/* Stats row */}
