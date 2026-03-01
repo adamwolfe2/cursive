@@ -240,16 +240,16 @@ export function OnboardingSuccess({ userType, email, isMarketplace, targetIndust
                 </p>
               </div>
             ) : isBusinessPath ? (
-              <div className="rounded-lg border border-violet-100 bg-violet-50 px-4 py-3 text-left">
-                <p className="text-xs font-semibold text-violet-700 uppercase tracking-wider mb-1.5">
+              <div className="rounded-lg border border-blue-100 bg-blue-50 px-4 py-3 text-left">
+                <p className="text-xs font-semibold text-blue-700 uppercase tracking-wider mb-1.5">
                   Next: Install your Superpixel
                 </p>
-                <p className="text-sm text-violet-900 mb-2">
+                <p className="text-sm text-blue-900 mb-2">
                   Track real-time visitors on your website and identify them as leads automatically.
                 </p>
                 <a
                   href="/settings/pixel"
-                  className="inline-flex items-center gap-1 text-xs font-semibold text-violet-700 hover:underline"
+                  className="inline-flex items-center gap-1 text-xs font-semibold text-blue-700 hover:underline"
                 >
                   Install Pixel →
                 </a>
@@ -349,17 +349,17 @@ export function OnboardingSuccess({ userType, email, isMarketplace, targetIndust
           <motion.div variants={staggerItemVariants} className="space-y-6">
             {/* Cursive Data upsell — show while user is being redirected */}
             {isBusinessPath && (
-              <div className="rounded-lg border border-amber-100 bg-amber-50 px-4 py-3 text-left">
-                <p className="text-xs font-semibold text-amber-700 uppercase tracking-wider mb-1.5">
+              <div className="rounded-lg border border-blue-100 bg-blue-50 px-4 py-3 text-left">
+                <p className="text-xs font-semibold text-blue-700 uppercase tracking-wider mb-1.5">
                   Want more leads faster?
                 </p>
-                <p className="text-sm text-amber-900 mb-2">
+                <p className="text-sm text-blue-900 mb-2">
                   Cursive Data gives you unlimited access to our full 300M+ B2B database — filtered by
                   industry, location, intent, and seniority. From $1k/mo.
                 </p>
                 <a
                   href="mailto:darren@meetcursive.com?subject=Cursive Data interest"
-                  className="text-xs font-semibold text-amber-700 hover:underline"
+                  className="text-xs font-semibold text-blue-700 hover:underline"
                 >
                   Reply to Darren to learn more →
                 </a>

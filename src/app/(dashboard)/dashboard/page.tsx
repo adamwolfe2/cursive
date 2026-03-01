@@ -415,23 +415,23 @@ export default async function DashboardPage({
       {/* Outbound upsell banner — shown when pixel has identified 10+ visitors and user is not on Outbound */}
       {showOutboundUpsell && (
         <AnimatedSection delay={0.04}>
-          <div className="rounded-xl border border-violet-200 bg-violet-50 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-start gap-3">
-              <div className="p-1.5 rounded-lg bg-violet-100 shrink-0 mt-0.5">
-                <Rocket className="h-4 w-4 text-violet-700" />
+              <div className="p-1.5 rounded-lg bg-blue-100 shrink-0 mt-0.5">
+                <Rocket className="h-4 w-4 text-blue-700" />
               </div>
               <div>
-                <p className="font-semibold text-violet-900 text-sm">
+                <p className="font-semibold text-blue-900 text-sm">
                   Your pixel has identified {pixelEventCount.toLocaleString()} visitors this week
                 </p>
-                <p className="text-xs text-violet-700 mt-0.5">
+                <p className="text-xs text-blue-700 mt-0.5">
                   Let Cursive Outbound email and follow up with every identified visitor — fully done-for-you, no extra work.
                 </p>
               </div>
             </div>
             <a
               href="mailto:darren@meetcursive.com?subject=Cursive Outbound interest"
-              className="inline-flex items-center gap-1.5 shrink-0 rounded-lg bg-violet-700 px-3 py-2 text-xs font-semibold text-white hover:bg-violet-800 transition-colors whitespace-nowrap"
+              className="inline-flex items-center gap-1.5 shrink-0 rounded-lg bg-blue-700 px-3 py-2 text-xs font-semibold text-white hover:bg-blue-800 transition-colors whitespace-nowrap"
             >
               <ArrowRight className="h-3 w-3" />
               Talk to Darren
