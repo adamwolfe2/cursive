@@ -7,7 +7,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { provisionCustomerPixel } from '@/lib/audiencelab/api-client'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { safeError } from '@/lib/utils/log-sanitizer'
-import { sendPixelDeliveryEmail } from '@/lib/email/templates/pixel-delivery'
+import { sendPostCallRecapEmail } from '@/lib/email/templates/pixel-delivery'
+import { inngest } from '@/inngest/client'
 
 export const maxDuration = 60 // Vercel Pro allows up to 60s
 
@@ -82,12 +83,21 @@ export async function POST(req: NextRequest) {
     if (existingDemo) {
       // Re-send the email even for existing pixels (e.g. second call with a new contact)
       if (emailToSend && existingDemo.snippet) {
-        sendPixelDeliveryEmail({
+        sendPostCallRecapEmail({
           to: emailToSend,
           domain: existingDemo.domain,
           snippet: existingDemo.snippet,
           pixelId: existingDemo.pixel_id,
         }).catch(err => safeError('[provision-demo] email send failed:', err))
+
+        inngest.send({
+          name: 'pixel/demo.created',
+          data: {
+            prospect_email: emailToSend,
+            domain: existingDemo.domain,
+            pixel_id: existingDemo.pixel_id,
+          },
+        }).catch(err => safeError('[provision-demo] inngest send failed:', err))
       }
       return NextResponse.json(
         {
@@ -134,14 +144,23 @@ export async function POST(req: NextRequest) {
       safeError('[provision-demo] DB insert failed (pixel still usable):', insertError)
     }
 
-    // Send pixel delivery email to prospect if provided
+    // Send post-call recap email to prospect if provided
     if (emailToSend) {
-      sendPixelDeliveryEmail({
+      sendPostCallRecapEmail({
         to: emailToSend,
         domain,
         snippet,
         pixelId: result.pixel_id,
       }).catch(err => safeError('[provision-demo] email send failed:', err))
+
+      inngest.send({
+        name: 'pixel/demo.created',
+        data: {
+          prospect_email: emailToSend,
+          domain,
+          pixel_id: result.pixel_id,
+        },
+      }).catch(err => safeError('[provision-demo] inngest send failed:', err))
     }
 
     return NextResponse.json(
