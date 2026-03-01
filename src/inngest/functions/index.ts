@@ -249,3 +249,6 @@ export { pixelV4Sync } from './pixel-v4-sync'
 
 // Intelligence Pack (on-demand Tier 2 + Tier 3 enrichment)
 export { intelligencePack } from './intelligence-pack'
+
+// First Leads Arrived notification (onboarding milestone — sends email when workspace gets first leads)
+export { firstLeadsArrived } from './first-leads-arrived'

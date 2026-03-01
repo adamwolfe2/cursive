@@ -23,3 +23,4 @@ export {
   type PixelTrialEmailData,
   type VisitorPreview,
 } from './pixel-trial'
+export { firstLeadsArrivedEmail, type FirstLeadsArrivedData } from './first-leads-arrived'

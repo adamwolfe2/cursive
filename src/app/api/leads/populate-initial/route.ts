@@ -15,6 +15,7 @@ import { meetsQualityBar } from '@/lib/services/lead-quality.service'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { checkWorkspaceDuplicates, logDedupRejections } from '@/lib/services/deduplication.service'
 import { handleApiError } from '@/lib/utils/api-error-handler'
+import { inngest } from '@/inngest/client'
 
 // Cap at 30s — AL fetch has a 20s internal timeout, plus DB work
 export const maxDuration = 30
@@ -31,7 +32,7 @@ export async function POST(req: NextRequest) {
     // Get user profile with workspace and segment info
     const { data: userProfile, error: userError } = await supabase
       .from('users')
-      .select('id, workspace_id, industry_segment, location_segment, daily_lead_limit, plan, is_active')
+      .select('id, workspace_id, industry_segment, location_segment, daily_lead_limit, plan, is_active, full_name')
       .eq('auth_user_id', currentUser.auth_user_id)
       .maybeSingle()
 
@@ -257,6 +258,20 @@ export async function POST(req: NextRequest) {
         { status: 500 }
       )
     }
+
+    // Fire first-leads notification (fire-and-forget — don't fail the request)
+    inngest.send({
+      name: 'workspace/first-leads-arrived',
+      data: {
+        workspaceId: userProfile.workspace_id,
+        userId: userProfile.id,
+        userEmail: currentUser.email ?? '',
+        userName: userProfile.full_name ?? '',
+        leadCount: dedupedLeads.length,
+        industry: userProfile.industry_segment ?? null,
+        location: userProfile.location_segment ?? null,
+      },
+    }).catch(() => null)
 
     return NextResponse.json({
       success: true,
