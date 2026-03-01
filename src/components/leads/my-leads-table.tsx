@@ -17,6 +17,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { useBulkSelection } from '@/lib/hooks/use-bulk-selection'
 import { BulkActionToolbar } from './BulkActionToolbar'
 import { useDebounce } from '@/hooks/use-debounce'
+import { Search, X, Inbox, ArrowRight, RefreshCw } from 'lucide-react'
 
 type UserLeadAssignmentUpdate = Database['public']['Tables']['user_lead_assignments']['Update']
 
@@ -402,14 +403,7 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
         </div>
         {/* Debounced search input */}
         <div className="relative sm:ml-auto sm:w-64">
-          <svg
-            className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 pointer-events-none"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 pointer-events-none" />
           <input
             type="text"
             value={searchInput}
@@ -424,9 +418,7 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
               className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600"
               aria-label="Clear search"
             >
-              <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <X className="h-3.5 w-3.5" />
             </button>
           )}
         </div>
@@ -435,19 +427,7 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
       {/* Table */}
       {visibleAssignments.length === 0 ? (
         <div className="p-12 text-center">
-          <svg
-            className="mx-auto h-12 w-12 text-zinc-400"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={1.5}
-              d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
-            />
-          </svg>
+          <Inbox className="mx-auto h-12 w-12 text-zinc-400" />
           <p className="mt-4 text-sm font-medium text-zinc-900">No leads found</p>
           <p className="mt-1 text-sm text-zinc-500">
             {searchQuery.trim()
@@ -464,15 +444,25 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
               Clear Search
             </button>
           ) : filter === 'all' ? (
-            <a
-              href="/my-leads/preferences"
-              className="mt-4 inline-flex items-center gap-1.5 rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 transition-colors"
-            >
-              Set Targeting Preferences
-              <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </a>
+            <div className="mt-4 flex flex-col items-center gap-3">
+              <p className="text-xs text-zinc-400">New leads arrive daily at 8am CT</p>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={fetchAssignments}
+                  className="inline-flex items-center gap-1.5 rounded-md border border-zinc-200 px-3 py-1.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50 transition-colors"
+                >
+                  <RefreshCw className="h-3.5 w-3.5" />
+                  Refresh
+                </button>
+                <a
+                  href="/my-leads/preferences"
+                  className="inline-flex items-center gap-1.5 rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 transition-colors"
+                >
+                  Set Targeting Preferences
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </a>
+              </div>
+            </div>
           ) : null}
         </div>
       ) : (
@@ -734,19 +724,7 @@ const LeadDetailModal = memo(function LeadDetailModal({
             onClick={onClose}
             className="p-1 rounded-md hover:bg-zinc-100"
           >
-            <svg
-              className="h-5 w-5 text-zinc-500"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
+            <X className="h-5 w-5 text-zinc-500" />
           </button>
         </div>
 

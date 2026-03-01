@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { HeaderNotificationBell } from '@/components/notifications/header-notification-bell'
 import { GlobalSearch } from '@/components/search/global-search'
+import { Menu, ChevronDown, Settings, CreditCard, Bell, ExternalLink, LogOut } from 'lucide-react'
 
 interface HeaderProps {
   user?: {
@@ -52,14 +53,7 @@ export function Header({ user, workspace, onMenuClick, className }: HeaderProps)
         onClick={onMenuClick}
         aria-label="Open menu"
       >
-        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M4 6h16M4 12h16M4 18h16"
-          />
-        </svg>
+        <Menu className="h-5 w-5" />
       </button>
 
       {/* Workspace info */}
@@ -99,7 +93,13 @@ export function Header({ user, workspace, onMenuClick, className }: HeaderProps)
         {user && (
           <div className="flex items-center gap-2">
             <span className="hidden text-sm text-muted-foreground sm:inline">Credits:</span>
-            <span className="text-sm font-semibold text-foreground">
+            <span className={cn(
+              'text-sm font-semibold',
+              user.creditsRemaining === 0 ? 'text-red-600' :
+              user.creditsRemaining <= 5 ? 'text-amber-600' :
+              user.creditsRemaining <= 20 ? 'text-yellow-600' :
+              'text-foreground'
+            )}>
               {user.creditsRemaining.toLocaleString()}
             </span>
           </div>
@@ -127,19 +127,7 @@ export function Header({ user, workspace, onMenuClick, className }: HeaderProps)
                 src={user.avatarUrl}
                 size="sm"
               />
-              <svg
-                className="h-4 w-4 text-muted-foreground"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
+              <ChevronDown className="h-4 w-4 text-muted-foreground" />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuLabel>
@@ -152,67 +140,19 @@ export function Header({ user, workspace, onMenuClick, className }: HeaderProps)
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => router.push('/settings')}>
-                <svg
-                  className="mr-2 h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                  />
-                </svg>
-                Profile
+                <Settings className="mr-2 h-4 w-4" />
+                Settings
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => router.push('/settings/billing')}>
-                <svg
-                  className="mr-2 h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
-                  />
-                </svg>
+                <CreditCard className="mr-2 h-4 w-4" />
                 Billing
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => router.push('/settings/notifications')}>
-                <svg
-                  className="mr-2 h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                  />
-                </svg>
+                <Bell className="mr-2 h-4 w-4" />
                 Notifications
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => router.push('/settings/integrations')}>
-                <svg
-                  className="mr-2 h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
-                  />
-                </svg>
+                <ExternalLink className="mr-2 h-4 w-4" />
                 Integrations
               </DropdownMenuItem>
               <DropdownMenuSeparator />
@@ -220,19 +160,7 @@ export function Header({ user, workspace, onMenuClick, className }: HeaderProps)
                 onClick={() => router.push('/auth/signout')}
                 destructive
               >
-                <svg
-                  className="mr-2 h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                  />
-                </svg>
+                <LogOut className="mr-2 h-4 w-4" />
                 Sign out
               </DropdownMenuItem>
             </DropdownMenuContent>
