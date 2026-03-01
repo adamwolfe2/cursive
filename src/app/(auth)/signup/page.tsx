@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Link from 'next/link'
 import Image from 'next/image'
+import { Mail } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { signupSchema, type SignupFormData } from '@/lib/validation/schemas'
 import { PasswordStrength } from '@/components/ui/password-strength'
@@ -19,6 +20,7 @@ function SignupPageInner() {
   const isMarketplace = source === 'marketplace'
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [confirmedEmail, setConfirmedEmail] = useState<string | null>(null)
 
   const {
     register,
@@ -38,12 +40,12 @@ function SignupPageInner() {
 
     const supabase = createClient()
 
-    const welcomeUrl = isMarketplace ? '/welcome?source=marketplace' : '/welcome'
+    const welcomeUrl = isMarketplace ? '/welcome?returning=true&source=marketplace' : '/welcome?returning=true'
 
     // Use NEXT_PUBLIC_SITE_URL for consistent redirect (must match Supabase allowed redirects)
     const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || window.location.origin).replace(/\/+$/, '')
 
-    const { error: signUpError } = await supabase.auth.signUp({
+    const { data: authData, error: signUpError } = await supabase.auth.signUp({
       email: data.email,
       password: data.password,
       options: {
@@ -65,7 +67,14 @@ function SignupPageInner() {
       return
     }
 
-    // Redirect to welcome page
+    if (!authData.session) {
+      // Email confirmation required — show "check your email" screen
+      setConfirmedEmail(data.email)
+      setLoading(false)
+      return
+    }
+
+    // Session exists (auto-confirm enabled) — redirect to onboarding
     router.push(welcomeUrl)
     router.refresh()
   }
@@ -93,6 +102,41 @@ function SignupPageInner() {
       setError(signInError.message || getErrorMessage(signInError))
       setLoading(false)
     }
+  }
+
+  // Email confirmation screen shown after successful signup with email confirmation required
+  if (confirmedEmail) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
+        <div className="w-full max-w-md space-y-6 text-center">
+          <div className="flex justify-center mb-6">
+            <Image src="/cursive-logo.png" alt="Cursive" width={90} height={90} priority />
+          </div>
+          <div className="flex justify-center">
+            <div className="rounded-full bg-primary/10 p-4">
+              <Mail className="h-8 w-8 text-primary" />
+            </div>
+          </div>
+          <div>
+            <h2 className="text-2xl font-bold tracking-tight text-gray-900">Check your email</h2>
+            <p className="mt-2 text-sm text-gray-600">
+              We sent a confirmation link to <span className="font-medium text-gray-900">{confirmedEmail}</span>
+            </p>
+          </div>
+          <div className="rounded-lg bg-primary/5 border border-primary/20 p-4 text-left">
+            <p className="text-sm text-gray-700">
+              Click the link in the email to activate your account and get started. Check your spam folder if you don&apos;t see it within a few minutes.
+            </p>
+          </div>
+          <p className="text-sm text-gray-500">
+            Already confirmed?{' '}
+            <Link href="/login" className="font-medium text-primary hover:text-primary/90">
+              Sign in
+            </Link>
+          </p>
+        </div>
+      </div>
+    )
   }
 
   return (

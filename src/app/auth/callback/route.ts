@@ -130,7 +130,12 @@ export async function GET(request: NextRequest) {
     } = await supabase.auth.getUser()
 
     let redirectUrl = next
-    if (authUser) {
+
+    // Only redirect to onboarding if this is NOT a password reset or a pre-specified next path
+    // Password reset links have ?next=/reset-password set — honor them directly
+    const isPasswordReset = next === '/reset-password'
+
+    if (authUser && !isPasswordReset) {
       // Use admin client to bypass RLS (anon-key triggers recursive policy on users table)
       const adminClient = createAdminClient()
       const { data: user } = await adminClient
