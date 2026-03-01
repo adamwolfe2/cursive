@@ -550,6 +550,13 @@ export async function processEventInline(
         event_type: 'lead.received',
         payload: leadPayload,
       })
+
+      // Triggers: ghlSyncContact — pushes lead to client's connected GHL account (if any)
+      // The function gracefully no-ops when no GHL OAuth connection is configured.
+      fireInngestEvent('ghl/sync-contact', {
+        workspace_id: targetWorkspaceId,
+        lead_id: leadId,
+      })
     }
 
     // Step 7: Mark event as processed
