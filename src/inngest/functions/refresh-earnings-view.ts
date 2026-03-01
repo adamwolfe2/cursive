@@ -12,7 +12,7 @@ export const refreshEarningsView = inngest.createFunction(
     name: 'Refresh Partner Earnings Materialized View',
     retries: 2,
   },
-  { cron: '0 * * * *' }, // Every hour at :00
+  { cron: '0 */4 * * *' }, // Every 4 hours (cost: 4x fewer DB refreshes)
   async ({ step }) => {
     const supabase = createAdminClient()
 
@@ -40,19 +40,6 @@ export const refreshEarningsView = inngest.createFunction(
       })
 
       return stats
-    })
-
-    // Step 2: Log completion to platform metrics
-    await step.run('log-metrics', async () => {
-      await supabase.from('platform_metrics').insert({
-        metric_name: 'materialized_view_refresh',
-        metric_type: 'performance',
-        value: refreshResult.duration_ms,
-        metadata: {
-          view_name: 'partner_earnings_summary',
-          rows_affected: refreshResult.rows_affected,
-        },
-      })
     })
 
     return {

@@ -25,7 +25,7 @@ export const pixelV4Sync = inngest.createFunction(
     retries: 2,
     timeouts: { finish: '10m' },
   },
-  { cron: '0 */2 * * *' }, // Every 2 hours
+  { cron: '0 */4 * * *' }, // Every 4 hours (cost: 2x fewer cron invocations)
   async ({ step }) => {
     // Step 1: Get all active pixels with AudienceLab pixel IDs
     const pixels = await step.run('get-active-pixels', async () => {
@@ -103,20 +103,17 @@ export const pixelV4Sync = inngest.createFunction(
               enrichData.dnc_landline = dncLandline
             }
 
-            // Try each email until we find a matching lead
-            for (const email of rawEmails) {
-              const { data: lead } = await supabase
-                .from('leads')
-                .select('id')
-                .eq('workspace_id', pixel.workspace_id)
-                .eq('email', email)
-                .maybeSingle()
+            // Batch lookup: find first matching lead for any of the emails (1 query vs N)
+            const { data: matchedLeads } = await supabase
+              .from('leads')
+              .select('id')
+              .eq('workspace_id', pixel.workspace_id)
+              .in('email', rawEmails)
+              .limit(1)
 
-              if (lead) {
-                await supabase.from('leads').update(enrichData).eq('id', lead.id)
-                enriched++
-                break
-              }
+            if (matchedLeads && matchedLeads.length > 0) {
+              await supabase.from('leads').update(enrichData).eq('id', matchedLeads[0].id)
+              enriched++
             }
           }
 

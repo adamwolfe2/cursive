@@ -54,30 +54,24 @@ export const dailyFreshnessDecay = inngest.createFunction(
           return { updated: 0, hasMore: false }
         }
 
-        // Update each lead's freshness score and price
-        let updated = 0
-        for (const lead of leads) {
-          const createdAt = new Date(lead.created_at)
-          const freshnessScore = calculateFreshnessScore(createdAt)
+        // Batch upsert: compute all updates first, then flush in one DB call (cost: N→1 queries)
+        const now = new Date().toISOString()
+        const batchUpdates = leads.map((lead) => {
+          const freshnessScore = calculateFreshnessScore(new Date(lead.created_at))
           const marketplacePrice = calculateMarketplacePrice({
             intentScore: lead.intent_score_calculated || 50,
             freshnessScore,
             hasPhone: !!lead.phone,
             verificationStatus: lead.verification_status || 'pending',
           })
+          return { id: lead.id, freshness_score: freshnessScore, marketplace_price: marketplacePrice, updated_at: now }
+        })
 
-          const { error: updateError } = await supabase
-            .from('leads')
-            .update({
-              freshness_score: freshnessScore,
-              marketplace_price: marketplacePrice,
-            })
-            .eq('id', lead.id)
+        const { error: upsertError } = await supabase
+          .from('leads')
+          .upsert(batchUpdates, { onConflict: 'id' })
 
-          if (!updateError) {
-            updated++
-          }
-        }
+        const updated = upsertError ? 0 : leads.length
 
         return {
           updated,

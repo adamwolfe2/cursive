@@ -38,7 +38,7 @@ export const processEmailVerificationQueue = inngest.createFunction(
       limit: 1, // Only one instance at a time
     },
   },
-  { cron: '*/5 * * * *' }, // Every 5 minutes
+  { cron: '*/15 * * * *' }, // Every 15 minutes (cost: 3x fewer cron invocations)
   async ({ step, logger }) => {
     // Check kill switch
     if (!isVerificationEnabled()) {
@@ -217,20 +217,31 @@ export const updatePartnerVerificationRates = inngest.createFunction(
 
     for (const partner of partners) {
       await step.run(`update-partner-${partner.id}`, async () => {
-        // Calculate verification pass rate
-        const { data: leadStats } = await supabase
-          .from('leads')
-          .select('verification_status')
-          .eq('partner_id', partner.id)
-          .in('verification_status', ['valid', 'catch_all', 'invalid'])
+        // Use count-only queries instead of fetching all rows (cost: no data transfer)
+        const [validResult, catchAllResult, totalResult] = await Promise.all([
+          supabase
+            .from('leads')
+            .select('*', { count: 'exact', head: true })
+            .eq('partner_id', partner.id)
+            .eq('verification_status', 'valid'),
+          supabase
+            .from('leads')
+            .select('*', { count: 'exact', head: true })
+            .eq('partner_id', partner.id)
+            .eq('verification_status', 'catch_all'),
+          supabase
+            .from('leads')
+            .select('*', { count: 'exact', head: true })
+            .eq('partner_id', partner.id)
+            .in('verification_status', ['valid', 'catch_all', 'invalid']),
+        ])
 
-        if (!leadStats || leadStats.length === 0) return
+        const total = totalResult.count ?? 0
+        if (total === 0) return
 
-        const validCount = leadStats.filter(l => l.verification_status === 'valid').length
-        const catchAllCount = leadStats.filter(l => l.verification_status === 'catch_all').length
-        const total = leadStats.length
-
-        const passRate = total > 0 ? ((validCount + catchAllCount) / total) * 100 : 0
+        const validCount = validResult.count ?? 0
+        const catchAllCount = catchAllResult.count ?? 0
+        const passRate = ((validCount + catchAllCount) / total) * 100
 
         await supabase
           .from('partners')

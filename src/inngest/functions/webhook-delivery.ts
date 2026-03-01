@@ -23,7 +23,7 @@ function getSupabaseAdmin() {
 export const deliverLeadWebhook = inngest.createFunction(
   {
     id: 'deliver-lead-webhook',
-    retries: 5,
+    retries: 3,
     timeouts: { finish: "5m" },
   },
   { event: 'lead/created' },

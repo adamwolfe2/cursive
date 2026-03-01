@@ -34,12 +34,13 @@ export const enrichCampaignLead = inngest.createFunction(
   {
     id: 'campaign-lead-enrichment',
     name: 'Campaign Lead Enrichment',
-    retries: 3,
+    retries: 1,
     timeouts: { finish: "5m" },
     throttle: {
       limit: 10,
       period: '1m',
     },
+    concurrency: { limit: 5 },
   },
   { event: 'campaign/lead-added' },
   async ({ event, step, logger }) => {
@@ -287,7 +288,7 @@ If you don't have specific information, make reasonable inferences based on thei
 
   try {
     const response = await client.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: 1024,
       messages: [{ role: 'user', content: prompt }],
     })
@@ -372,7 +373,7 @@ Respond with JSON:
 
   try {
     const response = await client.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: 256,
       messages: [{ role: 'user', content: prompt }],
     })
