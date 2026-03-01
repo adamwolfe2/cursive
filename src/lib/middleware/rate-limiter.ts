@@ -84,6 +84,20 @@ export const RATE_LIMITS = {
     message: 'Too many emails sent. Please wait before sending more.',
   },
 
+  // Lead enrichment - prevent runaway API costs
+  'lead-enrich': {
+    windowMs: 60 * 1000, // 1 minute
+    maxRequests: 30, // 30 enrichment requests per minute per user
+    message: 'Too many enrichment requests. Please slow down.',
+  },
+
+  // Lead export - prevent bulk scraping
+  'lead-export': {
+    windowMs: 60 * 60 * 1000, // 1 hour
+    maxRequests: 10, // 10 exports per hour per user
+    message: 'Too many exports per hour. Please try again later.',
+  },
+
   // Default fallback
   'default': {
     windowMs: 60 * 1000, // 1 minute

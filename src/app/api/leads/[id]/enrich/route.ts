@@ -14,6 +14,7 @@ import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { enrich } from '@/lib/audiencelab/api-client'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { withRateLimit, getRequestIdentifier } from '@/lib/middleware/rate-limiter'
 
 const ENRICH_CREDIT_COST = 1
 
@@ -48,25 +49,14 @@ export async function POST(
     const userProfile = await getCurrentUser()
     if (!userProfile) return unauthorized()
 
-    // Credit gate
-    // NOTE: TOCTOU risk — check and deduction are separate operations. Two concurrent requests
-    // from the same user could both pass this check before either deducts. To fully close this,
-    // the `increment_credits` RPC should perform an atomic "check AND increment" with a limit guard.
+    // Rate limit: 30 requests/min per user
+    const rateLimitResponse = await withRateLimit(req, 'lead-enrich', getRequestIdentifier(req, userProfile.id))
+    if (rateLimitResponse) return rateLimitResponse
+
+    // Compute credits for informational use in responses (not for gating — atomic RPC handles that)
     const creditsUsed = userProfile.daily_credits_used ?? 0
     const creditLimit = userProfile.daily_credit_limit ?? 3
     const creditsRemaining = Math.max(0, creditLimit - creditsUsed)
-
-    if (creditsRemaining < ENRICH_CREDIT_COST) {
-      return NextResponse.json(
-        {
-          error: 'Insufficient credits',
-          credits_remaining: creditsRemaining,
-          credits_required: ENRICH_CREDIT_COST,
-          upgrade_url: '/settings/billing',
-        },
-        { status: 402 }
-      )
-    }
 
     // Fetch the lead — must belong to user's workspace
     const { data: lead } = await supabase
@@ -140,15 +130,29 @@ export async function POST(
       )
     }
 
-    // Call Audience Labs /enrich
+    // Atomically check AND deduct credits before calling the external API.
+    // This closes the TOCTOU race: two concurrent requests can't both pass — only one deducts.
+    const { data: deducted } = await adminSupabase.rpc('atomic_deduct_credits', {
+      p_user_id: userProfile.id,
+      p_amount: ENRICH_CREDIT_COST,
+    })
+
+    if (!deducted) {
+      return NextResponse.json(
+        {
+          error: 'Insufficient credits',
+          credits_remaining: creditsRemaining,
+          credits_required: ENRICH_CREDIT_COST,
+          upgrade_url: '/settings/billing',
+        },
+        { status: 402 }
+      )
+    }
+
+    // Call Audience Labs /enrich (credit already reserved above)
     const enrichResult = await enrich({ filter: enrichFilter })
 
     if (!enrichResult.found || !enrichResult.result?.length) {
-      // Still deduct a credit atomically — the API was called
-      await adminSupabase.rpc('increment_credits', {
-        user_id: userProfile.id,
-        amount: ENRICH_CREDIT_COST,
-      })
 
       // Mark lead as enrichment_failed with timestamp for cooldown tracking
       await adminSupabase
@@ -239,12 +243,7 @@ export async function POST(
       }
     }
 
-    // Deduct credit atomically regardless of whether fields were added (API was called)
-    await adminSupabase.rpc('increment_credits', {
-      user_id: userProfile.id,
-      amount: ENRICH_CREDIT_COST,
-    })
-
+    // Credit already deducted atomically above (before API call)
     logEnrichment(adminSupabase, {
       workspace_id: userProfile.workspace_id,
       lead_id: leadId,

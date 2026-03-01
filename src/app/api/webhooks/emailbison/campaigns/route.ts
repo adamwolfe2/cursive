@@ -23,6 +23,49 @@ import {
 } from '@/lib/services/emailbison'
 
 import { verifyHmacSignature, sha256Hex } from '@/lib/utils/crypto'
+import { z } from 'zod'
+
+// Zod schemas for each event type's data payload
+const emailSentSchema = z.object({
+  message_id: z.string(),
+  tracking_id: z.string().optional(),
+  to_email: z.string().email(),
+  sent_at: z.string(),
+})
+
+const emailOpenedSchema = z.object({
+  to_email: z.string().email(),
+  opened_at: z.string(),
+  message_id: z.string().optional(),
+})
+
+const emailClickedSchema = z.object({
+  to_email: z.string().email(),
+  url: z.string(),
+  clicked_at: z.string(),
+})
+
+const replyReceivedSchema = z.object({
+  from_email: z.string().email(),
+  from_name: z.string().optional(),
+  subject: z.string().optional(),
+  body: z.string().optional(),
+  body_plain: z.string().optional(),
+  received_at: z.string(),
+  reply_id: z.union([z.string(), z.number()]),
+})
+
+const unsubscribeSchema = z.object({
+  lead_id: z.union([z.string(), z.number()]),
+  email: z.string().email(),
+  unsubscribed_at: z.string(),
+})
+
+const bounceSchema = z.object({
+  email: z.string().email(),
+  bounce_type: z.enum(['hard', 'soft']),
+  bounce_reason: z.string().optional(),
+})
 
 // Webhook secret from environment
 const WEBHOOK_SECRET = process.env.EMAILBISON_WEBHOOK_SECRET || ''
@@ -178,12 +221,12 @@ async function handleEmailSent(
   supabase: ReturnType<typeof createAdminClient>,
   event: EmailBisonWebhookEvent
 ) {
-  const data = event.data as {
-    message_id: string
-    tracking_id?: string
-    to_email: string
-    sent_at: string
+  const parsed = emailSentSchema.safeParse(event.data)
+  if (!parsed.success) {
+    safeError('[Campaign Webhook] Invalid emailSent payload:', parsed.error.issues)
+    return
   }
+  const data = parsed.data
 
   // Find email_sends record by tracking_id (which we set as email_send_id)
   if (data.tracking_id) {
@@ -214,7 +257,12 @@ async function handleReplyReceived(
   supabase: ReturnType<typeof createAdminClient>,
   event: ReplyReceivedEvent
 ) {
-  const { data } = event
+  const parsed = replyReceivedSchema.safeParse(event.data)
+  if (!parsed.success) {
+    safeError('[Campaign Webhook] Invalid replyReceived payload:', parsed.error.issues)
+    return
+  }
+  const data = parsed.data
 
   // Find the email_sends record by emailbison_message_id or recipient email
   const { data: emailSend } = await supabase
@@ -305,11 +353,12 @@ async function handleUnsubscribe(
   supabase: ReturnType<typeof createAdminClient>,
   event: EmailBisonWebhookEvent
 ) {
-  const data = event.data as {
-    lead_id: number
-    email: string
-    unsubscribed_at: string
+  const parsed = unsubscribeSchema.safeParse(event.data)
+  if (!parsed.success) {
+    safeError('[Campaign Webhook] Invalid unsubscribe payload:', parsed.error.issues)
+    return
   }
+  const data = parsed.data
 
   // Find leads by email and mark as unsubscribed
   const { data: leads } = await supabase
@@ -349,7 +398,12 @@ async function handleBounce(
   supabase: ReturnType<typeof createAdminClient>,
   event: BounceReceivedEvent
 ) {
-  const { data } = event
+  const parsed = bounceSchema.safeParse(event.data)
+  if (!parsed.success) {
+    safeError('[Campaign Webhook] Invalid bounce payload:', parsed.error.issues)
+    return
+  }
+  const data = parsed.data
 
   // Find leads by email
   const { data: leads } = await supabase
@@ -393,7 +447,12 @@ async function handleEmailOpened(
   supabase: ReturnType<typeof createAdminClient>,
   event: EmailOpenedEvent
 ) {
-  const { data } = event
+  const parsed = emailOpenedSchema.safeParse(event.data)
+  if (!parsed.success) {
+    safeError('[Campaign Webhook] Invalid emailOpened payload:', parsed.error.issues)
+    return
+  }
+  const data = parsed.data
 
   // Find email by message_id or to_email
   const { data: emailSend, error: findError } = await supabase
@@ -445,7 +504,12 @@ async function handleEmailClicked(
   supabase: ReturnType<typeof createAdminClient>,
   event: EmailClickedEvent
 ) {
-  const { data } = event
+  const parsed = emailClickedSchema.safeParse(event.data)
+  if (!parsed.success) {
+    safeError('[Campaign Webhook] Invalid emailClicked payload:', parsed.error.issues)
+    return
+  }
+  const data = parsed.data
 
   // Find email by to_email
   const { data: emailSend, error: findError } = await supabase

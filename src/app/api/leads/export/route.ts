@@ -7,6 +7,7 @@ import { getCurrentUser } from '@/lib/auth/helpers'
 import { LeadRepository } from '@/lib/repositories/lead.repository'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { createAuditLog } from '@/lib/services/audit.service'
+import { withRateLimit, getRequestIdentifier } from '@/lib/middleware/rate-limiter'
 import { z } from 'zod'
 
 // Allow up to 30s for large exports
@@ -33,6 +34,10 @@ export async function POST(request: NextRequest) {
     if (!user) {
       return unauthorized()
     }
+
+    // Rate limit: 10 exports per hour per user
+    const rateLimitResponse = await withRateLimit(request, 'lead-export', getRequestIdentifier(request, user.id))
+    if (rateLimitResponse) return rateLimitResponse
 
     // 2. Validate input with Zod
     const body = await request.json()
