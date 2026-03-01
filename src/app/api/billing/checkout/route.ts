@@ -7,6 +7,7 @@ import { getCurrentUser } from '@/lib/auth/helpers'
 import { createCheckoutSession } from '@/lib/stripe/client'
 import { createClient } from '@/lib/supabase/server'
 import { handleApiError, unauthorized, badRequest } from '@/lib/utils/api-error-handler'
+import { withRateLimit, getRequestIdentifier } from '@/lib/middleware/rate-limiter'
 import { z } from 'zod'
 
 const checkoutSchema = z.object({
@@ -17,6 +18,10 @@ const checkoutSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limit: 10 checkout attempts per hour per IP (prevents Stripe session spam)
+    const rateLimitResult = await withRateLimit(request, 'billing-checkout', getRequestIdentifier(request))
+    if (rateLimitResult) return rateLimitResult
+
     // 1. Check authentication
     const user = await getCurrentUser()
     if (!user) {

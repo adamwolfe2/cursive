@@ -70,6 +70,20 @@ export const RATE_LIMITS = {
     message: 'Too many payout requests. Please wait before trying again.',
   },
 
+  // Billing checkout - prevent Stripe session spam
+  'billing-checkout': {
+    windowMs: 60 * 60 * 1000, // 1 hour
+    maxRequests: 10, // 10 checkout sessions per hour per IP
+    message: 'Too many checkout attempts. Please wait before trying again.',
+  },
+
+  // Quick email send - prevent Resend abuse
+  'email-quick-send': {
+    windowMs: 10 * 60 * 1000, // 10 minutes
+    maxRequests: 20, // 20 quick-send emails per 10 minutes per user
+    message: 'Too many emails sent. Please wait before sending more.',
+  },
+
   // Default fallback
   'default': {
     windowMs: 60 * 1000, // 1 minute

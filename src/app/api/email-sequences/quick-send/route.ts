@@ -10,6 +10,7 @@ import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
+import { withRateLimit, getRequestIdentifier } from '@/lib/middleware/rate-limiter'
 
 const quickSendSchema = z.object({
   lead_id: z.string().uuid(),
@@ -21,6 +22,10 @@ const quickSendSchema = z.object({
 // POST /api/email-sequences/quick-send
 export async function POST(req: NextRequest) {
   try {
+    // Rate limit: 20 quick-send emails per 10 minutes per user (prevents Resend abuse)
+    const rateLimitResult = await withRateLimit(req, 'email-quick-send', getRequestIdentifier(req))
+    if (rateLimitResult) return rateLimitResult
+
     const user = await getCurrentUser()
     if (!user) {
       return unauthorized()
