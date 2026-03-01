@@ -1,5 +1,6 @@
 import { StructuredData } from '@/components/seo/structured-data'
 import { generateBreadcrumbSchema } from '@/lib/seo/structured-data'
+import { BlogScrollPopup } from '@/components/popups/blog-scroll-popup'
 
 const blogPublisherSchema = {
   '@context': 'https://schema.org',
@@ -34,6 +35,7 @@ export default function BlogLayout({ children }: { children: React.ReactNode }) 
         blogPublisherSchema,
       ]} />
       {children}
+      <BlogScrollPopup />
     </>
   )
 }
