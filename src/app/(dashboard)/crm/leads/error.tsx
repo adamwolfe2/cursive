@@ -27,7 +27,7 @@ export default function Error({
         <div className="space-y-2">
           <h1 className="text-2xl font-semibold tracking-tight">Something went wrong</h1>
           <p className="text-sm text-muted-foreground">
-            We encountered an error loading this page. Your data is safe.
+            We encountered an error loading CRM leads. Your data is safe.
           </p>
         </div>
         {error.digest && (

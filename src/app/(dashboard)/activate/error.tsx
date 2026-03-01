@@ -23,7 +23,7 @@ export default function Error({
       </div>
       <h2 className="text-lg font-semibold text-zinc-900 mb-2">Something went wrong</h2>
       <p className="text-sm text-zinc-500 mb-6 text-center max-w-md">
-        We encountered an error loading this page. Please try again.
+        We encountered an error loading account activation. Please try again.
       </p>
       <button
         onClick={reset}

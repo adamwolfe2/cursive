@@ -30,7 +30,7 @@ export default function LeadDatabaseError({
             Something went wrong
           </h1>
           <p className="text-sm text-muted-foreground">
-            We encountered an error loading this page. Your data is safe.
+            We encountered an error loading the lead database. Your data is safe.
           </p>
         </div>
 
