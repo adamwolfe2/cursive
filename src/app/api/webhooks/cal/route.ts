@@ -53,18 +53,39 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true })
     }
 
+    const bookingUid = String(booking.uid)
+    const attendeeName = String(attendee.name ?? '')
+    const attendeeEmail = String(attendee.email)
+    const startTime = String(booking.startTime)
+    const endTime = String(booking.endTime)
+
     await inngest.send({
       name: 'cal/booking.created',
       data: {
-        booking_uid: String(booking.uid),
-        attendee_name: String(attendee.name ?? ''),
-        attendee_email: String(attendee.email),
-        start_time: String(booking.startTime),
-        end_time: String(booking.endTime),
+        booking_uid: bookingUid,
+        attendee_name: attendeeName,
+        attendee_email: attendeeEmail,
+        start_time: startTime,
+        end_time: endTime,
       },
     })
 
-    safeLog('[Cal webhook] Fired cal/booking.created for:', attendee.email)
+    // Fire demo/booked to trigger pre-call nurture sequence
+    await inngest.send({
+      name: 'demo/booked',
+      data: {
+        attendee_name: attendeeName,
+        attendee_email: attendeeEmail,
+        booking_uid: bookingUid,
+        start_time: startTime,
+        end_time: endTime,
+        owner_name: 'Darren',
+        owner_email: 'darren@meetcursive.com',
+        calendar_link: 'https://cal.com/gotdarrenhill/30min',
+      },
+    })
+
+    safeLog('[Cal webhook] Fired cal/booking.created + demo/booked for:', attendeeEmail)
   }
 
   if (triggerEvent === 'BOOKING_CANCELLED') {
@@ -78,7 +99,16 @@ export async function POST(req: NextRequest) {
       },
     })
 
-    safeLog('[Cal webhook] Fired cal/booking.cancelled for uid:', booking.uid)
+    // Fire demo/cancelled so demo-nurture-sequence cancelOn guard stops emails
+    await inngest.send({
+      name: 'demo/cancelled',
+      data: {
+        booking_uid: String(booking.uid),
+        attendee_email: String(attendee?.email ?? ''),
+      },
+    })
+
+    safeLog('[Cal webhook] Fired cal/booking.cancelled + demo/cancelled for uid:', booking.uid)
   }
 
   return NextResponse.json({ ok: true })

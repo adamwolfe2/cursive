@@ -26,41 +26,92 @@ export const demoNurtureSequence = inngest.createFunction(
     name: 'Demo Nurture Sequence',
     retries: 3,
     timeouts: { finish: "5m" }, // per step
+    cancelOn: [
+      {
+        event: 'demo/cancelled',
+        if: 'event.data.booking_uid != "" && event.data.booking_uid == async.data.booking_uid',
+      },
+    ],
   },
   { event: 'demo/booked' },
   async ({ event, step, logger }) => {
+    const rawData = event.data as Record<string, any>
+
+    // Support both schemas:
+    // Prospect/Cal schema: attendee_email, attendee_name, booking_uid, start_time, end_time, owner_name, owner_email, calendar_link
+    // Legacy/DB schema:    leadId, demoDate, demoTime, timezone, workspaceId, demoOwner, demoOwnerEmail
+    const isProspectMode = !!rawData.attendee_email
+
+    // Unified fields for both modes
+    const recipientEmail: string = rawData.attendee_email || ''
+    const recipientFirstName: string = rawData.attendee_name
+      ? String(rawData.attendee_name).split(' ')[0]
+      : 'there'
+    const ownerName: string = rawData.owner_name || rawData.demoOwner || 'Darren'
+    const ownerEmail: string = rawData.owner_email || rawData.demoOwnerEmail || 'darren@meetcursive.com'
+    const calendarLink: string = rawData.calendar_link || 'https://cal.com/gotdarrenhill/30min'
+
+    // Parse demo date from start_time (Cal) or demoDate (legacy)
+    const startDate = rawData.start_time
+      ? new Date(rawData.start_time)
+      : rawData.demoDate
+        ? new Date(rawData.demoDate)
+        : new Date()
+
+    const demoDateFormatted = startDate.toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      timeZone: rawData.timezone || 'America/Chicago',
+    })
+    const demoTimeFormatted = startDate.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+      timeZone: rawData.timezone || 'America/Chicago',
+    })
+
+    // Legacy schema fields
     const {
       leadId,
       demoDate,
       demoTime,
       timezone,
       workspaceId,
-      demoOwner,
-      demoOwnerEmail,
-    } = event.data as {
-      leadId: string
-      demoDate: string // ISO format
-      demoTime: string
-      timezone: string
-      workspaceId: string
-      demoOwner: string
-      demoOwnerEmail: string
+    } = rawData as {
+      leadId?: string
+      demoDate?: string
+      demoTime?: string
+      timezone?: string
+      workspaceId?: string
     }
 
-    logger.info(`Starting demo sequence for lead ${leadId}`)
+    // In prospect mode we route directly; skip if no email
+    if (isProspectMode && !recipientEmail) {
+      logger.warn('demo/booked fired in prospect mode but no attendee_email — skipping')
+      return { skipped: true, reason: 'no_email' }
+    }
+
+    logger.info(`Starting demo sequence — mode=${isProspectMode ? 'prospect' : 'lead'}, recipient=${recipientEmail || leadId}`)
 
     // ========================================================================
-    // STEP 1: CREATE ENROLLMENT
+    // STEP 1: CREATE ENROLLMENT (legacy/DB mode only)
     // ========================================================================
 
     const enrollment = await step.run('create-enrollment', async () => {
+      // Prospect mode: no DB enrollment needed
+      if (isProspectMode) {
+        return { id: `prospect-${rawData.booking_uid || Date.now()}`, is_prospect: true }
+      }
+
       const supabase = createAdminClient()
 
       // Check if already enrolled
       const { data: existing } = await supabase
         .from('sequence_enrollments')
         .select('id, status')
-        .eq('lead_id', leadId)
+        .eq('lead_id', leadId!)
         .eq('sequence_id', 'demo-nurture-v1') // Use consistent ID
         .maybeSingle()
 
@@ -72,7 +123,7 @@ export const demoNurtureSequence = inngest.createFunction(
       const { data, error } = await supabase
         .from('sequence_enrollments')
         .insert({
-          lead_id: leadId,
+          lead_id: leadId!,
           sequence_id: 'demo-nurture-v1',
           workspace_id: workspaceId,
           status: 'active',
@@ -81,7 +132,7 @@ export const demoNurtureSequence = inngest.createFunction(
             demo_date: demoDate,
             demo_time: demoTime,
             timezone,
-            demo_owner: demoOwner,
+            demo_owner: ownerName,
           },
         })
         .select()
@@ -98,19 +149,42 @@ export const demoNurtureSequence = inngest.createFunction(
     // ========================================================================
 
     await step.run('send-confirmation', async () => {
-      const hasResponded = await checkIfLeadResponded(leadId)
+      if (isProspectMode) {
+        await sendProspectEmail({
+          to: recipientEmail,
+          toName: recipientFirstName,
+          ownerName,
+          ownerEmail,
+          calendarLink,
+          subject: `Your call with ${ownerName} is confirmed — ${demoDateFormatted}`,
+          bodyLines: [
+            `Hi ${recipientFirstName},`,
+            ``,
+            `Your call with ${ownerName} is confirmed for <strong>${demoDateFormatted} at ${demoTimeFormatted} CT</strong>.`,
+            ``,
+            `You'll receive a calendar invite shortly. If you need to reschedule, grab a new time here:`,
+            `<a href="${calendarLink}" style="color:#007AFF;">${calendarLink}</a>`,
+            ``,
+            `Looking forward to chatting!`,
+          ],
+        })
+        logger.info(`Sent prospect confirmation email to ${recipientEmail}`)
+        return { sent: true }
+      }
+
+      const hasResponded = await checkIfLeadResponded(leadId!)
       if (hasResponded) {
         logger.info('Lead responded, skipping confirmation')
         return { skipped: true }
       }
 
-      const tokens = await buildEmailTokens(leadId, demoDate, demoTime, timezone, {
-        demoOwner,
-        demoOwnerEmail,
+      const tokens = await buildEmailTokens(leadId!, demoDate!, demoTime!, timezone!, {
+        demoOwner: ownerName,
+        demoOwnerEmail: ownerEmail,
       })
 
       await sendSequenceEmail({
-        leadId,
+        leadId: leadId!,
         enrollmentId: enrollment.id,
         emailType: 'demo-confirmation',
         tokens,
@@ -121,8 +195,8 @@ export const demoNurtureSequence = inngest.createFunction(
       return { sent: true }
     })
 
-    // Check for exit conditions
-    if (await shouldExitSequence(leadId, enrollment.id)) {
+    // Check for exit conditions (legacy mode only)
+    if (!isProspectMode && leadId && await shouldExitSequence(leadId, enrollment.id)) {
       return await exitSequence(enrollment.id, 'lead-responded')
     }
 
@@ -130,7 +204,7 @@ export const demoNurtureSequence = inngest.createFunction(
     // EMAIL 2: 1-DAY BEFORE REMINDER
     // ========================================================================
 
-    const demoParsed = new Date(demoDate)
+    const demoParsed = startDate
     const oneDayBefore = new Date(demoParsed)
     oneDayBefore.setDate(oneDayBefore.getDate() - 1)
     oneDayBefore.setHours(9, 0, 0, 0) // Send at 9 AM
@@ -142,20 +216,42 @@ export const demoNurtureSequence = inngest.createFunction(
     }
 
     await step.run('send-1day-reminder', async () => {
-      const hasResponded = await checkIfLeadResponded(leadId)
+      if (isProspectMode) {
+        await sendProspectEmail({
+          to: recipientEmail,
+          toName: recipientFirstName,
+          ownerName,
+          ownerEmail,
+          calendarLink,
+          subject: `Reminder: Your call with ${ownerName} is tomorrow`,
+          bodyLines: [
+            `Hi ${recipientFirstName},`,
+            ``,
+            `Just a reminder — your call with ${ownerName} is <strong>tomorrow at ${demoTimeFormatted} CT</strong>.`,
+            ``,
+            `We'll cover how Cursive identifies your website visitors and turns them into named leads you can act on immediately.`,
+            ``,
+            `Need to reschedule? No problem: <a href="${calendarLink}" style="color:#007AFF;">${calendarLink}</a>`,
+          ],
+        })
+        logger.info(`Sent prospect 1-day reminder to ${recipientEmail}`)
+        return { sent: true }
+      }
+
+      const hasResponded = await checkIfLeadResponded(leadId!)
       if (hasResponded) {
         logger.info('Lead responded, skipping 1-day reminder')
         return { skipped: true }
       }
 
-      const tokens = await buildEmailTokens(leadId, demoDate, demoTime, timezone, {
-        demoOwner,
-        demoOwnerEmail,
+      const tokens = await buildEmailTokens(leadId!, demoDate!, demoTime!, timezone!, {
+        demoOwner: ownerName,
+        demoOwnerEmail: ownerEmail,
         demoOwnerPhone: '(555) 123-4567', // FUTURE: Pull from workspace settings table
       })
 
       await sendSequenceEmail({
-        leadId,
+        leadId: leadId!,
         enrollmentId: enrollment.id,
         emailType: 'demo-1day-reminder',
         tokens,
@@ -166,7 +262,7 @@ export const demoNurtureSequence = inngest.createFunction(
       return { sent: true }
     })
 
-    if (await shouldExitSequence(leadId, enrollment.id)) {
+    if (!isProspectMode && leadId && await shouldExitSequence(leadId, enrollment.id)) {
       return await exitSequence(enrollment.id, 'lead-responded')
     }
 
@@ -184,21 +280,41 @@ export const demoNurtureSequence = inngest.createFunction(
     }
 
     await step.run('send-2hour-reminder', async () => {
-      const hasResponded = await checkIfLeadResponded(leadId)
+      if (isProspectMode) {
+        await sendProspectEmail({
+          to: recipientEmail,
+          toName: recipientFirstName,
+          ownerName,
+          ownerEmail,
+          calendarLink,
+          subject: `Starting in 2 hours — your call with ${ownerName}`,
+          bodyLines: [
+            `Hi ${recipientFirstName},`,
+            ``,
+            `Your call with ${ownerName} starts in about <strong>2 hours</strong> at ${demoTimeFormatted} CT.`,
+            ``,
+            `See you soon! If anything comes up, reply here and we'll make it work.`,
+          ],
+        })
+        logger.info(`Sent prospect 2-hour reminder to ${recipientEmail}`)
+        return { sent: true }
+      }
+
+      const hasResponded = await checkIfLeadResponded(leadId!)
       if (hasResponded) {
         logger.info('Lead responded, skipping 2-hour reminder')
         return { skipped: true }
       }
 
-      const tokens = await buildEmailTokens(leadId, demoDate, demoTime, timezone, {
-        demoOwner,
-        demoOwnerEmail,
+      const tokens = await buildEmailTokens(leadId!, demoDate!, demoTime!, timezone!, {
+        demoOwner: ownerName,
+        demoOwnerEmail: ownerEmail,
         demoOwnerPhone: '(555) 123-4567',
         meetingLink: 'https://meet.google.com/demo-link', // FUTURE: Pull from calendar integration
       })
 
       await sendSequenceEmail({
-        leadId,
+        leadId: leadId!,
         enrollmentId: enrollment.id,
         emailType: 'demo-2hour-reminder',
         tokens,
@@ -209,7 +325,7 @@ export const demoNurtureSequence = inngest.createFunction(
       return { sent: true }
     })
 
-    if (await shouldExitSequence(leadId, enrollment.id)) {
+    if (!isProspectMode && leadId && await shouldExitSequence(leadId, enrollment.id)) {
       return await exitSequence(enrollment.id, 'lead-responded')
     }
 
@@ -232,18 +348,39 @@ export const demoNurtureSequence = inngest.createFunction(
     // ========================================================================
 
     await step.run('send-followup', async () => {
-      const hasResponded = await checkIfLeadResponded(leadId)
-      const hasStartedTrial = await checkIfLeadStartedTrial(leadId)
+      if (isProspectMode) {
+        await sendProspectEmail({
+          to: recipientEmail,
+          toName: recipientFirstName,
+          ownerName,
+          ownerEmail,
+          calendarLink,
+          subject: `Great talking yesterday — here's what's next`,
+          bodyLines: [
+            `Hi ${recipientFirstName},`,
+            ``,
+            `Really enjoyed our conversation yesterday. Cursive is already identifying visitors on sites like yours — the pixel takes 60 seconds to install and leads start appearing within minutes.`,
+            ``,
+            `<strong>Your next step:</strong> Sign up at <a href="https://leads.meetcursive.com/welcome" style="color:#007AFF;">leads.meetcursive.com/welcome</a>, install the pixel, and your first identified visitors will show up in your dashboard automatically.`,
+            ``,
+            `Want me to get the pixel set up for you? Reply here and I'll send it over.`,
+          ],
+        })
+        logger.info(`Sent prospect follow-up email to ${recipientEmail}`)
+        return { sent: true }
+      }
+
+      const hasResponded = await checkIfLeadResponded(leadId!)
+      const hasStartedTrial = await checkIfLeadStartedTrial(leadId!)
 
       if (hasResponded || hasStartedTrial) {
         logger.info('Lead converted, skipping follow-up')
         return { skipped: true }
       }
 
-      const tokens = await buildEmailTokens(leadId, demoDate, demoTime, timezone, {
-        demoOwner,
-        demoOwnerEmail,
-        // Email 4 specific tokens
+      const tokens = await buildEmailTokens(leadId!, demoDate!, demoTime!, timezone!, {
+        demoOwner: ownerName,
+        demoOwnerEmail: ownerEmail,
         customFeature: 'AI-Powered Visitor Scoring',
         customFeatureDescription: 'Automatically prioritize high-intent visitors',
         estimatedVisitors: '7,000',
@@ -259,7 +396,7 @@ export const demoNurtureSequence = inngest.createFunction(
       })
 
       await sendSequenceEmail({
-        leadId,
+        leadId: leadId!,
         enrollmentId: enrollment.id,
         emailType: 'demo-followup',
         tokens,
@@ -270,7 +407,7 @@ export const demoNurtureSequence = inngest.createFunction(
       return { sent: true }
     })
 
-    if (await shouldExitSequence(leadId, enrollment.id)) {
+    if (!isProspectMode && leadId && await shouldExitSequence(leadId, enrollment.id)) {
       return await exitSequence(enrollment.id, 'lead-converted')
     }
 
@@ -281,24 +418,46 @@ export const demoNurtureSequence = inngest.createFunction(
     await step.sleep('wait-for-checkin', '3d')
 
     await step.run('send-checkin', async () => {
-      const hasResponded = await checkIfLeadResponded(leadId)
-      const hasStartedTrial = await checkIfLeadStartedTrial(leadId)
+      if (isProspectMode) {
+        await sendProspectEmail({
+          to: recipientEmail,
+          toName: recipientFirstName,
+          ownerName,
+          ownerEmail,
+          calendarLink,
+          subject: `Quick check-in — did you get a chance to install the pixel?`,
+          bodyLines: [
+            `Hi ${recipientFirstName},`,
+            ``,
+            `Just checking in — did you get a chance to try Cursive?`,
+            ``,
+            `Once the pixel is live, you'll see exactly who's visiting your site — name, email, company, and intent signals — all in real time. Most customers see their first leads within the first few hours of traffic.`,
+            ``,
+            `Happy to jump on a quick call to get it set up: <a href="${calendarLink}" style="color:#007AFF;">${calendarLink}</a>`,
+          ],
+        })
+        logger.info(`Sent prospect check-in email to ${recipientEmail}`)
+        return { sent: true }
+      }
+
+      const hasResponded = await checkIfLeadResponded(leadId!)
+      const hasStartedTrial = await checkIfLeadStartedTrial(leadId!)
 
       if (hasResponded || hasStartedTrial) {
         logger.info('Lead converted, skipping check-in')
         return { skipped: true }
       }
 
-      const tokens = await buildEmailTokens(leadId, demoDate, demoTime, timezone, {
-        demoOwner,
-        demoOwnerEmail,
+      const tokens = await buildEmailTokens(leadId!, demoDate!, demoTime!, timezone!, {
+        demoOwner: ownerName,
+        demoOwnerEmail: ownerEmail,
         caseStudyCompany: 'TechFlow',
         caseStudyLink: 'https://meetcursive.com/case-studies/techflow',
-        calendarLink: 'https://cal.com/gotdarrenhill/30min',
+        calendarLink,
       })
 
       await sendSequenceEmail({
-        leadId,
+        leadId: leadId!,
         enrollmentId: enrollment.id,
         emailType: 'demo-checkin',
         tokens,
@@ -309,7 +468,7 @@ export const demoNurtureSequence = inngest.createFunction(
       return { sent: true }
     })
 
-    if (await shouldExitSequence(leadId, enrollment.id)) {
+    if (!isProspectMode && leadId && await shouldExitSequence(leadId, enrollment.id)) {
       return await exitSequence(enrollment.id, 'lead-re-engaged')
     }
 
@@ -320,24 +479,48 @@ export const demoNurtureSequence = inngest.createFunction(
     await step.sleep('wait-for-breakup', '4d')
 
     await step.run('send-breakup', async () => {
-      const hasResponded = await checkIfLeadResponded(leadId)
-      const hasStartedTrial = await checkIfLeadStartedTrial(leadId)
+      if (isProspectMode) {
+        await sendProspectEmail({
+          to: recipientEmail,
+          toName: recipientFirstName,
+          ownerName,
+          ownerEmail,
+          calendarLink,
+          subject: `Closing the loop — still interested in Cursive?`,
+          bodyLines: [
+            `Hi ${recipientFirstName},`,
+            ``,
+            `I don't want to keep filling your inbox, so this will be my last note for now.`,
+            ``,
+            `If you're ready to see what Cursive can do for your site, you can sign up here anytime: <a href="https://leads.meetcursive.com/welcome" style="color:#007AFF;">leads.meetcursive.com/welcome</a>`,
+            ``,
+            `Or grab time with me when the timing is better: <a href="${calendarLink}" style="color:#007AFF;">${calendarLink}</a>`,
+            ``,
+            `Either way, I hope we get to work together down the road.`,
+          ],
+        })
+        logger.info(`Sent prospect breakup email to ${recipientEmail}`)
+        return { sent: true }
+      }
+
+      const hasResponded = await checkIfLeadResponded(leadId!)
+      const hasStartedTrial = await checkIfLeadStartedTrial(leadId!)
 
       if (hasResponded || hasStartedTrial) {
         logger.info('Lead converted, skipping breakup')
         return { skipped: true }
       }
 
-      const tokens = await buildEmailTokens(leadId, demoDate, demoTime, timezone, {
-        demoOwner,
-        demoOwnerEmail,
-        calendarLink: 'https://cal.com/gotdarrenhill/30min',
+      const tokens = await buildEmailTokens(leadId!, demoDate!, demoTime!, timezone!, {
+        demoOwner: ownerName,
+        demoOwnerEmail: ownerEmail,
+        calendarLink,
         checkBackLink: `https://app.meetcursive.com/check-back?lead=${leadId}`,
         unsubscribeLink: `https://app.meetcursive.com/unsubscribe?lead=${leadId}`,
       })
 
       await sendSequenceEmail({
-        leadId,
+        leadId: leadId!,
         enrollmentId: enrollment.id,
         emailType: 'demo-breakup',
         tokens,
@@ -353,6 +536,12 @@ export const demoNurtureSequence = inngest.createFunction(
     // ========================================================================
 
     await step.run('complete-sequence', async () => {
+      // Prospect mode: no DB enrollment to update
+      if (isProspectMode) {
+        logger.info('Prospect sequence completed')
+        return { completed: true }
+      }
+
       const supabase = createAdminClient()
 
       await supabase
@@ -372,6 +561,82 @@ export const demoNurtureSequence = inngest.createFunction(
 
 // ============================================================================
 // HELPER FUNCTIONS
+// ============================================================================
+
+// ============================================================================
+// PROSPECT EMAIL HELPER (Cal booking mode — no DB lead lookup required)
+// ============================================================================
+
+/**
+ * Send a simple transactional email to a Cal booking prospect.
+ * Used in prospect mode where we have an email address but no DB lead record.
+ */
+async function sendProspectEmail({
+  to,
+  toName,
+  ownerName,
+  ownerEmail,
+  calendarLink,
+  subject,
+  bodyLines,
+}: {
+  to: string
+  toName: string
+  ownerName: string
+  ownerEmail: string
+  calendarLink: string
+  subject: string
+  bodyLines: string[]
+}) {
+  const { sendEmail: sendResendEmail } = await import('@/lib/email/resend-client')
+
+  const bodyHtml = bodyLines
+    .map(line => line === '' ? '<br/>' : `<p style="margin:0 0 12px;font-size:15px;line-height:1.6;color:#111827;">${line}</p>`)
+    .join('\n')
+
+  const html = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${subject}</title>
+  <style>
+    body { margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background:#f4f4f5; }
+    .wrapper { max-width:600px;margin:0 auto;background:#fff; }
+    .body { padding:40px; }
+    .sig { margin-top:32px;padding-top:24px;border-top:1px solid #e4e4e7;font-size:14px;color:#374151; }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="body">
+      ${bodyHtml}
+      <div class="sig">
+        <p style="margin:0 0 4px;">${ownerName}<br/>
+        <span style="color:#6b7280;font-size:13px;">Cursive · <a href="https://meetcursive.com" style="color:#007AFF;">meetcursive.com</a></span></p>
+        <p style="margin:12px 0 0;font-size:12px;color:#9ca3af;">
+          Questions? Reply here or grab time at
+          <a href="${calendarLink}" style="color:#007AFF;">${calendarLink}</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>`
+
+  const text = bodyLines.join('\n') + `\n\n— ${ownerName}\nCursive · https://meetcursive.com\n${calendarLink}`
+
+  await sendResendEmail({
+    to,
+    from: `${ownerName} at Cursive <${ownerEmail}>`,
+    subject,
+    html,
+    text,
+  })
+}
+
+// ============================================================================
+// LEGACY HELPERS (DB-backed lead mode)
 // ============================================================================
 
 /**
