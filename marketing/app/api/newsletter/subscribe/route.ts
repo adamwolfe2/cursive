@@ -4,33 +4,25 @@
  *
  * - Validates email
  * - Rate limits by IP (max 3 signups per IP per hour)
- * - Sends welcome email via Resend
- * - Stores subscriber to JSON file
+ * - Sends welcome email to subscriber via Resend
+ * - Notifies hello@meetcursive.com of each new signup
  * - Returns success/error
+ *
+ * NOTE: No local file storage — Vercel filesystem is read-only at runtime.
+ * Subscriber deduplication relies on Resend welcome email suppression.
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { promises as fs } from 'fs'
-import path from 'path'
 
 // Email validation regex
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 // In-memory rate limit store: IP -> array of timestamps
+// (per-instance only — acceptable for spam prevention at edge)
 const rateLimitMap = new Map<string, number[]>()
 
 const RATE_LIMIT_MAX = 3
 const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000 // 1 hour
-
-// Path to subscriber storage file
-const SUBSCRIBERS_FILE = path.join(process.cwd(), 'data', 'newsletter-subscribers.json')
-
-interface Subscriber {
-  email: string
-  source: string
-  subscribedAt: string
-  ip: string
-}
 
 /**
  * Check rate limit for a given IP address.
@@ -39,8 +31,6 @@ interface Subscriber {
 function checkRateLimit(ip: string): boolean {
   const now = Date.now()
   const timestamps = rateLimitMap.get(ip) || []
-
-  // Filter to only timestamps within the current window
   const recentTimestamps = timestamps.filter((t) => now - t < RATE_LIMIT_WINDOW_MS)
 
   if (recentTimestamps.length >= RATE_LIMIT_MAX) {
@@ -50,28 +40,6 @@ function checkRateLimit(ip: string): boolean {
   recentTimestamps.push(now)
   rateLimitMap.set(ip, recentTimestamps)
   return true
-}
-
-/**
- * Load existing subscribers from the JSON file.
- */
-async function loadSubscribers(): Promise<Subscriber[]> {
-  try {
-    const data = await fs.readFile(SUBSCRIBERS_FILE, 'utf-8')
-    return JSON.parse(data)
-  } catch {
-    // File doesn't exist yet or is invalid
-    return []
-  }
-}
-
-/**
- * Save subscribers to the JSON file.
- */
-async function saveSubscribers(subscribers: Subscriber[]): Promise<void> {
-  const dir = path.dirname(SUBSCRIBERS_FILE)
-  await fs.mkdir(dir, { recursive: true })
-  await fs.writeFile(SUBSCRIBERS_FILE, JSON.stringify(subscribers, null, 2), 'utf-8')
 }
 
 /**
@@ -89,9 +57,9 @@ function escapeHtml(text: string): string {
 }
 
 /**
- * Send welcome email to the new subscriber via Resend
+ * Send emails via Resend: welcome email to subscriber + notification to admin
  */
-async function sendWelcomeEmail(email: string): Promise<void> {
+async function sendNewsletterEmails(email: string, source: string, ip: string): Promise<void> {
   const resendApiKey = process.env.RESEND_API_KEY
   const emailFrom = process.env.EMAIL_FROM || 'Cursive <noreply@meetcursive.com>'
 
@@ -124,9 +92,9 @@ async function sendWelcomeEmail(email: string): Promise<void> {
       </p>
 
       <ul style="margin: 12px 0; padding-left: 20px; color: #666;">
-        <li><a href="https://www.meetcursive.com/blog" style="color: #007aff; text-decoration: none;">Our Blog</a> - Deep dives on B2B marketing</li>
-        <li><a href="https://www.meetcursive.com/platform" style="color: #007aff; text-decoration: none;">Platform Overview</a> - See what Cursive can do</li>
-        <li><a href="https://cal.com/gotdarrenhill/30min" style="color: #007aff; text-decoration: none;">Book a Demo</a> - Get a personalized walkthrough</li>
+        <li><a href="https://www.meetcursive.com/blog" style="color: #007aff; text-decoration: none;">Our Blog</a> — Deep dives on B2B marketing</li>
+        <li><a href="https://www.meetcursive.com/platform" style="color: #007aff; text-decoration: none;">Platform Overview</a> — See what Cursive can do</li>
+        <li><a href="https://cal.com/gotdarrenhill/30min" style="color: #007aff; text-decoration: none;">Book a Demo</a> — Get a personalized walkthrough</li>
       </ul>
 
       <p style="color: #666; line-height: 1.6;">
@@ -145,24 +113,60 @@ async function sendWelcomeEmail(email: string): Promise<void> {
     </div>
   `
 
-  const response = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${resendApiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      from: emailFrom,
-      to: email,
-      subject: 'Welcome to Cursive Weekly',
-      html: welcomeEmailHtml,
-    }),
-  })
+  const notificationHtml = `
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 600px; margin: 0 auto;">
+      <h3 style="color: #333; margin-bottom: 4px;">New Newsletter Subscriber</h3>
+      <p style="color: #888; font-size: 13px; margin-top: 0;">meetcursive.com</p>
+      <table style="width: 100%; border-collapse: collapse; margin-top: 16px;">
+        <tr>
+          <td style="padding: 8px 12px; background: #f7f9fb; font-size: 13px; color: #888; width: 100px;">Email</td>
+          <td style="padding: 8px 12px; font-size: 14px; color: #333;">${escapeHtml(email)}</td>
+        </tr>
+        <tr>
+          <td style="padding: 8px 12px; background: #f7f9fb; font-size: 13px; color: #888;">Source</td>
+          <td style="padding: 8px 12px; font-size: 14px; color: #333;">${escapeHtml(source)}</td>
+        </tr>
+        <tr>
+          <td style="padding: 8px 12px; background: #f7f9fb; font-size: 13px; color: #888;">Time</td>
+          <td style="padding: 8px 12px; font-size: 14px; color: #333;">${new Date().toISOString()}</td>
+        </tr>
+        <tr>
+          <td style="padding: 8px 12px; background: #f7f9fb; font-size: 13px; color: #888;">IP</td>
+          <td style="padding: 8px 12px; font-size: 14px; color: #333;">${escapeHtml(ip)}</td>
+        </tr>
+      </table>
+    </div>
+  `
 
-  if (!response.ok) {
-    const errorData = await response.json()
-    throw new Error(`Failed to send welcome email: ${JSON.stringify(errorData)}`)
-  }
+  // Send both emails in parallel
+  await Promise.all([
+    fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${resendApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: emailFrom,
+        to: email,
+        subject: 'Welcome to Cursive Weekly',
+        html: welcomeEmailHtml,
+      }),
+    }),
+    fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${resendApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: emailFrom,
+        to: 'hello@meetcursive.com',
+        subject: `New newsletter subscriber: ${email}`,
+        html: notificationHtml,
+      }),
+    }),
+  ])
 }
 
 /**
@@ -190,47 +194,20 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     if (!body.email || typeof body.email !== 'string') {
-      return NextResponse.json(
-        { success: false, error: 'Email is required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ success: false, error: 'Email is required' }, { status: 400 })
     }
 
     const email = body.email.trim().toLowerCase()
 
     // Validate email format
     if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid email format' },
-        { status: 400 }
-      )
+      return NextResponse.json({ success: false, error: 'Invalid email format' }, { status: 400 })
     }
 
-    // Load existing subscribers and check for duplicates
-    const subscribers = await loadSubscribers()
-    const alreadySubscribed = subscribers.some((sub) => sub.email === email)
+    const source = typeof body.source === 'string' ? body.source : 'blog_scroll_popup'
 
-    if (alreadySubscribed) {
-      // Return success to avoid leaking subscription status,
-      // but don't send another welcome email or duplicate the entry
-      return NextResponse.json({
-        success: true,
-        message: 'Successfully subscribed to newsletter',
-      })
-    }
-
-    // Store the new subscriber
-    const newSubscriber: Subscriber = {
-      email,
-      source: body.source || 'blog_scroll_popup',
-      subscribedAt: body.timestamp || new Date().toISOString(),
-      ip,
-    }
-    const updatedSubscribers = [...subscribers, newSubscriber]
-    await saveSubscribers(updatedSubscribers)
-
-    // Send welcome email via Resend
-    await sendWelcomeEmail(email)
+    // Send welcome email to subscriber + notification to admin
+    await sendNewsletterEmails(email, source, ip)
 
     return NextResponse.json({
       success: true,
