@@ -12,7 +12,7 @@ import { AutoSubmitOnboarding } from './auto-submit-onboarding'
 export default async function WelcomePage({
   searchParams,
 }: {
-  searchParams: Promise<{ source?: string; returning?: string }>
+  searchParams: Promise<{ source?: string; returning?: string; ref?: string; email?: string }>
 }) {
   const supabase = await createClient()
   // SECURITY: Use getUser() for server-side JWT verification instead of getSession()
@@ -21,6 +21,10 @@ export default async function WelcomePage({
   const params = await searchParams
   const isMarketplace = params.source === 'marketplace'
   const isReturning = params.returning === 'true'
+  // ?ref=call: coming from Darren's post-call recap email link
+  const isCallProspect = params.ref === 'call'
+  // ?email=: pre-fill the email field if coming from the recap email
+  const prefilledEmail = params.email || ''
 
   if (authUser) {
     // Use admin client to bypass RLS
@@ -44,5 +48,11 @@ export default async function WelcomePage({
   }
 
   // No session — show the quiz flow
-  return <OnboardingFlow isMarketplace={isMarketplace} />
+  return (
+    <OnboardingFlow
+      isMarketplace={isMarketplace}
+      isCallProspect={isCallProspect}
+      prefilledEmail={prefilledEmail}
+    />
+  )
 }

@@ -32,10 +32,12 @@ interface OnboardingSuccessProps {
   isMarketplace: boolean
   targetIndustry?: string
   targetLocations?: string
-  requiresConfirmation?: boolean  // NEW: true = show "check your email", false = show success/redirect
+  requiresConfirmation?: boolean
+  /** True when user arrived via ?ref=call — pixel is already active, show personalized message */
+  isCallProspect?: boolean
 }
 
-export function OnboardingSuccess({ userType, email, isMarketplace, targetIndustry, targetLocations, requiresConfirmation }: OnboardingSuccessProps) {
+export function OnboardingSuccess({ userType, email, isMarketplace, targetIndustry, targetLocations, requiresConfirmation, isCallProspect = false }: OnboardingSuccessProps) {
   const router = useRouter()
   const isBusinessPath = userType === 'business'
 
@@ -226,8 +228,18 @@ export function OnboardingSuccess({ userType, email, isMarketplace, targetIndust
               </div>
             )}
 
-            {/* Next step: Install pixel */}
-            {isBusinessPath && (
+            {/* Pixel status — context-aware for call prospects vs regular signups */}
+            {isBusinessPath && isCallProspect ? (
+              <div className="rounded-lg border border-green-100 bg-green-50 px-4 py-3 text-left">
+                <p className="text-xs font-semibold text-green-700 uppercase tracking-wider mb-1.5">
+                  Your pixel is already active
+                </p>
+                <p className="text-sm text-green-900">
+                  Darren set up your SuperPixel during the call. Visitor leads are already flowing —
+                  you&apos;ll see them in your dashboard as soon as you confirm your email.
+                </p>
+              </div>
+            ) : isBusinessPath ? (
               <div className="rounded-lg border border-violet-100 bg-violet-50 px-4 py-3 text-left">
                 <p className="text-xs font-semibold text-violet-700 uppercase tracking-wider mb-1.5">
                   Next: Install your Superpixel
@@ -242,7 +254,7 @@ export function OnboardingSuccess({ userType, email, isMarketplace, targetIndust
                   Install Pixel →
                 </a>
               </div>
-            )}
+            ) : null}
 
             {/* Step-by-step instructions */}
             <div className="flex flex-col items-center gap-3 text-sm text-muted-foreground">

@@ -34,9 +34,13 @@ import type { BusinessFormData, PartnerFormData } from '@/types/waitlist.types'
 
 interface OnboardingFlowProps {
   isMarketplace: boolean
+  /** True when prospect arrived via ?ref=call from the post-call recap email */
+  isCallProspect?: boolean
+  /** Pre-filled email from ?email= query param (call recap link) */
+  prefilledEmail?: string
 }
 
-export function OnboardingFlow({ isMarketplace }: OnboardingFlowProps) {
+export function OnboardingFlow({ isMarketplace, isCallProspect = false, prefilledEmail = '' }: OnboardingFlowProps) {
   const router = useRouter()
   const {
     currentScreen,
@@ -244,7 +248,19 @@ export function OnboardingFlow({ isMarketplace }: OnboardingFlowProps) {
   const renderScreen = () => {
     switch (currentScreen) {
       case 'title':
-        return <TitleScreen onSelectUserType={selectUserType} />
+        return (
+          <>
+            {isCallProspect && (
+              <div className="mx-auto max-w-lg px-6 pt-8">
+                <div className="rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-900 mb-2">
+                  <strong>Darren set everything up.</strong> Your pixel is already active and
+                  your account is pre-staged — just create your login to see your leads.
+                </div>
+              </div>
+            )}
+            <TitleScreen onSelectUserType={selectUserType} />
+          </>
+        )
 
       case 'business-intro':
         return <BusinessIntro onNext={() => goToScreen('business-q1')} onBack={goBack} />
@@ -314,6 +330,7 @@ export function OnboardingFlow({ isMarketplace }: OnboardingFlowProps) {
             targetIndustry={submittedIndustry}
             targetLocations={submittedLocations}
             requiresConfirmation={submittedRequiresConfirmation}
+            isCallProspect={isCallProspect}
           />
         )
 
