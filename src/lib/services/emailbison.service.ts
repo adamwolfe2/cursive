@@ -65,14 +65,7 @@ export async function createEmailBisonAccount(userData: {
       created_at: account.created_at,
     }
   } catch (error) {
-    // For now, return a placeholder until we have the actual API
-    return {
-      id: `eb_${Date.now()}`,
-      email: userData.email,
-      name: userData.businessName,
-      status: 'pending_manual_setup',
-      created_at: new Date().toISOString(),
-    }
+    throw error
   }
 }
 

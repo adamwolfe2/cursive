@@ -16,7 +16,7 @@ import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 
 function verifyCalSignature(rawBody: string, signature: string): boolean {
   const secret = process.env.CAL_WEBHOOK_SECRET
-  if (!secret) return true // skip verification if secret not configured (dev mode)
+  if (!secret) return false // fail closed — require secret to be configured
 
   const sig = signature.startsWith('sha256=') ? signature.slice(7) : signature
   const expected = createHmac('sha256', secret).update(rawBody, 'utf8').digest('hex')

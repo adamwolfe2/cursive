@@ -10,35 +10,40 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { createClient } from '@/lib/supabase/server'
+import { handleApiError } from '@/lib/utils/api-error-handler'
 
 export async function GET(request: NextRequest) {
-  const user = await getCurrentUser()
-  if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  try {
+    const user = await getCurrentUser()
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const supabase = await createClient()
+
+    const { searchParams } = new URL(request.url)
+    const industry = searchParams.get('industry')
+    const location = searchParams.get('location')
+
+    if (!industry || !location) {
+      return NextResponse.json({ has_segment: false, segment_name: null })
+    }
+
+    const industryKey = industry.toLowerCase().replace(/\s+/g, '_')
+    const locationKey = location.toLowerCase()
+
+    const { data: segment } = await supabase
+      .from('audience_lab_segments')
+      .select('segment_name')
+      .eq('industry', industryKey)
+      .eq('location', locationKey)
+      .maybeSingle()
+
+    return NextResponse.json({
+      has_segment: !!segment,
+      segment_name: segment?.segment_name ?? null,
+    })
+  } catch (error) {
+    return handleApiError(error)
   }
-
-  const supabase = await createClient()
-
-  const { searchParams } = new URL(request.url)
-  const industry = searchParams.get('industry')
-  const location = searchParams.get('location')
-
-  if (!industry || !location) {
-    return NextResponse.json({ has_segment: false, segment_name: null })
-  }
-
-  const industryKey = industry.toLowerCase().replace(/\s+/g, '_')
-  const locationKey = location.toLowerCase()
-
-  const { data: segment } = await supabase
-    .from('audience_lab_segments')
-    .select('segment_name')
-    .eq('industry', industryKey)
-    .eq('location', locationKey)
-    .maybeSingle()
-
-  return NextResponse.json({
-    has_segment: !!segment,
-    segment_name: segment?.segment_name ?? null,
-  })
 }
