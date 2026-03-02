@@ -744,7 +744,8 @@ export async function provisionCustomerPixel(params: {
   websiteUrl: string
   cursiveWebhookUrl?: string
 }): Promise<ALPixelCreateResponse> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://leads.meetcursive.com'
+  // Strip trailing slash — NEXT_PUBLIC_SITE_URL may have one, causing double-// in webhook URL
+  const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://leads.meetcursive.com').replace(/\/$/, '')
   const webhookUrl = params.cursiveWebhookUrl ||
     `${baseUrl}/api/webhooks/audiencelab/superpixel`
 
