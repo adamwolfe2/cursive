@@ -21,18 +21,18 @@ export async function GET(
 
   // Fetch webhook with deliveries (verify workspace ownership)
   const { data: webhook, error } = await supabase
-    .from('webhook_endpoints')
+    .from('workspace_webhooks')
     .select(`
       id, name, url, events, is_active,
-      webhook_deliveries(
+      outbound_webhook_deliveries(
         id, event_type, status, response_status, response_body,
-        attempt_count, delivered_at, payload
+        attempts, last_attempt_at, payload
       )
     `)
     .eq('id', id)
     .eq('workspace_id', user.workspace_id)
-    .order('delivered_at', { referencedTable: 'webhook_deliveries', ascending: false })
-    .limit(50, { referencedTable: 'webhook_deliveries' })
+    .order('last_attempt_at', { referencedTable: 'outbound_webhook_deliveries', ascending: false })
+    .limit(50, { referencedTable: 'outbound_webhook_deliveries' })
     .maybeSingle()
 
   if (error || !webhook) {
@@ -42,7 +42,7 @@ export async function GET(
   return NextResponse.json({
     data: {
       ...webhook,
-      recent_deliveries: webhook.webhook_deliveries ?? [],
+      recent_deliveries: (webhook as any).outbound_webhook_deliveries ?? [],
     },
   })
 }

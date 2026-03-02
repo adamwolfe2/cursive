@@ -22,7 +22,7 @@ export async function POST(
 
   // Fetch the webhook, verify it belongs to this workspace
   const { data: webhook } = await supabase
-    .from('webhook_endpoints')
+    .from('workspace_webhooks')
     .select('id, url, secret, is_active, events')
     .eq('id', id)
     .eq('workspace_id', user.workspace_id)
@@ -88,15 +88,17 @@ export async function POST(
   }
 
   // Log delivery
-  await supabase.from('webhook_deliveries').insert({
-    webhook_endpoint_id: id,
+  await supabase.from('outbound_webhook_deliveries').insert({
+    webhook_id: id,
+    workspace_id: user.workspace_id,
     event_type: payload.event,
     payload,
     status: success ? 'success' : 'failed',
     response_status: responseStatus || null,
     response_body: responseBody.slice(0, 2000),
-    attempt_count: 1,
-    delivered_at: new Date().toISOString(),
+    attempts: 1,
+    last_attempt_at: new Date().toISOString(),
+    completed_at: new Date().toISOString(),
   // Non-critical: swallow any insert error
   }).then(() => null, () => null)
 
