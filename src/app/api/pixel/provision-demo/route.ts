@@ -33,7 +33,7 @@ function parsePublicUrl(raw: string): { domain: string; fullUrl: string } | null
       /^(\d+\.){3}\d+$/.test(host) ||
       !host.includes('.')
     ) return null
-    return { domain: host, fullUrl: full }
+    return { domain: host.replace(/^www\./, ''), fullUrl: full }
   } catch {
     return null
   }

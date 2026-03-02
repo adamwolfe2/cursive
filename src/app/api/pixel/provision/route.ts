@@ -90,8 +90,8 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Extract domain from URL
-    const domain = new URL(validated.website_url).hostname
+    // Extract domain from URL — strip www. so demo pixel lookup matches regardless of prefix
+    const domain = new URL(validated.website_url).hostname.replace(/^www\./, '')
     const websiteName = validated.website_name || domain
 
     // Check for an unclaimed demo pixel from a sales call — claim it instead of creating new

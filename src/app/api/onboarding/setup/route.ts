@@ -520,6 +520,22 @@ export async function POST(request: NextRequest) {
           // Non-fatal — user can set up pixel from dashboard
           safeError('[Onboarding] Demo pixel claim failed (non-fatal):', pixelError instanceof Error ? pixelError.message : pixelError)
         }
+
+        // Alert ops when a business signup didn't have a matching demo pixel —
+        // they may need to manually provision one or follow up on pixel install
+        if (!pixelClaimed) {
+          sendSlackAlert({
+            type: 'pipeline_update',
+            severity: 'warning',
+            message: `Business signup without demo pixel — pixel install follow-up needed`,
+            metadata: {
+              email: validated.email,
+              company: validated.companyName,
+              domain: signupDomain,
+              workspace_id: workspace.id,
+            },
+          }).catch((err) => safeError('[Onboarding] Slack pixel-missing alert failed:', err))
+        }
       }
     }
 
