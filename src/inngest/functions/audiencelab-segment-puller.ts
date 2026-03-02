@@ -23,6 +23,8 @@ import {
   createAudience,
   fetchAudienceRecords,
   buildWorkspaceAudienceFilters,
+  AudienceLabUnfilteredError,
+  UNFILTERED_PREVIEW_THRESHOLD,
   type ALEnrichedProfile,
 } from '@/lib/audiencelab/api-client'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
@@ -184,6 +186,18 @@ export const audienceLabSegmentPuller = inngest.createFunction(
             previewCount = preview.count || 0
             safeLog(`${LOG_PREFIX} Preview for ${combo.industries.join(',')} in ${combo.states.join(',') || 'all states'}: ${previewCount} records`)
 
+            // Guard: suspiciously high count means AL ignored our filters.
+            // Skip this combo to avoid inserting unrelated global records.
+            if (previewCount >= UNFILTERED_PREVIEW_THRESHOLD) {
+              sendSlackAlert({
+                type: 'webhook_failure',
+                severity: 'warning',
+                message: `AL segment puller skipped combo — preview count ${previewCount.toLocaleString()} exceeds threshold (${UNFILTERED_PREVIEW_THRESHOLD.toLocaleString()}). Industries: ${combo.industries.join(',')} States: ${combo.states.join(',') || 'all'}`,
+                metadata: { combo_industries: combo.industries, combo_states: combo.states, previewCount },
+              }).catch((err) => safeError(`${LOG_PREFIX} Slack alert failed`, err))
+              return { inserted: 0, skipped: 0, error: 'Unfiltered response — skipped' as string | null }
+            }
+
             if (previewCount === 0) {
               return { inserted: 0, skipped: 0, error: null as string | null }
             }
@@ -214,7 +228,22 @@ export const audienceLabSegmentPuller = inngest.createFunction(
             const pageSize = Math.min(500, remaining - inserted)
             if (pageSize <= 0) break
 
-            const recordsResponse = await fetchAudienceRecords(audienceId, page, pageSize)
+            let recordsResponse
+            try {
+              recordsResponse = await fetchAudienceRecords(audienceId, page, pageSize)
+            } catch (fetchErr) {
+              if (fetchErr instanceof AudienceLabUnfilteredError) {
+                safeLog(`${LOG_PREFIX} Unfiltered response (${fetchErr.totalRecords.toLocaleString()} records) on page ${page}, aborting combo`)
+                sendSlackAlert({
+                  type: 'webhook_failure',
+                  severity: 'warning',
+                  message: `AL segment puller aborted — unfiltered page response (${fetchErr.totalRecords.toLocaleString()} records). Industries: ${combo.industries.join(',')}`,
+                  metadata: { combo_industries: combo.industries, combo_states: combo.states, totalRecords: fetchErr.totalRecords },
+                }).catch((err) => safeError(`${LOG_PREFIX} Slack alert failed`, err))
+                break
+              }
+              throw fetchErr
+            }
             const records = recordsResponse.data || []
 
             if (records.length === 0) break
@@ -411,6 +440,20 @@ async function insertLeadFromALRecord(
   // Quality gate — skip records that are too sparse to be useful
   const qualityScore = scoreALProfile(record)
   if (qualityScore < MIN_QUALITY_SCORE) return 'skipped'
+
+  // Post-fetch targeting filter: enforce the workspace's declared targeting even if
+  // AL ignored our API filters and returned unrelated global records.
+  if (combo.industries.length > 0) {
+    const recIndustry = (record.COMPANY_INDUSTRY || '').toLowerCase()
+    const hasMatch = combo.industries.some(i =>
+      recIndustry.includes(i.toLowerCase()) || i.toLowerCase().includes(recIndustry)
+    )
+    if (!hasMatch) return 'skipped'
+  }
+  if (combo.states.length > 0) {
+    const recState = record.PERSONAL_STATE || record.COMPANY_STATE
+    if (recState && !combo.states.includes(recState)) return 'skipped'
+  }
 
   // AL records use UPPER_CASE: PERSONAL_EMAILS, BUSINESS_EMAIL (comma-separated strings)
   const personalEmails = parseCSV(record.PERSONAL_EMAILS)

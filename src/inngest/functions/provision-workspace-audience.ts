@@ -27,6 +27,8 @@ import {
   createAudience,
   fetchAudienceRecords,
   buildWorkspaceAudienceFilters,
+  AudienceLabUnfilteredError,
+  UNFILTERED_PREVIEW_THRESHOLD,
   type ALEnrichedProfile,
 } from '@/lib/audiencelab/api-client'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
@@ -137,6 +139,18 @@ export const provisionWorkspaceAudience = inngest.createFunction(
         previewCount = preview.count || 0
         safeLog(`${LOG_PREFIX} Preview count: ${previewCount}`)
 
+        // Guard: if preview count is suspiciously high the AL API ignored our filters.
+        // Returning global (500k) records would pollute the workspace with garbage leads.
+        if (previewCount >= UNFILTERED_PREVIEW_THRESHOLD) {
+          sendSlackAlert({
+            type: 'webhook_failure',
+            severity: 'warning',
+            message: `AL provision skipped for workspace ${workspace_id} — preview count ${previewCount.toLocaleString()} exceeds threshold (${UNFILTERED_PREVIEW_THRESHOLD.toLocaleString()}). Filters likely ignored by API.`,
+            metadata: { workspace_id, user_id, industries: industries?.join(','), states: states?.join(','), previewCount },
+          }).catch(() => {})
+          return { audienceId: null as string | null, segmentFilters }
+        }
+
         if (previewCount === 0) {
           safeLog(`${LOG_PREFIX} No records found for this targeting, trying last 30 days`)
           // Broaden to 30 days if 7-day window is empty
@@ -190,6 +204,16 @@ export const provisionWorkspaceAudience = inngest.createFunction(
           records = recordsResponse.data || []
           if (records.length === 0) break
         } catch (err) {
+          if (err instanceof AudienceLabUnfilteredError) {
+            safeLog(`${LOG_PREFIX} Unfiltered response detected (${err.totalRecords.toLocaleString()} records), aborting fetch`)
+            sendSlackAlert({
+              type: 'webhook_failure',
+              severity: 'warning',
+              message: `AL provision aborted — unfiltered response (${err.totalRecords.toLocaleString()} records) for workspace ${workspace_id}`,
+              metadata: { workspace_id, user_id, totalRecords: err.totalRecords },
+            }).catch(() => {})
+            break
+          }
           safeError(`${LOG_PREFIX} Failed to fetch page ${page}`, err)
           break
         }
@@ -201,6 +225,26 @@ export const provisionWorkspaceAudience = inngest.createFunction(
           if (qualityScore < MIN_QUALITY_SCORE) {
             skipped++
             continue
+          }
+
+          // Post-fetch targeting filter: even if AL ignored our segment filters,
+          // we enforce industry and state matching using the record's own fields.
+          if (industries?.length > 0) {
+            const recIndustry = (record.COMPANY_INDUSTRY || '').toLowerCase()
+            const hasIndustryMatch = industries.some(i =>
+              recIndustry.includes(i.toLowerCase()) || i.toLowerCase().includes(recIndustry)
+            )
+            if (!hasIndustryMatch) {
+              skipped++
+              continue
+            }
+          }
+          if (states?.length > 0) {
+            const recState = record.PERSONAL_STATE || record.COMPANY_STATE
+            if (recState && !states.includes(recState)) {
+              skipped++
+              continue
+            }
           }
 
           const email =
@@ -354,13 +398,12 @@ export const provisionWorkspaceAudience = inngest.createFunction(
 
     safeLog(`${LOG_PREFIX} Workspace ${workspace_id}: ${insertResult.inserted} leads inserted, ${insertResult.skipped} skipped`)
 
-    // Step 4: Send "first leads arrived" activation email
+    // Step 4: Emit "first leads arrived" event — handled by first-leads-arrived.ts
+    // which uses a shared email template and prevents duplicate sends via Inngest dedup.
     if (insertResult.inserted > 0) {
-      await step.run('send-activation-email', async () => {
+      await step.run('emit-first-leads-event', async () => {
         try {
           const supabase = createAdminClient()
-
-          // Get user's email and name
           const { data: userRow } = await supabase
             .from('users')
             .select('email, full_name')
@@ -369,87 +412,22 @@ export const provisionWorkspaceAudience = inngest.createFunction(
 
           if (!userRow?.email) return
 
-          const firstName = userRow.full_name?.split(' ')[0] || 'there'
-          const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://leads.meetcursive.com'
-          const dashboardUrl = `${appUrl}/leads`
-          const RESEND_API_KEY = process.env.RESEND_API_KEY
-          const FROM_EMAIL = process.env.EMAIL_FROM || 'Cursive <notifications@meetcursive.com>'
-
-          if (!RESEND_API_KEY) return
-
-          const sampleHtml = insertResult.sampleLeads?.length
-            ? insertResult.sampleLeads.map(l =>
-                `<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #f0f0f0;">
-                  <div style="width:36px;height:36px;background:#007AFF;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:14px;flex-shrink:0;">${l.name.charAt(0)}</div>
-                  <div>
-                    <div style="font-weight:600;color:#111;font-size:14px;">${l.name}</div>
-                    <div style="color:#666;font-size:13px;">${[l.title, l.company].filter(Boolean).join(' at ')}</div>
-                  </div>
-                </div>`
-              ).join('')
-            : ''
-
-          const html = `
-<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
-<body style="margin:0;padding:0;background:#f7f9fb;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
-<div style="max-width:560px;margin:40px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
-  <div style="background:#007AFF;padding:28px 32px;">
-    <p style="color:rgba(255,255,255,0.8);font-size:13px;margin:0 0 6px;">Cursive Super Pixel</p>
-    <h1 style="color:#fff;font-size:24px;font-weight:600;margin:0;line-height:1.3;">Your first ${insertResult.inserted} leads just arrived.</h1>
-  </div>
-  <div style="padding:32px;">
-    <p style="color:#444;font-size:15px;line-height:1.6;margin:0 0 20px;">Hi ${firstName},</p>
-    <p style="color:#444;font-size:15px;line-height:1.6;margin:0 0 24px;">
-      We just pulled <strong>${insertResult.inserted} verified, intent-matched leads</strong> from our database and loaded them directly into your Cursive dashboard — matched to your industry and target locations.
-    </p>
-    ${sampleHtml ? `
-    <p style="color:#888;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin:0 0 12px;">A few of them:</p>
-    <div style="background:#fafafa;border-radius:12px;padding:4px 16px;margin-bottom:24px;">
-      ${sampleHtml}
-    </div>
-    ` : ''}
-    <a href="${dashboardUrl}" style="display:block;background:#007AFF;color:#fff;text-decoration:none;text-align:center;padding:16px;border-radius:10px;font-weight:700;font-size:16px;margin-bottom:24px;">
-      View All ${insertResult.inserted} Leads →
-    </a>
-    <p style="color:#666;font-size:14px;line-height:1.6;margin:0 0 8px;">From here you can:</p>
-    <ul style="color:#666;font-size:14px;line-height:1.9;margin:0 0 24px;padding-left:20px;">
-      <li>Export to your CRM (HubSpot, Salesforce, Slack)</li>
-      <li>Launch an outbound email campaign</li>
-      <li>Enrich any lead with 50+ verified data points</li>
-      <li>Filter by industry, location, seniority, and more</li>
-    </ul>
-    <p style="color:#666;font-size:14px;line-height:1.6;margin:0;">Your lead pipeline refreshes automatically every 6 hours. Questions? Reply to this email.</p>
-  </div>
-  <div style="background:#f7f9fb;padding:20px 32px;text-align:center;">
-    <p style="color:#aaa;font-size:12px;margin:0;">Cursive · <a href="${appUrl}/settings/notifications" style="color:#aaa;">Manage notifications</a></p>
-  </div>
-</div>
-</body>
-</html>`
-
-          await fetch('https://api.resend.com/emails', {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${RESEND_API_KEY}`,
-              'Content-Type': 'application/json',
+          await inngest.send({
+            name: 'workspace/first-leads-arrived',
+            data: {
+              workspaceId: workspace_id,
+              userId: user_id,
+              userEmail: userRow.email,
+              userName: userRow.full_name || userRow.email.split('@')[0],
+              leadCount: insertResult.inserted,
+              industry: industries?.[0] || null,
+              location: states?.[0] || null,
             },
-            body: JSON.stringify({
-              from: FROM_EMAIL,
-              to: userRow.email,
-              subject: `Your first ${insertResult.inserted} leads just arrived`,
-              html,
-              headers: {
-                'List-Unsubscribe': `<${appUrl}/settings/notifications>`,
-                'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
-              },
-            }),
           })
 
-          safeLog(`${LOG_PREFIX} Activation email sent to ${userRow.email}`)
-        } catch (emailErr) {
-          safeError(`${LOG_PREFIX} Activation email failed (non-fatal)`, emailErr)
+          safeLog(`${LOG_PREFIX} First-leads event emitted for workspace ${workspace_id}`)
+        } catch (emitErr) {
+          safeError(`${LOG_PREFIX} First-leads event emission failed (non-fatal)`, emitErr)
         }
       })
     }

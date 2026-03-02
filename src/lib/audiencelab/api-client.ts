@@ -360,7 +360,7 @@ export interface ALBatchEnrichStatusResponse {
 // API CLIENT
 // ============================================================================
 
-class AudienceLabApiError extends Error {
+export class AudienceLabApiError extends Error {
   constructor(
     message: string,
     public statusCode: number,
@@ -370,6 +370,30 @@ class AudienceLabApiError extends Error {
     this.name = 'AudienceLabApiError'
   }
 }
+
+/**
+ * Thrown when AL API returns a suspiciously large unfiltered audience response.
+ * This indicates the server-side filters were ignored and all records are global.
+ */
+export class AudienceLabUnfilteredError extends Error {
+  constructor(public totalRecords: number) {
+    super(`Likely unfiltered AL response: ${totalRecords.toLocaleString()} records exceeds safety threshold`)
+    this.name = 'AudienceLabUnfilteredError'
+  }
+}
+
+/**
+ * If total_records from fetchAudienceRecords() exceeds this threshold,
+ * the API likely returned all global records without applying filters.
+ * AL's total audience is ~500k — anything above 100k is treated as unfiltered.
+ */
+export const UNFILTERED_RECORDS_THRESHOLD = 100_000
+
+/**
+ * If a preview count from previewAudience() exceeds this threshold,
+ * the segment is likely unfiltered. Skip processing to avoid garbage data.
+ */
+export const UNFILTERED_PREVIEW_THRESHOLD = 50_000
 
 async function alFetch<T = unknown>(
   endpoint: string,
@@ -579,10 +603,17 @@ export async function fetchAudienceRecords(
     page: String(page),
     page_size: String(Math.min(pageSize, 1000)),
   })
-  return alFetch<ALAudienceRecordsResponse>(
+  const response = await alFetch<ALAudienceRecordsResponse>(
     `/audiences/${audienceId}?${params.toString()}`,
     { method: 'GET' }
   )
+
+  // Defense-in-depth: if AL returns a massive unfiltered audience, refuse to process it
+  if (response.total_records >= UNFILTERED_RECORDS_THRESHOLD) {
+    throw new AudienceLabUnfilteredError(response.total_records)
+  }
+
+  return response
 }
 
 // ============================================================================

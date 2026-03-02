@@ -20,6 +20,15 @@ import type { Database } from './database.types'
 // Convenience type aliases
 export type Workspace = Tables<'workspaces'>
 export type User = Tables<'users'>
+
+/**
+ * User with pixel trial status joined from audiencelab_pixels.
+ * Returned by getCurrentUser() — use this type when you need trial_status.
+ */
+export type UserWithPixelData = User & {
+  trial_status?: string | null
+  trial_ends_at?: string | null
+}
 export type GlobalTopic = Tables<'global_topics'>
 export type Query = Tables<'queries'>
 export type Lead = Tables<'leads'>

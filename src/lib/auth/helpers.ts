@@ -3,13 +3,13 @@
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { safeError, safeWarn } from '@/lib/utils/log-sanitizer'
-import type { User } from '@/types'
+import type { User, UserWithPixelData } from '@/types'
 
 /**
  * Get the current authenticated user
  * Returns null if not authenticated
  */
-export async function getCurrentUser(): Promise<User | null> {
+export async function getCurrentUser(): Promise<UserWithPixelData | null> {
   // SECURITY: Development-only bypass - COMPLETELY DISABLED in production builds
   // This bypass is ONLY available in local development with EXPLICIT configuration.
   // FAIL CLOSED: Any production indicator (VERCEL_ENV, NEXT_PUBLIC_APP_URL with non-localhost domain)
@@ -53,7 +53,9 @@ export async function getCurrentUser(): Promise<User | null> {
           daily_credits_used: 0,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
-        } as User
+          trial_status: null,
+          trial_ends_at: null,
+        } as UserWithPixelData
       }
     }
   }
@@ -76,7 +78,23 @@ export async function getCurrentUser(): Promise<User | null> {
     .eq('auth_user_id', authUser.id)
     .maybeSingle()
 
-  return user as User | null
+  if (!user) return null
+
+  // Fetch pixel trial status — stored in audiencelab_pixels, not on users table
+  let trial_status: string | null = null
+  let trial_ends_at: string | null = null
+  if (user.workspace_id) {
+    const { data: pixel } = await supabase
+      .from('audiencelab_pixels')
+      .select('trial_status, trial_ends_at')
+      .eq('workspace_id', user.workspace_id)
+      .limit(1)
+      .maybeSingle()
+    trial_status = pixel?.trial_status ?? null
+    trial_ends_at = pixel?.trial_ends_at ?? null
+  }
+
+  return { ...(user as User), trial_status, trial_ends_at } as UserWithPixelData
 }
 
 /**
