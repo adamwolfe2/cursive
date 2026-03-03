@@ -155,21 +155,9 @@ function timeAgo(ts: string) {
   return `${Math.floor(h / 24)}d ago`
 }
 
-const SERVICE_COLORS: Record<string, string> = {
-  firecrawl: 'bg-orange-100 text-orange-700',
-  fal:       'bg-purple-100 text-purple-700',
-  anthropic: 'bg-violet-100 text-violet-700',
-  openai:    'bg-green-100 text-green-700',
-  resend:    'bg-blue-100 text-blue-700',
-  slack:     'bg-yellow-100 text-yellow-700',
-  millionverifier: 'bg-cyan-100 text-cyan-700',
-  audiencelab: 'bg-rose-100 text-rose-700',
-}
-
 function ServiceBadge({ service }: { service: string }) {
-  const cls = SERVICE_COLORS[service] ?? 'bg-zinc-100 text-zinc-600'
   return (
-    <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-medium ${cls}`}>
+    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-medium bg-zinc-100 text-zinc-600">
       {service}
     </span>
   )
@@ -204,7 +192,7 @@ export default async function ApiCostPage() {
           { label: 'Avg Cost / Call', value: totalCalls > 0 ? `$${(totalCost / totalCalls).toFixed(5)}` : '$0', sub: 'per API call' },
         ].map(({ label, value, sub }) => (
           <div key={label} className="bg-white border border-zinc-200 rounded-xl p-5">
-            <p className="text-xs font-medium text-zinc-500 uppercase tracking-wide">{label}</p>
+            <p className="text-xs text-zinc-500">{label}</p>
             <p className="text-2xl font-bold text-zinc-900 mt-1">{value}</p>
             <p className="text-xs text-zinc-400 mt-0.5">{sub}</p>
           </div>
@@ -248,7 +236,7 @@ export default async function ApiCostPage() {
                       <div className="flex items-center gap-2">
                         <div className="flex-1 bg-zinc-100 rounded-full h-1.5 max-w-[100px]">
                           <div
-                            className="bg-indigo-500 h-1.5 rounded-full"
+                            className="bg-zinc-400 h-1.5 rounded-full"
                             style={{ width: `${totalCost > 0 ? Math.min(100, (row.total_cost / totalCost) * 100) : 0}%` }}
                           />
                         </div>
@@ -300,7 +288,7 @@ export default async function ApiCostPage() {
                 <div className="flex-1 flex items-center gap-2">
                   <div className="flex-1 bg-zinc-100 rounded-full h-2.5">
                     <div
-                      className="bg-indigo-400 h-2.5 rounded-full transition-all"
+                      className="bg-zinc-500 h-2.5 rounded-full transition-all"
                       style={{ width: `${Math.max(2, (d.total_cost / maxDailyCost) * 100)}%` }}
                     />
                   </div>
@@ -309,7 +297,7 @@ export default async function ApiCostPage() {
                 <div className="flex-1 flex items-center gap-2">
                   <div className="flex-1 bg-zinc-100 rounded-full h-2.5">
                     <div
-                      className="bg-blue-300 h-2.5 rounded-full"
+                      className="bg-zinc-300 h-2.5 rounded-full"
                       style={{ width: `${Math.max(2, (d.calls / maxDailyCalls) * 100)}%` }}
                     />
                   </div>

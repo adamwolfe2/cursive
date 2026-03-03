@@ -40,6 +40,24 @@ interface PayoutTotals {
   rejected_amount: number
 }
 
+const STATUS_BADGE: Record<string, string> = {
+  pending:    'bg-zinc-100 text-zinc-700',
+  processing: 'bg-zinc-100 text-zinc-700',
+  completed:  'bg-zinc-100 text-zinc-700',
+  rejected:   'bg-zinc-100 text-zinc-700',
+  failed:     'bg-zinc-100 text-zinc-700',
+}
+
+function StatusBadge({ status }: { status: string }) {
+  return (
+    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium capitalize ${STATUS_BADGE[status] ?? 'bg-zinc-100 text-zinc-600'}`}>
+      {status}
+    </span>
+  )
+}
+
+const FILTERS = ['all', 'pending', 'completed', 'rejected'] as const
+
 export default function AdminPayoutsPage() {
   const { toast } = useToast()
   const [isAdmin, setIsAdmin] = useState(false)
@@ -60,23 +78,15 @@ export default function AdminPayoutsPage() {
 
   const supabase = createClient()
 
-  // Admin role check - prevent non-admins from accessing
   useEffect(() => {
     const checkAdmin = async () => {
       const { data: { session } } = await supabase.auth.getSession()
       const user = session?.user
-      if (!user) {
-        window.location.href = '/login'
-        return
-      }
+      if (!user) { window.location.href = '/login'; return }
       const { data: userData } = await supabase
-        .from('users')
-        .select('role')
-        .eq('auth_user_id', user.id)
-        .maybeSingle() as { data: { role: string } | null }
+        .from('users').select('role').eq('auth_user_id', user.id).maybeSingle() as { data: { role: string } | null }
       if (!userData || (userData.role !== 'admin' && userData.role !== 'owner')) {
-        window.location.href = '/dashboard'
-        return
+        window.location.href = '/dashboard'; return
       }
       setIsAdmin(true)
       setAuthChecked(true)
@@ -91,11 +101,9 @@ export default function AdminPayoutsPage() {
   const fetchPayouts = async () => {
     setLoading(true)
     try {
-      const url = `/api/admin/payouts?status=${statusFilter}`
-      const response = await fetch(url)
-      if (!response.ok) throw new Error(`HTTP ${response.status}`)
-      const data = await response.json()
-
+      const res = await fetch(`/api/admin/payouts?status=${statusFilter}`)
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      const data = await res.json()
       if (data.success) {
         setPayouts(data.payouts || [])
         setTotals(data.totals || { pending_amount: 0, approved_amount: 0, completed_amount: 0, rejected_amount: 0 })
@@ -107,231 +115,150 @@ export default function AdminPayoutsPage() {
     }
   }
 
-  const handleApproveClick = (payoutId: string) => {
-    setConfirmApproveId(payoutId)
-  }
-
   const handleApprove = async (payoutId: string) => {
     setConfirmApproveId(null)
     setProcessingPayoutId(payoutId)
     try {
-      const response = await fetch('/api/admin/payouts/approve', {
+      const res = await fetch('/api/admin/payouts/approve', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ payout_id: payoutId }),
       })
-
-      const data = await response.json()
-
+      const data = await res.json()
       if (data.success) {
-        toast({ type: 'success', message: data.message || 'Payout approved successfully' })
+        toast({ type: 'success', message: data.message || 'Payout approved' })
         fetchPayouts()
       } else {
-        toast({ type: 'error', message: `Failed to approve payout: ${data.error}` })
+        toast({ type: 'error', message: `Failed: ${data.error}` })
       }
     } catch (error: any) {
-      toast({ type: 'error', message: `Error: ${error.message}` })
+      toast({ type: 'error', message: error.message })
     } finally {
       setProcessingPayoutId(null)
     }
   }
 
-  const handleRejectClick = (payoutId: string) => {
-    setRejectDialogOpen(payoutId)
-    setRejectReason('')
-  }
-
   const handleReject = async (payoutId: string) => {
-    if (!rejectReason.trim()) {
-      toast({ type: 'warning', message: 'Please provide a rejection reason' })
-      return
-    }
-
+    if (!rejectReason.trim()) { toast({ type: 'warning', message: 'Please provide a rejection reason' }); return }
     setProcessingPayoutId(payoutId)
     try {
-      const response = await fetch('/api/admin/payouts/reject', {
+      const res = await fetch('/api/admin/payouts/reject', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ payout_id: payoutId, reason: rejectReason }),
       })
-
-      const data = await response.json()
-
+      const data = await res.json()
       if (data.success) {
-        toast({ type: 'success', message: data.message || 'Payout rejected successfully' })
+        toast({ type: 'success', message: data.message || 'Payout rejected' })
         setRejectDialogOpen(null)
         setRejectReason('')
         fetchPayouts()
       } else {
-        toast({ type: 'error', message: `Failed to reject payout: ${data.error}` })
+        toast({ type: 'error', message: `Failed: ${data.error}` })
       }
     } catch (error: any) {
-      toast({ type: 'error', message: `Error: ${error.message}` })
+      toast({ type: 'error', message: error.message })
     } finally {
       setProcessingPayoutId(null)
     }
   }
 
-  const getStatusBadge = (status: string) => {
-    const colors: Record<string, string> = {
-      pending: 'bg-yellow-100 text-yellow-800',
-      processing: 'bg-blue-100 text-blue-800',
-      completed: 'bg-green-100 text-green-800',
-      rejected: 'bg-red-100 text-red-800',
-      failed: 'bg-red-200 text-red-900',
-    }
+  if (!authChecked) return (
+    <div className="flex items-center justify-center min-h-screen text-zinc-500 text-sm">Checking access...</div>
+  )
+  if (!isAdmin) return null
 
-    return (
-      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${colors[status] || 'bg-gray-100 text-gray-800'}`}>
-        {status.charAt(0).toUpperCase() + status.slice(1)}
-      </span>
-    )
-  }
-
-  if (!authChecked) {
-    return <div className="flex items-center justify-center min-h-screen"><p>Checking access...</p></div>
-  }
-  if (!isAdmin) {
-    return null
-  }
+  const fmt = (n: number) => `$${n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Partner Payouts</h1>
-        <p className="mt-2 text-sm text-gray-700">
-          Manage and approve partner commission payouts
-        </p>
+    <div className="max-w-5xl mx-auto px-6 py-8 space-y-6">
+
+      {/* Header */}
+      <div>
+        <h1 className="text-xl font-semibold text-zinc-900">Partner Payouts</h1>
+        <p className="text-sm text-zinc-500 mt-1">Manage and approve partner commission payouts</p>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-4 mb-8">
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="px-4 py-5 sm:p-6">
-            <dt className="text-sm font-medium text-gray-500 truncate">Pending</dt>
-            <dd className="mt-1 text-3xl font-semibold text-yellow-600">
-              ${totals.pending_amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </dd>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        {[
+          { label: 'Pending',   value: fmt(totals.pending_amount) },
+          { label: 'Approved',  value: fmt(totals.approved_amount) },
+          { label: 'Completed', value: fmt(totals.completed_amount) },
+          { label: 'Rejected',  value: fmt(totals.rejected_amount) },
+        ].map(s => (
+          <div key={s.label} className="bg-white border border-zinc-200 rounded-lg p-4">
+            <div className="text-xs text-zinc-500">{s.label}</div>
+            <div className="text-2xl font-semibold text-zinc-900 mt-1">{s.value}</div>
           </div>
-        </div>
-
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="px-4 py-5 sm:p-6">
-            <dt className="text-sm font-medium text-gray-500 truncate">Approved</dt>
-            <dd className="mt-1 text-3xl font-semibold text-blue-600">
-              ${totals.approved_amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </dd>
-          </div>
-        </div>
-
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="px-4 py-5 sm:p-6">
-            <dt className="text-sm font-medium text-gray-500 truncate">Completed</dt>
-            <dd className="mt-1 text-3xl font-semibold text-green-600">
-              ${totals.completed_amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </dd>
-          </div>
-        </div>
-
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="px-4 py-5 sm:p-6">
-            <dt className="text-sm font-medium text-gray-500 truncate">Rejected</dt>
-            <dd className="mt-1 text-3xl font-semibold text-red-600">
-              ${totals.rejected_amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </dd>
-          </div>
-        </div>
+        ))}
       </div>
 
       {/* Filters */}
-      <div className="mb-6 flex space-x-2">
-        <button
-          onClick={() => setStatusFilter('all')}
-          className={`px-4 py-2 rounded-md text-sm font-medium ${statusFilter === 'all' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
-        >
-          All
-        </button>
-        <button
-          onClick={() => setStatusFilter('pending')}
-          className={`px-4 py-2 rounded-md text-sm font-medium ${statusFilter === 'pending' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
-        >
-          Pending
-        </button>
-        <button
-          onClick={() => setStatusFilter('completed')}
-          className={`px-4 py-2 rounded-md text-sm font-medium ${statusFilter === 'completed' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
-        >
-          Completed
-        </button>
-        <button
-          onClick={() => setStatusFilter('rejected')}
-          className={`px-4 py-2 rounded-md text-sm font-medium ${statusFilter === 'rejected' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
-        >
-          Rejected
-        </button>
+      <div className="flex gap-1.5">
+        {FILTERS.map(f => (
+          <button
+            key={f}
+            onClick={() => setStatusFilter(f)}
+            className={`px-3 py-1.5 rounded-md text-sm font-medium capitalize transition-colors ${
+              statusFilter === f
+                ? 'bg-zinc-900 text-white'
+                : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
+            }`}
+          >
+            {f}
+          </button>
+        ))}
       </div>
 
-      {/* Payouts Table */}
-      <div className="bg-white shadow overflow-hidden sm:rounded-md">
+      {/* Table */}
+      <div className="bg-white border border-zinc-200 rounded-lg overflow-hidden">
         {loading ? (
-          <div className="flex justify-center items-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          <div className="flex justify-center items-center py-16">
+            <div className="animate-spin rounded-full h-6 w-6 border-2 border-zinc-200 border-t-zinc-900" />
           </div>
         ) : payouts.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-gray-500">No payouts found</p>
-          </div>
+          <div className="py-16 text-center text-sm text-zinc-400">No payouts found</div>
         ) : (
-          <ul className="divide-y divide-gray-200">
+          <ul className="divide-y divide-zinc-100">
             {payouts.map((payout) => (
-              <li key={payout.id} className="px-6 py-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-3">
-                      <p className="text-sm font-medium text-gray-900">
-                        {payout.partner.name}
-                      </p>
-                      {getStatusBadge(payout.status)}
+              <li key={payout.id} className="px-5 py-4">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2.5">
+                      <span className="text-sm font-medium text-zinc-900">{payout.partner.name}</span>
+                      <StatusBadge status={payout.status} />
                     </div>
-                    <p className="mt-1 text-sm text-gray-500">
-                      {payout.partner.email}
-                    </p>
-                    <div className="mt-2 flex items-center space-x-4 text-sm text-gray-500">
-                      <span>Amount: ${payout.amount.toFixed(2)}</span>
-                      <span>•</span>
-                      <span>Leads: {payout.lead_count}</span>
-                      <span>•</span>
-                      <span>Created: {new Date(payout.created_at).toLocaleDateString()}</span>
+                    <div className="text-xs text-zinc-500 mt-0.5">{payout.partner.email}</div>
+                    <div className="flex items-center gap-3 mt-1.5 text-xs text-zinc-500">
+                      <span>${payout.amount.toFixed(2)}</span>
+                      <span className="text-zinc-300">·</span>
+                      <span>{payout.lead_count} leads</span>
+                      <span className="text-zinc-300">·</span>
+                      <span>{new Date(payout.created_at).toLocaleDateString()}</span>
                     </div>
-                    {payout.status === 'completed' && payout.stripe_transfer_id && (
-                      <p className="mt-1 text-xs text-gray-400">
-                        Transfer ID: {payout.stripe_transfer_id}
-                      </p>
+                    {payout.stripe_transfer_id && (
+                      <div className="text-xs text-zinc-400 mt-1 font-mono">{payout.stripe_transfer_id}</div>
                     )}
-                    {payout.status === 'rejected' && payout.rejection_reason && (
-                      <p className="mt-1 text-xs text-red-600">
-                        Reason: {payout.rejection_reason}
-                      </p>
+                    {payout.rejection_reason && (
+                      <div className="text-xs text-red-600 mt-1">Rejected: {payout.rejection_reason}</div>
                     )}
-                    {payout.status === 'failed' && payout.error_message && (
-                      <p className="mt-1 text-xs text-red-600">
-                        Error: {payout.error_message}
-                      </p>
+                    {payout.error_message && (
+                      <div className="text-xs text-red-600 mt-1">Error: {payout.error_message}</div>
                     )}
                   </div>
 
                   {payout.status === 'pending' && (
-                    <div className="flex space-x-2">
+                    <div className="flex gap-2 flex-shrink-0">
                       <Button
-                        onClick={() => handleApproveClick(payout.id)}
+                        onClick={() => setConfirmApproveId(payout.id)}
                         disabled={processingPayoutId === payout.id || !payout.partner.stripe_account_id}
-                        variant="default"
                         size="sm"
                       >
                         {processingPayoutId === payout.id ? 'Processing...' : 'Approve'}
                       </Button>
                       <Button
-                        onClick={() => handleRejectClick(payout.id)}
+                        onClick={() => { setRejectDialogOpen(payout.id); setRejectReason('') }}
                         disabled={processingPayoutId === payout.id}
                         variant="outline"
                         size="sm"
@@ -347,22 +274,16 @@ export default function AdminPayoutsPage() {
         )}
       </div>
 
-      {/* Approve Confirmation Dialog */}
+      {/* Approve Dialog */}
       <Dialog open={!!confirmApproveId} onOpenChange={(open) => { if (!open) setConfirmApproveId(null) }}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Approve Payout</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to approve this payout? This will initiate a Stripe transfer.
-            </DialogDescription>
+            <DialogDescription>This will initiate a Stripe transfer to the partner.</DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setConfirmApproveId(null)}>
-              Cancel
-            </Button>
-            <Button onClick={() => { if (confirmApproveId) handleApprove(confirmApproveId) }}>
-              Approve
-            </Button>
+            <Button variant="outline" onClick={() => setConfirmApproveId(null)}>Cancel</Button>
+            <Button onClick={() => { if (confirmApproveId) handleApprove(confirmApproveId) }}>Approve</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -370,31 +291,21 @@ export default function AdminPayoutsPage() {
       {/* Reject Dialog */}
       {rejectDialogOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-semibold mb-4">Reject Payout</h3>
-            <p className="text-sm text-gray-600 mb-4">
-              Please provide a reason for rejecting this payout:
-            </p>
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 space-y-4">
+            <h3 className="text-base font-semibold text-zinc-900">Reject Payout</h3>
+            <p className="text-sm text-zinc-500">Provide a reason for rejecting this payout:</p>
             <textarea
               value={rejectReason}
               onChange={(e) => setRejectReason(e.target.value)}
-              className="w-full border border-gray-300 rounded-md p-2 mb-4 min-h-[100px]"
+              className="w-full border border-zinc-200 rounded-lg p-3 text-sm min-h-[100px] focus:outline-none focus:ring-1 focus:ring-zinc-400"
               placeholder="Enter rejection reason..."
             />
-            <div className="flex gap-3 justify-end">
-              <Button
-                onClick={() => {
-                  setRejectDialogOpen(null)
-                  setRejectReason('')
-                }}
-                variant="outline"
-              >
-                Cancel
-              </Button>
+            <div className="flex gap-2 justify-end">
+              <Button variant="outline" onClick={() => { setRejectDialogOpen(null); setRejectReason('') }}>Cancel</Button>
               <Button
                 onClick={() => handleReject(rejectDialogOpen)}
                 disabled={!rejectReason.trim() || processingPayoutId === rejectDialogOpen}
-                className="bg-red-600 hover:bg-red-700"
+                variant="destructive"
               >
                 {processingPayoutId === rejectDialogOpen ? 'Rejecting...' : 'Reject Payout'}
               </Button>
