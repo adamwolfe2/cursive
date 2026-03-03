@@ -14,12 +14,12 @@ const VALID_STAGES = ['new', 'booked', 'trial', 'active', 'at_risk', 'churned'] 
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { workspaceId: string } }
+  { params }: { params: Promise<{ workspaceId: string }> }
 ) {
   try {
     await requireAdminRole()
 
-    const { workspaceId } = params
+    const { workspaceId } = await params
     const body = await request.json()
     const { ops_stage, note } = body as { ops_stage: string; note?: string }
 
