@@ -221,15 +221,13 @@ export default function SegmentCatalogPage() {
             <RefreshCw size={14} className={`mr-1.5 ${loading ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
-          <label>
-            <Button size="sm" asChild disabled={importing}>
-              <span className="cursor-pointer">
-                <Upload size={14} className="mr-1.5" />
-                {importing ? `Importing… ${importProgress?.done.toLocaleString() ?? 0} / ${importProgress?.total.toLocaleString() ?? '?'}` : 'Upload CSV'}
-              </span>
-            </Button>
-            <input ref={fileRef} type="file" accept=".csv" className="hidden" onChange={handleFileSelect} disabled={importing} />
-          </label>
+          <input ref={fileRef} type="file" accept=".csv" className="hidden" onChange={handleFileSelect} disabled={importing} />
+          <Button size="sm" onClick={() => fileRef.current?.click()} disabled={importing}>
+            <Upload size={14} className="mr-1.5" />
+            {importing
+              ? `Importing… ${importProgress?.done.toLocaleString() ?? 0} / ${importProgress?.total.toLocaleString() ?? '?'}`
+              : 'Upload CSV'}
+          </Button>
         </div>
       </div>
 
@@ -272,7 +270,7 @@ export default function SegmentCatalogPage() {
         <select
           value={typeFilter}
           onChange={e => setTypeFilter(e.target.value)}
-          className="border border-zinc-200 rounded-lg px-3 py-2 text-sm text-zinc-700 bg-white"
+          className="border border-zinc-200 rounded-lg px-3 py-2 text-sm text-zinc-700 bg-white min-w-[110px]"
         >
           <option value="all">All Types</option>
           <option value="B2B">B2B</option>
@@ -281,7 +279,7 @@ export default function SegmentCatalogPage() {
         <select
           value={categoryFilter}
           onChange={e => setCategoryFilter(e.target.value)}
-          className="border border-zinc-200 rounded-lg px-3 py-2 text-sm text-zinc-700 bg-white max-w-[220px]"
+          className="border border-zinc-200 rounded-lg px-3 py-2 text-sm text-zinc-700 bg-white min-w-[180px] max-w-[260px]"
         >
           <option value="all">All Categories</option>
           {categories.map(c => <option key={c} value={c}>{c}</option>)}
