@@ -169,7 +169,7 @@ export default function AdminPixelsPage() {
                   <TableHead>Website</TableHead>
                   <TableHead>Trial Status</TableHead>
                   <TableHead>Workspace</TableHead>
-                  <TableHead className="text-right">Visitors (total / ID'd)</TableHead>
+                  <TableHead className="text-right">Visitors (total / ID&apos;d)</TableHead>
                   <TableHead>Last Sync</TableHead>
                   <TableHead className="w-[120px]">Actions</TableHead>
                 </TableRow>
