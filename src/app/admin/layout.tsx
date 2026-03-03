@@ -6,11 +6,10 @@
  */
 
 import { redirect } from 'next/navigation'
-import Link from 'next/link'
-import Image from 'next/image'
 import { createClient } from '@/lib/supabase/server'
 import { getUserWithRole } from '@/lib/auth/roles'
 import { createAdminClient } from '@/lib/supabase/admin'
+import AdminNav from './_components/AdminNav'
 
 export const dynamic = 'force-dynamic'
 
@@ -19,7 +18,7 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode
 }) {
-  // SECURITY: Use getUser() for server-side JWT verification (getSession() is not safe for server use)
+  // SECURITY: Use getUser() for server-side JWT verification
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -27,7 +26,6 @@ export default async function AdminLayout({
     redirect('/login?error=unauthorized')
   }
 
-  // Get user with role in single DB query (isAdmin was making a redundant call)
   const userWithRole = await getUserWithRole(user)
   if (!userWithRole || (userWithRole.role !== 'owner' && userWithRole.role !== 'admin')) {
     redirect('/dashboard?error=admin_required')
@@ -47,82 +45,7 @@ export default async function AdminLayout({
 
   return (
     <div className="min-h-screen bg-zinc-50">
-      {/* Admin Header */}
-      <header className="sticky top-0 z-50 bg-white border-b border-zinc-200 shadow-sm">
-        <div className="max-w-[1400px] mx-auto px-6">
-          <div className="flex items-center justify-between h-14">
-            <div className="flex items-center gap-6">
-              <Link href="/admin/dashboard" className="flex items-center gap-2 flex-shrink-0">
-                <div className="relative h-7 w-7 overflow-hidden rounded-lg flex-shrink-0">
-                  <Image src="/cursive-logo.png" alt="Cursive" fill className="object-contain" priority />
-                </div>
-                <span className="text-sm font-semibold text-zinc-900">Cursive Admin</span>
-              </Link>
-
-              <nav className="hidden md:flex items-center gap-1">
-                {[
-                  { href: '/admin/ops', label: 'Ops Hub' },
-                  { href: '/admin/dashboard', label: 'Dashboard' },
-                  { href: '/admin/accounts', label: 'Accounts' },
-                  { href: '/admin/services/subscriptions', label: 'Services' },
-                  { href: '/admin/waitlist', label: 'Waitlist' },
-                  { href: '/admin/support', label: 'Support' },
-                  { href: '/admin/requests', label: 'Feedback' },
-                  { href: '/admin/premium-requests', label: 'Upgrades' },
-                  { href: '/admin/leads', label: 'Leads' },
-                  { href: '/admin/analytics', label: 'Analytics' },
-                  { href: '/admin/revenue', label: 'Revenue' },
-                  { href: '/admin/payouts', label: 'Payouts' },
-                  { href: '/admin/api', label: 'API Costs' },
-                  { href: '/admin/monitoring/dedup-enrichment', label: 'Dedup' },
-                  { href: '/admin/email-deliverability', label: 'Deliverability' },
-                  { href: '/admin/email-stats', label: 'Email Stats' },
-                  { href: '/admin/dedup-stats', label: 'Dedup Stats' },
-                  { href: '/admin/credit-usage', label: 'Credit Usage' },
-                  { href: '/admin/enrichment-costs', label: 'Intel Costs' },
-                  { href: '/admin/audit-logs', label: 'Audit Logs' },
-                  { href: '/admin/operations-health', label: 'Ops Health' },
-                  { href: '/admin/failed-operations', label: 'Failed Ops' },
-                  { href: '/admin/failed-jobs', label: 'Failed Jobs' },
-                  { href: '/admin/custom-audiences', label: 'Audiences' },
-                  { href: '/admin/audiencelab/pixels', label: 'Pixels' },
-                ].map(({ href, label }) => (
-                  <Link
-                    key={href}
-                    href={href}
-                    className="px-3 py-1.5 text-sm text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 rounded-md transition-colors whitespace-nowrap"
-                  >
-                    {label}
-                  </Link>
-                ))}
-                <Link
-                  href="/admin/sdr"
-                  className="px-3 py-1.5 text-sm text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 rounded-md transition-colors flex items-center"
-                >
-                  AI SDR
-                  {needsApprovalCount > 0 && (
-                    <span className="ml-1.5 inline-flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
-                      {needsApprovalCount > 9 ? '9+' : needsApprovalCount}
-                    </span>
-                  )}
-                </Link>
-              </nav>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <span className="text-xs text-zinc-400 hidden lg:block">{adminEmail}</span>
-              <Link
-                href="/dashboard"
-                className="px-3 py-1.5 text-xs font-medium text-zinc-600 hover:text-zinc-900 border border-zinc-200 rounded-md hover:bg-zinc-50 transition-colors"
-              >
-                Exit Admin
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
+      <AdminNav adminEmail={adminEmail} needsApprovalCount={needsApprovalCount} />
       <main>{children}</main>
     </div>
   )
