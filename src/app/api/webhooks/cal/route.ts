@@ -12,6 +12,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createHmac, timingSafeEqual } from 'crypto'
 import { inngest } from '@/inngest/client'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 
 function verifyCalSignature(rawBody: string, signature: string): boolean {
@@ -59,6 +60,23 @@ export async function POST(req: NextRequest) {
     const startTime = String(booking.startTime)
     const endTime = String(booking.endTime)
 
+    // Persist booking to DB for Ops Dashboard
+    try {
+      const adminClient = createAdminClient()
+      await adminClient.from('cal_bookings').upsert({
+        booking_uid: bookingUid,
+        attendee_name: attendeeName,
+        attendee_email: attendeeEmail,
+        start_time: startTime,
+        end_time: endTime,
+        status: 'upcoming',
+        updated_at: new Date().toISOString(),
+      }, { onConflict: 'booking_uid' })
+    } catch (err) {
+      safeError('[Cal webhook] Failed to persist booking:', err)
+      // Non-fatal — continue to fire Inngest events
+    }
+
     await inngest.send({
       name: 'cal/booking.created',
       data: {
@@ -90,6 +108,16 @@ export async function POST(req: NextRequest) {
 
   if (triggerEvent === 'BOOKING_CANCELLED') {
     const attendee = Array.isArray(booking?.attendees) ? booking.attendees[0] : null
+
+    // Update booking status in DB
+    try {
+      const adminClient = createAdminClient()
+      await adminClient.from('cal_bookings')
+        .update({ status: 'cancelled', updated_at: new Date().toISOString() })
+        .eq('booking_uid', String(booking.uid))
+    } catch (err) {
+      safeError('[Cal webhook] Failed to update cancelled booking:', err)
+    }
 
     await inngest.send({
       name: 'cal/booking.cancelled',

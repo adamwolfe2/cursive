@@ -61,6 +61,7 @@ export default async function AdminLayout({
 
               <nav className="hidden md:flex items-center gap-1">
                 {[
+                  { href: '/admin/ops', label: 'Ops Hub' },
                   { href: '/admin/dashboard', label: 'Dashboard' },
                   { href: '/admin/accounts', label: 'Accounts' },
                   { href: '/admin/services/subscriptions', label: 'Services' },
