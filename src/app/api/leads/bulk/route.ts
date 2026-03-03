@@ -195,7 +195,7 @@ export async function POST(request: NextRequest) {
 
         // Find or create the tag in lead_tags
         const { data: existingTag } = await supabase
-          .from('lead_tags')
+          .from('tags')
           .select('id')
           .eq('workspace_id', user.workspace_id)
           .eq('name', tag_name.trim())
@@ -207,7 +207,7 @@ export async function POST(request: NextRequest) {
           tagId = existingTag.id
         } else {
           const { data: newTag, error: tagCreateErr } = await supabase
-            .from('lead_tags')
+            .from('tags')
             .insert({ workspace_id: user.workspace_id, name: tag_name.trim(), color: '#6b7280' })
             .select('id')
             .maybeSingle()
@@ -222,7 +222,7 @@ export async function POST(request: NextRequest) {
         // Upsert tag assignments for all resolved lead IDs
         const tagRows = resolvedLeadIds.map((lid) => ({ lead_id: lid, tag_id: tagId }))
         const { error: upsertErr } = await supabase
-          .from('lead_tag_assignments')
+          .from('lead_tags')
           .upsert(tagRows, { onConflict: 'lead_id,tag_id', ignoreDuplicates: true })
 
         if (upsertErr) {
