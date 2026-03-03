@@ -2,10 +2,12 @@
 // Handles OAuth redirects from Supabase
 // Shows loading page while processing to improve UX
 //
-// IMPORTANT: This route MUST use Node.js runtime (the default), NOT Edge.
-// The middleware uses Node.js runtime for Supabase session validation.
-// Edge↔Node.js cookie handling mismatch causes login redirect loops.
-// See middleware.ts comments for details.
+// Runs on Edge Runtime for fast cold starts (~5ms vs 3-5s for Node.js).
+// The middleware also runs on Edge (the `runtime: 'nodejs'` in middleware config
+// is ignored by Next.js — middleware always runs on Edge). All imports here
+// are Edge-compatible: @supabase/ssr uses fetch, admin client uses fetch.
+
+export const runtime = 'edge'
 
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
