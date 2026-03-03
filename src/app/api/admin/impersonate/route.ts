@@ -3,6 +3,8 @@
  * POST /api/admin/impersonate - Start impersonation session
  * DELETE /api/admin/impersonate - End impersonation session
  */
+export const runtime = 'edge'
+
 
 
 import { NextRequest, NextResponse } from 'next/server'

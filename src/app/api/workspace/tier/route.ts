@@ -2,6 +2,8 @@
  * Workspace Tier API
  * GET /api/workspace/tier - Get current workspace tier info, features, and usage
  */
+export const runtime = 'edge'
+
 
 
 import { NextRequest, NextResponse } from 'next/server'

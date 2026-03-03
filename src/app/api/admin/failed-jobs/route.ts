@@ -2,6 +2,8 @@
  * Failed Jobs API
  * View and manage failed background jobs
  */
+export const runtime = 'edge'
+
 
 
 import { NextResponse, type NextRequest } from 'next/server'

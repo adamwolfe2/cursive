@@ -2,6 +2,8 @@
  * Workspace Branding API
  * Get and update workspace branding (colors, logo)
  */
+export const runtime = 'edge'
+
 
 
 import { type NextRequest } from 'next/server'

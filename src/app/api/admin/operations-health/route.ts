@@ -2,6 +2,8 @@
  * Operations Health API
  * Provides metrics for email and webhook delivery rates
  */
+export const runtime = 'edge'
+
 
 
 import { NextRequest, NextResponse } from 'next/server'

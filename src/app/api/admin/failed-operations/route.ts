@@ -2,6 +2,8 @@
  * Failed Operations API
  * Admin endpoints for managing failed operations
  */
+export const runtime = 'edge'
+
 
 
 import { NextRequest, NextResponse } from 'next/server'

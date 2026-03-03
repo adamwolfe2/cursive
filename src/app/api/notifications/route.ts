@@ -2,6 +2,8 @@
  * Notifications API
  * List and manage user notifications
  */
+export const runtime = 'edge'
+
 
 
 import { NextResponse, type NextRequest } from 'next/server'

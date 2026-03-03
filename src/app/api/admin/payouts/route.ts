@@ -2,6 +2,8 @@
  * Admin Partner Payouts API
  * Manages partner commission payouts via Stripe transfers
  */
+export const runtime = 'edge'
+
 
 
 import { NextRequest, NextResponse } from 'next/server'

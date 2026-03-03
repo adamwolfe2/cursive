@@ -1,3 +1,5 @@
+export const runtime = 'edge'
+
 import { NextResponse } from "next/server"
 import { createAdminClient } from "@/lib/supabase/admin"
 import { getCurrentUser } from "@/lib/auth/helpers"
