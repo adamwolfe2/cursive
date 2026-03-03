@@ -7,7 +7,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import Link from 'next/link'
 import Image from 'next/image'
 import { isRedirectError } from 'next/dist/client/components/redirect-error'
-import { loginAction, googleLoginAction } from '../actions'
+import { loginAction } from '../actions'
+import { createClient } from '@/lib/supabase/client'
 import { loginSchema, type LoginFormData } from '@/lib/validation/schemas'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
@@ -83,22 +84,27 @@ function LoginForm() {
     setError(null)
 
     try {
-      const result = await googleLoginAction(redirect)
+      // OAuth must be initiated client-side so the browser can store the PKCE
+      // code_verifier cookie before navigating to Google. Calling signInWithOAuth
+      // from a server action breaks PKCE — the code_verifier never reaches the browser.
+      const supabase = createClient()
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin
+      const callbackUrl = `${siteUrl}/auth/callback?next=${encodeURIComponent(redirect)}`
 
-      if (result?.error) {
-        safeError('[LoginPage]', 'Google login error:', result.error)
-        setError(result.error)
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: callbackUrl,
+        },
+      })
+
+      if (error) {
+        safeError('[LoginPage]', 'Google login error:', error.message)
+        setError(error.message)
         setLoading(false)
-        return
       }
-
-      // Server Action will redirect automatically if successful
+      // On success the browser is redirected to Google automatically
     } catch (err) {
-      // Next.js redirect() throws a NEXT_REDIRECT error which is expected behavior
-      // We should let it propagate instead of catching it
-      if (isRedirectError(err)) {
-        throw err
-      }
       safeError('[LoginPage]', 'Exception during Google login:', err)
       setError('An unexpected error occurred')
       setLoading(false)
