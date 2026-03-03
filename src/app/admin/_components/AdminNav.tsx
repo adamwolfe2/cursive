@@ -31,7 +31,8 @@ const GROUPS = [
     items: [
       { href: '/admin/leads',              label: 'Leads' },
       { href: '/admin/custom-audiences',   label: 'Audiences' },
-      { href: '/admin/audiencelab/pixels', label: 'Pixels' },
+      { href: '/admin/audiencelab/pixels',   label: 'Pixels' },
+      { href: '/admin/audiencelab/segments', label: 'Segments' },
     ],
   },
   {
