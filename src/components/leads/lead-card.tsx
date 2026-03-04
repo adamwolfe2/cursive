@@ -79,6 +79,18 @@ export function sourceLabel(source: string | null): { label: string; className: 
   if (source === 'partner') {
     return { label: 'Partner', className: 'bg-emerald-50 text-emerald-600 border-emerald-200' }
   }
+  if (source === 'marketplace') {
+    return { label: 'Marketplace', className: 'bg-purple-50 text-purple-600 border-purple-200' }
+  }
+  if (source === 'query' || source === 'auto_match') {
+    return { label: 'Auto-Match', className: 'bg-indigo-50 text-indigo-600 border-indigo-200' }
+  }
+  if (source === 'import') {
+    return { label: 'Import', className: 'bg-gray-50 text-gray-600 border-gray-200' }
+  }
+  if (source === 'manual') {
+    return { label: 'Manual', className: 'bg-amber-50 text-amber-600 border-amber-200' }
+  }
   return null
 }
 
