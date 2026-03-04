@@ -192,9 +192,9 @@ export default function SegmentCatalogPage() {
       done += batch.length
       setImportProgress({ done, total })
 
-      // Small pause between batches to avoid rate limiting
+      // Pause between batches to stay under Vercel rate limits
       if (i + BATCH < rows.length) {
-        await new Promise(r => setTimeout(r, 80))
+        await new Promise(r => setTimeout(r, 500))
       }
     }
 
