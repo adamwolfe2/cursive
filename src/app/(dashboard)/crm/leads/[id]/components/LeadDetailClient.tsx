@@ -48,7 +48,7 @@ import { LeadAvatar } from '@/app/(dashboard)/crm/components/LeadAvatar'
 import { CompanyFavicon } from '@/app/(dashboard)/crm/components/CompanyFavicon'
 import { ScoreProgress } from '@/app/(dashboard)/crm/components/ScoreProgress'
 import { useToast } from '@/lib/hooks/use-toast'
-import { formatPhone } from '@/components/leads/lead-card'
+import { formatPhone, sourceLabel } from '@/components/leads/lead-card'
 import { formatDistanceToNow, format } from 'date-fns'
 import type { LeadTableRow } from '@/types/crm.types'
 
@@ -156,12 +156,8 @@ export function LeadDetailClient({ initialLead }: LeadDetailClientProps) {
           <div className="flex items-center gap-2">
             <StatusBadge status={lead.status} />
             {lead.source && (() => {
-              const src = lead.source
-              const isPixel = src === 'superpixel' || src.includes('superpixel')
-              const isDaily = src.startsWith('audience_labs') || src.startsWith('audiencelab')
-              if (isPixel) return <Badge variant="outline" className="text-sky-600 border-sky-200 bg-sky-50 text-[10px]">Pixel</Badge>
-              if (isDaily) return <Badge variant="outline" className="text-blue-600 border-blue-200 bg-blue-50 text-[10px]">Daily</Badge>
-              return null
+              const s = sourceLabel(lead.source)
+              return s ? <span className={`inline-flex items-center text-[10px] border rounded-full px-2 py-0.5 font-medium ${s.className}`}>{s.label}</span> : null
             })()}
 
             {lead.email && (
