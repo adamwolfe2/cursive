@@ -74,7 +74,7 @@ function mapRow(row: Record<string, string>) {
   }
 }
 
-const BATCH = 500
+// No batching needed — entire CSV sent in one request, processed server-side
 
 export default function SegmentCatalogPage() {
   const supabase = createClient()
@@ -155,58 +155,38 @@ export default function SegmentCatalogPage() {
     setLoading(false)
   }
 
-  // ── CSV Import (via API route — service role, no RLS issues) ─────────────────
+  // ── CSV Import: send raw CSV text in ONE request — zero rate limiting ───────
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
     setImporting(true)
     setImportResult(null)
-    setImportProgress(null)
 
-    const text = await file.text()
-    const rows = parseCSV(text).map(mapRow).filter(r => r.segment_id && r.name)
+    try {
+      const text = await file.text()
+      // Show approximate row count while waiting
+      const approxRows = text.split('\n').length - 1
+      setImportProgress({ done: 0, total: approxRows })
 
-    let done = 0
-    let total_inserted = 0
-    let errors = 0
-    const total = rows.length
+      const res = await fetch('/api/admin/audiencelab/segments/import', {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: text,
+      })
 
-    for (let i = 0; i < rows.length; i += BATCH) {
-      const batch = rows.slice(i, i + BATCH)
-      try {
-        const res = await fetch('/api/admin/audiencelab/segments/import', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ rows: batch }),
-        })
-        if (!res.ok) {
-          const err = await res.json().catch(() => ({}))
-          throw new Error(err.error || `HTTP ${res.status}`)
-        }
-        const data = await res.json()
-        total_inserted += data.count ?? batch.length
-      } catch (err: any) {
-        errors++
-        console.error(`Batch ${Math.floor(i / BATCH) + 1} failed:`, err.message)
-      }
-      done += batch.length
-      setImportProgress({ done, total })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`)
 
-      // Pause between batches to stay under Vercel rate limits
-      if (i + BATCH < rows.length) {
-        await new Promise(r => setTimeout(r, 500))
-      }
+      setImportResult(`Imported ${(data.count ?? data.total ?? approxRows).toLocaleString()} of ${(data.total ?? approxRows).toLocaleString()} rows successfully`)
+    } catch (err: any) {
+      setImportResult(`Import failed: ${err.message}`)
+    } finally {
+      setImporting(false)
+      setImportProgress(null)
+      loadStats()
+      loadSegments()
+      if (fileRef.current) fileRef.current.value = ''
     }
-
-    setImporting(false)
-    setImportResult(
-      errors > 0
-        ? `Imported ${total_inserted.toLocaleString()} of ${total.toLocaleString()} rows (${errors} batches failed — try again)`
-        : `Imported ${total_inserted.toLocaleString()} of ${total.toLocaleString()} rows successfully`
-    )
-    loadStats()
-    loadSegments()
-    if (fileRef.current) fileRef.current.value = ''
   }
 
   if (!authChecked) {
@@ -233,7 +213,7 @@ export default function SegmentCatalogPage() {
           <Button size="sm" onClick={() => fileRef.current?.click()} disabled={importing}>
             <Upload size={14} className="mr-1.5" />
             {importing
-              ? `Importing… ${importProgress?.done.toLocaleString() ?? 0} / ${importProgress?.total.toLocaleString() ?? '?'}`
+              ? `Importing ${importProgress?.total?.toLocaleString() ?? '…'} segments…`
               : 'Upload CSV'}
           </Button>
         </div>
