@@ -5,11 +5,11 @@
  * Full Cal.com booking history with status + signed-up indicator
  */
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
-import { Calendar, CheckCircle2, XCircle, Clock, AlertTriangle, TrendingUp, Copy, Check, ChevronLeft } from 'lucide-react'
+import { Calendar, CheckCircle2, XCircle, Clock, AlertTriangle, TrendingUp, Copy, Check, ChevronLeft, Search } from 'lucide-react'
 import { useToast } from '@/lib/hooks/use-toast'
 import { format } from 'date-fns'
 
@@ -74,6 +74,7 @@ export default function CallsPage() {
   const [authChecked, setAuthChecked] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
   const [statusFilter, setStatusFilter] = useState('')
+  const [search, setSearch] = useState('')
   const supabase = createClient()
   const queryClient = useQueryClient()
   const { toast } = useToast()
@@ -121,6 +122,17 @@ export default function CallsPage() {
     onError: () => toast({ type: 'error', message: 'Failed to update booking' }),
   })
 
+  const filteredBookings = useMemo(() => {
+    if (!data?.bookings) return []
+    const q = search.trim().toLowerCase()
+    if (!q) return data.bookings
+    return data.bookings.filter(
+      (b) =>
+        b.attendee_name.toLowerCase().includes(q) ||
+        b.attendee_email.toLowerCase().includes(q)
+    )
+  }, [data?.bookings, search])
+
   if (!authChecked) {
     return <div className="flex items-center justify-center min-h-screen text-zinc-500 text-sm">Checking access...</div>
   }
@@ -157,8 +169,18 @@ export default function CallsPage() {
         </div>
       )}
 
-      {/* Filter */}
+      {/* Filters */}
       <div className="mb-4 flex items-center gap-3">
+        <div className="relative">
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search name or email..."
+            className="h-9 pl-8 pr-3 text-[13px] bg-white border border-zinc-200 rounded-lg focus:outline-none focus:border-zinc-400 w-56"
+          />
+        </div>
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
@@ -181,6 +203,11 @@ export default function CallsPage() {
             <Calendar size={32} className="mx-auto mb-3 text-zinc-300" />
             <p>No bookings yet. Cal.com webhooks will populate this table automatically.</p>
           </div>
+        ) : !filteredBookings.length ? (
+          <div className="p-12 text-center text-zinc-400">
+            <Search size={24} className="mx-auto mb-3 text-zinc-300" />
+            <p>No bookings match your search.</p>
+          </div>
         ) : (
           <table className="w-full">
             <thead className="bg-zinc-50 border-b border-zinc-100">
@@ -194,7 +221,7 @@ export default function CallsPage() {
               </tr>
             </thead>
             <tbody>
-              {data.bookings.map((b) => (
+              {filteredBookings.map((b) => (
                 <tr key={b.id} className="border-b border-zinc-50 hover:bg-zinc-50/50 transition-colors">
                   <td className="px-5 py-3 text-[13px] font-medium text-zinc-900">{b.attendee_name}</td>
                   <td className="px-5 py-3">

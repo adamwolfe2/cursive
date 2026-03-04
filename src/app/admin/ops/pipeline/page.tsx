@@ -12,7 +12,7 @@ import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import {
   Globe, Mail, Copy, Check, ExternalLink, RefreshCw, AlertTriangle,
-  Circle, CheckCircle2, Users, ChevronLeft,
+  Circle, CheckCircle2, Users, ChevronLeft, ArrowRight,
 } from 'lucide-react'
 import { useToast } from '@/lib/hooks/use-toast'
 
@@ -204,8 +204,8 @@ function ProspectCard({ booking }: { booking: ProspectBooking }) {
         <span className="truncate">{booking.attendee_email}</span>
         <CopyBtn value={booking.attendee_email} />
       </div>
-      <div className={`text-[11px] font-medium mb-2 ${isPast ? 'text-zinc-400' : 'text-blue-600'}`}>
-        {isPast ? '✓ ' : '→ '}
+      <div className={`flex items-center gap-1 text-[11px] font-medium mb-2 ${isPast ? 'text-zinc-400' : 'text-blue-600'}`}>
+        {isPast ? <CheckCircle2 size={11} /> : <ArrowRight size={11} />}
         {meetingTime.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}{' '}
         {meetingTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
       </div>

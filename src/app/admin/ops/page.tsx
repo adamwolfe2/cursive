@@ -141,13 +141,13 @@ export default function OpsHubPage() {
 
   const getStatusBadge = (type: string, status: string | null) => {
     if (type === 'signup') {
-      return <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-100 text-zinc-600 font-medium">Signed Up</span>
+      return <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 font-medium">Signed Up</span>
     }
     switch (status) {
-      case 'upcoming':   return <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-100 text-zinc-600 font-medium">Upcoming</span>
+      case 'upcoming':   return <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-100 text-blue-700 font-medium">Upcoming</span>
       case 'completed':  return <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-100 text-zinc-600 font-medium">Completed</span>
-      case 'cancelled':  return <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-100 text-zinc-600 font-medium">Cancelled</span>
-      case 'no_show':    return <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-100 text-zinc-600 font-medium">No Show</span>
+      case 'cancelled':  return <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-100 text-zinc-500 font-medium">Cancelled</span>
+      case 'no_show':    return <span className="text-[10px] px-1.5 py-0.5 rounded bg-red-100 text-red-600 font-medium">No Show</span>
       default:           return null
     }
   }
