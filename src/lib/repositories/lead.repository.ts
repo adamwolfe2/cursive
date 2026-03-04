@@ -71,10 +71,9 @@ export class LeadRepository {
     }
 
     if (filters.search) {
-      // PERFORMANCE FIX: Search in indexed columns instead of JSONB
       const term = sanitizeSearchTerm(filters.search)
       query = query.or(
-        `company_name.ilike.%${term}%,company_domain.ilike.%${term}%,contact_name.ilike.%${term}%,contact_email.ilike.%${term}%`
+        `full_name.ilike.%${term}%,email.ilike.%${term}%,company_name.ilike.%${term}%,company_domain.ilike.%${term}%`
       )
     }
 
