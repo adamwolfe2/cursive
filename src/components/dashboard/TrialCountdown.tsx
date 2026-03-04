@@ -27,11 +27,12 @@ export function TrialCountdown({ trialEndsAt, visitorCountTotal }: TrialCountdow
     return () => clearInterval(interval)
   }, [trialEndsAt])
 
-  const colorClass = 'bg-blue-50 border-blue-200'
-  const iconColor = 'text-blue-600'
-  const headingColor = 'text-blue-900'
-  const bodyColor = 'text-blue-700'
-  const btnColor = 'bg-primary hover:bg-primary/90'
+  const isUrgent = daysLeft <= 3
+  const colorClass = isUrgent ? 'bg-red-50 border-red-200' : 'bg-blue-50 border-blue-200'
+  const iconColor = isUrgent ? 'text-red-600' : 'text-blue-600'
+  const headingColor = isUrgent ? 'text-red-900' : 'text-blue-900'
+  const bodyColor = isUrgent ? 'text-red-700' : 'text-blue-700'
+  const btnColor = isUrgent ? 'bg-red-600 hover:bg-red-700' : 'bg-primary hover:bg-primary/90'
 
   const heading =
     daysLeft === 0
