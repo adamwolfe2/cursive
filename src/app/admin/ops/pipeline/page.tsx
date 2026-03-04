@@ -317,10 +317,6 @@ export default function PipelinePage() {
     }
   }
 
-  if (!authChecked) {
-    return <div className="flex items-center justify-center min-h-screen text-zinc-500 text-sm">Checking access...</div>
-  }
-
   const q = search.trim().toLowerCase()
   const workspaces = useMemo(() => {
     const all = data?.workspaces || []
@@ -341,6 +337,10 @@ export default function PipelinePage() {
         p.attendee_email.toLowerCase().includes(q)
     )
   }, [data?.prospects, q])
+
+  if (!authChecked) {
+    return <div className="flex items-center justify-center min-h-screen text-zinc-500 text-sm">Checking access...</div>
+  }
 
   const getColumnWorkspaces = (stageId: string) =>
     workspaces.filter((w) => w.ops_stage === stageId)
