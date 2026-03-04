@@ -21,6 +21,7 @@ function buildQueryString(filters: LeadFilters): string {
 
   if (filters.search) params.append('search', filters.search)
   if (filters.status?.length) params.append('status', filters.status.join(','))
+  if (filters.sources?.length) params.append('sources', filters.sources.join(','))
   if (filters.industries?.length) params.append('industries', filters.industries.join(','))
   if (filters.states?.length) params.append('states', filters.states.join(','))
   if (filters.companySizes?.length) params.append('companySizes', filters.companySizes.join(','))

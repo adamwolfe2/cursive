@@ -11,6 +11,7 @@ import { LeadsDataTable } from './LeadsDataTable'
 import { LeadsFilterBar, type LeadsFilterBarRef } from './LeadsFilterBar'
 import { BulkActionsToolbar } from './BulkActionsToolbar'
 import { Skeleton } from '@/components/ui/skeleton'
+import { TableViewControls } from './TableViewControls'
 import { useKeyboardShortcuts } from '../hooks/use-keyboard-shortcuts'
 import type { WorkspaceUser } from './LeadsTableColumns'
 
@@ -66,8 +67,13 @@ export function LeadsTableClient() {
 
   return (
     <div className="space-y-4">
-      {/* Filter bar */}
-      <LeadsFilterBar ref={filterBarRef} />
+      {/* Filter bar + column controls */}
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex-1 min-w-0">
+          <LeadsFilterBar ref={filterBarRef} />
+        </div>
+        <TableViewControls />
+      </div>
 
       {/* Table */}
       {isLoading ? (

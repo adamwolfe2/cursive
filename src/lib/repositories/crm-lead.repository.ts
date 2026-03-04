@@ -34,6 +34,10 @@ export class CRMLeadRepository {
       query = query.in('status', filters.status)
     }
 
+    if (filters.sources && filters.sources.length > 0) {
+      query = query.in('source', filters.sources)
+    }
+
     if (filters.industries && filters.industries.length > 0) {
       query = query.in('company_industry', filters.industries)
     }

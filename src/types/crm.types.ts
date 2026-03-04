@@ -250,6 +250,7 @@ export interface LeadFilters extends PaginationParams {
   status?: string[]
   industries?: string[]
   states?: string[]
+  sources?: string[]
   companySizes?: string[]
   intentScoreMin?: number
   intentScoreMax?: number

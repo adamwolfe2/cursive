@@ -1,5 +1,5 @@
 /**
- * CRM Leads API - Create endpoint
+ * CRM Leads API - List and Create endpoints
  */
 
 import { NextRequest, NextResponse } from 'next/server'
@@ -9,8 +9,71 @@ import { CRMLeadRepository } from '@/lib/repositories/crm-lead.repository'
 import { z } from 'zod'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { inngest } from '@/inngest/client'
+import type { LeadFilters } from '@/types/crm.types'
 
 // Use edge runtime
+
+export async function GET(req: NextRequest) {
+  try {
+    const user = await getCurrentUser()
+    if (!user) return unauthorized()
+
+    const { searchParams } = new URL(req.url)
+
+    const filters: LeadFilters = {
+      page: Math.max(1, parseInt(searchParams.get('page') ?? '1', 10) || 1),
+      pageSize: Math.min(100, Math.max(1, parseInt(searchParams.get('pageSize') ?? '50', 10) || 50)),
+      search: searchParams.get('search') || undefined,
+      orderBy: searchParams.get('orderBy') || 'created_at',
+      orderDirection: (searchParams.get('orderDirection') as 'asc' | 'desc') || 'desc',
+    }
+
+    const status = searchParams.get('status')
+    if (status) filters.status = status.split(',')
+
+    const sources = searchParams.get('sources')
+    if (sources) filters.sources = sources.split(',')
+
+    const industries = searchParams.get('industries')
+    if (industries) filters.industries = industries.split(',')
+
+    const states = searchParams.get('states')
+    if (states) filters.states = states.split(',')
+
+    const companySizes = searchParams.get('companySizes')
+    if (companySizes) filters.companySizes = companySizes.split(',')
+
+    const tags = searchParams.get('tags')
+    if (tags) filters.tags = tags.split(',')
+
+    if (searchParams.get('hasPhone') === 'true') filters.hasPhone = true
+    if (searchParams.get('hasVerifiedEmail') === 'true') filters.hasVerifiedEmail = true
+
+    const intentScoreMin = searchParams.get('intentScoreMin')
+    if (intentScoreMin) filters.intentScoreMin = Number(intentScoreMin)
+    const intentScoreMax = searchParams.get('intentScoreMax')
+    if (intentScoreMax) filters.intentScoreMax = Number(intentScoreMax)
+    const freshnessMin = searchParams.get('freshnessMin')
+    if (freshnessMin) filters.freshnessMin = Number(freshnessMin)
+
+    const assignedUserId = searchParams.get('assignedUserId')
+    if (assignedUserId) filters.assignedUserId = assignedUserId
+
+    const leadRepo = new CRMLeadRepository()
+    const { leads, total } = await leadRepo.findByWorkspace(user.workspace_id, filters)
+
+    return NextResponse.json({
+      leads,
+      total,
+      page: filters.page,
+      pageSize: filters.pageSize,
+      pageCount: Math.ceil(total / filters.pageSize!),
+    })
+  } catch (error) {
+    safeError('[GET /api/crm/leads] Error:', error)
+    return handleApiError(error)
+  }
+}
 
 const createLeadSchema = z.object({
   email: z.string().email(),

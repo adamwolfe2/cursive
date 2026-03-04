@@ -29,6 +29,16 @@ const STATUS_OPTIONS: { value: LeadStatus; label: string; color: string }[] = [
   { value: 'lost', label: 'Lost', color: 'bg-gray-100 text-gray-700' },
 ]
 
+const SOURCE_OPTIONS: { value: string; label: string }[] = [
+  { value: 'audiencelab', label: 'SuperPixel' },
+  { value: 'audiencelab_database', label: 'Database Pull' },
+  { value: 'audiencelab_pull', label: 'Auto-Pull' },
+  { value: 'marketplace', label: 'Marketplace' },
+  { value: 'query', label: 'Auto-Match' },
+  { value: 'import', label: 'Import' },
+  { value: 'manual', label: 'Manual' },
+]
+
 const INDUSTRY_OPTIONS = [
   'Technology',
   'Healthcare',
@@ -77,6 +87,14 @@ export const LeadsFilterBar = forwardRef<LeadsFilterBarRef>((props, ref) => {
     setFilters({ status: newStatuses.length > 0 ? newStatuses : undefined })
   }
 
+  const toggleSource = (source: string) => {
+    const currentSources = filters.sources || []
+    const newSources = currentSources.includes(source)
+      ? currentSources.filter((s) => s !== source)
+      : [...currentSources, source]
+    setFilters({ sources: newSources.length > 0 ? newSources : undefined })
+  }
+
   const toggleIndustry = (industry: string) => {
     const currentIndustries = filters.industries || []
     const newIndustries = currentIndustries.includes(industry)
@@ -95,6 +113,7 @@ export const LeadsFilterBar = forwardRef<LeadsFilterBarRef>((props, ref) => {
 
   const activeFilterCount = [
     filters.status?.length || 0,
+    filters.sources?.length || 0,
     filters.industries?.length || 0,
     filters.states?.length || 0,
     filters.hasPhone ? 1 : 0,
@@ -147,6 +166,33 @@ export const LeadsFilterBar = forwardRef<LeadsFilterBarRef>((props, ref) => {
                 key={option.value}
                 checked={filters.status?.includes(option.value)}
                 onCheckedChange={() => toggleStatus(option.value)}
+              >
+                {option.label}
+              </DropdownMenuCheckboxItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        {/* Source filter */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="h-9">
+              Source
+              {filters.sources && filters.sources.length > 0 && (
+                <Badge variant="secondary" className="ml-2 px-1 py-0 text-xs">
+                  {filters.sources.length}
+                </Badge>
+              )}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuLabel>Filter by Source</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {SOURCE_OPTIONS.map((option) => (
+              <DropdownMenuCheckboxItem
+                key={option.value}
+                checked={filters.sources?.includes(option.value)}
+                onCheckedChange={() => toggleSource(option.value)}
               >
                 {option.label}
               </DropdownMenuCheckboxItem>
@@ -258,7 +304,7 @@ export const LeadsFilterBar = forwardRef<LeadsFilterBarRef>((props, ref) => {
       </div>
 
       {/* Active filter pills */}
-      {(filters.status?.length || filters.industries?.length || filters.states?.length) ? (
+      {(filters.status?.length || filters.sources?.length || filters.industries?.length || filters.states?.length) ? (
         <div className="flex flex-wrap gap-2">
           {filters.status?.map((status) => {
             const option = STATUS_OPTIONS.find((o) => o.value === status)
@@ -268,6 +314,18 @@ export const LeadsFilterBar = forwardRef<LeadsFilterBarRef>((props, ref) => {
                 <X
                   className="h-3 w-3 cursor-pointer"
                   onClick={() => toggleStatus(status as LeadStatus)}
+                />
+              </Badge>
+            )
+          })}
+          {filters.sources?.map((src) => {
+            const option = SOURCE_OPTIONS.find((o) => o.value === src)
+            return (
+              <Badge key={src} variant="secondary" className="gap-1">
+                {option?.label ?? src}
+                <X
+                  className="h-3 w-3 cursor-pointer"
+                  onClick={() => toggleSource(src)}
                 />
               </Badge>
             )
