@@ -450,24 +450,26 @@ export default async function DashboardPage({
           </Link>
 
           {/* This week */}
-          <div className="bg-white rounded-xl border border-gray-200 p-5">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="p-1.5 rounded-lg bg-gray-100">
-                <TrendingUp className="h-4 w-4 text-gray-600" />
+          <Link href="/leads" className="group">
+            <div className="bg-white rounded-xl border border-gray-200 p-5 h-full hover:border-gray-300 transition-all">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="p-1.5 rounded-lg bg-gray-100">
+                  <TrendingUp className="h-4 w-4 text-gray-600" />
+                </div>
+                <span className="text-sm text-gray-500">This Week</span>
               </div>
-              <span className="text-sm text-gray-500">This Week</span>
+              <div className="text-3xl font-bold text-gray-900">{weekCount}</div>
+              {(() => {
+                const trend = trendBadge(weekCount, prevWeekCount)
+                if (!trend) return <p className="text-xs text-gray-500 mt-1">{(weekCount / 7).toFixed(1)} avg/day</p>
+                return (
+                  <p className={`text-xs mt-1 font-medium ${trend.up ? 'text-emerald-600' : 'text-red-500'}`}>
+                    {trend.up ? '↑' : '↓'} {trend.pct}% vs. last week
+                  </p>
+                )
+              })()}
             </div>
-            <div className="text-3xl font-bold text-gray-900">{weekCount}</div>
-            {(() => {
-              const trend = trendBadge(weekCount, prevWeekCount)
-              if (!trend) return <p className="text-xs text-gray-500 mt-1">{(weekCount / 7).toFixed(1)} avg/day</p>
-              return (
-                <p className={`text-xs mt-1 font-medium ${trend.up ? 'text-emerald-600' : 'text-red-500'}`}>
-                  {trend.up ? '↑' : '↓'} {trend.pct}% vs. last week
-                </p>
-              )
-            })()}
-          </div>
+          </Link>
 
           {/* Credits */}
           <Link href="/settings/billing" className="group">
@@ -494,25 +496,27 @@ export default async function DashboardPage({
           </Link>
 
           {/* Total leads */}
-          <div className="bg-white rounded-xl border border-gray-200 p-5">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="p-1.5 rounded-lg bg-gray-100">
-                <Users className="h-4 w-4 text-gray-600" />
+          <Link href="/crm/leads" className="group">
+            <div className="bg-white rounded-xl border border-gray-200 p-5 h-full hover:border-gray-300 transition-all">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="p-1.5 rounded-lg bg-gray-100">
+                  <Users className="h-4 w-4 text-gray-600" />
+                </div>
+                <span className="text-sm text-gray-500">Total Leads</span>
               </div>
-              <span className="text-sm text-gray-500">Total Leads</span>
+              <div className="text-3xl font-bold text-gray-900">{totalCount}</div>
+              <p className="text-xs text-gray-500 mt-1">{enrichedCount} enriched</p>
+              {(() => {
+                const trend = trendBadge(weekCount, prevWeekCount)
+                if (!trend) return null
+                return (
+                  <p className={`text-xs mt-0.5 font-medium ${trend.up ? 'text-emerald-600' : 'text-red-500'}`}>
+                    {trend.up ? '↑' : '↓'} {trend.pct}% weekly growth
+                  </p>
+                )
+              })()}
             </div>
-            <div className="text-3xl font-bold text-gray-900">{totalCount}</div>
-            <p className="text-xs text-gray-500 mt-1">{enrichedCount} enriched</p>
-            {(() => {
-              const trend = trendBadge(weekCount, prevWeekCount)
-              if (!trend) return null
-              return (
-                <p className={`text-xs mt-0.5 font-medium ${trend.up ? 'text-emerald-600' : 'text-red-500'}`}>
-                  {trend.up ? '↑' : '↓'} {trend.pct}% weekly growth
-                </p>
-              )
-            })()}
-          </div>
+          </Link>
         </div>
       </AnimatedSection>
 
