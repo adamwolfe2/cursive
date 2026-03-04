@@ -65,6 +65,7 @@ const GROUPS = [
 interface AdminNavProps {
   adminEmail: string
   needsApprovalCount: number
+  upcomingBookingsCount?: number
 }
 
 // ─── Dropdown ────────────────────────────────────────────────────────────────
@@ -131,7 +132,7 @@ function NavDropdown({
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
-export default function AdminNav({ adminEmail, needsApprovalCount }: AdminNavProps) {
+export default function AdminNav({ adminEmail, needsApprovalCount, upcomingBookingsCount = 0 }: AdminNavProps) {
   const pathname = usePathname()
   const [drawerOpen, setDrawerOpen] = useState(false)
 
@@ -159,13 +160,18 @@ export default function AdminNav({ adminEmail, needsApprovalCount }: AdminNavPro
                 <Link
                   key={href}
                   href={href}
-                  className={`px-3 py-1.5 text-sm rounded-md transition-colors whitespace-nowrap ${
+                  className={`flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md transition-colors whitespace-nowrap ${
                     pathname.startsWith(href)
                       ? 'text-zinc-900 bg-zinc-100 font-medium'
                       : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'
                   }`}
                 >
                   {label}
+                  {href === '/admin/ops' && upcomingBookingsCount > 0 && (
+                    <span className="inline-flex h-4 min-w-[16px] items-center justify-center rounded-full bg-blue-500 px-1 text-[10px] font-bold text-white">
+                      {upcomingBookingsCount > 9 ? '9+' : upcomingBookingsCount}
+                    </span>
+                  )}
                 </Link>
               ))}
 
@@ -251,13 +257,18 @@ export default function AdminNav({ adminEmail, needsApprovalCount }: AdminNavPro
                   <Link
                     key={href}
                     href={href}
-                    className={`flex items-center px-3 py-2.5 text-sm rounded-md mb-0.5 transition-colors ${
+                    className={`flex items-center justify-between px-3 py-2.5 text-sm rounded-md mb-0.5 transition-colors ${
                       pathname.startsWith(href)
                         ? 'text-zinc-900 bg-zinc-100 font-medium'
                         : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50'
                     }`}
                   >
                     {label}
+                    {href === '/admin/ops' && upcomingBookingsCount > 0 && (
+                      <span className="inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-blue-500 px-1 text-[10px] font-bold text-white">
+                        {upcomingBookingsCount > 9 ? '9+' : upcomingBookingsCount}
+                      </span>
+                    )}
                   </Link>
                 ))}
                 <Link

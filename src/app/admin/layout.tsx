@@ -33,19 +33,28 @@ export default async function AdminLayout({
 
   const adminEmail = userWithRole.email || user.email || 'Admin'
 
+  const adminClient = createAdminClient()
+
   let needsApprovalCount = 0
+  let upcomingBookingsCount = 0
   try {
-    const adminClient = createAdminClient()
-    const { count } = await adminClient
-      .from('email_replies')
-      .select('id', { count: 'exact', head: true })
-      .eq('draft_status', 'needs_approval')
-    needsApprovalCount = count || 0
+    const [repliesRes, bookingsRes] = await Promise.all([
+      adminClient
+        .from('email_replies')
+        .select('id', { count: 'exact', head: true })
+        .eq('draft_status', 'needs_approval'),
+      adminClient
+        .from('cal_bookings')
+        .select('id', { count: 'exact', head: true })
+        .eq('status', 'upcoming'),
+    ])
+    needsApprovalCount = repliesRes.count || 0
+    upcomingBookingsCount = bookingsRes.count || 0
   } catch { /* non-fatal */ }
 
   return (
     <div className="min-h-screen bg-zinc-50">
-      <AdminNav adminEmail={adminEmail} needsApprovalCount={needsApprovalCount} />
+      <AdminNav adminEmail={adminEmail} needsApprovalCount={needsApprovalCount} upcomingBookingsCount={upcomingBookingsCount} />
       <main>{children}</main>
     </div>
   )
