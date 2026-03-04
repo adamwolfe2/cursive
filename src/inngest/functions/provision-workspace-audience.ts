@@ -432,7 +432,46 @@ export const provisionWorkspaceAudience = inngest.createFunction(
       })
     }
 
-    // Step 5: Notify if meaningful results
+    // Step 5: Auto-advance ops_stage to 'trial' if a cal_booking email matches the owner
+    await step.run('auto-advance-ops-stage', async () => {
+      try {
+        const supabase = createAdminClient()
+        const { data: userRow } = await supabase
+          .from('users')
+          .select('email')
+          .eq('id', user_id)
+          .maybeSingle()
+        if (!userRow?.email) return
+
+        const { data: booking } = await supabase
+          .from('cal_bookings')
+          .select('id')
+          .eq('attendee_email', userRow.email)
+          .limit(1)
+          .maybeSingle()
+
+        if (booking) {
+          await supabase
+            .from('workspaces')
+            .update({ ops_stage: 'trial' })
+            .eq('id', workspace_id)
+            .eq('ops_stage', 'new') // only advance if still at default stage
+
+          // Also back-link the booking to this workspace
+          await supabase
+            .from('cal_bookings')
+            .update({ workspace_id })
+            .eq('attendee_email', userRow.email)
+            .is('workspace_id', null)
+
+          safeLog(`${LOG_PREFIX} Auto-advanced ops_stage to 'trial' for workspace ${workspace_id}`)
+        }
+      } catch (err) {
+        safeError(`${LOG_PREFIX} ops_stage auto-advance failed (non-fatal)`, err)
+      }
+    })
+
+    // Step 6: Notify if meaningful results
     if (insertResult.inserted > 0) {
       await step.run('notify', async () => {
         sendSlackAlert({

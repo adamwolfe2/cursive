@@ -76,6 +76,7 @@ export default function CallsPage() {
   const [isAdmin, setIsAdmin] = useState(false)
   const [statusFilter, setStatusFilter] = useState('')
   const [search, setSearch] = useState('')
+  const [page, setPage] = useState(1)
   const supabase = createClient()
   const queryClient = useQueryClient()
   const { toast } = useToast()
@@ -96,9 +97,9 @@ export default function CallsPage() {
   }, [])
 
   const { data, isLoading } = useQuery<CallsData>({
-    queryKey: ['admin', 'ops', 'calls', statusFilter],
+    queryKey: ['admin', 'ops', 'calls', statusFilter, page],
     queryFn: async () => {
-      const params = new URLSearchParams()
+      const params = new URLSearchParams({ page: String(page) })
       if (statusFilter) params.set('status', statusFilter)
       const res = await fetch(`/api/admin/ops/calls?${params}`)
       if (!res.ok) throw new Error('Failed')
@@ -184,7 +185,7 @@ export default function CallsPage() {
         </div>
         <select
           value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
+          onChange={(e) => { setStatusFilter(e.target.value); setPage(1) }}
           className="h-9 px-3 text-[13px] bg-white border border-zinc-200 rounded-lg focus:outline-none"
         >
           <option value="">All Status</option>
@@ -287,6 +288,31 @@ export default function CallsPage() {
           </table>
         )}
       </div>
+
+      {/* Pagination */}
+      {data?.pagination && data.pagination.pages > 1 && (
+        <div className="flex items-center justify-between mt-4">
+          <span className="text-[12px] text-zinc-500">
+            Page {data.pagination.page} of {data.pagination.pages} · {data.pagination.total} total bookings
+          </span>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="h-8 px-3 text-[12px] font-medium text-zinc-600 border border-zinc-200 rounded-lg hover:bg-zinc-50 disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              Previous
+            </button>
+            <button
+              onClick={() => setPage((p) => Math.min(data.pagination.pages, p + 1))}
+              disabled={page === data.pagination.pages}
+              className="h-8 px-3 text-[12px] font-medium text-zinc-600 border border-zinc-200 rounded-lg hover:bg-zinc-50 disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

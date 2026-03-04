@@ -63,6 +63,18 @@ export async function POST(req: NextRequest) {
     // Persist booking to DB for Ops Dashboard
     try {
       const adminClient = createAdminClient()
+
+      // Check if attendee has already signed up — link workspace_id if so
+      let workspaceId: string | null = null
+      const { data: existingUser } = await adminClient
+        .from('users')
+        .select('workspace_id')
+        .eq('email', attendeeEmail)
+        .maybeSingle()
+      if (existingUser?.workspace_id) {
+        workspaceId = existingUser.workspace_id
+      }
+
       await adminClient.from('cal_bookings').upsert({
         booking_uid: bookingUid,
         attendee_name: attendeeName,
@@ -70,6 +82,7 @@ export async function POST(req: NextRequest) {
         start_time: startTime,
         end_time: endTime,
         status: 'upcoming',
+        ...(workspaceId ? { workspace_id: workspaceId } : {}),
         updated_at: new Date().toISOString(),
       }, { onConflict: 'booking_uid' })
     } catch (err) {
