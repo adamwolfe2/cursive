@@ -149,6 +149,7 @@ export default function VisitorsPage() {
   const [days, setDays] = useState('30')
   const [minScore, setMinScore] = useState(0)
   const [enrichmentFilter, setEnrichmentFilter] = useState('')
+  const [page, setPage] = useState(1)
   const supabase = createClient()
 
   useEffect(() => {
@@ -167,9 +168,9 @@ export default function VisitorsPage() {
   }, [])
 
   const { data, isLoading } = useQuery<VisitorsData>({
-    queryKey: ['admin', 'ops', 'visitors', days, minScore, enrichmentFilter],
+    queryKey: ['admin', 'ops', 'visitors', days, minScore, enrichmentFilter, page],
     queryFn: async () => {
-      const params = new URLSearchParams({ days, min_score: String(minScore) })
+      const params = new URLSearchParams({ days, min_score: String(minScore), page: String(page) })
       if (enrichmentFilter) params.set('enrichment', enrichmentFilter)
       const res = await fetch(`/api/admin/ops/visitors?${params}`)
       if (!res.ok) throw new Error('Failed')
@@ -224,7 +225,7 @@ export default function VisitorsPage() {
             <div>
               <select
                 value={days}
-                onChange={(e) => setDays(e.target.value)}
+                onChange={(e) => { setDays(e.target.value); setPage(1) }}
                 className="h-9 px-3 text-[13px] bg-white border border-zinc-200 rounded-lg focus:outline-none"
               >
                 <option value="7">Last 7 days</option>
@@ -235,7 +236,7 @@ export default function VisitorsPage() {
             <div>
               <select
                 value={enrichmentFilter}
-                onChange={(e) => setEnrichmentFilter(e.target.value)}
+                onChange={(e) => { setEnrichmentFilter(e.target.value); setPage(1) }}
                 className="h-9 px-3 text-[13px] bg-white border border-zinc-200 rounded-lg focus:outline-none"
               >
                 <option value="">All Enrichment</option>
@@ -251,7 +252,7 @@ export default function VisitorsPage() {
                 max={100}
                 step={10}
                 value={minScore}
-                onChange={(e) => setMinScore(Number(e.target.value))}
+                onChange={(e) => { setMinScore(Number(e.target.value)); setPage(1) }}
                 className="w-24"
               />
             </div>
@@ -280,11 +281,38 @@ export default function VisitorsPage() {
           <p className="text-zinc-400 text-sm mt-1">Try adjusting the date range or intent score</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-          {data.visitors.map((v) => (
-            <VisitorCard key={v.id} v={v} />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            {data.visitors.map((v) => (
+              <VisitorCard key={v.id} v={v} />
+            ))}
+          </div>
+
+          {/* Pagination */}
+          {data.pagination && data.pagination.pages > 1 && (
+            <div className="flex items-center justify-between mt-6 pt-4 border-t border-zinc-200">
+              <span className="text-[12px] text-zinc-500">
+                Page {data.pagination.page} of {data.pagination.pages} · {data.pagination.total} total
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                  className="h-8 px-3 text-[12px] font-medium text-zinc-600 border border-zinc-200 rounded-lg hover:bg-zinc-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  Previous
+                </button>
+                <button
+                  onClick={() => setPage((p) => Math.min(data.pagination.pages, p + 1))}
+                  disabled={page === data.pagination.pages}
+                  className="h-8 px-3 text-[12px] font-medium text-zinc-600 border border-zinc-200 rounded-lg hover:bg-zinc-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   )
