@@ -19,6 +19,7 @@ import type { TableDensity } from '@/types/crm.types'
 
 const COLUMN_LABELS: Record<string, string> = {
   select: 'Select',
+  source: 'Source',
   status: 'Status',
   name: 'Name',
   email: 'Email',

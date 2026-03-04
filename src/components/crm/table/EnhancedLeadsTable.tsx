@@ -198,6 +198,18 @@ export const EnhancedLeadsTable = React.forwardRef<EnhancedLeadsTableHandle, Enh
     setSelectedLeadIds(new Set())
   }, [searchQuery, statusFilter, sourceFilter])
 
+  const sourceLabel = (src: string): string => {
+    const map: Record<string, string> = {
+      audiencelab: 'SuperPixel',
+      audiencelab_database: 'Database Pull',
+      audiencelab_pull: 'Auto-Pull',
+      marketplace: 'Marketplace',
+      query: 'Auto-Match',
+      import: 'Import',
+    }
+    return map[src] ?? (src.charAt(0).toUpperCase() + src.slice(1).replace(/_/g, ' '))
+  }
+
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
       new: 'bg-blue-100 text-blue-700 border-blue-200',
@@ -300,7 +312,7 @@ export const EnhancedLeadsTable = React.forwardRef<EnhancedLeadsTableHandle, Enh
                       checked={sourceFilter === source}
                       onCheckedChange={() => setSourceFilter(source)}
                     >
-                      {source}
+                      {sourceLabel(source)}
                     </DropdownMenuCheckboxItem>
                   ))}
                 </>
@@ -489,7 +501,7 @@ export const EnhancedLeadsTable = React.forwardRef<EnhancedLeadsTableHandle, Enh
                       </Badge>
                     </TableCell>
                     <TableCell className="hidden xl:table-cell text-gray-600 text-sm">
-                      {lead.source || '-'}
+                      {lead.source ? sourceLabel(lead.source) : '-'}
                     </TableCell>
                     <TableCell className="hidden sm:table-cell text-gray-600 text-sm">
                       {formatDistanceToNow(new Date(lead.created_at), { addSuffix: true })}

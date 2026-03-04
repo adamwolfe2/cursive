@@ -148,6 +148,18 @@ function WorkspaceCard({
         >
           Switch Into
         </button>
+        {w.owner_email && (
+          <>
+            <span className="text-zinc-200">·</span>
+            <a
+              href={`mailto:${w.owner_email}?subject=${encodeURIComponent(`Your Cursive account — ${w.name}`)}`}
+              className="text-[11px] text-zinc-500 hover:text-primary font-medium"
+              title={`Email ${w.owner_email}`}
+            >
+              Email
+            </a>
+          </>
+        )}
         <div className="relative ml-auto">
           <button
             onClick={() => setStageOpen(!stageOpen)}
@@ -176,24 +188,37 @@ function WorkspaceCard({
 }
 
 function ProspectCard({ booking }: { booking: ProspectBooking }) {
+  const meetingTime = new Date(booking.start_time)
+  const isPast = meetingTime < new Date()
+  const mailtoSubject = encodeURIComponent('Following up from our Cursive demo')
+  const mailtoBody = encodeURIComponent(
+    `Hi ${booking.attendee_name.split(' ')[0]},\n\nGreat connecting with you${isPast ? '' : ' — looking forward to our call'}. Wanted to follow up on getting Cursive set up for you.\n\nBest,\nDarren`
+  )
+
   return (
     <div className="bg-white border border-zinc-200 rounded-lg p-3 shadow-sm">
       <div className="font-medium text-[13px] text-zinc-900 mb-1">{booking.attendee_name}</div>
       <div className="flex items-center text-[12px] text-zinc-500 mb-1">
-        <Mail size={11} className="mr-1" />
+        <Mail size={11} className="mr-1 flex-shrink-0" />
         <span className="truncate">{booking.attendee_email}</span>
         <CopyBtn value={booking.attendee_email} />
       </div>
-      <div className="text-[11px] text-zinc-400">
-        {new Date(booking.start_time).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
+      <div className={`text-[11px] font-medium mb-2 ${isPast ? 'text-zinc-400' : 'text-blue-600'}`}>
+        {isPast ? '✓ ' : '→ '}
+        {meetingTime.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}{' '}
+        {meetingTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
       </div>
-      <div className="mt-2 pt-2 border-t border-zinc-100">
+      <div className="flex items-center gap-3 pt-2 border-t border-zinc-100">
         <a
-          href={`mailto:${booking.attendee_email}`}
+          href={`mailto:${booking.attendee_email}?subject=${mailtoSubject}&body=${mailtoBody}`}
           className="text-[11px] text-primary hover:text-primary/80 font-medium"
         >
           Email
         </a>
+        <span className="text-zinc-200">·</span>
+        <span className={`text-[11px] ${booking.status === 'upcoming' ? 'text-blue-500' : 'text-zinc-400'}`}>
+          {booking.status}
+        </span>
       </div>
     </div>
   )

@@ -58,6 +58,7 @@ const defaultFilters: LeadFilters = {
 
 const defaultColumnVisibility: ColumnVisibility = {
   select: true,
+  source: true,
   status: true,
   name: true,
   email: true,

@@ -39,6 +39,19 @@ interface WorkspaceUser {
   email: string
 }
 
+// Helper to map raw source keys to human-friendly labels
+function sourceLabel(src: string): string {
+  const map: Record<string, string> = {
+    audiencelab: 'SuperPixel',
+    audiencelab_database: 'Database Pull',
+    audiencelab_pull: 'Auto-Pull',
+    marketplace: 'Marketplace',
+    query: 'Auto-Match',
+    import: 'Import',
+  }
+  return map[src] ?? (src.charAt(0).toUpperCase() + src.slice(1).replace(/_/g, ' '))
+}
+
 // Helper to format currency
 function formatCurrency(amount: number | null): string {
   if (amount === null) return '-'
@@ -158,6 +171,22 @@ export function createLeadsTableColumns(
     enableSorting: false,
     enableHiding: false,
     size: 40,
+  },
+
+  // Source column
+  {
+    accessorKey: 'source',
+    header: 'Source',
+    cell: ({ row }) => {
+      const src = row.getValue('source') as string | null
+      if (!src) return <span className="text-xs text-muted-foreground">-</span>
+      return (
+        <Badge variant="secondary" className="text-[10px] font-normal">
+          {sourceLabel(src)}
+        </Badge>
+      )
+    },
+    size: 120,
   },
 
   // Status column (with inline editing)
