@@ -15,6 +15,7 @@ import {
   Circle, CheckCircle2, Users, ChevronLeft, ArrowRight, Search,
 } from 'lucide-react'
 import { useToast } from '@/lib/hooks/use-toast'
+import { formatDistanceToNow } from 'date-fns'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -145,6 +146,11 @@ function WorkspaceCard({
           <ExternalLink size={10} className="ml-1 flex-shrink-0" />
         </div>
       )}
+
+      {/* Join date */}
+      <div className="text-[11px] text-zinc-400 mb-1">
+        Joined {formatDistanceToNow(new Date(w.created_at), { addSuffix: true })}
+      </div>
 
       {/* Trial days */}
       {w.trial_days_remaining !== null && w.trial_status === 'trial' && (
