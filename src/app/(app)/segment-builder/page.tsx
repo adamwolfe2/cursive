@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -34,6 +34,11 @@ import {
   Coins,
   AlertCircle,
   Loader2,
+  Search,
+  Library,
+  ArrowRight,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -116,6 +121,15 @@ const SENIORITY_LEVELS = [
   'Individual Contributor',
 ]
 
+interface CatalogSegment {
+  segment_id: string
+  name: string
+  category: string
+  sub_category: string | null
+  description: string | null
+  type: 'B2B' | 'B2C'
+}
+
 export default function SegmentBuilderPage() {
   const [filters, setFilters] = useState<FilterRule[]>([])
   const [segmentName, setSegmentName] = useState('')
@@ -125,6 +139,24 @@ export default function SegmentBuilderPage() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [segmentToDelete, setSegmentToDelete] = useState<string | null>(null)
   const [runningSegmentId, setRunningSegmentId] = useState<string | null>(null)
+  const [activeTab, setActiveTab] = useState('builder')
+
+  // Catalog state
+  const [catalogSearch, setCatalogSearch] = useState('')
+  const [catalogType, setCatalogType] = useState('')
+  const [catalogCategory, setCatalogCategory] = useState('')
+  const [catalogPage, setCatalogPage] = useState(1)
+  const [debouncedSearch, setDebouncedSearch] = useState('')
+  const debounceRef = useState<ReturnType<typeof setTimeout> | null>(null)
+
+  const handleCatalogSearchChange = useCallback((value: string) => {
+    setCatalogSearch(value)
+    if (debounceRef[0]) clearTimeout(debounceRef[0])
+    debounceRef[1](setTimeout(() => {
+      setDebouncedSearch(value)
+      setCatalogPage(1)
+    }, 350))
+  }, [debounceRef])
 
   const queryClient = useQueryClient()
 
@@ -142,6 +174,46 @@ export default function SegmentBuilderPage() {
   })
 
   const savedSegments = segmentsData?.segments || []
+
+  // Catalog query
+  const { data: catalogData, isLoading: catalogLoading } = useQuery({
+    queryKey: ['segment-catalog', debouncedSearch, catalogType, catalogCategory, catalogPage],
+    queryFn: async () => {
+      const params = new URLSearchParams({ page: String(catalogPage), per_page: '24' })
+      if (debouncedSearch) params.set('q', debouncedSearch)
+      if (catalogType) params.set('type', catalogType)
+      if (catalogCategory) params.set('category', catalogCategory)
+      const res = await fetch(`/api/segments/catalog?${params}`)
+      if (!res.ok) throw new Error('Failed to fetch catalog')
+      return res.json()
+    },
+    enabled: activeTab === 'catalog',
+    staleTime: 60_000,
+  })
+
+  const catalogSegments: CatalogSegment[] = catalogData?.segments ?? []
+  const catalogTotal: number = catalogData?.total ?? 0
+  const catalogTotalPages: number = catalogData?.total_pages ?? 1
+  const catalogCategories: string[] = catalogData?.categories ?? []
+
+  const handleUseCatalogSegment = (seg: CatalogSegment) => {
+    // Map the catalog category to an industry filter
+    const newFilter: FilterRule = {
+      id: Math.random().toString(36).substr(2, 9),
+      field: 'industry',
+      operator: 'equals',
+      value: seg.category,
+    }
+    setFilters((prev) => {
+      // Don't duplicate
+      const already = prev.some((f) => f.field === 'industry' && f.value === seg.category)
+      return already ? prev : [...prev, newFilter]
+    })
+    setSegmentName(seg.name)
+    setSegmentDescription(seg.description ?? seg.sub_category ?? '')
+    setActiveTab('builder')
+    toast.success(`Loaded "${seg.name}" into builder`)
+  }
 
   // Save segment mutation
   const saveSegmentMutation = useMutation({
@@ -479,9 +551,13 @@ export default function SegmentBuilderPage() {
         </p>
       </div>
 
-      <Tabs defaultValue="builder" className="space-y-6">
+      <Tabs value={activeTab} defaultValue="builder" onValueChange={setActiveTab} className="space-y-6">
         <TabsList>
           <TabsTrigger value="builder">Build Segment</TabsTrigger>
+          <TabsTrigger value="catalog">
+            <Library className="h-3.5 w-3.5 mr-1.5" />
+            Browse Catalog
+          </TabsTrigger>
           <TabsTrigger value="saved">
             Saved Segments ({savedSegments.length})
           </TabsTrigger>
@@ -748,6 +824,117 @@ export default function SegmentBuilderPage() {
               )}
             </div>
           </div>
+        </TabsContent>
+
+        {/* Catalog Tab */}
+        <TabsContent value="catalog" className="space-y-4">
+          <div className="flex flex-col sm:flex-row gap-3">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search 19,000+ pre-built segments..."
+                value={catalogSearch}
+                onChange={(e) => handleCatalogSearchChange(e.target.value)}
+                className="pl-9"
+              />
+            </div>
+            <Select value={catalogType || 'all'} onValueChange={(v) => { setCatalogType(v === 'all' ? '' : v); setCatalogPage(1) }}>
+              <SelectTrigger className="w-[130px]">
+                <SelectValue placeholder="Type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All types</SelectItem>
+                <SelectItem value="B2B">B2B</SelectItem>
+                <SelectItem value="B2C">B2C</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={catalogCategory || 'all'} onValueChange={(v) => { setCatalogCategory(v === 'all' ? '' : v); setCatalogPage(1) }}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All categories</SelectItem>
+                {catalogCategories.map((cat) => (
+                  <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {catalogLoading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {Array.from({ length: 9 }).map((_, i) => (
+                <div key={i} className="h-28 rounded-lg border border-gray-200 bg-gray-50 animate-pulse" />
+              ))}
+            </div>
+          ) : catalogSegments.length === 0 ? (
+            <div className="text-center py-16 text-muted-foreground">
+              <Library className="h-10 w-10 mx-auto mb-3 opacity-30" />
+              <p className="font-medium">No segments found</p>
+              <p className="text-sm mt-1">Try a different search or filter</p>
+            </div>
+          ) : (
+            <>
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <span>{catalogTotal.toLocaleString()} segments{debouncedSearch ? ` matching "${debouncedSearch}"` : ''}</span>
+                <span>Page {catalogPage} of {catalogTotalPages}</span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {catalogSegments.map((seg) => (
+                  <div
+                    key={seg.segment_id}
+                    className="flex flex-col justify-between rounded-lg border border-gray-200 bg-white p-4 hover:border-primary/40 hover:bg-primary/5 transition-all"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2 mb-1">
+                        <p className="text-sm font-medium text-gray-900 leading-tight">{seg.name}</p>
+                        <Badge variant={seg.type === 'B2B' ? 'default' : 'secondary'} className="text-[10px] shrink-0">
+                          {seg.type}
+                        </Badge>
+                      </div>
+                      <p className="text-xs text-muted-foreground mb-0.5">{seg.category}{seg.sub_category ? ` › ${seg.sub_category}` : ''}</p>
+                      {seg.description && (
+                        <p className="text-[11px] text-gray-400 line-clamp-2 mt-1">{seg.description}</p>
+                      )}
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="mt-3 w-full gap-1.5 text-xs"
+                      onClick={() => handleUseCatalogSegment(seg)}
+                    >
+                      Use this segment
+                      <ArrowRight className="h-3 w-3" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+
+              {catalogTotalPages > 1 && (
+                <div className="flex items-center justify-center gap-2 pt-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCatalogPage((p) => Math.max(1, p - 1))}
+                    disabled={catalogPage <= 1}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <span className="text-sm text-muted-foreground">
+                    {catalogPage} / {catalogTotalPages}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCatalogPage((p) => Math.min(catalogTotalPages, p + 1))}
+                    disabled={catalogPage >= catalogTotalPages}
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
+            </>
+          )}
         </TabsContent>
 
         {/* Saved Segments Tab */}
