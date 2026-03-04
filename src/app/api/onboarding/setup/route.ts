@@ -539,6 +539,38 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Auto-link cal_booking → workspace + advance ops_stage to 'trial'
+    // If this email had a booked demo, connect the booking and flag them as a trial.
+    if (validated.role === 'business') {
+      try {
+        const { data: booking } = await admin
+          .from('cal_bookings')
+          .select('id')
+          .eq('attendee_email', validated.email)
+          .is('workspace_id', null)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle()
+
+        if (booking) {
+          await Promise.all([
+            admin
+              .from('cal_bookings')
+              .update({ workspace_id: workspace.id })
+              .eq('id', booking.id),
+            admin
+              .from('workspaces')
+              .update({ ops_stage: 'trial' })
+              .eq('id', workspace.id),
+          ])
+          safeLog('[Onboarding] Cal booking linked and ops_stage → trial:', { booking_id: booking.id, workspace_id: workspace.id })
+        }
+      } catch (calLinkError) {
+        // Non-fatal — ops pipeline can be manually updated
+        safeError('[Onboarding] Cal booking link failed (non-fatal):', calLinkError instanceof Error ? calLinkError.message : calLinkError)
+      }
+    }
+
     // Build the response FIRST, then fire non-blocking side effects
     const response = NextResponse.json({ workspace_id: workspace.id, pixel_claimed: pixelClaimed })
 
