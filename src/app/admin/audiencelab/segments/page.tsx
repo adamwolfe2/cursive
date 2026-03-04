@@ -74,7 +74,7 @@ function mapRow(row: Record<string, string>) {
   }
 }
 
-const BATCH = 500
+const BATCH = 200
 
 export default function SegmentCatalogPage() {
   const supabase = createClient()

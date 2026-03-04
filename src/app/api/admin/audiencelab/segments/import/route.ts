@@ -4,8 +4,10 @@
  * Body: { rows: SegmentRow[] }
  */
 
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
-import { requireAdmin } from '@/lib/auth/admin'
+import { requireAdminRole } from '@/lib/auth/admin'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { handleApiError } from '@/lib/utils/api-error-handler'
 import { safeError } from '@/lib/utils/log-sanitizer'
@@ -22,7 +24,7 @@ interface SegmentRow {
 
 export async function POST(request: NextRequest) {
   try {
-    await requireAdmin()
+    await requireAdminRole()
 
     const body = await request.json()
     const rows: SegmentRow[] = body.rows
@@ -31,8 +33,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'rows array required' }, { status: 400 })
     }
 
-    if (rows.length > 1000) {
-      return NextResponse.json({ error: 'Max 1000 rows per batch' }, { status: 400 })
+    if (rows.length > 200) {
+      return NextResponse.json({ error: 'Max 200 rows per batch' }, { status: 400 })
     }
 
     const adminClient = createAdminClient()
