@@ -22,6 +22,7 @@ interface CalBooking {
   end_time: string
   status: string
   workspace_id: string | null
+  workspace_name: string | null
   signed_up: boolean
   created_at: string
 }
@@ -238,7 +239,14 @@ export default function CallsPage() {
                     <StatusBadge status={b.status} />
                   </td>
                   <td className="px-5 py-3">
-                    {b.signed_up
+                    {b.signed_up && b.workspace_id
+                      ? (
+                        <Link href={`/admin/accounts/${b.workspace_id}`} className="inline-flex items-center gap-1 text-[12px] text-emerald-600 hover:text-emerald-700 hover:underline">
+                          <CheckCircle2 size={13} />
+                          {b.workspace_name || 'Yes'}
+                        </Link>
+                      )
+                      : b.signed_up
                       ? <span className="inline-flex items-center gap-1 text-[12px] text-emerald-600"><CheckCircle2 size={13} />Yes</span>
                       : <span className="inline-flex items-center gap-1 text-[12px] text-zinc-400"><XCircle size={13} />No</span>
                     }

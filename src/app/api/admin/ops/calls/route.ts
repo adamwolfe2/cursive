@@ -43,21 +43,47 @@ export async function GET(request: NextRequest) {
 
     // Check which attendees have signed up: match email → users → workspace
     const emails = [...new Set((bookings || []).map((b) => b.attendee_email).filter(Boolean))]
-    let signedUpEmails = new Set<string>()
+    // email → { workspace_id, workspace_name }
+    const emailToWorkspace = new Map<string, { workspace_id: string; workspace_name: string | null }>()
+
     if (emails.length > 0) {
       const { data: users } = await adminClient
         .from('users')
-        .select('email')
+        .select('email, workspace_id')
         .in('email', emails)
+
+      const workspaceIds = [...new Set((users || []).map((u) => u.workspace_id).filter(Boolean))]
+
+      let workspaceNames = new Map<string, string>()
+      if (workspaceIds.length > 0) {
+        const { data: workspaces } = await adminClient
+          .from('workspaces')
+          .select('id, name')
+          .in('id', workspaceIds)
+        for (const w of workspaces || []) {
+          workspaceNames.set(w.id, w.name)
+        }
+      }
+
       for (const u of users || []) {
-        if (u.email) signedUpEmails.add(u.email)
+        if (u.email && u.workspace_id) {
+          emailToWorkspace.set(u.email, {
+            workspace_id: u.workspace_id,
+            workspace_name: workspaceNames.get(u.workspace_id) ?? null,
+          })
+        }
       }
     }
 
-    const enrichedBookings = (bookings || []).map((b) => ({
-      ...b,
-      signed_up: signedUpEmails.has(b.attendee_email),
-    }))
+    const enrichedBookings = (bookings || []).map((b) => {
+      const ws = emailToWorkspace.get(b.attendee_email)
+      return {
+        ...b,
+        signed_up: !!ws,
+        workspace_id: ws?.workspace_id ?? b.workspace_id ?? null,
+        workspace_name: ws?.workspace_name ?? null,
+      }
+    })
 
     // Stats
     const total = count ?? 0
