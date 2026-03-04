@@ -237,14 +237,20 @@ export default function SegmentBuilderPage() {
         }
       })
 
-      const response = await fetch('/api/audiencelab/database/search', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...apiFilters,
-          action: 'preview',
-        }),
-      })
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 20000)
+
+      let response: Response
+      try {
+        response = await fetch('/api/audiencelab/database/search', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...apiFilters, action: 'preview' }),
+          signal: controller.signal,
+        })
+      } finally {
+        clearTimeout(timeoutId)
+      }
 
       const data = await response.json()
 
@@ -254,8 +260,12 @@ export default function SegmentBuilderPage() {
       } else {
         toast.error(data.error || 'Failed to preview')
       }
-    } catch (_error) {
-      toast.error('Failed to preview segment')
+    } catch (_error: any) {
+      if (_error?.name === 'AbortError') {
+        toast.error('Preview timed out — the audience database is slow right now. Try again in a moment.')
+      } else {
+        toast.error('Failed to preview segment')
+      }
     } finally {
       setLoading(false)
     }
@@ -327,15 +337,20 @@ export default function SegmentBuilderPage() {
         }
       })
 
-      const response = await fetch('/api/audiencelab/database/search', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...apiFilters,
-          action: 'pull',
-          limit: 25,
-        }),
-      })
+      const pullController = new AbortController()
+      const pullTimeoutId = setTimeout(() => pullController.abort(), 30000)
+
+      let response: Response
+      try {
+        response = await fetch('/api/audiencelab/database/search', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...apiFilters, action: 'pull', limit: 25 }),
+          signal: pullController.signal,
+        })
+      } finally {
+        clearTimeout(pullTimeoutId)
+      }
 
       const data = await response.json()
 
@@ -352,8 +367,12 @@ export default function SegmentBuilderPage() {
           toast.error(data.error || 'Failed to pull leads')
         }
       }
-    } catch (_error) {
-      toast.error('Failed to pull leads')
+    } catch (_error: any) {
+      if (_error?.name === 'AbortError') {
+        toast.error('Pull timed out — please try again in a moment.')
+      } else {
+        toast.error('Failed to pull leads')
+      }
     }
   }
 

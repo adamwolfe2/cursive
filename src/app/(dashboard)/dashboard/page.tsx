@@ -140,8 +140,11 @@ export default async function DashboardPage({
       .select('id', { count: 'exact', head: true })
       .eq('workspace_id', userProfile.workspace_id)
       .eq('enrichment_status', 'enriched'),
-    // Credits
-    CreditService.getRemainingCredits(userProfile.id).catch(() => null),
+    // Credits — race with 3s timeout so a slow credit service doesn't block the page
+    Promise.race([
+      CreditService.getRemainingCredits(userProfile.id),
+      new Promise<null>(resolve => setTimeout(() => resolve(null), 3000)),
+    ]).catch(() => null),
     // Recent enriched leads for activity log
     supabase
       .from('leads')
@@ -363,82 +366,76 @@ export default async function DashboardPage({
         </div>
       )}
 
-      {/* Credits low banner */}
-      {creditsRemaining <= 3 && (
-        <div className="rounded-xl p-4 flex items-center justify-between gap-4 bg-blue-50 border border-blue-200">
-          <div className="flex items-center gap-3">
-            {isFree ? (
-              <Rocket className="h-5 w-5 text-blue-600 shrink-0" />
-            ) : (
-              <Zap className="h-5 w-5 text-blue-600 shrink-0" />
-            )}
-            <div>
-              {isFree ? (
-                <>
-                  <p className="font-semibold text-blue-900 text-sm">
-                    {creditsRemaining === 0 ? 'You\'ve used all your free credits today' : `Only ${creditsRemaining} free credit${creditsRemaining === 1 ? '' : 's'} left today`}
-                  </p>
-                  <p className="text-xs text-blue-700">Upgrade to Pro for 1,000 daily credits, priority enrichment, and full CRM access.</p>
-                </>
-              ) : (
-                <>
-                  <p className="font-semibold text-blue-900 text-sm">
-                    {creditsRemaining === 0 ? 'You\'re out of enrichment credits' : `Only ${creditsRemaining} enrichment credit${creditsRemaining === 1 ? '' : 's'} left`}
-                  </p>
-                  <p className="text-xs text-blue-700">Each lead enrichment (phone, email, LinkedIn) costs 1 credit.</p>
-                </>
-              )}
-            </div>
-          </div>
-          <Link
-            href="/settings/billing"
-            className="shrink-0 text-sm font-semibold text-white rounded-lg px-3 py-1.5 transition-colors bg-primary hover:bg-primary/90"
-          >
-            {isFree ? 'Upgrade to Pro' : 'Buy Credits'}
-          </Link>
-        </div>
-      )}
-
-      {/* Pixel trial banner — client component for live countdown */}
-      {isOnTrial && trialEndsAtStr && (
-        <TrialCountdown
-          trialEndsAt={trialEndsAtStr}
-          visitorCountTotal={pixel?.visitor_count_total ?? null}
-        />
-      )}
-
-      {/* First leads celebration banner — client component handles localStorage dismiss */}
-      {totalCount > 0 && onboarding !== 'complete' && (
-        <FirstLeadsBanner count={totalCount} workspaceAgeHours={workspaceAgeHours} />
-      )}
-
-      {/* Outbound upsell banner — shown when pixel has identified 10+ visitors and user is not on Outbound */}
-      {showOutboundUpsell && (
-        <AnimatedSection delay={0.04}>
-          <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="flex items-start gap-3">
-              <div className="p-1.5 rounded-lg bg-blue-100 shrink-0 mt-0.5">
-                <Rocket className="h-4 w-4 text-blue-700" />
+      {/* Single priority banner — only show one at a time to avoid banner spam */}
+      {(() => {
+        // Priority: trial ending > credits empty > outbound opportunity > first leads
+        if (isOnTrial && trialEndsAtStr) {
+          return (
+            <AnimatedSection delay={0.03}>
+              <TrialCountdown trialEndsAt={trialEndsAtStr} visitorCountTotal={pixel?.visitor_count_total ?? null} />
+            </AnimatedSection>
+          )
+        }
+        if (creditsRemaining <= 3) {
+          return (
+            <AnimatedSection delay={0.03}>
+              <div className="rounded-xl p-4 flex items-center justify-between gap-4 bg-blue-50 border border-blue-200">
+                <div className="flex items-center gap-3">
+                  {isFree ? <Rocket className="h-5 w-5 text-blue-600 shrink-0" /> : <Zap className="h-5 w-5 text-blue-600 shrink-0" />}
+                  <div>
+                    {isFree ? (
+                      <>
+                        <p className="font-semibold text-blue-900 text-sm">
+                          {creditsRemaining === 0 ? 'You\'ve used all your free credits today' : `Only ${creditsRemaining} free credit${creditsRemaining === 1 ? '' : 's'} left`}
+                        </p>
+                        <p className="text-xs text-blue-700">Upgrade to Pro for 1,000 daily credits, priority enrichment, and full CRM access.</p>
+                      </>
+                    ) : (
+                      <>
+                        <p className="font-semibold text-blue-900 text-sm">
+                          {creditsRemaining === 0 ? 'You\'re out of enrichment credits' : `Only ${creditsRemaining} credit${creditsRemaining === 1 ? '' : 's'} remaining`}
+                        </p>
+                        <p className="text-xs text-blue-700">Each lead enrichment costs 1 credit — credits reset daily.</p>
+                      </>
+                    )}
+                  </div>
+                </div>
+                <Link href="/settings/billing" className="shrink-0 text-sm font-semibold text-white rounded-lg px-3 py-1.5 transition-colors bg-primary hover:bg-primary/90">
+                  {isFree ? 'Upgrade to Pro' : 'Buy Credits'}
+                </Link>
               </div>
-              <div>
-                <p className="font-semibold text-blue-900 text-sm">
-                  Your pixel has identified {pixelEventCount.toLocaleString()} visitors this week
-                </p>
-                <p className="text-xs text-blue-700 mt-0.5">
-                  Let Cursive Outbound email and follow up with every identified visitor — fully done-for-you, no extra work.
-                </p>
+            </AnimatedSection>
+          )
+        }
+        if (showOutboundUpsell) {
+          return (
+            <AnimatedSection delay={0.03}>
+              <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-start gap-3">
+                  <div className="p-1.5 rounded-lg bg-blue-100 shrink-0 mt-0.5">
+                    <Rocket className="h-4 w-4 text-blue-700" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-blue-900 text-sm">Your pixel has identified {pixelEventCount.toLocaleString()} visitors</p>
+                    <p className="text-xs text-blue-700 mt-0.5">Let Cursive Outbound email and follow up with every identified visitor — fully done-for-you.</p>
+                  </div>
+                </div>
+                <a href="mailto:darren@meetcursive.com?subject=Cursive Outbound interest" className="inline-flex items-center gap-1.5 shrink-0 rounded-lg bg-blue-700 px-3 py-2 text-xs font-semibold text-white hover:bg-blue-800 transition-colors whitespace-nowrap">
+                  <ArrowRight className="h-3 w-3" />Talk to Darren
+                </a>
               </div>
-            </div>
-            <a
-              href="mailto:darren@meetcursive.com?subject=Cursive Outbound interest"
-              className="inline-flex items-center gap-1.5 shrink-0 rounded-lg bg-blue-700 px-3 py-2 text-xs font-semibold text-white hover:bg-blue-800 transition-colors whitespace-nowrap"
-            >
-              <ArrowRight className="h-3 w-3" />
-              Talk to Darren
-            </a>
-          </div>
-        </AnimatedSection>
-      )}
+            </AnimatedSection>
+          )
+        }
+        if (totalCount > 0 && onboarding !== 'complete') {
+          return (
+            <AnimatedSection delay={0.03}>
+              <FirstLeadsBanner count={totalCount} workspaceAgeHours={workspaceAgeHours} />
+            </AnimatedSection>
+          )
+        }
+        return null
+      })()}
 
       {/* Stats row */}
       <AnimatedSection delay={0.05}>
@@ -562,9 +559,10 @@ export default async function DashboardPage({
                     || sanitizeName([lead.first_name, lead.last_name].filter(Boolean).join(' '))
                     || sanitizeCompanyName(lead.company_name)
                     || 'Unknown'
-                  const displaySub = sanitizeText(lead.email)
+                  const validEmail = lead.email?.includes('@') ? sanitizeText(lead.email) : null
+                  const displaySub = sanitizeCompanyName(lead.company_name)
+                    || validEmail
                     || sanitizeText(lead.phone)
-                    || sanitizeCompanyName(lead.company_name)
                     || ''
                   const intent = intentLabel(lead.intent_score_calculated)
                   const isEnriched = lead.enrichment_status === 'enriched'
