@@ -247,6 +247,21 @@ export default function AdminWorkspaceDetailPage() {
     },
   })
 
+  // Ops stage mutation
+  const opsStageMutation = useMutation({
+    mutationFn: async (stage: string) => {
+      const res = await fetch(`/api/admin/ops/pipeline/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ops_stage: stage }),
+      })
+      if (!res.ok) throw new Error('Failed to update ops stage')
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'workspace', id] })
+    },
+  })
+
   // Impersonation mutation
   const impersonateMutation = useMutation({
     mutationFn: async () => {
@@ -400,7 +415,18 @@ export default function AdminWorkspaceDetailPage() {
               </div>
               <div>
                 <dt className="text-xs text-zinc-500">Ops Stage</dt>
-                <dd className="text-sm text-zinc-900 capitalize">{(workspace.ops_stage || 'new').replace('_', ' ')}</dd>
+                <dd className="mt-0.5">
+                  <select
+                    value={workspace.ops_stage || 'new'}
+                    onChange={(e) => opsStageMutation.mutate(e.target.value)}
+                    disabled={opsStageMutation.isPending}
+                    className="text-sm text-zinc-900 border border-zinc-200 rounded px-2 py-0.5 bg-white focus:outline-none focus:border-zinc-400 capitalize disabled:opacity-50"
+                  >
+                    {['new', 'booked', 'trial', 'active', 'at_risk', 'churned'].map((s) => (
+                      <option key={s} value={s}>{s.replace('_', ' ')}</option>
+                    ))}
+                  </select>
+                </dd>
               </div>
               <div>
                 <dt className="text-xs text-zinc-500">Created</dt>

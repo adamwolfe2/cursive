@@ -155,6 +155,13 @@ function WorkspaceCard({
 
       {/* Actions */}
       <div className="flex items-center gap-2 mt-2 pt-2 border-t border-zinc-100">
+        <Link
+          href={`/admin/accounts/${w.id}`}
+          className="text-[11px] text-zinc-500 hover:text-zinc-800 font-medium"
+        >
+          View
+        </Link>
+        <span className="text-zinc-200">·</span>
         <button
           onClick={() => onImpersonate(w.id, w.name)}
           className="text-[11px] text-primary hover:text-primary/80 font-medium"
