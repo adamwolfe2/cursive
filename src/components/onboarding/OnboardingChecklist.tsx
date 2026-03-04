@@ -80,7 +80,7 @@ export function OnboardingChecklist() {
       {allComplete ? (
         <div className="px-5 pb-4">
           <div className="rounded-lg bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 px-4 py-3 flex items-center gap-3">
-            <span className="text-xl" aria-hidden="true">🎉</span>
+            <CheckCircle2 className="h-5 w-5 text-green-500 shrink-0" aria-hidden="true" />
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-green-900">You&apos;re all set!</p>
               <p className="text-xs text-green-700 mt-0.5">

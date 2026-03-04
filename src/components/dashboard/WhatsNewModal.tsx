@@ -70,7 +70,7 @@ export function WhatsNewModal() {
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-lg">🎉</span>
+            <Sparkles className="h-5 w-5 text-primary" />
             <DialogTitle>What&apos;s new in Cursive</DialogTitle>
           </div>
           <p className="text-sm text-muted-foreground">

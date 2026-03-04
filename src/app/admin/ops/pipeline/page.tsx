@@ -5,14 +5,14 @@
  * Columns: Booked (pre-signup) | New | Trial | Active | At Risk | Churned
  */
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import {
   Globe, Mail, Copy, Check, ExternalLink, RefreshCw, AlertTriangle,
-  Circle, CheckCircle2, Users, ChevronLeft, ArrowRight,
+  Circle, CheckCircle2, Users, ChevronLeft, ArrowRight, Search,
 } from 'lucide-react'
 import { useToast } from '@/lib/hooks/use-toast'
 
@@ -230,6 +230,7 @@ function ProspectCard({ booking }: { booking: ProspectBooking }) {
 export default function PipelinePage() {
   const [authChecked, setAuthChecked] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
+  const [search, setSearch] = useState('')
   const [impersonateId, setImpersonateId] = useState<string | null>(null)
   const [impersonateName, setImpersonateName] = useState('')
   const [impersonateReason, setImpersonateReason] = useState('')
@@ -308,8 +309,26 @@ export default function PipelinePage() {
     return <div className="flex items-center justify-center min-h-screen text-zinc-500 text-sm">Checking access...</div>
   }
 
-  const workspaces = data?.workspaces || []
-  const prospects = data?.prospects || []
+  const q = search.trim().toLowerCase()
+  const workspaces = useMemo(() => {
+    const all = data?.workspaces || []
+    if (!q) return all
+    return all.filter(
+      (w) =>
+        w.name.toLowerCase().includes(q) ||
+        (w.owner_email || '').toLowerCase().includes(q) ||
+        (w.industry_vertical || '').toLowerCase().includes(q)
+    )
+  }, [data?.workspaces, q])
+  const prospects = useMemo(() => {
+    const all = data?.prospects || []
+    if (!q) return all
+    return all.filter(
+      (p) =>
+        p.attendee_name.toLowerCase().includes(q) ||
+        p.attendee_email.toLowerCase().includes(q)
+    )
+  }, [data?.prospects, q])
 
   const getColumnWorkspaces = (stageId: string) =>
     workspaces.filter((w) => w.ops_stage === stageId)
@@ -317,7 +336,7 @@ export default function PipelinePage() {
   return (
     <div className="px-4 py-6 min-h-screen bg-zinc-50">
       {/* Header */}
-      <div className="max-w-[1600px] mx-auto mb-6 flex items-center justify-between">
+      <div className="max-w-[1600px] mx-auto mb-6 flex items-center justify-between gap-4">
         <div>
           <Link href="/admin/ops" className="inline-flex items-center gap-1 text-[12px] text-zinc-400 hover:text-zinc-600 mb-1 transition-colors">
             <ChevronLeft size={13} />
@@ -325,16 +344,28 @@ export default function PipelinePage() {
           </Link>
           <h1 className="text-xl font-semibold text-zinc-900">Pipeline</h1>
           <p className="text-[13px] text-zinc-500 mt-0.5">
-            {workspaces.length} accounts · {prospects.length} prospects
+            {(data?.workspaces || []).length} accounts · {(data?.prospects || []).length} prospects
           </p>
         </div>
-        <button
-          onClick={() => refetch()}
-          className="flex items-center gap-2 text-[13px] text-zinc-500 hover:text-zinc-700 border border-zinc-200 rounded-lg px-3 py-1.5 bg-white"
-        >
-          <RefreshCw size={13} />
-          Refresh
-        </button>
+        <div className="flex items-center gap-2">
+          <div className="relative">
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search company or email..."
+              className="h-9 pl-8 pr-3 text-[13px] bg-white border border-zinc-200 rounded-lg focus:outline-none focus:border-zinc-400 w-52"
+            />
+          </div>
+          <button
+            onClick={() => refetch()}
+            className="flex items-center gap-2 text-[13px] text-zinc-500 hover:text-zinc-700 border border-zinc-200 rounded-lg px-3 py-1.5 bg-white whitespace-nowrap"
+          >
+            <RefreshCw size={13} />
+            Refresh
+          </button>
+        </div>
       </div>
 
       {/* Kanban */}
