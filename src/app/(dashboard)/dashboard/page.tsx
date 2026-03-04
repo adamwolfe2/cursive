@@ -6,7 +6,7 @@ import Link from 'next/link'
 import {
   Users, TrendingUp, Crown, ArrowRight, Sparkles,
   Zap, Star, Target, CheckCircle2, Circle,
-  Calendar, Eye, Rocket, Clock, Gift,
+  Calendar, Eye, Rocket, Activity,
 } from 'lucide-react'
 import { sanitizeName, sanitizeCompanyName, sanitizeText } from '@/lib/utils/sanitize-text'
 import { DashboardAnimationWrapper, AnimatedSection } from '@/components/dashboard/dashboard-animation-wrapper'
@@ -15,7 +15,6 @@ import { OnboardingChecklist } from '@/components/onboarding/OnboardingChecklist
 import { WhatsNewModal } from '@/components/dashboard/WhatsNewModal'
 import { FirstLeadsBanner } from '@/components/dashboard/FirstLeadsBanner'
 import { TrialCountdown } from '@/components/dashboard/TrialCountdown'
-import { HowWeFindLeads } from '@/components/dashboard/HowWeFindLeads'
 
 export const metadata: Metadata = {
   title: 'Dashboard | Cursive',
@@ -91,7 +90,6 @@ export default async function DashboardPage({
     activationResult,
     yesterdayLeadsResult,
     prevWeekLeadsResult,
-    sourceLeadsResult,
     intelligenceTierResult,
     pixelEventsResult,
   ] = await Promise.all([
@@ -112,14 +110,14 @@ export default async function DashboardPage({
       .from('leads')
       .select('id', { count: 'exact', head: true })
       .eq('workspace_id', userProfile.workspace_id),
-    // Recent 6 leads
+    // Recent 8 leads
     supabase
       .from('leads')
       .select('id, full_name, first_name, last_name, email, phone, company_name, company_industry, status, created_at, delivered_at, intent_score_calculated, enrichment_status, source')
       .eq('workspace_id', userProfile.workspace_id)
       .order('delivered_at', { ascending: false, nullsFirst: false })
       .order('created_at', { ascending: false })
-      .limit(6),
+      .limit(8),
     // Pixel (trial status)
     supabase
       .from('audiencelab_pixels')
@@ -172,13 +170,6 @@ export default async function DashboardPage({
       .eq('workspace_id', userProfile.workspace_id)
       .gte('delivered_at', `${prevWeekStart}T00:00:00`)
       .lt('delivered_at', `${weekStart}T00:00:00`),
-    // Lead source breakdown (this week)
-    supabase
-      .from('leads')
-      .select('source')
-      .eq('workspace_id', userProfile.workspace_id)
-      .gte('delivered_at', `${weekStart}T00:00:00`)
-      .limit(200),
     // Intelligence Pack used on any lead (for checklist)
     supabase
       .from('leads')
@@ -199,17 +190,6 @@ export default async function DashboardPage({
   const yesterdayCount = yesterdayLeadsResult.count ?? 0
   const prevWeekCount = prevWeekLeadsResult.count ?? 0
 
-  // Lead source attribution
-  const sourceLeads = sourceLeadsResult.data ?? []
-  const sourceCounts: Record<string, number> = {}
-  for (const l of sourceLeads) {
-    const src = l.source ?? 'unknown'
-    sourceCounts[src] = (sourceCounts[src] ?? 0) + 1
-  }
-  const topSources = Object.entries(sourceCounts)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 5)
-  const sourceTotal = topSources.reduce((s, [, n]) => s + n, 0)
   const recentLeads = recentLeadsResult.data ?? []
   const pixel = pixelResult.data
   const hasPixel = !!pixel
@@ -606,66 +586,42 @@ export default async function DashboardPage({
                     Set preferences <ArrowRight className="h-3.5 w-3.5" />
                   </Link>
                 )}
-                <div className="mt-4 text-left">
-                  <HowWeFindLeads />
-                </div>
               </div>
             )}
           </div>
-          {/* How we find your leads — shown below leads list when there are leads */}
-          {recentLeads.length > 0 && (
-            <div className="mt-3">
-              <HowWeFindLeads />
-            </div>
-          )}
         </AnimatedSection>
 
-        {/* Right column: Checklist + Quick Actions */}
+        {/* Right column */}
         <div className="space-y-4">
 
-          {/* Onboarding checklist */}
-          {showChecklist && (
-            <AnimatedSection delay={0.15}>
-              <div className="bg-white rounded-xl border border-gray-200 p-5">
-                <div className="flex items-center justify-between mb-1">
-                  <h3 className="font-semibold text-gray-900 text-sm">Setup Checklist</h3>
-                  <span className="text-xs text-gray-500">{checklistProgress}/{checklistTotal}</span>
-                </div>
-                <div className="mt-1 h-1.5 bg-gray-100 rounded-full overflow-hidden mb-4">
-                  <div
-                    className="h-full bg-gradient-to-r from-blue-500 to-primary rounded-full transition-all"
-                    style={{ width: `${(checklistProgress / checklistTotal) * 100}%` }}
-                  />
-                </div>
-                <div className="space-y-3">
-                  {checklistItems.map((item) => (
-                    <div key={item.id} className="flex items-center gap-2.5">
-                      {item.done ? (
-                        <CheckCircle2 className="h-4 w-4 text-green-500 shrink-0" />
-                      ) : (
-                        <Circle className="h-4 w-4 text-gray-400 shrink-0" />
-                      )}
-                      {item.href && !item.done ? (
-                        <Link href={item.href} className="text-sm text-gray-700 hover:text-primary transition-colors">
-                          {item.label}
-                        </Link>
-                      ) : (
-                        <span className={`text-sm ${item.done ? 'text-gray-500 line-through' : 'text-gray-700'}`}>
-                          {item.label}
-                        </span>
-                      )}
-                      {!item.done && item.href && (
-                        <ArrowRight className="h-3 w-3 text-gray-400 ml-auto" />
-                      )}
-                    </div>
-                  ))}
-                </div>
+          {/* Pixel health status */}
+          <AnimatedSection delay={0.12}>
+            <div className={`rounded-xl border p-3 ${hasVerifiedPixel ? 'border-green-200 bg-green-50' : hasPixel ? 'border-amber-200 bg-amber-50' : 'border-gray-200 bg-gray-50'}`}>
+              <div className="flex items-center gap-2">
+                <div className={`h-2 w-2 rounded-full shrink-0 ${hasVerifiedPixel ? 'bg-green-500' : hasPixel ? 'bg-amber-400' : 'bg-gray-300'}`} />
+                <span className={`text-xs font-medium ${hasVerifiedPixel ? 'text-green-800' : hasPixel ? 'text-amber-800' : 'text-gray-600'}`}>
+                  {hasVerifiedPixel ? 'Pixel Active' : hasPixel ? 'Pixel Installed — awaiting first event' : 'Pixel not installed'}
+                </span>
+                <Link href="/settings/pixel" className="ml-auto text-xs text-primary hover:underline shrink-0">
+                  {hasPixel ? 'Manage' : 'Install'}
+                </Link>
               </div>
-            </AnimatedSection>
-          )}
+              {hasPixel && (
+                <div className="flex items-center gap-3 mt-1.5 pl-4 text-[11px] text-gray-500">
+                  {pixelEventCount > 0 && <span>{pixelEventCount.toLocaleString()} events</span>}
+                  {pixel?.visitor_count_total ? <span>{pixel.visitor_count_total.toLocaleString()} visitors identified</span> : null}
+                  {isOnTrial && trialEndsAtStr && (
+                    <span className="text-amber-600 font-medium">
+                      Trial: {Math.max(0, Math.ceil((new Date(trialEndsAtStr).getTime() - Date.now()) / 86400000))}d left
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+          </AnimatedSection>
 
           {/* Next step — dynamic based on user state */}
-          <AnimatedSection delay={0.2}>
+          <AnimatedSection delay={0.15}>
             {(() => {
               // Determine the next logical action
               const step = !hasPreferences
@@ -705,6 +661,47 @@ export default async function DashboardPage({
               )
             })()}
           </AnimatedSection>
+
+          {/* Setup checklist */}
+          {showChecklist && (
+            <AnimatedSection delay={0.2}>
+              <div className="bg-white rounded-xl border border-gray-200 p-5">
+                <div className="flex items-center justify-between mb-1">
+                  <h3 className="font-semibold text-gray-900 text-sm">Setup Checklist</h3>
+                  <span className="text-xs text-gray-500">{checklistProgress}/{checklistTotal}</span>
+                </div>
+                <div className="mt-1 h-1.5 bg-gray-100 rounded-full overflow-hidden mb-4">
+                  <div
+                    className="h-full bg-gradient-to-r from-blue-500 to-primary rounded-full transition-all"
+                    style={{ width: `${(checklistProgress / checklistTotal) * 100}%` }}
+                  />
+                </div>
+                <div className="space-y-3">
+                  {checklistItems.map((item) => (
+                    <div key={item.id} className="flex items-center gap-2.5">
+                      {item.done ? (
+                        <CheckCircle2 className="h-4 w-4 text-green-500 shrink-0" />
+                      ) : (
+                        <Circle className="h-4 w-4 text-gray-400 shrink-0" />
+                      )}
+                      {item.href && !item.done ? (
+                        <Link href={item.href} className="text-sm text-gray-700 hover:text-primary transition-colors">
+                          {item.label}
+                        </Link>
+                      ) : (
+                        <span className={`text-sm ${item.done ? 'text-gray-500 line-through' : 'text-gray-700'}`}>
+                          {item.label}
+                        </span>
+                      )}
+                      {!item.done && item.href && (
+                        <ArrowRight className="h-3 w-3 text-gray-400 ml-auto" />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </AnimatedSection>
+          )}
 
           {/* Quick actions */}
           <AnimatedSection delay={0.22}>
@@ -747,65 +744,12 @@ export default async function DashboardPage({
             </div>
           </AnimatedSection>
 
-          {/* Refer & Earn CTA */}
-          <AnimatedSection delay={0.23}>
-            <Link href="/referrals" className="block rounded-xl bg-gradient-to-r from-blue-50 to-primary/5 border border-primary/20 p-5 hover:shadow-sm transition-all group">
-              <div className="flex items-center gap-3 mb-1.5">
-                <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                  <Gift className="h-4 w-4 text-primary" />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-gray-900">Refer & Earn</p>
-                  <p className="text-xs text-gray-500">Earn $50 in credits for each referral</p>
-                </div>
-              </div>
-              <span className="inline-flex items-center gap-1 text-xs font-medium text-primary">
-                Share your link <ArrowRight className="h-3 w-3" />
-              </span>
-            </Link>
-          </AnimatedSection>
-
-          {/* Lead Performance */}
-          {totalCount > 0 && (
+          {/* Recent activity */}
+          {activityLog.length > 0 && (
             <AnimatedSection delay={0.24}>
               <div className="bg-white rounded-xl border border-gray-200 p-5">
                 <h3 className="font-semibold text-gray-900 text-sm mb-3 flex items-center gap-2">
-                  <TrendingUp className="h-3.5 w-3.5 text-gray-500" />
-                  Lead Performance
-                </h3>
-                <div className="space-y-3">
-                  <div>
-                    <div className="flex justify-between text-xs mb-1">
-                      <span className="text-gray-500">Enrichment Rate</span>
-                      <span className="font-medium text-gray-700">{Math.round((enrichedCount / totalCount) * 100)}%</span>
-                    </div>
-                    <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                      <div className="h-full bg-blue-500 rounded-full transition-all" style={{ width: `${Math.min((enrichedCount / totalCount) * 100, 100)}%` }} />
-                    </div>
-                  </div>
-                  <div className="flex justify-between text-xs">
-                    <span className="text-gray-500">Avg leads/day</span>
-                    <span className="font-medium text-gray-700">{(weekCount / Math.max(new Date().getDay() || 7, 1)).toFixed(1)}</span>
-                  </div>
-                  <div className="flex justify-between text-xs">
-                    <span className="text-gray-500">Total enriched</span>
-                    <span className="font-medium text-gray-700">{enrichedCount.toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between text-xs">
-                    <span className="text-gray-500">Credits used today</span>
-                    <span className="font-medium text-gray-700">{creditLimit - creditsRemaining} of {creditLimit}</span>
-                  </div>
-                </div>
-              </div>
-            </AnimatedSection>
-          )}
-
-          {/* Activity log */}
-          {activityLog.length > 0 && (
-            <AnimatedSection delay={0.22}>
-              <div className="bg-white rounded-xl border border-gray-200 p-5">
-                <h3 className="font-semibold text-gray-900 text-sm mb-3 flex items-center gap-2">
-                  <Clock className="h-3.5 w-3.5 text-gray-500" />
+                  <Activity className="h-3.5 w-3.5 text-gray-500" />
                   Recent Activity
                 </h3>
                 <div className="space-y-3">
@@ -836,42 +780,6 @@ export default async function DashboardPage({
                       </div>
                     </div>
                   ))}
-                </div>
-              </div>
-            </AnimatedSection>
-          )}
-
-          {/* Lead Source Attribution */}
-          {topSources.length > 0 && (
-            <AnimatedSection delay={0.24}>
-              <div className="bg-white rounded-xl border border-gray-200 p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-sm font-semibold text-gray-900">Lead Sources</h3>
-                  <span className="text-xs text-gray-400">This week</span>
-                </div>
-                <div className="space-y-2">
-                  {topSources.map(([src, count]) => {
-                    const pct = sourceTotal > 0 ? Math.round((count / sourceTotal) * 100) : 0
-                    const label = src === 'audiencelab' ? 'SuperPixel'
-                      : src === 'marketplace' ? 'Marketplace'
-                      : src === 'query' ? 'Auto-Match'
-                      : src === 'import' ? 'Import'
-                      : src.charAt(0).toUpperCase() + src.slice(1)
-                    return (
-                      <div key={src}>
-                        <div className="flex items-center justify-between text-xs mb-1">
-                          <span className="text-gray-600">{label}</span>
-                          <span className="text-gray-900 font-medium">{count} ({pct}%)</span>
-                        </div>
-                        <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-primary rounded-full transition-all"
-                            style={{ width: `${pct}%` }}
-                          />
-                        </div>
-                      </div>
-                    )
-                  })}
                 </div>
               </div>
             </AnimatedSection>
