@@ -42,6 +42,7 @@ interface Workspace {
   created_at: string
   company_size: string | null
   annual_revenue: string | null
+  ops_stage: string | null
   users: { id: string; email: string; full_name: string | null; role: string; plan: string; created_at: string }[]
   workspace_tiers: WorkspaceTier | null
 }
@@ -326,6 +327,12 @@ export default function AdminWorkspaceDetailPage() {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <Link
+            href="/admin/ops/pipeline"
+            className="px-3 py-2 text-sm font-medium text-zinc-600 border border-zinc-200 rounded-lg hover:bg-zinc-50 transition-colors"
+          >
+            Pipeline
+          </Link>
           <button
             onClick={() => impersonateMutation.mutate()}
             disabled={impersonateMutation.isPending}
@@ -390,6 +397,10 @@ export default function AdminWorkspaceDetailPage() {
               <div>
                 <dt className="text-xs text-zinc-500">Onboarding Status</dt>
                 <dd className="text-sm text-zinc-900 capitalize">{workspace.onboarding_status}</dd>
+              </div>
+              <div>
+                <dt className="text-xs text-zinc-500">Ops Stage</dt>
+                <dd className="text-sm text-zinc-900 capitalize">{(workspace.ops_stage || 'new').replace('_', ' ')}</dd>
               </div>
               <div>
                 <dt className="text-xs text-zinc-500">Created</dt>
