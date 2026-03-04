@@ -74,7 +74,7 @@ function mapRow(row: Record<string, string>) {
   }
 }
 
-const BATCH = 200
+const BATCH = 500
 
 export default function SegmentCatalogPage() {
   const supabase = createClient()
@@ -89,6 +89,7 @@ export default function SegmentCatalogPage() {
   // Search / filters
   const [query, setQuery] = useState('')
   const [typeFilter, setTypeFilter] = useState<string>('all')
+  const [types, setTypes] = useState<string[]>([])
   const [categories, setCategories] = useState<string[]>([])
   const [categoryFilter, setCategoryFilter] = useState<string>('all')
 
@@ -119,7 +120,6 @@ export default function SegmentCatalogPage() {
   useEffect(() => {
     if (authChecked && isAdmin) {
       loadStats()
-      loadCategories()
     }
   }, [authChecked, isAdmin])
 
@@ -127,21 +127,16 @@ export default function SegmentCatalogPage() {
     if (authChecked && isAdmin) loadSegments()
   }, [query, typeFilter, categoryFilter, authChecked, isAdmin])
 
+  // ── Stats: use API route (service role) for accurate counts ─────────────────
   const loadStats = async () => {
-    const { data } = await supabase.from('al_segment_catalog').select('type')
-    if (!data) return
-    const b2b = data.filter(r => r.type === 'B2B').length
-    const b2c = data.filter(r => r.type !== 'B2B').length
-    setStats({ total: data.length, b2b, b2c, categories: 0 })
-  }
-
-  const loadCategories = async () => {
-    const { data } = await supabase.from('al_segment_catalog')
-      .select('category').order('category')
-    if (!data) return
-    const unique = [...new Set(data.map(r => r.category))].filter(Boolean)
-    setCategories(unique)
-    setStats(s => s ? { ...s, categories: unique.length } : s)
+    try {
+      const res = await fetch('/api/admin/audiencelab/segments/stats')
+      if (!res.ok) return
+      const data = await res.json()
+      setStats({ total: data.total, b2b: data.b2b, b2c: data.b2c, categories: data.categories })
+      setTypes(data.types ?? [])
+      setCategories(data.categoryList ?? [])
+    } catch {}
   }
 
   const loadSegments = async () => {
@@ -160,7 +155,7 @@ export default function SegmentCatalogPage() {
     setLoading(false)
   }
 
-  // ── CSV Import ──────────────────────────────────────────────────────────────
+  // ── CSV Import (via API route — service role, no RLS issues) ─────────────────
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
@@ -184,27 +179,32 @@ export default function SegmentCatalogPage() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ rows: batch }),
         })
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}))
+          throw new Error(err.error || `HTTP ${res.status}`)
+        }
         const data = await res.json()
-        if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`)
         total_inserted += data.count ?? batch.length
       } catch (err: any) {
         errors++
-        console.error(`Batch ${i / BATCH + 1} failed:`, err)
+        console.error(`Batch ${Math.floor(i / BATCH) + 1} failed:`, err.message)
       }
       done += batch.length
       setImportProgress({ done, total })
-      // Brief pause to avoid rate-limiting edge function calls
-      await new Promise(r => setTimeout(r, 150))
+
+      // Small pause between batches to avoid rate limiting
+      if (i + BATCH < rows.length) {
+        await new Promise(r => setTimeout(r, 80))
+      }
     }
 
     setImporting(false)
     setImportResult(
       errors > 0
-        ? `Imported ${total_inserted.toLocaleString()} of ${total.toLocaleString()} rows (${errors} batches failed — upload again to fill gaps)`
-        : `Imported ${total_inserted.toLocaleString()} of ${total.toLocaleString()} rows`
+        ? `Imported ${total_inserted.toLocaleString()} of ${total.toLocaleString()} rows (${errors} batches failed — try again)`
+        : `Imported ${total_inserted.toLocaleString()} of ${total.toLocaleString()} rows successfully`
     )
     loadStats()
-    loadCategories()
     loadSegments()
     if (fileRef.current) fileRef.current.value = ''
   }
@@ -253,7 +253,7 @@ export default function SegmentCatalogPage() {
           {[
             { label: 'Total Segments', value: stats.total.toLocaleString() },
             { label: 'B2B', value: stats.b2b.toLocaleString() },
-            { label: 'B2C', value: stats.b2c.toLocaleString() },
+            { label: 'B2C / Other', value: stats.b2c.toLocaleString() },
             { label: 'Categories', value: stats.categories.toLocaleString() },
           ].map(s => (
             <div key={s.label} className="bg-white border border-zinc-200 rounded-lg p-4">
@@ -281,8 +281,7 @@ export default function SegmentCatalogPage() {
           className="border border-zinc-200 rounded-lg px-3 py-2 text-sm text-zinc-700 bg-white min-w-[110px]"
         >
           <option value="all">All Types</option>
-          <option value="B2B">B2B</option>
-          <option value="B2C">B2C</option>
+          {types.map(t => <option key={t} value={t}>{t}</option>)}
         </select>
         <select
           value={categoryFilter}

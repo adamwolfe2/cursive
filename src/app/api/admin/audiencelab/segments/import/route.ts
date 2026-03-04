@@ -33,8 +33,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'rows array required' }, { status: 400 })
     }
 
-    if (rows.length > 200) {
-      return NextResponse.json({ error: 'Max 200 rows per batch' }, { status: 400 })
+    if (rows.length > 500) {
+      return NextResponse.json({ error: 'Max 500 rows per batch' }, { status: 400 })
     }
 
     const adminClient = createAdminClient()
