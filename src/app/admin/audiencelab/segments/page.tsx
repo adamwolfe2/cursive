@@ -173,6 +173,7 @@ export default function SegmentCatalogPage() {
 
     let done = 0
     let total_inserted = 0
+    let errors = 0
     const total = rows.length
 
     for (let i = 0; i < rows.length; i += BATCH) {
@@ -184,17 +185,24 @@ export default function SegmentCatalogPage() {
           body: JSON.stringify({ rows: batch }),
         })
         const data = await res.json()
-        if (!res.ok) throw new Error(data.error ?? 'Batch failed')
+        if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`)
         total_inserted += data.count ?? batch.length
       } catch (err: any) {
-        console.error('Batch error:', err)
+        errors++
+        console.error(`Batch ${i / BATCH + 1} failed:`, err)
       }
       done += batch.length
       setImportProgress({ done, total })
+      // Brief pause to avoid rate-limiting edge function calls
+      await new Promise(r => setTimeout(r, 150))
     }
 
     setImporting(false)
-    setImportResult(`Imported ${total_inserted.toLocaleString()} of ${total.toLocaleString()} rows`)
+    setImportResult(
+      errors > 0
+        ? `Imported ${total_inserted.toLocaleString()} of ${total.toLocaleString()} rows (${errors} batches failed — upload again to fill gaps)`
+        : `Imported ${total_inserted.toLocaleString()} of ${total.toLocaleString()} rows`
+    )
     loadStats()
     loadCategories()
     loadSegments()
