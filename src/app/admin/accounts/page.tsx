@@ -36,6 +36,7 @@ export default function AdminAccountsPage() {
   const [search, setSearch] = useState('')
   const [industryFilter, setIndustryFilter] = useState('')
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'suspended'>('all')
+  const [opsStageFilter, setOpsStageFilter] = useState('')
   const [impersonateModalOpen, setImpersonateModalOpen] = useState(false)
   const [selectedWorkspace, setSelectedWorkspace] = useState<Workspace | null>(null)
   const [impersonateReason, setImpersonateReason] = useState('')
@@ -276,6 +277,21 @@ export default function AdminAccountsPage() {
               <option value="suspended">Suspended</option>
             </select>
           </div>
+          <div className="w-40">
+            <select
+              value={opsStageFilter}
+              onChange={(e) => setOpsStageFilter(e.target.value)}
+              className="w-full h-10 px-3 text-[13px] text-zinc-900 bg-white border border-zinc-300 rounded-lg focus:outline-none focus:border-primary"
+            >
+              <option value="">All Stages</option>
+              <option value="new">New</option>
+              <option value="booked">Booked</option>
+              <option value="trial">Trial</option>
+              <option value="active">Active</option>
+              <option value="at_risk">At Risk</option>
+              <option value="churned">Churned</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -344,7 +360,10 @@ export default function AdminAccountsPage() {
                 </tr>
               </thead>
               <tbody>
-                {workspaces?.map((workspace) => (
+                {(opsStageFilter
+                  ? workspaces?.filter((w) => (w.ops_stage || 'new') === opsStageFilter)
+                  : workspaces
+                )?.map((workspace) => (
                   <tr
                     key={workspace.id}
                     className={`border-b border-zinc-100 hover:bg-zinc-50 transition-colors ${
