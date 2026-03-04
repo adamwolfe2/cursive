@@ -5,7 +5,7 @@
  * Columns: Booked (pre-signup) | New | Trial | Active | At Risk | Churned
  */
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
@@ -95,6 +95,18 @@ function WorkspaceCard({
   isUpdating: boolean
 }) {
   const [stageOpen, setStageOpen] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!stageOpen) return
+    const handler = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setStageOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [stageOpen])
 
   return (
     <div className="bg-white border border-zinc-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow">
@@ -161,7 +173,7 @@ function WorkspaceCard({
             </a>
           </>
         )}
-        <div className="relative ml-auto">
+        <div className="relative ml-auto" ref={dropdownRef}>
           <button
             onClick={() => setStageOpen(!stageOpen)}
             disabled={isUpdating}
