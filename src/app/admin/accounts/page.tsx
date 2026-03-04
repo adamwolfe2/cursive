@@ -22,6 +22,7 @@ interface Workspace {
   suspended_reason: string | null
   last_activity_at: string | null
   created_at: string
+  ops_stage: string | null
   users: { id: string; email: string; full_name: string | null; plan: string; role: string }[]
   workspace_tiers?: {
     product_tiers?: {
@@ -75,7 +76,7 @@ export default function AdminAccountsPage() {
       let query = supabase
         .from('workspaces')
         .select(`
-          *,
+          *, ops_stage,
           users (id, email, full_name, plan, role),
           workspace_tiers (
             product_tiers (name, slug)
@@ -205,6 +206,18 @@ export default function AdminAccountsPage() {
     return <span className="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-md bg-zinc-100 text-zinc-600">Free</span>
   }
 
+  const getOpsStageBadge = (stage: string | null) => {
+    switch (stage) {
+      case 'booked':   return <span className="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-md bg-blue-100 text-blue-700">Booked</span>
+      case 'new':      return <span className="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-md bg-zinc-100 text-zinc-600">New</span>
+      case 'trial':    return <span className="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-md bg-amber-100 text-amber-700">Trial</span>
+      case 'active':   return <span className="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-md bg-green-100 text-green-700">Active</span>
+      case 'at_risk':  return <span className="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-md bg-red-100 text-red-600">At Risk</span>
+      case 'churned':  return <span className="inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-md bg-zinc-100 text-zinc-400">Churned</span>
+      default:         return null
+    }
+  }
+
   const getOnboardingBadge = (status: string) => {
     switch (status) {
       case 'completed':
@@ -322,6 +335,7 @@ export default function AdminAccountsPage() {
                 <tr>
                   <th className="px-5 py-3 text-left text-[13px] font-medium text-zinc-600">Business</th>
                   <th className="px-5 py-3 text-left text-[13px] font-medium text-zinc-600">Industry</th>
+                  <th className="px-5 py-3 text-left text-[13px] font-medium text-zinc-600">Stage</th>
                   <th className="px-5 py-3 text-left text-[13px] font-medium text-zinc-600">Plan</th>
                   <th className="px-5 py-3 text-left text-[13px] font-medium text-zinc-600">Onboarding</th>
                   <th className="px-5 py-3 text-left text-[13px] font-medium text-zinc-600">Status</th>
@@ -362,6 +376,9 @@ export default function AdminAccountsPage() {
                     </td>
                     <td className="px-5 py-3 text-[13px] text-zinc-600">
                       {workspace.industry_vertical || 'N/A'}
+                    </td>
+                    <td className="px-5 py-3">
+                      {getOpsStageBadge(workspace.ops_stage)}
                     </td>
                     <td className="px-5 py-3">
                       {getTierBadge(workspace)}
