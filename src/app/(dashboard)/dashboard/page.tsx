@@ -280,6 +280,9 @@ export default async function DashboardPage({
               Welcome back, {userProfile.full_name?.split(' ')[0] || 'there'}!
             </h1>
             <p className="text-sm text-gray-500 mt-0.5">
+              {userProfile.workspaces?.name && (
+                <span className="font-medium text-gray-700">{userProfile.workspaces.name} · </span>
+              )}
               Here&apos;s your lead pipeline. New leads arrive every morning at 8am CT.
             </p>
           </div>

@@ -164,6 +164,16 @@ export function LeadDetailClient({ initialLead }: LeadDetailClientProps) {
               return null
             })()}
 
+            {lead.email && (
+              <a
+                href={`mailto:${lead.email}`}
+                className="inline-flex items-center gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm font-medium shadow-sm hover:bg-accent hover:text-accent-foreground transition-colors"
+              >
+                <Mail className="h-4 w-4" />
+                Email
+              </a>
+            )}
+
             <Button
               className="gap-2 bg-primary hover:bg-primary/90 text-white shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={() => setShowEnrichPanel(true)}
