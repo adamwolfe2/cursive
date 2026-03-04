@@ -35,19 +35,33 @@ function StatCard({
   icon: Icon,
   label,
   value,
+  href,
 }: {
   icon: React.ElementType
   label: string
   value: number
   color?: string
+  href?: string
 }) {
-  return (
-    <div className="bg-white border border-zinc-200 rounded-lg p-5">
+  const inner = (
+    <>
       <div className="flex items-center gap-2 mb-3">
         <Icon size={14} className="text-zinc-400" />
         <span className="text-xs text-zinc-500">{label}</span>
       </div>
       <div className="text-2xl font-semibold text-zinc-900">{value}</div>
+    </>
+  )
+  if (href) {
+    return (
+      <Link href={href} className="block bg-white border border-zinc-200 rounded-lg p-5 hover:border-zinc-300 hover:shadow-sm transition-all">
+        {inner}
+      </Link>
+    )
+  }
+  return (
+    <div className="bg-white border border-zinc-200 rounded-lg p-5">
+      {inner}
     </div>
   )
 }
@@ -118,11 +132,11 @@ export default function OpsHubPage() {
   }
 
   const stats = [
-    { icon: Calendar,       label: 'Demo Bookings Today', value: data?.bookings_today ?? 0 },
-    { icon: TrendingUp,     label: 'Active Trials',       value: data?.active_trials ?? 0 },
-    { icon: AlertTriangle,  label: 'Expiring ≤7 Days',   value: data?.expiring_soon ?? 0 },
-    { icon: CheckCircle2,   label: 'Active Clients',      value: data?.active_clients ?? 0 },
-    { icon: Users,          label: 'Unclaimed Demos',     value: data?.unclaimed_demos ?? 0 },
+    { icon: Calendar,       label: 'Demo Bookings Today', value: data?.bookings_today ?? 0,  href: '/admin/ops/calls' },
+    { icon: TrendingUp,     label: 'Active Trials',       value: data?.active_trials ?? 0,   href: '/admin/ops/pipeline?stage=trial' },
+    { icon: AlertTriangle,  label: 'Expiring ≤7 Days',   value: data?.expiring_soon ?? 0,   href: '/admin/ops/pipeline?stage=trial' },
+    { icon: CheckCircle2,   label: 'Active Clients',      value: data?.active_clients ?? 0,  href: '/admin/ops/pipeline?stage=active' },
+    { icon: Users,          label: 'Unclaimed Demos',     value: data?.unclaimed_demos ?? 0, href: '/admin/ops/visitors' },
   ]
 
   const getStatusBadge = (type: string, status: string | null) => {

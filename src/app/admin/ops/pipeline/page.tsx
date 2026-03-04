@@ -7,11 +7,12 @@
 
 import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import Link from 'next/link'
 import {
   Globe, Mail, Copy, Check, ExternalLink, RefreshCw, AlertTriangle,
-  Circle, CheckCircle2, Users,
+  Circle, CheckCircle2, Users, ChevronLeft,
 } from 'lucide-react'
 import { useToast } from '@/lib/hooks/use-toast'
 
@@ -237,6 +238,8 @@ export default function PipelinePage() {
   const supabase = createClient()
   const queryClient = useQueryClient()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const highlightStage = searchParams.get('stage')
   const { toast } = useToast()
 
   useEffect(() => {
@@ -316,6 +319,10 @@ export default function PipelinePage() {
       {/* Header */}
       <div className="max-w-[1600px] mx-auto mb-6 flex items-center justify-between">
         <div>
+          <Link href="/admin/ops" className="inline-flex items-center gap-1 text-[12px] text-zinc-400 hover:text-zinc-600 mb-1 transition-colors">
+            <ChevronLeft size={13} />
+            Ops Hub
+          </Link>
           <h1 className="text-xl font-semibold text-zinc-900">Pipeline</h1>
           <p className="text-[13px] text-zinc-500 mt-0.5">
             {workspaces.length} accounts · {prospects.length} prospects
@@ -341,7 +348,7 @@ export default function PipelinePage() {
             const total = items.length + columnProspects.length
 
             return (
-              <div key={col.id} className={`flex flex-col border-t-2 ${col.color} rounded-lg`}>
+              <div key={col.id} className={`flex flex-col border-t-2 ${col.color} rounded-lg${highlightStage === col.id ? ' ring-2 ring-offset-1 ring-zinc-400' : ''}`}>
                 {/* Column header */}
                 <div className="px-3 pt-3 pb-2">
                   <div className="flex items-center justify-between">

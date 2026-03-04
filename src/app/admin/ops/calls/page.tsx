@@ -8,7 +8,8 @@
 import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
-import { Calendar, CheckCircle2, XCircle, Clock, AlertTriangle, TrendingUp, Copy, Check } from 'lucide-react'
+import Link from 'next/link'
+import { Calendar, CheckCircle2, XCircle, Clock, AlertTriangle, TrendingUp, Copy, Check, ChevronLeft } from 'lucide-react'
 import { useToast } from '@/lib/hooks/use-toast'
 import { format } from 'date-fns'
 
@@ -130,6 +131,10 @@ export default function CallsPage() {
     <div className="max-w-7xl mx-auto px-6 py-8">
       {/* Header */}
       <div className="mb-6">
+        <Link href="/admin/ops" className="inline-flex items-center gap-1 text-[12px] text-zinc-400 hover:text-zinc-600 mb-1 transition-colors">
+          <ChevronLeft size={13} />
+          Ops Hub
+        </Link>
         <h1 className="text-xl font-semibold text-zinc-900">Booking Log</h1>
         <p className="text-[13px] text-zinc-500 mt-1">All Cal.com demo bookings — conversion rate + follow-up</p>
       </div>

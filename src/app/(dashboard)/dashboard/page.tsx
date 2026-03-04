@@ -341,7 +341,7 @@ export default async function DashboardPage({
                 Check your pixel setup
               </a>
               {' · '}
-              <a href="/settings" className="text-blue-600 hover:underline">
+              <a href="/my-leads/preferences" className="text-blue-600 hover:underline">
                 Review your targeting preferences
               </a>
             </p>

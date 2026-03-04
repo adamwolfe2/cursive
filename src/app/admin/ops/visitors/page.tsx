@@ -8,9 +8,10 @@
 import { useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
+import Link from 'next/link'
 import {
   Eye, Mail, Phone, Linkedin, Copy, Check, ExternalLink,
-  Building2, MapPin, SlidersHorizontal, AlertCircle,
+  Building2, MapPin, SlidersHorizontal, AlertCircle, ChevronLeft,
 } from 'lucide-react'
 
 interface Visitor {
@@ -185,6 +186,10 @@ export default function VisitorsPage() {
     <div className="max-w-7xl mx-auto px-6 py-8">
       {/* Header */}
       <div className="mb-6">
+        <Link href="/admin/ops" className="inline-flex items-center gap-1 text-[12px] text-zinc-400 hover:text-zinc-600 mb-1 transition-colors">
+          <ChevronLeft size={13} />
+          Ops Hub
+        </Link>
         <h1 className="text-xl font-semibold text-zinc-900">Prospecting Feed</h1>
         <p className="text-[13px] text-zinc-500 mt-1">
           meetcursive.com pixel visitors — identified prospects ready for outreach
