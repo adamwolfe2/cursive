@@ -48,7 +48,7 @@ interface LeadAssignment {
     state_code: string | null
     company_industry: string | null
     created_at: string
-  }
+  } | null
 }
 
 const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
@@ -83,10 +83,11 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
   // Client-side search filter applied on top of paginated server results.
   // When search is active, we filter the current page's assignments locally.
   const visibleAssignments = useMemo(() => {
-    if (!searchQuery.trim()) return assignments
+    if (!searchQuery.trim()) return assignments.filter((a) => a.leads !== null)
     const q = searchQuery.toLowerCase().trim()
     return assignments.filter((a) => {
       const lead = a.leads
+      if (!lead) return false
       const name = (
         lead.full_name ||
         [lead.first_name, lead.last_name].filter(Boolean).join(' ')
@@ -165,17 +166,19 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
       query = query.eq('status', filter)
     }
 
-    const { data, error, count } = await query.range(from, to)
+    try {
+      const { data, error, count } = await query.range(from, to)
 
-    if (error) {
-      safeError('[MyLeadsTable]', 'Failed to fetch assignments:', error)
-    } else {
-      setAssignments((data as unknown as LeadAssignment[]) || [])
-      setTotalCount(count ?? 0)
-      setNewLeadCount(0)
+      if (error) {
+        safeError('[MyLeadsTable]', 'Failed to fetch assignments:', error)
+      } else {
+        setAssignments((data as unknown as LeadAssignment[]) || [])
+        setTotalCount(count ?? 0)
+        setNewLeadCount(0)
+      }
+    } finally {
+      setLoading(false)
     }
-
-    setLoading(false)
   }, [userId, workspaceId, filter, page])
 
   useEffect(() => {
@@ -352,14 +355,18 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
   }
 
   function getLeadName(lead: LeadAssignment['leads']) {
+    if (!lead) return 'Unknown'
     return (
       lead.full_name ||
       [lead.first_name, lead.last_name].filter(Boolean).join(' ') ||
+      lead.company_name ||
+      (lead.email?.includes('@') ? lead.email.split('@')[0] : null) ||
       'Unknown'
     )
   }
 
   function getLocation(lead: LeadAssignment['leads']) {
+    if (!lead) return ''
     return [lead.city, lead.state_code || lead.state].filter(Boolean).join(', ')
   }
 
@@ -513,7 +520,7 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
                       <p className="font-medium text-zinc-900">
                         {getLeadName(assignment.leads)}
                       </p>
-                      {assignment.leads.email && (
+                      {assignment.leads?.email?.includes('@') && (
                         <p className="text-sm text-zinc-500">
                           {assignment.leads.email}
                         </p>
@@ -523,9 +530,9 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
                   <td className="px-4 py-3">
                     <div>
                       <p className="text-zinc-900">
-                        {assignment.leads.company_name || '-'}
+                        {assignment.leads?.company_name || '-'}
                       </p>
-                      {assignment.leads.job_title && (
+                      {assignment.leads?.job_title && (
                         <p className="text-sm text-zinc-500">
                           {assignment.leads.job_title}
                         </p>
@@ -696,16 +703,21 @@ const LeadDetailModal = memo(function LeadDetailModal({
     )
   }
 
+  // lead is guaranteed non-null here (checked above); use non-null assertion for closures
   function getLeadName() {
+    const l = lead!
     return (
-      lead.full_name ||
-      [lead.first_name, lead.last_name].filter(Boolean).join(' ') ||
+      l.full_name ||
+      [l.first_name, l.last_name].filter(Boolean).join(' ') ||
+      l.company_name ||
+      (l.email?.includes('@') ? l.email.split('@')[0] : null) ||
       'Unknown'
     )
   }
 
   function getLocation() {
-    return [lead.city, lead.state_code || lead.state].filter(Boolean).join(', ')
+    const l = lead!
+    return [l.city, l.state_code || l.state].filter(Boolean).join(', ')
   }
 
   return (
@@ -738,7 +750,7 @@ const LeadDetailModal = memo(function LeadDetailModal({
               {lead.job_title && (
                 <p className="text-zinc-600">{lead.job_title}</p>
               )}
-              {lead.email && (
+              {lead.email?.includes('@') && (
                 <p className="text-zinc-600">
                   <a
                     href={`mailto:${lead.email}`}

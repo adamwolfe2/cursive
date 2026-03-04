@@ -431,7 +431,10 @@ export const EnhancedLeadsTable = React.forwardRef<EnhancedLeadsTableHandle, Enh
               </TableRow>
             ) : (
               paginatedLeads.map((lead, index) => {
-                const fullName = [lead.first_name, lead.last_name].filter(Boolean).join(' ') || 'Unknown'
+                const fullName = [lead.first_name, lead.last_name].filter(Boolean).join(' ')
+                  || lead.company_name
+                  || (lead.email?.includes('@') ? lead.email.split('@')[0] : null)
+                  || 'Unknown'
                 const initials = getInitials(lead.first_name, lead.last_name)
 
                 const isSelected = selectedLeadIds.has(lead.id)
@@ -467,14 +470,14 @@ export const EnhancedLeadsTable = React.forwardRef<EnhancedLeadsTableHandle, Enh
                           <span className="font-medium text-sm text-gray-900 block truncate">
                             {fullName}
                           </span>
-                          <span className="text-xs text-gray-500 md:hidden">{lead.email}</span>
+                          <span className="text-xs text-gray-500 md:hidden">{lead.email?.includes('@') ? lead.email : null}</span>
                         </div>
                       </div>
                     </TableCell>
                     <TableCell className="hidden md:table-cell">
                       <div className="flex items-center gap-1.5 text-sm text-gray-700">
                         <Mail className="size-3.5 text-gray-400" />
-                        {lead.email || '-'}
+                        {lead.email?.includes('@') ? lead.email : '-'}
                       </div>
                     </TableCell>
                     <TableCell className="hidden lg:table-cell text-gray-700 text-sm">

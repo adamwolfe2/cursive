@@ -178,7 +178,9 @@ export function LeadsPageClient({ initialData, currentPage, perPage, totalCount 
         onClose={() => setDrawerOpen(false)}
         title={
           selectedLeadData
-            ? [selectedLeadData.first_name, selectedLeadData.last_name].filter(Boolean).join(' ') || 'Unnamed Lead'
+            ? [selectedLeadData.first_name, selectedLeadData.last_name].filter(Boolean).join(' ')
+              || selectedLeadData.company_name
+              || 'Unnamed Lead'
             : ''
         }
         subtitle={selectedLeadData?.company_name}
@@ -192,12 +194,16 @@ export function LeadsPageClient({ initialData, currentPage, perPage, totalCount 
             <div className="space-y-3">
               <div className="flex items-start gap-3">
                 <span className="w-20 shrink-0 text-xs text-muted-foreground">Email</span>
-                <a
-                  href={`mailto:${selectedLeadData?.email}`}
-                  className="text-sm text-primary hover:underline"
-                >
-                  {selectedLeadData?.email || '-'}
-                </a>
+                {selectedLeadData?.email?.includes('@') ? (
+                  <a
+                    href={`mailto:${selectedLeadData.email}`}
+                    className="text-sm text-primary hover:underline"
+                  >
+                    {selectedLeadData.email}
+                  </a>
+                ) : (
+                  <span className="text-sm text-foreground">-</span>
+                )}
               </div>
               <div className="flex items-start gap-3">
                 <span className="w-20 shrink-0 text-xs text-muted-foreground">Phone</span>
