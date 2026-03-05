@@ -107,6 +107,34 @@ export async function middleware(req: NextRequest) {
       })
     }
 
+    // Fully-public API routes that never need auth — skip Supabase client
+    // creation entirely. Creating GoTrueClient triggers _recoverAndRefresh()
+    // async in the background which can generate unhandled rejections and 504s.
+    const FULLY_PUBLIC_API_ROUTES = [
+      '/api/affiliate/apply',
+      '/api/affiliate/track-click',
+      '/api/analyze-site',
+      '/api/lead-capture',
+      '/api/pixel/provision-demo',
+    ]
+    if (FULLY_PUBLIC_API_ROUTES.some(r => pathname.startsWith(r))) {
+      // For OPTIONS (CORS preflight) — pass through immediately, no rate limit needed
+      if (req.method === 'OPTIONS') {
+        return NextResponse.next({ request: req })
+      }
+      // Rate limit POST/GET on these routes (lightweight, no Supabase client)
+      maybeCleanup()
+      const ip = getClientIp(req)
+      const rl = checkRateLimit(`write:${ip}`, 'write')
+      if (!rl.allowed) {
+        return NextResponse.json(
+          { error: 'Too many requests', retryAfter: rl.retryAfter },
+          { status: 429, headers: { 'Retry-After': String(rl.retryAfter) } }
+        )
+      }
+      return NextResponse.next({ request: req })
+    }
+
     // ─── Rate Limiting for API routes ───────────────────────────────
     if (pathname.startsWith('/api')) {
       maybeCleanup()
