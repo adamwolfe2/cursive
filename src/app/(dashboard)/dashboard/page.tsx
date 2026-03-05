@@ -88,8 +88,11 @@ export default async function DashboardPage({
         return data
       }
 
-      // Cache miss or stale — refresh inline and return live data
-      await admin.rpc('refresh_workspace_stats', { p_workspace_id: wsId })
+      // Cache miss or stale — refresh inline (4s timeout) and return live data
+      await Promise.race([
+        admin.rpc('refresh_workspace_stats', { p_workspace_id: wsId }),
+        new Promise(resolve => setTimeout(resolve, 4000)),
+      ])
       const { data: fresh } = await admin
         .from('workspace_stats_cache')
         .select('*')
@@ -185,7 +188,10 @@ export default async function DashboardPage({
     hotLeadsResult,
     pipelineStatsResult,
   ] = await Promise.all([
-    getWorkspaceStats(workspaceId),
+    Promise.race([
+      getWorkspaceStats(workspaceId),
+      new Promise<null>(resolve => setTimeout(() => resolve(null), 5000)),
+    ]).catch(() => null),
     getRecentLeads(workspaceId),
     // Pixel trial status — always fresh (changes on trial actions)
     supabase

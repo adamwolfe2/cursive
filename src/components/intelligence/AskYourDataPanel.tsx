@@ -13,6 +13,7 @@ interface Message {
 
 interface AskYourDataPanelProps {
   className?: string
+  hideHeader?: boolean
 }
 
 const EXAMPLE_QUERIES = [
@@ -23,7 +24,7 @@ const EXAMPLE_QUERIES = [
   "Show me leads with tech stacks including Salesforce",
 ]
 
-export function AskYourDataPanel({ className }: AskYourDataPanelProps) {
+export function AskYourDataPanel({ className, hideHeader }: AskYourDataPanelProps) {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
@@ -86,16 +87,10 @@ export function AskYourDataPanel({ className }: AskYourDataPanelProps) {
 
   return (
     <div
-      className={`flex flex-col h-full bg-white rounded-xl border border-gray-200 overflow-hidden ${className ?? ''}`}
+      className={`flex flex-col h-full bg-white overflow-hidden ${className ?? ''}`}
     >
-      {/* Header */}
-      <div className="px-4 py-3 border-b border-gray-200 bg-gray-50">
-        <h3 className="text-sm font-semibold text-gray-900">Ask Your Data</h3>
-        <p className="text-xs text-gray-500 mt-0.5">Query your leads in plain English</p>
-      </div>
-
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
         {messages.length === 0 && (
           <div className="space-y-2">
             <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">Try asking</p>
@@ -182,7 +177,7 @@ export function AskYourDataPanel({ className }: AskYourDataPanelProps) {
       </div>
 
       {/* Input */}
-      <div className="p-3 border-t border-gray-200">
+      <div className="px-4 py-3 border-t border-gray-200 shrink-0">
         <form
           onSubmit={e => {
             e.preventDefault()

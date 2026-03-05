@@ -18,24 +18,29 @@ export function AskYourDataSlideOver() {
         Ask your data
       </button>
 
-      {/* Backdrop */}
+      {/* Transparent click-catcher — no dark overlay, just closes panel on outside click */}
       {open && (
         <div
-          className="fixed inset-0 z-50 bg-black/20 transition-opacity"
+          className="fixed inset-0 z-40"
           onClick={() => setOpen(false)}
         />
       )}
 
       {/* Slide-over panel */}
       <div
-        className={`fixed top-0 right-0 z-50 h-full w-[420px] max-w-[100vw] bg-white shadow-2xl flex flex-col transform transition-transform duration-300 ease-out ${
+        className={`fixed top-0 right-0 z-50 h-screen w-[420px] max-w-[100vw] bg-white shadow-2xl flex flex-col transform transition-transform duration-300 ease-out ${
           open ? 'translate-x-0' : 'translate-x-full'
         }`}
+        onClick={e => e.stopPropagation()}
       >
+        {/* Panel header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 shrink-0">
           <div className="flex items-center gap-2">
             <Sparkles className="h-4 w-4 text-blue-600" />
-            <span className="text-sm font-semibold text-gray-900">Ask Your Data</span>
+            <div>
+              <span className="text-sm font-semibold text-gray-900">Ask Your Data</span>
+              <p className="text-xs text-gray-500 leading-none mt-0.5">Query your leads in plain English</p>
+            </div>
           </div>
           <button
             onClick={() => setOpen(false)}
@@ -45,8 +50,10 @@ export function AskYourDataSlideOver() {
             <X className="h-4 w-4" />
           </button>
         </div>
-        <div className="flex-1 overflow-hidden">
-          {open && <AskYourDataPanel className="h-full border-0 rounded-none" />}
+
+        {/* Chat content — fills remaining height */}
+        <div className="flex-1 min-h-0">
+          {open && <AskYourDataPanel />}
         </div>
       </div>
     </>
