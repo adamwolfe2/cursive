@@ -88,8 +88,8 @@ export default function AffiliateCommissionsPage() {
             <div>
               <div className="text-[14px] text-zinc-800 font-medium mb-1">Commission unlocks at 50 activations</div>
               <p className="text-[13px] text-zinc-500 leading-relaxed">
-                You're at <span className="font-medium text-zinc-700">{totalActivations}</span> activations.
-                Every activation earns a free month — you're{' '}
+                You&apos;re at <span className="font-medium text-zinc-700">{totalActivations}</span> activations.
+                Every activation earns a free month — you&apos;re{' '}
                 <span className="font-medium text-zinc-700">{50 - totalActivations}</span> away from the $1,000 bonus
                 and your first commission.
               </p>
