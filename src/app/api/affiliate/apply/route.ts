@@ -38,6 +38,16 @@ const applySchema = z.object({
   promotionPlan: z.string().min(10).max(2000),
 })
 
+const CORS_HEADERS = {
+  'Access-Control-Allow-Origin': 'https://www.meetcursive.com',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+}
+
+export async function OPTIONS(): Promise<NextResponse> {
+  return new NextResponse(null, { status: 204, headers: CORS_HEADERS })
+}
+
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     const ip =
@@ -48,7 +58,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     if (!checkRateLimit(ip)) {
       return NextResponse.json(
         { error: 'Too many applications from this IP. Try again later.' },
-        { status: 429 }
+        { status: 429, headers: CORS_HEADERS }
       )
     }
 
@@ -57,7 +67,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     if (!validation.success) {
       return NextResponse.json(
         { error: 'Invalid form data', details: validation.error.flatten() },
-        { status: 400 }
+        { status: 400, headers: CORS_HEADERS }
       )
     }
 
@@ -73,7 +83,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       .maybeSingle()
 
     if (existing) {
-      return NextResponse.json({ success: true }) // silent dedup
+      return NextResponse.json({ success: true }, { headers: CORS_HEADERS }) // silent dedup
     }
 
     // Insert application
@@ -106,9 +116,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       data.audienceSize
     ).catch(() => {})
 
-    return NextResponse.json({ success: true })
+    return NextResponse.json({ success: true }, { headers: CORS_HEADERS })
   } catch (error) {
     safeError('[affiliate/apply] Error:', error)
-    return NextResponse.json({ error: 'Failed to submit application' }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to submit application' }, { status: 500, headers: CORS_HEADERS })
   }
 }
