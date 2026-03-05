@@ -109,8 +109,13 @@ function WorkspaceCard({
     return () => document.removeEventListener('mousedown', handler)
   }, [stageOpen])
 
+  const isAtRisk = w.ops_stage === 'at_risk'
+  const emailBody = isAtRisk
+    ? `Hi ${w.owner_name?.split(' ')[0] || 'there'},\n\nYour Cursive pixel trial is expiring soon${w.trial_days_remaining !== null ? ` (${w.trial_days_remaining} days left)` : ''}. Wanted to reach out before it expires — would love to keep identifying visitors for ${w.name}.\n\nBest,\nDarren`
+    : `Hi ${w.owner_name?.split(' ')[0] || 'there'},\n\nJust checking in on your Cursive account. How are the leads working for you?\n\nBest,\nDarren`
+
   return (
-    <div className="bg-white border border-zinc-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow">
+    <div className={`rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow ${isAtRisk ? 'bg-red-50 border border-red-300' : 'bg-white border border-zinc-200'}`}>
       {/* Name row */}
       <div className="flex items-start justify-between gap-2 mb-2">
         <div className="font-medium text-[13px] text-zinc-900 leading-tight truncate">{w.name}</div>
@@ -178,7 +183,7 @@ function WorkspaceCard({
           <>
             <span className="text-zinc-200">·</span>
             <a
-              href={`mailto:${w.owner_email}?subject=${encodeURIComponent(`Your Cursive account — ${w.name}`)}&body=${encodeURIComponent(`Hi ${w.owner_name?.split(' ')[0] || 'there'},\n\nJust checking in on your Cursive account. How are the leads working for you?\n\nBest,\nDarren`)}`}
+              href={`mailto:${w.owner_email}?subject=${encodeURIComponent(isAtRisk ? `${w.name} — Cursive trial expiring soon` : `Your Cursive account — ${w.name}`)}&body=${encodeURIComponent(emailBody)}`}
               className="text-[11px] text-zinc-500 hover:text-primary font-medium"
               title={`Email ${w.owner_email}`}
             >
