@@ -23,6 +23,7 @@ interface CalBooking {
   status: string
   workspace_id: string | null
   workspace_name: string | null
+  notes: string | null
   signed_up: boolean
   created_at: string
 }
@@ -225,7 +226,10 @@ export default function CallsPage() {
             <tbody>
               {filteredBookings.map((b) => (
                 <tr key={b.id} className="border-b border-zinc-50 hover:bg-zinc-50/50 transition-colors">
-                  <td className="px-5 py-3 text-[13px] font-medium text-zinc-900">{b.attendee_name}</td>
+                  <td className="px-5 py-3">
+                    <div className="text-[13px] font-medium text-zinc-900">{b.attendee_name}</div>
+                    {b.notes && <div className="text-[11px] text-zinc-400 mt-0.5 max-w-[180px] truncate" title={b.notes}>{b.notes}</div>}
+                  </td>
                   <td className="px-5 py-3">
                     <div className="flex items-center text-[12px] text-zinc-600">
                       {b.attendee_email}
