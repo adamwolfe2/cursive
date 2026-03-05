@@ -1,12 +1,16 @@
 // Dashboard Layout - Protected layout with navigation
 
-// Force dynamic rendering for all dashboard pages (auth required)
+// Force dynamic rendering for all dashboard pages (auth required).
+// Note: unstable_cache is used below for individual DB queries — this lets us
+// skip Next.js page cache (which can't vary by user) while still caching data.
 export const dynamic = 'force-dynamic'
 
 import { Suspense } from 'react'
+import { unstable_cache } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { AppShell } from '@/components/layout'
 import { ImpersonationBanner } from '@/components/admin'
 import { TierProvider } from '@/lib/hooks/use-tier'
@@ -82,50 +86,80 @@ export default async function DashboardLayout({
     redirect('/login')
   }
 
-  // Try to read cached workspace_id from middleware cookie to flatten all queries
-  // into a single Promise.all (avoids 2 sequential DB roundtrips on most navigations)
   const cachedWorkspaceId = cookieStore.get('x-workspace-id')?.value
-  const today = new Date().toISOString().split('T')[0]
 
-  // When we have a cached workspace_id, run ALL queries in one parallel batch.
-  // Otherwise fall back to sequential (profile first, then workspace queries).
-  const [userProfileResult, adminResult, creditsResult, leadsResult] = await Promise.all([
-    supabase
-      .from('users')
-      .select('id, auth_user_id, full_name, email, plan, role, workspace_id, daily_credit_limit, daily_credits_used, workspaces(id, name, subdomain, website_url, branding)')
-      .eq('auth_user_id', user.id)
-      .maybeSingle(),
-    // Inline admin check to avoid redundant getSession() call in isAdmin()
-    user.email
-      ? supabase
-          .from('platform_admins')
-          .select('id')
-          .eq('email', user.email)
-          .eq('is_active', true)
-          .maybeSingle()
-          .then(({ data }) => !!data)
-      : Promise.resolve(false),
-    // Credits — only if we have a cached workspace_id
-    cachedWorkspaceId
-      ? supabase
-          .from('workspace_credits')
-          .select('balance')
-          .eq('workspace_id', cachedWorkspaceId)
-          .maybeSingle()
-      : Promise.resolve({ data: null }),
-    // Today's lead count — only if we have a cached workspace_id
-    cachedWorkspaceId
-      ? supabase
-          .from('leads')
-          .select('id', { count: 'exact', head: true })
-          .eq('workspace_id', cachedWorkspaceId)
-          .gte('delivered_at', `${today}T00:00:00`)
-          .lte('delivered_at', `${today}T23:59:59`)
-      : Promise.resolve({ count: null }),
+  // Cache the user profile for 5 minutes — it changes rarely (plan upgrades, name edits).
+  // Key includes auth user ID so each user gets their own cache slot.
+  const getUserProfile = unstable_cache(
+    async (authUserId: string) => {
+      const admin = createAdminClient()
+      const { data } = await admin
+        .from('users')
+        .select('id, auth_user_id, full_name, email, plan, role, workspace_id, daily_credit_limit, daily_credits_used, workspaces(id, name, subdomain, website_url, branding)')
+        .eq('auth_user_id', authUserId)
+        .maybeSingle()
+      return data
+    },
+    ['user-profile'],
+    { revalidate: 300, tags: [`user-profile-${user.id}`] }
+  )
+
+  // Cache the admin check for 5 minutes
+  const getIsAdmin = unstable_cache(
+    async (email: string) => {
+      const admin = createAdminClient()
+      const { data } = await admin
+        .from('platform_admins')
+        .select('id')
+        .eq('email', email)
+        .eq('is_active', true)
+        .maybeSingle()
+      return !!data
+    },
+    ['is-admin'],
+    { revalidate: 300, tags: [`is-admin-${user.email}`] }
+  )
+
+  // Cache credits for 2 minutes (balance changes on enrichment, not per-request)
+  const getCredits = unstable_cache(
+    async (wsId: string) => {
+      const admin = createAdminClient()
+      const { data } = await admin
+        .from('workspace_credits')
+        .select('balance')
+        .eq('workspace_id', wsId)
+        .maybeSingle()
+      return data
+    },
+    ['workspace-credits'],
+    { revalidate: 120, tags: [`workspace-credits-${cachedWorkspaceId ?? 'unknown'}`] }
+  )
+
+  // Cache today's lead count from stats table (refreshed every 15 min)
+  const getTodayLeads = unstable_cache(
+    async (wsId: string) => {
+      const admin = createAdminClient()
+      const { data } = await admin
+        .from('workspace_stats_cache')
+        .select('today_leads')
+        .eq('workspace_id', wsId)
+        .maybeSingle()
+      return data?.today_leads ?? 0
+    },
+    ['today-leads'],
+    { revalidate: 120, tags: [`workspace-stats-${cachedWorkspaceId ?? 'unknown'}`] }
+  )
+
+  const workspaceIdForQueries = cachedWorkspaceId ?? ''
+
+  const [userProfileData, userIsAdmin, creditsData, todayLeadsFromStats] = await Promise.all([
+    getUserProfile(user.id),
+    user.email ? getIsAdmin(user.email) : Promise.resolve(false),
+    workspaceIdForQueries ? getCredits(workspaceIdForQueries) : Promise.resolve(null),
+    workspaceIdForQueries ? getTodayLeads(workspaceIdForQueries) : Promise.resolve(0),
   ])
 
-  // Type the user data
-  const userProfile = userProfileResult.data as {
+  const userProfile = userProfileData as {
     id: string
     full_name: string | null
     email: string
@@ -146,33 +180,21 @@ export default async function DashboardLayout({
     } | null
   } | null
 
-  const userIsAdmin = adminResult
-
   if (!userProfile) {
     redirect('/welcome')
   }
 
-  // If we had a cache hit, use the parallel results. Otherwise do a sequential fallback.
-  let creditBalance = creditsResult?.data?.balance ?? 0
-  let todayLeadCount = (leadsResult as { count: number | null })?.count ?? 0
+  let creditBalance = creditsData?.balance ?? 0
+  let todayLeadCount = todayLeadsFromStats ?? 0
 
   // Fallback: if no cached workspace_id but user has one, fetch now
   if (!cachedWorkspaceId && userProfile.workspace_id) {
     const [fallbackCredits, fallbackLeads] = await Promise.all([
-      supabase
-        .from('workspace_credits')
-        .select('balance')
-        .eq('workspace_id', userProfile.workspace_id)
-        .maybeSingle(),
-      supabase
-        .from('leads')
-        .select('id', { count: 'exact', head: true })
-        .eq('workspace_id', userProfile.workspace_id)
-        .gte('delivered_at', `${today}T00:00:00`)
-        .lte('delivered_at', `${today}T23:59:59`),
+      getCredits(userProfile.workspace_id),
+      getTodayLeads(userProfile.workspace_id),
     ])
-    creditBalance = fallbackCredits.data?.balance ?? 0
-    todayLeadCount = fallbackLeads.count ?? 0
+    creditBalance = fallbackCredits?.balance ?? 0
+    todayLeadCount = fallbackLeads ?? 0
   }
 
   const workspace = userProfile.workspaces as {

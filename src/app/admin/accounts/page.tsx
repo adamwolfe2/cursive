@@ -420,7 +420,7 @@ export default function AdminAccountsPage() {
                       {new Date(workspace.created_at).toLocaleDateString()}
                     </td>
                     <td className="px-5 py-3">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-3">
                         <button
                           onClick={() => handleImpersonate(workspace)}
                           className="text-[12px] text-primary hover:text-primary/80 font-medium bg-primary-muted hover:bg-primary-muted/80 px-2 py-1 rounded transition-colors"

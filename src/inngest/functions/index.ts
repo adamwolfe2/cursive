@@ -1,5 +1,6 @@
 // Export all Inngest functions
 
+export { refreshWorkspaceStats } from './refresh-workspace-stats'
 export { dailyLeadGeneration } from './daily-lead-generation'
 export { leadEnrichment, leadEnrichmentFailure } from './lead-enrichment'
 export { leadDelivery } from './lead-delivery'

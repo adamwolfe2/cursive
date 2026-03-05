@@ -29,10 +29,12 @@ import {
 } from '@/lib/audiencelab/api-client'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
+import { meetsQualityBar } from '@/lib/services/lead-quality.service'
 
 // ─── Lead Quality Scoring ─────────────────────────────────────────────────────
 // Minimum completeness score — leads below this are not worth storing.
-const MIN_QUALITY_SCORE = 20
+// 55+ requires verified email (25-30) + full name (15) + phone (8+) + company (8) minimum.
+const MIN_QUALITY_SCORE = 55
 
 /**
  * Score an ALEnrichedProfile's completeness (0–100).
@@ -441,6 +443,19 @@ async function insertLeadFromALRecord(
   const qualityScore = scoreALProfile(record)
   if (qualityScore < MIN_QUALITY_SCORE) return 'skipped'
 
+  // Strict field-level quality check: requires name, email, phone, location
+  const phones = parseCSV(record.PERSONAL_PHONE || record.MOBILE_PHONE || record.DIRECT_NUMBER)
+  const qualityCheck = meetsQualityBar({
+    first_name: record.FIRST_NAME || null,
+    last_name: record.LAST_NAME || null,
+    company_name: record.COMPANY_NAME || null,
+    email: parseCSV(record.PERSONAL_EMAILS)[0] || parseCSV(record.BUSINESS_EMAIL)[0] || null,
+    phone: phones[0] || null,
+    city: record.PERSONAL_CITY || record.COMPANY_CITY || null,
+    state: record.PERSONAL_STATE || record.COMPANY_STATE || null,
+  })
+  if (!qualityCheck.passes) return 'skipped'
+
   // Post-fetch targeting filter: enforce the workspace's declared targeting even if
   // AL ignored our API filters and returned unrelated global records.
   if (combo.industries.length > 0) {
@@ -477,9 +492,6 @@ async function insertLeadFromALRecord(
   const firstName = record.FIRST_NAME || ''
   const lastName = record.LAST_NAME || ''
   const fullName = [firstName, lastName].filter(Boolean).join(' ')
-
-  // Parse phones from AL fields
-  const phones = parseCSV(record.PERSONAL_PHONE || record.MOBILE_PHONE || record.DIRECT_NUMBER)
 
   const { error } = await supabase
     .from('leads')

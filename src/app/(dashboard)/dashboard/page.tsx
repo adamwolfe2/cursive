@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
+import { unstable_cache } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { CreditService } from '@/lib/services/credit.service'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
@@ -63,144 +65,133 @@ export default async function DashboardPage({
 
   if (userError || !userProfile?.workspace_id) redirect('/welcome')
 
-  // Parallelize all data fetches
-  const today = new Date().toISOString().split('T')[0]
-  const startOfWeek = new Date()
-  startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay())
-  const weekStart = startOfWeek.toISOString().split('T')[0]
+  const workspaceId = userProfile.workspace_id!
 
-  const yesterdayDate = new Date()
-  yesterdayDate.setDate(yesterdayDate.getDate() - 1)
-  const yesterday = yesterdayDate.toISOString().split('T')[0]
+  // ── Cached stats (pre-computed every 15 min by refreshWorkspaceStats Inngest job) ──
+  // Falls back to live COUNT queries if the cache row is missing or stale (> 20 min).
+  const getWorkspaceStats = unstable_cache(
+    async (wsId: string) => {
+      const admin = createAdminClient()
+      const { data } = await admin
+        .from('workspace_stats_cache')
+        .select('*')
+        .eq('workspace_id', wsId)
+        .maybeSingle()
 
-  const prevWeekStartDate = new Date()
-  prevWeekStartDate.setDate(prevWeekStartDate.getDate() - prevWeekStartDate.getDay() - 7)
-  const prevWeekStart = prevWeekStartDate.toISOString().split('T')[0]
+      // If cache is fresh (< 20 min old and for today's date), use it
+      const today = new Date().toISOString().split('T')[0]
+      if (
+        data &&
+        data.stats_date === today &&
+        Date.now() - new Date(data.refreshed_at).getTime() < 20 * 60 * 1000
+      ) {
+        return data
+      }
 
+      // Cache miss or stale — refresh inline and return live data
+      await admin.rpc('refresh_workspace_stats', { p_workspace_id: wsId })
+      const { data: fresh } = await admin
+        .from('workspace_stats_cache')
+        .select('*')
+        .eq('workspace_id', wsId)
+        .maybeSingle()
+      return fresh
+    },
+    ['workspace-stats'],
+    { revalidate: 120, tags: [`workspace-stats-${workspaceId}`] }
+  )
+
+  // ── Cached recent leads (last 8, refreshes every 2 min) ──
+  const getRecentLeads = unstable_cache(
+    async (wsId: string) => {
+      const admin = createAdminClient()
+      const { data } = await admin
+        .from('leads')
+        .select('id, full_name, first_name, last_name, email, phone, company_name, company_industry, status, created_at, delivered_at, intent_score_calculated, enrichment_status, source')
+        .eq('workspace_id', wsId)
+        .order('delivered_at', { ascending: false, nullsFirst: false })
+        .order('created_at', { ascending: false })
+        .limit(8)
+      return data ?? []
+    },
+    ['recent-leads'],
+    { revalidate: 120, tags: [`recent-leads-${workspaceId}`] }
+  )
+
+  // ── Cached recent enrichments for activity log (2 min) ──
+  const getRecentEnrichments = unstable_cache(
+    async (wsId: string) => {
+      const admin = createAdminClient()
+      const { data } = await admin
+        .from('leads')
+        .select('id, full_name, first_name, last_name, company_name, updated_at, source')
+        .eq('workspace_id', wsId)
+        .eq('enrichment_status', 'enriched')
+        .order('updated_at', { ascending: false })
+        .limit(5)
+      return data ?? []
+    },
+    ['recent-enrichments'],
+    { revalidate: 120, tags: [`recent-enrichments-${workspaceId}`] }
+  )
+
+  // Run all data fetches in parallel — stats + non-cacheable fresh data
   const [
-    todayLeadsResult,
-    weekLeadsResult,
-    totalLeadsResult,
+    statsData,
     recentLeadsResult,
     pixelResult,
     userTargetingResult,
-    enrichedLeadsResult,
     creditsData,
     recentEnrichmentsResult,
     activationResult,
-    yesterdayLeadsResult,
-    prevWeekLeadsResult,
-    intelligenceTierResult,
-    pixelEventsResult,
   ] = await Promise.all([
-    // Today's lead count
-    supabase
-      .from('leads')
-      .select('id', { count: 'exact', head: true })
-      .eq('workspace_id', userProfile.workspace_id)
-      .gte('delivered_at', `${today}T00:00:00`),
-    // This week's leads
-    supabase
-      .from('leads')
-      .select('id', { count: 'exact', head: true })
-      .eq('workspace_id', userProfile.workspace_id)
-      .gte('delivered_at', `${weekStart}T00:00:00`),
-    // Total leads ever
-    supabase
-      .from('leads')
-      .select('id', { count: 'exact', head: true })
-      .eq('workspace_id', userProfile.workspace_id),
-    // Recent 8 leads
-    supabase
-      .from('leads')
-      .select('id, full_name, first_name, last_name, email, phone, company_name, company_industry, status, created_at, delivered_at, intent_score_calculated, enrichment_status, source')
-      .eq('workspace_id', userProfile.workspace_id)
-      .order('delivered_at', { ascending: false, nullsFirst: false })
-      .order('created_at', { ascending: false })
-      .limit(8),
-    // Pixel (trial status)
+    getWorkspaceStats(workspaceId),
+    getRecentLeads(workspaceId),
+    // Pixel trial status — always fresh (changes on trial actions)
     supabase
       .from('audiencelab_pixels')
       .select('pixel_id, trial_status, trial_ends_at, visitor_count_total')
-      .eq('workspace_id', userProfile.workspace_id)
+      .eq('workspace_id', workspaceId)
       .eq('is_active', true)
       .maybeSingle(),
-    // User targeting preferences
+    // User targeting preferences — always fresh
     supabase
       .from('user_targeting')
       .select('is_active, target_industries, target_states')
       .eq('user_id', userProfile.id)
-      .eq('workspace_id', userProfile.workspace_id)
+      .eq('workspace_id', workspaceId)
       .maybeSingle(),
-    // Enriched leads count (for checklist)
-    supabase
-      .from('leads')
-      .select('id', { count: 'exact', head: true })
-      .eq('workspace_id', userProfile.workspace_id)
-      .eq('enrichment_status', 'enriched'),
-    // Credits — race with 3s timeout so a slow credit service doesn't block the page
+    // Credits — race with 3s timeout
     Promise.race([
       CreditService.getRemainingCredits(userProfile.id),
       new Promise<null>(resolve => setTimeout(() => resolve(null), 3000)),
     ]).catch(() => null),
-    // Recent enriched leads for activity log
-    supabase
-      .from('leads')
-      .select('id, full_name, first_name, last_name, company_name, updated_at, source')
-      .eq('workspace_id', userProfile.workspace_id)
-      .eq('enrichment_status', 'enriched')
-      .order('updated_at', { ascending: false })
-      .limit(5),
-    // Check if user has submitted an activation request
+    getRecentEnrichments(workspaceId),
+    // Activation request check — always fresh
     supabase
       .from('custom_audience_requests')
       .select('id', { count: 'exact', head: true })
-      .eq('workspace_id', userProfile.workspace_id),
-    // Yesterday's leads (for trend vs today)
-    supabase
-      .from('leads')
-      .select('id', { count: 'exact', head: true })
-      .eq('workspace_id', userProfile.workspace_id)
-      .gte('delivered_at', `${yesterday}T00:00:00`)
-      .lt('delivered_at', `${today}T00:00:00`),
-    // Last week's leads (for trend vs this week)
-    supabase
-      .from('leads')
-      .select('id', { count: 'exact', head: true })
-      .eq('workspace_id', userProfile.workspace_id)
-      .gte('delivered_at', `${prevWeekStart}T00:00:00`)
-      .lt('delivered_at', `${weekStart}T00:00:00`),
-    // Intelligence Pack used on any lead (for checklist)
-    supabase
-      .from('leads')
-      .select('id', { count: 'exact', head: true })
-      .eq('workspace_id', userProfile.workspace_id)
-      .neq('intelligence_tier', 'none'),
-    // Pixel events — count > 0 means pixel is verified and firing
-    supabase
-      .from('audiencelab_events')
-      .select('id', { count: 'exact', head: true })
-      .eq('workspace_id', userProfile.workspace_id)
-      .limit(1),
+      .eq('workspace_id', workspaceId),
   ])
 
-  const todayCount = todayLeadsResult.count ?? 0
-  const weekCount = weekLeadsResult.count ?? 0
-  const totalCount = totalLeadsResult.count ?? 0
-  const yesterdayCount = yesterdayLeadsResult.count ?? 0
-  const prevWeekCount = prevWeekLeadsResult.count ?? 0
+  // Pull counts from the pre-computed stats cache
+  const todayCount      = statsData?.today_leads     ?? 0
+  const weekCount       = statsData?.week_leads      ?? 0
+  const totalCount      = statsData?.total_leads     ?? 0
+  const yesterdayCount  = statsData?.yesterday_leads ?? 0
+  const prevWeekCount   = statsData?.prev_week_leads ?? 0
+  const enrichedCount   = statsData?.enriched_leads  ?? 0
+  const pixelEventCount = statsData?.pixel_event_count ?? 0
+  const intelligenceTierCount = statsData?.intelligence_leads ?? 0
 
-  const recentLeads = recentLeadsResult.data ?? []
+  const recentLeads = recentLeadsResult
   const pixel = pixelResult.data
   const hasPixel = !!pixel
   const targeting = userTargetingResult.data
   const hasPreferences = !!(targeting?.target_industries?.length || targeting?.target_states?.length)
-  const enrichedCount = enrichedLeadsResult.count ?? 0
   const hasEnriched = enrichedCount > 0
-  const intelligenceTierCount = intelligenceTierResult.count ?? 0
   const hasIntelligence = hasEnriched || intelligenceTierCount > 0
   const hasActivated = (activationResult.count ?? 0) > 0
-  const pixelEventCount = pixelEventsResult.count ?? 0
   const hasVerifiedPixel = hasPixel && pixelEventCount > 0
 
   // Show Outbound upsell when pixel has identified 10+ visitors and user is not on Outbound/Pipeline tier
@@ -218,7 +209,7 @@ export default async function DashboardPage({
   const creditsRemaining = credits?.remaining ?? 0
   const creditLimit = credits?.limit ?? 10
   const isFree = !userProfile.plan || userProfile.plan === 'free'
-  const recentEnrichments = (recentEnrichmentsResult.data ?? []) as Array<{
+  const recentEnrichments = (recentEnrichmentsResult ?? []) as Array<{
     id: string
     full_name: string | null
     first_name: string | null

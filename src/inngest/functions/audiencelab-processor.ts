@@ -13,6 +13,7 @@
 import { inngest } from '@/inngest/client'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { normalizeALPayload, extractEventType, isLeadWorthy, isVerifiedEmail } from '@/lib/audiencelab/field-map'
+import { meetsQualityBar } from '@/lib/services/lead-quality.service'
 import {
   normalizeEmail,
   calculateHashKey,
@@ -267,6 +268,20 @@ export const processAudienceLabEvent = inngest.createFunction(
         return { lead_id: null, is_new_lead: false, reason: 'not_lead_worthy' }
       }
 
+      // Field-completeness gate: requires name, email, phone, and location
+      const qualityCheck = meetsQualityBar({
+        first_name: identity.first_name,
+        last_name: identity.last_name,
+        company_name: identity.company_name,
+        email: identity.primary_email,
+        phone: identity.phones[0] || null,
+        city: identity.city || null,
+        state: identity.state || null,
+      })
+      if (!qualityCheck.passes) {
+        return { lead_id: null, is_new_lead: false, reason: `quality_gate_${qualityCheck.reason}` }
+      }
+
       const dedupResult = await checkDuplicate(
         identity.primary_email,
         identity.company_domain,
@@ -296,7 +311,7 @@ export const processAudienceLabEvent = inngest.createFunction(
           email: identity.primary_email,
           first_name: identity.first_name,
           last_name: identity.last_name,
-          company_name: identity.company_name || 'Unknown',
+          company_name: identity.company_name || null,
           company_domain: identity.company_domain,
           job_title: identity.job_title,
           phone: identity.phones[0] || null,

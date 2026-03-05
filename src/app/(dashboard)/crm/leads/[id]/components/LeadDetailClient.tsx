@@ -153,7 +153,7 @@ export function LeadDetailClient({ initialLead }: LeadDetailClientProps) {
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <StatusBadge status={lead.status} />
             {lead.source && (() => {
               const s = sourceLabel(lead.source)

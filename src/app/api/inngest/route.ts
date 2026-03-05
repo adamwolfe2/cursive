@@ -20,6 +20,7 @@ export const { GET, POST, PUT } = serve({
     functions.platformUpload,
 
     // System Jobs
+    functions.refreshWorkspaceStats,
     functions.creditReset,
     functions.weeklyTrends,
     functions.webhookRetryProcessor,

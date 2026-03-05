@@ -119,9 +119,9 @@ export const distributeDailyLeads = inngest.createFunction(
             .map((lead: AudienceLabLead) => ({ lead, score: scoreLeadQuality(lead) }))
             .sort((a: { score: number }, b: { score: number }) => b.score - a.score)
 
-          // Only take leads that have at minimum a name and either email or company (score >= 40)
+          // Only take leads with full name + verified email + company (score >= 60)
           const qualityLeads = scoredLeads
-            .filter((s: { score: number }) => s.score >= 40)
+            .filter((s: { score: number }) => s.score >= 60)
             .slice(0, remainingForToday)
             .map((s: { lead: AudienceLabLead }) => s.lead)
 
@@ -198,6 +198,9 @@ export const distributeDailyLeads = inngest.createFunction(
           if (insertError) {
             throw new Error(`Failed to insert leads: ${insertError.message}`)
           }
+
+          // Refresh stats cache immediately so dashboard shows updated counts
+          supabase.rpc('refresh_workspace_stats', { p_workspace_id: user.workspace_id }).catch(() => {})
 
           // Return data needed for notification/GHL steps
           return {

@@ -287,7 +287,7 @@ export const LeadCard = memo(function LeadCard({
               )}
             </div>
 
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-2">
               {!isEnriched && creditsRemaining === 0 && (
                 <a
                   href="/settings/billing"
