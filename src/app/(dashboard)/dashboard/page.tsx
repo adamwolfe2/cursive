@@ -18,6 +18,8 @@ import { WhatsNewModal } from '@/components/dashboard/WhatsNewModal'
 import { FirstLeadsBanner } from '@/components/dashboard/FirstLeadsBanner'
 import { TrialCountdown } from '@/components/dashboard/TrialCountdown'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'Dashboard | Cursive',
 }
