@@ -61,6 +61,8 @@ export default async function AnalyticsPage() {
         .from('leads')
         .select('status, enrichment_status, intent_score_calculated, source, created_at, delivered_at')
         .eq('workspace_id', wsId)
+        .order('delivered_at', { ascending: false, nullsFirst: false })
+        .limit(5000) // Cap to prevent timeout on large workspaces
       const rows = data ?? []
 
       const total = rows.length
@@ -224,7 +226,7 @@ export default async function AnalyticsPage() {
               <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-100">
                 <p className="text-xs text-blue-700 font-medium">Start tracking outreach</p>
                 <p className="text-xs text-blue-600 mt-0.5">
-                  Mark leads as "Contacted" from the{' '}
+                  Mark leads as &ldquo;Contacted&rdquo; from the{' '}
                   <Link href="/leads" className="underline">leads page</Link> to see your pipeline fill up.
                 </p>
               </div>
@@ -350,7 +352,7 @@ export default async function AnalyticsPage() {
             <div>
               <p className="font-semibold text-gray-900">Track your outreach to unlock full analytics</p>
               <p className="text-sm text-gray-500 mt-1">
-                Mark leads as "Contacted," "Won," or "Not Interested" directly from the leads page.
+                Mark leads as &ldquo;Contacted,&rdquo; &ldquo;Won,&rdquo; or &ldquo;Not Interested&rdquo; directly from the leads page.
                 Your pipeline funnel and close rate will update automatically.
               </p>
             </div>

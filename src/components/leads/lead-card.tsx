@@ -13,6 +13,8 @@ import { IntentScoreBadge } from './IntentScoreBadge'
 
 type QuickStatus = 'new' | 'contacted' | 'qualified' | 'won' | 'lost'
 
+const VALID_QUICK_STATUSES: readonly QuickStatus[] = ['new', 'contacted', 'qualified', 'won', 'lost'] as const
+
 const QUICK_STATUS_OPTIONS: { value: QuickStatus; label: string; color: string }[] = [
   { value: 'contacted', label: 'Contacted', color: 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100' },
   { value: 'qualified', label: 'Qualified', color: 'bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100' },
@@ -27,7 +29,11 @@ function QuickStatusPill({
   leadId: string
   initialStatus: string | null
 }) {
-  const [status, setStatus] = useState<QuickStatus>((initialStatus as QuickStatus) || 'new')
+  const [status, setStatus] = useState<QuickStatus>(
+    initialStatus && (VALID_QUICK_STATUSES as readonly string[]).includes(initialStatus)
+      ? (initialStatus as QuickStatus)
+      : 'new'
+  )
   const [open, setOpen] = useState(false)
   const [saving, setSaving] = useState(false)
 
