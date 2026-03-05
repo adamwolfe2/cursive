@@ -2,13 +2,13 @@
 
 /**
  * /admin/affiliates — Affiliate Partner Program Admin
+ * Auth is handled by the admin layout — no redundant check needed here.
  */
 
-import { useState, useEffect } from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { createClient } from '@/lib/supabase/client'
+import { useState } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
-import { ChevronLeft, Users, Clock, CheckCircle2, XCircle, ArrowRight } from 'lucide-react'
+import { ChevronLeft, Users, Clock, CheckCircle2, TrendingUp, DollarSign } from 'lucide-react'
 import { format } from 'date-fns'
 
 interface AffiliateApplication {
@@ -16,8 +16,11 @@ interface AffiliateApplication {
   first_name: string
   last_name: string
   email: string
+  phone: string | null
+  website: string | null
   audience_size: string
   audience_types: string[]
+  promotion_plan: string
   status: string
   created_at: string
 }
@@ -62,27 +65,11 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 export default function AdminAffiliatesPage() {
-  const [authChecked, setAuthChecked] = useState(false)
-  const [isAdmin, setIsAdmin] = useState(false)
   const [statusFilter, setStatusFilter] = useState('all')
-  const supabase = createClient()
+  const [expanded, setExpanded] = useState<string | null>(null)
+  const qc = useQueryClient()
 
-  useEffect(() => {
-    const check = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session?.user) { window.location.href = '/login'; return }
-      const { data: userData } = await supabase
-        .from('users').select('role').eq('auth_user_id', session.user.id).maybeSingle() as { data: { role: string } | null }
-      if (!userData || (userData.role !== 'admin' && userData.role !== 'owner')) {
-        window.location.href = '/dashboard'; return
-      }
-      setIsAdmin(true)
-      setAuthChecked(true)
-    }
-    check()
-  }, [])
-
-  const { data, isLoading, refetch } = useQuery<AffiliatesData>({
+  const { data, isLoading } = useQuery<AffiliatesData>({
     queryKey: ['admin', 'affiliates', statusFilter],
     queryFn: async () => {
       const params = new URLSearchParams()
@@ -91,12 +78,23 @@ export default function AdminAffiliatesPage() {
       if (!res.ok) throw new Error('Failed')
       return res.json()
     },
-    enabled: authChecked && isAdmin,
   })
 
-  if (!authChecked) {
-    return <div className="flex items-center justify-center min-h-screen text-zinc-500 text-sm">Checking access...</div>
-  }
+  const reviewMutation = useMutation({
+    mutationFn: async ({ id, action }: { id: string; action: 'approve' | 'reject' }) => {
+      const res = await fetch(`/api/admin/affiliates/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action }),
+      })
+      if (!res.ok) throw new Error('Failed')
+      return res.json()
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['admin', 'affiliates'] })
+      setExpanded(null)
+    },
+  })
 
   const stats = data?.stats
 
@@ -113,19 +111,20 @@ export default function AdminAffiliatesPage() {
 
       {/* Stats */}
       {stats && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
           {[
-            { label: 'Applications', value: stats.total_applications, icon: Users },
-            { label: 'Pending Review', value: stats.pending, icon: Clock },
-            { label: 'Active Partners', value: stats.active_affiliates, icon: CheckCircle2 },
-            { label: 'Total Activations', value: stats.total_activations, icon: ArrowRight },
+            { label: 'Total Applications', value: stats.total_applications, icon: Users },
+            { label: 'Pending Review', value: stats.pending, icon: Clock, highlight: stats.pending > 0 },
+            { label: 'Approved', value: stats.approved, icon: CheckCircle2 },
+            { label: 'Active Partners', value: stats.active_affiliates, icon: TrendingUp },
+            { label: 'Total Activations', value: stats.total_activations, icon: DollarSign },
           ].map((s) => (
-            <div key={s.label} className="bg-white border border-zinc-200 rounded-lg p-4">
+            <div key={s.label} className={`bg-white border rounded-lg p-4 ${s.highlight ? 'border-amber-300' : 'border-zinc-200'}`}>
               <div className="flex items-center gap-2 mb-2">
-                <s.icon size={13} className="text-zinc-400" />
+                <s.icon size={13} className={s.highlight ? 'text-amber-500' : 'text-zinc-400'} />
                 <span className="text-[12px] text-zinc-500">{s.label}</span>
               </div>
-              <div className="text-2xl font-semibold text-zinc-900">{s.value}</div>
+              <div className={`text-2xl font-semibold ${s.highlight ? 'text-amber-600' : 'text-zinc-900'}`}>{s.value}</div>
             </div>
           ))}
         </div>
@@ -144,6 +143,11 @@ export default function AdminAffiliatesPage() {
             }`}
           >
             {f.charAt(0).toUpperCase() + f.slice(1)}
+            {f === 'pending' && stats?.pending ? (
+              <span className="ml-1.5 bg-amber-100 text-amber-700 text-[10px] px-1.5 py-0.5 rounded-full font-semibold">
+                {stats.pending}
+              </span>
+            ) : null}
           </button>
         ))}
       </div>
@@ -163,8 +167,8 @@ export default function AdminAffiliatesPage() {
               <tr>
                 <th className="px-5 py-3 text-left text-[12px] font-medium text-zinc-500">Name</th>
                 <th className="px-5 py-3 text-left text-[12px] font-medium text-zinc-500">Email</th>
+                <th className="px-5 py-3 text-left text-[12px] font-medium text-zinc-500">Channels</th>
                 <th className="px-5 py-3 text-left text-[12px] font-medium text-zinc-500">Audience</th>
-                <th className="px-5 py-3 text-left text-[12px] font-medium text-zinc-500">Size</th>
                 <th className="px-5 py-3 text-left text-[12px] font-medium text-zinc-500">Applied</th>
                 <th className="px-5 py-3 text-left text-[12px] font-medium text-zinc-500">Status</th>
                 <th className="px-5 py-3 text-left text-[12px] font-medium text-zinc-500"></th>
@@ -172,32 +176,81 @@ export default function AdminAffiliatesPage() {
             </thead>
             <tbody>
               {data.applications.map((a) => (
-                <tr key={a.id} className="border-b border-zinc-50 hover:bg-zinc-50/50 transition-colors">
-                  <td className="px-5 py-3 text-[13px] font-medium text-zinc-900">
-                    {a.first_name} {a.last_name}
-                  </td>
-                  <td className="px-5 py-3 text-[12px] text-zinc-600">{a.email}</td>
-                  <td className="px-5 py-3 text-[12px] text-zinc-600">
-                    {a.audience_types.join(', ')}
-                  </td>
-                  <td className="px-5 py-3 text-[12px] text-zinc-600">
-                    {AUDIENCE_SIZE_LABELS[a.audience_size] || a.audience_size}
-                  </td>
-                  <td className="px-5 py-3 text-[12px] text-zinc-500">
-                    {format(new Date(a.created_at), 'MMM d, yyyy')}
-                  </td>
-                  <td className="px-5 py-3">
-                    <StatusBadge status={a.status} />
-                  </td>
-                  <td className="px-5 py-3">
-                    <Link
-                      href={`/admin/affiliates/${a.id}`}
-                      className="text-[12px] text-zinc-400 hover:text-zinc-900 transition-colors"
-                    >
-                      Review →
-                    </Link>
-                  </td>
-                </tr>
+                <>
+                  <tr
+                    key={a.id}
+                    className="border-b border-zinc-50 hover:bg-zinc-50/50 transition-colors cursor-pointer"
+                    onClick={() => setExpanded(expanded === a.id ? null : a.id)}
+                  >
+                    <td className="px-5 py-3 text-[13px] font-medium text-zinc-900">
+                      {a.first_name} {a.last_name}
+                    </td>
+                    <td className="px-5 py-3 text-[12px] text-zinc-600">{a.email}</td>
+                    <td className="px-5 py-3 text-[12px] text-zinc-600 max-w-[180px] truncate">
+                      {a.audience_types.join(', ')}
+                    </td>
+                    <td className="px-5 py-3 text-[12px] text-zinc-600">
+                      {AUDIENCE_SIZE_LABELS[a.audience_size] || a.audience_size}
+                    </td>
+                    <td className="px-5 py-3 text-[12px] text-zinc-500">
+                      {format(new Date(a.created_at), 'MMM d, yyyy')}
+                    </td>
+                    <td className="px-5 py-3">
+                      <StatusBadge status={a.status} />
+                    </td>
+                    <td className="px-5 py-3 text-[12px] text-zinc-400">
+                      {expanded === a.id ? '▲' : '▼'}
+                    </td>
+                  </tr>
+
+                  {/* Expanded detail row */}
+                  {expanded === a.id && (
+                    <tr key={`${a.id}-detail`} className="bg-zinc-50 border-b border-zinc-100">
+                      <td colSpan={7} className="px-5 py-5">
+                        <div className="grid md:grid-cols-2 gap-6">
+                          <div>
+                            <p className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wide mb-2">Promotion Plan</p>
+                            <p className="text-[13px] text-zinc-700 leading-relaxed whitespace-pre-wrap">{a.promotion_plan}</p>
+                          </div>
+                          <div className="space-y-3">
+                            {a.website && (
+                              <div>
+                                <p className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wide mb-1">Website</p>
+                                <a href={a.website} target="_blank" rel="noopener noreferrer" className="text-[13px] text-blue-600 hover:underline break-all">
+                                  {a.website}
+                                </a>
+                              </div>
+                            )}
+                            {a.phone && (
+                              <div>
+                                <p className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wide mb-1">Phone</p>
+                                <p className="text-[13px] text-zinc-700">{a.phone}</p>
+                              </div>
+                            )}
+                            {a.status === 'pending' && (
+                              <div className="flex gap-2 pt-2">
+                                <button
+                                  onClick={() => reviewMutation.mutate({ id: a.id, action: 'approve' })}
+                                  disabled={reviewMutation.isPending}
+                                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-[12px] font-semibold rounded-lg transition-colors disabled:opacity-50"
+                                >
+                                  Approve & Send Welcome Email
+                                </button>
+                                <button
+                                  onClick={() => reviewMutation.mutate({ id: a.id, action: 'reject' })}
+                                  disabled={reviewMutation.isPending}
+                                  className="px-4 py-2 bg-zinc-200 hover:bg-zinc-300 text-zinc-700 text-[12px] font-semibold rounded-lg transition-colors disabled:opacity-50"
+                                >
+                                  Reject
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </>
               ))}
             </tbody>
           </table>

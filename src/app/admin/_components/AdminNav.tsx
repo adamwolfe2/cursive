@@ -36,6 +36,12 @@ const GROUPS = [
     ],
   },
   {
+    label: 'Partners',
+    items: [
+      { href: '/admin/affiliates', label: 'Applications' },
+    ],
+  },
+  {
     label: 'Finance',
     items: [
       { href: '/admin/payouts',           label: 'Payouts' },

@@ -140,7 +140,7 @@ function EarningsCalculator() {
           max={150}
           value={activations}
           onChange={(e) => setActivations(Number(e.target.value))}
-          className="w-full h-2 rounded-full bg-gray-200 appearance-none cursor-pointer"
+          className="w-full h-2 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-gray-400 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:shadow-md [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-gray-400 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white"
           style={{
             background: `linear-gradient(to right, #007AFF ${((activations - 1) / 149) * 100}%, #e5e7eb ${((activations - 1) / 149) * 100}%)`,
           }}
@@ -183,15 +183,15 @@ function EarningsCalculator() {
       )}
 
       {nextMilestone && (
-        <div className="flex items-center gap-3 bg-amber-50 border border-amber-200 rounded-xl p-4">
-          <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
-            <Zap className="w-4 h-4 text-amber-600" />
+        <div className="flex items-center gap-3 bg-blue-50 border border-blue-200 rounded-xl p-4">
+          <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+            <Zap className="w-4 h-4 text-[#007AFF]" />
           </div>
           <div>
-            <p className="text-sm font-semibold text-amber-800">
+            <p className="text-sm font-semibold text-blue-900">
               {nextMilestone.activations - activations} more activations until your ${nextMilestone.bonus.toLocaleString()} bonus
             </p>
-            <p className="text-xs text-amber-600">Hit {nextMilestone.activations} activations → cash hits your account instantly</p>
+            <p className="text-xs text-blue-600">Hit {nextMilestone.activations} activations → cash hits your account instantly</p>
           </div>
         </div>
       )}
