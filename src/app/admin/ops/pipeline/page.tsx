@@ -178,7 +178,7 @@ function WorkspaceCard({
           <>
             <span className="text-zinc-200">·</span>
             <a
-              href={`mailto:${w.owner_email}?subject=${encodeURIComponent(`Your Cursive account — ${w.name}`)}`}
+              href={`mailto:${w.owner_email}?subject=${encodeURIComponent(`Your Cursive account — ${w.name}`)}&body=${encodeURIComponent(`Hi ${w.owner_name?.split(' ')[0] || 'there'},\n\nJust checking in on your Cursive account. How are the leads working for you?\n\nBest,\nDarren`)}`}
               className="text-[11px] text-zinc-500 hover:text-primary font-medium"
               title={`Email ${w.owner_email}`}
             >

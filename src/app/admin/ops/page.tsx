@@ -180,23 +180,31 @@ export default function OpsHubPage() {
             <div className="p-8 text-center text-zinc-400 text-sm">No recent activity</div>
           ) : (
             <ul className="divide-y divide-zinc-50">
-              {data.activity_feed.map((item) => (
-                <li key={`${item.type}-${item.id}`} className="flex items-start gap-3 px-5 py-3">
-                  <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 bg-zinc-100 text-zinc-500">
-                    {item.type === 'booking' ? <Calendar size={13} /> : <Users size={13} />}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-[13px] text-zinc-800">{item.label}</div>
-                    {item.sub && <div className="text-[12px] text-zinc-400">{item.sub}</div>}
-                  </div>
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    {getStatusBadge(item.type, item.status)}
-                    <span className="text-[11px] text-zinc-400 whitespace-nowrap">
-                      {formatDistanceToNow(new Date(item.time), { addSuffix: true })}
-                    </span>
-                  </div>
-                </li>
-              ))}
+              {data.activity_feed.map((item) => {
+                const href = item.type === 'booking' ? '/admin/ops/calls' : `/admin/accounts/${item.id}`
+                return (
+                  <li key={`${item.type}-${item.id}`}>
+                    <Link
+                      href={href}
+                      className="flex items-start gap-3 px-5 py-3 hover:bg-zinc-50 transition-colors"
+                    >
+                      <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 bg-zinc-100 text-zinc-500">
+                        {item.type === 'booking' ? <Calendar size={13} /> : <Users size={13} />}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-[13px] text-zinc-800">{item.label}</div>
+                        {item.sub && <div className="text-[12px] text-zinc-400">{item.sub}</div>}
+                      </div>
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        {getStatusBadge(item.type, item.status)}
+                        <span className="text-[11px] text-zinc-400 whitespace-nowrap">
+                          {formatDistanceToNow(new Date(item.time), { addSuffix: true })}
+                        </span>
+                      </div>
+                    </Link>
+                  </li>
+                )
+              })}
             </ul>
           )}
         </div>
