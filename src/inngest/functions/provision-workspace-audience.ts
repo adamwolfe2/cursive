@@ -398,6 +398,27 @@ export const provisionWorkspaceAudience = inngest.createFunction(
 
     safeLog(`${LOG_PREFIX} Workspace ${workspace_id}: ${insertResult.inserted} leads inserted, ${insertResult.skipped} skipped`)
 
+    // Step 3b: Process affiliate activation (idempotent, non-fatal)
+    if (insertResult.inserted > 0) {
+      await step.run('affiliate-activation', async () => {
+        try {
+          const supabase = createAdminClient()
+          const { data: userRow } = await supabase
+            .from('users')
+            .select('email')
+            .eq('id', user_id)
+            .maybeSingle()
+
+          if (!userRow?.email) return
+
+          const { processAffiliateActivation } = await import('@/lib/affiliate/activation')
+          await processAffiliateActivation(workspace_id, user_id, userRow.email)
+        } catch (err) {
+          safeError(`${LOG_PREFIX} Affiliate activation failed (non-fatal)`, err)
+        }
+      })
+    }
+
     // Step 4: Emit "first leads arrived" event — handled by first-leads-arrived.ts
     // which uses a shared email template and prevents duplicate sends via Inngest dedup.
     if (insertResult.inserted > 0) {

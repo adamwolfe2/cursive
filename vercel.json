@@ -16,6 +16,10 @@
     {
       "path": "/api/cron/segment-pull",
       "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/api/cron/affiliate-payouts",
+      "schedule": "0 10 1 * *"
     }
   ]
 }

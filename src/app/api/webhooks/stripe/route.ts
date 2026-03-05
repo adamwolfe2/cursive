@@ -9,6 +9,12 @@ import {
   sendPurchaseConfirmationEmail,
   sendEmail,
 } from '@/lib/email/service'
+import {
+  handleAffiliateInvoicePayment,
+  handleAffiliateClawback,
+  handleAffiliateChurn,
+  handleAffiliateStripeAccountUpdated,
+} from '@/lib/affiliate/commission'
 import { inngest } from '@/inngest/client'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 import { STRIPE_CONFIG } from '@/lib/stripe/config'
@@ -703,6 +709,44 @@ export async function POST(request: NextRequest) {
 
       if (serviceSubscriptionEvents.includes(event.type)) {
         await handleServiceWebhookEvent(event)
+        // Affiliate commission: hook into successful invoice payments
+        if (event.type === 'invoice.payment_succeeded') {
+          const invoice = event.data.object as Stripe.Invoice
+          const customerId = invoice.customer as string | null
+          if (customerId) {
+            const adminClient = createAdminClient()
+            const { data: userData } = await adminClient
+              .from('users')
+              .select('workspace_id')
+              .eq('stripe_customer_id', customerId)
+              .maybeSingle()
+            if (userData?.workspace_id) {
+              handleAffiliateInvoicePayment(userData.workspace_id, invoice)
+                .catch((err) => safeError('[Stripe Webhook] Affiliate commission failed (non-fatal):', err))
+            }
+          }
+        }
+        // Affiliate churn: hook into subscription cancellation
+        if (event.type === 'customer.subscription.deleted') {
+          const sub = event.data.object as Stripe.Subscription
+          const customerId = sub.customer as string | null
+          if (customerId) {
+            const adminClient = createAdminClient()
+            const { data: userData } = await adminClient
+              .from('users')
+              .select('workspace_id')
+              .eq('stripe_customer_id', customerId)
+              .maybeSingle()
+            if (userData?.workspace_id) {
+              handleAffiliateChurn(userData.workspace_id)
+                .catch((err) => safeError('[Stripe Webhook] Affiliate churn failed (non-fatal):', err))
+            }
+          }
+        }
+      } else if (event.type === 'account.updated') {
+        // Stripe Connect: affiliate's Express account updated (onboarding completed)
+        handleAffiliateStripeAccountUpdated(event.data.object as Stripe.Account)
+          .catch((err) => safeError('[Stripe Webhook] Affiliate account update failed (non-fatal):', err))
       } else if (event.type === 'checkout.session.completed') {
         // Handle checkout session completed (credit purchases and lead purchases)
         // Process inline since Inngest callbacks hang on Vercel (Node.js serverless issue)
@@ -711,6 +755,13 @@ export async function POST(request: NextRequest) {
         await handleChargeFailed(event)
       } else if (event.type === 'charge.refunded') {
         await handleChargeRefunded(event)
+        // Affiliate clawback on refund — use charge.invoice (the Stripe invoice ID)
+        const charge = event.data.object as Stripe.Charge
+        const chargeInvoiceId = charge.invoice as string | null
+        if (chargeInvoiceId) {
+          handleAffiliateClawback(chargeInvoiceId)
+            .catch((err) => safeError('[Stripe Webhook] Affiliate clawback failed (non-fatal):', err))
+        }
       } else if (event.type === 'charge.dispute.created') {
         await handleChargeDisputeCreated(event)
       } else if (event.type === 'customer.deleted') {

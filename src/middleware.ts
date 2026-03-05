@@ -58,6 +58,25 @@ function maybeCleanup() {
   }
 }
 
+/**
+ * Set cursive_ref cookie on first visit with ?ref= param.
+ * First-touch only — never overwrites an existing cookie.
+ * httpOnly: false so client JS can read it for attribution.
+ */
+function applyAffiliateCookie(req: NextRequest, res: NextResponse): void {
+  const refCode = req.nextUrl.searchParams.get('ref')
+  if (!refCode) return
+  const existing = req.cookies.get('cursive_ref')?.value
+  if (existing) return // first-touch — never overwrite
+  res.cookies.set('cursive_ref', refCode.toUpperCase(), {
+    httpOnly: false,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: 60 * 60 * 24 * 30, // 30 days
+    path: '/',
+  })
+}
+
 export async function middleware(req: NextRequest) {
   // Validate critical environment variables on first request
   validateRequiredEnvVars()
@@ -126,6 +145,9 @@ export async function middleware(req: NextRequest) {
     // Partner-only routes
     const isPartnerRoute = pathname.startsWith('/partner')
 
+    // Affiliate portal routes (public marketing + portal)
+    const isAffiliateRoute = pathname.startsWith('/affiliate')
+
     // Public routes that don't require authentication (single source of truth)
     const isPublicRoute =
       pathname.startsWith('/login') ||
@@ -141,6 +163,9 @@ export async function middleware(req: NextRequest) {
       pathname.startsWith('/superpixel') ||
       pathname.startsWith('/privacy') ||
       pathname.startsWith('/terms') ||
+      pathname.startsWith('/affiliates') ||
+      pathname.startsWith('/api/affiliate/apply') ||
+      pathname.startsWith('/api/affiliate/track-click') ||
       pathname.startsWith('/api/analyze-site') ||
       pathname.startsWith('/api/lead-capture') ||
       pathname.startsWith('/api/similarweb') ||
@@ -222,7 +247,7 @@ export async function middleware(req: NextRequest) {
     // Workspace check: verify authenticated users have a workspace for dashboard routes.
     // Caches workspace_id in a cookie to avoid DB query on every request (~50-100ms savings).
     // Exclude /api/auth/* — needed during onboarding before workspace exists.
-    if (user && !isPublicRoute && !isAdminRoute && !isPartnerRoute && !pathname.startsWith('/onboarding') && !pathname.startsWith('/welcome') && !pathname.startsWith('/api/onboarding') && !pathname.startsWith('/api/auth')) {
+    if (user && !isPublicRoute && !isAdminRoute && !isPartnerRoute && !isAffiliateRoute && !pathname.startsWith('/onboarding') && !pathname.startsWith('/welcome') && !pathname.startsWith('/api/onboarding') && !pathname.startsWith('/api/auth') && !pathname.startsWith('/api/affiliate')) {
       // Check cookie cache first to avoid DB roundtrip on every request
       const cachedWorkspaceId = req.cookies.get('x-workspace-id')?.value
 
@@ -257,6 +282,9 @@ export async function middleware(req: NextRequest) {
         })
       }
     }
+
+    // Set affiliate ref cookie on first visit with ?ref= param
+    applyAffiliateCookie(req, client.response)
 
     // Add custom headers for subdomain information
     if (subdomain) {
