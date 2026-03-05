@@ -501,7 +501,7 @@ export default function AffiliatesPage() {
       </section>
 
       {/* ── STATS STRIP ───────────────────────────────────── */}
-      <section className="py-12 bg-gray-900">
+      <section className="py-12 bg-[#F7F9FB] border-y border-gray-200">
         <Container>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto text-center">
             {[
@@ -512,7 +512,7 @@ export default function AffiliatesPage() {
             ].map((stat) => (
               <div key={stat.label}>
                 <p className="text-3xl font-light text-[#007AFF] mb-1">{stat.number}</p>
-                <p className="text-sm text-white/60">{stat.label}</p>
+                <p className="text-sm text-gray-500">{stat.label}</p>
               </div>
             ))}
           </div>
@@ -671,15 +671,15 @@ export default function AffiliatesPage() {
         </Container>
       </section>
 
-      {/* ── DARK CALLOUT ──────────────────────────────────── */}
-      <section className="py-12 bg-gray-900">
+      {/* ── CALLOUT ───────────────────────────────────────── */}
+      <section className="py-12 bg-[#007AFF]/6 border-y border-[#007AFF]/15">
         <Container>
           <div className="max-w-4xl mx-auto text-center">
-            <p className="text-white/60 text-xs font-mono uppercase tracking-widest mb-3">What makes this program different</p>
-            <p className="text-white text-xl md:text-2xl font-light leading-relaxed">
+            <p className="text-[#007AFF] text-xs font-mono uppercase tracking-widest mb-3">What makes this program different</p>
+            <p className="text-gray-900 text-xl md:text-2xl font-light leading-relaxed">
               Most affiliate programs pay once.{' '}
               <strong className="text-[#007AFF] font-semibold">Ours pays every month, forever.</strong>{' '}
-              Refer once. Earn as long as they're a customer.
+              Refer once. Earn as long as they&apos;re a customer.
             </p>
           </div>
         </Container>
