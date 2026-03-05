@@ -150,13 +150,30 @@ export default async function DashboardLayout({
     { revalidate: 120, tags: [`workspace-stats-${cachedWorkspaceId ?? 'unknown'}`] }
   )
 
+  // Cache hot leads count (intent ≥70, not yet won/lost) — drives sidebar badge urgency
+  const getHotLeads = unstable_cache(
+    async (wsId: string) => {
+      const admin = createAdminClient()
+      const { count } = await admin
+        .from('leads')
+        .select('id', { count: 'exact', head: true })
+        .eq('workspace_id', wsId)
+        .gte('intent_score_calculated', 70)
+        .not('status', 'in', '("won","lost")')
+      return count ?? 0
+    },
+    ['hot-leads-count'],
+    { revalidate: 120, tags: [`workspace-stats-${cachedWorkspaceId ?? 'unknown'}`] }
+  )
+
   const workspaceIdForQueries = cachedWorkspaceId ?? ''
 
-  const [userProfileData, userIsAdmin, creditsData, todayLeadsFromStats] = await Promise.all([
+  const [userProfileData, userIsAdmin, creditsData, todayLeadsFromStats, hotLeadsFromStats] = await Promise.all([
     getUserProfile(user.id),
     user.email ? getIsAdmin(user.email) : Promise.resolve(false),
     workspaceIdForQueries ? getCredits(workspaceIdForQueries) : Promise.resolve(null),
     workspaceIdForQueries ? getTodayLeads(workspaceIdForQueries) : Promise.resolve(0),
+    workspaceIdForQueries ? getHotLeads(workspaceIdForQueries) : Promise.resolve(0),
   ])
 
   const userProfile = userProfileData as {
@@ -186,15 +203,18 @@ export default async function DashboardLayout({
 
   let creditBalance = creditsData?.balance ?? 0
   let todayLeadCount = todayLeadsFromStats ?? 0
+  let hotLeadCount = hotLeadsFromStats ?? 0
 
   // Fallback: if no cached workspace_id but user has one, fetch now
   if (!cachedWorkspaceId && userProfile.workspace_id) {
-    const [fallbackCredits, fallbackLeads] = await Promise.all([
+    const [fallbackCredits, fallbackLeads, fallbackHotLeads] = await Promise.all([
       getCredits(userProfile.workspace_id),
       getTodayLeads(userProfile.workspace_id),
+      getHotLeads(userProfile.workspace_id),
     ])
     creditBalance = fallbackCredits?.balance ?? 0
     todayLeadCount = fallbackLeads ?? 0
+    hotLeadCount = fallbackHotLeads ?? 0
   }
 
   const workspace = userProfile.workspaces as {
@@ -233,6 +253,7 @@ export default async function DashboardLayout({
               : undefined
           }
           todayLeadCount={todayLeadCount}
+          hotLeadCount={hotLeadCount > 0 ? hotLeadCount : undefined}
         >
           <DashboardProvider
             value={{

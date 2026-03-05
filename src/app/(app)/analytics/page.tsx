@@ -1,586 +1,372 @@
-'use client'
-
-/**
- * Analytics Dashboard
- * Comprehensive workspace analytics and metrics
- */
-
-import { useQuery } from '@tanstack/react-query'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import {
-  BarChart,
-  Bar,
-  LineChart,
-  Line,
-  PieChart,
-  Pie,
-  Cell,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from 'recharts'
-import {
-  TrendingUp,
-  Users,
-  DollarSign,
-  Zap,
-  Target,
-  Activity,
-  Layers,
-  Monitor,
-  ArrowRight,
-} from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import type { Metadata } from 'next'
+import { unstable_cache } from 'next/cache'
+import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { Badge } from '@/components/ui/badge'
-import { SkeletonStatCard, SkeletonCard, SkeletonTable } from '@/components/ui/skeleton'
+import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
+import {
+  TrendingUp, Users, Zap, Target, ArrowRight,
+  CheckCircle2, Activity, Eye, Flame,
+} from 'lucide-react'
+import { AnimatedSection, DashboardAnimationWrapper } from '@/components/dashboard/dashboard-animation-wrapper'
 
-export default function AnalyticsPage() {
-  // Fetch workspace stats
-  const { data: statsData, isLoading: statsLoading } = useQuery({
-    queryKey: ['analytics', 'workspace-stats'],
-    queryFn: async () => {
-      const response = await fetch('/api/analytics/workspace-stats')
-      if (!response.ok) throw new Error('Failed to fetch workspace stats')
-      return response.json()
-    },
-    refetchInterval: 60000, // Refetch every minute
-  })
+export const metadata: Metadata = {
+  title: 'Analytics | Cursive',
+}
 
-  // Fetch credit usage
-  const { data: creditData, isLoading: creditLoading } = useQuery({
-    queryKey: ['analytics', 'credit-usage'],
-    queryFn: async () => {
-      const response = await fetch('/api/analytics/credit-usage?days=30')
-      if (!response.ok) throw new Error('Failed to fetch credit usage')
-      return response.json()
-    },
-  })
+function pct(num: number, den: number) {
+  if (!den) return '0%'
+  return `${Math.round((num / den) * 100)}%`
+}
 
-  // Fetch lead quality
-  const { data: qualityData, isLoading: qualityLoading } = useQuery({
-    queryKey: ['analytics', 'lead-quality'],
-    queryFn: async () => {
-      const response = await fetch('/api/analytics/lead-quality')
-      if (!response.ok) throw new Error('Failed to fetch lead quality')
-      return response.json()
-    },
-  })
-
-  // Fetch segment performance
-  const { data: segmentData, isLoading: segmentLoading } = useQuery({
-    queryKey: ['analytics', 'segments'],
-    queryFn: async () => {
-      const response = await fetch('/api/analytics/segments')
-      if (!response.ok) throw new Error('Failed to fetch segments')
-      return response.json()
-    },
-  })
-
-  // Fetch pixel performance
-  const { data: pixelData, isLoading: pixelLoading } = useQuery({
-    queryKey: ['analytics', 'pixels'],
-    queryFn: async () => {
-      const response = await fetch('/api/analytics/pixels')
-      if (!response.ok) throw new Error('Failed to fetch pixels')
-      return response.json()
-    },
-  })
-
-  const stats = statsData?.stats
-  const creditUsage = creditData?.usage
-  const leadQuality = qualityData?.report
-  const segmentPerf = segmentData?.performance || []
-  const pixelPerf = pixelData?.performance || []
-
-  const isLoading = statsLoading || creditLoading || qualityLoading
-
-  if (isLoading) {
-    return (
-      <div className="container mx-auto py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold">Analytics Dashboard</h1>
-          <p className="text-muted-foreground mt-2">
-            Comprehensive metrics and insights for your workspace
-          </p>
-        </div>
-
-        {/* Loading skeleton */}
-        <div className="space-y-6">
-          {/* Key metrics skeleton */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <SkeletonStatCard />
-            <SkeletonStatCard />
-            <SkeletonStatCard />
-            <SkeletonStatCard />
-          </div>
-
-          {/* Charts skeleton */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <SkeletonCard className="h-80" />
-            <SkeletonCard className="h-80" />
-          </div>
-
-          <div className="grid grid-cols-1 gap-6">
-            <SkeletonCard className="h-96" />
-          </div>
+function FunnelBar({ label, count, total, color }: { label: string; count: number; total: number; color: string }) {
+  const width = total > 0 ? Math.max(4, Math.round((count / total) * 100)) : 0
+  return (
+    <div className="flex items-center gap-3">
+      <span className="text-sm text-gray-500 w-24 shrink-0 text-right">{label}</span>
+      <div className="flex-1 h-6 bg-gray-100 rounded-lg overflow-hidden">
+        <div
+          className={`h-full ${color} rounded-lg flex items-center px-2 transition-all`}
+          style={{ width: `${width}%` }}
+        >
+          {width > 12 && <span className="text-white text-xs font-bold">{count.toLocaleString()}</span>}
         </div>
       </div>
-    )
-  }
+      {width <= 12 && <span className="text-xs font-semibold text-gray-600 w-8">{count}</span>}
+      <span className="text-xs text-gray-400 w-10 text-right shrink-0">{pct(count, total)}</span>
+    </div>
+  )
+}
 
-  // Prepare chart data
-  const dailyUsageData = creditUsage?.daily_usage || []
-  const scoreDistributionData = leadQuality?.score_distribution
-    ? [
-        { name: '90-100', value: leadQuality.score_distribution['90-100'] || 0 },
-        { name: '80-89', value: leadQuality.score_distribution['80-89'] || 0 },
-        { name: '70-79', value: leadQuality.score_distribution['70-79'] || 0 },
-        { name: '60-69', value: leadQuality.score_distribution['60-69'] || 0 },
-        { name: '0-59', value: leadQuality.score_distribution['0-59'] || 0 },
-      ]
-    : []
+export default async function AnalyticsPage() {
+  const supabase = await createClient()
+  const { data: { session } } = await supabase.auth.getSession()
+  if (!session?.user) redirect('/login')
 
-  const COLORS = ['#22c55e', '#3b82f6', '#f59e0b', '#ef4444', '#6b7280']
+  const { data: userData } = await supabase
+    .from('users')
+    .select('id, workspace_id, plan')
+    .eq('auth_user_id', session.user.id)
+    .maybeSingle()
+
+  if (!userData?.workspace_id) redirect('/welcome')
+  const workspaceId = userData.workspace_id
+
+  // ── All analytics queries in parallel ──
+
+  const getPipelineStats = unstable_cache(
+    async (wsId: string) => {
+      const admin = createAdminClient()
+      const { data } = await admin
+        .from('leads')
+        .select('status, enrichment_status, intent_score_calculated, source, created_at, delivered_at')
+        .eq('workspace_id', wsId)
+        .order('delivered_at', { ascending: false, nullsFirst: false })
+        .limit(5000) // Cap to prevent timeout on large workspaces
+      const rows = data ?? []
+
+      const total = rows.length
+      const enriched = rows.filter(r => r.enrichment_status === 'enriched').length
+
+      // Pipeline funnel
+      const contacted = rows.filter(r => ['contacted', 'qualified', 'proposal', 'negotiation', 'won'].includes(r.status || '')).length
+      const qualified = rows.filter(r => ['qualified', 'proposal', 'negotiation', 'won'].includes(r.status || '')).length
+      const won = rows.filter(r => r.status === 'won').length
+      const lost = rows.filter(r => r.status === 'lost').length
+
+      // Intent distribution
+      const hot = rows.filter(r => (r.intent_score_calculated ?? 0) >= 70).length
+      const warm = rows.filter(r => (r.intent_score_calculated ?? 0) >= 40 && (r.intent_score_calculated ?? 0) < 70).length
+      const cold = rows.filter(r => r.intent_score_calculated !== null && (r.intent_score_calculated ?? 0) < 40).length
+      const noScore = rows.filter(r => r.intent_score_calculated === null).length
+
+      // Source breakdown
+      const sourceMap: Record<string, number> = {}
+      for (const r of rows) {
+        const src = r.source || 'unknown'
+        let bucket = 'Other'
+        if (src.includes('superpixel') || src.includes('pixel')) bucket = 'Pixel Visitors'
+        else if (src.startsWith('audience_labs') || src.startsWith('audiencelab')) bucket = 'Daily Leads'
+        else if (src === 'query' || src === 'auto_match') bucket = 'Auto-Match'
+        else if (src === 'marketplace') bucket = 'Marketplace'
+        else if (src === 'import') bucket = 'Import'
+        else if (src === 'manual') bucket = 'Manual'
+        else if (src === 'partner') bucket = 'Partner'
+        sourceMap[bucket] = (sourceMap[bucket] ?? 0) + 1
+      }
+
+      // Weekly trend — last 8 weeks
+      const now = new Date()
+      const weeks: { label: string; count: number }[] = []
+      for (let i = 7; i >= 0; i--) {
+        const weekStart = new Date(now)
+        weekStart.setDate(weekStart.getDate() - i * 7 - weekStart.getDay())
+        weekStart.setHours(0, 0, 0, 0)
+        const weekEnd = new Date(weekStart)
+        weekEnd.setDate(weekEnd.getDate() + 7)
+        const count = rows.filter(r => {
+          const d = new Date(r.delivered_at || r.created_at || '')
+          return d >= weekStart && d < weekEnd
+        }).length
+        const monthDay = weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+        weeks.push({ label: monthDay, count })
+      }
+
+      return { total, enriched, contacted, qualified, won, lost, hot, warm, cold, noScore, sourceMap, weeks }
+    },
+    ['analytics-pipeline'],
+    { revalidate: 300, tags: [`analytics-${workspaceId}`] }
+  )
+
+  const stats = await getPipelineStats(workspaceId)
+  const maxWeek = Math.max(...stats.weeks.map(w => w.count), 1)
+  const sourceSorted = Object.entries(stats.sourceMap).sort((a, b) => b[1] - a[1])
+
+  // Conversion rate labels
+  const enrichRate = pct(stats.enriched, stats.total)
+  const contactRate = pct(stats.contacted, stats.total)
+  const winRate = pct(stats.won, Math.max(stats.contacted, 1))
 
   return (
-    <div className="container mx-auto py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">Analytics Dashboard</h1>
-        <p className="text-muted-foreground mt-2">
-          Comprehensive metrics and insights for your workspace
-        </p>
+    <div className="space-y-6 p-6">
+      <DashboardAnimationWrapper>
+
+      {/* Header */}
+      <AnimatedSection delay={0}>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Analytics</h1>
+            <p className="text-sm text-gray-500 mt-0.5">Your lead pipeline performance at a glance.</p>
+          </div>
+          <Link
+            href="/leads"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary/90 transition-colors"
+          >
+            <Zap className="h-4 w-4" /> View Leads
+          </Link>
+        </div>
+      </AnimatedSection>
+
+      {/* KPI Row */}
+      <AnimatedSection delay={0.04}>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-white rounded-xl border border-gray-200 p-5">
+            <div className="flex items-center gap-2 mb-1">
+              <div className="p-1.5 rounded-lg bg-gray-100"><Users className="h-4 w-4 text-gray-600" /></div>
+              <span className="text-sm text-gray-500">Total Leads</span>
+            </div>
+            <div className="text-3xl font-bold text-gray-900">{stats.total.toLocaleString()}</div>
+            <p className="text-xs text-gray-400 mt-1">{enrichRate} enriched</p>
+          </div>
+          <div className="bg-white rounded-xl border border-blue-100 bg-blue-50/30 p-5">
+            <div className="flex items-center gap-2 mb-1">
+              <div className="p-1.5 rounded-lg bg-blue-100"><Activity className="h-4 w-4 text-blue-600" /></div>
+              <span className="text-sm text-gray-500">Contacted</span>
+            </div>
+            <div className="text-3xl font-bold text-blue-700">{stats.contacted.toLocaleString()}</div>
+            <p className="text-xs text-gray-400 mt-1">{contactRate} of total</p>
+          </div>
+          <div className={`rounded-xl border p-5 ${stats.hot > 0 ? 'border-orange-100 bg-orange-50/30' : 'border-gray-200 bg-white'}`}>
+            <div className="flex items-center gap-2 mb-1">
+              <div className={`p-1.5 rounded-lg ${stats.hot > 0 ? 'bg-orange-100' : 'bg-gray-100'}`}>
+                <Flame className={`h-4 w-4 ${stats.hot > 0 ? 'text-orange-600' : 'text-gray-500'}`} />
+              </div>
+              <span className="text-sm text-gray-500">Hot Leads</span>
+            </div>
+            <div className={`text-3xl font-bold ${stats.hot > 0 ? 'text-orange-700' : 'text-gray-400'}`}>{stats.hot.toLocaleString()}</div>
+            <p className="text-xs text-gray-400 mt-1">intent score ≥70</p>
+          </div>
+          <div className={`rounded-xl border p-5 ${stats.won > 0 ? 'border-emerald-200 bg-emerald-50/40' : 'border-gray-200 bg-white'}`}>
+            <div className="flex items-center gap-2 mb-1">
+              <div className={`p-1.5 rounded-lg ${stats.won > 0 ? 'bg-emerald-100' : 'bg-gray-100'}`}>
+                <CheckCircle2 className={`h-4 w-4 ${stats.won > 0 ? 'text-emerald-600' : 'text-gray-400'}`} />
+              </div>
+              <span className="text-sm text-gray-500">Won</span>
+            </div>
+            <div className={`text-3xl font-bold ${stats.won > 0 ? 'text-emerald-700' : 'text-gray-400'}`}>{stats.won.toLocaleString()}</div>
+            <p className="text-xs text-gray-400 mt-1">{winRate} close rate</p>
+          </div>
+        </div>
+      </AnimatedSection>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+        {/* Pipeline Funnel */}
+        <AnimatedSection delay={0.08}>
+          <div className="bg-white rounded-xl border border-gray-200 p-6">
+            <h2 className="font-semibold text-gray-900 flex items-center gap-2 mb-5">
+              <Target className="h-4 w-4 text-gray-500" />
+              Pipeline Funnel
+            </h2>
+            <div className="space-y-3">
+              <FunnelBar label="All Leads" count={stats.total} total={stats.total} color="bg-gray-400" />
+              <FunnelBar label="Enriched" count={stats.enriched} total={stats.total} color="bg-blue-400" />
+              <FunnelBar label="Contacted" count={stats.contacted} total={stats.total} color="bg-blue-600" />
+              <FunnelBar label="Qualified" count={stats.qualified} total={stats.total} color="bg-indigo-500" />
+              <FunnelBar label="Won" count={stats.won} total={stats.total} color="bg-emerald-500" />
+            </div>
+            {stats.lost > 0 && (
+              <p className="mt-4 text-xs text-gray-400">{stats.lost} marked not interested</p>
+            )}
+            <div className="mt-5 pt-4 border-t border-gray-100 grid grid-cols-3 gap-3 text-center">
+              <div>
+                <p className="text-lg font-bold text-gray-900">{enrichRate}</p>
+                <p className="text-xs text-gray-500">Enrich rate</p>
+              </div>
+              <div>
+                <p className="text-lg font-bold text-blue-700">{contactRate}</p>
+                <p className="text-xs text-gray-500">Contact rate</p>
+              </div>
+              <div>
+                <p className={`text-lg font-bold ${stats.won > 0 ? 'text-emerald-700' : 'text-gray-400'}`}>{winRate}</p>
+                <p className="text-xs text-gray-500">Close rate</p>
+              </div>
+            </div>
+            {stats.contacted === 0 && (
+              <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-100">
+                <p className="text-xs text-blue-700 font-medium">Start tracking outreach</p>
+                <p className="text-xs text-blue-600 mt-0.5">
+                  Mark leads as &ldquo;Contacted&rdquo; from the{' '}
+                  <Link href="/leads" className="underline">leads page</Link> to see your pipeline fill up.
+                </p>
+              </div>
+            )}
+          </div>
+        </AnimatedSection>
+
+        {/* Intent Score Distribution */}
+        <AnimatedSection delay={0.1}>
+          <div className="bg-white rounded-xl border border-gray-200 p-6">
+            <h2 className="font-semibold text-gray-900 flex items-center gap-2 mb-5">
+              <Flame className="h-4 w-4 text-orange-500" />
+              Lead Quality
+            </h2>
+            <div className="space-y-4">
+              {[
+                { label: 'Hot (70+)', count: stats.hot, color: 'bg-orange-500', textColor: 'text-orange-700', bg: 'bg-orange-50 border-orange-100' },
+                { label: 'Warm (40\u201369)', count: stats.warm, color: 'bg-amber-400', textColor: 'text-amber-700', bg: 'bg-amber-50 border-amber-100' },
+                { label: 'Cold (<40)', count: stats.cold, color: 'bg-slate-300', textColor: 'text-slate-600', bg: 'bg-slate-50 border-slate-100' },
+                { label: 'Not scored', count: stats.noScore, color: 'bg-gray-200', textColor: 'text-gray-400', bg: 'bg-gray-50 border-gray-100' },
+              ].map(({ label, count, color, textColor, bg }) => {
+                const barPct = stats.total > 0 ? Math.round((count / stats.total) * 100) : 0
+                return (
+                  <div key={label} className={`rounded-lg border p-3 ${count > 0 ? bg : 'bg-gray-50 border-gray-100'}`}>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium text-gray-700">{label}</span>
+                      <span className={`text-sm font-bold ${count > 0 ? textColor : 'text-gray-400'}`}>{count.toLocaleString()} <span className="text-xs font-normal text-gray-400">({barPct}%)</span></span>
+                    </div>
+                    <div className="h-1.5 bg-white rounded-full overflow-hidden">
+                      <div className={`h-full ${color} rounded-full transition-all`} style={{ width: `${barPct}%` }} />
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+            {stats.hot > 0 && (
+              <Link
+                href="/leads"
+                className="mt-4 flex items-center justify-between rounded-lg bg-orange-50 border border-orange-200 px-3 py-2.5 hover:bg-orange-100 transition-colors"
+              >
+                <span className="text-xs font-semibold text-orange-800">
+                  {stats.hot} hot lead{stats.hot !== 1 ? 's' : ''} ready for outreach
+                </span>
+                <ArrowRight className="h-3.5 w-3.5 text-orange-600" />
+              </Link>
+            )}
+          </div>
+        </AnimatedSection>
+
+        {/* Lead Sources */}
+        <AnimatedSection delay={0.12}>
+          <div className="bg-white rounded-xl border border-gray-200 p-6">
+            <h2 className="font-semibold text-gray-900 flex items-center gap-2 mb-5">
+              <Eye className="h-4 w-4 text-gray-500" />
+              Lead Sources
+            </h2>
+            {sourceSorted.length > 0 ? (
+              <div className="space-y-3">
+                {sourceSorted.map(([source, count]) => {
+                  const barPct = stats.total > 0 ? Math.round((count / stats.total) * 100) : 0
+                  const isTop = source === sourceSorted[0]?.[0]
+                  return (
+                    <div key={source} className="flex items-center gap-3">
+                      <span className="text-sm text-gray-600 w-28 shrink-0 truncate">{source}</span>
+                      <div className="flex-1 h-4 bg-gray-100 rounded-full overflow-hidden">
+                        <div
+                          className={`h-full rounded-full ${isTop ? 'bg-primary' : 'bg-gray-300'}`}
+                          style={{ width: `${Math.max(4, barPct)}%` }}
+                        />
+                      </div>
+                      <span className="text-xs font-medium text-gray-600 w-8 text-right">{count}</span>
+                      <span className="text-xs text-gray-400 w-8 text-right">{barPct}%</span>
+                    </div>
+                  )
+                })}
+              </div>
+            ) : (
+              <p className="text-sm text-gray-400">No leads yet</p>
+            )}
+          </div>
+        </AnimatedSection>
+
+        {/* Weekly Trend */}
+        <AnimatedSection delay={0.14}>
+          <div className="bg-white rounded-xl border border-gray-200 p-6">
+            <h2 className="font-semibold text-gray-900 flex items-center gap-2 mb-5">
+              <TrendingUp className="h-4 w-4 text-gray-500" />
+              Weekly Lead Volume
+            </h2>
+            <div className="flex items-end gap-2 h-32">
+              {stats.weeks.map((week, i) => {
+                const height = maxWeek > 0 ? Math.max(4, Math.round((week.count / maxWeek) * 100)) : 4
+                const isLatest = i === stats.weeks.length - 1
+                return (
+                  <div key={week.label} className="flex-1 flex flex-col items-center gap-1">
+                    <span className="text-[10px] text-gray-500 font-medium">{week.count > 0 ? week.count : ''}</span>
+                    <div
+                      className={`w-full rounded-t-sm transition-all ${isLatest ? 'bg-primary' : 'bg-gray-200 hover:bg-gray-300'}`}
+                      style={{ height: `${height}%` }}
+                      title={`${week.label}: ${week.count} leads`}
+                    />
+                  </div>
+                )
+              })}
+            </div>
+            <div className="flex gap-2 mt-2">
+              {stats.weeks.map((week) => (
+                <div key={week.label} className="flex-1 text-center">
+                  <span className="text-[9px] text-gray-400 leading-none">{week.label.split(' ')[1]}</span>
+                </div>
+              ))}
+            </div>
+            <p className="text-xs text-gray-400 mt-3 text-center">Last 8 weeks &middot; {stats.weeks[stats.weeks.length - 1]?.label} highlighted</p>
+          </div>
+        </AnimatedSection>
+
       </div>
 
-      <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="credits">Credits</TabsTrigger>
-          <TabsTrigger value="quality">Lead Quality</TabsTrigger>
-          <TabsTrigger value="segments">Segments</TabsTrigger>
-          <TabsTrigger value="pixels">Pixels</TabsTrigger>
-        </TabsList>
-
-        {/* Overview Tab */}
-        <TabsContent value="overview" className="space-y-6">
-          {/* Key Metrics */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Total Leads</CardTitle>
-                <Users className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {stats?.total_leads?.toLocaleString() || 0}
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {stats?.leads_this_week || 0} this week
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Avg Lead Score</CardTitle>
-                <Target className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {stats?.avg_lead_score?.toFixed(1) || '0'}
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {stats?.high_quality_leads || 0} high quality (80+)
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Credits Balance</CardTitle>
-                <DollarSign className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {stats?.credits_balance?.toLocaleString() || 0}
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {creditUsage?.credits_spent_30d || 0} spent (30d)
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Active Campaigns</CardTitle>
-                <Activity className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {stats?.active_campaigns || 0}
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {stats?.active_pixels || 0} active pixels
-                </p>
-              </CardContent>
-            </Card>
+      {/* Bottom CTA if user isn&apos;t using pipeline features */}
+      {stats.contacted === 0 && stats.total > 0 && (
+        <AnimatedSection delay={0.16}>
+          <div className="bg-gradient-to-r from-blue-50 to-primary/5 border border-primary/20 rounded-xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+              <p className="font-semibold text-gray-900">Track your outreach to unlock full analytics</p>
+              <p className="text-sm text-gray-500 mt-1">
+                Mark leads as &ldquo;Contacted,&rdquo; &ldquo;Won,&rdquo; or &ldquo;Not Interested&rdquo; directly from the leads page.
+                Your pipeline funnel and close rate will update automatically.
+              </p>
+            </div>
+            <Link
+              href="/leads"
+              className="shrink-0 inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary/90 transition-colors"
+            >
+              Start Tracking <ArrowRight className="h-4 w-4" />
+            </Link>
           </div>
+        </AnimatedSection>
+      )}
 
-          {/* Lead Sources */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Lead Sources</CardTitle>
-              <CardDescription>Where your leads are coming from</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="text-center p-4 border rounded-lg">
-                  <div className="text-2xl font-bold text-blue-600">
-                    {stats?.leads_by_source?.pixel || 0}
-                  </div>
-                  <p className="text-sm text-muted-foreground mt-1">Pixel</p>
-                </div>
-                <div className="text-center p-4 border rounded-lg">
-                  <div className="text-2xl font-bold text-green-600">
-                    {stats?.leads_by_source?.database || 0}
-                  </div>
-                  <p className="text-sm text-muted-foreground mt-1">Database</p>
-                </div>
-                <div className="text-center p-4 border rounded-lg">
-                  <div className="text-2xl font-bold text-blue-600">
-                    {stats?.leads_by_source?.marketplace || 0}
-                  </div>
-                  <p className="text-sm text-muted-foreground mt-1">Marketplace</p>
-                </div>
-                <div className="text-center p-4 border rounded-lg">
-                  <div className="text-2xl font-bold text-orange-600">
-                    {stats?.leads_by_source?.upload || 0}
-                  </div>
-                  <p className="text-sm text-muted-foreground mt-1">Upload</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Credits Tab */}
-        <TabsContent value="credits" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Credit Usage (30 Days)</CardTitle>
-              <CardDescription>Daily credit spending trends</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="h-[300px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={dailyUsageData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis
-                      dataKey="day"
-                      tickFormatter={(value) => new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                    />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Line
-                      type="monotone"
-                      dataKey="credits"
-                      stroke="#3b82f6"
-                      strokeWidth={2}
-                      name="Credits Used"
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-                <div>
-                  <p className="text-sm text-muted-foreground">Total Used</p>
-                  <p className="text-2xl font-bold">{creditUsage?.total_used || 0}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Avg Daily</p>
-                  <p className="text-2xl font-bold">{creditUsage?.avg_daily || 0}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Database Pulls</p>
-                  <p className="text-2xl font-bold">
-                    {creditUsage?.by_action?.database_pull || 0}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Segment Runs</p>
-                  <p className="text-2xl font-bold">
-                    {creditUsage?.by_action?.segment_run || 0}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Lead Quality Tab */}
-        <TabsContent value="quality" className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Score Distribution */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Score Distribution</CardTitle>
-                <CardDescription>Lead quality breakdown</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="h-[300px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={scoreDistributionData}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={false}
-                        label={(entry) => `${entry.name}: ${entry.value}`}
-                        outerRadius={80}
-                        fill="#8884d8"
-                        dataKey="value"
-                      >
-                        {scoreDistributionData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                        ))}
-                      </Pie>
-                      <Tooltip />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Completeness */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Data Completeness</CardTitle>
-                <CardDescription>Field completion rates</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {leadQuality?.completeness && (
-                    <>
-                      <div>
-                        <div className="flex justify-between text-sm mb-1">
-                          <span>Email</span>
-                          <span className="font-medium">
-                            {leadQuality.completeness.has_email}/{leadQuality.total_leads}
-                          </span>
-                        </div>
-                        <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-blue-600"
-                            style={{
-                              width: `${(leadQuality.completeness.has_email / leadQuality.total_leads) * 100}%`,
-                            }}
-                          />
-                        </div>
-                      </div>
-                      <div>
-                        <div className="flex justify-between text-sm mb-1">
-                          <span>Phone</span>
-                          <span className="font-medium">
-                            {leadQuality.completeness.has_phone}/{leadQuality.total_leads}
-                          </span>
-                        </div>
-                        <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-green-600"
-                            style={{
-                              width: `${(leadQuality.completeness.has_phone / leadQuality.total_leads) * 100}%`,
-                            }}
-                          />
-                        </div>
-                      </div>
-                      <div>
-                        <div className="flex justify-between text-sm mb-1">
-                          <span>Company</span>
-                          <span className="font-medium">
-                            {leadQuality.completeness.has_company}/{leadQuality.total_leads}
-                          </span>
-                        </div>
-                        <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-blue-600"
-                            style={{
-                              width: `${(leadQuality.completeness.has_company / leadQuality.total_leads) * 100}%`,
-                            }}
-                          />
-                        </div>
-                      </div>
-                      <div>
-                        <div className="flex justify-between text-sm mb-1">
-                          <span>Fully Complete</span>
-                          <span className="font-medium">
-                            {leadQuality.completeness.fully_complete}/{leadQuality.total_leads}
-                          </span>
-                        </div>
-                        <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-emerald-600"
-                            style={{
-                              width: `${(leadQuality.completeness.fully_complete / leadQuality.total_leads) * 100}%`,
-                            }}
-                          />
-                        </div>
-                      </div>
-                    </>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        {/* Segments Tab */}
-        <TabsContent value="segments" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Segment Performance</CardTitle>
-              <CardDescription>Metrics for your saved segments</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {segmentLoading ? (
-                <SkeletonTable rows={5} columns={4} />
-              ) : segmentPerf.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-12 text-center">
-                  <div className="mb-4 rounded-full bg-muted p-4">
-                    <Layers className="h-8 w-8 text-muted-foreground" />
-                  </div>
-                  <h4 className="text-base font-semibold text-foreground mb-1">No active segments yet</h4>
-                  <p className="text-sm text-muted-foreground mb-6 max-w-md">
-                    Segments let you organize and filter your audience by specific criteria. Create a segment to start tracking performance metrics.
-                  </p>
-                  <Button asChild>
-                    <Link href="/segment-builder" className="gap-1.5">
-                      Create Segment <ArrowRight className="h-4 w-4" />
-                    </Link>
-                  </Button>
-                </div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b">
-                        <th className="text-left py-3 px-4 font-medium">Segment</th>
-                        <th className="text-right py-3 px-4 font-medium">Total Runs</th>
-                        <th className="text-right py-3 px-4 font-medium">Last Count</th>
-                        <th className="text-right py-3 px-4 font-medium">Avg Count</th>
-                        <th className="text-right py-3 px-4 font-medium">Total Pulled</th>
-                        <th className="text-left py-3 px-4 font-medium">Last Run</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {segmentPerf.map((segment: any) => (
-                        <tr key={segment.segment_id} className="border-b">
-                          <td className="py-3 px-4 font-medium">{segment.segment_name}</td>
-                          <td className="py-3 px-4 text-right">{segment.total_runs ?? '-'}</td>
-                          <td className="py-3 px-4 text-right">
-                            {segment.last_count?.toLocaleString() || '-'}
-                          </td>
-                          <td className="py-3 px-4 text-right">
-                            {segment.avg_count?.toFixed(0) || '-'}
-                          </td>
-                          <td className="py-3 px-4 text-right">
-                            {segment.total_leads_pulled?.toLocaleString() || 0}
-                          </td>
-                          <td className="py-3 px-4">
-                            {segment.last_run_at
-                              ? new Date(segment.last_run_at).toLocaleDateString()
-                              : 'Never'}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Pixels Tab */}
-        <TabsContent value="pixels" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Pixel Performance</CardTitle>
-              <CardDescription>Tracking analytics and identity resolution</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {pixelLoading ? (
-                <SkeletonTable rows={5} columns={5} />
-              ) : pixelPerf.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-12 text-center">
-                  <div className="mb-4 rounded-full bg-muted p-4">
-                    <Monitor className="h-8 w-8 text-muted-foreground" />
-                  </div>
-                  <h4 className="text-base font-semibold text-foreground mb-1">No active pixels yet</h4>
-                  <p className="text-sm text-muted-foreground mb-6 max-w-md">
-                    Install a tracking pixel on your website to identify visitors, track engagement, and unlock identity resolution analytics.
-                  </p>
-                  <Button asChild>
-                    <Link href="/settings/pixel" className="gap-1.5">
-                      Install Pixel <ArrowRight className="h-4 w-4" />
-                    </Link>
-                  </Button>
-                </div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b">
-                        <th className="text-left py-3 px-4 font-medium">Website</th>
-                        <th className="text-right py-3 px-4 font-medium">Total Events</th>
-                        <th className="text-right py-3 px-4 font-medium">Events (7d)</th>
-                        <th className="text-right py-3 px-4 font-medium">Unique Visitors</th>
-                        <th className="text-right py-3 px-4 font-medium">ID Resolution</th>
-                        <th className="text-right py-3 px-4 font-medium">Avg Pages/Visit</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {pixelPerf.map((pixel: any) => (
-                        <tr key={pixel.pixel_id} className="border-b">
-                          <td className="py-3 px-4 font-medium">{pixel.website_name}</td>
-                          <td className="py-3 px-4 text-right">
-                            {pixel.total_events?.toLocaleString() ?? '-'}
-                          </td>
-                          <td className="py-3 px-4 text-right">
-                            {pixel.events_7d?.toLocaleString()}
-                          </td>
-                          <td className="py-3 px-4 text-right">
-                            {pixel.unique_visitors?.toLocaleString()}
-                          </td>
-                          <td className="py-3 px-4 text-right">
-                            <Badge variant={pixel.identity_resolution_rate > 50 ? 'default' : 'secondary'}>
-                              {pixel.identity_resolution_rate?.toFixed(1)}%
-                            </Badge>
-                          </td>
-                          <td className="py-3 px-4 text-right">
-                            {pixel.avg_pages_per_visitor?.toFixed(1)}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+      </DashboardAnimationWrapper>
     </div>
   )
 }
