@@ -1,13 +1,12 @@
 'use client'
 
 import { useEffect } from 'react'
-import { AlertTriangle, RefreshCw, RotateCcw } from 'lucide-react'
+import { AlertTriangle, RefreshCw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 export default function Error({
   error,
-  reset,
 }: {
   error: Error & { digest?: string }
   reset: () => void
@@ -27,7 +26,7 @@ export default function Error({
         <div className="space-y-2">
           <h1 className="text-2xl font-semibold tracking-tight">Something went wrong</h1>
           <p className="text-sm text-muted-foreground">
-            We encountered an error loading your dashboard. Please try again.
+            We encountered an error loading your dashboard. Please reload the page.
           </p>
         </div>
         {error.digest && (
@@ -35,16 +34,10 @@ export default function Error({
             <p className="text-xs text-muted-foreground font-mono">Error ID: {error.digest}</p>
           </div>
         )}
-        <div className="flex flex-col gap-2">
-          <Button onClick={reset} className="w-full">
-            <RefreshCw className="mr-2 h-4 w-4" />
-            Try Again
-          </Button>
-          <Button variant="outline" onClick={() => window.location.reload()} className="w-full">
-            <RotateCcw className="mr-2 h-4 w-4" />
-            Reload Page
-          </Button>
-        </div>
+        <Button onClick={() => window.location.reload()} className="w-full">
+          <RefreshCw className="mr-2 h-4 w-4" />
+          Reload Page
+        </Button>
         <p className="text-xs text-muted-foreground">If this problem persists, please contact support.</p>
       </div>
     </div>
