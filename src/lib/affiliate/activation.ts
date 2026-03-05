@@ -223,12 +223,60 @@ export async function processAffiliateActivation(
 }
 
 /**
+ * processAffiliateAttributionByEmail
+ * Called BEFORE signup — at Cal.com booking time.
+ * Creates a 'lead' referral with email only (no user_id/workspace_id yet).
+ * When the user later signs up, processAffiliateAttribution finds and fills it in.
+ * UNIQUE(affiliate_id, referred_email) provides idempotency.
+ *
+ * @param refCode - Partner code from Cal.com booking metadata
+ * @param email - The booker's email address
+ */
+export async function processAffiliateAttributionByEmail(
+  refCode: string,
+  email: string
+): Promise<void> {
+  try {
+    const admin = createAdminClient()
+
+    const { data: affiliate } = await admin
+      .from('affiliates')
+      .select('id')
+      .eq('partner_code', refCode.toUpperCase())
+      .eq('status', 'active')
+      .maybeSingle()
+
+    if (!affiliate) {
+      safeLog(`[affiliate-attribution-email] No active affiliate for refCode=${refCode}`)
+      return
+    }
+
+    // Insert or ignore — UNIQUE(affiliate_id, referred_email) prevents duplicates
+    await admin
+      .from('affiliate_referrals')
+      .insert({
+        affiliate_id: affiliate.id,
+        referred_email: email.toLowerCase(),
+        status: 'lead',
+      })
+      .select('id')
+      .maybeSingle()
+
+    safeLog(`[affiliate-attribution-email] Pre-attribution lead created for ${email} → affiliate ${affiliate.id}`)
+  } catch (error) {
+    safeError('[affiliate-attribution-email] Unexpected error:', error)
+    // Never throw — non-fatal
+  }
+}
+
+/**
  * processAffiliateAttribution
- * Called during onboarding when a new business user signs up with a ref cookie.
- * Creates a 'lead' referral record linking this user to the affiliate.
+ * Called during onboarding when a new user signs up with a ref cookie.
+ * Hardened: first checks if a pre-attribution record exists (from Cal booking)
+ * and fills in the user_id + workspace_id. If not found, inserts a new record.
  * Idempotent — uses onConflict(affiliate_id, referred_email).
  *
- * @param refCode - Partner code from the cursive_ref cookie
+ * @param refCode - Partner code from the cursive_ref cookie or X-Affiliate-Ref header
  * @param userId - The new user's Supabase user ID
  * @param email - The new user's email
  * @param workspaceId - The newly created workspace ID
@@ -255,12 +303,40 @@ export async function processAffiliateAttribution(
       return
     }
 
-    // Insert lead referral — onConflict(affiliate_id, referred_email) = do nothing
+    const lowerEmail = email.toLowerCase()
+
+    // Check for pre-attribution record created at Cal booking time
+    const { data: existing } = await admin
+      .from('affiliate_referrals')
+      .select('id, referred_user_id, workspace_id')
+      .eq('affiliate_id', affiliate.id)
+      .eq('referred_email', lowerEmail)
+      .eq('status', 'lead')
+      .maybeSingle()
+
+    if (existing) {
+      // Fill in user_id and workspace_id if not already set
+      if (!existing.referred_user_id || !existing.workspace_id) {
+        await admin
+          .from('affiliate_referrals')
+          .update({
+            referred_user_id: userId,
+            workspace_id: workspaceId,
+          })
+          .eq('id', existing.id)
+        safeLog(`[affiliate-attribution] Updated pre-attribution referral for ${lowerEmail} → affiliate ${affiliate.id}`)
+      } else {
+        safeLog(`[affiliate-attribution] Pre-attribution referral already linked for ${lowerEmail}`)
+      }
+      return
+    }
+
+    // No pre-attribution: insert new lead referral
     await admin
       .from('affiliate_referrals')
       .insert({
         affiliate_id: affiliate.id,
-        referred_email: email.toLowerCase(),
+        referred_email: lowerEmail,
         referred_user_id: userId,
         workspace_id: workspaceId,
         status: 'lead',
@@ -268,7 +344,7 @@ export async function processAffiliateAttribution(
       .select('id')
       .maybeSingle()
 
-    safeLog(`[affiliate-attribution] Lead referral created for ${email} → affiliate ${affiliate.id}`)
+    safeLog(`[affiliate-attribution] Lead referral created for ${lowerEmail} → affiliate ${affiliate.id}`)
   } catch (error) {
     safeError('[affiliate-attribution] Unexpected error:', error)
     // Never throw — non-fatal

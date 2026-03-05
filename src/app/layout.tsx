@@ -4,6 +4,7 @@ import { Analytics } from '@vercel/analytics/next'
 import { SkipLink } from '@/components/ui/skip-link'
 import { Providers } from '@/components/providers'
 import { CrispChat } from '@/components/crisp-chat'
+import { AffiliateRefCapture } from '@/components/affiliate/affiliate-ref-capture'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -65,6 +66,7 @@ export default function RootLayout({
       <body className="font-sans antialiased">
         <SkipLink href="#main-content">Skip to main content</SkipLink>
         <Providers>
+          <AffiliateRefCapture />
           <main id="main-content">
             {children}
           </main>

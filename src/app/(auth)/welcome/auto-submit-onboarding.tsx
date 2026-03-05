@@ -12,6 +12,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
+import { getStoredRefCode } from '@/components/affiliate/affiliate-ref-capture'
 
 interface AutoSubmitOnboardingProps {
   isMarketplace: boolean
@@ -135,9 +136,12 @@ export function AutoSubmitOnboarding({ isMarketplace, isReturning }: AutoSubmitO
             await wait(baseDelay + jitter)
           }
 
+          const setupHeaders: Record<string, string> = { 'Content-Type': 'application/json' }
+          const storedRef = getStoredRefCode()
+          if (storedRef) setupHeaders['x-affiliate-ref'] = storedRef
           lastResponse = await fetch('/api/onboarding/setup', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: setupHeaders,
             body: JSON.stringify(onboardingData),
           })
 

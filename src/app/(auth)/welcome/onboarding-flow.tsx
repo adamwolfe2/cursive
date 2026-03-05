@@ -7,6 +7,7 @@
 
 import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import { getStoredRefCode } from '@/components/affiliate/affiliate-ref-capture'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useWaitlistFlow } from '@/hooks/use-waitlist-flow'
 import { screenVariants } from '@/lib/utils/waitlist-animations'
@@ -127,9 +128,12 @@ export function OnboardingFlow({ isMarketplace, isCallProspect = false, prefille
       }
 
       // Session exists — create workspace
+      const businessHeaders: Record<string, string> = { 'Content-Type': 'application/json' }
+      const storedRefBusiness = getStoredRefCode()
+      if (storedRefBusiness) businessHeaders['x-affiliate-ref'] = storedRefBusiness
       const res = await fetch('/api/onboarding/setup', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: businessHeaders,
         body: JSON.stringify({ role: 'business', ...data }),
       })
 
@@ -218,9 +222,12 @@ export function OnboardingFlow({ isMarketplace, isCallProspect = false, prefille
         return
       }
 
+      const partnerHeaders: Record<string, string> = { 'Content-Type': 'application/json' }
+      const storedRefPartner = getStoredRefCode()
+      if (storedRefPartner) partnerHeaders['x-affiliate-ref'] = storedRefPartner
       const res = await fetch('/api/onboarding/setup', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: partnerHeaders,
         body: JSON.stringify({ role: 'partner', ...data }),
       })
 

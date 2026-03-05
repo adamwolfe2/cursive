@@ -20,6 +20,7 @@ import {
   DialogContent,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { getStoredRefCode } from '@/components/affiliate/affiliate-ref-capture'
 
 // ─── Cal.com config ───────────────────────────────────────────────────────────
 const CAL_NAMESPACE = '30min'
@@ -33,15 +34,25 @@ interface CalInlineEmbedProps {
   /** Height of the embed container. Defaults to 700px */
   height?: number | string
   className?: string
+  /** Optional ref code for server-rendered paths where it can be passed directly */
+  refCode?: string
 }
 
-export function CalInlineEmbed({ height = 700, className }: CalInlineEmbedProps) {
+export function CalInlineEmbed({ height = 700, className, refCode: refCodeProp }: CalInlineEmbedProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const initialised = useRef(false)
 
   useEffect(() => {
     if (initialised.current || !containerRef.current) return
     initialised.current = true
+
+    // Resolve ref code: prop takes priority, then localStorage/sessionStorage/cookie
+    const resolvedRef = refCodeProp || getStoredRefCode()
+
+    // Build calLink — append ref as metadata param so Cal passes it through the webhook
+    const calLink = resolvedRef
+      ? `${CAL_LINK}?metadata[ref]=${encodeURIComponent(resolvedRef)}`
+      : CAL_LINK
 
     // The Cal.com embed mutates window.Cal; guard against duplicate loads
     const initCal = () => {
@@ -96,7 +107,7 @@ export function CalInlineEmbed({ height = 700, className }: CalInlineEmbedProps)
           useSlotsViewOnSmallScreen: 'true',
           theme: 'light',
         },
-        calLink: CAL_LINK,
+        calLink,
       })
 
       Cal.ns[CAL_NAMESPACE]?.('ui', {
@@ -107,7 +118,7 @@ export function CalInlineEmbed({ height = 700, className }: CalInlineEmbedProps)
     }
 
     initCal()
-  }, [])
+  }, [refCodeProp])
 
   return (
     <div

@@ -60,6 +60,12 @@ export async function POST(req: NextRequest) {
     const startTime = String(booking.startTime)
     const endTime = String(booking.endTime)
 
+    // Extract affiliate ref code from Cal.com booking metadata or responses
+    const refCode: string | null =
+      booking.metadata?.ref ??
+      booking.responses?.ref?.value ??
+      null
+
     // Persist booking to DB for Ops Dashboard
     try {
       const adminClient = createAdminClient()
@@ -82,12 +88,20 @@ export async function POST(req: NextRequest) {
         start_time: startTime,
         end_time: endTime,
         status: 'upcoming',
+        ref_code: refCode ?? null,
         ...(workspaceId ? { workspace_id: workspaceId } : {}),
         updated_at: new Date().toISOString(),
       }, { onConflict: 'booking_uid' })
     } catch (err) {
       safeError('[Cal webhook] Failed to persist booking:', err)
       // Non-fatal — continue to fire Inngest events
+    }
+
+    // Pre-attribution: create lead referral at booking time (before signup)
+    if (refCode && attendeeEmail) {
+      const { processAffiliateAttributionByEmail } = await import('@/lib/affiliate/activation')
+      processAffiliateAttributionByEmail(refCode, attendeeEmail)
+        .catch((err) => safeError('[Cal webhook] Pre-attribution failed (non-fatal):', err))
     }
 
     await inngest.send({

@@ -27,6 +27,8 @@ export interface CreateServiceCheckoutParams {
   billingEmail?: string
   successUrl?: string
   cancelUrl?: string
+  /** Affiliate ref code from cursive_ref cookie — stored in session metadata for webhook fallback */
+  affiliateRefCode?: string
 }
 
 export interface ServiceCheckoutResult {
@@ -48,7 +50,8 @@ export async function createServiceCheckout(
     negotiatedMonthlyPrice,
     billingEmail,
     successUrl,
-    cancelUrl
+    cancelUrl,
+    affiliateRefCode,
   } = params
 
   // Get the service tier
@@ -97,7 +100,8 @@ export async function createServiceCheckout(
       service_tier_id: tier.id,
       service_tier_slug: tier.slug,
       monthly_price: (negotiatedMonthlyPrice ?? (tier as any).monthly_price ?? 0).toString(),
-      setup_fee: ((tier as any).setup_fee ?? 0).toString()
+      setup_fee: ((tier as any).setup_fee ?? 0).toString(),
+      affiliate_ref_code: affiliateRefCode ?? '',
     },
     subscription_data: {
       metadata: {

@@ -100,6 +100,9 @@ export async function POST(req: NextRequest) {
         )
     }
 
+    // Read affiliate ref code from cookie for attribution fallback
+    const affiliateRefCode = req.cookies.get('cursive_ref')?.value ?? ''
+
     // Create Stripe Checkout Session
     const session = await stripe.checkout.sessions.create({
       customer: customer.id,
@@ -131,6 +134,7 @@ export async function POST(req: NextRequest) {
         company_name: companyName || '',
         user_id: user.id,
         workspace_id: user.workspace_id,
+        affiliate_ref_code: affiliateRefCode,
       },
       allow_promotion_codes: true,
       billing_address_collection: 'auto',

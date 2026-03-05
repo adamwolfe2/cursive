@@ -85,6 +85,28 @@ async function handleCheckoutSessionCompleted(event: Stripe.Event): Promise<void
     default:
       safeLog(`[Stripe Webhook] Unknown checkout metadata type: ${metadataType}`)
   }
+
+  // Affiliate attribution fallback: runs after primary handler for all checkout types
+  // Idempotent — UNIQUE(affiliate_id, referred_email) makes duplicate calls safe
+  const affiliateRefCode = session.metadata?.affiliate_ref_code
+  if (affiliateRefCode) {
+    const workspaceId = session.metadata?.workspace_id
+    const userId = session.metadata?.user_id
+    if (workspaceId && userId) {
+      // Look up user email from workspace/user IDs
+      const adminClientForAffiliate = createAdminClient()
+      const { data: userData } = await adminClientForAffiliate
+        .from('users')
+        .select('email')
+        .eq('id', userId)
+        .maybeSingle()
+      if (userData?.email) {
+        const { processAffiliateAttribution } = await import('@/lib/affiliate/activation')
+        processAffiliateAttribution(affiliateRefCode, userId, userData.email, workspaceId)
+          .catch((err) => safeError('[Stripe Webhook] Affiliate attribution fallback failed (non-fatal):', err))
+      }
+    }
+  }
 }
 
 /**

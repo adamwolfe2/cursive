@@ -333,14 +333,16 @@ export async function POST(request: NextRequest) {
 
     safeLog('[Onboarding] User created:', userProfile.id)
 
-    // 8b. Affiliate attribution — read cursive_ref cookie (non-blocking, fire-and-forget)
-    if (validated.role === 'business') {
-      const refCode = request.cookies.get('cursive_ref')?.value
-      if (refCode) {
-        const { processAffiliateAttribution } = await import('@/lib/affiliate/activation')
-        processAffiliateAttribution(refCode, userProfile.id, validated.email, workspace.id)
-          .catch((err: unknown) => safeError('[Onboarding] Affiliate attribution failed (non-fatal):', err))
-      }
+    // 8b. Affiliate attribution — cookie or X-Affiliate-Ref header fallback (non-blocking)
+    // Remove role gate: attribute ALL users (business + partner), not just business
+    const refCode =
+      request.cookies.get('cursive_ref')?.value ??
+      request.headers.get('x-affiliate-ref') ??
+      null
+    if (refCode) {
+      const { processAffiliateAttribution } = await import('@/lib/affiliate/activation')
+      processAffiliateAttribution(refCode, userProfile.id, validated.email, workspace.id)
+        .catch((err: unknown) => safeError('[Onboarding] Affiliate attribution failed (non-fatal):', err))
     }
 
     // 9. Grant free trial credits
