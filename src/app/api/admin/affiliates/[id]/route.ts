@@ -4,8 +4,19 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { requireAdminRole } from '@/lib/auth/admin'
+import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+
+async function checkAdminAccess(): Promise<boolean> {
+  try {
+    const supabase = await createClient()
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session?.user?.id) return false
+    const admin = createAdminClient()
+    const { data: user } = await admin.from('users').select('role').eq('auth_user_id', session.user.id).maybeSingle()
+    return user?.role === 'owner' || user?.role === 'admin'
+  } catch { return false }
+}
 import {
   sendPartnerApproved,
   sendPartnerRejected,
@@ -18,7 +29,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> {
   try {
-    await requireAdminRole()
+    if (!await checkAdminAccess()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     const { id } = await params
     const admin = createAdminClient()
 
@@ -55,7 +66,7 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> {
   try {
-    await requireAdminRole()
+    if (!await checkAdminAccess()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     const { id } = await params
     const body = await request.json()
     const { action, reviewNotes } = body as { action: string; reviewNotes?: string }

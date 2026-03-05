@@ -20,7 +20,7 @@ function checkRateLimit(ip: string): boolean {
   const entry = RATE_LIMIT.get(ip)
   if (!entry || now > entry.resetAt) {
     RATE_LIMIT.set(ip, { count: 1, resetAt: now + 60 * 60 * 1000 })
-    return true // allowed
+    return true
   }
   entry.count++
   RATE_LIMIT.set(ip, entry)
@@ -38,17 +38,28 @@ const applySchema = z.object({
   promotionPlan: z.string().min(10).max(2000),
 })
 
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': 'https://www.meetcursive.com',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
+const ALLOWED_ORIGINS = [
+  'https://www.meetcursive.com',
+  'https://meetcursive.com',
+]
+
+function cors(request: NextRequest) {
+  const origin = request.headers.get('origin') || ''
+  const allowedOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0]
+  return {
+    'Access-Control-Allow-Origin': allowedOrigin,
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Vary': 'Origin',
+  }
 }
 
-export async function OPTIONS(): Promise<NextResponse> {
-  return new NextResponse(null, { status: 204, headers: CORS_HEADERS })
+export async function OPTIONS(request: NextRequest): Promise<NextResponse> {
+  return new NextResponse(null, { status: 204, headers: cors(request) })
 }
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
+  const headers = cors(request)
   try {
     const ip =
       request.headers.get('x-forwarded-for')?.split(',')[0].trim() ||
@@ -58,7 +69,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     if (!checkRateLimit(ip)) {
       return NextResponse.json(
         { error: 'Too many applications from this IP. Try again later.' },
-        { status: 429, headers: CORS_HEADERS }
+        { status: 429, headers }
       )
     }
 
@@ -67,14 +78,14 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     if (!validation.success) {
       return NextResponse.json(
         { error: 'Invalid form data', details: validation.error.flatten() },
-        { status: 400, headers: CORS_HEADERS }
+        { status: 400, headers }
       )
     }
 
     const data = validation.data
     const admin = createAdminClient()
 
-    // Dedup: if email already has pending/approved application, return success silently
+    // Dedup
     const { data: existing } = await admin
       .from('affiliate_applications')
       .select('id, status')
@@ -83,10 +94,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       .maybeSingle()
 
     if (existing) {
-      return NextResponse.json({ success: true }, { headers: CORS_HEADERS }) // silent dedup
+      return NextResponse.json({ success: true }, { headers })
     }
 
-    // Insert application
     const { data: application, error: insertError } = await admin
       .from('affiliate_applications')
       .insert({
@@ -107,7 +117,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       throw new Error(insertError?.message || 'Failed to save application')
     }
 
-    // Send emails (non-blocking)
     sendPartnerApplicationReceived(data.email, data.firstName).catch(() => {})
     sendPartnerApplicationNotification(
       application.id,
@@ -116,9 +125,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       data.audienceSize
     ).catch(() => {})
 
-    return NextResponse.json({ success: true }, { headers: CORS_HEADERS })
+    return NextResponse.json({ success: true }, { headers })
   } catch (error) {
     safeError('[affiliate/apply] Error:', error)
-    return NextResponse.json({ error: 'Failed to submit application' }, { status: 500, headers: CORS_HEADERS })
+    return NextResponse.json({ error: 'Failed to submit application' }, { status: 500, headers })
   }
 }

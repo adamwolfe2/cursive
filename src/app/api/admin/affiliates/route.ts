@@ -4,21 +4,43 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { requireAdminRole } from '@/lib/auth/admin'
+import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
+async function checkAdminAccess(): Promise<boolean> {
+  try {
+    // getSession() reads local cookie — no network call, no hanging
+    const supabase = await createClient()
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session?.user?.id) return false
+
+    const admin = createAdminClient()
+    const { data: user } = await admin
+      .from('users')
+      .select('role')
+      .eq('auth_user_id', session.user.id)
+      .maybeSingle()
+
+    return user?.role === 'owner' || user?.role === 'admin'
+  } catch {
+    return false
+  }
+}
+
 export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
-    await requireAdminRole()
+    const isAdmin = await checkAdminAccess()
+    if (!isAdmin) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
 
     const status = request.nextUrl.searchParams.get('status')
     const admin = createAdminClient()
 
-    // Fetch applications
     let query = admin
       .from('affiliate_applications')
-      .select('id, first_name, last_name, email, audience_size, audience_types, status, created_at')
+      .select('id, first_name, last_name, email, phone, website, audience_size, audience_types, promotion_plan, status, created_at')
       .order('created_at', { ascending: false })
 
     if (status && status !== 'all') {
@@ -26,10 +48,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     }
 
     const { data: applications, error } = await query
-
     if (error) throw new Error(error.message)
 
-    // Stats
     const [allApps, affiliatesRes] = await Promise.all([
       admin.from('affiliate_applications').select('status'),
       admin.from('affiliates').select('id, total_activations, status'),
@@ -50,9 +70,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ applications: applications || [], stats })
   } catch (error) {
     safeError('[admin/affiliates] Error:', error)
-    if (error instanceof Error && error.message.includes('Unauthorized')) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
     return NextResponse.json({ error: 'Failed to load affiliates' }, { status: 500 })
   }
 }
