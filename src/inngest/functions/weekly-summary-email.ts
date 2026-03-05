@@ -41,6 +41,9 @@ interface WeeklyStats {
   creditsUsed: number
   creditsRemaining: number
   topSource: string | null
+  contacted: number
+  wonThisWeek: number
+  hotLeadsWaiting: number
 }
 
 // ============================================================
@@ -342,12 +345,39 @@ async function getWeeklyStats(
   const creditsUsed = userData?.daily_credits_used ?? 0
   const creditsRemaining = Math.max(0, creditLimit - creditsUsed)
 
+  // Pipeline: leads contacted this week
+  const { count: contacted } = await supabase
+    .from('leads')
+    .select('id', { count: 'exact', head: true })
+    .eq('workspace_id', workspaceId)
+    .in('status', ['contacted', 'qualified', 'proposal', 'negotiation', 'won'])
+    .gte('updated_at', sevenDaysAgo)
+
+  // Wins this week (leads marked "won" in the past 7 days)
+  const { count: wonThisWeek } = await supabase
+    .from('leads')
+    .select('id', { count: 'exact', head: true })
+    .eq('workspace_id', workspaceId)
+    .eq('status', 'won')
+    .gte('updated_at', sevenDaysAgo)
+
+  // Hot leads waiting for outreach (intent ≥70, not contacted/won/lost)
+  const { count: hotLeadsWaiting } = await supabase
+    .from('leads')
+    .select('id', { count: 'exact', head: true })
+    .eq('workspace_id', workspaceId)
+    .gte('intent_score_calculated', 70)
+    .not('status', 'in', '("contacted","qualified","proposal","negotiation","won","lost")')
+
   return {
     leadsReceived: leadsReceived ?? 0,
     leadsEnriched: leadsEnriched ?? 0,
     creditsUsed,
     creditsRemaining,
     topSource,
+    contacted: contacted ?? 0,
+    wonThisWeek: wonThisWeek ?? 0,
+    hotLeadsWaiting: hotLeadsWaiting ?? 0,
   }
 }
 
@@ -379,6 +409,89 @@ function buildWeeklySummaryEmail({
   const currentYear = new Date().getFullYear()
 
   const lowCredits = stats.creditsRemaining < 20
+  const leadsUrl = `${APP_URL}/leads`
+  const analyticsUrl = `${APP_URL}/analytics`
+
+  // Pipeline section (only show if user has started tracking outreach)
+  const pipelineHtml = stats.contacted > 0 || stats.wonThisWeek > 0
+    ? `
+    <!-- Pipeline Momentum -->
+    <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin-top: 24px; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden;">
+      <tr>
+        <td style="padding: 12px 20px; background-color: #f9fafb; border-bottom: 1px solid #e5e7eb;">
+          <p style="margin: 0; font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em;">Pipeline This Week</p>
+        </td>
+      </tr>
+      ${stats.contacted > 0 ? `
+      <tr>
+        <td style="padding: 12px 20px; border-bottom: 1px solid #f3f4f6;">
+          <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+            <tr>
+              <td style="font-size: 13px; color: #6b7280;">Leads Contacted</td>
+              <td style="font-size: 18px; font-weight: 700; color: #3b82f6; text-align: right;">${stats.contacted}</td>
+            </tr>
+          </table>
+        </td>
+      </tr>` : ''}
+      ${stats.wonThisWeek > 0 ? `
+      <tr>
+        <td style="padding: 12px 20px; background-color: #f0fdf4; border-bottom: 1px solid #f3f4f6;">
+          <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+            <tr>
+              <td style="font-size: 13px; color: #15803d; font-weight: 500;">Deals Won</td>
+              <td style="font-size: 18px; font-weight: 700; color: #16a34a; text-align: right;">${stats.wonThisWeek}</td>
+            </tr>
+          </table>
+        </td>
+      </tr>` : ''}
+      ${stats.hotLeadsWaiting > 0 ? `
+      <tr>
+        <td style="padding: 12px 20px;">
+          <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+            <tr>
+              <td style="font-size: 13px; color: #9a3412; font-weight: 500;">Hot Leads Awaiting Outreach</td>
+              <td style="font-size: 18px; font-weight: 700; color: #ea580c; text-align: right;">${stats.hotLeadsWaiting}</td>
+            </tr>
+          </table>
+        </td>
+      </tr>` : ''}
+    </table>`
+    : ''
+
+  // Hot leads nudge (when user hasn't started outreach yet but has hot leads)
+  const hotLeadsNudge = stats.contacted === 0 && stats.hotLeadsWaiting > 0
+    ? `
+    <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin-top: 24px;">
+      <tr>
+        <td style="background-color: #fff7ed; border: 1px solid #fed7aa; border-radius: 8px; padding: 16px 20px;">
+          <p style="margin: 0 0 8px; font-size: 14px; font-weight: 600; color: #9a3412;">
+            ${stats.hotLeadsWaiting} hot lead${stats.hotLeadsWaiting === 1 ? '' : 's'} waiting for you
+          </p>
+          <p style="margin: 0 0 12px; font-size: 13px; color: #c2410c; line-height: 1.5;">
+            These leads have high intent scores (70+) and haven't been contacted yet. Reach out now while they're still active.
+          </p>
+          <a href="${leadsUrl}" style="display: inline-block; padding: 8px 16px; background-color: #ea580c; color: #ffffff; font-size: 13px; font-weight: 600; text-decoration: none; border-radius: 6px;">View Hot Leads</a>
+        </td>
+      </tr>
+    </table>`
+    : ''
+
+  // Wins celebration block
+  const winsCelebration = stats.wonThisWeek > 0
+    ? `
+    <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin-top: 24px;">
+      <tr>
+        <td style="background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 16px 20px;">
+          <p style="margin: 0 0 4px; font-size: 14px; font-weight: 700; color: #15803d;">
+            You closed ${stats.wonThisWeek} deal${stats.wonThisWeek === 1 ? '' : 's'} this week.
+          </p>
+          <p style="margin: 0; font-size: 13px; color: #16a34a; line-height: 1.5;">
+            Keep it up — your pipeline is working. Check your <a href="${analyticsUrl}" style="color: #15803d; text-decoration: underline;">analytics</a> to see your close rate trend.
+          </p>
+        </td>
+      </tr>
+    </table>`
+    : ''
 
   const topSourceHtml = stats.topSource
     ? `
@@ -452,7 +565,7 @@ function buildWeeklySummaryEmail({
   </style>
 </head>
 <body style="margin: 0; padding: 0; background-color: #f9fafb;">
-  <div style="display: none; max-height: 0; overflow: hidden; mso-hide: all;">Your Cursive weekly summary: ${stats.leadsReceived} leads received, ${stats.leadsEnriched} enriched this week.</div>
+  <div style="display: none; max-height: 0; overflow: hidden; mso-hide: all;">${stats.wonThisWeek > 0 ? `${stats.wonThisWeek} deal${stats.wonThisWeek === 1 ? '' : 's'} won — ` : ''}${stats.leadsReceived} leads received, ${stats.hotLeadsWaiting > 0 ? `${stats.hotLeadsWaiting} hot leads waiting.` : `${stats.leadsEnriched} enriched this week.`}</div>
 
   <!-- Outer wrapper -->
   <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background-color: #f9fafb;">
@@ -533,6 +646,15 @@ function buildWeeklySummaryEmail({
                 ${topSourceHtml}
 
               </table>
+
+              <!-- Pipeline momentum -->
+              ${pipelineHtml}
+
+              <!-- Wins celebration -->
+              ${winsCelebration}
+
+              <!-- Hot leads nudge -->
+              ${hotLeadsNudge}
 
               <!-- Low credit nudge -->
               ${lowCreditNudge}

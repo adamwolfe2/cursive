@@ -388,9 +388,10 @@ interface AppShellProps {
     logoUrl?: string | null
   }
   todayLeadCount?: number
+  hotLeadCount?: number
 }
 
-export function AppShell({ children, user, workspace, todayLeadCount }: AppShellProps) {
+export function AppShell({ children, user, workspace, todayLeadCount, hotLeadCount }: AppShellProps) {
   const [sidebarOpen, setSidebarOpen] = React.useState(false)
 
   // Filter navigation items based on user role
@@ -407,6 +408,10 @@ export function AppShell({ children, user, workspace, todayLeadCount }: AppShell
       // Attach today's lead count badge to the Dashboard nav item
       if (item.href === '/dashboard' && todayLeadCount && todayLeadCount > 0) {
         return { ...item, badge: todayLeadCount }
+      }
+      // Attach hot leads badge to Daily Leads nav item — urgent action signal
+      if (item.href === '/leads' && hotLeadCount && hotLeadCount > 0) {
+        return { ...item, badge: hotLeadCount }
       }
       return item
     })

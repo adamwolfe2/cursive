@@ -82,7 +82,7 @@ export default async function AppLayout({
   const cachedWorkspaceId = cookieStore.get('x-workspace-id')?.value
   const today = new Date().toISOString().split('T')[0]
 
-  const [userProfileResult, adminResult, creditsResult, leadsResult] = await Promise.all([
+  const [userProfileResult, adminResult, creditsResult, leadsResult, hotLeadsResult] = await Promise.all([
     supabase
       .from('users')
       .select('id, auth_user_id, full_name, email, plan, role, workspace_id, daily_credit_limit, daily_credits_used, workspaces(id, name, subdomain, website_url, branding)')
@@ -111,6 +111,15 @@ export default async function AppLayout({
           .eq('workspace_id', cachedWorkspaceId)
           .gte('delivered_at', `${today}T00:00:00`)
           .lte('delivered_at', `${today}T23:59:59`)
+      : Promise.resolve({ count: null }),
+    // Hot leads: intent ≥70, not yet won/lost — drives sidebar badge urgency
+    cachedWorkspaceId
+      ? supabase
+          .from('leads')
+          .select('id', { count: 'exact', head: true })
+          .eq('workspace_id', cachedWorkspaceId)
+          .gte('intent_score_calculated', 70)
+          .not('status', 'in', '("won","lost")')
       : Promise.resolve({ count: null }),
   ])
 
@@ -143,9 +152,10 @@ export default async function AppLayout({
 
   let creditBalance = creditsResult?.data?.balance ?? 0
   let todayLeadCount = (leadsResult as { count: number | null })?.count ?? 0
+  let hotLeadCount = (hotLeadsResult as { count: number | null })?.count ?? 0
 
   if (!cachedWorkspaceId && userProfile.workspace_id) {
-    const [fallbackCredits, fallbackLeads] = await Promise.all([
+    const [fallbackCredits, fallbackLeads, fallbackHotLeads] = await Promise.all([
       supabase
         .from('workspace_credits')
         .select('balance')
@@ -157,9 +167,16 @@ export default async function AppLayout({
         .eq('workspace_id', userProfile.workspace_id)
         .gte('delivered_at', `${today}T00:00:00`)
         .lte('delivered_at', `${today}T23:59:59`),
+      supabase
+        .from('leads')
+        .select('id', { count: 'exact', head: true })
+        .eq('workspace_id', userProfile.workspace_id)
+        .gte('intent_score_calculated', 70)
+        .not('status', 'in', '("won","lost")'),
     ])
     creditBalance = fallbackCredits.data?.balance ?? 0
     todayLeadCount = fallbackLeads.count ?? 0
+    hotLeadCount = fallbackHotLeads.count ?? 0
   }
 
   const workspace = userProfile.workspaces as {
@@ -197,6 +214,7 @@ export default async function AppLayout({
               : undefined
           }
           todayLeadCount={todayLeadCount}
+          hotLeadCount={hotLeadCount > 0 ? hotLeadCount : undefined}
         >
           <DashboardProvider
             value={{
