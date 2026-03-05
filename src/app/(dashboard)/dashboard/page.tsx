@@ -8,7 +8,7 @@ import Link from 'next/link'
 import {
   Users, TrendingUp, Crown, ArrowRight, Sparkles,
   Zap, Star, Target, CheckCircle2, Circle,
-  Calendar, Eye, Rocket, Activity,
+  Calendar, Eye, Rocket, Activity, Flame, Phone, Mail,
 } from 'lucide-react'
 import { sanitizeName, sanitizeCompanyName, sanitizeText } from '@/lib/utils/sanitize-text'
 import { DashboardAnimationWrapper, AnimatedSection } from '@/components/dashboard/dashboard-animation-wrapper'
@@ -135,6 +135,44 @@ export default async function DashboardPage({
     { revalidate: 120, tags: [`recent-enrichments-${workspaceId}`] }
   )
 
+  // ── Top hot leads (top 5 by intent score, for "Act On Today" widget) ──
+  const getHotLeads = unstable_cache(
+    async (wsId: string) => {
+      const admin = createAdminClient()
+      const { data } = await admin
+        .from('leads')
+        .select('id, full_name, first_name, last_name, email, phone, company_name, intent_score_calculated, enrichment_status, status, source')
+        .eq('workspace_id', wsId)
+        .gte('intent_score_calculated', 40)
+        .not('status', 'eq', 'won')
+        .not('status', 'eq', 'lost')
+        .order('intent_score_calculated', { ascending: false })
+        .limit(5)
+      return data ?? []
+    },
+    ['hot-leads'],
+    { revalidate: 300, tags: [`hot-leads-${workspaceId}`] }
+  )
+
+  // ── Pipeline status counts (for funnel widget) ──
+  const getPipelineStats = unstable_cache(
+    async (wsId: string) => {
+      const admin = createAdminClient()
+      const { data } = await admin
+        .from('leads')
+        .select('status')
+        .eq('workspace_id', wsId)
+      const counts = { new: 0, contacted: 0, qualified: 0, proposal: 0, negotiation: 0, won: 0, lost: 0 }
+      for (const row of (data ?? [])) {
+        const s = (row.status || 'new') as keyof typeof counts
+        if (s in counts) counts[s]++
+      }
+      return counts
+    },
+    ['pipeline-stats'],
+    { revalidate: 120, tags: [`pipeline-stats-${workspaceId}`] }
+  )
+
   // Run all data fetches in parallel — stats + non-cacheable fresh data
   const [
     statsData,
@@ -144,6 +182,8 @@ export default async function DashboardPage({
     creditsData,
     recentEnrichmentsResult,
     activationResult,
+    hotLeadsResult,
+    pipelineStatsResult,
   ] = await Promise.all([
     getWorkspaceStats(workspaceId),
     getRecentLeads(workspaceId),
@@ -172,6 +212,8 @@ export default async function DashboardPage({
       .from('custom_audience_requests')
       .select('id', { count: 'exact', head: true })
       .eq('workspace_id', workspaceId),
+    getHotLeads(workspaceId),
+    getPipelineStats(workspaceId),
   ])
 
   // Pull counts from the pre-computed stats cache
@@ -218,6 +260,23 @@ export default async function DashboardPage({
     updated_at: string | null
     source: string | null
   }>
+
+  const hotLeads = (hotLeadsResult ?? []) as Array<{
+    id: string
+    full_name: string | null
+    first_name: string | null
+    last_name: string | null
+    email: string | null
+    phone: string | null
+    company_name: string | null
+    intent_score_calculated: number | null
+    enrichment_status: string | null
+    status: string | null
+    source: string | null
+  }>
+  const pipelineStats = pipelineStatsResult ?? { new: 0, contacted: 0, qualified: 0, proposal: 0, negotiation: 0, won: 0, lost: 0 }
+  const pipelineTotal = pipelineStats.contacted + pipelineStats.qualified + pipelineStats.proposal + pipelineStats.negotiation + pipelineStats.won
+  const showPipeline = pipelineTotal > 0
 
   // Build activity log: lead deliveries + enrichments merged and sorted by time
   type ActivityEvent = { type: 'delivery'; count: number; time: string } | { type: 'enrich'; leadName: string; company: string | null; time: string }
@@ -511,6 +570,86 @@ export default async function DashboardPage({
         </div>
       </AnimatedSection>
 
+      {/* Top Leads to Act On — highest intent leads that haven't been won/lost yet */}
+      {hotLeads.length > 0 && (
+        <AnimatedSection delay={0.08}>
+          <div className="bg-white rounded-xl border border-gray-200 p-5">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-semibold text-gray-900 flex items-center gap-2">
+                <Flame className="h-4 w-4 text-orange-500" />
+                Top Leads to Act On
+              </h2>
+              <Link href="/leads?sort=intent" className="text-sm text-primary hover:underline flex items-center gap-1">
+                All leads <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {hotLeads.slice(0, 3).map((lead) => {
+                const name = sanitizeName(lead.full_name)
+                  || sanitizeName([lead.first_name, lead.last_name].filter(Boolean).join(' '))
+                  || sanitizeCompanyName(lead.company_name)
+                  || 'Unknown'
+                const score = lead.intent_score_calculated
+                const isHot = score !== null && score >= 70
+                const isEnriched = lead.enrichment_status === 'enriched'
+                const currentStatus = lead.status || 'new'
+                const statusLabel = currentStatus === 'new' ? null : currentStatus.charAt(0).toUpperCase() + currentStatus.slice(1)
+                return (
+                  <div key={lead.id} className={`rounded-lg border p-3.5 flex flex-col gap-2.5 ${isHot ? 'border-orange-200 bg-orange-50/40' : 'border-blue-100 bg-blue-50/30'}`}>
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-gray-900 truncate">{name}</p>
+                        {lead.company_name && (
+                          <p className="text-xs text-gray-500 truncate">{sanitizeCompanyName(lead.company_name)}</p>
+                        )}
+                      </div>
+                      <div className="shrink-0 flex flex-col items-end gap-1">
+                        {score !== null && (
+                          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full border ${isHot ? 'bg-orange-100 text-orange-700 border-orange-200' : 'bg-amber-50 text-amber-700 border-amber-200'}`}>
+                            {isHot ? 'HOT' : 'WARM'} {score}
+                          </span>
+                        )}
+                        {statusLabel && (
+                          <span className="text-[10px] font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-full px-1.5 py-0.5">
+                            {statusLabel}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      {isEnriched && lead.email && (
+                        <a
+                          href={`mailto:${lead.email}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="inline-flex items-center gap-1 text-[10px] bg-white border border-gray-200 text-gray-600 rounded-full px-2 py-0.5 hover:border-primary hover:text-primary transition-colors font-medium"
+                        >
+                          <Mail className="h-2.5 w-2.5" /> Email
+                        </a>
+                      )}
+                      {isEnriched && lead.phone && (
+                        <a
+                          href={`tel:${lead.phone}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="inline-flex items-center gap-1 text-[10px] bg-white border border-gray-200 text-gray-600 rounded-full px-2 py-0.5 hover:border-primary hover:text-primary transition-colors font-medium"
+                        >
+                          <Phone className="h-2.5 w-2.5" /> Call
+                        </a>
+                      )}
+                      <Link
+                        href={`/crm/leads/${lead.id}`}
+                        className="inline-flex items-center gap-1 text-[10px] bg-white border border-gray-200 text-gray-600 rounded-full px-2 py-0.5 hover:border-primary hover:text-primary transition-colors font-medium ml-auto"
+                      >
+                        View <ArrowRight className="h-2.5 w-2.5" />
+                      </Link>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </AnimatedSection>
+      )}
+
       {/* Main content grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
@@ -779,6 +918,49 @@ export default async function DashboardPage({
                     </div>
                   ))}
                 </div>
+              </div>
+            </AnimatedSection>
+          )}
+
+          {/* Pipeline funnel widget — only when user has updated statuses */}
+          {showPipeline && (
+            <AnimatedSection delay={0.26}>
+              <div className="bg-white rounded-xl border border-gray-200 p-5">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-semibold text-gray-900 text-sm flex items-center gap-2">
+                    <Target className="h-3.5 w-3.5 text-gray-500" />
+                    Pipeline
+                  </h3>
+                  <Link href="/crm/leads" className="text-xs text-primary hover:underline">
+                    View CRM
+                  </Link>
+                </div>
+                <div className="space-y-2">
+                  {[
+                    { key: 'contacted', label: 'Contacted', color: 'bg-blue-500', textColor: 'text-blue-700' },
+                    { key: 'qualified', label: 'Qualified', color: 'bg-indigo-500', textColor: 'text-indigo-700' },
+                    { key: 'proposal', label: 'Proposal', color: 'bg-amber-500', textColor: 'text-amber-700' },
+                    { key: 'won', label: 'Won', color: 'bg-emerald-500', textColor: 'text-emerald-700' },
+                  ].map(({ key, label, color, textColor }) => {
+                    const count = pipelineStats[key as keyof typeof pipelineStats] ?? 0
+                    const max = Math.max(pipelineStats.contacted, 1)
+                    const pct = Math.round((count / max) * 100)
+                    return (
+                      <div key={key} className="flex items-center gap-2">
+                        <span className="text-xs text-gray-500 w-16 shrink-0">{label}</span>
+                        <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                          <div className={`h-full ${color} rounded-full transition-all`} style={{ width: `${pct}%` }} />
+                        </div>
+                        <span className={`text-xs font-semibold ${count > 0 ? textColor : 'text-gray-400'} w-6 text-right`}>{count}</span>
+                      </div>
+                    )
+                  })}
+                </div>
+                {pipelineStats.won > 0 && (
+                  <p className="mt-3 text-[11px] text-emerald-700 bg-emerald-50 rounded-lg px-2.5 py-1.5 font-medium">
+                    {pipelineStats.won} lead{pipelineStats.won !== 1 ? 's' : ''} won — keep going!
+                  </p>
+                )}
               </div>
             </AnimatedSection>
           )}

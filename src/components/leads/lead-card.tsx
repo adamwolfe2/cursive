@@ -1,13 +1,114 @@
 'use client'
 
-import { useState, memo } from 'react'
+import { useState, memo, useCallback } from 'react'
 import {
   Zap, Mail, Phone, MapPin, CheckCircle2,
-  ChevronRight, Square, CheckSquare,
+  ChevronRight, Square, CheckSquare, PhoneCall,
 } from 'lucide-react'
 import { cn } from '@/lib/design-system'
 import { formatDistanceToNow } from 'date-fns'
 import { IntentScoreBadge } from './IntentScoreBadge'
+
+// ─── Quick Status ───────────────────────────────────────────
+
+type QuickStatus = 'new' | 'contacted' | 'qualified' | 'won' | 'lost'
+
+const QUICK_STATUS_OPTIONS: { value: QuickStatus; label: string; color: string }[] = [
+  { value: 'contacted', label: 'Contacted', color: 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100' },
+  { value: 'qualified', label: 'Qualified', color: 'bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100' },
+  { value: 'won', label: 'Won', color: 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100' },
+  { value: 'lost', label: 'Not interested', color: 'bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100' },
+]
+
+function QuickStatusPill({
+  leadId,
+  initialStatus,
+}: {
+  leadId: string
+  initialStatus: string | null
+}) {
+  const [status, setStatus] = useState<QuickStatus>((initialStatus as QuickStatus) || 'new')
+  const [open, setOpen] = useState(false)
+  const [saving, setSaving] = useState(false)
+
+  const handleSelect = useCallback(async (next: QuickStatus) => {
+    if (next === status) { setOpen(false); return }
+    setSaving(true)
+    setOpen(false)
+    try {
+      await fetch(`/api/leads/${leadId}/status`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: next }),
+      })
+      setStatus(next)
+    } catch {
+      // silent fail — status reverts on next load
+    } finally {
+      setSaving(false)
+    }
+  }, [leadId, status])
+
+  if (status === 'won') {
+    return (
+      <span className="inline-flex items-center gap-1 text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full px-2 py-0.5 font-medium">
+        <CheckCircle2 className="h-2.5 w-2.5" /> Won
+      </span>
+    )
+  }
+
+  if (status === 'lost') {
+    return (
+      <button
+        onClick={(e) => { e.stopPropagation(); setOpen(v => !v) }}
+        className="inline-flex items-center gap-1 text-[10px] bg-gray-50 text-gray-400 border border-gray-200 rounded-full px-2 py-0.5 font-medium hover:bg-gray-100 transition-colors relative"
+      >
+        Not interested
+        {open && (
+          <div className="absolute bottom-6 left-0 z-20 bg-white border border-gray-200 rounded-lg shadow-lg p-1 min-w-[130px]" onClick={e => e.stopPropagation()}>
+            {QUICK_STATUS_OPTIONS.filter(o => o.value !== 'lost').map(opt => (
+              <button key={opt.value} onClick={() => handleSelect(opt.value)} className={cn('w-full text-left text-[10px] font-medium px-2 py-1.5 rounded-md transition-colors', opt.color)}>
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        )}
+      </button>
+    )
+  }
+
+  const current = QUICK_STATUS_OPTIONS.find(o => o.value === status)
+
+  return (
+    <div className="relative" onClick={e => e.stopPropagation()}>
+      <button
+        onClick={() => setOpen(v => !v)}
+        disabled={saving}
+        className={cn(
+          'inline-flex items-center gap-1 text-[10px] border rounded-full px-2 py-0.5 font-medium transition-colors',
+          status === 'new'
+            ? 'bg-gray-50 text-gray-400 border-gray-200 hover:bg-gray-100 hover:text-gray-600'
+            : current?.color ?? '',
+        )}
+      >
+        {saving ? '...' : status === 'new' ? '+ Status' : current?.label}
+      </button>
+      {open && (
+        <div className="absolute bottom-6 left-0 z-20 bg-white border border-gray-200 rounded-lg shadow-lg p-1 min-w-[130px]">
+          {QUICK_STATUS_OPTIONS.map(opt => (
+            <button
+              key={opt.value}
+              onClick={() => handleSelect(opt.value)}
+              className={cn('w-full text-left text-[10px] font-medium px-2 py-1.5 rounded-md transition-colors', opt.color, opt.value === status && 'ring-1 ring-current')}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
 
 // ─── Types ─────────────────────────────────────────────────
 
@@ -285,9 +386,33 @@ export const LeadCard = memo(function LeadCard({
                   {lead.delivered_at ? formatDistanceToNow(new Date(lead.delivered_at), { addSuffix: true }) : ''}
                 </span>
               )}
+              {/* Quick status pill — inline workflow tracker */}
+              {!selectionMode && (
+                <QuickStatusPill leadId={lead.id} initialStatus={lead.status} />
+              )}
             </div>
 
             <div className="flex items-center gap-2">
+              {isEnriched && lead.email && (
+                <a
+                  href={`mailto:${lead.email}`}
+                  onClick={(e) => e.stopPropagation()}
+                  className="inline-flex items-center gap-1 text-xs text-gray-500 border border-gray-200 rounded-full px-2 py-0.5 hover:border-primary hover:text-primary transition-colors"
+                  title={`Email ${lead.email}`}
+                >
+                  <Mail className="h-3 w-3" />
+                </a>
+              )}
+              {isEnriched && lead.phone && (
+                <a
+                  href={`tel:${lead.phone}`}
+                  onClick={(e) => e.stopPropagation()}
+                  className="inline-flex items-center gap-1 text-xs text-gray-500 border border-gray-200 rounded-full px-2 py-0.5 hover:border-primary hover:text-primary transition-colors"
+                  title={`Call ${lead.phone}`}
+                >
+                  <PhoneCall className="h-3 w-3" />
+                </a>
+              )}
               {!isEnriched && creditsRemaining === 0 && (
                 <a
                   href="/settings/billing"
