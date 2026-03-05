@@ -5,13 +5,13 @@
  * meetcursive.com visitor feed for outreach
  */
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import {
   Eye, Mail, Phone, Linkedin, Copy, Check, ExternalLink,
-  Building2, MapPin, SlidersHorizontal, AlertCircle, ChevronLeft,
+  Building2, MapPin, SlidersHorizontal, AlertCircle, ChevronLeft, Search,
 } from 'lucide-react'
 
 interface Visitor {
@@ -150,6 +150,7 @@ export default function VisitorsPage() {
   const [minScore, setMinScore] = useState(0)
   const [enrichmentFilter, setEnrichmentFilter] = useState('')
   const [page, setPage] = useState(1)
+  const [search, setSearch] = useState('')
   const supabase = createClient()
 
   useEffect(() => {
@@ -178,6 +179,20 @@ export default function VisitorsPage() {
     },
     enabled: authChecked && isAdmin,
   })
+
+  const filteredVisitors = useMemo(() => {
+    const vs = data?.visitors || []
+    const q = search.trim().toLowerCase()
+    if (!q) return vs
+    return vs.filter(
+      (v) =>
+        (v.full_name || '').toLowerCase().includes(q) ||
+        (v.first_name || '').toLowerCase().includes(q) ||
+        (v.last_name || '').toLowerCase().includes(q) ||
+        (v.company_name || '').toLowerCase().includes(q) ||
+        (v.email || '').toLowerCase().includes(q)
+    )
+  }, [data?.visitors, search])
 
   if (!authChecked) {
     return <div className="flex items-center justify-center min-h-screen text-zinc-500 text-sm">Checking access...</div>
@@ -221,6 +236,16 @@ export default function VisitorsPage() {
             <div className="flex items-center gap-2">
               <SlidersHorizontal size={14} className="text-zinc-400" />
               <span className="text-[12px] text-zinc-500 font-medium">Filters</span>
+            </div>
+            <div className="relative">
+              <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-zinc-400" />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search name or company..."
+                className="h-9 pl-8 pr-3 text-[13px] bg-white border border-zinc-200 rounded-lg focus:outline-none focus:border-zinc-400 w-48"
+              />
             </div>
             <div>
               <select
@@ -280,10 +305,15 @@ export default function VisitorsPage() {
           <p className="text-zinc-500">No pixel visitors match your filters</p>
           <p className="text-zinc-400 text-sm mt-1">Try adjusting the date range or intent score</p>
         </div>
+      ) : !filteredVisitors.length ? (
+        <div className="text-center py-20">
+          <Search size={32} className="mx-auto text-zinc-200 mb-4" />
+          <p className="text-zinc-500">No visitors match your search</p>
+        </div>
       ) : (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            {data.visitors.map((v) => (
+            {filteredVisitors.map((v) => (
               <VisitorCard key={v.id} v={v} />
             ))}
           </div>
