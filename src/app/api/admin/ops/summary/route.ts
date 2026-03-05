@@ -56,10 +56,11 @@ export async function GET() {
         .select('id, attendee_name, attendee_email, start_time, status, created_at')
         .order('created_at', { ascending: false })
         .limit(10),
-      // Recent workspace signups for activity feed
+      // Recent workspace signups for activity feed (with owner email)
       adminClient
         .from('workspaces')
-        .select('id, name, created_at')
+        .select('id, name, created_at, users!inner(email, role)')
+        .eq('users.role', 'owner')
         .order('created_at', { ascending: false })
         .limit(5),
     ])
@@ -73,14 +74,17 @@ export async function GET() {
       time: b.created_at,
       status: b.status,
     }))
-    const signupItems = (recentSignupsRes.data || []).map((w) => ({
-      type: 'signup' as const,
-      id: w.id,
-      label: `${w.name} signed up`,
-      sub: null,
-      time: w.created_at,
-      status: null,
-    }))
+    const signupItems = (recentSignupsRes.data || []).map((w: any) => {
+      const ownerEmail = Array.isArray(w.users) ? w.users[0]?.email : null
+      return {
+        type: 'signup' as const,
+        id: w.id,
+        label: `${w.name} signed up`,
+        sub: ownerEmail || null,
+        time: w.created_at,
+        status: null,
+      }
+    })
     const activityFeed = [...bookingItems, ...signupItems]
       .sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime())
       .slice(0, 12)
