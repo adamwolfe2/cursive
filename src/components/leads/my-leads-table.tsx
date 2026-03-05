@@ -446,7 +446,7 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
           {searchQuery.trim() ? (
             <button
               onClick={() => setSearchInput('')}
-              className="mt-4 inline-flex items-center gap-1.5 rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 transition-colors"
+              className="mt-4 inline-flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 transition-colors"
             >
               Clear Search
             </button>
@@ -463,7 +463,7 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
                 </button>
                 <a
                   href="/my-leads/preferences"
-                  className="inline-flex items-center gap-1.5 rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 transition-colors"
+                  className="inline-flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 transition-colors"
                 >
                   Set Targeting Preferences
                   <ArrowRight className="h-3.5 w-3.5" />
@@ -694,7 +694,7 @@ const LeadDetailModal = memo(function LeadDetailModal({
           </p>
           <button
             onClick={onClose}
-            className="w-full px-4 py-2 bg-zinc-900 text-white rounded-md hover:bg-zinc-800"
+            className="w-full px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90"
           >
             Close
           </button>

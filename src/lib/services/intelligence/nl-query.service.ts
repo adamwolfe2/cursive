@@ -1,10 +1,8 @@
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { createAdminClient } from '@/lib/supabase/admin'
+import Anthropic from '@anthropic-ai/sdk'
 
-const OPENAI_API_KEY = () => process.env.OPENAI_API_KEY ?? ''
-
-const SCHEMA_CONTEXT = `
-You are converting natural language to a Supabase PostgreSQL SELECT query for the "leads" table.
+const SCHEMA_CONTEXT = `You are converting natural language to a Supabase PostgreSQL SELECT query for the "leads" table.
 
 Table: leads
 Columns available for SELECT and WHERE:
@@ -21,11 +19,10 @@ RULES:
 3. Always add ORDER BY created_at DESC unless user specifies otherwise
 4. Always add LIMIT 100 unless user specifies otherwise (max 500)
 5. Use ILIKE for text searches (case-insensitive)
-6. Return ONLY the SQL query, no explanation, no markdown
+6. Return ONLY the SQL query, no explanation, no markdown, no code fences
 
 Example: "show me all leads from Texas with a score over 70"
-→ SELECT id, full_name, email, company_name, job_title, state, lead_score, status FROM leads WHERE workspace_id = :workspace_id AND state_code = 'TX' AND lead_score > 70 ORDER BY lead_score DESC LIMIT 100
-`
+→ SELECT id, full_name, email, company_name, job_title, state, lead_score, status FROM leads WHERE workspace_id = :workspace_id AND state_code = 'TX' AND lead_score > 70 ORDER BY lead_score DESC LIMIT 100`
 
 export interface NLQueryResult {
   sql: string
@@ -38,27 +35,22 @@ export async function runNaturalLanguageQuery(
   query: string,
   workspaceId: string,
 ): Promise<NLQueryResult> {
-  // Step 1: Generate SQL
-  const sqlRes = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${OPENAI_API_KEY()}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: 'gpt-4o-mini',
-      messages: [
-        { role: 'system', content: SCHEMA_CONTEXT },
-        { role: 'user', content: query },
-      ],
-      max_tokens: 500,
-      temperature: 0,
-    }),
+  const anthropic = new Anthropic({
+    apiKey: process.env.ANTHROPIC_API_KEY,
   })
 
-  if (!sqlRes.ok) throw new Error('Failed to generate SQL')
-  const sqlData = await sqlRes.json()
-  let sql = sqlData.choices?.[0]?.message?.content?.trim() ?? ''
+  // Step 1: Generate SQL using Claude Haiku (fast + cheap)
+  const sqlMsg = await anthropic.messages.create({
+    model: 'claude-haiku-4-5-20251001',
+    max_tokens: 500,
+    system: SCHEMA_CONTEXT,
+    messages: [{ role: 'user', content: query }],
+  })
+
+  let sql = (sqlMsg.content[0] as { type: string; text: string }).text?.trim() ?? ''
+
+  // Strip markdown code fences if Claude wrapped the SQL
+  sql = sql.replace(/^```sql\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim()
 
   // Security validation
   const upper = sql.toUpperCase().trim()
@@ -72,11 +64,11 @@ export async function runNaturalLanguageQuery(
   sql = sql.replace(/:workspace_id/g, `'${workspaceId.replace(/'/g, "''")}'`)
 
   // Ensure workspace_id filter exists
-  if (!sql.toLowerCase().includes(`workspace_id`)) {
+  if (!sql.toLowerCase().includes('workspace_id')) {
     throw new Error('Generated query missing workspace_id filter')
   }
 
-  // Step 2: Execute via Supabase RPC (raw SQL with admin client)
+  // Step 2: Execute via Supabase RPC
   const supabase = createAdminClient()
   const { data: results, error } = await supabase.rpc('execute_nl_query', { query_sql: sql })
 
@@ -84,30 +76,26 @@ export async function runNaturalLanguageQuery(
 
   const rows = (results as Record<string, unknown>[]) ?? []
 
-  // Step 3: Generate natural language summary
-  let summary = `Found ${rows.length} leads.`
-  if (rows.length > 0 && OPENAI_API_KEY()) {
+  // Step 3: Generate natural language summary using Claude Haiku
+  let summary = `Found ${rows.length} lead${rows.length !== 1 ? 's' : ''}.`
+  if (rows.length > 0) {
     try {
-      const summaryRes = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${OPENAI_API_KEY()}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'gpt-4o-mini',
-          messages: [{
-            role: 'user',
-            content: `The user asked: "${query}"\nWe found ${rows.length} leads. Top 3: ${rows.slice(0, 3).map((r: any) => `${r.full_name || r.first_name} at ${r.company_name}`).join(', ')}.\nWrite a 1-sentence natural language summary of these results.`,
-          }],
-          max_tokens: 100,
-          temperature: 0.3,
-        }),
+      const top3 = rows.slice(0, 3).map((r: any) => {
+        const name = r.full_name || [r.first_name, r.last_name].filter(Boolean).join(' ') || 'Unknown'
+        return r.company_name ? `${name} at ${r.company_name}` : name
+      }).join(', ')
+
+      const summaryMsg = await anthropic.messages.create({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 100,
+        messages: [{
+          role: 'user',
+          content: `The user asked: "${query}"\nWe found ${rows.length} leads. Top results: ${top3}.\nWrite a concise 1-sentence summary of these results. Be specific.`,
+        }],
       })
-      const sd = await summaryRes.json()
-      summary = sd.choices?.[0]?.message?.content?.trim() ?? summary
+      summary = (summaryMsg.content[0] as { type: string; text: string }).text?.trim() ?? summary
     } catch {
-      // Non-fatal
+      // Non-fatal — default summary is fine
     }
   }
 

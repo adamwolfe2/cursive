@@ -85,7 +85,7 @@ export function EmailRevealButton({
       <button
         onClick={handleReveal}
         disabled={loading}
-        className="inline-flex items-center h-7 px-2.5 text-[11px] font-medium bg-zinc-900 text-white hover:bg-zinc-800 rounded-md transition-all duration-150 disabled:cursor-not-allowed disabled:opacity-50"
+        className="inline-flex items-center h-7 px-2.5 text-[11px] font-medium bg-primary text-white hover:bg-primary/90 rounded-md transition-all duration-150 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {loading ? (
           'Revealing...'

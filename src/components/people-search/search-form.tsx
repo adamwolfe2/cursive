@@ -201,7 +201,7 @@ export function SearchForm({ onSearch, loading }: SearchFormProps) {
         <button
           type="submit"
           disabled={loading || !isValid}
-          className="flex-1 min-h-[44px] h-11 sm:h-9 px-4 text-[13px] font-medium bg-zinc-900 text-white hover:bg-zinc-800 rounded-lg transition-all duration-150 disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex-1 min-h-[44px] h-11 sm:h-9 px-4 text-[13px] font-medium bg-primary text-white hover:bg-primary/90 rounded-lg transition-all duration-150 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {loading ? 'Searching...' : 'Search People'}
         </button>

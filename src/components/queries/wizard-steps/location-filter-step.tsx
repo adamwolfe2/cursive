@@ -181,7 +181,7 @@ export function LocationFilterStep({
           <button
             type="button"
             onClick={handleNext}
-            className="h-9 px-6 text-[13px] font-medium bg-zinc-900 text-white hover:bg-zinc-800 rounded-lg transition-all duration-150"
+            className="h-9 px-6 text-[13px] font-medium bg-primary text-white hover:bg-primary/90 rounded-lg transition-all duration-150"
           >
             Continue
           </button>

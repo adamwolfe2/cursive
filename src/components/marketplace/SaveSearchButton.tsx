@@ -116,7 +116,7 @@ export function SaveSearchButton({ filters, activeFilterCount, onSaved }: SaveSe
             className={`flex-1 h-8 text-[12px] font-medium rounded-md transition-all ${
               isSaving || !name.trim()
                 ? 'bg-zinc-200 text-zinc-400 cursor-not-allowed'
-                : 'bg-zinc-900 text-white hover:bg-zinc-800 cursor-pointer'
+                : 'bg-primary text-white hover:bg-primary/90 cursor-pointer'
             }`}
           >
             {isSaving ? 'Saving...' : 'Save'}

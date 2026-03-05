@@ -99,7 +99,7 @@ export function PartnerHubClient({ affiliate, referrals, commissions, milestones
         </p>
         <a
           href="/affiliates/apply"
-          className="inline-flex items-center gap-2 px-6 py-3 bg-zinc-900 text-white text-sm font-semibold rounded-lg hover:bg-zinc-700 transition-colors"
+          className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white text-sm font-semibold rounded-lg hover:bg-primary/90 transition-colors"
         >
           Apply to Partner Program
           <ExternalLink className="h-4 w-4" />
@@ -143,7 +143,7 @@ export function PartnerHubClient({ affiliate, referrals, commissions, milestones
           </span>
           <button
             onClick={handleCopy}
-            className="flex items-center gap-1.5 px-4 py-2 bg-zinc-900 text-white text-sm font-medium rounded-lg hover:bg-zinc-700 transition-colors shrink-0"
+            className="flex items-center gap-1.5 px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors shrink-0"
           >
             {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
             {copied ? 'Copied' : 'Copy Link'}

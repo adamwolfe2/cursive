@@ -143,7 +143,7 @@ export function ContactsTable({ data, onRowClick, onCreateClick }: ContactsTable
           <Button
             size="sm"
             onClick={onCreateClick}
-            className="h-7 gap-1.5 bg-gray-900 px-2.5 text-sm font-normal hover:bg-gray-800"
+            className="h-7 gap-1.5 bg-primary px-2.5 text-sm font-normal hover:bg-primary/90"
           >
             <Plus className="h-3.5 w-3.5" />
             New contact

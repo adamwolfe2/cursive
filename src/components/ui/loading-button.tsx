@@ -28,7 +28,7 @@ export function LoadingButton({
   ...props
 }: LoadingButtonProps) {
   const variantStyles = {
-    primary: 'bg-zinc-900 text-white hover:bg-zinc-800',
+    primary: 'bg-primary text-primary-foreground hover:bg-primary/90',
     secondary: 'bg-zinc-100 text-zinc-900 hover:bg-zinc-200',
     outline: 'border border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50',
     destructive: 'bg-red-600 text-white hover:bg-red-700',
@@ -48,7 +48,7 @@ export function LoadingButton({
       className={cn(
         'inline-flex items-center justify-center gap-2 sm:gap-2 rounded-lg font-medium transition-colors',
         'disabled:opacity-50 disabled:cursor-not-allowed',
-        'focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:ring-offset-2',
+        'focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2',
         variantStyles[variant],
         sizeStyles[size],
         fullWidth && 'w-full',
