@@ -106,28 +106,28 @@ export class CampaignRepository {
       throw new DatabaseError(campaignError.message)
     }
 
-    // Get leads count
-    // Note: campaign is already workspace-filtered above; RLS provides secondary defense
-    // PERFORMANCE: Use estimated count for campaign stats
-    const { count: leadsCount, error: leadsError } = await supabase
-      .from('campaign_leads')
-      .select('*', { count: 'estimated', head: true })
-      .eq('campaign_id', id)
+    // Parallel: fetch leads count and pending review simultaneously
+    const [
+      { count: leadsCount, error: leadsError },
+      { data: pendingReview, error: reviewError },
+    ] = await Promise.all([
+      supabase
+        .from('campaign_leads')
+        .select('*', { count: 'estimated', head: true })
+        .eq('campaign_id', id),
+      supabase
+        .from('campaign_reviews')
+        .select('*')
+        .eq('campaign_id', id)
+        .eq('status', 'pending')
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle(),
+    ])
 
     if (leadsError) {
       throw new DatabaseError(leadsError.message)
     }
-
-    // Get pending review if any
-    const { data: pendingReview, error: reviewError } = await supabase
-      .from('campaign_reviews')
-      .select('*')
-      .eq('campaign_id', id)
-      .eq('status', 'pending')
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle()
-
     // Ignore not found error for review
     if (reviewError && reviewError.code !== 'PGRST116') {
       throw new DatabaseError(reviewError.message)
