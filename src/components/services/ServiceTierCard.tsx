@@ -77,13 +77,13 @@ export function ServiceTierCard({ tier, featured = false }: ServiceTierCardProps
           {/* Pricing */}
           <div className="mb-4">
             <div className="flex items-baseline gap-1">
-              <span className="text-4xl font-bold text-zinc-900">
+              <span className="text-2xl sm:text-4xl font-bold text-zinc-900">
                 {formattedPriceMin}
               </span>
               {formattedPriceMax && (
                 <>
                   <span className="text-2xl text-zinc-500">-</span>
-                  <span className="text-4xl font-bold text-zinc-900">
+                  <span className="text-2xl sm:text-4xl font-bold text-zinc-900">
                     {formattedPriceMax}
                   </span>
                 </>

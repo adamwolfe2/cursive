@@ -341,7 +341,7 @@ export default function CustomAudiencesAdminPage() {
               {/* Criteria */}
               <div>
                 <h3 className="text-sm font-medium text-gray-500 mb-2">Criteria</h3>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <div className="text-xs text-gray-500">Industry</div>
                     <div className="font-medium text-gray-900">{selectedRequest.industry}</div>
@@ -433,7 +433,7 @@ export default function CustomAudiencesAdminPage() {
               {/* Actions */}
               <div className="border-t border-gray-200 pt-6">
                 <h3 className="text-sm font-medium text-gray-500 mb-3">Update Status</h3>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {selectedRequest.status === 'pending' && (
                     <button
                       onClick={() => updateStatus(selectedRequest.id, 'sample_sent')}

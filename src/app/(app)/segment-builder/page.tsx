@@ -740,7 +740,7 @@ export default function SegmentBuilderPage() {
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <div className="text-center py-4">
-                        <div className="text-4xl font-bold text-primary">
+                        <div className="text-2xl sm:text-4xl font-bold text-primary">
                           {preview.count.toLocaleString()}
                         </div>
                         <div className="text-sm text-muted-foreground mt-1">

@@ -186,7 +186,7 @@ export default function BuyerProfilePage() {
                   >
                     Service States
                   </FormLabel>
-                  <div className="grid grid-cols-8 gap-2">
+                  <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-2">
                     {states.map(state => (
                       <button
                         key={state}

@@ -37,7 +37,7 @@ export function ResultsDashboard({ results, domain, monthlyVisitors, dealSize, i
       {/* Revenue leak hero */}
       <div className="text-center py-8 bg-red-500/5 border border-red-500/20 rounded-2xl">
         <p className="text-white/60 text-sm uppercase tracking-wider mb-2">You&apos;re leaving on the table every year</p>
-        <div className="text-5xl md:text-6xl font-black text-red-400">
+        <div className="text-3xl sm:text-5xl md:text-6xl font-black text-red-400">
           <CountUpNumber value={results.revenueLeak} prefix="$" duration={2500} />
         </div>
         <p className="text-white/50 text-sm mt-3 max-w-lg mx-auto">

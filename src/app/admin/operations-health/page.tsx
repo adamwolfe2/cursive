@@ -136,7 +136,7 @@ export default function OperationsHealthPage() {
           </CardHeader>
           <CardContent>
             <div className="flex items-baseline justify-between">
-              <div className="text-4xl font-bold">{metrics.emailDeliveryRate.toFixed(2)}%</div>
+              <div className="text-2xl sm:text-4xl font-bold">{metrics.emailDeliveryRate.toFixed(2)}%</div>
               <Badge variant={getHealthBadgeVariant(emailHealthStatus)}>
                 {emailHealthStatus}
               </Badge>
@@ -181,7 +181,7 @@ export default function OperationsHealthPage() {
           </CardHeader>
           <CardContent>
             <div className="flex items-baseline justify-between">
-              <div className="text-4xl font-bold">{metrics.webhookSuccessRate.toFixed(2)}%</div>
+              <div className="text-2xl sm:text-4xl font-bold">{metrics.webhookSuccessRate.toFixed(2)}%</div>
               <Badge variant={getHealthBadgeVariant(webhookHealthStatus)}>
                 {webhookHealthStatus}
               </Badge>

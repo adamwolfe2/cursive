@@ -178,7 +178,7 @@ export function PricingCards({ plans, currentPlan }: PricingCardsProps) {
 
               <div className="mb-6">
                 <div className="flex items-baseline gap-1">
-                  <span className="text-5xl font-bold text-zinc-900">
+                  <span className="text-3xl sm:text-5xl font-bold text-zinc-900">
                     ${Math.round(displayPrice)}
                   </span>
                   <span className="text-zinc-500">

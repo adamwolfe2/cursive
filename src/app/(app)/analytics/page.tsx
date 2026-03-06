@@ -208,7 +208,7 @@ export default async function AnalyticsPage() {
             {stats.lost > 0 && (
               <p className="mt-4 text-xs text-gray-400">{stats.lost} marked not interested</p>
             )}
-            <div className="mt-5 pt-4 border-t border-gray-100 grid grid-cols-3 gap-3 text-center">
+            <div className="mt-5 pt-4 border-t border-gray-100 grid grid-cols-1 sm:grid-cols-3 gap-3 text-center">
               <div>
                 <p className="text-lg font-bold text-gray-900">{enrichRate}</p>
                 <p className="text-xs text-gray-500">Enrich rate</p>

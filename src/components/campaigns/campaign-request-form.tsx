@@ -156,7 +156,7 @@ export function CampaignRequestForm() {
             <Sparkles className="h-4 w-4" />
             Powered by EmailBison
           </div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          <h1 className="text-2xl sm:text-4xl font-bold text-gray-900 mb-4">
             Apply for a Custom Email Campaign
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">

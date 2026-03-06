@@ -225,7 +225,7 @@ export default function CustomAudiencePage() {
         </GradientCard>
 
         {/* Info Section */}
-        <div className="mt-8 grid grid-cols-3 gap-4">
+        <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="text-center p-4">
             <div className="text-2xl font-bold text-primary mb-1">48h</div>
             <div className="text-sm text-muted-foreground">Sample delivery</div>

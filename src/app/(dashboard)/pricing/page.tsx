@@ -78,7 +78,7 @@ export default function PricingPage() {
           </div>
 
           <div className="flex items-baseline gap-1 mb-6">
-            <span className="text-4xl font-bold text-foreground">$0</span>
+            <span className="text-3xl sm:text-4xl font-bold text-foreground">$0</span>
             <span className="text-muted-foreground">/month</span>
           </div>
 
@@ -122,7 +122,7 @@ export default function PricingPage() {
           </div>
 
           <div className="flex items-baseline gap-1 mb-1">
-            <span className="text-4xl font-bold text-foreground">
+            <span className="text-3xl sm:text-4xl font-bold text-foreground">
               ${billingPeriod === 'monthly' ? '50' : '40'}
             </span>
             <span className="text-muted-foreground">/month</span>

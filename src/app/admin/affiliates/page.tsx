@@ -99,7 +99,7 @@ export default function AdminAffiliatesPage() {
   const stats = data?.stats
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
       <div className="mb-6">
         <Link href="/admin" className="inline-flex items-center gap-1 text-[12px] text-zinc-400 hover:text-zinc-600 mb-1 transition-colors">
           <ChevronLeft size={13} />
@@ -111,7 +111,7 @@ export default function AdminAffiliatesPage() {
 
       {/* Stats */}
       {stats && (
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 mb-6">
           {[
             { label: 'Total Applications', value: stats.total_applications, icon: Users },
             { label: 'Pending Review', value: stats.pending, icon: Clock, highlight: stats.pending > 0 },
@@ -153,7 +153,7 @@ export default function AdminAffiliatesPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-white border border-zinc-200 rounded-lg shadow-sm overflow-hidden">
+      <div className="bg-white border border-zinc-200 rounded-lg shadow-sm overflow-hidden overflow-x-auto">
         {isLoading ? (
           <div className="p-12 text-center text-zinc-400">Loading...</div>
         ) : !data?.applications.length ? (

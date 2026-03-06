@@ -147,7 +147,7 @@ export default function AdminAffiliateDetailPage({ params }: { params: Promise<{
               </span>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 mb-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
               {[
                 { label: 'Name', value: `${app.first_name} ${app.last_name}` },
                 { label: 'Email', value: app.email },
@@ -258,7 +258,7 @@ export default function AdminAffiliateDetailPage({ params }: { params: Promise<{
                   </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-4 mb-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
                   {[
                     { label: 'Partner Code', value: affiliate.partner_code },
                     { label: 'Status', value: affiliate.status },
@@ -282,6 +282,7 @@ export default function AdminAffiliateDetailPage({ params }: { params: Promise<{
               {affiliate.referrals && affiliate.referrals.length > 0 && (
                 <div className="bg-white border border-zinc-200 rounded-lg p-6">
                   <h2 className="text-[14px] font-semibold text-zinc-900 mb-4">Referrals ({affiliate.referrals.length})</h2>
+                  <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead className="bg-zinc-50 border-b border-zinc-100">
                       <tr>
@@ -308,6 +309,7 @@ export default function AdminAffiliateDetailPage({ params }: { params: Promise<{
                       ))}
                     </tbody>
                   </table>
+                  </div>
                 </div>
               )}
             </>

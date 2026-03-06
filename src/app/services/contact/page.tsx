@@ -53,7 +53,7 @@ export default function ContactSalesPage() {
             <CheckCircle className="h-12 w-12 text-green-600" />
           </div>
 
-          <h1 className="text-4xl font-bold text-zinc-900 mb-4">
+          <h1 className="text-2xl sm:text-4xl font-bold text-zinc-900 mb-4">
             Thank You!
           </h1>
           <p className="text-xl text-zinc-600 mb-8">
@@ -104,7 +104,7 @@ export default function ContactSalesPage() {
             Back to services
           </Link>
 
-          <h1 className="text-4xl font-bold text-zinc-900 mb-4">
+          <h1 className="text-2xl sm:text-4xl font-bold text-zinc-900 mb-4">
             Let&apos;s Talk About Your Growth
           </h1>
           <p className="text-xl text-zinc-600">

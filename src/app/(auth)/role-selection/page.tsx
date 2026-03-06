@@ -63,7 +63,7 @@ export default function RoleSelectionPage() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <h1 className="text-4xl font-bold text-zinc-900 mb-3">
+          <h1 className="text-2xl sm:text-4xl font-bold text-zinc-900 mb-3">
             Welcome to Cursive
           </h1>
           <p className="text-lg text-zinc-600">

@@ -367,14 +367,14 @@ export default function PartnerUploadPage() {
 
           <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-6">
             <h3 className="font-medium text-white">Required Fields</h3>
-            <ul className="mt-2 grid grid-cols-2 gap-2 text-sm text-zinc-400">
+            <ul className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-zinc-400">
               <li>✓ Email</li>
               <li>✓ First Name</li>
               <li>✓ Last Name</li>
               <li>✓ Company Name</li>
             </ul>
             <h3 className="mt-4 font-medium text-white">Optional Fields</h3>
-            <ul className="mt-2 grid grid-cols-2 gap-2 text-sm text-zinc-400">
+            <ul className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-zinc-400">
               <li>• Job Title</li>
               <li>• Phone</li>
               <li>• City, State, Zip</li>
