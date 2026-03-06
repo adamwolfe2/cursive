@@ -15,6 +15,8 @@ import { meetsQualityBar } from '@/lib/services/lead-quality.service'
 import { checkWorkspaceDuplicates, logDedupRejections } from '@/lib/services/deduplication.service'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://leads.meetcursive.com'
+
 /**
  * Score a lead based on data completeness.
  * Leads with name + email + company are highest quality.
@@ -220,7 +222,7 @@ export const distributeDailyLeads = inngest.createFunction(
         if (result && result.inserted > 0) {
           await step.run(`send-notification-${user.id}`, async () => {
             const firstName = user.full_name?.split(' ')[0] || 'there'
-            const dashboardUrl = 'https://leads.meetcursive.com/leads'
+            const dashboardUrl = `${APP_URL}/leads`
             const leadCount = result.inserted
             const today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric' })
 
@@ -308,10 +310,10 @@ export const distributeDailyLeads = inngest.createFunction(
             <td style="background:#f9fafb;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 12px 12px;padding:18px 36px;">
               <p style="margin:0 0 6px;font-size:12px;color:#9ca3af;line-height:1.6;">
                 You receive leads daily based on your industry and location targeting.
-                <a href="https://leads.meetcursive.com/settings" style="color:#6366f1;text-decoration:none;">Update preferences</a>
+                <a href="${APP_URL}/settings" style="color:#6366f1;text-decoration:none;">Update preferences</a>
               </p>
               <p style="margin:0;font-size:12px;color:#d1d5db;">
-                &copy; ${new Date().getFullYear()} Cursive &middot; <a href="https://leads.meetcursive.com/settings/notifications" style="color:#d1d5db;text-decoration:none;">Manage email notifications</a>
+                &copy; ${new Date().getFullYear()} Cursive &middot; <a href="${APP_URL}/settings/notifications" style="color:#d1d5db;text-decoration:none;">Manage email notifications</a>
               </p>
             </td>
           </tr>
@@ -322,7 +324,7 @@ export const distributeDailyLeads = inngest.createFunction(
   </table>
 </body>
 </html>`,
-              text: `Your ${leadCount} new lead${leadCount === 1 ? '' : 's'} ${leadCount === 1 ? 'is' : 'are'} ready — ${today}\n\nHi ${firstName},\n\nYour daily batch just landed. Here's a preview:\n\n${previewLeads.map((l: AudienceLabLead) => `- ${[l.FIRST_NAME, l.LAST_NAME].filter(Boolean).join(' ') || 'New Lead'}${l.JOB_TITLE || l.HEADLINE ? `, ${l.JOB_TITLE || l.HEADLINE}` : ''}${l.COMPANY_NAME ? ` at ${l.COMPANY_NAME}` : ''}`).join('\n')}${remainingCount > 0 ? `\n+ ${remainingCount} more leads` : ''}\n\nView all your leads: ${dashboardUrl}\n\nEach lead can be enriched with verified contact details for 1 credit.\n\n---\nCursive · Manage notifications: https://leads.meetcursive.com/settings/notifications`,
+              text: `Your ${leadCount} new lead${leadCount === 1 ? '' : 's'} ${leadCount === 1 ? 'is' : 'are'} ready — ${today}\n\nHi ${firstName},\n\nYour daily batch just landed. Here's a preview:\n\n${previewLeads.map((l: AudienceLabLead) => `- ${[l.FIRST_NAME, l.LAST_NAME].filter(Boolean).join(' ') || 'New Lead'}${l.JOB_TITLE || l.HEADLINE ? `, ${l.JOB_TITLE || l.HEADLINE}` : ''}${l.COMPANY_NAME ? ` at ${l.COMPANY_NAME}` : ''}`).join('\n')}${remainingCount > 0 ? `\n+ ${remainingCount} more leads` : ''}\n\nView all your leads: ${dashboardUrl}\n\nEach lead can be enriched with verified contact details for 1 credit.\n\n---\nCursive · Manage notifications: ${APP_URL}/settings/notifications`,
               tags: [{ name: 'type', value: 'daily-leads' }],
             })
 

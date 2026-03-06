@@ -15,8 +15,9 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { sendEmail } from '@/lib/email/service'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 
-const UPGRADE_URL = 'https://leads.meetcursive.com/settings/billing'
-const DASHBOARD_URL = 'https://leads.meetcursive.com/leads'
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://leads.meetcursive.com'
+const UPGRADE_URL = `${APP_URL}/settings/billing`
+const DASHBOARD_URL = `${APP_URL}/leads`
 
 function daysFromNow(n: number): { start: string; end: string } {
   const base = new Date()
@@ -63,7 +64,7 @@ function trialEmail7Day({
 <p style="margin:20px 0 0;font-size:13px;color:#9ca3af;">Questions? Reply to this email — we're here to help.</p>
 </td></tr>
 <tr><td style="background:#f9fafb;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 12px 12px;padding:16px 36px;">
-<p style="margin:0;font-size:12px;color:#d1d5db;">&copy; ${new Date().getFullYear()} Cursive &middot; <a href="https://leads.meetcursive.com/settings/notifications" style="color:#d1d5db;text-decoration:none;">Manage notifications</a></p>
+<p style="margin:0;font-size:12px;color:#d1d5db;">&copy; ${new Date().getFullYear()} Cursive &middot; <a href="${APP_URL}/settings/notifications" style="color:#d1d5db;text-decoration:none;">Manage notifications</a></p>
 </td></tr>
 </table></td></tr></table></body></html>`
 
@@ -103,7 +104,7 @@ ${sampleLeads.length > 0 ? `<p style="margin:0 0 8px;font-size:14px;font-weight:
 <p style="margin:20px 0 0;font-size:13px;color:#9ca3af;">Questions? Reply to this email — we're here to help.</p>
 </td></tr>
 <tr><td style="background:#f9fafb;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 12px 12px;padding:16px 36px;">
-<p style="margin:0;font-size:12px;color:#d1d5db;">&copy; ${new Date().getFullYear()} Cursive &middot; <a href="https://leads.meetcursive.com/settings/notifications" style="color:#d1d5db;text-decoration:none;">Manage notifications</a></p>
+<p style="margin:0;font-size:12px;color:#d1d5db;">&copy; ${new Date().getFullYear()} Cursive &middot; <a href="${APP_URL}/settings/notifications" style="color:#d1d5db;text-decoration:none;">Manage notifications</a></p>
 </td></tr>
 </table></td></tr></table></body></html>`
 
@@ -130,7 +131,7 @@ function trialEmailDayOf({ userName, trialEndsAt }: { userName: string; trialEnd
 <p style="margin:20px 0 0;font-size:13px;color:#9ca3af;">Still have questions? <a href="mailto:support@meetcursive.com" style="color:#6366f1;">Email us</a> and we'll help you decide.</p>
 </td></tr>
 <tr><td style="background:#f9fafb;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 12px 12px;padding:16px 36px;">
-<p style="margin:0;font-size:12px;color:#d1d5db;">&copy; ${new Date().getFullYear()} Cursive &middot; <a href="https://leads.meetcursive.com/settings/notifications" style="color:#d1d5db;text-decoration:none;">Manage notifications</a></p>
+<p style="margin:0;font-size:12px;color:#d1d5db;">&copy; ${new Date().getFullYear()} Cursive &middot; <a href="${APP_URL}/settings/notifications" style="color:#d1d5db;text-decoration:none;">Manage notifications</a></p>
 </td></tr>
 </table></td></tr></table></body></html>`
 
