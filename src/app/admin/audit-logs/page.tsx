@@ -8,7 +8,7 @@
  * and severity color-coding for compliance and debugging.
  */
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import { safeError } from '@/lib/utils/log-sanitizer'
@@ -273,8 +273,14 @@ export default function AdminAuditLogsPage() {
 
   const todayLogs = summaryData?.data?.logs ?? []
   const todayTotal = summaryData?.data?.pagination?.total ?? 0
-  const todayWarnings = todayLogs.filter(l => l.severity === 'warning').length
-  const todayErrors = todayLogs.filter(l => l.severity === 'error' || l.severity === 'critical').length
+  const todayWarnings = useMemo(
+    () => todayLogs.filter(l => l.severity === 'warning').length,
+    [todayLogs]
+  )
+  const todayErrors = useMemo(
+    () => todayLogs.filter(l => l.severity === 'error' || l.severity === 'critical').length,
+    [todayLogs]
+  )
 
   // ---- Guard rendering ----
   if (!authChecked) {

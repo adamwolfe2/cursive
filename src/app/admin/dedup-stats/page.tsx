@@ -5,6 +5,7 @@
  * Shows 30-day deduplication statistics: top workspaces, rejection reasons, sources, daily trend
  */
 
+import { useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -84,14 +85,22 @@ export default function DedupStatsPage() {
     staleTime: 5 * 60 * 1000,
   })
 
-  const peakDay = statsData?.daily_trend.reduce(
-    (max, d) => (d.total > max.total ? d : max),
-    { day: '', total: 0 }
+  const peakDay = useMemo(
+    () =>
+      statsData?.daily_trend.reduce(
+        (max, d) => (d.total > max.total ? d : max),
+        { day: '', total: 0 }
+      ),
+    [statsData]
   )
 
-  const dailyAvg = statsData
-    ? Math.round(statsData.total_rejections / Math.max(statsData.daily_trend.length, 1))
-    : 0
+  const dailyAvg = useMemo(
+    () =>
+      statsData
+        ? Math.round(statsData.total_rejections / Math.max(statsData.daily_trend.length, 1))
+        : 0,
+    [statsData]
+  )
 
   return (
     <div className="max-w-[1400px] mx-auto px-6 py-8">

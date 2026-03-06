@@ -118,6 +118,7 @@ export default function AdminWorkspaceDetailPage() {
       if (error) throw error
       return data as Workspace
     },
+    staleTime: 2 * 60 * 1000,
   })
 
   // Fetch available tiers
@@ -129,6 +130,7 @@ export default function AdminWorkspaceDetailPage() {
       const data = await response.json()
       return data.tiers as ProductTier[]
     },
+    staleTime: 10 * 60 * 1000, // tiers change rarely
   })
 
   // Fetch audit logs for this workspace
@@ -146,6 +148,7 @@ export default function AdminWorkspaceDetailPage() {
       return data as AuditLog[]
     },
     enabled: activeTab === 'logs',
+    staleTime: 2 * 60 * 1000,
   })
 
   // Fetch usage stats
@@ -191,6 +194,7 @@ export default function AdminWorkspaceDetailPage() {
       }
     },
     enabled: activeTab === 'usage' || activeTab === 'overview',
+    staleTime: 2 * 60 * 1000,
   })
 
   // Assign tier mutation

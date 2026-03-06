@@ -90,6 +90,7 @@ export default function AdminLeadsPage() {
       return data as Lead[]
     },
     enabled: authChecked && isAdmin,
+    staleTime: 2 * 60 * 1000,
   })
 
   // Fetch verification queue
@@ -110,6 +111,7 @@ export default function AdminLeadsPage() {
       return data as Lead[]
     },
     enabled: authChecked && isAdmin,
+    staleTime: 2 * 60 * 1000,
   })
 
   if (!authChecked) {

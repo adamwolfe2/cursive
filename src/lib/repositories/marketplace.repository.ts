@@ -659,6 +659,7 @@ export class MarketplaceRepository {
 
   /**
    * Get aggregate stats for marketplace
+   * PERFORMANCE: 3 parallel queries (was 4 sequential); industry+avg combined into one
    */
   async getMarketplaceStats(): Promise<{
     totalLeads: number
@@ -669,50 +670,44 @@ export class MarketplaceRepository {
   }> {
     const adminClient = createAdminClient()
 
-    // Total leads count - PERFORMANCE: Use estimated for analytics
-    const { count: totalLeads } = await adminClient
-      .from('leads')
-      .select('*', { count: 'estimated', head: true })
-      .eq('is_marketplace_listed', true)
-
-    // By industry (simplified - would need more complex query for full breakdown)
-    const { data: industryData } = await adminClient
-      .from('leads')
-      .select('company_industry')
-      .eq('is_marketplace_listed', true)
-      .limit(10000)
-
-    const totalByIndustry: Record<string, number> = {}
-    industryData?.forEach((lead) => {
-      const industry = lead.company_industry || 'Unknown'
-      totalByIndustry[industry] = (totalByIndustry[industry] || 0) + 1
-    })
-
-    // Average price and intent score
-    const { data: avgData } = await adminClient
-      .from('leads')
-      .select('marketplace_price, intent_score_calculated')
-      .eq('is_marketplace_listed', true)
-      .limit(10000) // Sample for performance
-
-    let avgPrice = 0.05
-    let avgIntentScore = 50
-    if (avgData?.length) {
-      avgPrice =
-        avgData.reduce((sum, l) => sum + (l.marketplace_price || 0.05), 0) / avgData.length
-      avgIntentScore =
-        avgData.reduce((sum, l) => sum + (l.intent_score_calculated || 50), 0) / avgData.length
-    }
-
-    // Sold last 30 days
     const thirtyDaysAgo = new Date()
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
-    // PERFORMANCE: Use estimated count for analytics dashboard
-    const { count: totalSoldLast30Days } = await adminClient
-      .from('marketplace_purchase_items')
-      .select('*', { count: 'estimated', head: true })
-      .gte('created_at', thirtyDaysAgo.toISOString())
+    // Run 3 queries in parallel; combined lead sample handles both industry breakdown and averages
+    const [
+      { count: totalLeads },
+      { data: leadsData },
+      { count: totalSoldLast30Days },
+    ] = await Promise.all([
+      adminClient
+        .from('leads')
+        .select('*', { count: 'estimated', head: true })
+        .eq('is_marketplace_listed', true),
+      adminClient
+        .from('leads')
+        .select('company_industry, marketplace_price, intent_score_calculated')
+        .eq('is_marketplace_listed', true)
+        .limit(10000),
+      adminClient
+        .from('marketplace_purchase_items')
+        .select('*', { count: 'estimated', head: true })
+        .gte('created_at', thirtyDaysAgo.toISOString()),
+    ])
+
+    const totalByIndustry: Record<string, number> = {}
+    let avgPrice = 0.05
+    let avgIntentScore = 50
+
+    if (leadsData?.length) {
+      leadsData.forEach((lead) => {
+        const industry = lead.company_industry || 'Unknown'
+        totalByIndustry[industry] = (totalByIndustry[industry] || 0) + 1
+      })
+      avgPrice =
+        leadsData.reduce((sum, l) => sum + (l.marketplace_price || 0.05), 0) / leadsData.length
+      avgIntentScore =
+        leadsData.reduce((sum, l) => sum + (l.intent_score_calculated || 50), 0) / leadsData.length
+    }
 
     return {
       totalLeads: totalLeads || 0,

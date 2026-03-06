@@ -44,6 +44,7 @@ export function DncClient({ workspaces }: { workspaces: Workspace[] }) {
       const res = await fetch('/api/admin/sdr/dnc')
       return res.json() as Promise<{ entries: DncEntry[] }>
     },
+    staleTime: 5 * 60 * 1000,
   })
 
   const filtered = useMemo(() => {

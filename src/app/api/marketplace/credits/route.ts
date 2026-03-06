@@ -1,26 +1,19 @@
 // Marketplace Credits API
 // Get current workspace credit balance
 
-import { NextResponse } from 'next/server'
-import { getCurrentUser } from '@/lib/auth/helpers'
+import { NextRequest, NextResponse } from 'next/server'
+import { fastAuth } from '@/lib/auth/fast-auth'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { MarketplaceRepository } from '@/lib/repositories/marketplace.repository'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const user = await getCurrentUser()
-
-    if (!user) {
-      return unauthorized()
-    }
-
-    if (!user.workspace_id) {
-      return NextResponse.json({ error: 'No workspace found' }, { status: 404 })
-    }
+    const user = await fastAuth(request)
+    if (!user) return unauthorized()
 
     const repo = new MarketplaceRepository()
-    const credits = await repo.getWorkspaceCredits(user.workspace_id)
+    const credits = await repo.getWorkspaceCredits(user.workspaceId)
 
     return NextResponse.json({
       balance: credits?.balance || 0,

@@ -1,106 +1,76 @@
 // API endpoint for marketplace statistics
 
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { getCurrentUser } from '@/lib/auth/helpers'
+import { fastAuth } from '@/lib/auth/fast-auth'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const user = await getCurrentUser()
+    const user = await fastAuth(request)
+    if (!user) return unauthorized()
 
-    if (!user) {
-      return unauthorized()
-    }
-
-    if (!user.workspace_id) {
-      return NextResponse.json(
-        { error: 'User workspace not found' },
-        { status: 404 }
-      )
-    }
-
-    const workspaceId = user.workspace_id
+    const workspaceId = user.workspaceId
     const supabase = await createClient()
 
-    // Get available leads count (leads not purchased by this workspace)
-    const { count: availableCount, error: availableError } = await supabase
-      .from('leads')
-      .select('*', { count: 'estimated', head: true })
-      .neq('workspace_id', workspaceId)
-      .eq('status', 'available')
-
-    if (availableError) {
-      throw availableError
-    }
-
-    // Get credits balance
-    const { data: creditsData, error: creditsError } = await supabase
-      .from('workspace_credits')
-      .select('balance')
-      .eq('workspace_id', workspaceId)
-      .maybeSingle()
-
-    if (creditsError) {
-      throw creditsError
-    }
-
-    const credits = creditsData?.balance || 0
-
-    // Get purchase history count
-    const { count: purchaseCount, error: purchaseError } = await supabase
-      .from('lead_purchases')
-      .select('*', { count: 'estimated', head: true })
-      .eq('buyer_workspace_id', workspaceId)
-
-    if (purchaseError) {
-      throw purchaseError
-    }
-
-    // Get recent purchases for trend (limit to 1000 — we only need the sum)
     const thirtyDaysAgo = new Date()
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
-    const { data: recentPurchases, error: recentError } = await supabase
-      .from('lead_purchases')
-      .select('purchased_at, price_paid')
-      .eq('buyer_workspace_id', workspaceId)
-      .gte('purchased_at', thirtyDaysAgo.toISOString())
-      .limit(1000)
+    // Run all 5 queries in parallel — each is independent
+    const [
+      { count: availableCount, error: availableError },
+      { data: creditsData, error: creditsError },
+      { count: purchaseCount, error: purchaseError },
+      { data: recentPurchases, error: recentError },
+      { data: avgPriceData, error: avgError },
+    ] = await Promise.all([
+      supabase
+        .from('leads')
+        .select('*', { count: 'estimated', head: true })
+        .neq('workspace_id', workspaceId)
+        .eq('status', 'available'),
+      supabase
+        .from('workspace_credits')
+        .select('balance')
+        .eq('workspace_id', workspaceId)
+        .maybeSingle(),
+      supabase
+        .from('lead_purchases')
+        .select('*', { count: 'estimated', head: true })
+        .eq('buyer_workspace_id', workspaceId),
+      supabase
+        .from('lead_purchases')
+        .select('purchased_at, price_paid')
+        .eq('buyer_workspace_id', workspaceId)
+        .gte('purchased_at', thirtyDaysAgo.toISOString())
+        .limit(1000),
+      supabase
+        .from('leads')
+        .select('price')
+        .neq('workspace_id', workspaceId)
+        .eq('status', 'available')
+        .limit(100),
+    ])
 
-    if (recentError) {
-      throw recentError
-    }
+    if (availableError) throw availableError
+    if (creditsError) throw creditsError
+    if (purchaseError) throw purchaseError
+    if (recentError) throw recentError
+    if (avgError) throw avgError
 
-    // Calculate total spent
-    const totalSpent = recentPurchases?.reduce(
-      (sum, p) => sum + (p.price_paid || 0),
-      0
-    ) || 0
-
-    // Get average lead price (sample 100 rows — this is an approximation used for display only)
-    const { data: avgPriceData, error: avgError } = await supabase
-      .from('leads')
-      .select('price')
-      .neq('workspace_id', workspaceId)
-      .eq('status', 'available')
-      .limit(100)
-
-    if (avgError) {
-      throw avgError
-    }
-
+    const credits = creditsData?.balance || 0
+    const totalSpent =
+      recentPurchases?.reduce((sum, p) => sum + (p.price_paid || 0), 0) || 0
     const avgPrice = avgPriceData?.length
-      ? avgPriceData.reduce((sum, l) => sum + (l.price || 0), 0) /
-        avgPriceData.length
+      ? avgPriceData.reduce((sum, l) => sum + (l.price || 0), 0) / avgPriceData.length
       : 0
 
     return NextResponse.json({
       availableLeads: availableCount || 0,
-      credits: credits,
+      credits,
       totalPurchased: purchaseCount || 0,
-      totalSpent: totalSpent,
+      totalSpent,
       averagePrice: avgPrice,
       recentPurchases: recentPurchases?.length || 0,
     })

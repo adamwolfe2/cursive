@@ -32,6 +32,8 @@ const purchaseQuerySchema = z.object({
 export async function POST(request: NextRequest) {
   let idempotencyKey: string | undefined
   let workspaceId: string | undefined
+  // Single admin client shared across try/catch to avoid repeated object creation
+  const adminClient = createAdminClient()
 
   try {
     const user = await getCurrentUser()
@@ -71,7 +73,6 @@ export async function POST(request: NextRequest) {
 
     // IDEMPOTENCY: Check if request already processed
     if (validated.idempotencyKey) {
-      const adminClient = createAdminClient()
       const { data: existingKey } = await adminClient
         .from('api_idempotency_keys')
         .select('status, response_data, completed_at')
@@ -102,7 +103,6 @@ export async function POST(request: NextRequest) {
     }
 
     const repo = new MarketplaceRepository()
-    const adminClient = createAdminClient()
 
     // RACE CONDITION FIX: Use atomic validation with row-level locks
     let leads: any[]
@@ -326,7 +326,6 @@ export async function POST(request: NextRequest) {
       }
 
       if (validated.idempotencyKey) {
-        const adminClient = createAdminClient()
         await adminClient
           .from('api_idempotency_keys')
           .update({
@@ -342,7 +341,6 @@ export async function POST(request: NextRequest) {
     } else {
       // Stripe payment - create checkout session
       const stripe = getStripeClient()
-      const adminClient = createAdminClient()
 
       const purchase = await repo.createPurchase({
         buyerWorkspaceId: user.workspace_id,
@@ -441,7 +439,6 @@ export async function POST(request: NextRequest) {
       }
 
       if (validated.idempotencyKey) {
-        const adminClient = createAdminClient()
         await adminClient
           .from('api_idempotency_keys')
           .update({
@@ -460,7 +457,6 @@ export async function POST(request: NextRequest) {
 
     if (idempotencyKey && workspaceId) {
       try {
-        const adminClient = createAdminClient()
         await adminClient
           .from('api_idempotency_keys')
           .update({
