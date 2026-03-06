@@ -488,11 +488,13 @@ export async function POST(request: NextRequest) {
       if (signupDomain && !GENERIC_DOMAINS.includes(signupDomain)) {
         try {
           const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
+          const domainBase = signupDomain.replace(/^www\./, '')
+          const domainVariants = [domainBase, `www.${domainBase}`]
           const { data: demoPixel } = await admin
             .from('audiencelab_pixels')
             .select('id, pixel_id')
             .is('workspace_id', null)
-            .eq('domain', signupDomain)
+            .in('domain', domainVariants)
             .eq('trial_status', 'demo')
             .gte('created_at', thirtyDaysAgo)
             .order('created_at', { ascending: false })

@@ -92,6 +92,7 @@ export default function MarketplacePage() {
   const isLoading = leadsQuery.isLoading
   const credits = creditsQuery.data?.balance ?? 0
   const totalSpend = statsQuery.data?.totalSpent ?? 0
+  const leadCount = statsQuery.data?.leadCount ?? 0
   const isPurchasing = purchaseMutation.isPending
 
   // Handle Stripe redirect
@@ -245,7 +246,7 @@ export default function MarketplacePage() {
           )}
 
           {/* Upsell Banner */}
-          <UpsellBanner creditsBalance={credits} totalSpend={totalSpend} />
+          <UpsellBanner creditsBalance={credits} totalSpend={totalSpend} leadCount={leadCount} />
 
           {/* Header */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">

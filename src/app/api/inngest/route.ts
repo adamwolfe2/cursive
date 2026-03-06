@@ -208,5 +208,23 @@ export const { GET, POST, PUT } = serve({
 
     // Intelligence Pack (on-demand Tier 2 + Tier 3 enrichment)
     functions.intelligencePack,
+
+    // First Leads Arrived (activation email on first lead provisioning)
+    functions.firstLeadsArrived,
+
+    // Trial Countdown Emails (daily cron — 7d/3d/day-of reminders before pixel trial expiry)
+    functions.trialCountdownEmails,
+
+    // Provision Workspace Audience (event-triggered on signup — provisions initial leads)
+    functions.provisionWorkspaceAudience,
+
+    // Cal.com No-Show Recovery (2-email recovery sequence when prospect misses call)
+    functions.calNoShowRecovery,
+
+    // Pixel V4 Sync (every 2h — enriches leads with DNC flags, intent scores, department)
+    functions.pixelV4Sync,
+
+    // DFY Upsell Trigger (daily 10am UTC — emails workspaces with 50+ leads and no managed spend)
+    functions.dfyUpsellTrigger,
   ],
 })

@@ -256,3 +256,6 @@ export { firstLeadsArrived } from './first-leads-arrived'
 
 // Trial countdown emails (daily cron — -7d, -3d, day-of reminders before pixel trial expiry)
 export { trialCountdownEmails } from './trial-countdown-emails'
+
+// DFY Upsell Trigger (daily 10am UTC — targets workspaces with 50+ leads and $0 managed spend)
+export { dfyUpsellTrigger } from './dfy-upsell-trigger'

@@ -7,9 +7,10 @@ import { X, Sparkles, TrendingUp, Zap } from 'lucide-react'
 interface UpsellBannerProps {
   creditsBalance: number
   totalSpend: number
+  leadCount?: number
 }
 
-export function UpsellBanner({ creditsBalance, totalSpend }: UpsellBannerProps) {
+export function UpsellBanner({ creditsBalance, totalSpend, leadCount = 0 }: UpsellBannerProps) {
   const [dismissed, setDismissed] = useState(false)
   const [dismissedKey, setDismissedKey] = useState<string | null>(null)
 
@@ -37,6 +38,18 @@ export function UpsellBanner({ creditsBalance, totalSpend }: UpsellBannerProps) 
         href: '/services#data',
         color: 'from-blue-500/10 to-cyan-500/10 border-blue-200',
         iconColor: 'text-blue-600',
+      }
+    }
+    if (leadCount >= 50 && totalSpend < 500) {
+      return {
+        key: 'dfy-lead-upsell',
+        icon: TrendingUp,
+        title: `You have ${leadCount.toLocaleString()} leads — let us turn them into pipeline`,
+        message: 'Our team builds your outbound sequence, writes the copy, and works your leads for you — starting at $2,500/mo.',
+        cta: 'See Done-For-You Outbound',
+        href: '/services#outbound',
+        color: 'from-violet-500/10 to-purple-500/10 border-violet-200',
+        iconColor: 'text-violet-600',
       }
     }
     if (creditsBalance < 20) {

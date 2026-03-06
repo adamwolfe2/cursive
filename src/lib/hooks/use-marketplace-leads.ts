@@ -53,6 +53,7 @@ interface MarketplaceCreditsResponse {
 
 interface MarketplaceStatsResponse {
   totalSpent: number
+  leadCount: number
 }
 
 interface PurchaseResponse {
@@ -134,7 +135,7 @@ async function fetchMarketplaceStats(): Promise<MarketplaceStatsResponse> {
   }
 
   const data = await response.json()
-  return { totalSpent: data.totalSpent || 0 }
+  return { totalSpent: data.totalSpent || 0, leadCount: data.totalPurchased || 0 }
 }
 
 async function purchaseLeads(leadIds: string[]): Promise<PurchaseResponse> {

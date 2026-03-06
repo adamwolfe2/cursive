@@ -27,6 +27,7 @@ export default function CreditsPage() {
   const { user, isLoading: userLoading } = useUser()
   const [currentBalance, setCurrentBalance] = useState(0)
   const [totalSpend, setTotalSpend] = useState(0)
+  const [leadCount, setLeadCount] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const [isPurchasing, setIsPurchasing] = useState<string | null>(null)
   const [showSuccess, setShowSuccess] = useState(false)
@@ -60,6 +61,7 @@ export default function CreditsPage() {
       if (statsRes.ok) {
         const statsData = await statsRes.json()
         setTotalSpend(statsData.totalSpent || 0)
+        setLeadCount(statsData.totalPurchased || 0)
       }
     } catch (error) {
       safeError('[CreditsPage]', 'Failed to fetch stats:', error)
@@ -200,7 +202,7 @@ export default function CreditsPage() {
           )}
 
           {/* Upsell Banner */}
-          <UpsellBanner creditsBalance={currentBalance} totalSpend={totalSpend} />
+          <UpsellBanner creditsBalance={currentBalance} totalSpend={totalSpend} leadCount={leadCount} />
 
           {/* Header */}
           <div className="flex items-center justify-between mb-8">
