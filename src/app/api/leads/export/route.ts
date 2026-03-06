@@ -3,7 +3,7 @@
 
 
 import { NextRequest, NextResponse } from 'next/server'
-import { getCurrentUser } from '@/lib/auth/helpers'
+import { fastAuth } from '@/lib/auth/fast-auth'
 import { LeadRepository } from '@/lib/repositories/lead.repository'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { createAuditLog } from '@/lib/services/audit.service'
@@ -30,13 +30,13 @@ const exportRequestSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     // 1. Check authentication
-    const user = await getCurrentUser()
+    const user = await fastAuth(request)
     if (!user) {
       return unauthorized()
     }
 
     // Rate limit: 10 exports per hour per user
-    const rateLimitResponse = await withRateLimit(request, 'lead-export', getRequestIdentifier(request, user.id))
+    const rateLimitResponse = await withRateLimit(request, 'lead-export', getRequestIdentifier(request, user.userId))
     if (rateLimitResponse) return rateLimitResponse
 
     // 2. Validate input with Zod
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
 
     // 3. Generate CSV with workspace filtering
     const leadRepo = new LeadRepository()
-    const csv = await leadRepo.exportToCSV(user.workspace_id, filters || {})
+    const csv = await leadRepo.exportToCSV(user.workspaceId, filters || {})
 
     // 4. Return CSV file response
     // Count data rows (subtract 1 for header row) to detect truncation at 10k limit
@@ -54,8 +54,8 @@ export async function POST(request: NextRequest) {
 
     // Log the export to the audit trail (non-critical — fire and forget)
     createAuditLog({
-      workspaceId: user.workspace_id,
-      userId: user.id,
+      workspaceId: user.workspaceId,
+      userId: user.userId,
       action: 'export',
       resourceType: 'lead',
       metadata: {

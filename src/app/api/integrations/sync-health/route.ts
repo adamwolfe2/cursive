@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server'
-import { getCurrentUser } from '@/lib/auth/helpers'
+import { NextRequest, NextResponse } from 'next/server'
+import { fastAuth } from '@/lib/auth/fast-auth'
 import { unauthorized, handleApiError } from '@/lib/utils/api-error-handler'
 import { createClient } from '@/lib/supabase/server'
 
@@ -13,14 +13,14 @@ const NAMES: Record<string, string> = {
   salesforce: 'Salesforce',
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const user = await getCurrentUser()
+    const user = await fastAuth(request)
     if (!user) {
       return unauthorized()
     }
 
-    if (!user.workspace_id) {
+    if (!user.workspaceId) {
       return NextResponse.json({ data: [] })
     }
 
@@ -29,7 +29,7 @@ export async function GET() {
     const { data: connections } = await supabase
       .from('crm_connections')
       .select('provider, status, last_sync_at, created_at, token_expires_at')
-      .eq('workspace_id', user.workspace_id)
+      .eq('workspace_id', user.workspaceId)
       .in('provider', ['hubspot', 'salesforce'])
 
     const now = Date.now()

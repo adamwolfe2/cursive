@@ -8,7 +8,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { getCurrentUser } from '@/lib/auth/helpers'
+import { fastAuth } from '@/lib/auth/fast-auth'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { hmacSha256Hex } from '@/lib/utils/crypto'
@@ -30,7 +30,7 @@ const testWebhookSchema = z.object({
  */
 export async function GET(req: NextRequest) {
   try {
-    const user = await getCurrentUser()
+    const user = await fastAuth(req)
     if (!user) return unauthorized()
 
     const supabase = await createClient()
@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
     const { data: workspace, error } = await supabase
       .from('workspaces')
       .select('webhook_url, webhook_secret, webhook_enabled, webhook_events')
-      .eq('id', user.workspace_id)
+      .eq('id', user.workspaceId)
       .maybeSingle()
 
     if (error || !workspace) {
@@ -64,7 +64,7 @@ export async function GET(req: NextRequest) {
  */
 export async function POST(req: NextRequest) {
   try {
-    const user = await getCurrentUser()
+    const user = await fastAuth(req)
     if (!user) return unauthorized()
 
     const supabase = await createClient()
@@ -106,7 +106,7 @@ export async function POST(req: NextRequest) {
       const { data: existing } = await supabase
         .from('workspaces')
         .select('webhook_secret')
-        .eq('id', user.workspace_id)
+        .eq('id', user.workspaceId)
         .maybeSingle()
 
       if (!existing?.webhook_secret) {
@@ -118,7 +118,7 @@ export async function POST(req: NextRequest) {
     const { error } = await supabase
       .from('workspaces')
       .update(updateData)
-      .eq('id', user.workspace_id)
+      .eq('id', user.workspaceId)
 
     if (error) {
       safeError('[Webhook Settings] Update error:', error)
@@ -132,7 +132,7 @@ export async function POST(req: NextRequest) {
     const { data: updated } = await supabase
       .from('workspaces')
       .select('webhook_url, webhook_secret, webhook_enabled, webhook_events')
-      .eq('id', user.workspace_id)
+      .eq('id', user.workspaceId)
       .maybeSingle()
 
     return NextResponse.json({
@@ -158,7 +158,7 @@ export async function POST(req: NextRequest) {
  */
 export async function PUT(req: NextRequest) {
   try {
-    const user = await getCurrentUser()
+    const user = await fastAuth(req)
     if (!user) return unauthorized()
 
     const supabase = await createClient()
@@ -179,7 +179,7 @@ export async function PUT(req: NextRequest) {
     const { data: workspace } = await supabase
       .from('workspaces')
       .select('webhook_secret')
-      .eq('id', user.workspace_id)
+      .eq('id', user.workspaceId)
       .maybeSingle()
 
     // Create test payload
@@ -188,7 +188,7 @@ export async function PUT(req: NextRequest) {
       timestamp: new Date().toISOString(),
       data: {
         message: 'This is a test webhook from Cursive',
-        workspace_id: user.workspace_id,
+        workspace_id: user.workspaceId,
       },
     }
 
@@ -250,7 +250,7 @@ export async function PUT(req: NextRequest) {
  */
 export async function DELETE(req: NextRequest) {
   try {
-    const user = await getCurrentUser()
+    const user = await fastAuth(req)
     if (!user) return unauthorized()
 
     const supabase = await createClient()
@@ -264,7 +264,7 @@ export async function DELETE(req: NextRequest) {
         webhook_secret: newSecret,
         updated_at: new Date().toISOString(),
       })
-      .eq('id', user.workspace_id)
+      .eq('id', user.workspaceId)
 
     if (error) {
       safeError('[Webhook Settings] Regenerate error:', error)

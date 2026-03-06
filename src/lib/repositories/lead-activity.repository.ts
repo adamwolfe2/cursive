@@ -256,38 +256,31 @@ export class LeadActivityRepository {
 
   /**
    * Get lead status counts for a workspace
+   * PERFORMANCE: 7 parallel count-only queries instead of fetching all rows
    */
   async getStatusCounts(
     workspaceId: string
   ): Promise<Record<LeadStatus, number>> {
     const supabase = await createClient()
 
-    const { data, error } = await supabase
-      .from('leads')
-      .select('status')
-      .eq('workspace_id', workspaceId)
+    const statuses: LeadStatus[] = ['new', 'contacted', 'qualified', 'proposal', 'negotiation', 'won', 'lost']
 
-    if (error) {
-      safeError('[LeadActivityRepository] Get status counts error:', error)
-      throw new Error(`Failed to fetch status counts: ${error.message}`)
-    }
+    const results = await Promise.all(
+      statuses.map((status) =>
+        supabase
+          .from('leads')
+          .select('*', { count: 'exact', head: true })
+          .eq('workspace_id', workspaceId)
+          .eq('status', status)
+          .then(({ count, error }) => {
+            if (error) {
+              safeError('[LeadActivityRepository] Get status counts error:', error)
+            }
+            return [status, count || 0] as const
+          })
+      )
+    )
 
-    // Count by status
-    const counts: Record<LeadStatus, number> = {
-      new: 0,
-      contacted: 0,
-      qualified: 0,
-      proposal: 0,
-      negotiation: 0,
-      won: 0,
-      lost: 0,
-    }
-
-    for (const row of data || []) {
-      const status = (row.status as LeadStatus) || 'new'
-      counts[status] = (counts[status] || 0) + 1
-    }
-
-    return counts
+    return Object.fromEntries(results) as Record<LeadStatus, number>
   }
 }

@@ -4,7 +4,7 @@
 
 import { NextResponse, type NextRequest } from 'next/server'
 import { AgentRepository } from '@/lib/repositories/agent.repository'
-import { getCurrentUser } from '@/lib/auth/helpers'
+import { fastAuth } from '@/lib/auth/fast-auth'
 import { handleApiError, unauthorized, success, created } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'
 
@@ -20,11 +20,11 @@ const createAgentSchema = z.object({
 
 export async function GET(request: NextRequest) {
   try {
-    const user = await getCurrentUser()
+    const user = await fastAuth(request)
     if (!user) return unauthorized()
 
     const repo = new AgentRepository()
-    const agents = await repo.findByWorkspace(user.workspace_id)
+    const agents = await repo.findByWorkspace(user.workspaceId)
 
     return success(agents)
   } catch (error: unknown) {
@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const user = await getCurrentUser()
+    const user = await fastAuth(request)
     if (!user) return unauthorized()
 
     const body = await request.json()
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
 
     const repo = new AgentRepository()
     const agent = await repo.create({
-      workspace_id: user.workspace_id,
+      workspace_id: user.workspaceId,
       ...validatedData,
     })
 

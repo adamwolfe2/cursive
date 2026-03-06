@@ -5,7 +5,7 @@
 
 
 import { NextRequest, NextResponse } from 'next/server'
-import { getCurrentUser } from '@/lib/auth/helpers'
+import { fastAuth } from '@/lib/auth/fast-auth'
 import { createClient } from '@/lib/supabase/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
@@ -21,7 +21,7 @@ const querySchema = z.object({
  */
 export async function GET(request: NextRequest) {
   try {
-    const user = await getCurrentUser()
+    const user = await fastAuth(request)
     if (!user) {
       return unauthorized()
     }
@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
     // Call RPC function for credit usage
     const { data: usage, error } = await supabase
       .rpc('get_credit_usage_summary', {
-        p_workspace_id: user.workspace_id,
+        p_workspace_id: user.workspaceId,
         p_days: days,
       })
 

@@ -4,7 +4,7 @@
 
 import { NextResponse, type NextRequest } from 'next/server'
 import { AgentRepository } from '@/lib/repositories/agent.repository'
-import { getCurrentUser } from '@/lib/auth/helpers'
+import { fastAuth } from '@/lib/auth/fast-auth'
 import { handleApiError, unauthorized, notFound, success } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'
 
@@ -25,11 +25,11 @@ const updateAgentSchema = z.object({
 export async function GET(request: NextRequest, context: RouteContext) {
   try {
     const { id } = await context.params
-    const user = await getCurrentUser()
+    const user = await fastAuth(request)
     if (!user) return unauthorized()
 
     const repo = new AgentRepository()
-    const result = await repo.findByIdWithDetails(id, user.workspace_id)
+    const result = await repo.findByIdWithDetails(id, user.workspaceId)
 
     if (!result) return notFound('Agent not found')
 
@@ -42,14 +42,14 @@ export async function GET(request: NextRequest, context: RouteContext) {
 export async function PATCH(request: NextRequest, context: RouteContext) {
   try {
     const { id } = await context.params
-    const user = await getCurrentUser()
+    const user = await fastAuth(request)
     if (!user) return unauthorized()
 
     const body = await request.json()
     const validatedData = updateAgentSchema.parse(body)
 
     const repo = new AgentRepository()
-    const agent = await repo.update(id, user.workspace_id, validatedData)
+    const agent = await repo.update(id, user.workspaceId, validatedData)
 
     return success(agent)
   } catch (error: unknown) {
@@ -60,11 +60,11 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
 export async function DELETE(request: NextRequest, context: RouteContext) {
   try {
     const { id } = await context.params
-    const user = await getCurrentUser()
+    const user = await fastAuth(request)
     if (!user) return unauthorized()
 
     const repo = new AgentRepository()
-    await repo.delete(id, user.workspace_id)
+    await repo.delete(id, user.workspaceId)
 
     return success({ message: 'Agent deleted successfully' })
   } catch (error: unknown) {

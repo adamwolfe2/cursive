@@ -6,7 +6,7 @@
 
 
 import { NextRequest, NextResponse } from 'next/server'
-import { getCurrentUser } from '@/lib/auth/helpers'
+import { fastAuth } from '@/lib/auth/fast-auth'
 import { ActivityRepository } from '@/lib/repositories/activity.repository'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'
@@ -44,7 +44,7 @@ const createActivitySchema = z.object({
 export async function GET(request: NextRequest) {
   try {
     // 1. Check authentication
-    const user = await getCurrentUser()
+    const user = await fastAuth(request)
     if (!user) {
       return unauthorized()
     }
@@ -93,7 +93,7 @@ export async function GET(request: NextRequest) {
 
     // 3. Fetch activities with workspace filtering
     const activityRepo = new ActivityRepository()
-    const result = await activityRepo.findByWorkspace(user.workspace_id, filters, sort, page, pageSize)
+    const result = await activityRepo.findByWorkspace(user.workspaceId, filters, sort, page, pageSize)
 
     // 4. Return response
     return NextResponse.json({
@@ -109,7 +109,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     // 1. Check authentication
-    const user = await getCurrentUser()
+    const user = await fastAuth(request)
     if (!user) {
       return unauthorized()
     }
@@ -122,8 +122,8 @@ export async function POST(request: NextRequest) {
     const activityRepo = new ActivityRepository()
     const activity = await activityRepo.create({
       ...validated,
-      workspace_id: user.workspace_id,
-      created_by_user_id: user.id,
+      workspace_id: user.workspaceId,
+      created_by_user_id: user.userId,
     })
 
     // 4. Return response

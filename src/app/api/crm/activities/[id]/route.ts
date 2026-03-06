@@ -7,7 +7,7 @@
 
 
 import { NextRequest, NextResponse } from 'next/server'
-import { getCurrentUser } from '@/lib/auth/helpers'
+import { fastAuth } from '@/lib/auth/fast-auth'
 import { ActivityRepository } from '@/lib/repositories/activity.repository'
 import { handleApiError, unauthorized, notFound } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'
@@ -30,7 +30,7 @@ export async function GET(
 ) {
   try {
     // 1. Check authentication
-    const user = await getCurrentUser()
+    const user = await fastAuth(request)
     if (!user) {
       return unauthorized()
     }
@@ -40,7 +40,7 @@ export async function GET(
 
     // 3. Fetch activity with workspace filtering
     const activityRepo = new ActivityRepository()
-    const activity = await activityRepo.findById(id, user.workspace_id)
+    const activity = await activityRepo.findById(id, user.workspaceId)
 
     if (!activity) {
       return notFound('Activity not found')
@@ -62,7 +62,7 @@ export async function PUT(
 ) {
   try {
     // 1. Check authentication
-    const user = await getCurrentUser()
+    const user = await fastAuth(request)
     if (!user) {
       return unauthorized()
     }
@@ -76,9 +76,9 @@ export async function PUT(
 
     // 4. Update activity
     const activityRepo = new ActivityRepository()
-    const activity = await activityRepo.update(id, user.workspace_id, {
+    const activity = await activityRepo.update(id, user.workspaceId, {
       ...validated,
-      updated_by_user_id: user.id,
+      updated_by_user_id: user.userId,
     } as any)
 
     // 5. Return response
@@ -97,7 +97,7 @@ export async function DELETE(
 ) {
   try {
     // 1. Check authentication
-    const user = await getCurrentUser()
+    const user = await fastAuth(request)
     if (!user) {
       return unauthorized()
     }
@@ -107,7 +107,7 @@ export async function DELETE(
 
     // 3. Delete activity
     const activityRepo = new ActivityRepository()
-    await activityRepo.delete(id, user.workspace_id)
+    await activityRepo.delete(id, user.workspaceId)
 
     // 4. Return response
     return NextResponse.json({

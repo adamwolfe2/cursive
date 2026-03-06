@@ -257,28 +257,43 @@ export class CampaignBuilderRepository {
 
   /**
    * Get workspace stats
+   * PERFORMANCE: parallel count queries instead of fetching all rows and filtering client-side
    */
   async getWorkspaceStats(workspaceId: string) {
     const supabase = await createClient()
 
-    const { data, error } = await supabase
-      .from('campaign_drafts')
-      .select('status')
-      .eq('workspace_id', workspaceId)
+    const statuses = ['draft', 'generating', 'review', 'approved', 'exported'] as const
 
-    if (error) {
-      throw new Error(`Failed to get workspace stats: ${error.message}`)
+    const [
+      { count: total, error: totalError },
+      ...statusCounts
+    ] = await Promise.all([
+      supabase
+        .from('campaign_drafts')
+        .select('*', { count: 'exact', head: true })
+        .eq('workspace_id', workspaceId),
+      ...statuses.map((status) =>
+        supabase
+          .from('campaign_drafts')
+          .select('*', { count: 'exact', head: true })
+          .eq('workspace_id', workspaceId)
+          .eq('status', status)
+      ),
+    ])
+
+    if (totalError) {
+      throw new Error(`Failed to get workspace stats: ${totalError.message}`)
     }
 
-    const drafts = data || []
+    const [draft, generating, review, approved, exported] = statusCounts.map((r) => r.count || 0)
 
     return {
-      total: drafts.length,
-      draft: drafts.filter((d) => d.status === 'draft').length,
-      generating: drafts.filter((d) => d.status === 'generating').length,
-      review: drafts.filter((d) => d.status === 'review').length,
-      approved: drafts.filter((d) => d.status === 'approved').length,
-      exported: drafts.filter((d) => d.status === 'exported').length,
+      total: total || 0,
+      draft: draft ?? 0,
+      generating: generating ?? 0,
+      review: review ?? 0,
+      approved: approved ?? 0,
+      exported: exported ?? 0,
     }
   }
 }
