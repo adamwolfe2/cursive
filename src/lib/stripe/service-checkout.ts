@@ -95,6 +95,7 @@ export async function createServiceCheckout(
     line_items: lineItems,
     customer_email: billingEmail,
     metadata: {
+      type: 'service_subscription',
       workspace_id: workspaceId,
       user_id: userId,
       service_tier_id: tier.id,

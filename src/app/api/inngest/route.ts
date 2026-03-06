@@ -124,9 +124,9 @@ export const { GET, POST, PUT } = serve({
     functions.sendPurchaseEmail,
     functions.sendCreditPurchaseEmail,
 
-    // Stripe Webhook Processing with Retries
-    functions.processStripeWebhook,
-    functions.handleWebhookFailure,
+    // NOTE: processStripeWebhook + handleWebhookFailure are intentionally NOT registered.
+    // Stripe webhooks are processed inline in /api/webhooks/stripe/route.ts (edge-safe, idempotent).
+    // The stripe/webhook.received Inngest event is never fired, so these would be dead code.
 
     // Operations Health Monitoring
     functions.monitorOperationsHealth,

@@ -13,6 +13,7 @@ import {
   sendCancellationEmail,
 } from '@/lib/email/service-emails'
 import { logger } from '@/lib/monitoring/logger'
+import { sendSlackAlert } from '@/lib/monitoring/alerts'
 
 /**
  * Update all users in a workspace to a given plan + credit limit.
@@ -186,6 +187,27 @@ export async function handleSubscriptionCreated(subscription: Stripe.Subscriptio
     } catch (emailError: any) {
       logger.error('[Webhook] Failed to send welcome email', { error: emailError instanceof Error ? emailError.message : String(emailError) })
       // Don't throw - email failures shouldn't block webhook processing
+    }
+
+    // Alert ops — new paying customer
+    try {
+      const emailInfo = await getWorkspaceEmailInfo(workspaceId)
+      await sendSlackAlert({
+        type: 'new_signup',
+        severity: 'info',
+        message: `💰 New service subscription: ${emailInfo.customerName} (${emailInfo.customerEmail}) signed up for ${tier.name} at $${monthlyPrice}/mo${setupFeePaid > 0 ? ` + $${setupFeePaid} setup fee` : ''}`,
+        metadata: {
+          customer_email: emailInfo.customerEmail,
+          customer_name: emailInfo.customerName,
+          tier: tier.name,
+          monthly_price: `$${monthlyPrice}/mo`,
+          setup_fee: setupFeePaid > 0 ? `$${setupFeePaid}` : 'none',
+          stripe_subscription_id: subscription.id,
+          workspace_id: workspaceId,
+        },
+      })
+    } catch (slackError: any) {
+      logger.error('[Webhook] Failed to send new subscription Slack alert', { error: slackError instanceof Error ? slackError.message : String(slackError) })
     }
 
     // Trigger GHL sub-account creation for done-for-you tiers

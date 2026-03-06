@@ -1,3 +1,6 @@
+// Stripe uses synchronous constructEvent (Node.js crypto) — must stay on Node.js runtime
+export const runtime = 'nodejs'
+
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { z } from 'zod'
@@ -81,6 +84,11 @@ async function handleCheckoutSessionCompleted(event: Stripe.Event): Promise<void
       break
     case 'lead_purchase':
       await handleLeadPurchaseCompleted(session)
+      break
+    case 'service_subscription':
+      // Subscription lifecycle is handled via customer.subscription.created event.
+      // checkout.session.completed just provides confirmation; no extra action needed here.
+      safeLog('[Stripe Webhook] Service subscription checkout completed, subscription events will handle provisioning')
       break
     default:
       safeLog(`[Stripe Webhook] Unknown checkout metadata type: ${metadataType}`)
@@ -667,13 +675,17 @@ export async function POST(request: NextRequest) {
     const processingStartTime = Date.now()
 
     // Check if this event has already been processed
+    // IMPORTANT: Only skip if error_message IS NULL (meaning it succeeded or is in-progress).
+    // If error_message is set, the previous attempt failed — delete it and allow Stripe to retry,
+    // otherwise Stripe gets a 200 "duplicate" response and never retries failed payments.
     const { data: existingEvent } = await adminClient
       .from('webhook_events')
-      .select('id, processed_at')
+      .select('id, processed_at, error_message')
       .eq('stripe_event_id', event.id)
       .maybeSingle()
 
-    if (existingEvent) {
+    if (existingEvent && existingEvent.error_message === null) {
+      // Previously processed successfully (or currently in-progress) — skip
       safeLog('[Stripe Webhook] Duplicate event detected, skipping', {
         eventId: event.id,
         eventType: event.type,
@@ -684,6 +696,15 @@ export async function POST(request: NextRequest) {
         duplicate: true,
         originallyProcessedAt: existingEvent.processed_at,
       })
+    }
+
+    // If a previous attempt failed (error_message set), delete it so we can retry cleanly
+    if (existingEvent?.error_message) {
+      safeLog('[Stripe Webhook] Previous attempt failed, retrying', {
+        eventId: event.id,
+        previousError: existingEvent.error_message,
+      })
+      await adminClient.from('webhook_events').delete().eq('stripe_event_id', event.id)
     }
 
     // Record that we're processing this event

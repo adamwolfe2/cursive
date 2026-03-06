@@ -1,3 +1,6 @@
+// Uses createHmac + timingSafeEqual from Node.js crypto — must stay on Node.js runtime
+export const runtime = 'nodejs'
+
 /**
  * Cal.com Webhook Handler
  *
