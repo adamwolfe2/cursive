@@ -9,7 +9,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { getCurrentUser } from '@/lib/auth/helpers'
+import { fastAuth } from '@/lib/auth/fast-auth'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { inngest } from '@/inngest/client'
 import { safeError } from '@/lib/utils/log-sanitizer'
@@ -23,7 +23,7 @@ const INTEL_CREDIT_COST = 2
 
 export async function POST(request: NextRequest) {
   try {
-    const user = await getCurrentUser()
+    const user = await fastAuth(request)
     if (!user) return unauthorized()
 
     const body = await request.json()
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     const { data: leads } = await supabase
       .from('leads')
       .select('id, intelligence_tier')
-      .eq('workspace_id', user.workspace_id)
+      .eq('workspace_id', user.workspaceId)
       .in('id', lead_ids)
 
     const eligibleLeads = (leads ?? []).filter((l) => {
@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
     const { data: credits } = await supabase
       .from('workspace_credits')
       .select('balance')
-      .eq('workspace_id', user.workspace_id)
+      .eq('workspace_id', user.workspaceId)
       .maybeSingle()
 
     const balance = credits?.balance ?? 0
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
     const { error: deductError } = await supabase
       .from('workspace_credits')
       .update({ balance: balance - creditsNeeded })
-      .eq('workspace_id', user.workspace_id)
+      .eq('workspace_id', user.workspaceId)
 
     if (deductError) {
       safeError('[BulkIntelligence] Credit deduction failed', deductError)
@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
       name: 'enrichment/intelligence-pack' as const,
       data: {
         lead_id: lead.id,
-        workspace_id: user.workspace_id,
+        workspace_id: user.workspaceId,
         tier,
       },
     }))

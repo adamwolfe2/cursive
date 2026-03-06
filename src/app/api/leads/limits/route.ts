@@ -5,20 +5,20 @@
 
 
 import { NextRequest, NextResponse } from 'next/server'
-import { getCurrentUser } from '@/lib/auth/helpers'
+import { fastAuth } from '@/lib/auth/fast-auth'
 import { getLeadProviderService } from '@/lib/services/lead-provider.service'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 
 export async function GET(request: NextRequest) {
   try {
-    const user = await getCurrentUser()
+    const user = await fastAuth(request)
     if (!user) {
       return unauthorized()
     }
 
     const leadProvider = getLeadProviderService()
-    const limits = await leadProvider.getWorkspaceLeadLimits(user.workspace_id)
+    const limits = await leadProvider.getWorkspaceLeadLimits(user.workspaceId)
 
     return NextResponse.json({
       success: true,

@@ -6,7 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
-import { getCurrentUser } from '@/lib/auth/helpers'
+import { fastAuth } from '@/lib/auth/fast-auth'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 
@@ -27,7 +27,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const user = await getCurrentUser()
+    const user = await fastAuth(request)
     if (!user) {
       return unauthorized()
     }
@@ -39,7 +39,7 @@ export async function GET(
       .from('email_templates')
       .select('*')
       .eq('id', id)
-      .eq('workspace_id', user.workspace_id)
+      .eq('workspace_id', user.workspaceId)
       .maybeSingle()
 
     if (error || !template) {
@@ -58,7 +58,7 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const user = await getCurrentUser()
+    const user = await fastAuth(request)
     if (!user) {
       return unauthorized()
     }
@@ -74,7 +74,7 @@ export async function PATCH(
       .from('email_templates')
       .select('id')
       .eq('id', id)
-      .eq('workspace_id', user.workspace_id)
+      .eq('workspace_id', user.workspaceId)
       .maybeSingle()
 
     if (!existing) {
@@ -85,7 +85,7 @@ export async function PATCH(
       .from('email_templates')
       .update(validated)
       .eq('id', id)
-      .eq('workspace_id', user.workspace_id) // Defense-in-depth
+      .eq('workspace_id', user.workspaceId) // Defense-in-depth
       .select()
       .maybeSingle()
 
@@ -109,7 +109,7 @@ export async function PATCH(
         .from('email_templates')
         .update({ last_used_at: new Date().toISOString() })
         .eq('id', id)
-        .eq('workspace_id', user.workspace_id) // Defense-in-depth
+        .eq('workspace_id', user.workspaceId) // Defense-in-depth
     }
 
     return NextResponse.json({ template })
@@ -124,7 +124,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const user = await getCurrentUser()
+    const user = await fastAuth(request)
     if (!user) {
       return unauthorized()
     }
@@ -137,7 +137,7 @@ export async function DELETE(
       .from('email_templates')
       .select('id')
       .eq('id', id)
-      .eq('workspace_id', user.workspace_id)
+      .eq('workspace_id', user.workspaceId)
       .maybeSingle()
 
     if (!existing) {
@@ -162,7 +162,7 @@ export async function DELETE(
       .from('email_templates')
       .delete()
       .eq('id', id)
-      .eq('workspace_id', user.workspace_id) // Defense-in-depth
+      .eq('workspace_id', user.workspaceId) // Defense-in-depth
 
     if (error) {
       safeError('Failed to delete email template:', error)

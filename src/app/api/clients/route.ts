@@ -8,7 +8,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { getCurrentUser } from '@/lib/auth/helpers'
+import { fastAuth } from '@/lib/auth/fast-auth'
 import { createClient } from '@/lib/supabase/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
@@ -66,7 +66,7 @@ const CreateClientSchema = z.object({
 
 export async function GET(req: NextRequest) {
   try {
-    const user = await getCurrentUser()
+    const user = await fastAuth(req)
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -79,7 +79,7 @@ export async function GET(req: NextRequest) {
     let query = supabase
       .from('client_profiles')
       .select('id, workspace_id, company_name, company_description, website_url, industry, company_size, primary_offering, secondary_offerings, value_propositions, trust_signals, pain_points, competitors, differentiators, target_industries, target_company_sizes, target_seniorities, target_regions, target_titles, is_active, created_at, updated_at')
-      .eq('workspace_id', user.workspace_id)
+      .eq('workspace_id', user.workspaceId)
       .order('routing_priority', { ascending: true })
 
     // Filter by active status
@@ -104,7 +104,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const user = await getCurrentUser()
+    const user = await fastAuth(req)
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -125,7 +125,7 @@ export async function POST(req: NextRequest) {
       .from('client_profiles')
       .insert({
         ...parsed.data,
-        workspace_id: user.workspace_id,
+        workspace_id: user.workspaceId,
       })
       .select('id, workspace_id, client_name, client_code, contact_email, contact_phone, routing_priority, routing_weight, is_exclusive, is_active, created_at, updated_at')
       .maybeSingle()

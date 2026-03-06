@@ -1,7 +1,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { getCurrentUser } from '@/lib/auth/helpers'
+import { fastAuth } from '@/lib/auth/fast-auth'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { safeParseFloat } from '@/lib/utils/parse-number'
 import { safeError } from '@/lib/utils/log-sanitizer'
@@ -14,7 +14,7 @@ export async function PATCH(
     const supabase = await createClient()
     const { id } = await params
 
-    const user = await getCurrentUser()
+    const user = await fastAuth(request)
     if (!user) return unauthorized()
 
     // Verify preference belongs to workspace
@@ -22,7 +22,7 @@ export async function PATCH(
       .from('lead_preferences')
       .select('id')
       .eq('id', id)
-      .eq('workspace_id', user.workspace_id)
+      .eq('workspace_id', user.workspaceId)
       .maybeSingle()
 
     if (!existing) {
@@ -52,7 +52,7 @@ export async function PATCH(
       .from('lead_preferences')
       .update(updateData)
       .eq('id', id)
-      .eq('workspace_id', user.workspace_id) // Defense-in-depth
+      .eq('workspace_id', user.workspaceId) // Defense-in-depth
       .select('id, workspace_id, name, description, is_active, target_industries, target_regions, target_company_sizes, target_intent_signals, max_leads_per_day, max_cost_per_lead, monthly_budget, created_at, updated_at')
       .maybeSingle()
 
@@ -75,7 +75,7 @@ export async function DELETE(
     const supabase = await createClient()
     const { id } = await params
 
-    const user = await getCurrentUser()
+    const user = await fastAuth(request)
     if (!user) return unauthorized()
 
     // Delete preference (RLS will ensure workspace ownership)
@@ -83,7 +83,7 @@ export async function DELETE(
       .from('lead_preferences')
       .delete()
       .eq('id', id)
-      .eq('workspace_id', user.workspace_id)
+      .eq('workspace_id', user.workspaceId)
 
     if (error) {
       safeError('[Lead Preferences] Failed to delete preference:', error)

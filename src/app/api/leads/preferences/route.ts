@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { safeError } from '@/lib/utils/log-sanitizer'
-import { getCurrentUser } from '@/lib/auth/helpers'
+import { fastAuth } from '@/lib/auth/fast-auth'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { createClient } from '@/lib/supabase/server'
 
@@ -20,7 +20,7 @@ const createPreferenceSchema = z.object({
 
 export async function GET(request: NextRequest) {
   try {
-    const user = await getCurrentUser()
+    const user = await fastAuth(request)
     if (!user) return unauthorized()
 
     const supabase = await createClient()
@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
     const { data: preferences, error } = await supabase
       .from('lead_preferences')
       .select('id, workspace_id, name, description, target_industries, target_regions, target_company_sizes, target_intent_signals, max_leads_per_day, max_cost_per_lead, monthly_budget, created_at, updated_at')
-      .eq('workspace_id', user.workspace_id)
+      .eq('workspace_id', user.workspaceId)
       .order('created_at', { ascending: false })
       .limit(100)
 
@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const user = await getCurrentUser()
+    const user = await fastAuth(request)
     if (!user) return unauthorized()
 
     const supabase = await createClient()
@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
     const { data: preference, error } = await supabase
       .from('lead_preferences')
       .insert({
-        workspace_id: user.workspace_id,
+        workspace_id: user.workspaceId,
         name: validated.name,
         description: validated.description,
         target_industries: validated.target_industries,

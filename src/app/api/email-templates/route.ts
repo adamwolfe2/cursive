@@ -6,7 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
-import { getCurrentUser } from '@/lib/auth/helpers'
+import { fastAuth } from '@/lib/auth/fast-auth'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 
@@ -23,7 +23,7 @@ const createTemplateSchema = z.object({
 // GET /api/email-templates - List templates
 export async function GET(request: NextRequest) {
   try {
-    const user = await getCurrentUser()
+    const user = await fastAuth(request)
     if (!user) {
       return unauthorized()
     }
@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
     let query = supabase
       .from('email_templates')
       .select('*')
-      .eq('workspace_id', user.workspace_id)
+      .eq('workspace_id', user.workspaceId)
       .order('created_at', { ascending: false })
       .limit(500)
 
@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
 // POST /api/email-templates - Create template
 export async function POST(request: NextRequest) {
   try {
-    const user = await getCurrentUser()
+    const user = await fastAuth(request)
     if (!user) {
       return unauthorized()
     }
@@ -76,8 +76,8 @@ export async function POST(request: NextRequest) {
     const { data: template, error } = await supabase
       .from('email_templates')
       .insert({
-        workspace_id: user.workspace_id,
-        user_id: user.id,
+        workspace_id: user.workspaceId,
+        user_id: user.userId,
         name: validated.name,
         description: validated.description,
         subject: validated.subject,

@@ -103,7 +103,7 @@ ${validatedData.expected_volume ? `*Expected Volume:* ${validatedData.expected_v
 ${validatedData.budget_range ? `*Budget:* ${validatedData.budget_range}\n` : ''}
 *Contact Preference:* ${validatedData.contact_preference}
 
-*Action:* Review at https://leads.meetcursive.com/admin/premium-requests/${featureRequest.id}`
+*Action:* Review at ${process.env.NEXT_PUBLIC_APP_URL || 'https://leads.meetcursive.com'}/admin/premium-requests/${featureRequest.id}`
 
     // Send Slack alert (don't block on failure)
     sendSlackAlert({

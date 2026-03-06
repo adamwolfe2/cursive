@@ -5,7 +5,7 @@
 
 
 import { NextResponse, type NextRequest } from 'next/server'
-import { getCurrentUser } from '@/lib/auth/helpers'
+import { fastAuth } from '@/lib/auth/fast-auth'
 import { handleApiError, unauthorized, success, DatabaseError } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'
 import {
@@ -39,10 +39,10 @@ const updateSchema = z.object({
  */
 export async function GET(request: NextRequest) {
   try {
-    const user = await getCurrentUser()
+    const user = await fastAuth(request)
     if (!user) return unauthorized()
 
-    const settings = await getWorkspaceSettings(user.workspace_id)
+    const settings = await getWorkspaceSettings(user.workspaceId)
 
     return success({
       settings: {
@@ -86,13 +86,13 @@ export async function GET(request: NextRequest) {
  */
 export async function PATCH(request: NextRequest) {
   try {
-    const user = await getCurrentUser()
+    const user = await fastAuth(request)
     if (!user) return unauthorized()
 
     const body = await request.json()
     const validated = updateSchema.parse(body)
 
-    const result = await updateWorkspaceSettings(user.workspace_id, {
+    const result = await updateWorkspaceSettings(user.workspaceId, {
       defaultSenderName: validated.default_sender_name,
       defaultSenderEmail: validated.default_sender_email,
       defaultSenderTitle: validated.default_sender_title,

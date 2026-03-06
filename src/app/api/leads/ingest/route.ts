@@ -16,7 +16,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { inngest } from '@/inngest/client'
 import { z } from 'zod'
-import { getCurrentUser } from '@/lib/auth/helpers'
+import { fastAuth } from '@/lib/auth/fast-auth'
 import { createMatchingEngine } from '@/lib/services/matching-engine.service'
 import { createUserLeadRouter } from '@/lib/services/user-lead-router.service'
 import { createClient } from '@/lib/supabase/server'
@@ -74,7 +74,7 @@ type IngestRequest = z.infer<typeof IngestRequestSchema>
 
 export async function POST(req: NextRequest) {
   try {
-    const user = await getCurrentUser()
+    const user = await fastAuth(req)
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -89,8 +89,8 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const request = parsed.data
-    const workspaceId = user.workspace_id
+    const ingestRequest = parsed.data
+    const workspaceId = user.workspaceId
     const results: Array<{
       leadId: string
       matched: boolean
@@ -135,8 +135,8 @@ export async function POST(req: NextRequest) {
 
     // Collect all leads for batch dedup logging
     const allLeads = [
-      ...(request.leads || []),
-      ...(request.lead ? [request.lead] : []),
+      ...(ingestRequest.leads || []),
+      ...(ingestRequest.lead ? [ingestRequest.lead] : []),
     ]
     const dedupCandidates = allLeads.map((l) => ({
       email: l.email || null,
@@ -148,17 +148,17 @@ export async function POST(req: NextRequest) {
     let leadIndex = 0
 
     // Handle batch leads
-    if (request.leads) {
-      for (const leadData of request.leads) {
+    if (ingestRequest.leads) {
+      for (const leadData of ingestRequest.leads) {
         const currentIndex = leadIndex++
         try {
-          const { id: leadId, wasDuplicate } = await createLeadFromPush(supabase, workspaceId, leadData, request)
+          const { id: leadId, wasDuplicate } = await createLeadFromPush(supabase, workspaceId, leadData, ingestRequest)
 
           if (wasDuplicate) {
             dedupIndices.add(currentIndex)
           }
 
-          if (request.auto_route && !wasDuplicate) {
+          if (ingestRequest.auto_route && !wasDuplicate) {
             const routing = await routeLeadToAll(leadId)
             results.push({
               leadId,
@@ -180,16 +180,16 @@ export async function POST(req: NextRequest) {
     }
 
     // Handle single lead
-    if (request.lead) {
+    if (ingestRequest.lead) {
       const currentIndex = leadIndex++
       try {
-        const { id: leadId, wasDuplicate } = await createLeadFromPush(supabase, workspaceId, request.lead, request)
+        const { id: leadId, wasDuplicate } = await createLeadFromPush(supabase, workspaceId, ingestRequest.lead, ingestRequest)
 
         if (wasDuplicate) {
           dedupIndices.add(currentIndex)
         }
 
-        if (request.auto_route && !wasDuplicate) {
+        if (ingestRequest.auto_route && !wasDuplicate) {
           const routing = await routeLeadToAll(leadId)
           results.push({
             leadId,
@@ -214,8 +214,8 @@ export async function POST(req: NextRequest) {
       .catch((err: unknown) => safeError('[Lead Ingest] Dedup log failed:', err))
 
     // Update source statistics
-    if (request.source_id) {
-      await updateSourceStats(supabase, request.source_id, results)
+    if (ingestRequest.source_id) {
+      await updateSourceStats(supabase, ingestRequest.source_id, results)
     }
 
     return NextResponse.json({

@@ -5,7 +5,7 @@
 
 
 import { NextRequest, NextResponse } from 'next/server'
-import { getCurrentUser } from '@/lib/auth/helpers'
+import { fastAuth } from '@/lib/auth/fast-auth'
 import { createClient } from '@/lib/supabase/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { getErrorMessage } from '@/lib/utils/error-messages'
@@ -35,7 +35,7 @@ const updateFilterSchema = z.object({
  */
 export async function GET(request: NextRequest) {
   try {
-    const user = await getCurrentUser()
+    const user = await fastAuth(request)
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -59,8 +59,8 @@ export async function GET(request: NextRequest) {
 
     // Get user's own filters
     const { data: ownFilters, error: ownError } = await query
-      .eq('workspace_id', user.workspace_id)
-      .eq('user_id', user.id)
+      .eq('workspace_id', user.workspaceId)
+      .eq('user_id', user.userId)
       .limit(200)
 
     if (ownError) {
@@ -78,9 +78,9 @@ export async function GET(request: NextRequest) {
       let sharedQuery = supabase
         .from('saved_filters')
         .select('*, users!saved_filters_user_id_fkey(full_name, email)')
-        .eq('workspace_id', user.workspace_id)
+        .eq('workspace_id', user.workspaceId)
         .eq('is_shared', true)
-        .neq('user_id', user.id)
+        .neq('user_id', user.userId)
         .order('created_at', { ascending: false })
 
       if (filterType) {
@@ -115,7 +115,7 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
-    const user = await getCurrentUser()
+    const user = await fastAuth(request)
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -130,7 +130,7 @@ export async function POST(request: NextRequest) {
       await supabase
         .from('saved_filters')
         .update({ is_default: false })
-        .eq('user_id', user.id)
+        .eq('user_id', user.userId)
         .eq('filter_type', data.filter_type)
         .eq('is_default', true)
     }
@@ -140,8 +140,8 @@ export async function POST(request: NextRequest) {
       .from('saved_filters')
       .insert({
         ...data,
-        workspace_id: user.workspace_id,
-        user_id: user.id,
+        workspace_id: user.workspaceId,
+        user_id: user.userId,
       })
       .select()
       .maybeSingle()
@@ -167,7 +167,7 @@ export async function POST(request: NextRequest) {
  */
 export async function PATCH(request: NextRequest) {
   try {
-    const user = await getCurrentUser()
+    const user = await fastAuth(request)
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -184,14 +184,14 @@ export async function PATCH(request: NextRequest) {
         .from('saved_filters')
         .select('filter_type')
         .eq('id', id)
-        .eq('user_id', user.id)
+        .eq('user_id', user.userId)
         .maybeSingle()
 
       if (existingFilter) {
         await supabase
           .from('saved_filters')
           .update({ is_default: false })
-          .eq('user_id', user.id)
+          .eq('user_id', user.userId)
           .eq('filter_type', existingFilter.filter_type)
           .eq('is_default', true)
           .neq('id', id)
@@ -203,8 +203,8 @@ export async function PATCH(request: NextRequest) {
       .from('saved_filters')
       .update(updates)
       .eq('id', id)
-      .eq('user_id', user.id)
-      .eq('workspace_id', user.workspace_id) // Defense-in-depth
+      .eq('user_id', user.userId)
+      .eq('workspace_id', user.workspaceId) // Defense-in-depth
       .select()
       .maybeSingle()
 
@@ -236,7 +236,7 @@ export async function PATCH(request: NextRequest) {
  */
 export async function DELETE(request: NextRequest) {
   try {
-    const user = await getCurrentUser()
+    const user = await fastAuth(request)
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -258,8 +258,8 @@ export async function DELETE(request: NextRequest) {
       .from('saved_filters')
       .delete()
       .eq('id', filterId)
-      .eq('user_id', user.id)
-      .eq('workspace_id', user.workspace_id) // Defense-in-depth
+      .eq('user_id', user.userId)
+      .eq('workspace_id', user.workspaceId) // Defense-in-depth
 
     if (error) {
       safeError('[Filters API] Delete error:', error)

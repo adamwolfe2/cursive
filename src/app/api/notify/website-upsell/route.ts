@@ -1,6 +1,6 @@
 
 import { NextRequest, NextResponse } from 'next/server'
-import { getCurrentUser } from '@/lib/auth/helpers'
+import { fastAuth } from '@/lib/auth/fast-auth'
 import { Resend } from 'resend'
 import { z } from 'zod'
 import { safeError } from '@/lib/utils/log-sanitizer'
@@ -28,7 +28,7 @@ function escapeHtml(unsafe: string): string {
 export async function POST(request: NextRequest) {
   try {
     // Get current user
-    const user = await getCurrentUser()
+    const user = await fastAuth(request)
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }

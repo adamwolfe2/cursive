@@ -98,7 +98,7 @@ function buildRecoveryEmailHtml(user: IncompleteUser): string {
           <!-- Header -->
           <tr>
             <td style="padding: 40px 40px 24px 40px; text-align: center; border-bottom: 1px solid #e5e7eb;">
-              <img src="https://leads.meetcursive.com/cursive-logo.png" alt="Cursive" style="height: 36px;" />
+              <img src="${APP_URL}/cursive-logo.png" alt="Cursive" style="height: 36px;" />
             </td>
           </tr>
 

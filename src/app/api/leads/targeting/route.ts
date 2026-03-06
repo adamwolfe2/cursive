@@ -9,7 +9,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { safeError } from '@/lib/utils/log-sanitizer'
-import { getCurrentUser } from '@/lib/auth/helpers'
+import { fastAuth } from '@/lib/auth/fast-auth'
 import { createClient } from '@/lib/supabase/server'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 
@@ -34,7 +34,7 @@ type TargetingInput = z.infer<typeof targetingSchema>
  */
 export async function GET(request: NextRequest) {
   try {
-    const userProfile = await getCurrentUser()
+    const userProfile = await fastAuth(request)
     if (!userProfile) {
       return unauthorized()
     }
@@ -45,8 +45,8 @@ export async function GET(request: NextRequest) {
     const { data: targeting, error } = await supabase
       .from('user_targeting')
       .select('*')
-      .eq('user_id', userProfile.id)
-      .eq('workspace_id', userProfile.workspace_id)
+      .eq('user_id', userProfile.userId)
+      .eq('workspace_id', userProfile.workspaceId)
       .maybeSingle()
 
     if (error && error.code !== 'PGRST116') {
@@ -71,7 +71,7 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
-    const userProfile = await getCurrentUser()
+    const userProfile = await fastAuth(request)
     if (!userProfile) {
       return unauthorized()
     }
@@ -86,13 +86,13 @@ export async function POST(request: NextRequest) {
     const { data: existing } = await supabase
       .from('user_targeting')
       .select('id')
-      .eq('user_id', userProfile.id)
-      .eq('workspace_id', userProfile.workspace_id)
+      .eq('user_id', userProfile.userId)
+      .eq('workspace_id', userProfile.workspaceId)
       .maybeSingle()
 
     const targetingData = {
-      user_id: userProfile.id,
-      workspace_id: userProfile.workspace_id,
+      user_id: userProfile.userId,
+      workspace_id: userProfile.workspaceId,
       target_industries: validatedData.target_industries,
       target_states: validatedData.target_states,
       target_cities: validatedData.target_cities,
@@ -113,8 +113,8 @@ export async function POST(request: NextRequest) {
         .from('user_targeting')
         .update(targetingData)
         .eq('id', existing.id)
-        .eq('user_id', userProfile.id) // SECURITY: Double-check user_id
-        .eq('workspace_id', userProfile.workspace_id) // SECURITY: Double-check workspace_id
+        .eq('user_id', userProfile.userId) // SECURITY: Double-check user_id
+        .eq('workspace_id', userProfile.workspaceId) // SECURITY: Double-check workspace_id
         .select()
         .maybeSingle()
 
@@ -163,7 +163,7 @@ export async function POST(request: NextRequest) {
       const { error: userUpdateError } = await supabase
         .from('users')
         .update(segmentUpdate)
-        .eq('id', userProfile.id)
+        .eq('id', userProfile.userId)
 
       if (userUpdateError) {
         // Non-fatal: log but don't fail the whole request

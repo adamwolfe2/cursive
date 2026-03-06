@@ -8,6 +8,8 @@
 
 import { inngest } from '../client'
 import { createAdminClient } from '@/lib/supabase/admin'
+
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://leads.meetcursive.com'
 import { sendEmail } from '@/lib/services/outreach/email-sender.service'
 import type {
   DemoSequenceTokens,
@@ -361,7 +363,7 @@ export const demoNurtureSequence = inngest.createFunction(
             ``,
             `Really enjoyed our conversation yesterday. Cursive is already identifying visitors on sites like yours — the pixel takes 60 seconds to install and leads start appearing within minutes.`,
             ``,
-            `<strong>Your next step:</strong> Sign up at <a href="https://leads.meetcursive.com/welcome" style="color:#007AFF;">leads.meetcursive.com/welcome</a>, install the pixel, and your first identified visitors will show up in your dashboard automatically.`,
+            `<strong>Your next step:</strong> Sign up at <a href="${APP_URL}/welcome" style="color:#007AFF;">${APP_URL.replace('https://', '')}/welcome</a>, install the pixel, and your first identified visitors will show up in your dashboard automatically.`,
             ``,
             `Want me to get the pixel set up for you? Reply here and I'll send it over.`,
           ],
@@ -492,7 +494,7 @@ export const demoNurtureSequence = inngest.createFunction(
             ``,
             `I don't want to keep filling your inbox, so this will be my last note for now.`,
             ``,
-            `If you're ready to see what Cursive can do for your site, you can sign up here anytime: <a href="https://leads.meetcursive.com/welcome" style="color:#007AFF;">leads.meetcursive.com/welcome</a>`,
+            `If you're ready to see what Cursive can do for your site, you can sign up here anytime: <a href="${APP_URL}/welcome" style="color:#007AFF;">${APP_URL.replace('https://', '')}/welcome</a>`,
             ``,
             `Or grab time with me when the timing is better: <a href="${calendarLink}" style="color:#007AFF;">${calendarLink}</a>`,
             ``,

@@ -9,7 +9,7 @@ export const runtime = 'nodejs'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { getCurrentUser } from '@/lib/auth/helpers'
+import { fastAuth } from '@/lib/auth/fast-auth'
 import { generateAdCreative } from '@/lib/ai-studio/image-generation'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
@@ -26,7 +26,7 @@ const generateSchema = z.object({
 
 export async function GET(request: NextRequest) {
   try {
-    const user = await getCurrentUser()
+    const user = await fastAuth(request)
     if (!user) {
       return unauthorized()
     }
@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
       .from('brand_workspaces')
       .select('id')
       .eq('id', workspaceId)
-      .eq('workspace_id', user.workspace_id)
+      .eq('workspace_id', user.workspaceId)
       .maybeSingle()
 
     if (!brandWorkspace) {
@@ -72,7 +72,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const user = await getCurrentUser()
+    const user = await fastAuth(request)
     if (!user) {
       return unauthorized()
     }
@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
       .from('brand_workspaces')
       .select('*, customer_profiles(*), offers(*)')
       .eq('id', workspaceId)
-      .eq('workspace_id', user.workspace_id)
+      .eq('workspace_id', user.workspaceId)
       .maybeSingle()
 
     if (workspaceError || !workspace) {

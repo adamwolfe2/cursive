@@ -6,13 +6,13 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { getCurrentUser } from '@/lib/auth/helpers'
+import { fastAuth } from '@/lib/auth/fast-auth'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function GET(request: NextRequest) {
   try {
     // 1. Authentication
-    const user = await getCurrentUser()
+    const user = await fastAuth(request)
     if (!user) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
     const { data: workspaces, error } = await supabase
       .from('brand_workspaces')
       .select('id, name, url, logo_url, favicon_url, brand_data, extraction_status, created_at')
-      .eq('workspace_id', user.workspace_id)
+      .eq('workspace_id', user.workspaceId)
       .order('created_at', { ascending: false })
 
     if (error) {

@@ -109,7 +109,7 @@ export async function POST(request: NextRequest) {
                   {
                     type: 'button',
                     text: { type: 'plain_text', text: '👀 View in Admin' },
-                    url: `https://leads.meetcursive.com/admin/custom-audiences`,
+                    url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://leads.meetcursive.com'}/admin/custom-audiences`,
                     style: 'primary',
                   },
                 ],

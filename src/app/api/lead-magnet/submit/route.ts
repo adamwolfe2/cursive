@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
     })
 
     // Send confirmation email with next steps
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://leads.meetcursive.com'
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://leads.meetcursive.com'
     const onboardingUrl = `${baseUrl}/onboarding?email=${encodeURIComponent(email)}&type=${audit_type}`
 
     try {

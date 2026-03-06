@@ -148,7 +148,7 @@ export const inactiveUserReengagement = inngest.createFunction(
 
             const leadCount = newLeadCount ?? 0
             const userName = user.full_name || user.email.split('@')[0]
-            const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://leads.meetcursive.com'
+            const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://leads.meetcursive.com'
 
             // Build and send the email
             const html = buildReengagementEmail({
