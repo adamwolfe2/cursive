@@ -78,8 +78,8 @@ export function ProvisioningWidget({ steps }: ProvisioningWidgetProps) {
           {steps.map(step => (
             <div key={step.id} className="flex items-start gap-3">
               {step.done
-                ? <CheckCircle2 className="h-4.5 w-4.5 text-green-500 shrink-0 mt-0.5" aria-hidden="true" />
-                : <Circle className="h-4.5 w-4.5 text-gray-300 shrink-0 mt-0.5" aria-hidden="true" />
+                ? <CheckCircle2 className="h-5 w-5 text-green-500 shrink-0 mt-0.5" aria-hidden="true" />
+                : <Circle className="h-5 w-5 text-gray-300 shrink-0 mt-0.5" aria-hidden="true" />
               }
               <div className="flex-1 min-w-0">
                 {!step.done && step.href ? (

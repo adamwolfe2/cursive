@@ -5,7 +5,7 @@
 
 
 import { NextRequest, NextResponse } from 'next/server'
-import { getCurrentUser } from '@/lib/auth/helpers'
+import { fastAuth } from '@/lib/auth/fast-auth'
 import { MarketplaceRepository } from '@/lib/repositories/marketplace.repository'
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
@@ -41,7 +41,7 @@ const checkoutSchema = z.object({
  */
 export async function POST(request: NextRequest) {
   try {
-    const user = await getCurrentUser()
+    const user = await fastAuth(request)
     if (!user) {
       return unauthorized()
     }
@@ -86,8 +86,8 @@ export async function POST(request: NextRequest) {
       cancel_url: cancelUrl,
       metadata: {
         type: 'credit_purchase',
-        workspace_id: user.workspace_id,
-        user_id: user.id,
+        workspace_id: user.workspaceId,
+        user_id: user.userId,
         credits: selectedPackage.credits.toString(),
       },
       customer_email: user.email,
@@ -97,8 +97,8 @@ export async function POST(request: NextRequest) {
     // Now create the DB record with the session ID included
     const repo = new MarketplaceRepository()
     const purchase = await repo.createCreditPurchase({
-      workspaceId: user.workspace_id,
-      userId: user.id,
+      workspaceId: user.workspaceId,
+      userId: user.userId,
       credits: selectedPackage.credits,
       packageName: selectedPackage.name,
       amountPaid: selectedPackage.price / 100, // Convert cents to dollars for DB
