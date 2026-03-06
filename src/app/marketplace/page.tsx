@@ -8,6 +8,7 @@ import { NavBar } from '@/components/nav-bar'
 import { useDebounce } from '@/hooks/use-debounce'
 import { Button } from '@/components/ui/button'
 import { MobileFilters } from './components/MobileFilters'
+import { FilterContent } from './components/FilterContent'
 import { BuyLeadButton } from '@/components/marketplace/BuyLeadButton'
 import { UpsellBanner } from '@/components/marketplace/UpsellBanner'
 import { UpgradeModal } from '@/components/marketplace/UpgradeModal'
@@ -27,41 +28,6 @@ import { useQueryClient } from '@tanstack/react-query'
 // Re-use Filters type from the hook
 type Filters = MarketplaceFilters
 
-// Constants
-const INDUSTRIES = [
-  'Technology',
-  'Healthcare',
-  'Finance',
-  'Manufacturing',
-  'Retail',
-  'Real Estate',
-  'Professional Services',
-  'Construction',
-  'Education',
-  'Transportation',
-]
-
-const STATES = [
-  'CA', 'TX', 'NY', 'FL', 'IL', 'PA', 'OH', 'GA', 'NC', 'MI',
-  'NJ', 'VA', 'WA', 'AZ', 'MA', 'TN', 'IN', 'MO', 'MD', 'WI',
-]
-
-const COMPANY_SIZES = [
-  '1-10',
-  '11-50',
-  '51-200',
-  '201-500',
-  '501-1000',
-  '1000+',
-]
-
-const SENIORITY_LEVELS = [
-  { value: 'c_suite', label: 'C-Suite' },
-  { value: 'vp', label: 'VP' },
-  { value: 'director', label: 'Director' },
-  { value: 'manager', label: 'Manager' },
-  { value: 'ic', label: 'Individual Contributor' },
-]
 
 function getIntentBadge(score: number): { label: string; color: string } {
   if (score >= 70) return { label: 'Hot', color: 'bg-emerald-100 text-emerald-700' }
@@ -369,166 +335,13 @@ export default function MarketplacePage() {
             <div className={`hidden lg:block ${showFilters ? 'w-64 flex-shrink-0' : 'w-0'} transition-all duration-200`}>
               {showFilters && (
                 <div className="bg-white border border-zinc-200 rounded-lg p-4 sticky top-4" role="region" aria-label="Lead filters">
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-[14px] font-semibold text-zinc-900">Filters</h2>
-                    <button
-                      onClick={clearFilters}
-                      className="text-[12px] text-zinc-500 hover:text-zinc-700"
-                      aria-label="Clear all filters"
-                    >
-                      Clear all
-                    </button>
-                  </div>
-
-                  {/* Industry Filter */}
-                  <fieldset className="mb-4">
-                    <legend className="text-[12px] font-medium text-zinc-700 mb-2">Industry</legend>
-                    <div className="space-y-1 max-h-40 overflow-y-auto" role="group" aria-label="Industry filters">
-                      {INDUSTRIES.map((industry) => (
-                        <label key={industry} className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={filters.industries.includes(industry)}
-                            onChange={() => toggleFilter('industries', industry)}
-                            className="w-3.5 h-3.5 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-500"
-                            aria-label={`Filter by ${industry} industry`}
-                          />
-                          <span className="text-[12px] text-zinc-600">{industry}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </fieldset>
-
-                  {/* State Filter */}
-                  <fieldset className="mb-4">
-                    <legend className="text-[12px] font-medium text-zinc-700 mb-2">State</legend>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2" role="group" aria-label="State filters">
-                      {STATES.slice(0, 10).map((state) => (
-                        <button
-                          key={state}
-                          onClick={() => toggleFilter('states', state)}
-                          className={`h-11 min-w-[44px] lg:h-auto lg:px-2 lg:py-1 px-3 text-[11px] rounded flex items-center justify-center ${
-                            filters.states.includes(state)
-                              ? 'bg-zinc-900 text-white'
-                              : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
-                          }`}
-                          aria-label={`Filter by ${state} state`}
-                          aria-pressed={filters.states.includes(state)}
-                        >
-                          {state}
-                        </button>
-                      ))}
-                    </div>
-                  </fieldset>
-
-                  {/* Company Size Filter */}
-                  <fieldset className="mb-4">
-                    <legend className="text-[12px] font-medium text-zinc-700 mb-2">Company Size</legend>
-                    <div className="space-y-1" role="group" aria-label="Company size filters">
-                      {COMPANY_SIZES.map((size) => (
-                        <label key={size} className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={filters.companySizes.includes(size)}
-                            onChange={() => toggleFilter('companySizes', size)}
-                            className="w-3.5 h-3.5 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-500"
-                            aria-label={`Filter by company size ${size} employees`}
-                          />
-                          <span className="text-[12px] text-zinc-600">{size} employees</span>
-                        </label>
-                      ))}
-                    </div>
-                  </fieldset>
-
-                  {/* Seniority Filter */}
-                  <fieldset className="mb-4">
-                    <legend className="text-[12px] font-medium text-zinc-700 mb-2">Seniority</legend>
-                    <div className="space-y-1" role="group" aria-label="Seniority level filters">
-                      {SENIORITY_LEVELS.map((level) => (
-                        <label key={level.value} className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={filters.seniorityLevels.includes(level.value)}
-                            onChange={() => toggleFilter('seniorityLevels', level.value)}
-                            className="w-3.5 h-3.5 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-500"
-                            aria-label={`Filter by ${level.label} seniority level`}
-                          />
-                          <span className="text-[12px] text-zinc-600">{level.label}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </fieldset>
-
-                  {/* Contact Quality Filters */}
-                  <fieldset className="mb-4">
-                    <legend className="text-[12px] font-medium text-zinc-700 mb-2">Contact Quality</legend>
-                    <div className="space-y-1" role="group" aria-label="Contact quality filters">
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={!!filters.hasVerifiedEmail}
-                          onChange={() => setFilters((prev) => ({ ...prev, hasVerifiedEmail: !prev.hasVerifiedEmail }))}
-                          className="w-3.5 h-3.5 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-500"
-                          aria-label="Filter by verified email only"
-                        />
-                        <span className="text-[12px] text-zinc-600">Verified email only</span>
-                      </label>
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={!!filters.hasPhone}
-                          onChange={() => setFilters((prev) => ({ ...prev, hasPhone: !prev.hasPhone }))}
-                          className="w-3.5 h-3.5 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-500"
-                          aria-label="Filter by has phone number"
-                        />
-                        <span className="text-[12px] text-zinc-600">Has phone number</span>
-                      </label>
-                    </div>
-                  </fieldset>
-
-                  {/* Intent Score Filter */}
-                  <fieldset className="mb-4">
-                    <legend className="text-[12px] font-medium text-zinc-700 mb-2">Minimum Intent Score</legend>
-                    <div className="flex gap-2" role="group" aria-label="Intent score filters">
-                      {[0, 40, 70].map((score) => (
-                        <button
-                          key={score}
-                          onClick={() => setFilters((prev) => ({ ...prev, intentScoreMin: prev.intentScoreMin === score ? undefined : score }))}
-                          className={`flex-1 px-2 py-1.5 text-[11px] rounded ${
-                            filters.intentScoreMin === score
-                              ? 'bg-zinc-900 text-white'
-                              : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
-                          }`}
-                          aria-label={`Filter by intent score ${score === 0 ? 'all levels' : score === 40 ? 'warm and above' : 'hot only'}`}
-                          aria-pressed={filters.intentScoreMin === score}
-                        >
-                          {score === 0 ? 'All' : score === 40 ? 'Warm+' : 'Hot'}
-                        </button>
-                      ))}
-                    </div>
-                  </fieldset>
-
-                  {/* Freshness Filter */}
-                  <fieldset>
-                    <legend className="text-[12px] font-medium text-zinc-700 mb-2">Minimum Freshness</legend>
-                    <div className="flex gap-2" role="group" aria-label="Freshness filters">
-                      {[0, 40, 70].map((score) => (
-                        <button
-                          key={score}
-                          onClick={() => setFilters((prev) => ({ ...prev, freshnessMin: prev.freshnessMin === score ? undefined : score }))}
-                          className={`flex-1 px-2 py-1.5 text-[11px] rounded ${
-                            filters.freshnessMin === score
-                              ? 'bg-zinc-900 text-white'
-                              : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
-                          }`}
-                          aria-label={`Filter by freshness ${score === 0 ? 'all levels' : score === 40 ? 'recent and above' : 'fresh only'}`}
-                          aria-pressed={filters.freshnessMin === score}
-                        >
-                          {score === 0 ? 'All' : score === 40 ? 'Recent+' : 'Fresh'}
-                        </button>
-                      ))}
-                    </div>
-                  </fieldset>
+                  <FilterContent
+                    filters={filters}
+                    toggleFilter={toggleFilter}
+                    setFilters={setFilters}
+                    clearFilters={clearFilters}
+                    variant="desktop"
+                  />
                 </div>
               )}
             </div>
@@ -559,167 +372,13 @@ export default function MarketplacePage() {
 
                   {/* Mobile: Filter Sheet */}
                   <MobileFilters filterCount={activeFilterCount}>
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <button
-                          onClick={clearFilters}
-                          className="text-[13px] text-zinc-500 hover:text-zinc-700"
-                          aria-label="Clear all filters"
-                        >
-                          Clear all
-                        </button>
-                      </div>
-
-                      {/* Industry Filter */}
-                      <fieldset>
-                        <legend className="text-[13px] font-medium text-zinc-900 mb-3">Industry</legend>
-                        <div className="space-y-2 max-h-60 overflow-y-auto" role="group" aria-label="Industry filters">
-                          {INDUSTRIES.map((industry) => (
-                            <label key={industry} className="flex items-center gap-3 cursor-pointer">
-                              <input
-                                type="checkbox"
-                                checked={filters.industries.includes(industry)}
-                                onChange={() => toggleFilter('industries', industry)}
-                                className="w-4 h-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-500"
-                                aria-label={`Filter by ${industry} industry`}
-                              />
-                              <span className="text-[14px] text-zinc-700">{industry}</span>
-                            </label>
-                          ))}
-                        </div>
-                      </fieldset>
-
-                      {/* State Filter */}
-                      <fieldset>
-                        <legend className="text-[13px] font-medium text-zinc-900 mb-3">State</legend>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2" role="group" aria-label="State filters">
-                          {STATES.slice(0, 10).map((state) => (
-                            <button
-                              key={state}
-                              onClick={() => toggleFilter('states', state)}
-                              className={`h-11 min-w-[44px] px-3 text-[12px] rounded flex items-center justify-center font-medium ${
-                                filters.states.includes(state)
-                                  ? 'bg-zinc-900 text-white'
-                                  : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
-                              }`}
-                              aria-label={`Filter by ${state} state`}
-                              aria-pressed={filters.states.includes(state)}
-                            >
-                              {state}
-                            </button>
-                          ))}
-                        </div>
-                      </fieldset>
-
-                      {/* Company Size Filter */}
-                      <fieldset>
-                        <legend className="text-[13px] font-medium text-zinc-900 mb-3">Company Size</legend>
-                        <div className="space-y-2" role="group" aria-label="Company size filters">
-                          {COMPANY_SIZES.map((size) => (
-                            <label key={size} className="flex items-center gap-3 cursor-pointer">
-                              <input
-                                type="checkbox"
-                                checked={filters.companySizes.includes(size)}
-                                onChange={() => toggleFilter('companySizes', size)}
-                                className="w-4 h-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-500"
-                                aria-label={`Filter by company size ${size} employees`}
-                              />
-                              <span className="text-[14px] text-zinc-700">{size} employees</span>
-                            </label>
-                          ))}
-                        </div>
-                      </fieldset>
-
-                      {/* Seniority Filter */}
-                      <fieldset>
-                        <legend className="text-[13px] font-medium text-zinc-900 mb-3">Seniority</legend>
-                        <div className="space-y-2" role="group" aria-label="Seniority level filters">
-                          {SENIORITY_LEVELS.map((level) => (
-                            <label key={level.value} className="flex items-center gap-3 cursor-pointer">
-                              <input
-                                type="checkbox"
-                                checked={filters.seniorityLevels.includes(level.value)}
-                                onChange={() => toggleFilter('seniorityLevels', level.value)}
-                                className="w-4 h-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-500"
-                                aria-label={`Filter by ${level.label} seniority level`}
-                              />
-                              <span className="text-[14px] text-zinc-700">{level.label}</span>
-                            </label>
-                          ))}
-                        </div>
-                      </fieldset>
-
-                      {/* Contact Quality Filters */}
-                      <fieldset>
-                        <legend className="text-[13px] font-medium text-zinc-900 mb-3">Contact Quality</legend>
-                        <div className="space-y-2" role="group" aria-label="Contact quality filters">
-                          <label className="flex items-center gap-3 cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={!!filters.hasVerifiedEmail}
-                              onChange={() => setFilters((prev) => ({ ...prev, hasVerifiedEmail: !prev.hasVerifiedEmail }))}
-                              className="w-4 h-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-500"
-                              aria-label="Filter by verified email only"
-                            />
-                            <span className="text-[14px] text-zinc-700">Verified email only</span>
-                          </label>
-                          <label className="flex items-center gap-3 cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={!!filters.hasPhone}
-                              onChange={() => setFilters((prev) => ({ ...prev, hasPhone: !prev.hasPhone }))}
-                              className="w-4 h-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-500"
-                              aria-label="Filter by has phone number"
-                            />
-                            <span className="text-[14px] text-zinc-700">Has phone number</span>
-                          </label>
-                        </div>
-                      </fieldset>
-
-                      {/* Intent Score Filter */}
-                      <fieldset>
-                        <legend className="text-[13px] font-medium text-zinc-900 mb-3">Minimum Intent Score</legend>
-                        <div className="grid grid-cols-3 gap-2" role="group" aria-label="Intent score filters">
-                          {[0, 40, 70].map((score) => (
-                            <button
-                              key={score}
-                              onClick={() => setFilters((prev) => ({ ...prev, intentScoreMin: prev.intentScoreMin === score ? undefined : score }))}
-                              className={`h-11 px-3 text-[13px] font-medium rounded ${
-                                filters.intentScoreMin === score
-                                  ? 'bg-zinc-900 text-white'
-                                  : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
-                              }`}
-                              aria-label={`Filter by intent score ${score === 0 ? 'all levels' : score === 40 ? 'warm and above' : 'hot only'}`}
-                              aria-pressed={filters.intentScoreMin === score}
-                            >
-                              {score === 0 ? 'All' : score === 40 ? 'Warm+' : 'Hot'}
-                            </button>
-                          ))}
-                        </div>
-                      </fieldset>
-
-                      {/* Freshness Filter */}
-                      <fieldset>
-                        <legend className="text-[13px] font-medium text-zinc-900 mb-3">Minimum Freshness</legend>
-                        <div className="grid grid-cols-3 gap-2" role="group" aria-label="Freshness filters">
-                          {[0, 40, 70].map((score) => (
-                            <button
-                              key={score}
-                              onClick={() => setFilters((prev) => ({ ...prev, freshnessMin: prev.freshnessMin === score ? undefined : score }))}
-                              className={`h-11 px-3 text-[13px] font-medium rounded ${
-                                filters.freshnessMin === score
-                                  ? 'bg-zinc-900 text-white'
-                                  : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
-                              }`}
-                              aria-label={`Filter by freshness ${score === 0 ? 'all levels' : score === 40 ? 'recent and above' : 'fresh only'}`}
-                              aria-pressed={filters.freshnessMin === score}
-                            >
-                              {score === 0 ? 'All' : score === 40 ? 'Recent+' : 'Fresh'}
-                            </button>
-                          ))}
-                        </div>
-                      </fieldset>
-                    </div>
+                    <FilterContent
+                      filters={filters}
+                      toggleFilter={toggleFilter}
+                      setFilters={setFilters}
+                      clearFilters={clearFilters}
+                      variant="mobile"
+                    />
                   </MobileFilters>
 
                   {/* Sort dropdown — desktop and mobile */}
