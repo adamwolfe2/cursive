@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server'
-import { getCurrentUser } from '@/lib/auth/helpers'
+import { NextRequest, NextResponse } from 'next/server'
+import { fastAuth } from '@/lib/auth/fast-auth'
 import { createClient } from '@/lib/supabase/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
@@ -11,19 +11,15 @@ export interface ChecklistItem {
   href: string
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const user = await getCurrentUser()
+    const user = await fastAuth(request)
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    if (!user.workspace_id) {
-      return NextResponse.json({ error: 'No workspace found' }, { status: 404 })
-    }
-
     const supabase = await createClient()
-    const workspaceId = user.workspace_id
+    const workspaceId = user.workspaceId
 
     // Run all five checklist queries in parallel
     const [pixelResult, targetingResult, creditResult, leadResult, crmResult] =

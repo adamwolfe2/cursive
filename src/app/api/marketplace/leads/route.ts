@@ -3,7 +3,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { getCurrentUser } from '@/lib/auth/helpers'
+import { fastAuth } from '@/lib/auth/fast-auth'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { MarketplaceRepository } from '@/lib/repositories/marketplace.repository'
 import { withRateLimit } from '@/lib/middleware/rate-limiter'
@@ -31,7 +31,7 @@ const filtersSchema = z.object({
 
 export async function GET(request: NextRequest) {
   try {
-    const user = await getCurrentUser()
+    const user = await fastAuth(request)
 
     if (!user) {
       return unauthorized()
@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
     const rateLimitResult = await withRateLimit(
       request,
       'marketplace-browse',
-      `user:${user.id}`
+      `user:${user.userId}`
     )
     if (rateLimitResult) {
       return rateLimitResult

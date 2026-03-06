@@ -10,11 +10,11 @@ import { inngest } from '../client'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { validateEmail, findBestEmail } from '@/lib/services/enrichment/email-validation.service'
 import {
-  analyzeCompany,
   qualifyLead,
   researchCompany,
   analyzeIntentSignals,
 } from '@/lib/services/ai/claude.service'
+import { getCachedCompanyAnalysis } from '@/lib/ai/company-analysis'
 import { enrichLeadWithClay, enrichCompanyWithClay } from '@/lib/services/clay.service'
 import {
   getCompanyTechStack,
@@ -395,9 +395,9 @@ async function enrichWithAI(
       .eq('id', workspaceId)
       .maybeSingle()
 
-    // Run AI analysis
+    // Run AI analysis — use domain-keyed cache to avoid redundant calls for same company
     const [companyAnalysis, qualification] = await Promise.all([
-      analyzeCompany({
+      getCachedCompanyAnalysis({
         name: companyData.name ?? '',
         domain: companyData.domain ?? '',
         description: companyData.description ?? '',

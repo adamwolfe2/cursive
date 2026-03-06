@@ -5,7 +5,7 @@
 
 
 import { NextRequest, NextResponse } from 'next/server'
-import { getCurrentUser } from '@/lib/auth/helpers'
+import { fastAuth } from '@/lib/auth/fast-auth'
 import { createClient } from '@/lib/supabase/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { getErrorMessage } from '@/lib/utils/error-messages'
@@ -16,7 +16,7 @@ import { getErrorMessage } from '@/lib/utils/error-messages'
  */
 export async function GET(request: NextRequest) {
   try {
-    const user = await getCurrentUser()
+    const user = await fastAuth(request)
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
     // Call RPC function for workspace stats
     const { data: stats, error } = await supabase
       .rpc('get_workspace_stats', {
-        p_workspace_id: user.workspace_id,
+        p_workspace_id: user.workspaceId,
       })
 
     if (error) {

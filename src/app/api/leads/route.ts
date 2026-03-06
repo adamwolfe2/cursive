@@ -3,7 +3,7 @@
 
 
 import { NextRequest, NextResponse } from 'next/server'
-import { getCurrentUser } from '@/lib/auth/helpers'
+import { fastAuth } from '@/lib/auth/fast-auth'
 import { LeadRepository } from '@/lib/repositories/lead.repository'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'
@@ -22,8 +22,8 @@ const leadFiltersSchema = z.object({
 
 export async function GET(request: NextRequest) {
   try {
-    // 1. Check authentication
-    const user = await getCurrentUser()
+    // 1. Check authentication — fastAuth: 1 network call vs 3 in getCurrentUser()
+    const user = await fastAuth(request)
     if (!user) {
       return unauthorized()
     }
@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
     // 3. Fetch leads with workspace filtering
     const leadRepo = new LeadRepository()
     const result = await leadRepo.findByWorkspace(
-      user.workspace_id,
+      user.workspaceId,
       {
         query_id: validated.query_id,
         enrichment_status: validated.enrichment_status,
