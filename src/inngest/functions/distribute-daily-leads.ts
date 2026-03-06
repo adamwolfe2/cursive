@@ -91,6 +91,12 @@ export const distributeDailyLeads = inngest.createFunction(
 
           const remainingForToday = dailyLimit - (todayCount || 0)
 
+          // Check total leads ever received — used to detect first-ever distribution
+          const { count: totalBefore } = await supabase
+            .from('leads')
+            .select('*', { count: 'exact', head: true })
+            .eq('workspace_id', user.workspace_id)
+
           // Look up the real audience segment from DB (industry + location → segment_id)
           const { data: segmentMapping, error: mappingError } = await supabase
             .from('audience_lab_segments')
@@ -206,6 +212,7 @@ export const distributeDailyLeads = inngest.createFunction(
           return {
             inserted: leadsToInsert.length,
             leads,
+            isFirstDistribution: (todayCount || 0) === 0 && totalBefore === 0,
           }
         })
 
@@ -320,6 +327,28 @@ export const distributeDailyLeads = inngest.createFunction(
             })
 
           })
+
+          // Fire first-leads-arrived event on the very first distribution
+          if (result.isFirstDistribution) {
+            await step.run(`first-leads-event-${user.id}`, async () => {
+              try {
+                await inngest.send({
+                  name: 'workspace/first-leads-arrived',
+                  data: {
+                    workspaceId: user.workspace_id,
+                    userId: user.id,
+                    userEmail: user.email,
+                    userName: user.full_name || user.email.split('@')[0],
+                    leadCount: result.inserted,
+                    industry: user.industry_segment || null,
+                    location: user.location_segment || null,
+                  },
+                })
+              } catch (emitErr) {
+                safeError(`[DailyLeads] First-leads event emit failed (non-fatal):`, emitErr)
+              }
+            })
+          }
 
           // Sync to GHL if user has CRM enabled
           if (user.ghl_sub_account_id) {

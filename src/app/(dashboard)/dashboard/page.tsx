@@ -17,6 +17,8 @@ import { OnboardingChecklist } from '@/components/onboarding/OnboardingChecklist
 import { WhatsNewModal } from '@/components/dashboard/WhatsNewModal'
 import { FirstLeadsBanner } from '@/components/dashboard/FirstLeadsBanner'
 import { TrialCountdown } from '@/components/dashboard/TrialCountdown'
+import { FirstEnrichmentModal } from '@/components/onboarding/FirstEnrichmentModal'
+import { ProvisioningWidget } from '@/components/dashboard/ProvisioningWidget'
 
 export const dynamic = 'force-dynamic'
 
@@ -189,6 +191,7 @@ export default async function DashboardPage({
     activationResult,
     hotLeadsResult,
     pipelineStatsResult,
+    firstEnrichmentResult,
   ] = await Promise.all([
     Promise.race([
       getWorkspaceStats(workspaceId),
@@ -222,6 +225,24 @@ export default async function DashboardPage({
       .eq('workspace_id', workspaceId),
     getHotLeads(workspaceId),
     getPipelineStats(workspaceId),
+    // First enrichment celebration: check workspace flag + first enriched lead
+    supabase
+      .from('workspaces')
+      .select('has_seen_first_enrichment')
+      .eq('id', workspaceId)
+      .maybeSingle()
+      .then(async ({ data: ws }) => {
+        if (ws?.has_seen_first_enrichment) return null
+        const { data: lead } = await supabase
+          .from('leads')
+          .select('id, full_name, first_name, last_name, company_name, job_title, city, state, intent_score_calculated')
+          .eq('workspace_id', workspaceId)
+          .eq('enrichment_status', 'enriched')
+          .order('updated_at', { ascending: false })
+          .limit(1)
+          .maybeSingle()
+        return lead ?? null
+      }),
   ])
 
   // Pull counts from the pre-computed stats cache
@@ -360,6 +381,42 @@ export default async function DashboardPage({
       {showChecklist && (
         <AnimatedSection delay={0.03}>
           <OnboardingChecklist />
+        </AnimatedSection>
+      )}
+
+      {/* New-user provisioning status widget — shows the 4 critical setup steps */}
+      {workspaceAgeHours < 72 && (
+        <AnimatedSection delay={0.04}>
+          <ProvisioningWidget
+            steps={[
+              {
+                id: 'account',
+                label: 'Account created',
+                done: true,
+              },
+              {
+                id: 'pixel',
+                label: 'Pixel installed',
+                sublabel: hasPixel ? undefined : 'Add the tracking script to your site',
+                done: hasPixel,
+                href: '/settings/pixel',
+              },
+              {
+                id: 'leads',
+                label: 'First leads identified',
+                sublabel: totalCount > 0 ? undefined : 'Waiting for your first leads to arrive…',
+                done: totalCount > 0,
+                href: '/leads',
+              },
+              {
+                id: 'team',
+                label: 'Share with your team',
+                sublabel: 'Invite teammates to view and action leads',
+                done: false,
+                href: '/settings/team',
+              },
+            ]}
+          />
         </AnimatedSection>
       )}
 
@@ -1003,6 +1060,14 @@ export default async function DashboardPage({
       </div>
 
       <WhatsNewModal />
+
+      {/* First enrichment celebration — shows once when user's first lead is enriched */}
+      {firstEnrichmentResult && (
+        <FirstEnrichmentModal
+          lead={firstEnrichmentResult}
+          workspaceId={workspaceId}
+        />
+      )}
       </DashboardAnimationWrapper>
     </div>
   )

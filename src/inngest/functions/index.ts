@@ -253,3 +253,6 @@ export { intelligencePack } from './intelligence-pack'
 
 // First Leads Arrived notification (onboarding milestone — sends email when workspace gets first leads)
 export { firstLeadsArrived } from './first-leads-arrived'
+
+// Trial countdown emails (daily cron — -7d, -3d, day-of reminders before pixel trial expiry)
+export { trialCountdownEmails } from './trial-countdown-emails'
