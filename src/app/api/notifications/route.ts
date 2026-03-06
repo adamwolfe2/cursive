@@ -7,7 +7,7 @@ export const runtime = 'edge'
 
 
 import { NextResponse, type NextRequest } from 'next/server'
-import { getCurrentUser } from '@/lib/auth/helpers'
+import { fastAuth } from '@/lib/auth/fast-auth'
 import { handleApiError, unauthorized, success, badRequest } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'
 import {
@@ -35,7 +35,7 @@ const actionSchema = z.object({
  */
 export async function GET(request: NextRequest) {
   try {
-    const user = await getCurrentUser()
+    const user = await fastAuth(request)
     if (!user) return unauthorized()
 
     const searchParams = Object.fromEntries(request.nextUrl.searchParams)
@@ -51,8 +51,8 @@ export async function GET(request: NextRequest) {
     if (params.is_read !== undefined) filters.isRead = params.is_read
 
     const { notifications, total, unreadCount } = await getNotifications(
-      user.workspace_id,
-      user.id,
+      user.workspaceId,
+      user.userId,
       filters,
       { page: params.page, limit: params.limit }
     )
@@ -97,7 +97,7 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
-    const user = await getCurrentUser()
+    const user = await fastAuth(request)
     if (!user) return unauthorized()
 
     const body = await request.json()
@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
 
     switch (validated.action) {
       case 'mark_all_read': {
-        const result = await markAllNotificationsRead(user.workspace_id, user.id)
+        const result = await markAllNotificationsRead(user.workspaceId, user.userId)
         return success({
           message: 'All notifications marked as read',
           marked_count: result.markedCount,
@@ -113,7 +113,7 @@ export async function POST(request: NextRequest) {
       }
 
       case 'get_count': {
-        const count = await getUnreadCount(user.workspace_id, user.id)
+        const count = await getUnreadCount(user.workspaceId, user.userId)
         return success({ unread_count: count })
       }
 

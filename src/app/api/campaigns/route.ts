@@ -4,7 +4,7 @@
 
 import { type NextRequest, NextResponse } from 'next/server'
 import { CampaignRepository } from '@/lib/repositories/campaign.repository'
-import { getCurrentUser } from '@/lib/auth/helpers'
+import { fastAuth } from '@/lib/auth/fast-auth'
 import { handleApiError, unauthorized, success, created } from '@/lib/utils/api-error-handler'
 import {
   requireFeature,
@@ -49,7 +49,7 @@ const createCampaignSchema = z.object({
 
 export async function GET(request: NextRequest) {
   try {
-    const user = await getCurrentUser()
+    const user = await fastAuth(request)
     if (!user) return unauthorized()
 
     const { searchParams } = new URL(request.url)
@@ -60,15 +60,15 @@ export async function GET(request: NextRequest) {
 
     let campaigns
     if (status) {
-      campaigns = await repo.findByStatus(user.workspace_id, status)
+      campaigns = await repo.findByStatus(user.workspaceId, status)
     } else {
-      campaigns = await repo.findByWorkspace(user.workspace_id)
+      campaigns = await repo.findByWorkspace(user.workspaceId)
     }
 
     // Include tier usage information if requested
     let usage = null
     if (includeUsage) {
-      const { withinLimit, used, limit } = await isWorkspaceWithinLimit(user.workspace_id, 'campaigns')
+      const { withinLimit, used, limit } = await isWorkspaceWithinLimit(user.workspaceId, 'campaigns')
       usage = { used, limit, withinLimit }
     }
 
@@ -83,19 +83,19 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const user = await getCurrentUser()
+    const user = await fastAuth(request)
     if (!user) return unauthorized()
 
     // Check if workspace has campaigns feature enabled
     await requireFeature(
-      user.workspace_id,
+      user.workspaceId,
       'campaigns',
       'Campaigns require a paid plan. Upgrade to create email campaigns.'
     )
 
     // Check if workspace is within campaign limit
     await requireWithinLimit(
-      user.workspace_id,
+      user.workspaceId,
       'campaigns',
       'You have reached your maximum number of campaigns. Upgrade to create more.'
     )
@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
 
     const repo = new CampaignRepository()
     const campaign = await repo.create({
-      workspace_id: user.workspace_id,
+      workspace_id: user.workspaceId,
       name: validatedData.name,
       description: validatedData.description,
       agent_id: validatedData.agent_id,

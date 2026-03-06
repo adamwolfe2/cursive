@@ -9,7 +9,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { getCurrentUser } from '@/lib/auth/helpers'
+import { fastAuth } from '@/lib/auth/fast-auth'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { getStripeClient } from '@/lib/stripe/client'
 import type Stripe from 'stripe'
@@ -26,7 +26,7 @@ const checkoutSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
-    const user = await getCurrentUser()
+    const user = await fastAuth(req)
     if (!user) return unauthorized()
 
     const stripe = getStripeClient()
@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
       .from('leads')
       .select('id, workspace_id, company_name, company_industry, company_location')
       .eq('id', leadId)
-      .eq('workspace_id', user.workspace_id)
+      .eq('workspace_id', user.workspaceId)
       .maybeSingle()
 
     if (leadError || !lead) {
@@ -82,7 +82,7 @@ export async function POST(req: NextRequest) {
         metadata: {
           company_name: companyName || '',
           buyer_email: buyerEmail,
-          user_id: user.id,
+          user_id: user.userId,
         },
       })
 
@@ -132,8 +132,8 @@ export async function POST(req: NextRequest) {
         lead_id: leadId,
         buyer_email: buyerEmail,
         company_name: companyName || '',
-        user_id: user.id,
-        workspace_id: user.workspace_id,
+        user_id: user.userId,
+        workspace_id: user.workspaceId,
         affiliate_ref_code: affiliateRefCode,
       },
       allow_promotion_codes: true,

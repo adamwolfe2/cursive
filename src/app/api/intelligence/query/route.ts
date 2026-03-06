@@ -8,7 +8,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { getCurrentUser } from '@/lib/auth/helpers'
+import { fastAuth } from '@/lib/auth/fast-auth'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { runNaturalLanguageQuery } from '@/lib/services/intelligence/nl-query.service'
 import { trackCost } from '@/lib/services/intelligence/cost-tracker'
@@ -20,17 +20,17 @@ const schema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    const user = await getCurrentUser()
+    const user = await fastAuth(request)
     if (!user) return unauthorized()
 
     const body = await request.json()
     const { query } = schema.parse(body)
 
-    const result = await runNaturalLanguageQuery(query, user.workspace_id)
+    const result = await runNaturalLanguageQuery(query, user.workspaceId)
 
     // Track cost (~$0.005 per NL query) — fire-and-forget, never block the response
     trackCost({
-      workspace_id: user.workspace_id,
+      workspace_id: user.workspaceId,
       tier: 'nl_query',
       provider: 'openai_gpt4o_mini',
       // Free by design — NL queries reduce friction. To charge in future: deduct 0.5 credits (same pattern as POST /api/leads/[id]/intelligence).

@@ -21,8 +21,14 @@ import {
   sendPartnerApproved,
   sendPartnerRejected,
 } from '@/lib/email/affiliate-emails'
-import { safeError } from '@/lib/utils/log-sanitizer'
+import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
 import { randomUUID } from 'crypto'
+import { z } from 'zod'
+
+const patchSchema = z.object({
+  action: z.enum(['approve', 'reject', 'pause', 'terminate']),
+  reviewNotes: z.string().optional(),
+})
 
 export async function GET(
   _request: NextRequest,
@@ -69,7 +75,11 @@ export async function PATCH(
     if (!await checkAdminAccess()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     const { id } = await params
     const body = await request.json()
-    const { action, reviewNotes } = body as { action: string; reviewNotes?: string }
+    const parseResult = patchSchema.safeParse(body)
+    if (!parseResult.success) {
+      return NextResponse.json({ error: 'Invalid action', details: parseResult.error.flatten().fieldErrors }, { status: 400 })
+    }
+    const { action, reviewNotes } = parseResult.data
 
     const admin = createAdminClient()
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://leads.meetcursive.com'
@@ -138,7 +148,7 @@ export async function PATCH(
         partnerCode,
         referralUrl,
         dashboardUrl
-      ).catch(() => {})
+      ).catch((err) => safeError('[admin/affiliates] Failed to send approval email:', err))
 
       return NextResponse.json({ success: true, partnerCode })
     }
@@ -153,7 +163,9 @@ export async function PATCH(
         })
         .eq('id', id)
 
-      sendPartnerRejected(application.email, application.first_name).catch(() => {})
+      sendPartnerRejected(application.email, application.first_name).catch((err) =>
+        safeError('[admin/affiliates] Failed to send rejection email:', err)
+      )
 
       return NextResponse.json({ success: true })
     }
@@ -174,18 +186,20 @@ export async function PATCH(
           .eq('id', affiliate.id)
 
         if (action === 'terminate') {
-          // Mark all pending commissions/bonuses as failed
-          await admin
-            .from('affiliate_commissions')
-            .update({ status: 'failed' })
-            .eq('affiliate_id', affiliate.id)
-            .eq('status', 'pending')
-
-          await admin
-            .from('affiliate_milestone_bonuses')
-            .update({ status: 'failed' })
-            .eq('affiliate_id', affiliate.id)
-            .eq('status', 'pending')
+          // Mark all pending commissions/bonuses as failed — run in parallel
+          await Promise.all([
+            admin
+              .from('affiliate_commissions')
+              .update({ status: 'failed' })
+              .eq('affiliate_id', affiliate.id)
+              .eq('status', 'pending'),
+            admin
+              .from('affiliate_milestone_bonuses')
+              .update({ status: 'failed' })
+              .eq('affiliate_id', affiliate.id)
+              .eq('status', 'pending'),
+          ])
+          safeLog('[admin/affiliates] Terminated affiliate, cancelled pending commissions/bonuses:', affiliate.id)
         }
       }
 

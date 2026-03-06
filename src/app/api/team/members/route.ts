@@ -4,14 +4,14 @@
 
 import { NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { getCurrentUser } from '@/lib/auth/helpers'
+import { fastAuth } from '@/lib/auth/fast-auth'
 import { handleApiError, unauthorized, success } from '@/lib/utils/api-error-handler'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function GET(request: NextRequest) {
   try {
     // 1. Check authentication
-    const user = await getCurrentUser()
+    const user = await fastAuth(request)
     if (!user) {
       return unauthorized()
     }
@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
     const { data: members, error } = await supabase
       .from('users')
       .select('id, email, full_name, avatar_url, role, created_at, last_login_at')
-      .eq('workspace_id', user.workspace_id)
+      .eq('workspace_id', user.workspaceId)
       .order('role', { ascending: true })
       .order('created_at', { ascending: true })
 

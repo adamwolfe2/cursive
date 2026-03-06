@@ -7,6 +7,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { z } from 'zod'
+
+const VALID_STATUSES = ['pending', 'approved', 'rejected', 'all'] as const
+const statusSchema = z.enum(VALID_STATUSES).default('all')
 
 async function checkAdminAccess(): Promise<boolean> {
   try {
@@ -35,7 +39,15 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const status = request.nextUrl.searchParams.get('status')
+    const rawStatus = request.nextUrl.searchParams.get('status') ?? 'all'
+    const statusResult = statusSchema.safeParse(rawStatus)
+    if (!statusResult.success) {
+      return NextResponse.json(
+        { error: 'Invalid status filter', valid: VALID_STATUSES },
+        { status: 400 }
+      )
+    }
+    const status = statusResult.data
     const admin = createAdminClient()
 
     let query = admin
@@ -43,7 +55,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       .select('id, first_name, last_name, email, phone, website, audience_size, audience_types, promotion_plan, status, created_at')
       .order('created_at', { ascending: false })
 
-    if (status && status !== 'all') {
+    if (status !== 'all') {
       query = query.eq('status', status)
     }
 

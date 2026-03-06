@@ -154,7 +154,7 @@ export class AgentRepository {
   } | null> {
     const supabase = await createClient()
 
-    // Get agent
+    // Fetch agent first — required to check existence before running sub-queries
     const { data: agent, error: agentError } = await supabase
       .from('agents')
       .select('*')
@@ -169,47 +169,39 @@ export class AgentRepository {
       throw new DatabaseError(agentError.message)
     }
 
-    // Get instructions
-    const { data: instructions, error: instructionsError } = await supabase
-      .from('email_instructions')
-      .select('*')
-      .eq('agent_id', id)
-      .order('order_index', { ascending: true })
+    if (!agent) return null
 
-    if (instructionsError) {
-      throw new DatabaseError(instructionsError.message)
-    }
+    // Fetch the remaining 4 sub-queries in parallel
+    const [
+      { data: instructions, error: instructionsError },
+      { data: kbEntries, error: kbError },
+      { count: threadCount, error: threadError },
+      { count: taskCount, error: taskError },
+    ] = await Promise.all([
+      supabase
+        .from('email_instructions')
+        .select('*')
+        .eq('agent_id', id)
+        .order('order_index', { ascending: true }),
+      supabase
+        .from('kb_entries')
+        .select('*')
+        .eq('agent_id', id),
+      supabase
+        .from('email_threads')
+        .select('*', { count: 'estimated', head: true })
+        .eq('agent_id', id),
+      supabase
+        .from('email_tasks')
+        .select('*', { count: 'estimated', head: true })
+        .eq('agent_id', id)
+        .eq('status', 'ready'),
+    ])
 
-    // Get KB entries
-    const { data: kbEntries, error: kbError } = await supabase
-      .from('kb_entries')
-      .select('*')
-      .eq('agent_id', id)
-
-    if (kbError) {
-      throw new DatabaseError(kbError.message)
-    }
-
-    // Get thread count
-    const { count: threadCount, error: threadError } = await supabase
-      .from('email_threads')
-      .select('*', { count: 'estimated', head: true })
-      .eq('agent_id', id)
-
-    if (threadError) {
-      throw new DatabaseError(threadError.message)
-    }
-
-    // Get pending task count
-    const { count: taskCount, error: taskError } = await supabase
-      .from('email_tasks')
-      .select('*', { count: 'estimated', head: true })
-      .eq('agent_id', id)
-      .eq('status', 'ready')
-
-    if (taskError) {
-      throw new DatabaseError(taskError.message)
-    }
+    if (instructionsError) throw new DatabaseError(instructionsError.message)
+    if (kbError) throw new DatabaseError(kbError.message)
+    if (threadError) throw new DatabaseError(threadError.message)
+    if (taskError) throw new DatabaseError(taskError.message)
 
     return {
       agent: agent as Agent,
@@ -496,23 +488,21 @@ export class AgentRepository {
 
     const supabase = await createClient()
 
-    const statuses = ['ready', 'pending', 'sent', 'failed']
-    const stats: Record<string, number> = {}
+    // Fetch all 4 status counts in parallel
+    const [ready, pending, sent, failed] = await Promise.all(
+      (['ready', 'pending', 'sent', 'failed'] as const).map((status) =>
+        supabase
+          .from('email_tasks')
+          .select('*', { count: 'estimated', head: true })
+          .eq('agent_id', agentId)
+          .eq('status', status)
+          .then(({ count, error }) => {
+            if (error) throw new DatabaseError(error.message)
+            return count || 0
+          })
+      )
+    )
 
-    for (const status of statuses) {
-      const { count, error } = await supabase
-        .from('email_tasks')
-        .select('*', { count: 'estimated', head: true })
-        .eq('agent_id', agentId)
-        .eq('status', status)
-
-      if (error) {
-        throw new DatabaseError(error.message)
-      }
-
-      stats[status] = count || 0
-    }
-
-    return stats as { ready: number; pending: number; sent: number; failed: number }
+    return { ready, pending, sent, failed }
   }
 }

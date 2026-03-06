@@ -3,7 +3,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { getCurrentUser } from '@/lib/auth/helpers'
+import { fastAuth } from '@/lib/auth/fast-auth'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { CRMLeadRepository } from '@/lib/repositories/crm-lead.repository'
 import { z } from 'zod'
@@ -15,7 +15,7 @@ import type { LeadFilters } from '@/types/crm.types'
 
 export async function GET(req: NextRequest) {
   try {
-    const user = await getCurrentUser()
+    const user = await fastAuth(req)
     if (!user) return unauthorized()
 
     const { searchParams } = new URL(req.url)
@@ -60,7 +60,7 @@ export async function GET(req: NextRequest) {
     if (assignedUserId) filters.assignedUserId = assignedUserId
 
     const leadRepo = new CRMLeadRepository()
-    const { leads, total } = await leadRepo.findByWorkspace(user.workspace_id, filters)
+    const { leads, total } = await leadRepo.findByWorkspace(user.workspaceId, filters)
 
     return NextResponse.json({
       leads,
@@ -92,7 +92,7 @@ const createLeadSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
-    const user = await getCurrentUser()
+    const user = await fastAuth(req)
     if (!user) {
       return unauthorized()
     }
@@ -102,7 +102,7 @@ export async function POST(req: NextRequest) {
 
     const leadRepo = new CRMLeadRepository()
     const lead = await leadRepo.create({
-      workspace_id: user.workspace_id,
+      workspace_id: user.workspaceId,
       email: validated.email,
       first_name: validated.first_name,
       last_name: validated.last_name,
@@ -120,7 +120,7 @@ export async function POST(req: NextRequest) {
 
     inngest.send({
       name: 'lead/created' as const,
-      data: { lead_id: lead.id, workspace_id: user.workspace_id, source: validated.source },
+      data: { lead_id: lead.id, workspace_id: user.workspaceId, source: validated.source },
     }).catch((err) => safeError('[Create Lead] Inngest send failed:', err))
 
     return NextResponse.json({ success: true, data: lead })
