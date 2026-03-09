@@ -10,6 +10,7 @@ import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { createClient } from '@/lib/supabase/server'
 import { qualifyLead, analyzeCompany } from '@/lib/services/ai/claude.service'
+import { withRateLimit, getRequestIdentifier } from '@/lib/middleware/rate-limiter'
 import type { LeadContactData, LeadCompanyData } from '@/types'
 
 const qualifyLeadSchema = z.object({
@@ -21,6 +22,10 @@ export async function POST(req: NextRequest) {
   try {
     const user = await getCurrentUser()
     if (!user) return unauthorized()
+
+    // Rate limit: AI calls are expensive — max 30 per user per hour
+    const rateLimitResponse = await withRateLimit(req, 'ai-qualify', getRequestIdentifier(req, user.id))
+    if (rateLimitResponse) return rateLimitResponse
 
     const supabase = await createClient()
 

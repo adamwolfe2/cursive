@@ -12,6 +12,7 @@ import { z } from 'zod'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { createClient } from '@/lib/supabase/server'
+import { withRateLimit, getRequestIdentifier } from '@/lib/middleware/rate-limiter'
 import {
   queueEnrichment,
   getEnrichmentStats,
@@ -33,6 +34,10 @@ export async function POST(req: NextRequest) {
   try {
     const user = await getCurrentUser()
     if (!user) return unauthorized()
+
+    // Rate limit: enrichment queuing triggers external API calls — max 30/min per user
+    const rateLimitResponse = await withRateLimit(req, 'lead-enrich', getRequestIdentifier(req, user.id))
+    if (rateLimitResponse) return rateLimitResponse
 
     const supabase = await createClient()
 

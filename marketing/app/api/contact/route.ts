@@ -8,6 +8,20 @@ import { NextRequest, NextResponse } from 'next/server'
 // Email validation regex
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
+// In-memory rate limit: 5 submissions per IP per hour
+const rateLimitMap = new Map<string, number[]>()
+const RATE_LIMIT_MAX = 5
+const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now()
+  const timestamps = (rateLimitMap.get(ip) || []).filter((t) => now - t < RATE_LIMIT_WINDOW_MS)
+  if (timestamps.length >= RATE_LIMIT_MAX) return false
+  timestamps.push(now)
+  rateLimitMap.set(ip, timestamps)
+  return true
+}
+
 // Types for form data
 interface ContactFormData {
   name: string
@@ -32,6 +46,8 @@ function validateContactForm(data: Record<string, unknown>): { valid: boolean; e
     errors.push({ field: 'name', message: 'Name is required' })
   } else if (data.name.trim().length < 2) {
     errors.push({ field: 'name', message: 'Name must be at least 2 characters' })
+  } else if (data.name.trim().length > 200) {
+    errors.push({ field: 'name', message: 'Name must be 200 characters or fewer' })
   }
 
   // Validate email
@@ -46,6 +62,8 @@ function validateContactForm(data: Record<string, unknown>): { valid: boolean; e
     errors.push({ field: 'message', message: 'Message is required' })
   } else if (data.message.trim().length < 10) {
     errors.push({ field: 'message', message: 'Message must be at least 10 characters' })
+  } else if (data.message.trim().length > 5000) {
+    errors.push({ field: 'message', message: 'Message must be 5000 characters or fewer' })
   }
 
   // Validate company (optional but if provided, validate length)
@@ -193,6 +211,16 @@ function escapeHtml(text: string): string {
  */
 export async function POST(request: NextRequest) {
   try {
+    // Rate limit by IP
+    const forwardedFor = request.headers.get('x-forwarded-for')
+    const ip = forwardedFor ? forwardedFor.split(',')[0].trim() : 'unknown'
+    if (!checkRateLimit(ip)) {
+      return NextResponse.json(
+        { success: false, error: 'Too many requests. Please try again later.' },
+        { status: 429 }
+      )
+    }
+
     // Parse request body
     const body = await request.json()
 

@@ -18,6 +18,22 @@ const CORS = {
   'Access-Control-Allow-Headers': 'Content-Type',
 }
 
+// Rate limit: max 10 provisioning requests per IP per hour (expensive AudienceLab API call)
+const provisionDemoRateLimitMap = new Map<string, number[]>()
+const PROVISION_DEMO_MAX = 10
+const PROVISION_DEMO_WINDOW_MS = 60 * 60 * 1000
+
+function checkProvisionDemoRateLimit(ip: string): boolean {
+  const now = Date.now()
+  const timestamps = (provisionDemoRateLimitMap.get(ip) || []).filter(
+    (t) => now - t < PROVISION_DEMO_WINDOW_MS
+  )
+  if (timestamps.length >= PROVISION_DEMO_MAX) return false
+  timestamps.push(now)
+  provisionDemoRateLimitMap.set(ip, timestamps)
+  return true
+}
+
 export async function OPTIONS() {
   return new NextResponse(null, { status: 204, headers: CORS })
 }
@@ -41,6 +57,16 @@ function parsePublicUrl(raw: string): { domain: string; fullUrl: string } | null
 
 export async function POST(req: NextRequest) {
   try {
+    // Rate limit: prevent abuse of this free, unauthenticated AudienceLab provisioning endpoint
+    const forwardedFor = req.headers.get('x-forwarded-for')
+    const ip = forwardedFor ? forwardedFor.split(',')[0].trim() : 'unknown'
+    if (!checkProvisionDemoRateLimit(ip)) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please try again later.' },
+        { status: 429, headers: CORS }
+      )
+    }
+
     const body = await req.json().catch(() => ({}))
     const { websiteUrl, prospectEmail } = body as { websiteUrl?: string; prospectEmail?: string }
 

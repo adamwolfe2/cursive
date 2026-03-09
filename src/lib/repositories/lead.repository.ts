@@ -358,11 +358,20 @@ export class LeadRepository {
       ]
     })
 
+    // Sanitize a cell value for CSV: quote it and strip leading formula-injection chars
+    // (=, +, -, @, TAB, CR) to prevent spreadsheet formula injection attacks
+    const sanitizeCsvCell = (value: unknown): string => {
+      let v = String(value ?? '')
+      // Prefix leading formula-starter characters with a single quote to defuse them
+      v = v.replace(/^[\s]*([=+\-@\t\r]+)/, (_, formulaChars) => "'" + formulaChars)
+      return `"${v.replace(/"/g, '""')}"`
+    }
+
     // Build CSV
     const csv = [
       headers.join(','),
       ...rows.map((row) =>
-        row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(',')
+        row.map((cell) => sanitizeCsvCell(cell)).join(',')
       ),
     ].join('\n')
 

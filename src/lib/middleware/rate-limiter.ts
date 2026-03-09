@@ -98,6 +98,20 @@ export const RATE_LIMITS = {
     message: 'Too many exports per hour. Please try again later.',
   },
 
+  // AI lead qualification - expensive Claude API calls
+  'ai-qualify': {
+    windowMs: 60 * 60 * 1000, // 1 hour
+    maxRequests: 30, // 30 AI qualification calls per hour per user
+    message: 'AI qualification limit reached. Please wait before qualifying more leads.',
+  },
+
+  // AI email generation - expensive Claude API calls
+  'ai-generate-email': {
+    windowMs: 60 * 60 * 1000, // 1 hour
+    maxRequests: 100, // 100 email generations per hour per user
+    message: 'Email generation limit reached. Please wait before generating more emails.',
+  },
+
   // Default fallback
   'default': {
     windowMs: 60 * 1000, // 1 minute

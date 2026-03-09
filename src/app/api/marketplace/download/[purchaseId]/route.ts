@@ -72,6 +72,19 @@ export async function GET(
     'Email Verified',
   ]
 
+  // Sanitize a cell value for CSV: quote it and strip leading formula-injection chars
+  // (=, +, -, @, TAB, CR) to prevent spreadsheet formula injection attacks
+  function sanitizeCsvCell(value: string): string {
+    let v = String(value)
+    // Strip leading characters that spreadsheet apps interpret as formula starters
+    v = v.replace(/^[\s]*([=+\-@\t\r]+)/, (_, formulaChars) => {
+      // Prefix with a single quote to defuse the formula
+      return "'" + formulaChars
+    })
+    // Escape any double-quotes by doubling them, then wrap in double-quotes
+    return `"${v.replace(/"/g, '""')}"`
+  }
+
   const rows = purchase.marketplace_purchase_items.map((item: any) => {
     const lead = item.leads
 
@@ -93,7 +106,7 @@ export async function GET(
       lead.intent_score_calculated || '',
       lead.freshness_score || '',
       lead.verification_status || '',
-    ].map((v) => `"${String(v).replace(/"/g, '""')}"`);
+    ].map((v) => sanitizeCsvCell(v));
   })
 
   const csv = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n')

@@ -13,6 +13,20 @@ import { NextRequest, NextResponse } from 'next/server'
 // Email validation regex
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
+// In-memory rate limit: 5 submissions per IP per hour
+const rateLimitMap = new Map<string, number[]>()
+const RATE_LIMIT_MAX = 5
+const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now()
+  const timestamps = (rateLimitMap.get(ip) || []).filter((t) => now - t < RATE_LIMIT_WINDOW_MS)
+  if (timestamps.length >= RATE_LIMIT_MAX) return false
+  timestamps.push(now)
+  rateLimitMap.set(ip, timestamps)
+  return true
+}
+
 interface LeadFormError {
   field: string
   message: string
@@ -216,6 +230,16 @@ async function sendLeadConfirmation(leadData: LeadData): Promise<void> {
  */
 export async function POST(request: NextRequest) {
   try {
+    // Rate limit by IP
+    const forwardedFor = request.headers.get('x-forwarded-for')
+    const ip = forwardedFor ? forwardedFor.split(',')[0].trim() : 'unknown'
+    if (!checkRateLimit(ip)) {
+      return NextResponse.json(
+        { success: false, error: 'Too many requests. Please try again later.' },
+        { status: 429 }
+      )
+    }
+
     // Parse request body
     const body = await request.json()
 
