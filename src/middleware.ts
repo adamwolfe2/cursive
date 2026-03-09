@@ -113,7 +113,6 @@ export async function middleware(req: NextRequest) {
     const FULLY_PUBLIC_API_ROUTES = [
       '/api/affiliate/apply',
       '/api/affiliate/track-click',
-      '/api/analyze-site',
       '/api/lead-capture',
       '/api/pixel/provision-demo',
     ]
@@ -194,7 +193,6 @@ export async function middleware(req: NextRequest) {
       pathname.startsWith('/affiliates') ||
       pathname.startsWith('/api/affiliate/apply') ||
       pathname.startsWith('/api/affiliate/track-click') ||
-      pathname.startsWith('/api/analyze-site') ||
       pathname.startsWith('/api/lead-capture') ||
       pathname.startsWith('/api/similarweb') ||
       pathname.startsWith('/api/pixel/provision-demo') ||

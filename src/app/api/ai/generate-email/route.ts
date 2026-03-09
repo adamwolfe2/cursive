@@ -29,14 +29,14 @@ interface LeadAiAnalysis {
 
 const generateEmailSchema = z.object({
   lead_id: z.string().uuid().optional(),
-  recipient_name: z.string().min(1),
-  recipient_title: z.string().optional().default(''),
-  recipient_company: z.string().min(1),
-  recipient_industry: z.string().optional(),
-  value_proposition: z.string().min(1),
-  call_to_action: z.string().min(1),
+  recipient_name: z.string().min(1).max(100),
+  recipient_title: z.string().max(100).optional().default(''),
+  recipient_company: z.string().min(1).max(200),
+  recipient_industry: z.string().max(100).optional(),
+  value_proposition: z.string().min(1).max(500),
+  call_to_action: z.string().min(1).max(200),
   tone: z.enum(['professional', 'casual', 'friendly', 'urgent']).default('professional'),
-  previous_interactions: z.array(z.string()).optional(),
+  previous_interactions: z.array(z.string().max(200)).max(10).optional(),
 })
 
 export async function POST(req: NextRequest) {

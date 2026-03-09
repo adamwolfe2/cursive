@@ -91,7 +91,7 @@ export function HumanHomePage() {
   return (
     <main className="bg-white">
       {/* ===== HERO SECTION ===== */}
-      <section id="hero" className="pt-14 pb-6 bg-white lg:min-h-[90vh] lg:flex lg:flex-col lg:justify-center">
+      <section id="hero" className="pt-14 pb-6 bg-white min-h-[100svh] lg:min-h-[90vh] lg:flex lg:flex-col lg:justify-center">
         <Container className="max-w-[1440px] lg:px-12">
           {/* Eyebrow Badge */}
           <motion.div
@@ -222,7 +222,7 @@ export function HumanHomePage() {
                     <div className="w-2 h-2 rounded-full bg-gray-300" />
                     <div className="w-2 h-2 rounded-full bg-gray-300" />
                   </div>
-                  <div className="p-3 md:p-4 min-h-[400px]">
+                  <div className="p-3 md:p-4 h-[400px] overflow-hidden">
                     <AnimatePresence mode="wait">
                       <motion.div
                         key={activeFeature}
