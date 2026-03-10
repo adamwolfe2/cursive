@@ -1,3 +1,15 @@
+/**
+ * Dashboard — streaming SSR
+ *
+ * Fast phase  (~100–300 ms): user profile, cached stats, pixel, targeting, credits
+ *   → renders header, banners, 4 stat cards immediately
+ *
+ * Streamed phase (~200–500 ms, ≤2 s on cache miss): hot leads, recent leads,
+ *   enrichments, pipeline stats, first-enrichment celebration
+ *   → renders below the fold while user already sees content above it
+ */
+
+import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import { unstable_cache } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
@@ -26,617 +38,233 @@ export const metadata: Metadata = {
   title: 'Dashboard | Cursive',
 }
 
+// ─── Module-scope helpers ──────────────────────────────────────────────────────
+
 function intentLabel(score: number | null) {
   if (!score) return null
-  if (score >= 70) return { label: 'Hot', color: 'text-emerald-700 bg-emerald-50 border-emerald-200' }
+  if (score >= 70) return { label: 'Hot',  color: 'text-emerald-700 bg-emerald-50 border-emerald-200' }
   if (score >= 40) return { label: 'Warm', color: 'text-amber-600 bg-amber-50 border-amber-200' }
-  return { label: 'Cold', color: 'text-slate-600 bg-slate-100 border-slate-200' }
+  return              { label: 'Cold', color: 'text-slate-600 bg-slate-100 border-slate-200' }
 }
 
-export default async function DashboardPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ onboarding?: string }>
-}) {
-  const { onboarding } = await searchParams
+function trendBadge(current: number, previous: number) {
+  if (previous === 0) return null
+  const pct = Math.round(((current - previous) / previous) * 100)
+  if (Math.abs(pct) < 1) return null
+  return { pct: Math.abs(pct), up: pct > 0 }
+}
+
+// ─── Module-scope cache functions (stable references = proper Next.js caching) ─
+
+const getCachedWorkspaceStats = unstable_cache(
+  async (wsId: string) => {
+    const admin = createAdminClient()
+    const { data } = await admin
+      .from('workspace_stats_cache')
+      .select('*')
+      .eq('workspace_id', wsId)
+      .maybeSingle()
+
+    const today = new Date().toISOString().split('T')[0]
+    if (
+      data &&
+      data.stats_date === today &&
+      Date.now() - new Date(data.refreshed_at).getTime() < 20 * 60 * 1000
+    ) {
+      return data
+    }
+
+    // Cache miss — refresh inline with 4 s guard, then return fresh row
+    await Promise.race([
+      admin.rpc('refresh_workspace_stats', { p_workspace_id: wsId }),
+      new Promise(resolve => setTimeout(resolve, 4000)),
+    ])
+    const { data: fresh } = await admin
+      .from('workspace_stats_cache')
+      .select('*')
+      .eq('workspace_id', wsId)
+      .maybeSingle()
+    return fresh
+  },
+  ['workspace-stats'],
+  { revalidate: 120 },
+)
+
+const getCachedRecentLeads = unstable_cache(
+  async (wsId: string) => {
+    const admin = createAdminClient()
+    const { data } = await admin
+      .from('leads')
+      .select('id, full_name, first_name, last_name, email, phone, company_name, status, created_at, delivered_at, intent_score_calculated, enrichment_status, source')
+      .eq('workspace_id', wsId)
+      .order('delivered_at', { ascending: false, nullsFirst: false })
+      .order('created_at',   { ascending: false })
+      .limit(8)
+    return data ?? []
+  },
+  ['recent-leads'],
+  { revalidate: 120 },
+)
+
+const getCachedRecentEnrichments = unstable_cache(
+  async (wsId: string) => {
+    const admin = createAdminClient()
+    const { data } = await admin
+      .from('leads')
+      .select('id, full_name, first_name, last_name, company_name, updated_at, source')
+      .eq('workspace_id', wsId)
+      .eq('enrichment_status', 'enriched')
+      .order('updated_at', { ascending: false })
+      .limit(5)
+    return data ?? []
+  },
+  ['recent-enrichments'],
+  { revalidate: 120 },
+)
+
+const getCachedHotLeads = unstable_cache(
+  async (wsId: string) => {
+    const admin = createAdminClient()
+    const { data } = await admin
+      .from('leads')
+      .select('id, full_name, first_name, last_name, email, phone, company_name, intent_score_calculated, enrichment_status, status, source')
+      .eq('workspace_id', wsId)
+      .gte('intent_score_calculated', 40)
+      .not('status', 'eq', 'won')
+      .not('status', 'eq', 'lost')
+      .order('intent_score_calculated', { ascending: false })
+      .limit(5)
+    return data ?? []
+  },
+  ['hot-leads'],
+  { revalidate: 300 },
+)
+
+const getCachedPipelineStats = unstable_cache(
+  async (wsId: string) => {
+    const admin = createAdminClient()
+    const { data } = await admin
+      .from('leads')
+      .select('status')
+      .eq('workspace_id', wsId)
+    const counts = { new: 0, contacted: 0, qualified: 0, proposal: 0, negotiation: 0, won: 0, lost: 0 }
+    for (const row of data ?? []) {
+      const s = (row.status || 'new') as keyof typeof counts
+      if (s in counts) counts[s]++
+    }
+    return counts
+  },
+  ['pipeline-stats'],
+  { revalidate: 120 },
+)
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+type ChecklistItem = { id: string; label: string; done: boolean; href: string | null }
+
+interface MainGridProps {
+  workspaceId: string
+  hasPreferences: boolean
+  hasEnriched: boolean
+  hasPixel: boolean
+  hasVerifiedPixel: boolean
+  hasActivated: boolean
+  isOnTrial: boolean
+  trialEndsAtStr: string | null
+  pixelEventCount: number
+  visitorCountTotal: number | null
+  todayCount: number
+  isFree: boolean
+  showChecklist: boolean
+  checklistItems: ChecklistItem[]
+  checklistProgress: number
+  checklistTotal: number
+  creditLimit: number
+  dailyLimit: number
+}
+
+// ─── Streamed main content grid ────────────────────────────────────────────────
+
+async function DashboardMainGrid(props: MainGridProps) {
+  const {
+    workspaceId, hasPreferences, hasEnriched, hasPixel, hasVerifiedPixel,
+    hasActivated, isOnTrial, trialEndsAtStr, pixelEventCount, visitorCountTotal,
+    todayCount, isFree, showChecklist, checklistItems, checklistProgress,
+    checklistTotal, creditLimit, dailyLimit,
+  } = props
+
   const supabase = await createClient()
 
-  // Layout already verified auth — use getSession() for fast local JWT check (no network call)
-  const { data: { session } } = await supabase.auth.getSession()
-  if (!session?.user) redirect('/login')
-  const user = session.user
-
-  // Get user profile
-  const { data: userData, error: userError } = await supabase
-    .from('users')
-    .select('id, auth_user_id, workspace_id, email, full_name, plan, role, daily_lead_limit, industry_segment, location_segment, workspaces(id, name, industry_vertical, created_at)')
-    .eq('auth_user_id', user.id)
-    .maybeSingle()
-
-  const userProfile = userData as {
-    id: string
-    auth_user_id: string
-    workspace_id: string
-    email: string
-    full_name: string | null
-    plan: string | null
-    role: string
-    daily_lead_limit: number | null
-    industry_segment: string | null
-    location_segment: string | null
-    workspaces: { id: string; name: string; industry_vertical: string | null; created_at: string } | null
-  } | null
-
-  if (userError || !userProfile?.workspace_id) redirect('/welcome')
-
-  const workspaceId = userProfile.workspace_id!
-
-  // ── Cached stats (pre-computed every 15 min by refreshWorkspaceStats Inngest job) ──
-  // Falls back to live COUNT queries if the cache row is missing or stale (> 20 min).
-  const getWorkspaceStats = unstable_cache(
-    async (wsId: string) => {
-      const admin = createAdminClient()
-      const { data } = await admin
-        .from('workspace_stats_cache')
-        .select('*')
-        .eq('workspace_id', wsId)
+  const [hotLeads, recentLeads, recentEnrichments, pipelineStats, firstEnrichmentResult] =
+    await Promise.all([
+      getCachedHotLeads(workspaceId),
+      getCachedRecentLeads(workspaceId),
+      getCachedRecentEnrichments(workspaceId),
+      getCachedPipelineStats(workspaceId),
+      supabase
+        .from('workspaces')
+        .select('has_seen_first_enrichment')
+        .eq('id', workspaceId)
         .maybeSingle()
+        .then(async ({ data: ws }) => {
+          if (ws?.has_seen_first_enrichment) return null
+          const { data: lead } = await supabase
+            .from('leads')
+            .select('id, full_name, first_name, last_name, company_name, job_title, city, state, intent_score_calculated')
+            .eq('workspace_id', workspaceId)
+            .eq('enrichment_status', 'enriched')
+            .order('updated_at', { ascending: false })
+            .limit(1)
+            .maybeSingle()
+          return lead ?? null
+        }),
+    ])
 
-      // If cache is fresh (< 20 min old and for today's date), use it
-      const today = new Date().toISOString().split('T')[0]
-      if (
-        data &&
-        data.stats_date === today &&
-        Date.now() - new Date(data.refreshed_at).getTime() < 20 * 60 * 1000
-      ) {
-        return data
-      }
-
-      // Cache miss or stale — refresh inline (4s timeout) and return live data
-      await Promise.race([
-        admin.rpc('refresh_workspace_stats', { p_workspace_id: wsId }),
-        new Promise(resolve => setTimeout(resolve, 4000)),
-      ])
-      const { data: fresh } = await admin
-        .from('workspace_stats_cache')
-        .select('*')
-        .eq('workspace_id', wsId)
-        .maybeSingle()
-      return fresh
-    },
-    ['workspace-stats'],
-    { revalidate: 120, tags: [`workspace-stats-${workspaceId}`] }
-  )
-
-  // ── Cached recent leads (last 8, refreshes every 2 min) ──
-  const getRecentLeads = unstable_cache(
-    async (wsId: string) => {
-      const admin = createAdminClient()
-      const { data } = await admin
-        .from('leads')
-        .select('id, full_name, first_name, last_name, email, phone, company_name, company_industry, status, created_at, delivered_at, intent_score_calculated, enrichment_status, source')
-        .eq('workspace_id', wsId)
-        .order('delivered_at', { ascending: false, nullsFirst: false })
-        .order('created_at', { ascending: false })
-        .limit(8)
-      return data ?? []
-    },
-    ['recent-leads'],
-    { revalidate: 120, tags: [`recent-leads-${workspaceId}`] }
-  )
-
-  // ── Cached recent enrichments for activity log (2 min) ──
-  const getRecentEnrichments = unstable_cache(
-    async (wsId: string) => {
-      const admin = createAdminClient()
-      const { data } = await admin
-        .from('leads')
-        .select('id, full_name, first_name, last_name, company_name, updated_at, source')
-        .eq('workspace_id', wsId)
-        .eq('enrichment_status', 'enriched')
-        .order('updated_at', { ascending: false })
-        .limit(5)
-      return data ?? []
-    },
-    ['recent-enrichments'],
-    { revalidate: 120, tags: [`recent-enrichments-${workspaceId}`] }
-  )
-
-  // ── Top hot leads (top 5 by intent score, for "Act On Today" widget) ──
-  const getHotLeads = unstable_cache(
-    async (wsId: string) => {
-      const admin = createAdminClient()
-      const { data } = await admin
-        .from('leads')
-        .select('id, full_name, first_name, last_name, email, phone, company_name, intent_score_calculated, enrichment_status, status, source')
-        .eq('workspace_id', wsId)
-        .gte('intent_score_calculated', 40)
-        .not('status', 'eq', 'won')
-        .not('status', 'eq', 'lost')
-        .order('intent_score_calculated', { ascending: false })
-        .limit(5)
-      return data ?? []
-    },
-    ['hot-leads'],
-    { revalidate: 300, tags: [`hot-leads-${workspaceId}`] }
-  )
-
-  // ── Pipeline status counts (for funnel widget) ──
-  const getPipelineStats = unstable_cache(
-    async (wsId: string) => {
-      const admin = createAdminClient()
-      const { data } = await admin
-        .from('leads')
-        .select('status')
-        .eq('workspace_id', wsId)
-      const counts = { new: 0, contacted: 0, qualified: 0, proposal: 0, negotiation: 0, won: 0, lost: 0 }
-      for (const row of (data ?? [])) {
-        const s = (row.status || 'new') as keyof typeof counts
-        if (s in counts) counts[s]++
-      }
-      return counts
-    },
-    ['pipeline-stats'],
-    { revalidate: 120, tags: [`pipeline-stats-${workspaceId}`] }
-  )
-
-  // Run all data fetches in parallel — stats + non-cacheable fresh data
-  const [
-    statsData,
-    recentLeadsResult,
-    pixelResult,
-    userTargetingResult,
-    creditsData,
-    recentEnrichmentsResult,
-    activationResult,
-    hotLeadsResult,
-    pipelineStatsResult,
-    firstEnrichmentResult,
-  ] = await Promise.all([
-    Promise.race([
-      getWorkspaceStats(workspaceId),
-      new Promise<null>(resolve => setTimeout(() => resolve(null), 5000)),
-    ]).catch(() => null),
-    getRecentLeads(workspaceId),
-    // Pixel trial status — always fresh (changes on trial actions)
-    supabase
-      .from('audiencelab_pixels')
-      .select('pixel_id, trial_status, trial_ends_at, visitor_count_total')
-      .eq('workspace_id', workspaceId)
-      .eq('is_active', true)
-      .maybeSingle(),
-    // User targeting preferences — always fresh
-    supabase
-      .from('user_targeting')
-      .select('is_active, target_industries, target_states')
-      .eq('user_id', userProfile.id)
-      .eq('workspace_id', workspaceId)
-      .maybeSingle(),
-    // Credits — race with 3s timeout
-    Promise.race([
-      CreditService.getRemainingCredits(userProfile.id),
-      new Promise<null>(resolve => setTimeout(() => resolve(null), 3000)),
-    ]).catch(() => null),
-    getRecentEnrichments(workspaceId),
-    // Activation request check — always fresh
-    supabase
-      .from('custom_audience_requests')
-      .select('id', { count: 'exact', head: true })
-      .eq('workspace_id', workspaceId),
-    getHotLeads(workspaceId),
-    getPipelineStats(workspaceId),
-    // First enrichment celebration: check workspace flag + first enriched lead
-    supabase
-      .from('workspaces')
-      .select('has_seen_first_enrichment')
-      .eq('id', workspaceId)
-      .maybeSingle()
-      .then(async ({ data: ws }) => {
-        if (ws?.has_seen_first_enrichment) return null
-        const { data: lead } = await supabase
-          .from('leads')
-          .select('id, full_name, first_name, last_name, company_name, job_title, city, state, intent_score_calculated')
-          .eq('workspace_id', workspaceId)
-          .eq('enrichment_status', 'enriched')
-          .order('updated_at', { ascending: false })
-          .limit(1)
-          .maybeSingle()
-        return lead ?? null
-      }),
-  ])
-
-  // Pull counts from the pre-computed stats cache
-  const todayCount      = statsData?.today_leads     ?? 0
-  const weekCount       = statsData?.week_leads      ?? 0
-  const totalCount      = statsData?.total_leads     ?? 0
-  const yesterdayCount  = statsData?.yesterday_leads ?? 0
-  const prevWeekCount   = statsData?.prev_week_leads ?? 0
-  const enrichedCount   = statsData?.enriched_leads  ?? 0
-  const pixelEventCount = statsData?.pixel_event_count ?? 0
-  const intelligenceTierCount = statsData?.intelligence_leads ?? 0
-
-  const recentLeads = recentLeadsResult
-  const pixel = pixelResult.data
-  const hasPixel = !!pixel
-  const targeting = userTargetingResult.data
-  const hasPreferences = !!(targeting?.target_industries?.length || targeting?.target_states?.length)
-  const hasEnriched = enrichedCount > 0
-  const hasIntelligence = hasEnriched || intelligenceTierCount > 0
-  const hasActivated = (activationResult.count ?? 0) > 0
-  const hasVerifiedPixel = hasPixel && pixelEventCount > 0
-
-  // Show Outbound upsell when pixel has identified 10+ visitors and user is not on Outbound/Pipeline tier
-  const outboundUpgradeTiers = ['outbound', 'pipeline', 'venture_studio']
-  const showOutboundUpsell =
-    pixelEventCount >= 10 &&
-    !outboundUpgradeTiers.includes(userProfile.plan ?? '')
-
-  // Workspace age for first-leads banner
-  const workspaceCreatedAt = userProfile.workspaces?.created_at
-  const workspaceAgeHours = workspaceCreatedAt
-    ? (Date.now() - new Date(workspaceCreatedAt).getTime()) / 3_600_000
-    : 9999
-  const credits = creditsData
-  const creditsRemaining = credits?.remaining ?? 0
-  const creditLimit = credits?.limit ?? 10
-  const isFree = !userProfile.plan || userProfile.plan === 'free'
-  const recentEnrichments = (recentEnrichmentsResult ?? []) as Array<{
-    id: string
-    full_name: string | null
-    first_name: string | null
-    last_name: string | null
-    company_name: string | null
-    updated_at: string | null
-    source: string | null
+  const typedHotLeads = (hotLeads ?? []) as Array<{
+    id: string; full_name: string | null; first_name: string | null; last_name: string | null
+    email: string | null; phone: string | null; company_name: string | null
+    intent_score_calculated: number | null; enrichment_status: string | null
+    status: string | null; source: string | null
   }>
 
-  const hotLeads = (hotLeadsResult ?? []) as Array<{
-    id: string
-    full_name: string | null
-    first_name: string | null
-    last_name: string | null
-    email: string | null
-    phone: string | null
-    company_name: string | null
-    intent_score_calculated: number | null
-    enrichment_status: string | null
-    status: string | null
-    source: string | null
+  const typedEnrichments = (recentEnrichments ?? []) as Array<{
+    id: string; full_name: string | null; first_name: string | null; last_name: string | null
+    company_name: string | null; updated_at: string | null; source: string | null
   }>
-  const pipelineStats = pipelineStatsResult ?? { new: 0, contacted: 0, qualified: 0, proposal: 0, negotiation: 0, won: 0, lost: 0 }
-  const pipelineTotal = pipelineStats.contacted + pipelineStats.qualified + pipelineStats.proposal + pipelineStats.negotiation + pipelineStats.won
+
+  const pipeline = pipelineStats ?? { new: 0, contacted: 0, qualified: 0, proposal: 0, negotiation: 0, won: 0, lost: 0 }
+  const pipelineTotal = pipeline.contacted + pipeline.qualified + pipeline.proposal + pipeline.negotiation + pipeline.won
   const showPipeline = pipelineTotal > 0
 
-  // Build activity log: lead deliveries + enrichments merged and sorted by time
-  type ActivityEvent = { type: 'delivery'; count: number; time: string } | { type: 'enrich'; leadName: string; company: string | null; time: string }
+  // Build activity log
+  type ActivityEvent =
+    | { type: 'delivery'; count: number; time: string }
+    | { type: 'enrich'; leadName: string; company: string | null; time: string }
   const activityLog: ActivityEvent[] = []
   if (todayCount > 0) {
     activityLog.push({ type: 'delivery', count: todayCount, time: new Date().toISOString() })
   }
-  for (const e of recentEnrichments) {
+  for (const e of typedEnrichments) {
     const name = e.full_name || [e.first_name, e.last_name].filter(Boolean).join(' ') || 'Lead'
     activityLog.push({ type: 'enrich', leadName: name, company: e.company_name, time: e.updated_at ?? new Date().toISOString() })
   }
   activityLog.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime())
 
-  // Pixel trial info
-  const isOnTrial = pixel?.trial_status === 'trial'
-  const trialEndsAtStr = pixel?.trial_ends_at ?? null
-
-  // Onboarding checklist
-  const checklistItems = [
-    { id: 'account', label: 'Create your account', done: true, href: null },
-    { id: 'pixel', label: 'Install tracking pixel', done: hasPixel, href: '/settings/pixel' },
-    { id: 'pixel_verified', label: 'Verify your pixel is working', done: hasVerifiedPixel, href: '/settings/pixel' },
-    { id: 'prefs', label: 'Set lead preferences', done: hasPreferences, href: '/my-leads/preferences' },
-    { id: 'enrich', label: 'Enrich your first lead', done: hasEnriched, href: '/leads' },
-    { id: 'activate', label: 'Activate — run a campaign', done: hasActivated, href: '/activate' },
-    { id: 'intelligence', label: 'Try Intelligence Pack on a lead', done: hasIntelligence, href: '/leads' },
-  ]
-  const checklistProgress = checklistItems.filter((i) => i.done).length
-  const checklistTotal = checklistItems.length
-  const showChecklist = checklistProgress < checklistTotal
-
-  const dailyLimit = userProfile.daily_lead_limit ?? 10
-
-  function trendBadge(current: number, previous: number) {
-    if (previous === 0) return null
-    const pct = Math.round(((current - previous) / previous) * 100)
-    if (Math.abs(pct) < 1) return null
-    const up = pct > 0
-    return { pct: Math.abs(pct), up }
-  }
+  // Next step
+  const step = !hasPreferences
+    ? { label: 'Set targeting preferences', desc: 'Tell us your ideal customer so we can match leads.', href: '/my-leads/preferences', icon: <Target className="h-5 w-5 text-primary" />, color: 'border-primary/30 bg-primary/5' }
+    : !hasEnriched
+    ? { label: 'Enrich your first lead', desc: 'Reveal verified email, phone & LinkedIn — it\'s free.', href: '/leads', icon: <Sparkles className="h-5 w-5 text-blue-600" />, color: 'border-blue-200 bg-blue-50' }
+    : !hasPixel
+    ? { label: 'Install tracking pixel', desc: 'Identify anonymous website visitors in real-time.', href: '/settings/pixel', icon: <Eye className="h-5 w-5 text-primary" />, color: 'border-primary/30 bg-primary/5' }
+    : !hasActivated
+    ? { label: 'Activate outreach', desc: 'Build a lookalike audience or launch managed outbound.', href: '/activate', icon: <Rocket className="h-5 w-5 text-primary" />, color: 'border-primary/30 bg-primary/5' }
+    : null
 
   return (
-    <div className="space-y-6 p-6">
-      <DashboardAnimationWrapper>
-
-      {/* Header */}
-      <AnimatedSection delay={0}>
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">
-              Welcome back, {userProfile.full_name?.split(' ')[0] || 'there'}!
-            </h1>
-            <p className="text-sm text-gray-500 mt-0.5">
-              {userProfile.workspaces?.name && (
-                <span className="font-medium text-gray-700">{userProfile.workspaces.name} · </span>
-              )}
-              Here&apos;s your lead pipeline. New leads arrive every morning at 8am CT.
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Link
-              href="/leads"
-              className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary/90 transition-colors"
-            >
-              <Star className="h-4 w-4 fill-white" />
-              Today&apos;s Leads
-            </Link>
-          </div>
-        </div>
-      </AnimatedSection>
-
-      {/* In-app onboarding checklist widget — client component, handles dismissed state via localStorage */}
-      {showChecklist && (
-        <AnimatedSection delay={0.03}>
-          <OnboardingChecklist />
-        </AnimatedSection>
-      )}
-
-      {/* New-user provisioning status widget — shows the 4 critical setup steps */}
-      {workspaceAgeHours < 72 && (
-        <AnimatedSection delay={0.04}>
-          <ProvisioningWidget
-            steps={[
-              {
-                id: 'account',
-                label: 'Account created',
-                done: true,
-              },
-              {
-                id: 'pixel',
-                label: 'Pixel installed',
-                sublabel: hasPixel ? undefined : 'Add the tracking script to your site',
-                done: hasPixel,
-                href: '/settings/pixel',
-              },
-              {
-                id: 'leads',
-                label: 'First leads identified',
-                sublabel: totalCount > 0 ? undefined : 'Waiting for your first leads to arrive…',
-                done: totalCount > 0,
-                href: '/leads',
-              },
-              {
-                id: 'team',
-                label: 'Share with your team',
-                sublabel: 'Invite teammates to view and action leads',
-                done: false,
-                href: '/settings/team',
-              },
-            ]}
-          />
-        </AnimatedSection>
-      )}
-
-      {/* Onboarding complete banner */}
-      {onboarding === 'complete' && (
-        <div className="rounded-xl bg-blue-50 border border-blue-200 p-4 flex items-start gap-3">
-          <CheckCircle2 className="h-5 w-5 text-blue-600 shrink-0 mt-0.5" />
-          <div>
-            <p className="font-semibold text-blue-900">Setup complete!</p>
-            <p className="text-sm text-blue-700">
-              {totalCount > 0
-                ? `Your first ${totalCount} leads are ready — check them out below!`
-                : 'We\'re setting up your lead pipeline now. Your first leads will arrive shortly — check back in a few minutes or by 8am CT tomorrow.'}
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* Zero leads pipeline setup banner (shown when user has 0 total leads and NOT just onboarded) */}
-      {totalCount === 0 && onboarding !== 'complete' && (
-        <div className="rounded-xl bg-blue-50 border border-blue-200 p-5 flex items-start gap-3">
-          <Calendar className="h-5 w-5 text-blue-600 shrink-0 mt-0.5" />
-          <div>
-            <p className="font-semibold text-blue-900">Your first leads will arrive by 8am CT tomorrow</p>
-            <p className="text-sm text-blue-700 mt-1">
-              We&apos;re matching leads to your industry and location preferences right now. You&apos;ll get up to {dailyLimit} fresh leads every morning.
-              {!hasPreferences && (
-                <> <Link href="/my-leads/preferences" className="font-medium underline">Set your targeting preferences</Link> so we can match the most relevant leads for you.</>
-              )}
-              {hasPreferences && !hasPixel && (
-                <> While you wait, <Link href="/settings/pixel" className="font-medium underline">install the pixel</Link> to identify website visitors too.</>
-              )}
-            </p>
-            <p className="text-sm text-zinc-500 mt-2">
-              Questions?{' '}
-              <a href="/settings/pixel" className="text-blue-600 hover:underline">
-                Check your pixel setup
-              </a>
-              {' · '}
-              <a href="/my-leads/preferences" className="text-blue-600 hover:underline">
-                Review your targeting preferences
-              </a>
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* Single priority banner — only show one at a time to avoid banner spam */}
-      {(() => {
-        // Priority: trial ending > credits empty > outbound opportunity > first leads
-        if (isOnTrial && trialEndsAtStr) {
-          return (
-            <AnimatedSection delay={0.03}>
-              <TrialCountdown trialEndsAt={trialEndsAtStr} visitorCountTotal={pixel?.visitor_count_total ?? null} />
-            </AnimatedSection>
-          )
-        }
-        if (creditsRemaining <= 3) {
-          return (
-            <AnimatedSection delay={0.03}>
-              <div className="rounded-xl p-4 flex items-center justify-between gap-4 bg-blue-50 border border-blue-200">
-                <div className="flex items-center gap-3">
-                  {isFree ? <Rocket className="h-5 w-5 text-blue-600 shrink-0" /> : <Zap className="h-5 w-5 text-blue-600 shrink-0" />}
-                  <div>
-                    {isFree ? (
-                      <>
-                        <p className="font-semibold text-blue-900 text-sm">
-                          {creditsRemaining === 0 ? 'You\'ve used all your free credits today' : `Only ${creditsRemaining} free credit${creditsRemaining === 1 ? '' : 's'} left`}
-                        </p>
-                        <p className="text-xs text-blue-700">Upgrade to Pro for 1,000 daily credits, priority enrichment, and full CRM access.</p>
-                      </>
-                    ) : (
-                      <>
-                        <p className="font-semibold text-blue-900 text-sm">
-                          {creditsRemaining === 0 ? 'You\'re out of enrichment credits' : `Only ${creditsRemaining} credit${creditsRemaining === 1 ? '' : 's'} remaining`}
-                        </p>
-                        <p className="text-xs text-blue-700">Each lead enrichment costs 1 credit — credits reset daily.</p>
-                      </>
-                    )}
-                  </div>
-                </div>
-                <Link href="/settings/billing" className="shrink-0 text-sm font-semibold text-white rounded-lg px-3 py-1.5 transition-colors bg-primary hover:bg-primary/90">
-                  {isFree ? 'Upgrade to Pro' : 'Buy Credits'}
-                </Link>
-              </div>
-            </AnimatedSection>
-          )
-        }
-        if (showOutboundUpsell) {
-          return (
-            <AnimatedSection delay={0.03}>
-              <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="flex items-start gap-3">
-                  <div className="p-1.5 rounded-lg bg-blue-100 shrink-0 mt-0.5">
-                    <Rocket className="h-4 w-4 text-blue-700" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-blue-900 text-sm">Your pixel has identified {pixelEventCount.toLocaleString()} visitors</p>
-                    <p className="text-xs text-blue-700 mt-0.5">Let Cursive Outbound email and follow up with every identified visitor — fully done-for-you.</p>
-                  </div>
-                </div>
-                <a href="mailto:darren@meetcursive.com?subject=Cursive Outbound interest" className="inline-flex items-center gap-1.5 shrink-0 rounded-lg bg-blue-700 px-3 py-2 text-xs font-semibold text-white hover:bg-blue-800 transition-colors whitespace-nowrap">
-                  <ArrowRight className="h-3 w-3" />Talk to Darren
-                </a>
-              </div>
-            </AnimatedSection>
-          )
-        }
-        if (totalCount > 0 && onboarding !== 'complete') {
-          return (
-            <AnimatedSection delay={0.03}>
-              <FirstLeadsBanner count={totalCount} workspaceAgeHours={workspaceAgeHours} />
-            </AnimatedSection>
-          )
-        }
-        return null
-      })()}
-
-      {/* Stats row */}
-      <AnimatedSection delay={0.05}>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* Today's leads */}
-          <Link href="/leads" className="group">
-            <div className="bg-white rounded-xl border border-primary/30 bg-primary/5 p-5 hover:border-primary/50 transition-all h-full">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="p-1.5 rounded-lg bg-primary/15">
-                  <Calendar className="h-4 w-4 text-primary" />
-                </div>
-                <span className="text-sm text-gray-500">Today&apos;s Leads</span>
-              </div>
-              <div className="text-3xl font-bold text-primary">{todayCount}</div>
-              <div className="mt-1.5 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                <div className="h-full bg-primary rounded-full" style={{ width: `${Math.min((todayCount / Math.max(dailyLimit, 1)) * 100, 100)}%` }} />
-              </div>
-              <p className="text-xs text-gray-500 mt-1">{todayCount} of {dailyLimit} delivered</p>
-              {(() => {
-                const trend = trendBadge(todayCount, yesterdayCount)
-                if (!trend) return <p className="text-xs text-gray-400 mt-1">vs. yesterday</p>
-                return (
-                  <p className={`text-xs mt-1 font-medium ${trend.up ? 'text-emerald-600' : 'text-red-500'}`}>
-                    {trend.up ? '↑' : '↓'} {trend.pct}% vs. yesterday
-                  </p>
-                )
-              })()}
-            </div>
-          </Link>
-
-          {/* This week */}
-          <Link href="/leads" className="group">
-            <div className="bg-white rounded-xl border border-gray-200 p-5 h-full hover:border-gray-300 transition-all">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="p-1.5 rounded-lg bg-gray-100">
-                  <TrendingUp className="h-4 w-4 text-gray-600" />
-                </div>
-                <span className="text-sm text-gray-500">This Week</span>
-              </div>
-              <div className="text-3xl font-bold text-gray-900">{weekCount}</div>
-              {(() => {
-                const trend = trendBadge(weekCount, prevWeekCount)
-                if (!trend) return <p className="text-xs text-gray-500 mt-1">{(weekCount / 7).toFixed(1)} avg/day</p>
-                return (
-                  <p className={`text-xs mt-1 font-medium ${trend.up ? 'text-emerald-600' : 'text-red-500'}`}>
-                    {trend.up ? '↑' : '↓'} {trend.pct}% vs. last week
-                  </p>
-                )
-              })()}
-            </div>
-          </Link>
-
-          {/* Credits */}
-          <Link href="/settings/billing" className="group">
-            <div className={`bg-white rounded-xl border p-5 h-full transition-all ${creditsRemaining <= 3 ? 'border-blue-200 bg-blue-50/40' : 'border-gray-200 hover:border-gray-300'}`}>
-              <div className="flex items-center gap-2 mb-2">
-                <div className={`p-1.5 rounded-lg ${creditsRemaining <= 3 ? 'bg-blue-100' : 'bg-gray-100'}`}>
-                  <Zap className={`h-4 w-4 ${creditsRemaining <= 3 ? 'text-blue-600' : 'text-gray-600'}`} />
-                </div>
-                <span
-                  className="text-sm text-gray-500"
-                  title="2 credits per Intel Pack · 10 credits per Deep Research · Auto-enrichment is always free"
-                >
-                  Enrichment Credits
-                </span>
-              </div>
-              <div className={`text-3xl font-bold ${creditsRemaining <= 3 ? 'text-blue-600' : 'text-gray-900'}`}>{creditsRemaining}</div>
-              <p
-                className="text-xs text-gray-500 mt-1"
-                title="2 credits per Intel Pack · 10 credits per Deep Research · Auto-enrichment is always free"
-              >
-                of {creditLimit}/day ({isFree ? 'Free' : 'Pro'}) · resets daily
-              </p>
-            </div>
-          </Link>
-
-          {/* Total leads */}
-          <Link href="/crm/leads" className="group">
-            <div className="bg-white rounded-xl border border-gray-200 p-5 h-full hover:border-gray-300 transition-all">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="p-1.5 rounded-lg bg-gray-100">
-                  <Users className="h-4 w-4 text-gray-600" />
-                </div>
-                <span className="text-sm text-gray-500">Total Leads</span>
-              </div>
-              <div className="text-3xl font-bold text-gray-900">{totalCount}</div>
-              <p className="text-xs text-gray-500 mt-1">{enrichedCount} enriched</p>
-              {(() => {
-                const trend = trendBadge(weekCount, prevWeekCount)
-                if (!trend) return null
-                return (
-                  <p className={`text-xs mt-0.5 font-medium ${trend.up ? 'text-emerald-600' : 'text-red-500'}`}>
-                    {trend.up ? '↑' : '↓'} {trend.pct}% weekly growth
-                  </p>
-                )
-              })()}
-            </div>
-          </Link>
-        </div>
-      </AnimatedSection>
-
-      {/* Top Leads to Act On — highest intent leads that haven't been won/lost yet */}
-      {hotLeads.length > 0 && (
+    <>
+      {/* Hot leads */}
+      {typedHotLeads.length > 0 && (
         <AnimatedSection delay={0.08}>
           <div className="bg-white rounded-xl border border-gray-200 p-5">
             <div className="flex items-center justify-between mb-4">
@@ -649,11 +277,10 @@ export default async function DashboardPage({
               </Link>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {hotLeads.slice(0, 3).map((lead) => {
+              {typedHotLeads.slice(0, 3).map((lead) => {
                 const name = sanitizeName(lead.full_name)
                   || sanitizeName([lead.first_name, lead.last_name].filter(Boolean).join(' '))
-                  || sanitizeCompanyName(lead.company_name)
-                  || 'Unknown'
+                  || sanitizeCompanyName(lead.company_name) || 'Unknown'
                 const score = lead.intent_score_calculated
                 const isHot = score !== null && score >= 70
                 const isEnriched = lead.enrichment_status === 'enriched'
@@ -664,9 +291,7 @@ export default async function DashboardPage({
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
                         <p className="text-sm font-semibold text-gray-900 truncate">{name}</p>
-                        {lead.company_name && (
-                          <p className="text-xs text-gray-500 truncate">{sanitizeCompanyName(lead.company_name)}</p>
-                        )}
+                        {lead.company_name && <p className="text-xs text-gray-500 truncate">{sanitizeCompanyName(lead.company_name)}</p>}
                       </div>
                       <div className="shrink-0 flex flex-col items-end gap-1">
                         {score !== null && (
@@ -683,27 +308,16 @@ export default async function DashboardPage({
                     </div>
                     <div className="flex items-center gap-1.5 flex-wrap">
                       {isEnriched && lead.email && (
-                        <a
-                          href={`mailto:${lead.email}`}
-                          onClick={(e) => e.stopPropagation()}
-                          className="inline-flex items-center gap-1 text-[10px] bg-white border border-gray-200 text-gray-600 rounded-full px-2 py-0.5 hover:border-primary hover:text-primary transition-colors font-medium"
-                        >
+                        <a href={`mailto:${lead.email}`} onClick={(e) => e.stopPropagation()} className="inline-flex items-center gap-1 text-[10px] bg-white border border-gray-200 text-gray-600 rounded-full px-2 py-0.5 hover:border-primary hover:text-primary transition-colors font-medium">
                           <Mail className="h-2.5 w-2.5" /> Email
                         </a>
                       )}
                       {isEnriched && lead.phone && (
-                        <a
-                          href={`tel:${lead.phone}`}
-                          onClick={(e) => e.stopPropagation()}
-                          className="inline-flex items-center gap-1 text-[10px] bg-white border border-gray-200 text-gray-600 rounded-full px-2 py-0.5 hover:border-primary hover:text-primary transition-colors font-medium"
-                        >
+                        <a href={`tel:${lead.phone}`} onClick={(e) => e.stopPropagation()} className="inline-flex items-center gap-1 text-[10px] bg-white border border-gray-200 text-gray-600 rounded-full px-2 py-0.5 hover:border-primary hover:text-primary transition-colors font-medium">
                           <Phone className="h-2.5 w-2.5" /> Call
                         </a>
                       )}
-                      <Link
-                        href={`/crm/leads/${lead.id}`}
-                        className="inline-flex items-center gap-1 text-[10px] bg-white border border-gray-200 text-gray-600 rounded-full px-2 py-0.5 hover:border-primary hover:text-primary transition-colors font-medium ml-auto"
-                      >
+                      <Link href={`/crm/leads/${lead.id}`} className="inline-flex items-center gap-1 text-[10px] bg-white border border-gray-200 text-gray-600 rounded-full px-2 py-0.5 hover:border-primary hover:text-primary transition-colors font-medium ml-auto">
                         View <ArrowRight className="h-2.5 w-2.5" />
                       </Link>
                     </div>
@@ -718,7 +332,7 @@ export default async function DashboardPage({
       {/* Main content grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        {/* Recent Leads (2/3 width) */}
+        {/* Recent Leads — 2/3 width */}
         <AnimatedSection delay={0.1} className="lg:col-span-2">
           <div className="bg-white rounded-xl border border-gray-200 p-5">
             <div className="flex items-center justify-between mb-4">
@@ -730,31 +344,24 @@ export default async function DashboardPage({
                 View all <ArrowRight className="h-3.5 w-3.5" />
               </Link>
             </div>
-
-            {recentLeads.length > 0 ? (
+            {(recentLeads as any[]).filter(l => {
+              const n = l.full_name || [l.first_name, l.last_name].filter(Boolean).join(' ')
+              return n && n.trim().length > 1
+            }).length > 0 ? (
               <div className="space-y-2">
-                {recentLeads.filter((lead: any) => {
-                  const name = lead.full_name || [lead.first_name, lead.last_name].filter(Boolean).join(' ')
-                  return name && name.trim().length > 1
-                }).map((lead: any) => {
+                {(recentLeads as any[]).filter(l => {
+                  const n = l.full_name || [l.first_name, l.last_name].filter(Boolean).join(' ')
+                  return n && n.trim().length > 1
+                }).map((lead) => {
                   const displayName = sanitizeName(lead.full_name)
                     || sanitizeName([lead.first_name, lead.last_name].filter(Boolean).join(' '))
-                    || sanitizeCompanyName(lead.company_name)
-                    || 'Unknown'
+                    || sanitizeCompanyName(lead.company_name) || 'Unknown'
                   const validEmail = lead.email?.includes('@') ? sanitizeText(lead.email) : null
-                  const displaySub = sanitizeCompanyName(lead.company_name)
-                    || validEmail
-                    || sanitizeText(lead.phone)
-                    || ''
+                  const displaySub = sanitizeCompanyName(lead.company_name) || validEmail || sanitizeText(lead.phone) || ''
                   const intent = intentLabel(lead.intent_score_calculated)
                   const isEnriched = lead.enrichment_status === 'enriched'
-
                   return (
-                    <Link
-                      key={lead.id}
-                      href={`/crm/leads/${lead.id}`}
-                      className="flex items-center gap-3 p-3 rounded-lg border border-transparent hover:border-gray-200 hover:bg-gray-50 transition-all group"
-                    >
+                    <Link key={lead.id} href={`/crm/leads/${lead.id}`} className="flex items-center gap-3 p-3 rounded-lg border border-transparent hover:border-gray-200 hover:bg-gray-50 transition-all group">
                       <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-xs font-bold text-blue-700 shrink-0">
                         {displayName.charAt(0).toUpperCase()}
                       </div>
@@ -763,16 +370,8 @@ export default async function DashboardPage({
                         {displaySub && <p className="text-xs text-gray-500 truncate">{displaySub}</p>}
                       </div>
                       <div className="flex items-center gap-1.5 shrink-0">
-                        {isEnriched && (
-                          <span className="text-[10px] bg-blue-50 text-blue-600 border border-blue-200 rounded-full px-1.5 py-0.5 font-medium">
-                            Enriched
-                          </span>
-                        )}
-                        {intent && (
-                          <span className={`text-[10px] border rounded-full px-1.5 py-0.5 font-medium ${intent.color}`}>
-                            {intent.label}
-                          </span>
-                        )}
+                        {isEnriched && <span className="text-[10px] bg-blue-50 text-blue-600 border border-blue-200 rounded-full px-1.5 py-0.5 font-medium">Enriched</span>}
+                        {intent && <span className={`text-[10px] border rounded-full px-1.5 py-0.5 font-medium ${intent.color}`}>{intent.label}</span>}
                       </div>
                     </Link>
                   )
@@ -796,7 +395,7 @@ export default async function DashboardPage({
         {/* Right column */}
         <div className="space-y-4">
 
-          {/* Pixel health status */}
+          {/* Pixel health */}
           <AnimatedSection delay={0.12}>
             <div className={`rounded-xl border p-3 ${hasVerifiedPixel ? 'border-green-200 bg-green-50' : hasPixel ? 'border-amber-200 bg-amber-50' : 'border-gray-200 bg-gray-50'}`}>
               <div className="flex items-center gap-2">
@@ -811,7 +410,7 @@ export default async function DashboardPage({
               {hasPixel && (
                 <div className="flex items-center gap-3 mt-1.5 pl-4 text-[11px] text-gray-500">
                   {pixelEventCount > 0 && <span>{pixelEventCount.toLocaleString()} events</span>}
-                  {pixel?.visitor_count_total ? <span>{pixel.visitor_count_total.toLocaleString()} visitors identified</span> : null}
+                  {visitorCountTotal ? <span>{visitorCountTotal.toLocaleString()} visitors identified</span> : null}
                   {isOnTrial && trialEndsAtStr && (
                     <span className="text-amber-600 font-medium">
                       Trial: {Math.max(0, Math.ceil((new Date(trialEndsAtStr).getTime() - Date.now()) / 86400000))}d left
@@ -822,46 +421,31 @@ export default async function DashboardPage({
             </div>
           </AnimatedSection>
 
-          {/* Next step — dynamic based on user state */}
+          {/* Next step */}
           <AnimatedSection delay={0.15}>
-            {(() => {
-              // Determine the next logical action
-              const step = !hasPreferences
-                ? { label: 'Set targeting preferences', desc: 'Tell us your ideal customer so we can match leads.', href: '/my-leads/preferences', icon: <Target className="h-5 w-5 text-primary" />, color: 'border-primary/30 bg-primary/5' }
-                : !hasEnriched && totalCount > 0
-                ? { label: 'Enrich your first lead', desc: 'Reveal verified email, phone & LinkedIn — it\u2019s free.', href: '/leads', icon: <Sparkles className="h-5 w-5 text-blue-600" />, color: 'border-blue-200 bg-blue-50' }
-                : !hasPixel
-                ? { label: 'Install tracking pixel', desc: 'Identify anonymous website visitors in real-time.', href: '/settings/pixel', icon: <Eye className="h-5 w-5 text-primary" />, color: 'border-primary/30 bg-primary/5' }
-                : !hasActivated
-                ? { label: 'Activate outreach', desc: 'Build a lookalike audience or launch managed outbound.', href: '/activate', icon: <Rocket className="h-5 w-5 text-primary" />, color: 'border-primary/30 bg-primary/5' }
-                : null
-
-              if (!step) return (
-                <div className="rounded-xl border border-blue-200 bg-blue-50 p-5">
-                  <div className="flex items-center gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-blue-600 shrink-0" />
-                    <div>
-                      <p className="text-sm font-semibold text-blue-900">You&apos;re all set!</p>
-                      <p className="text-xs text-blue-700">Check your leads for fresh matches every morning at 8am CT.</p>
-                    </div>
+            {step ? (
+              <Link href={step.href} className={`block rounded-xl border p-5 transition-all hover:shadow-sm ${step.color}`}>
+                <div className="flex items-center gap-3 mb-2">
+                  {step.icon}
+                  <p className="text-sm font-semibold text-gray-900">Next Step</p>
+                </div>
+                <p className="text-sm font-medium text-gray-800">{step.label}</p>
+                <p className="text-xs text-gray-500 mt-0.5">{step.desc}</p>
+                <span className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-primary">
+                  Get started <ArrowRight className="h-3 w-3" />
+                </span>
+              </Link>
+            ) : (
+              <div className="rounded-xl border border-blue-200 bg-blue-50 p-5">
+                <div className="flex items-center gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-blue-600 shrink-0" />
+                  <div>
+                    <p className="text-sm font-semibold text-blue-900">You&apos;re all set!</p>
+                    <p className="text-xs text-blue-700">Check your leads for fresh matches every morning at 8am CT.</p>
                   </div>
                 </div>
-              )
-
-              return (
-                <Link href={step.href} className={`block rounded-xl border p-5 transition-all hover:shadow-sm ${step.color}`}>
-                  <div className="flex items-center gap-3 mb-2">
-                    {step.icon}
-                    <p className="text-sm font-semibold text-gray-900">Next Step</p>
-                  </div>
-                  <p className="text-sm font-medium text-gray-800">{step.label}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">{step.desc}</p>
-                  <span className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-primary">
-                    Get started <ArrowRight className="h-3 w-3" />
-                  </span>
-                </Link>
-              )
-            })()}
+              </div>
+            )}
           </AnimatedSection>
 
           {/* Setup checklist */}
@@ -873,31 +457,18 @@ export default async function DashboardPage({
                   <span className="text-xs text-gray-500">{checklistProgress}/{checklistTotal}</span>
                 </div>
                 <div className="mt-1 h-1.5 bg-gray-100 rounded-full overflow-hidden mb-4">
-                  <div
-                    className="h-full bg-gradient-to-r from-blue-500 to-primary rounded-full transition-all"
-                    style={{ width: `${(checklistProgress / checklistTotal) * 100}%` }}
-                  />
+                  <div className="h-full bg-gradient-to-r from-blue-500 to-primary rounded-full transition-all" style={{ width: `${(checklistProgress / checklistTotal) * 100}%` }} />
                 </div>
                 <div className="space-y-3">
                   {checklistItems.map((item) => (
                     <div key={item.id} className="flex items-center gap-2.5">
-                      {item.done ? (
-                        <CheckCircle2 className="h-4 w-4 text-green-500 shrink-0" />
-                      ) : (
-                        <Circle className="h-4 w-4 text-gray-400 shrink-0" />
-                      )}
-                      {item.href && !item.done ? (
-                        <Link href={item.href} className="text-sm text-gray-700 hover:text-primary transition-colors">
-                          {item.label}
-                        </Link>
-                      ) : (
-                        <span className={`text-sm ${item.done ? 'text-gray-500 line-through' : 'text-gray-700'}`}>
-                          {item.label}
-                        </span>
-                      )}
-                      {!item.done && item.href && (
-                        <ArrowRight className="h-3 w-3 text-gray-400 ml-auto" />
-                      )}
+                      {item.done
+                        ? <CheckCircle2 className="h-4 w-4 text-green-500 shrink-0" />
+                        : <Circle className="h-4 w-4 text-gray-400 shrink-0" />}
+                      {item.href && !item.done
+                        ? <Link href={item.href} className="text-sm text-gray-700 hover:text-primary transition-colors">{item.label}</Link>
+                        : <span className={`text-sm ${item.done ? 'text-gray-500 line-through' : 'text-gray-700'}`}>{item.label}</span>}
+                      {!item.done && item.href && <ArrowRight className="h-3 w-3 text-gray-400 ml-auto" />}
                     </div>
                   ))}
                 </div>
@@ -927,7 +498,7 @@ export default async function DashboardPage({
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-gray-800">Website Visitors</p>
                     <p className="text-xs text-gray-500">
-                      {pixel?.visitor_count_total ? `${pixel.visitor_count_total} identified` : hasPixel ? 'Pixel active' : 'Setup pixel'}
+                      {visitorCountTotal ? `${visitorCountTotal} identified` : hasPixel ? 'Pixel active' : 'Setup pixel'}
                     </p>
                   </div>
                   <ArrowRight className="h-3.5 w-3.5 text-gray-400 group-hover:text-primary transition-colors" />
@@ -958,17 +529,13 @@ export default async function DashboardPage({
                   {activityLog.slice(0, 6).map((event, i) => (
                     <div key={i} className="flex items-start gap-2.5">
                       <div className="mt-0.5 h-5 w-5 shrink-0 flex items-center justify-center">
-                        {event.type === 'delivery' ? (
-                          <div className="h-2 w-2 rounded-full bg-primary" />
-                        ) : (
-                          <div className="h-2 w-2 rounded-full bg-blue-400" />
-                        )}
+                        {event.type === 'delivery'
+                          ? <div className="h-2 w-2 rounded-full bg-primary" />
+                          : <div className="h-2 w-2 rounded-full bg-blue-400" />}
                       </div>
                       <div className="flex-1 min-w-0">
                         {event.type === 'delivery' ? (
-                          <p className="text-xs text-gray-700">
-                            <span className="font-medium">{event.count} leads</span> delivered today
-                          </p>
+                          <p className="text-xs text-gray-700"><span className="font-medium">{event.count} leads</span> delivered today</p>
                         ) : (
                           <p className="text-xs text-gray-700 truncate">
                             <span className="font-medium">{event.leadName}</span>
@@ -987,7 +554,7 @@ export default async function DashboardPage({
             </AnimatedSection>
           )}
 
-          {/* Pipeline funnel widget — only when user has updated statuses */}
+          {/* Pipeline funnel */}
           {showPipeline && (
             <AnimatedSection delay={0.26}>
               <div className="bg-white rounded-xl border border-gray-200 p-5">
@@ -996,20 +563,17 @@ export default async function DashboardPage({
                     <Target className="h-3.5 w-3.5 text-gray-500" />
                     Pipeline
                   </h3>
-                  <Link href="/crm/leads" className="text-xs text-primary hover:underline">
-                    View CRM
-                  </Link>
+                  <Link href="/crm/leads" className="text-xs text-primary hover:underline">View CRM</Link>
                 </div>
                 <div className="space-y-2">
-                  {[
-                    { key: 'contacted', label: 'Contacted', color: 'bg-blue-500', textColor: 'text-blue-700' },
-                    { key: 'qualified', label: 'Qualified', color: 'bg-indigo-500', textColor: 'text-indigo-700' },
-                    { key: 'proposal', label: 'Proposal', color: 'bg-amber-500', textColor: 'text-amber-700' },
-                    { key: 'won', label: 'Won', color: 'bg-emerald-500', textColor: 'text-emerald-700' },
-                  ].map(({ key, label, color, textColor }) => {
-                    const count = pipelineStats[key as keyof typeof pipelineStats] ?? 0
-                    const max = Math.max(pipelineStats.contacted, 1)
-                    const pct = Math.round((count / max) * 100)
+                  {([
+                    { key: 'contacted', label: 'Contacted', color: 'bg-blue-500',    textColor: 'text-blue-700'    },
+                    { key: 'qualified', label: 'Qualified', color: 'bg-indigo-500',  textColor: 'text-indigo-700'  },
+                    { key: 'proposal',  label: 'Proposal',  color: 'bg-amber-500',   textColor: 'text-amber-700'   },
+                    { key: 'won',       label: 'Won',       color: 'bg-emerald-500', textColor: 'text-emerald-700' },
+                  ] as const).map(({ key, label, color, textColor }) => {
+                    const count = pipeline[key] ?? 0
+                    const pct = Math.round((count / Math.max(pipeline.contacted, 1)) * 100)
                     return (
                       <div key={key} className="flex items-center gap-2">
                         <span className="text-xs text-gray-500 w-16 shrink-0">{label}</span>
@@ -1021,16 +585,16 @@ export default async function DashboardPage({
                     )
                   })}
                 </div>
-                {pipelineStats.won > 0 && (
+                {pipeline.won > 0 && (
                   <p className="mt-3 text-[11px] text-emerald-700 bg-emerald-50 rounded-lg px-2.5 py-1.5 font-medium">
-                    {pipelineStats.won} lead{pipelineStats.won !== 1 ? 's' : ''} won — keep going!
+                    {pipeline.won} lead{pipeline.won !== 1 ? 's' : ''} won — keep going!
                   </p>
                 )}
               </div>
             </AnimatedSection>
           )}
 
-          {/* Plan + upgrade CTA */}
+          {/* Upgrade CTA */}
           {isFree && (
             <AnimatedSection delay={0.25}>
               <div className="rounded-xl bg-gradient-to-br from-blue-50 to-primary/5 border border-primary/20 p-5">
@@ -1039,17 +603,14 @@ export default async function DashboardPage({
                   <span className="text-sm font-semibold text-gray-900">Free Plan</span>
                 </div>
                 <div className="text-xs text-gray-500 mb-3 space-y-1">
-                  <p className="flex justify-between"><span>Daily leads</span><span className="font-medium text-gray-700">10/day</span></p>
-                  <p className="flex justify-between"><span>Enrichment credits</span><span className="font-medium text-gray-700">3/day</span></p>
+                  <p className="flex justify-between"><span>Daily leads</span><span className="font-medium text-gray-700">{dailyLimit}/day</span></p>
+                  <p className="flex justify-between"><span>Enrichment credits</span><span className="font-medium text-gray-700">{creditLimit}/day</span></p>
                   <p className="flex justify-between"><span>Credits reset</span><span className="font-medium text-gray-700">8am CT</span></p>
                   <div className="border-t border-gray-200 pt-1 mt-1">
                     <p className="flex justify-between text-primary"><span>Pro plan</span><span className="font-semibold">100 leads + 1,000 credits</span></p>
                   </div>
                 </div>
-                <Link
-                  href="/settings/billing"
-                  className="w-full inline-flex items-center justify-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-sm font-semibold text-white hover:bg-primary/90 transition-colors"
-                >
+                <Link href="/settings/billing" className="w-full inline-flex items-center justify-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-sm font-semibold text-white hover:bg-primary/90 transition-colors">
                   <Sparkles className="h-3.5 w-3.5" />
                   Upgrade to Pro
                 </Link>
@@ -1060,14 +621,414 @@ export default async function DashboardPage({
       </div>
 
       <WhatsNewModal />
+      {firstEnrichmentResult && <FirstEnrichmentModal lead={firstEnrichmentResult} workspaceId={workspaceId} />}
+    </>
+  )
+}
 
-      {/* First enrichment celebration — shows once when user's first lead is enriched */}
-      {firstEnrichmentResult && (
-        <FirstEnrichmentModal
-          lead={firstEnrichmentResult}
-          workspaceId={workspaceId}
-        />
-      )}
+// ─── Skeleton shown while DashboardMainGrid streams in ────────────────────────
+
+function DashboardMainGridSkeleton() {
+  return (
+    <div className="space-y-6 animate-pulse">
+      {/* Hot leads skeleton */}
+      <div className="bg-white rounded-xl border border-gray-200 p-5">
+        <div className="h-5 w-44 bg-gray-200 rounded mb-4" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {[1, 2, 3].map(i => <div key={i} className="rounded-lg border border-gray-100 bg-gray-50 h-24" />)}
+        </div>
+      </div>
+      {/* Main grid skeleton */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 bg-white rounded-xl border border-gray-200 p-5">
+          <div className="h-5 w-32 bg-gray-200 rounded mb-4" />
+          <div className="space-y-3">
+            {[1, 2, 3, 4, 5].map(i => (
+              <div key={i} className="flex items-center gap-3 p-3 rounded-lg bg-gray-50">
+                <div className="h-8 w-8 rounded-full bg-gray-200 shrink-0" />
+                <div className="flex-1 space-y-1.5">
+                  <div className="h-3.5 w-36 bg-gray-200 rounded" />
+                  <div className="h-3 w-24 bg-gray-100 rounded" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="space-y-4">
+          {[64, 80, 96].map(h => (
+            <div key={h} className="rounded-xl border border-gray-200 bg-gray-50" style={{ height: h }} />
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─── Main page — fast phase only ──────────────────────────────────────────────
+
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ onboarding?: string }>
+}) {
+  const { onboarding } = await searchParams
+  const supabase = await createClient()
+
+  const { data: { session } } = await supabase.auth.getSession()
+  if (!session?.user) redirect('/login')
+  const user = session.user
+
+  const { data: userData, error: userError } = await supabase
+    .from('users')
+    .select('id, auth_user_id, workspace_id, email, full_name, plan, role, daily_lead_limit, industry_segment, location_segment, workspaces(id, name, industry_vertical, created_at)')
+    .eq('auth_user_id', user.id)
+    .maybeSingle()
+
+  const userProfile = userData as {
+    id: string; auth_user_id: string; workspace_id: string; email: string
+    full_name: string | null; plan: string | null; role: string
+    daily_lead_limit: number | null; industry_segment: string | null; location_segment: string | null
+    workspaces: { id: string; name: string; industry_vertical: string | null; created_at: string } | null
+  } | null
+
+  if (userError || !userProfile?.workspace_id) redirect('/welcome')
+
+  const workspaceId = userProfile.workspace_id
+
+  // ── Fast phase: data needed for above-the-fold content ──
+  const [
+    statsData,
+    pixelResult,
+    userTargetingResult,
+    creditsData,
+    activationResult,
+  ] = await Promise.all([
+    // Stats: 2 s outer timeout (inner refresh still runs up to 4 s, but we don't wait)
+    Promise.race([
+      getCachedWorkspaceStats(workspaceId),
+      new Promise<null>(resolve => setTimeout(() => resolve(null), 2000)),
+    ]).catch(() => null),
+    supabase
+      .from('audiencelab_pixels')
+      .select('pixel_id, trial_status, trial_ends_at, visitor_count_total')
+      .eq('workspace_id', workspaceId)
+      .eq('is_active', true)
+      .maybeSingle(),
+    supabase
+      .from('user_targeting')
+      .select('is_active, target_industries, target_states')
+      .eq('user_id', userProfile.id)
+      .eq('workspace_id', workspaceId)
+      .maybeSingle(),
+    // Credits: 1.5 s timeout (shows 0 on timeout — non-critical)
+    Promise.race([
+      CreditService.getRemainingCredits(userProfile.id),
+      new Promise<null>(resolve => setTimeout(() => resolve(null), 1500)),
+    ]).catch(() => null),
+    supabase
+      .from('custom_audience_requests')
+      .select('id', { count: 'exact', head: true })
+      .eq('workspace_id', workspaceId),
+  ])
+
+  // Derived state for above-fold rendering
+  const todayCount      = statsData?.today_leads      ?? 0
+  const weekCount       = statsData?.week_leads       ?? 0
+  const totalCount      = statsData?.total_leads      ?? 0
+  const yesterdayCount  = statsData?.yesterday_leads  ?? 0
+  const prevWeekCount   = statsData?.prev_week_leads  ?? 0
+  const enrichedCount   = statsData?.enriched_leads   ?? 0
+  const pixelEventCount = statsData?.pixel_event_count ?? 0
+  const intelligenceTierCount = statsData?.intelligence_leads ?? 0
+
+  const pixel           = pixelResult.data
+  const hasPixel        = !!pixel
+  const targeting       = userTargetingResult.data
+  const hasPreferences  = !!(targeting?.target_industries?.length || targeting?.target_states?.length)
+  const hasEnriched     = enrichedCount > 0
+  const hasIntelligence = hasEnriched || intelligenceTierCount > 0
+  const hasActivated    = (activationResult.count ?? 0) > 0
+  const hasVerifiedPixel = hasPixel && pixelEventCount > 0
+  const isOnTrial       = pixel?.trial_status === 'trial'
+  const trialEndsAtStr  = pixel?.trial_ends_at ?? null
+  const visitorCountTotal = pixel?.visitor_count_total ?? null
+
+  const creditsRemaining = creditsData?.remaining ?? 0
+  const creditLimit      = creditsData?.limit ?? 3
+  const isFree           = !userProfile.plan || userProfile.plan === 'free'
+  const dailyLimit       = userProfile.daily_lead_limit ?? 10
+
+  const outboundUpgradeTiers = ['outbound', 'pipeline', 'venture_studio']
+  const showOutboundUpsell   = pixelEventCount >= 10 && !outboundUpgradeTiers.includes(userProfile.plan ?? '')
+
+  const workspaceCreatedAt = userProfile.workspaces?.created_at
+  const workspaceAgeHours  = workspaceCreatedAt
+    ? (Date.now() - new Date(workspaceCreatedAt).getTime()) / 3_600_000
+    : 9999
+
+  const checklistItems: ChecklistItem[] = [
+    { id: 'account',          label: 'Create your account',             done: true,              href: null },
+    { id: 'pixel',            label: 'Install tracking pixel',          done: hasPixel,          href: '/settings/pixel' },
+    { id: 'pixel_verified',   label: 'Verify your pixel is working',    done: hasVerifiedPixel,  href: '/settings/pixel' },
+    { id: 'prefs',            label: 'Set lead preferences',            done: hasPreferences,    href: '/my-leads/preferences' },
+    { id: 'enrich',           label: 'Enrich your first lead',          done: hasEnriched,       href: '/leads' },
+    { id: 'activate',         label: 'Activate — run a campaign',       done: hasActivated,      href: '/activate' },
+    { id: 'intelligence',     label: 'Try Intelligence Pack on a lead', done: hasIntelligence,   href: '/leads' },
+  ]
+  const checklistProgress = checklistItems.filter(i => i.done).length
+  const checklistTotal    = checklistItems.length
+  const showChecklist     = checklistProgress < checklistTotal
+
+  // Helper to create redirect with cookies preserved
+  const redirectWithCookies = (url: URL) => {
+    // (used only via redirect() in this component — kept for type completeness)
+    return url
+  }
+  void redirectWithCookies // suppress unused warning
+
+  return (
+    <div className="space-y-6 p-6">
+      <DashboardAnimationWrapper>
+
+        {/* Header */}
+        <AnimatedSection delay={0}>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">
+                Welcome back, {userProfile.full_name?.split(' ')[0] || 'there'}!
+              </h1>
+              <p className="text-sm text-gray-500 mt-0.5">
+                {userProfile.workspaces?.name && (
+                  <span className="font-medium text-gray-700">{userProfile.workspaces.name} · </span>
+                )}
+                Here&apos;s your lead pipeline. New leads arrive every morning at 8am CT.
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Link
+                href="/leads"
+                className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary/90 transition-colors"
+              >
+                <Star className="h-4 w-4 fill-white" />
+                Today&apos;s Leads
+              </Link>
+            </div>
+          </div>
+        </AnimatedSection>
+
+        {/* Onboarding checklist widget */}
+        {showChecklist && (
+          <AnimatedSection delay={0.03}>
+            <OnboardingChecklist />
+          </AnimatedSection>
+        )}
+
+        {/* New-user provisioning widget */}
+        {workspaceAgeHours < 72 && (
+          <AnimatedSection delay={0.04}>
+            <ProvisioningWidget
+              steps={[
+                { id: 'account', label: 'Account created', done: true },
+                { id: 'pixel',   label: 'Pixel installed',  done: hasPixel,    sublabel: hasPixel ? undefined : 'Add the tracking script to your site', href: '/settings/pixel' },
+                { id: 'leads',   label: 'First leads identified', done: totalCount > 0, sublabel: totalCount > 0 ? undefined : 'Waiting for your first leads to arrive…', href: '/leads' },
+                { id: 'team',    label: 'Share with your team',   done: false,           sublabel: 'Invite teammates to view and action leads', href: '/settings/team' },
+              ]}
+            />
+          </AnimatedSection>
+        )}
+
+        {/* Onboarding complete banner */}
+        {onboarding === 'complete' && (
+          <div className="rounded-xl bg-blue-50 border border-blue-200 p-4 flex items-start gap-3">
+            <CheckCircle2 className="h-5 w-5 text-blue-600 shrink-0 mt-0.5" />
+            <div>
+              <p className="font-semibold text-blue-900">Setup complete!</p>
+              <p className="text-sm text-blue-700">
+                {totalCount > 0
+                  ? `Your first ${totalCount} leads are ready — check them out below!`
+                  : 'We\'re setting up your lead pipeline now. Your first leads will arrive shortly — check back in a few minutes or by 8am CT tomorrow.'}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Zero leads banner */}
+        {totalCount === 0 && onboarding !== 'complete' && (
+          <div className="rounded-xl bg-blue-50 border border-blue-200 p-5 flex items-start gap-3">
+            <Calendar className="h-5 w-5 text-blue-600 shrink-0 mt-0.5" />
+            <div>
+              <p className="font-semibold text-blue-900">Your first leads will arrive by 8am CT tomorrow</p>
+              <p className="text-sm text-blue-700 mt-1">
+                We&apos;re matching leads to your industry and location preferences right now. You&apos;ll get up to {dailyLimit} fresh leads every morning.
+                {!hasPreferences && <> <Link href="/my-leads/preferences" className="font-medium underline">Set your targeting preferences</Link> so we can match the most relevant leads for you.</>}
+                {hasPreferences && !hasPixel && <> While you wait, <Link href="/settings/pixel" className="font-medium underline">install the pixel</Link> to identify website visitors too.</>}
+              </p>
+              <p className="text-sm text-zinc-500 mt-2">
+                Questions?{' '}
+                <a href="/settings/pixel" className="text-blue-600 hover:underline">Check your pixel setup</a>
+                {' · '}
+                <a href="/my-leads/preferences" className="text-blue-600 hover:underline">Review your targeting preferences</a>
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Single priority banner */}
+        {(() => {
+          if (isOnTrial && trialEndsAtStr) return (
+            <AnimatedSection delay={0.03}>
+              <TrialCountdown trialEndsAt={trialEndsAtStr} visitorCountTotal={visitorCountTotal} />
+            </AnimatedSection>
+          )
+          if (creditsRemaining <= 3) return (
+            <AnimatedSection delay={0.03}>
+              <div className="rounded-xl p-4 flex items-center justify-between gap-4 bg-blue-50 border border-blue-200">
+                <div className="flex items-center gap-3">
+                  {isFree ? <Rocket className="h-5 w-5 text-blue-600 shrink-0" /> : <Zap className="h-5 w-5 text-blue-600 shrink-0" />}
+                  <div>
+                    {isFree ? (
+                      <>
+                        <p className="font-semibold text-blue-900 text-sm">
+                          {creditsRemaining === 0 ? 'You\'ve used all your free credits today' : `Only ${creditsRemaining} free credit${creditsRemaining === 1 ? '' : 's'} left`}
+                        </p>
+                        <p className="text-xs text-blue-700">Upgrade to Pro for 1,000 daily credits, priority enrichment, and full CRM access.</p>
+                      </>
+                    ) : (
+                      <>
+                        <p className="font-semibold text-blue-900 text-sm">
+                          {creditsRemaining === 0 ? 'You\'re out of enrichment credits' : `Only ${creditsRemaining} credit${creditsRemaining === 1 ? '' : 's'} remaining`}
+                        </p>
+                        <p className="text-xs text-blue-700">Each lead enrichment costs 1 credit — credits reset daily.</p>
+                      </>
+                    )}
+                  </div>
+                </div>
+                <Link href="/settings/billing" className="shrink-0 text-sm font-semibold text-white rounded-lg px-3 py-1.5 transition-colors bg-primary hover:bg-primary/90">
+                  {isFree ? 'Upgrade to Pro' : 'Buy Credits'}
+                </Link>
+              </div>
+            </AnimatedSection>
+          )
+          if (showOutboundUpsell) return (
+            <AnimatedSection delay={0.03}>
+              <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-start gap-3">
+                  <div className="p-1.5 rounded-lg bg-blue-100 shrink-0 mt-0.5"><Rocket className="h-4 w-4 text-blue-700" /></div>
+                  <div>
+                    <p className="font-semibold text-blue-900 text-sm">Your pixel has identified {pixelEventCount.toLocaleString()} visitors</p>
+                    <p className="text-xs text-blue-700 mt-0.5">Let Cursive Outbound email and follow up with every identified visitor — fully done-for-you.</p>
+                  </div>
+                </div>
+                <a href="mailto:darren@meetcursive.com?subject=Cursive Outbound interest" className="inline-flex items-center gap-1.5 shrink-0 rounded-lg bg-blue-700 px-3 py-2 text-xs font-semibold text-white hover:bg-blue-800 transition-colors whitespace-nowrap">
+                  <ArrowRight className="h-3 w-3" />Talk to Darren
+                </a>
+              </div>
+            </AnimatedSection>
+          )
+          if (totalCount > 0 && onboarding !== 'complete') return (
+            <AnimatedSection delay={0.03}>
+              <FirstLeadsBanner count={totalCount} workspaceAgeHours={workspaceAgeHours} />
+            </AnimatedSection>
+          )
+          return null
+        })()}
+
+        {/* 4 stat cards — above the fold, rendered from fast-phase data */}
+        <AnimatedSection delay={0.05}>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Today's leads */}
+            <Link href="/leads" className="group">
+              <div className="bg-white rounded-xl border border-primary/30 bg-primary/5 p-5 hover:border-primary/50 transition-all h-full">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="p-1.5 rounded-lg bg-primary/15"><Calendar className="h-4 w-4 text-primary" /></div>
+                  <span className="text-sm text-gray-500">Today&apos;s Leads</span>
+                </div>
+                <div className="text-3xl font-bold text-primary">{todayCount}</div>
+                <div className="mt-1.5 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="h-full bg-primary rounded-full" style={{ width: `${Math.min((todayCount / Math.max(dailyLimit, 1)) * 100, 100)}%` }} />
+                </div>
+                <p className="text-xs text-gray-500 mt-1">{todayCount} of {dailyLimit} delivered</p>
+                {(() => {
+                  const trend = trendBadge(todayCount, yesterdayCount)
+                  if (!trend) return <p className="text-xs text-gray-400 mt-1">vs. yesterday</p>
+                  return <p className={`text-xs mt-1 font-medium ${trend.up ? 'text-emerald-600' : 'text-red-500'}`}>{trend.up ? '↑' : '↓'} {trend.pct}% vs. yesterday</p>
+                })()}
+              </div>
+            </Link>
+
+            {/* This week */}
+            <Link href="/leads" className="group">
+              <div className="bg-white rounded-xl border border-gray-200 p-5 h-full hover:border-gray-300 transition-all">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="p-1.5 rounded-lg bg-gray-100"><TrendingUp className="h-4 w-4 text-gray-600" /></div>
+                  <span className="text-sm text-gray-500">This Week</span>
+                </div>
+                <div className="text-3xl font-bold text-gray-900">{weekCount}</div>
+                {(() => {
+                  const trend = trendBadge(weekCount, prevWeekCount)
+                  if (!trend) return <p className="text-xs text-gray-500 mt-1">{(weekCount / 7).toFixed(1)} avg/day</p>
+                  return <p className={`text-xs mt-1 font-medium ${trend.up ? 'text-emerald-600' : 'text-red-500'}`}>{trend.up ? '↑' : '↓'} {trend.pct}% vs. last week</p>
+                })()}
+              </div>
+            </Link>
+
+            {/* Credits */}
+            <Link href="/settings/billing" className="group">
+              <div className={`bg-white rounded-xl border p-5 h-full transition-all ${creditsRemaining <= 3 ? 'border-blue-200 bg-blue-50/40' : 'border-gray-200 hover:border-gray-300'}`}>
+                <div className="flex items-center gap-2 mb-2">
+                  <div className={`p-1.5 rounded-lg ${creditsRemaining <= 3 ? 'bg-blue-100' : 'bg-gray-100'}`}>
+                    <Zap className={`h-4 w-4 ${creditsRemaining <= 3 ? 'text-blue-600' : 'text-gray-600'}`} />
+                  </div>
+                  <span className="text-sm text-gray-500" title="2 credits per Intel Pack · 10 credits per Deep Research">Enrichment Credits</span>
+                </div>
+                <div className={`text-3xl font-bold ${creditsRemaining <= 3 ? 'text-blue-600' : 'text-gray-900'}`}>{creditsRemaining}</div>
+                <p className="text-xs text-gray-500 mt-1">of {creditLimit}/day ({isFree ? 'Free' : 'Pro'}) · resets daily</p>
+              </div>
+            </Link>
+
+            {/* Total leads */}
+            <Link href="/crm/leads" className="group">
+              <div className="bg-white rounded-xl border border-gray-200 p-5 h-full hover:border-gray-300 transition-all">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="p-1.5 rounded-lg bg-gray-100"><Users className="h-4 w-4 text-gray-600" /></div>
+                  <span className="text-sm text-gray-500">Total Leads</span>
+                </div>
+                <div className="text-3xl font-bold text-gray-900">{totalCount}</div>
+                <p className="text-xs text-gray-500 mt-1">{enrichedCount} enriched</p>
+                {(() => {
+                  const trend = trendBadge(weekCount, prevWeekCount)
+                  if (!trend) return null
+                  return <p className={`text-xs mt-0.5 font-medium ${trend.up ? 'text-emerald-600' : 'text-red-500'}`}>{trend.up ? '↑' : '↓'} {trend.pct}% weekly growth</p>
+                })()}
+              </div>
+            </Link>
+          </div>
+        </AnimatedSection>
+
+        {/* ── Streamed section: hot leads + main content grid ── */}
+        <Suspense fallback={<DashboardMainGridSkeleton />}>
+          <DashboardMainGrid
+            workspaceId={workspaceId}
+            hasPreferences={hasPreferences}
+            hasEnriched={hasEnriched}
+            hasPixel={hasPixel}
+            hasVerifiedPixel={hasVerifiedPixel}
+            hasActivated={hasActivated}
+            isOnTrial={isOnTrial}
+            trialEndsAtStr={trialEndsAtStr}
+            pixelEventCount={pixelEventCount}
+            visitorCountTotal={visitorCountTotal}
+            todayCount={todayCount}
+            isFree={isFree}
+            showChecklist={showChecklist}
+            checklistItems={checklistItems}
+            checklistProgress={checklistProgress}
+            checklistTotal={checklistTotal}
+            creditLimit={creditLimit}
+            dailyLimit={dailyLimit}
+          />
+        </Suspense>
+
       </DashboardAnimationWrapper>
     </div>
   )
