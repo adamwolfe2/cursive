@@ -117,7 +117,7 @@ export function AskYourDataPanel({ className, hideHeader }: AskYourDataPanelProp
                   : 'bg-gray-50 border border-gray-200 rounded-2xl rounded-tl-sm p-3 text-xs w-full'
               }`}
             >
-              <p>{msg.content}</p>
+              <p className="whitespace-pre-wrap">{msg.content}</p>
 
               {/* Results table */}
               {msg.results && msg.results.length > 0 && (
