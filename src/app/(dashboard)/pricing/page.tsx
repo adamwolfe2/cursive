@@ -60,8 +60,8 @@ export default function PricingPage() {
           }`}
         >
           Yearly
-          <span className="ml-1.5 inline-flex items-center rounded-full bg-muted-foreground/20 text-muted-foreground px-2 py-0.5 text-xs font-semibold">
-            Coming Soon
+          <span className="ml-1.5 inline-flex items-center rounded-full bg-primary/20 text-primary px-2 py-0.5 text-xs font-semibold">
+            Save 20%
           </span>
         </button>
       </div>
@@ -129,10 +129,10 @@ export default function PricingPage() {
           </div>
           <div className="flex items-center gap-2 mb-6">
             <span className="text-sm text-muted-foreground line-through">
-              ${billingPeriod === 'monthly' ? '99' : '79'}/mo
+              ${billingPeriod === 'monthly' ? '99' : '50'}/mo
             </span>
             <span className="inline-flex items-center rounded-full bg-primary/10 text-primary px-2 py-0.5 text-xs font-semibold">
-              Save 50%
+              {billingPeriod === 'monthly' ? 'Save 50%' : 'Save 20% vs monthly'}
             </span>
           </div>
 

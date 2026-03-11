@@ -122,10 +122,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error:
-            'Google Sheets integration is not yet available. The service is being developed and will be available soon.',
-          code: 'SERVICE_NOT_AVAILABLE',
+            'Unable to initialize Google Sheets service. Your access token may have expired — please disconnect and reconnect your Google account.',
+          code: 'SERVICE_INIT_FAILED',
         },
-        { status: 501 }
+        { status: 503 }
       )
     }
 
