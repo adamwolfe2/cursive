@@ -75,10 +75,14 @@ const getCachedWorkspaceStats = unstable_cache(
     }
 
     // Cache miss — refresh inline with 4 s guard, then return fresh row
-    await Promise.race([
-      admin.rpc('refresh_workspace_stats', { p_workspace_id: wsId }).catch(() => null),
-      new Promise(resolve => setTimeout(resolve, 4000)),
-    ])
+    try {
+      await Promise.race([
+        admin.rpc('refresh_workspace_stats', { p_workspace_id: wsId }),
+        new Promise(resolve => setTimeout(resolve, 4000)),
+      ])
+    } catch {
+      // swallow RPC errors — stale cache is acceptable
+    }
     const { data: fresh } = await admin
       .from('workspace_stats_cache')
       .select('*')
