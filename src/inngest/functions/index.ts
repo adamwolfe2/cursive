@@ -262,3 +262,6 @@ export { dfyUpsellTrigger } from './dfy-upsell-trigger'
 
 // Rate limit logs cleanup (hourly — deletes entries older than 2h to prevent unbounded table growth)
 export { cleanupRateLimitLogs } from './cleanup-rate-limit-logs'
+
+// Webhook events cleanup (daily — deletes events older than 30 days to prevent unbounded table growth)
+export { cleanupWebhookEvents } from './cleanup-webhook-events'

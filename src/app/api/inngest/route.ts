@@ -226,5 +226,9 @@ export const { GET, POST, PUT } = serve({
 
     // DFY Upsell Trigger (daily 10am UTC — emails workspaces with 50+ leads and no managed spend)
     functions.dfyUpsellTrigger,
+
+    // Cleanup crons (prevent unbounded table growth)
+    functions.cleanupRateLimitLogs,
+    functions.cleanupWebhookEvents,
   ],
 })
