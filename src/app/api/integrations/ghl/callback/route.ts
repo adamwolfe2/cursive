@@ -72,7 +72,14 @@ export async function GET(req: NextRequest) {
       )
     }
 
-    const context: OAuthContext = JSON.parse(contextCookie)
+    let context: OAuthContext
+    try {
+      context = JSON.parse(contextCookie)
+    } catch {
+      return NextResponse.redirect(
+        new URL('/settings/integrations?error=ghl_invalid_session', req.url)
+      )
+    }
 
     // Clear OAuth cookies
     cookieStore.delete('ghl_oauth_state')

@@ -52,7 +52,12 @@ export async function POST(request: NextRequest, context: RouteContext) {
     }
 
     // Parse the webhook payload
-    const payload = JSON.parse(rawBody)
+    let payload: any
+    try {
+      payload = JSON.parse(rawBody)
+    } catch {
+      return NextResponse.json({ error: 'Invalid JSON payload' }, { status: 400 })
+    }
     const event = parseWebhookEvent(payload)
 
     // Get supabase admin client

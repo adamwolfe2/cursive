@@ -60,7 +60,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // If referral is null, this email was already attributed to this affiliate
     if (referral) {
       // Send new lead notification (non-blocking)
-      sendPartnerNewLead(affiliate.email, affiliate.first_name, authUser.email).catch(() => {})
+      sendPartnerNewLead(affiliate.email, affiliate.first_name, authUser.email).catch((err) => safeError('[affiliate/attribute] New lead notification failed:', err))
     }
 
     return NextResponse.json({ success: true })

@@ -117,13 +117,13 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       throw new Error(insertError?.message || 'Failed to save application')
     }
 
-    sendPartnerApplicationReceived(data.email, data.firstName).catch(() => {})
+    sendPartnerApplicationReceived(data.email, data.firstName).catch((err) => safeError('[affiliate/apply] Confirmation email failed:', err))
     sendPartnerApplicationNotification(
       application.id,
       `${data.firstName} ${data.lastName}`,
       data.audienceTypes,
       data.audienceSize
-    ).catch(() => {})
+    ).catch((err) => safeError('[affiliate/apply] Admin notification failed:', err))
 
     return NextResponse.json({ success: true }, { headers })
   } catch (error) {

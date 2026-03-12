@@ -168,7 +168,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
           affiliate.first_name,
           total,
           periodLabel
-        ).catch(() => {})
+        ).catch((err) => safeError('[affiliate-payouts] Payout email failed:', err))
 
         results.transferred++
         safeLog(`[affiliate-payouts] Transferred $${(total / 100).toFixed(2)} to ${affiliate.email}`)
