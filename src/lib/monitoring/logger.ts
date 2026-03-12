@@ -3,6 +3,8 @@
  * Provides consistent logging across the platform
  */
 
+import { safeWarn, safeError } from '@/lib/utils/log-sanitizer'
+
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'critical'
 
 export interface LogContext {
@@ -77,11 +79,11 @@ class Logger {
         console.info(formatted)
         break
       case 'warn':
-        console.warn(formatted)
+        safeWarn(formatted)
         break
       case 'error':
       case 'critical':
-        console.error(formatted)
+        safeError(formatted)
         break
     }
 
@@ -116,11 +118,11 @@ class Logger {
         }
       }).catch(() => {
         // Sentry not available, just log
-        console.error('MONITORING:', JSON.stringify(entry))
+        safeError('MONITORING:', JSON.stringify(entry))
       })
     } catch (error) {
       // Fallback to console
-      console.error('MONITORING:', JSON.stringify(entry))
+      safeError('MONITORING:', JSON.stringify(entry))
     }
   }
 

@@ -4,6 +4,7 @@
  */
 
 import * as Sentry from '@sentry/nextjs'
+import { safeWarn } from '@/lib/utils/log-sanitizer'
 
 export interface ErrorContext {
   userId?: string
@@ -22,7 +23,7 @@ export interface ErrorContext {
  */
 export function initSentry() {
   if (!process.env.NEXT_PUBLIC_SENTRY_DSN) {
-    console.warn('[Sentry] DSN not configured - error tracking disabled')
+    safeWarn('[Sentry] DSN not configured - error tracking disabled')
     return
   }
 

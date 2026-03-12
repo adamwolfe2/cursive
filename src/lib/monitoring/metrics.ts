@@ -4,6 +4,7 @@
  */
 
 import { createAdminClient } from '@/lib/supabase/admin'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export interface MetricData {
   name: string
@@ -99,12 +100,12 @@ class Metrics {
       )
 
       if (error) {
-        console.error('Failed to flush metrics:', error)
+        safeError('Failed to flush metrics:', error)
         // Re-add to buffer for retry
         this.buffer.unshift(...metricsToFlush)
       }
     } catch (error) {
-      console.error('Metrics flush error:', error)
+      safeError('Metrics flush error:', error)
     }
   }
 

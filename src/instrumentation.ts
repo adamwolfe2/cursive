@@ -15,6 +15,8 @@
  * allowing them to crash the process.
  */
 
+import { safeError } from '@/lib/utils/log-sanitizer'
+
 export async function register() {
   if (process.env.NEXT_RUNTIME === 'nodejs') {
     process.on('unhandledRejection', (reason: unknown) => {
@@ -39,7 +41,7 @@ export async function register() {
       }
 
       // Log unexpected unhandled rejections (don't crash for any of them)
-      console.error('[UnhandledRejection] Unhandled promise rejection:', message)
+      safeError('[UnhandledRejection] Unhandled promise rejection:', message)
     })
 
     // Also suppress unhandledRejection warnings printed by Node for GoTrue

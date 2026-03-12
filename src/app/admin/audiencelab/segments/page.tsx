@@ -8,6 +8,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Upload, RefreshCw, Search, X } from 'lucide-react'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
@@ -192,7 +193,7 @@ export default function SegmentCatalogPage() {
         total_inserted += batch.length
       } catch (err: any) {
         errors++
-        console.error(`Batch ${Math.floor(i / BATCH) + 1} failed:`, err?.message ?? err)
+        safeError(`Batch ${Math.floor(i / BATCH) + 1} failed:`, err?.message ?? err)
       }
       done += batch.length
       setImportProgress({ done, total })
