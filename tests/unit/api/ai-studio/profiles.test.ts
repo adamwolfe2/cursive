@@ -29,8 +29,11 @@ function createQueryChain(resolvedValue?: any) {
   chain.delete = vi.fn().mockReturnValue(chain)
   chain.eq = vi.fn().mockReturnValue(chain)
   chain.order = vi.fn().mockReturnValue(chain)
+  chain.limit = vi.fn().mockReturnValue(chain)
   chain.single = vi.fn().mockResolvedValue(resolvedValue ?? { data: null, error: null })
   chain.maybeSingle = vi.fn().mockResolvedValue(resolvedValue ?? { data: null, error: null })
+  // Make chain thenable so `await chain` resolves (for queries ending without .single()/.maybeSingle())
+  chain.then = (resolve: any) => resolve(resolvedValue ?? { data: null, error: null })
   return chain
 }
 
@@ -102,14 +105,18 @@ function mockSupabaseClient(options: {
       }
 
       if (table === 'customer_profiles') {
-        return {
+        const resolved = {
+          data: options.profiles ?? [],
+          error: options.profilesError ?? null,
+        }
+        const profileChain: any = {
           select: vi.fn().mockReturnThis(),
           eq: vi.fn().mockReturnThis(),
-          order: vi.fn().mockResolvedValue({
-            data: options.profiles ?? [],
-            error: options.profilesError ?? null,
-          }),
+          order: vi.fn().mockReturnThis(),
+          limit: vi.fn().mockReturnThis(),
+          then: (resolve: any, reject?: any) => Promise.resolve(resolved).then(resolve, reject),
         }
+        return profileChain
       }
 
       return createQueryChain()

@@ -12,11 +12,18 @@ const addSchema = z.object({
   reason: z.string().optional(),
 })
 
-export async function GET(_req: NextRequest) {
+export async function GET(req: NextRequest) {
   try {
     await requireAdmin()
+    const { searchParams } = new URL(req.url)
+    const workspaceId = searchParams.get('workspace_id')
+
+    if (!workspaceId || !z.string().uuid().safeParse(workspaceId).success) {
+      return NextResponse.json({ error: 'Valid workspace_id is required' }, { status: 400 })
+    }
+
     const repo = new DncRepository()
-    const entries = await repo.findAll()
+    const entries = await repo.findByWorkspace(workspaceId)
     return NextResponse.json({ entries })
   } catch (error) {
     safeError('[SDR DNC GET]', error)

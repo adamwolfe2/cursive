@@ -10,7 +10,9 @@ import Stripe from 'stripe'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 function getStripe(): Stripe {
-  return new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  const key = process.env.STRIPE_SECRET_KEY
+  if (!key) throw new Error('STRIPE_SECRET_KEY is not configured')
+  return new Stripe(key, {
     apiVersion: '2025-02-24.acacia' as Stripe.LatestApiVersion,
   })
 }

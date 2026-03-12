@@ -199,7 +199,9 @@ export const abandonedCartRecovery = inngest.createFunction(
 
     // Step 1: Query Stripe for abandoned checkout sessions from the last 24 hours
     const abandonedSessions = await step.run('fetch-abandoned-sessions', async () => {
-      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
+      const key = process.env.STRIPE_SECRET_KEY
+      if (!key) throw new Error('STRIPE_SECRET_KEY is not configured')
+      const stripe = new Stripe(key)
 
       const now = Math.floor(Date.now() / 1000)
       const twentyFourHoursAgo = now - 24 * 60 * 60

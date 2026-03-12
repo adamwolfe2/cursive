@@ -32,8 +32,10 @@ function createQueryChain(resolvedValue?: any) {
   chain.delete = vi.fn().mockReturnValue(chain)
   chain.eq = vi.fn().mockReturnValue(chain)
   chain.order = vi.fn().mockReturnValue(chain)
+  chain.limit = vi.fn().mockReturnValue(chain)
   chain.single = vi.fn().mockResolvedValue(resolvedValue ?? { data: null, error: null })
   chain.maybeSingle = vi.fn().mockResolvedValue(resolvedValue ?? { data: null, error: null })
+  chain.then = (resolve: any) => resolve(resolvedValue ?? { data: null, error: null })
   return chain
 }
 
@@ -119,14 +121,18 @@ function mockSupabaseClientForGet(options: {
       }
 
       if (table === 'ad_creatives') {
-        return {
+        const resolved = {
+          data: options.creatives ?? [],
+          error: options.creativesError ?? null,
+        }
+        const creativesChain: any = {
           select: vi.fn().mockReturnThis(),
           eq: vi.fn().mockReturnThis(),
-          order: vi.fn().mockResolvedValue({
-            data: options.creatives ?? [],
-            error: options.creativesError ?? null,
-          }),
+          order: vi.fn().mockReturnThis(),
+          limit: vi.fn().mockReturnThis(),
+          then: (resolve: any, reject?: any) => Promise.resolve(resolved).then(resolve, reject),
         }
+        return creativesChain
       }
 
       return createQueryChain()
@@ -155,6 +161,7 @@ function mockSupabaseClientForPost(options: {
     return chain
   })
   chain.eq = vi.fn().mockReturnValue(chain)
+  chain.limit = vi.fn().mockReturnValue(chain)
   const resolveQuery = () => {
     if (isInsertOperation) {
       // INSERT creative
@@ -188,6 +195,7 @@ function mockSupabaseClientForPost(options: {
   }
   chain.single = vi.fn().mockImplementation(resolveQuery)
   chain.maybeSingle = vi.fn().mockImplementation(resolveQuery)
+  chain.then = (resolve: any, reject?: any) => resolveQuery().then(resolve, reject)
 
   const client = {
     from: vi.fn().mockImplementation((table: string) => {

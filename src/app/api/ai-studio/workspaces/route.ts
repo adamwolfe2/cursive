@@ -28,6 +28,7 @@ export async function GET(request: NextRequest) {
       .select('id, name, url, logo_url, favicon_url, brand_data, extraction_status, created_at')
       .eq('workspace_id', user.workspaceId)
       .order('created_at', { ascending: false })
+      .limit(100)
 
     if (error) {
       safeError('[Workspaces] Database error:', error)

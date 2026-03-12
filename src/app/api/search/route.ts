@@ -6,6 +6,7 @@ import { z } from 'zod'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { createClient } from '@/lib/supabase/server'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
+import { sanitizeSearchTerm } from '@/lib/utils/sanitize-search'
 
 const searchSchema = z.object({
   q: z.string().min(2, 'Query must be at least 2 characters').max(100, 'Query too long'),
@@ -57,9 +58,8 @@ export async function GET(request: NextRequest) {
     const { q, limit } = validated
     const workspaceId = user.workspace_id
 
-    // Escape SQL wildcard characters so literal % and _ in search terms are treated as literals
-    const escapedQ = q.replace(/[%_\\]/g, '\\$&')
-    const pattern = `%${escapedQ}%`
+    // Sanitize for PostgREST .or() filter syntax (escapes LIKE wildcards + removes PostgREST operators)
+    const pattern = `%${sanitizeSearchTerm(q)}%`
 
     // 3. Use createClient() (respects RLS, filters to user's workspace automatically)
     const supabase = await createClient()

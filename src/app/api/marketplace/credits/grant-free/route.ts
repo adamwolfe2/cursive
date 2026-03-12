@@ -72,37 +72,36 @@ export async function POST() {
     if (updateError) {
       safeError('[Grant Free Credits] RPC add_workspace_credits failed, using fallback:', updateError)
 
-      const { data: existing } = await adminClient
-        .from('workspace_credits')
-        .select('balance, total_earned')
-        .eq('workspace_id', user.workspace_id)
-        .maybeSingle()
+      // Atomic upsert with SQL increment — avoids read-then-write race condition
+      const credits = FREE_TRIAL_CREDITS.credits
+      const { error: upsertErr } = await adminClient.rpc('exec_sql', {
+        query: `
+          INSERT INTO workspace_credits (workspace_id, balance, total_purchased, total_used, total_earned)
+          VALUES ($1, $2, 0, 0, $2)
+          ON CONFLICT (workspace_id) DO UPDATE SET
+            balance = workspace_credits.balance + $2,
+            total_earned = workspace_credits.total_earned + $2
+        `.trim(),
+        params: [user.workspace_id, credits],
+      })
 
-      if (existing) {
-        const { error: updateErr } = await adminClient
+      // If the custom RPC isn't available, fall back to safe upsert
+      if (upsertErr) {
+        const { error: fallbackErr } = await adminClient
           .from('workspace_credits')
-          .update({
-            balance: existing.balance + FREE_TRIAL_CREDITS.credits,
-            total_earned: (existing.total_earned || 0) + FREE_TRIAL_CREDITS.credits,
-          })
-          .eq('workspace_id', user.workspace_id)
+          .upsert(
+            {
+              workspace_id: user.workspace_id,
+              balance: credits,
+              total_purchased: 0,
+              total_used: 0,
+              total_earned: credits,
+            },
+            { onConflict: 'workspace_id' }
+          )
 
-        if (updateErr) {
-          throw updateErr
-        }
-      } else {
-        const { error: insertErr } = await adminClient
-          .from('workspace_credits')
-          .insert({
-            workspace_id: user.workspace_id,
-            balance: FREE_TRIAL_CREDITS.credits,
-            total_purchased: 0,
-            total_used: 0,
-            total_earned: FREE_TRIAL_CREDITS.credits,
-          })
-
-        if (insertErr) {
-          throw insertErr
+        if (fallbackErr) {
+          throw fallbackErr
         }
       }
     }

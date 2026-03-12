@@ -13,7 +13,9 @@ import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
 const MIN_PAYOUT_CENTS = 5000 // $50
 
 function getStripe(): Stripe {
-  return new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  const key = process.env.STRIPE_SECRET_KEY
+  if (!key) throw new Error('STRIPE_SECRET_KEY is not configured')
+  return new Stripe(key, {
     apiVersion: '2025-02-24.acacia' as Stripe.LatestApiVersion,
   })
 }

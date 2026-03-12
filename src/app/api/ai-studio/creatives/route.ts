@@ -57,6 +57,7 @@ export async function GET(request: NextRequest) {
       .select('*, customer_profiles(name, title), offers(name)')
       .eq('brand_workspace_id', workspaceId)
       .order('created_at', { ascending: false })
+      .limit(200)
 
     if (error) {
       safeError('[Creatives GET] Database error:', error)

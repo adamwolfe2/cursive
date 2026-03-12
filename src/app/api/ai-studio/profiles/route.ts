@@ -60,6 +60,7 @@ export async function GET(request: NextRequest) {
       .select('id, brand_workspace_id, name, email, phone, demographics, preferences, purchase_history, engagement_score, tags, created_at, updated_at')
       .eq('brand_workspace_id', workspaceId)
       .order('created_at', { ascending: false })
+      .limit(200)
 
     if (error) {
       safeError('[Profiles] Database error:', error)

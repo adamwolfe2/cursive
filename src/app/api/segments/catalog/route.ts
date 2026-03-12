@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
+import { sanitizeSearchTerm } from '@/lib/utils/sanitize-search'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function GET(req: NextRequest) {
   const supabase = await createClient()
@@ -20,7 +22,8 @@ export async function GET(req: NextRequest) {
     .select('segment_id, name, category, sub_category, description, type', { count: 'exact' })
 
   if (q) {
-    query = query.or(`name.ilike.%${q}%,category.ilike.%${q}%,keywords.ilike.%${q}%`)
+    const term = sanitizeSearchTerm(q)
+    query = query.or(`name.ilike.%${term}%,category.ilike.%${term}%,keywords.ilike.%${term}%`)
   }
   if (type) {
     query = query.eq('type', type)
@@ -34,7 +37,8 @@ export async function GET(req: NextRequest) {
 
   const { data, error, count } = await query
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    safeError('[Segments Catalog] Database error:', error)
+    return NextResponse.json({ error: 'Failed to fetch segments' }, { status: 500 })
   }
 
   // Also fetch distinct categories for filter UI (lightweight)

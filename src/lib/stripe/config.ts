@@ -27,6 +27,22 @@ export const STRIPE_CONFIG = {
 } as const
 
 /**
+ * Get a server-side Stripe client with validated config.
+ * Throws if STRIPE_SECRET_KEY is missing — fail loud, not silent.
+ */
+export function getStripeClient(): import('stripe').default {
+  if (!STRIPE_CONFIG.secretKey) {
+    throw new Error('STRIPE_SECRET_KEY is not configured')
+  }
+  // Dynamic import avoids bundling Stripe in client builds
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const Stripe = require('stripe').default || require('stripe')
+  return new Stripe(STRIPE_CONFIG.secretKey, {
+    apiVersion: STRIPE_CONFIG.apiVersion as import('stripe').Stripe.LatestApiVersion,
+  })
+}
+
+/**
  * Validates that all required Stripe environment variables are set
  * @throws Error if any required variable is missing
  */

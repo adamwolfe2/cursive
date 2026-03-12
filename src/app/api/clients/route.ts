@@ -81,6 +81,7 @@ export async function GET(req: NextRequest) {
       .select('id, workspace_id, company_name, company_description, website_url, industry, company_size, primary_offering, secondary_offerings, value_propositions, trust_signals, pain_points, competitors, differentiators, target_industries, target_company_sizes, target_seniorities, target_regions, target_titles, is_active, created_at, updated_at')
       .eq('workspace_id', user.workspaceId)
       .order('routing_priority', { ascending: true })
+      .limit(200)
 
     // Filter by active status
     const activeOnly = searchParams.get('active')
