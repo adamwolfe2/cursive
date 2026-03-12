@@ -12,6 +12,7 @@ import { QueryClient, QueryClientProvider, QueryCache, MutationCache } from '@ta
 import { ErrorBoundary } from './error-boundary'
 import { initGlobalErrorHandler } from '@/lib/utils/global-error-handler'
 import { ToastProvider } from '@/lib/contexts/toast-context'
+import { PostHogProvider } from './providers/posthog-provider'
 
 // Redirect to login when any query/mutation returns 401 (expired JWT)
 function handle401(error: unknown) {
@@ -76,9 +77,11 @@ export function Providers({ children }: ProvidersProps) {
 
   return (
     <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <ToastProvider>{children}</ToastProvider>
-      </QueryClientProvider>
+      <PostHogProvider>
+        <QueryClientProvider client={queryClient}>
+          <ToastProvider>{children}</ToastProvider>
+        </QueryClientProvider>
+      </PostHogProvider>
     </ErrorBoundary>
   )
 }
