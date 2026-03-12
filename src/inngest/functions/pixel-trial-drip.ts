@@ -117,6 +117,7 @@ export const pixelTrialDrip = inngest.createFunction(
     id: 'pixel-trial-drip',
     name: 'Pixel Trial Email Drip',
     retries: 2,
+    cancelOn: [{ event: 'subscription/created', match: 'data.workspace_id' }],
     concurrency: { limit: 20 },
   },
   { event: 'pixel/provisioned' },

@@ -22,7 +22,11 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://leads.meetcursive.co
 const BOOKING_URL = 'https://cal.com/gotdarrenhill/30min'
 
 export const dfyOnboardingSequence = inngest.createFunction(
-  { id: 'dfy-onboarding-sequence', retries: 2 },
+  {
+    id: 'dfy-onboarding-sequence',
+    retries: 2,
+    cancelOn: [{ event: 'subscription/cancelled', match: 'data.workspace_id' }],
+  },
   { event: 'dfy/onboarding-completed' },
   async ({ event, step }) => {
     const {

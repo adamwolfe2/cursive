@@ -279,7 +279,11 @@ function buildEmail3(name: string): { subject: string; html: string } {
 // ---------------------------------------------------------------------------
 
 export const postPurchaseSequence = inngest.createFunction(
-  { id: 'post-purchase-sequence', retries: 2 },
+  {
+    id: 'post-purchase-sequence',
+    retries: 2,
+    cancelOn: [{ event: 'subscription/cancelled', match: 'data.workspace_id' }],
+  },
   { event: 'marketplace/credit-purchased' },
   async ({ event, step }) => {
     const { workspace_id, user_id, credits } = event.data
