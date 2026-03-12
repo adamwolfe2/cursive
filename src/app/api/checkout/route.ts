@@ -73,81 +73,92 @@ export async function POST(req: NextRequest) {
       .eq('email', buyerEmail)
       .maybeSingle()
 
-    if (existingCustomer?.stripe_customer_id) {
-      customer = await stripe.customers.retrieve(existingCustomer.stripe_customer_id)
-    } else {
-      customer = await stripe.customers.create({
-        email: buyerEmail,
-        name: buyerName || companyName,
+    try {
+      if (existingCustomer?.stripe_customer_id) {
+        customer = await stripe.customers.retrieve(existingCustomer.stripe_customer_id)
+      } else {
+        customer = await stripe.customers.create({
+          email: buyerEmail,
+          name: buyerName || companyName,
+          metadata: {
+            company_name: companyName || '',
+            buyer_email: buyerEmail,
+            user_id: user.userId,
+          },
+        })
+
+        // Update buyer with Stripe customer ID
+        await supabase
+          .from('buyers')
+          .upsert(
+            {
+              email: buyerEmail,
+              company_name: companyName || 'Unknown',
+              stripe_customer_id: customer.id,
+              workspace_id: lead.workspace_id,
+            },
+            { onConflict: 'email' }
+          )
+      }
+
+      // Read affiliate ref code from cookie for attribution fallback
+      const affiliateRefCode = req.cookies.get('cursive_ref')?.value ?? ''
+
+      // Create Stripe Checkout Session
+      const session = await stripe.checkout.sessions.create({
+        customer: customer.id,
+        payment_method_types: ['card'],
+        line_items: [
+          {
+            price_data: {
+              currency: 'usd',
+              product_data: {
+                name: `Lead: ${lead.company_name}`,
+                description: `${lead.company_industry || 'Industry'} - ${lead.company_location?.state || 'N/A'}`,
+                metadata: {
+                  lead_id: leadId,
+                  company_name: lead.company_name,
+                  industry: lead.company_industry || 'N/A',
+                },
+              },
+              unit_amount: 5000, // $50.00
+            },
+            quantity: 1,
+          },
+        ],
+        mode: 'payment',
+        success_url: `${process.env.NEXT_PUBLIC_APP_URL}/marketplace?success=true&lead_id=${leadId}`,
+        cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/marketplace?canceled=true`,
         metadata: {
-          company_name: companyName || '',
+          lead_id: leadId,
           buyer_email: buyerEmail,
+          company_name: companyName || '',
           user_id: user.userId,
+          workspace_id: user.workspaceId,
+          affiliate_ref_code: affiliateRefCode,
+        },
+        allow_promotion_codes: true,
+        billing_address_collection: 'auto',
+        customer_update: {
+          address: 'auto',
+          name: 'auto',
         },
       })
 
-      // Update buyer with Stripe customer ID
-      await supabase
-        .from('buyers')
-        .upsert(
-          {
-            email: buyerEmail,
-            company_name: companyName || 'Unknown',
-            stripe_customer_id: customer.id,
-            workspace_id: lead.workspace_id,
-          },
-          { onConflict: 'email' }
+      return NextResponse.json({
+        sessionId: session.id,
+        url: session.url,
+      })
+    } catch (stripeErr: any) {
+      if (stripeErr?.type?.startsWith('Stripe')) {
+        safeError('[Checkout] Stripe error:', stripeErr.message)
+        return NextResponse.json(
+          { error: 'Payment processing failed. Please try again or contact support.' },
+          { status: 400 }
         )
+      }
+      throw stripeErr
     }
-
-    // Read affiliate ref code from cookie for attribution fallback
-    const affiliateRefCode = req.cookies.get('cursive_ref')?.value ?? ''
-
-    // Create Stripe Checkout Session
-    const session = await stripe.checkout.sessions.create({
-      customer: customer.id,
-      payment_method_types: ['card'],
-      line_items: [
-        {
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: `Lead: ${lead.company_name}`,
-              description: `${lead.company_industry || 'Industry'} - ${lead.company_location?.state || 'N/A'}`,
-              metadata: {
-                lead_id: leadId,
-                company_name: lead.company_name,
-                industry: lead.company_industry || 'N/A',
-              },
-            },
-            unit_amount: 5000, // $50.00
-          },
-          quantity: 1,
-        },
-      ],
-      mode: 'payment',
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/marketplace?success=true&lead_id=${leadId}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/marketplace?canceled=true`,
-      metadata: {
-        lead_id: leadId,
-        buyer_email: buyerEmail,
-        company_name: companyName || '',
-        user_id: user.userId,
-        workspace_id: user.workspaceId,
-        affiliate_ref_code: affiliateRefCode,
-      },
-      allow_promotion_codes: true,
-      billing_address_collection: 'auto',
-      customer_update: {
-        address: 'auto',
-        name: 'auto',
-      },
-    })
-
-    return NextResponse.json({
-      sessionId: session.id,
-      url: session.url,
-    })
   } catch (error) {
     return handleApiError(error)
   }

@@ -36,38 +36,49 @@ export async function POST(request: NextRequest) {
     // Check if already has a Stripe account
     let accountId = partner.stripe_account_id
 
-    if (!accountId) {
-      // Create new Stripe Connect account
-      const account = await stripe.accounts.create({
-        type: 'express',
-        country: 'US',
-        email: partner.email,
-        capabilities: {
-          transfers: { requested: true },
-        },
-        business_profile: {
-          name: partner.company_name || partner.name,
-          support_email: partner.email,
-        },
+    try {
+      if (!accountId) {
+        // Create new Stripe Connect account
+        const account = await stripe.accounts.create({
+          type: 'express',
+          country: 'US',
+          email: partner.email,
+          capabilities: {
+            transfers: { requested: true },
+          },
+          business_profile: {
+            name: partner.company_name || partner.name,
+            support_email: partner.email,
+          },
+        })
+
+        accountId = account.id
+
+        // Update partner with Stripe account ID
+        await repo.update(user.linked_partner_id, {
+          stripeAccountId: accountId,
+        })
+      }
+
+      // Create account link for onboarding
+      const accountLink = await stripe.accountLinks.create({
+        account: accountId,
+        refresh_url: `${process.env.NEXT_PUBLIC_APP_URL}/partner/settings`,
+        return_url: `${process.env.NEXT_PUBLIC_APP_URL}/partner/settings?stripe_connected=true`,
+        type: 'account_onboarding',
       })
 
-      accountId = account.id
-
-      // Update partner with Stripe account ID
-      await repo.update(user.linked_partner_id, {
-        stripeAccountId: accountId,
-      })
+      return NextResponse.json({ url: accountLink.url })
+    } catch (stripeErr: any) {
+      if (stripeErr?.type?.startsWith('Stripe')) {
+        safeError('[Partner Connect] Stripe error:', stripeErr.message)
+        return NextResponse.json(
+          { error: 'Failed to set up payment account. Please try again or contact support.' },
+          { status: 400 }
+        )
+      }
+      throw stripeErr
     }
-
-    // Create account link for onboarding
-    const accountLink = await stripe.accountLinks.create({
-      account: accountId,
-      refresh_url: `${process.env.NEXT_PUBLIC_APP_URL}/partner/settings`,
-      return_url: `${process.env.NEXT_PUBLIC_APP_URL}/partner/settings?stripe_connected=true`,
-      type: 'account_onboarding',
-    })
-
-    return NextResponse.json({ url: accountLink.url })
   } catch (error) {
     safeError('Error creating Stripe Connect link:', error)
     return NextResponse.json(

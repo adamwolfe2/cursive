@@ -143,8 +143,6 @@ export async function POST(req: NextRequest) {
         message: `Payout of $${payout.amount.toFixed(2)} approved and transferred to ${payout.partner.name}`,
       })
     } catch (stripeError: any) {
-      safeError('[Admin Payouts] Stripe transfer failed:', stripeError)
-
       // Update payout status to 'failed'
       await adminClient
         .from('payout_requests')
@@ -155,10 +153,14 @@ export async function POST(req: NextRequest) {
         })
         .eq('id', payout_id)
 
-      return NextResponse.json(
-        { error: 'Stripe transfer failed' },
-        { status: 500 }
-      )
+      if (stripeError?.type?.startsWith('Stripe')) {
+        safeError('[Admin Payouts] Stripe transfer failed:', stripeError.message)
+        return NextResponse.json(
+          { error: 'Payout transfer failed. Please verify the partner Stripe account and try again.' },
+          { status: 400 }
+        )
+      }
+      throw stripeError
     }
   } catch (error) {
     return handleApiError(error)

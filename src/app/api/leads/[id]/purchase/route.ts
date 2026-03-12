@@ -66,20 +66,32 @@ export async function POST(
     const amountInCents = Math.round(priceInDollars * 100)
 
     // Create Stripe payment intent
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: amountInCents,
-      currency: 'usd',
-      automatic_payment_methods: { enabled: true },
-      metadata: {
-        type: 'lead_purchase',
-        lead_id: id,
-        buyer_user_id: user.id,
-        buyer_workspace_id: user.workspace_id,
-        partner_id: lead.uploaded_by_partner_id || 'none',
-        company_name: lead.business_name || 'Unknown',
-      },
-      description: `Lead purchase: ${lead.business_name || 'Unknown'} (${lead.industry || 'N/A'})`,
-    })
+    let paymentIntent
+    try {
+      paymentIntent = await stripe.paymentIntents.create({
+        amount: amountInCents,
+        currency: 'usd',
+        automatic_payment_methods: { enabled: true },
+        metadata: {
+          type: 'lead_purchase',
+          lead_id: id,
+          buyer_user_id: user.id,
+          buyer_workspace_id: user.workspace_id,
+          partner_id: lead.uploaded_by_partner_id || 'none',
+          company_name: lead.business_name || 'Unknown',
+        },
+        description: `Lead purchase: ${lead.business_name || 'Unknown'} (${lead.industry || 'N/A'})`,
+      })
+    } catch (stripeErr: any) {
+      if (stripeErr?.type?.startsWith('Stripe')) {
+        safeError('[Lead Purchase] Stripe error:', stripeErr.message)
+        return NextResponse.json(
+          { error: 'Payment processing failed. Please try again or contact support.' },
+          { status: 400 }
+        )
+      }
+      throw stripeErr
+    }
 
     return NextResponse.json({
       clientSecret: paymentIntent.client_secret,
