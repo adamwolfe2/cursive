@@ -33,53 +33,50 @@ export async function GET(req: NextRequest) {
 
     const adminClient = createAdminClient()
 
-    // Fetch the actual current balance from workspace_credits
-    const { data: creditsData } = await adminClient
+    // Build queries (not yet awaited)
+    const balanceQuery = adminClient
       .from('workspace_credits')
       .select('balance')
       .eq('workspace_id', workspaceId)
       .maybeSingle()
 
-    const actualCurrentBalance = creditsData?.balance ?? 0
-
-    // Fetch credit purchases (credits in) — completed only
-    const purchasesQuery = adminClient
+    let purchasesQuery = adminClient
       .from('credit_purchases')
       .select('id, credits, package_name, amount_paid, status, created_at, completed_at')
       .eq('workspace_id', workspaceId)
       .eq('status', 'completed')
       .order('created_at', { ascending: false })
+    if (dateFilter) purchasesQuery = purchasesQuery.gte('created_at', dateFilter)
 
-    // Apply date filter if requested
-    const purchasesQueryFiltered = dateFilter
-      ? purchasesQuery.gte('created_at', dateFilter)
-      : purchasesQuery
-
-    const { data: purchases, error: purchasesError } = await purchasesQueryFiltered
-
-    if (purchasesError) {
-      safeError('[Credit History] Failed to fetch purchases:', purchasesError)
-      return NextResponse.json({ error: 'Failed to fetch credit history' }, { status: 500 })
-    }
-
-    // Fetch enrichment log (credits out)
-    const enrichmentsQuery = adminClient
+    let enrichmentsQuery = adminClient
       .from('enrichment_log')
       .select('id, lead_id, status, credits_used, created_at')
       .eq('workspace_id', workspaceId)
       .eq('status', 'success')
       .order('created_at', { ascending: false })
+    if (dateFilter) enrichmentsQuery = enrichmentsQuery.gte('created_at', dateFilter)
 
-    const enrichmentsQueryFiltered = dateFilter
-      ? enrichmentsQuery.gte('created_at', dateFilter)
-      : enrichmentsQuery
+    // Execute all three queries in parallel
+    const [creditsResult, purchasesResult, enrichmentsResult] = await Promise.all([
+      balanceQuery,
+      purchasesQuery,
+      enrichmentsQuery,
+    ])
 
-    const { data: enrichments, error: enrichmentsError } = await enrichmentsQueryFiltered
+    const actualCurrentBalance = creditsResult.data?.balance ?? 0
 
-    if (enrichmentsError) {
-      safeError('[Credit History] Failed to fetch enrichments:', enrichmentsError)
+    if (purchasesResult.error) {
+      safeError('[Credit History] Failed to fetch purchases:', purchasesResult.error)
+      return NextResponse.json({ error: 'Failed to fetch credit history' }, { status: 500 })
+    }
+
+    const purchases = purchasesResult.data
+
+    if (enrichmentsResult.error) {
+      safeError('[Credit History] Failed to fetch enrichments:', enrichmentsResult.error)
       // Non-fatal — proceed with just purchases
     }
+    const enrichments = enrichmentsResult.data
 
     // Build combined transaction list
     type Transaction = {

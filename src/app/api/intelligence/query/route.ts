@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
       credits_charged: 0,
       api_cost_usd: 0.005,
       status: 'completed',
-    }).catch(() => {})
+    }).catch((err) => safeError('[NLQuery] Cost tracking failed:', err))
 
     return NextResponse.json({
       query,

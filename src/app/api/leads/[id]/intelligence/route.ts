@@ -66,32 +66,24 @@ export async function POST(
       )
     }
 
-    // Check credit balance
-    const { data: credits } = await supabase
-      .from('workspace_credits')
-      .select('balance')
-      .eq('workspace_id', user.workspace_id)
-      .maybeSingle()
-
-    const balance = credits?.balance ?? 0
-    if (balance < creditsNeeded) {
-      return NextResponse.json(
-        {
-          error: 'Insufficient credits',
-          required: creditsNeeded,
-          available: balance,
-        },
-        { status: 402 }
-      )
-    }
-
-    // Deduct credits atomically
-    const { error: deductError } = await supabase
-      .from('workspace_credits')
-      .update({ balance: balance - creditsNeeded })
-      .eq('workspace_id', user.workspace_id)
+    // Atomically check + deduct credits (prevents race condition)
+    const { data: newBalance, error: deductError } = await supabase
+      .rpc('deduct_workspace_credits', {
+        p_workspace_id: user.workspace_id,
+        p_amount: creditsNeeded,
+      })
 
     if (deductError) {
+      // RPC raises exception on insufficient credits
+      if (deductError.message?.includes('Insufficient credits')) {
+        return NextResponse.json(
+          {
+            error: 'Insufficient credits',
+            required: creditsNeeded,
+          },
+          { status: 402 }
+        )
+      }
       safeError('[Intelligence] Credit deduction failed', deductError)
       return NextResponse.json(
         { error: 'Failed to deduct credits' },

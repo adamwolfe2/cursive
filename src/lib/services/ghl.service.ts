@@ -214,27 +214,36 @@ export async function syncLeadsToGHL(
   })
 
   let successCount = 0
+  const BATCH_SIZE = 5
 
-  for (const lead of leads) {
-    try {
-      await upsertGHLContact(locationId, {
-        firstName: lead.firstName,
-        lastName: lead.lastName,
-        email: lead.email,
-        phone: lead.phone,
-        companyName: lead.companyName,
-        tags,
-        customFields: {
-          title: lead.title || '',
-        },
-      })
-      successCount++
-    } catch (error) {
-      safeError('[GHL] Failed to sync lead:', {
-        email: lead.email,
-        error,
-      })
-      // Continue with other leads even if one fails
+  // Process leads in parallel batches to reduce latency while respecting GHL rate limits
+  for (let i = 0; i < leads.length; i += BATCH_SIZE) {
+    const batch = leads.slice(i, i + BATCH_SIZE)
+    const results = await Promise.allSettled(
+      batch.map((lead) =>
+        upsertGHLContact(locationId, {
+          firstName: lead.firstName,
+          lastName: lead.lastName,
+          email: lead.email,
+          phone: lead.phone,
+          companyName: lead.companyName,
+          tags,
+          customFields: {
+            title: lead.title || '',
+          },
+        })
+      )
+    )
+
+    for (let j = 0; j < results.length; j++) {
+      if (results[j].status === 'fulfilled') {
+        successCount++
+      } else {
+        safeError('[GHL] Failed to sync lead:', {
+          email: batch[j].email,
+          error: (results[j] as PromiseRejectedResult).reason,
+        })
+      }
     }
   }
 

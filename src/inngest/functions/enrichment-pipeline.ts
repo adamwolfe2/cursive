@@ -79,10 +79,10 @@ export const processEnrichmentJob = inngest.createFunction(
         })
         .eq('id', job_id)
 
-      // Fetch lead data
+      // Fetch lead data — explicit columns to avoid over-fetching JSONB blobs
       const { data: leadData, error: leadError } = await supabase
         .from('leads')
-        .select('*')
+        .select('id, email, first_name, last_name, full_name, phone, company_name, company_domain, company_industry, job_title, title, city, state, linkedin_url, intent_score_calculated, lead_score, source, status, enrichment_status, intelligence_tier, contact_data, company_data, ai_analysis, workspace_id, created_at')
         .eq('id', lead_id)
         .eq('workspace_id', workspace_id)
         .maybeSingle()
@@ -94,7 +94,7 @@ export const processEnrichmentJob = inngest.createFunction(
       // Fetch job data
       const { data: jobData } = await supabase
         .from('enrichment_jobs')
-        .select('*')
+        .select('id, lead_id, workspace_id, provider, status, result, error, attempts, created_at')
         .eq('id', job_id)
         .maybeSingle()
 

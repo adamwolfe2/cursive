@@ -36,7 +36,7 @@ export class AnthropicClient {
 
   constructor(config: AnthropicConfig) {
     this.apiKey = config.apiKey
-    this.defaultModel = config.model || 'claude-3-5-sonnet-20241022'
+    this.defaultModel = config.model || 'claude-haiku-4-5-20251001'
   }
 
   async chatCompletion(options: ChatCompletionOptions): Promise<ChatCompletionResponse> {

@@ -54,33 +54,24 @@ export async function POST(request: NextRequest) {
 
     const creditsNeeded = eligibleLeads.length * INTEL_CREDIT_COST
 
-    // Check credit balance
-    const { data: credits } = await supabase
-      .from('workspace_credits')
-      .select('balance')
-      .eq('workspace_id', user.workspaceId)
-      .maybeSingle()
-
-    const balance = credits?.balance ?? 0
-    if (balance < creditsNeeded) {
-      return NextResponse.json(
-        {
-          error: 'Insufficient credits',
-          required: creditsNeeded,
-          available: balance,
-          eligible_leads: eligibleLeads.length,
-        },
-        { status: 402 }
-      )
-    }
-
-    // Deduct credits for all eligible leads
-    const { error: deductError } = await supabase
-      .from('workspace_credits')
-      .update({ balance: balance - creditsNeeded })
-      .eq('workspace_id', user.workspaceId)
+    // Atomically check + deduct credits (prevents race condition)
+    const { data: newBalance, error: deductError } = await supabase
+      .rpc('deduct_workspace_credits', {
+        p_workspace_id: user.workspaceId,
+        p_amount: creditsNeeded,
+      })
 
     if (deductError) {
+      if (deductError.message?.includes('Insufficient credits')) {
+        return NextResponse.json(
+          {
+            error: 'Insufficient credits',
+            required: creditsNeeded,
+            eligible_leads: eligibleLeads.length,
+          },
+          { status: 402 }
+        )
+      }
       safeError('[BulkIntelligence] Credit deduction failed', deductError)
       return NextResponse.json(
         { error: 'Failed to deduct credits' },

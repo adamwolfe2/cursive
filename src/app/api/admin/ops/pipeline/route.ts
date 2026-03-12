@@ -54,6 +54,7 @@ export async function GET() {
     ])
 
     // Get lead counts this week for each workspace
+    // Use minimal select + limit to avoid fetching unbounded rows
     const workspaceIds = (workspacesRes.data || []).map((w) => w.id)
     let leadCounts: Record<string, number> = {}
     if (workspaceIds.length > 0) {
@@ -63,6 +64,7 @@ export async function GET() {
         .select('workspace_id')
         .in('workspace_id', workspaceIds)
         .gte('created_at', sevenDaysAgo)
+        .limit(5000)
 
       for (const lead of leadsData || []) {
         leadCounts[lead.workspace_id] = (leadCounts[lead.workspace_id] || 0) + 1
