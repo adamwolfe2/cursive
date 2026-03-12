@@ -2,7 +2,7 @@
   "metadata": {
     "source": "sales.co",
     "version": "1.0",
-    "total_templates": 193,
+    "total_templates": 42,
     "taxonomy": {
       "tones": ["informal", "formal", "energetic", "humble"],
       "structures": ["problem_solution", "value_prop_first", "social_proof", "question_based"],
@@ -370,6 +370,150 @@
       "target_seniority": ["c_level", "vp", "director"],
       "company_types": ["Startup", "Growth", "Tech"],
       "variables": ["first_name", "company_name", "product_name", "product_observation", "likely_challenge", "sender_name"]
+    },
+    {
+      "name": "Cursive Partnership — Ecommerce $250k Revenue",
+      "subject": "{{first_name}}, can we chat?",
+      "body_html": "<p>Hi {{first_name}},</p><p>Reason for reaching out is I would love to discuss a performance-driven partnership with a few of the clients you currently have under {{company_name}} -- where I provide the data and audience targeting that drives real revenue without any additional ad spend.</p><p>For example, I recently generated over $250k in additional revenue for an ecommerce store in under 60 days without any additional ad spend or effort from the client.</p><p>I would love to discuss setting this up for {{company_name}} and the projects you have running.</p><p>Can you chat possibly this week?</p><p>{{sender_name}}</p>",
+      "body_text": "Hi {{first_name}},\n\nReason for reaching out is I would love to discuss a performance-driven partnership with a few of the clients you currently have under {{company_name}} -- where I provide the data and audience targeting that drives real revenue without any additional ad spend.\n\nFor example, I recently generated over $250k in additional revenue for an ecommerce store in under 60 days without any additional ad spend or effort from the client.\n\nI would love to discuss setting this up for {{company_name}} and the projects you have running.\n\nCan you chat possibly this week?\n\n{{sender_name}}",
+      "tone": "informal",
+      "structure": "social_proof",
+      "cta_type": "meeting_request",
+      "target_seniority": ["c_level", "vp", "director"],
+      "company_types": ["Agency", "Ecommerce", "Growth"],
+      "variables": ["first_name", "company_name", "sender_name"]
+    },
+    {
+      "name": "Cursive Partnership — SaaS 50% Lower CPL",
+      "subject": "{{first_name}}, can we chat?",
+      "body_html": "<p>Hi {{first_name}},</p><p>Reason for reaching out is I would love to discuss a performance-driven partnership with a few of the clients you currently have under {{company_name}} -- where I provide the data and audience targeting that cuts acquisition costs in half.</p><p>For example, I was recently able to drop cost per lead by 50% and increase quality by using business data for a SaaS company.</p><p>I would love to discuss setting this up for {{company_name}} and the projects you have running.</p><p>Can you chat possibly this week?</p><p>{{sender_name}}</p>",
+      "body_text": "Hi {{first_name}},\n\nReason for reaching out is I would love to discuss a performance-driven partnership with a few of the clients you currently have under {{company_name}} -- where I provide the data and audience targeting that cuts acquisition costs in half.\n\nFor example, I was recently able to drop cost per lead by 50% and increase quality by using business data for a SaaS company.\n\nI would love to discuss setting this up for {{company_name}} and the projects you have running.\n\nCan you chat possibly this week?\n\n{{sender_name}}",
+      "tone": "informal",
+      "structure": "social_proof",
+      "cta_type": "meeting_request",
+      "target_seniority": ["c_level", "vp", "director"],
+      "company_types": ["Agency", "SaaS", "Tech"],
+      "variables": ["first_name", "company_name", "sender_name"]
+    },
+    {
+      "name": "Cursive Partnership — VSL Opt-in 50% Cut",
+      "subject": "{{first_name}}, can we chat?",
+      "body_html": "<p>Hi {{first_name}},</p><p>Reason for reaching out is I would love to discuss a performance-driven partnership with a few of the clients you currently have under {{company_name}} -- where I provide the data and audience targeting that dramatically lowers opt-in costs.</p><p>For example, I recently dropped opt-in costs for a VSL by 50%, going from $15 down to $3.50.</p><p>I would love to discuss setting this up for {{company_name}} and the projects you have running.</p><p>Can you chat possibly this week?</p><p>{{sender_name}}</p>",
+      "body_text": "Hi {{first_name}},\n\nReason for reaching out is I would love to discuss a performance-driven partnership with a few of the clients you currently have under {{company_name}} -- where I provide the data and audience targeting that dramatically lowers opt-in costs.\n\nFor example, I recently dropped opt-in costs for a VSL by 50%, going from $15 down to $3.50.\n\nI would love to discuss setting this up for {{company_name}} and the projects you have running.\n\nCan you chat possibly this week?\n\n{{sender_name}}",
+      "tone": "informal",
+      "structure": "social_proof",
+      "cta_type": "meeting_request",
+      "target_seniority": ["c_level", "vp", "director", "manager"],
+      "company_types": ["Agency", "Info Product", "Growth"],
+      "variables": ["first_name", "company_name", "sender_name"]
+    },
+    {
+      "name": "Cursive Partnership — AI Startup $11M in 30 Days",
+      "subject": "{{first_name}}, can we chat?",
+      "body_html": "<p>Hi {{first_name}},</p><p>Reason for reaching out is I would love to discuss a performance-driven partnership with a few of the clients you currently have under {{company_name}} -- where I provide the B2B2C audiences and targeting data that scale revenue fast.</p><p>For example, I recently generated over $11M in revenue for an AI start-up in just over 30 days with $250,000 in ad spend by using B2B2C audiences.</p><p>I would love to discuss setting this up for {{company_name}} and the projects you have running.</p><p>Can you chat possibly this week?</p><p>{{sender_name}}</p>",
+      "body_text": "Hi {{first_name}},\n\nReason for reaching out is I would love to discuss a performance-driven partnership with a few of the clients you currently have under {{company_name}} -- where I provide the B2B2C audiences and targeting data that scale revenue fast.\n\nFor example, I recently generated over $11M in revenue for an AI start-up in just over 30 days with $250,000 in ad spend by using B2B2C audiences.\n\nI would love to discuss setting this up for {{company_name}} and the projects you have running.\n\nCan you chat possibly this week?\n\n{{sender_name}}",
+      "tone": "informal",
+      "structure": "social_proof",
+      "cta_type": "meeting_request",
+      "target_seniority": ["c_level", "vp"],
+      "company_types": ["Agency", "Tech", "Startup", "Growth"],
+      "variables": ["first_name", "company_name", "sender_name"]
+    },
+    {
+      "name": "Cursive Partnership — Ecommerce $10k + 40% CPA Cut",
+      "subject": "{{first_name}}, can we chat?",
+      "body_html": "<p>Hi {{first_name}},</p><p>Reason for reaching out is I would love to discuss a performance-driven partnership with a few of the clients you currently have under {{company_name}} -- where I provide the data and audience targeting that drives incremental sales and lowers CPA.</p><p>For example, I recently produced an additional $10k in sales for an ecommerce store and cut their CPA by 40%.</p><p>I would love to discuss setting this up for {{company_name}} and the projects you have running.</p><p>Can you chat possibly this week?</p><p>{{sender_name}}</p>",
+      "body_text": "Hi {{first_name}},\n\nReason for reaching out is I would love to discuss a performance-driven partnership with a few of the clients you currently have under {{company_name}} -- where I provide the data and audience targeting that drives incremental sales and lowers CPA.\n\nFor example, I recently produced an additional $10k in sales for an ecommerce store and cut their CPA by 40%.\n\nI would love to discuss setting this up for {{company_name}} and the projects you have running.\n\nCan you chat possibly this week?\n\n{{sender_name}}",
+      "tone": "informal",
+      "structure": "social_proof",
+      "cta_type": "meeting_request",
+      "target_seniority": ["c_level", "vp", "director"],
+      "company_types": ["Agency", "Ecommerce", "Growth"],
+      "variables": ["first_name", "company_name", "sender_name"]
+    },
+    {
+      "name": "Cursive Partnership — Ecommerce CPA $41 to $14",
+      "subject": "{{first_name}}, can we chat?",
+      "body_html": "<p>Hi {{first_name}},</p><p>Reason for reaching out is I would love to discuss a performance-driven partnership with a few of the clients you currently have under {{company_name}} -- where I provide the data and audience targeting that fixes retargeting and slashes CPA.</p><p>For example, I recently worked with a $15k/day ecommerce client where we reduced their CPA by 50% from $41 to $14 and fixed their retargeting.</p><p>I would love to discuss setting this up for {{company_name}} and the projects you have running.</p><p>Can you chat possibly this week?</p><p>{{sender_name}}</p>",
+      "body_text": "Hi {{first_name}},\n\nReason for reaching out is I would love to discuss a performance-driven partnership with a few of the clients you currently have under {{company_name}} -- where I provide the data and audience targeting that fixes retargeting and slashes CPA.\n\nFor example, I recently worked with a $15k/day ecommerce client where we reduced their CPA by 50% from $41 to $14 and fixed their retargeting.\n\nI would love to discuss setting this up for {{company_name}} and the projects you have running.\n\nCan you chat possibly this week?\n\n{{sender_name}}",
+      "tone": "informal",
+      "structure": "social_proof",
+      "cta_type": "meeting_request",
+      "target_seniority": ["c_level", "vp", "director"],
+      "company_types": ["Agency", "Ecommerce", "Growth"],
+      "variables": ["first_name", "company_name", "sender_name"]
+    },
+    {
+      "name": "Cursive Partnership — Ecommerce $250k (Tomorrow CTA)",
+      "subject": "{{first_name}}, can we chat?",
+      "body_html": "<p>Hi {{first_name}},</p><p>Reason for reaching out is I would love to discuss a performance-driven partnership with a few of the clients you currently have under {{company_name}} -- where I provide the data and audience targeting that drives real revenue without any additional ad spend.</p><p>For example, I recently generated over $250k in additional revenue for an ecommerce store in under 60 days without any additional ad spend or effort from the client.</p><p>I would love to discuss setting this up for {{company_name}} and the projects you have running.</p><p>Can you chat possibly tomorrow?</p><p>{{sender_name}}</p>",
+      "body_text": "Hi {{first_name}},\n\nReason for reaching out is I would love to discuss a performance-driven partnership with a few of the clients you currently have under {{company_name}} -- where I provide the data and audience targeting that drives real revenue without any additional ad spend.\n\nFor example, I recently generated over $250k in additional revenue for an ecommerce store in under 60 days without any additional ad spend or effort from the client.\n\nI would love to discuss setting this up for {{company_name}} and the projects you have running.\n\nCan you chat possibly tomorrow?\n\n{{sender_name}}",
+      "tone": "informal",
+      "structure": "social_proof",
+      "cta_type": "meeting_request",
+      "target_seniority": ["c_level", "vp", "director"],
+      "company_types": ["Agency", "Ecommerce", "Growth"],
+      "variables": ["first_name", "company_name", "sender_name"]
+    },
+    {
+      "name": "Cursive Partnership — AI Startup $11M (Tomorrow CTA)",
+      "subject": "{{first_name}}, can we chat?",
+      "body_html": "<p>Hi {{first_name}},</p><p>Reason for reaching out is I would love to discuss a performance-driven partnership with a few of the clients you currently have under {{company_name}} -- where I provide the B2B2C audiences and targeting data that scale revenue fast.</p><p>For example, I recently generated over $11M in revenue for an AI start-up in just over 30 days with $250,000 in ad spend by using B2B2C audiences.</p><p>I would love to discuss setting this up for {{company_name}} and the projects you have running.</p><p>Can you chat possibly tomorrow?</p><p>{{sender_name}}</p>",
+      "body_text": "Hi {{first_name}},\n\nReason for reaching out is I would love to discuss a performance-driven partnership with a few of the clients you currently have under {{company_name}} -- where I provide the B2B2C audiences and targeting data that scale revenue fast.\n\nFor example, I recently generated over $11M in revenue for an AI start-up in just over 30 days with $250,000 in ad spend by using B2B2C audiences.\n\nI would love to discuss setting this up for {{company_name}} and the projects you have running.\n\nCan you chat possibly tomorrow?\n\n{{sender_name}}",
+      "tone": "informal",
+      "structure": "social_proof",
+      "cta_type": "meeting_request",
+      "target_seniority": ["c_level", "vp"],
+      "company_types": ["Agency", "Tech", "Startup", "Growth"],
+      "variables": ["first_name", "company_name", "sender_name"]
+    },
+    {
+      "name": "Cursive Partnership — SaaS CPL (Next Week CTA)",
+      "subject": "{{first_name}}, can we chat?",
+      "body_html": "<p>Hi {{first_name}},</p><p>Reason for reaching out is I would love to discuss a performance-driven partnership with a few of the clients you currently have under {{company_name}} -- where I provide the data and audience targeting that cuts acquisition costs in half.</p><p>For example, I was recently able to drop cost per lead by 50% and increase quality by using business data for a SaaS company.</p><p>I would love to discuss setting this up for {{company_name}} and the projects you have running.</p><p>Can you chat possibly next week?</p><p>{{sender_name}}</p>",
+      "body_text": "Hi {{first_name}},\n\nReason for reaching out is I would love to discuss a performance-driven partnership with a few of the clients you currently have under {{company_name}} -- where I provide the data and audience targeting that cuts acquisition costs in half.\n\nFor example, I was recently able to drop cost per lead by 50% and increase quality by using business data for a SaaS company.\n\nI would love to discuss setting this up for {{company_name}} and the projects you have running.\n\nCan you chat possibly next week?\n\n{{sender_name}}",
+      "tone": "informal",
+      "structure": "social_proof",
+      "cta_type": "meeting_request",
+      "target_seniority": ["c_level", "vp", "director"],
+      "company_types": ["Agency", "SaaS", "Tech"],
+      "variables": ["first_name", "company_name", "sender_name"]
+    },
+    {
+      "name": "Cursive Partnership — VSL Opt-in (15 Min CTA)",
+      "subject": "{{first_name}}, can we chat?",
+      "body_html": "<p>Hi {{first_name}},</p><p>Reason for reaching out is I would love to discuss a performance-driven partnership with a few of the clients you currently have under {{company_name}} -- where I provide the data and audience targeting that dramatically lowers opt-in costs.</p><p>For example, I recently dropped opt-in costs for a VSL by 50%, going from $15 down to $3.50.</p><p>I would love to discuss setting this up for {{company_name}} and the projects you have running.</p><p>Do you have 15 minutes this week?</p><p>{{sender_name}}</p>",
+      "body_text": "Hi {{first_name}},\n\nReason for reaching out is I would love to discuss a performance-driven partnership with a few of the clients you currently have under {{company_name}} -- where I provide the data and audience targeting that dramatically lowers opt-in costs.\n\nFor example, I recently dropped opt-in costs for a VSL by 50%, going from $15 down to $3.50.\n\nI would love to discuss setting this up for {{company_name}} and the projects you have running.\n\nDo you have 15 minutes this week?\n\n{{sender_name}}",
+      "tone": "informal",
+      "structure": "social_proof",
+      "cta_type": "meeting_request",
+      "target_seniority": ["c_level", "vp", "director", "manager"],
+      "company_types": ["Agency", "Info Product", "Growth"],
+      "variables": ["first_name", "company_name", "sender_name"]
+    },
+    {
+      "name": "Cursive Partnership — CPA $41 to $14 (15 Min CTA)",
+      "subject": "{{first_name}}, can we chat?",
+      "body_html": "<p>Hi {{first_name}},</p><p>Reason for reaching out is I would love to discuss a performance-driven partnership with a few of the clients you currently have under {{company_name}} -- where I provide the data and audience targeting that fixes retargeting and slashes CPA.</p><p>For example, I recently worked with a $15k/day ecommerce client where we reduced their CPA by 50% from $41 to $14 and fixed their retargeting.</p><p>I would love to discuss setting this up for {{company_name}} and the projects you have running.</p><p>Do you have 15 minutes this week?</p><p>{{sender_name}}</p>",
+      "body_text": "Hi {{first_name}},\n\nReason for reaching out is I would love to discuss a performance-driven partnership with a few of the clients you currently have under {{company_name}} -- where I provide the data and audience targeting that fixes retargeting and slashes CPA.\n\nFor example, I recently worked with a $15k/day ecommerce client where we reduced their CPA by 50% from $41 to $14 and fixed their retargeting.\n\nI would love to discuss setting this up for {{company_name}} and the projects you have running.\n\nDo you have 15 minutes this week?\n\n{{sender_name}}",
+      "tone": "informal",
+      "structure": "social_proof",
+      "cta_type": "meeting_request",
+      "target_seniority": ["c_level", "vp", "director"],
+      "company_types": ["Agency", "Ecommerce", "Growth"],
+      "variables": ["first_name", "company_name", "sender_name"]
+    },
+    {
+      "name": "Cursive Partnership — Ecommerce $10k + CPA (Open Question CTA)",
+      "subject": "Quick question, {{first_name}}",
+      "body_html": "<p>Hi {{first_name}},</p><p>Reason for reaching out is I would love to discuss a performance-driven partnership with a few of the clients you currently have under {{company_name}} -- where I provide the data and audience targeting that drives incremental sales and lowers CPA.</p><p>For example, I recently produced an additional $10k in sales for an ecommerce store and cut their CPA by 40%.</p><p>I would love to discuss setting this up for {{company_name}} and the projects you have running.</p><p>Would you be open to a quick call?</p><p>{{sender_name}}</p>",
+      "body_text": "Hi {{first_name}},\n\nReason for reaching out is I would love to discuss a performance-driven partnership with a few of the clients you currently have under {{company_name}} -- where I provide the data and audience targeting that drives incremental sales and lowers CPA.\n\nFor example, I recently produced an additional $10k in sales for an ecommerce store and cut their CPA by 40%.\n\nI would love to discuss setting this up for {{company_name}} and the projects you have running.\n\nWould you be open to a quick call?\n\n{{sender_name}}",
+      "tone": "informal",
+      "structure": "social_proof",
+      "cta_type": "open_question",
+      "target_seniority": ["c_level", "vp", "director"],
+      "company_types": ["Agency", "Ecommerce", "Growth"],
+      "variables": ["first_name", "company_name", "sender_name"]
     }
   ]
 }
