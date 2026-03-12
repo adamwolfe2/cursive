@@ -13,7 +13,8 @@ const START_TIME = Date.now()
 
 async function checkDatabase(): Promise<{ status: string; responseTime: number; error?: string }> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+  // Use anon key (public) for health checks — never expose service role key in a public endpoint
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
   if (!url || !key) return { status: 'unconfigured', responseTime: 0 }
 
   const start = Date.now()

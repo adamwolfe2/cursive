@@ -59,11 +59,11 @@ export async function GET(req: NextRequest) {
     // Fire main query + all stats queries + pixel info in parallel
     const [
       visitorsResult,
-      { count: totalCount },
-      { count: enrichedCount },
-      { count: thisWeekCount },
-      { data: scoreData },
-      { data: pixel },
+      totalResult,
+      enrichedResult,
+      thisWeekResult,
+      scoreResult,
+      pixelResult,
     ] = await Promise.all([
       query,
       adminSupabase
@@ -101,6 +101,16 @@ export async function GET(req: NextRequest) {
     ])
 
     if (visitorsResult.error) throw visitorsResult.error
+    if (totalResult.error) safeError('[Visitors API] Total count query failed:', totalResult.error)
+    if (enrichedResult.error) safeError('[Visitors API] Enriched count query failed:', enrichedResult.error)
+    if (thisWeekResult.error) safeError('[Visitors API] This week count query failed:', thisWeekResult.error)
+    if (scoreResult.error) safeError('[Visitors API] Score query failed:', scoreResult.error)
+
+    const totalCount = totalResult.count
+    const enrichedCount = enrichedResult.count
+    const thisWeekCount = thisWeekResult.count
+    const scoreData = scoreResult.data
+    const pixel = pixelResult.data
 
     const scores = (scoreData ?? []).map((l) => l.intent_score_calculated).filter((s): s is number => s !== null)
     const avgScore = scores.length ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0

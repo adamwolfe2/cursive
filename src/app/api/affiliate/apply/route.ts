@@ -11,21 +11,7 @@ import {
   sendPartnerApplicationNotification,
 } from '@/lib/email/affiliate-emails'
 import { safeError } from '@/lib/utils/log-sanitizer'
-
-const RATE_LIMIT: Map<string, { count: number; resetAt: number }> = new Map()
-const MAX_PER_HOUR = 3
-
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now()
-  const entry = RATE_LIMIT.get(ip)
-  if (!entry || now > entry.resetAt) {
-    RATE_LIMIT.set(ip, { count: 1, resetAt: now + 60 * 60 * 1000 })
-    return true
-  }
-  entry.count++
-  RATE_LIMIT.set(ip, entry)
-  return entry.count <= MAX_PER_HOUR
-}
+import { checkRateLimit, rateLimitResponse } from '@/lib/middleware/rate-limiter'
 
 const applySchema = z.object({
   firstName: z.string().min(1).max(100),
@@ -66,10 +52,12 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       request.headers.get('x-real-ip') ||
       'unknown'
 
-    if (!checkRateLimit(ip)) {
-      return NextResponse.json(
-        { error: 'Too many applications from this IP. Try again later.' },
-        { status: 429, headers }
+    // DB-backed rate limiting (persists across serverless instances)
+    const rateResult = await checkRateLimit(ip, 'public-form')
+    if (!rateResult.allowed) {
+      return new NextResponse(
+        JSON.stringify({ error: 'Too many applications from this IP. Try again later.' }),
+        { status: 429, headers: { ...headers, 'Retry-After': String(Math.ceil((rateResult.resetAt.getTime() - Date.now()) / 1000)) } }
       )
     }
 

@@ -77,7 +77,7 @@ export default function PeopleSearchPage() {
     try {
       const response = await fetch('/api/users/me')
       const data = await response.json()
-      if (data.success) {
+      if (data.success && data.data?.credits_remaining != null) {
         setCreditsRemaining(data.data.credits_remaining)
       }
     } catch (err) {

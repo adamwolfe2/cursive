@@ -18,6 +18,10 @@ const trackSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     const user = await getCurrentUser()
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const body = await request.json()
 
     const parsed = trackSchema.safeParse(body)
@@ -33,13 +37,13 @@ export async function POST(request: NextRequest) {
 
     const supabase = await createClient()
 
-    // Enrich properties with user data if authenticated
+    // Enrich properties with authenticated user data
     const enrichedProperties = {
       ...properties,
-      user_id: user?.id || null,
-      workspace_id: user?.workspace_id || null,
-      user_email: user?.email || null,
-      user_plan: user?.plan || null,
+      user_id: user.id,
+      workspace_id: user.workspace_id || null,
+      user_email: user.email || null,
+      user_plan: user.plan || null,
     }
 
     // Store event in analytics table
@@ -48,8 +52,8 @@ export async function POST(request: NextRequest) {
       .insert({
         event_name: event,
         properties: enrichedProperties,
-        user_id: user?.id || null,
-        workspace_id: user?.workspace_id || null,
+        user_id: user.id,
+        workspace_id: user.workspace_id || null,
         created_at: new Date().toISOString(),
       })
 
@@ -60,7 +64,7 @@ export async function POST(request: NextRequest) {
 
     // Send to external analytics service (PostHog, Mixpanel, etc.) if configured
     if (process.env.POSTHOG_API_KEY) {
-      await sendToPostHog(event, enrichedProperties, user?.id)
+      await sendToPostHog(event, enrichedProperties, user.id)
     }
 
     return NextResponse.json({ success: true })
