@@ -9,8 +9,15 @@ echo "🔍 Checking if marketing site files changed..."
 
 # Use Vercel's last deployed SHA if available, otherwise fall back to HEAD^
 if [ -n "$VERCEL_GIT_PREVIOUS_SHA" ]; then
-  COMPARE_SHA="$VERCEL_GIT_PREVIOUS_SHA"
-  echo "📌 Comparing against last deployed commit: $COMPARE_SHA"
+  # Verify the SHA still exists (can be invalid after force-push or rebase)
+  if git cat-file -e "$VERCEL_GIT_PREVIOUS_SHA" 2>/dev/null; then
+    COMPARE_SHA="$VERCEL_GIT_PREVIOUS_SHA"
+    echo "📌 Comparing against last deployed commit: $COMPARE_SHA"
+  else
+    echo "⚠️ Last deployed SHA $VERCEL_GIT_PREVIOUS_SHA no longer exists (force-push?)"
+    echo "🚀 Proceeding with build (cannot compare)"
+    exit 1
+  fi
 elif git rev-parse HEAD^ >/dev/null 2>&1; then
   COMPARE_SHA="HEAD^"
   echo "📌 No VERCEL_GIT_PREVIOUS_SHA, comparing against HEAD^"
