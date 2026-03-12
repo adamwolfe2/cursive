@@ -145,7 +145,7 @@ export async function checkRateLimit(
   // Get recent requests count
   const { count, error } = await supabase
     .from('rate_limit_logs')
-    .select('*', { count: 'exact', head: true })
+    .select('id', { count: 'exact', head: true })
     .eq('key', key)
     .gte('created_at', windowStart.toISOString())
 
@@ -287,7 +287,7 @@ export async function checkSuspiciousReferralIP(
 
   const { count } = await supabase
     .from('referrals')
-    .select('*', { count: 'exact', head: true })
+    .select('id', { count: 'exact', head: true })
     .eq('referrer_ip', referrerIp)
     .gte('created_at', oneHourAgo.toISOString())
 

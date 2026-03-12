@@ -259,3 +259,6 @@ export { trialCountdownEmails } from './trial-countdown-emails'
 
 // DFY Upsell Trigger (daily 10am UTC — targets workspaces with 50+ leads and $0 managed spend)
 export { dfyUpsellTrigger } from './dfy-upsell-trigger'
+
+// Rate limit logs cleanup (hourly — deletes entries older than 2h to prevent unbounded table growth)
+export { cleanupRateLimitLogs } from './cleanup-rate-limit-logs'

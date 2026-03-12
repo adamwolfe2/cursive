@@ -28,13 +28,19 @@ export async function GET(request: NextRequest) {
 
     const supabase = await createClient()
 
-    // Get all completed purchases for this workspace
+    // Pagination
+    const url = new URL(request.url)
+    const limit = Math.min(Number(url.searchParams.get('limit') || '100'), 500)
+    const offset = Math.max(Number(url.searchParams.get('offset') || '0'), 0)
+
+    // Get completed purchases for this workspace (paginated)
     const { data: purchases } = await supabase
       .from('marketplace_purchases')
       .select('id, total_price, completed_at')
       .eq('buyer_workspace_id', user.workspace_id)
       .eq('status', 'completed')
       .order('completed_at', { ascending: false })
+      .range(offset, offset + limit - 1)
 
     if (!purchases || purchases.length === 0) {
       return NextResponse.json({ leads: [] })

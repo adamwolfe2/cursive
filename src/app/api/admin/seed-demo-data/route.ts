@@ -127,10 +127,8 @@ export async function POST(request: NextRequest) {
       created_at: new Date().toISOString(),
     }))
 
-    // Upsert topics (ignore conflicts)
-    for (const topic of topicsToInsert) {
-      await supabase.from('global_topics').upsert(topic, { onConflict: 'topic' }).select('id')
-    }
+    // Batch upsert topics (single round-trip instead of N)
+    await supabase.from('global_topics').upsert(topicsToInsert, { onConflict: 'topic' }).select('id')
 
     // Fetch topic IDs
     const { data: topics } = await supabase
