@@ -112,7 +112,7 @@ export const provisionWorkspaceAudience = inngest.createFunction(
         severity: 'warning',
         message: `Workspace ${workspace_id} provision SKIPPED — AUDIENCELAB_ACCOUNT_API_KEY not configured`,
         metadata: { workspace_id, user_id },
-      }).catch(() => {}) // non-fatal
+      }).catch((err) => safeError(`${LOG_PREFIX} Slack alert failed:`, err)) // non-fatal
       safeLog(`${LOG_PREFIX} AUDIENCELAB_ACCOUNT_API_KEY not configured, skipping`)
       return { skipped: true, reason: 'No API key' }
     }
@@ -147,7 +147,7 @@ export const provisionWorkspaceAudience = inngest.createFunction(
             severity: 'warning',
             message: `AL provision skipped for workspace ${workspace_id} — preview count ${previewCount.toLocaleString()} exceeds threshold (${UNFILTERED_PREVIEW_THRESHOLD.toLocaleString()}). Filters likely ignored by API.`,
             metadata: { workspace_id, user_id, industries: industries?.join(','), states: states?.join(','), previewCount },
-          }).catch(() => {})
+          }).catch((err) => safeError(`${LOG_PREFIX} Slack alert failed:`, err))
           return { audienceId: null as string | null, segmentFilters }
         }
 
@@ -211,7 +211,7 @@ export const provisionWorkspaceAudience = inngest.createFunction(
               severity: 'warning',
               message: `AL provision aborted — unfiltered response (${err.totalRecords.toLocaleString()} records) for workspace ${workspace_id}`,
               metadata: { workspace_id, user_id, totalRecords: err.totalRecords },
-            }).catch(() => {})
+            }).catch((fetchAlertErr) => safeError(`${LOG_PREFIX} Slack alert failed:`, fetchAlertErr))
             break
           }
           safeError(`${LOG_PREFIX} Failed to fetch page ${page}`, err)

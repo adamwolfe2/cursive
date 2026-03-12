@@ -131,7 +131,7 @@ export async function handleAffiliateInvoicePayment(
           affiliate.first_name,
           commissionAmount,
           affiliate.total_earnings + commissionAmount
-        ).catch(() => {})
+        ).catch((err) => safeError('[affiliate-commission] Commission earned email failed:', err))
 
         safeLog(`[affiliate-commission] Transferred $${commissionAmount / 100} to ${affiliate.email}`)
       } catch (transferErr) {

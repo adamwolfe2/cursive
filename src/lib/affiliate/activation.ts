@@ -202,7 +202,7 @@ export async function processAffiliateActivation(
         newTier,
         bonusAmount,
         affiliate.stripe_onboarding_complete
-      ).catch(() => {})
+      ).catch((err) => safeError('[affiliate-activation] Tier milestone email failed:', err))
     }
 
     // Send activation email (non-blocking)
@@ -215,7 +215,7 @@ export async function processAffiliateActivation(
       newFreeMonths,
       nextMilestoneInfo ? (nextMilestoneInfo.count - newActivations) : null,
       nextMilestoneInfo ? nextMilestoneInfo.bonus : null
-    ).catch(() => {})
+    ).catch((err) => safeError('[affiliate-activation] Activation email failed:', err))
   } catch (error) {
     safeError('[affiliate-activation] Unexpected error:', error)
     // Never throw — this must not break the provisioning flow

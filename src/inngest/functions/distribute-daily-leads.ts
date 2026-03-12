@@ -209,7 +209,7 @@ export const distributeDailyLeads = inngest.createFunction(
           }
 
           // Refresh stats cache immediately so dashboard shows updated counts
-          void Promise.resolve(supabase.rpc('refresh_workspace_stats', { p_workspace_id: user.workspace_id })).catch(() => {})
+          void Promise.resolve(supabase.rpc('refresh_workspace_stats', { p_workspace_id: user.workspace_id })).catch((err) => safeError('[DistributeDailyLeads] Stats refresh failed:', err))
 
           // Return data needed for notification/GHL steps
           return {

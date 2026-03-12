@@ -26,6 +26,7 @@ import {
   trackCost,
 } from '@/lib/services/intelligence'
 import type { LeadContactData, LeadCompanyData } from '@/types'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // ============================================================================
 // TYPES
@@ -239,7 +240,7 @@ export const processEnrichmentJob = inngest.createFunction(
           credits_charged: enrichmentResult.creditsUsed || 0,
           api_cost_usd: PROVIDER_COSTS[provider],
           status: 'completed',
-        }).catch(() => {})
+        }).catch((err) => safeError('[Enrichment Pipeline] Failed to track cost:', err))
       }
     })
 
