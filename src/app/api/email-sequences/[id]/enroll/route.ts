@@ -69,27 +69,29 @@ export async function POST(
       failed: 0,
     }
 
-    for (const lead of leads) {
-      try {
-        const { error } = await supabase.rpc('enroll_lead_in_sequence', {
+    // Parallelize enrollment RPCs — each targets a different lead
+    const enrollResults = await Promise.allSettled(
+      leads.map((lead) =>
+        supabase.rpc('enroll_lead_in_sequence', {
           p_sequence_id: sequenceId,
           p_lead_id: lead.id,
         })
+      )
+    )
 
-        if (error) {
-          if (error.code === '23505') {
-            // Unique constraint violation - already enrolled
-            results.already_enrolled++
-          } else {
-            safeError('Failed to enroll lead:', error)
-            results.failed++
-          }
-        } else {
-          results.enrolled++
-        }
-      } catch (err) {
-        safeError('Error enrolling lead:', err)
+    for (const result of enrollResults) {
+      if (result.status === 'rejected') {
+        safeError('Error enrolling lead:', result.reason)
         results.failed++
+      } else if (result.value.error) {
+        if (result.value.error.code === '23505') {
+          results.already_enrolled++
+        } else {
+          safeError('Failed to enroll lead:', result.value.error)
+          results.failed++
+        }
+      } else {
+        results.enrolled++
       }
     }
 

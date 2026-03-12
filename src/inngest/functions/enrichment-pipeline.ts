@@ -885,46 +885,49 @@ export const batchEnrichLeads = inngest.createFunction(
 
     logger.info(`Starting batch enrichment for ${lead_ids.length} leads`)
 
-    // Queue enrichment jobs for each lead
+    // Queue enrichment jobs for each lead (batch insert + batch event send)
     const jobIds = await step.run('queue-jobs', async () => {
       const supabase = createAdminClient()
-      const jobs: string[] = []
 
-      for (const leadId of lead_ids) {
-        for (const provider of providers) {
-          const { data: job, error } = await supabase
-            .from('enrichment_jobs')
-            .insert({
-              lead_id: leadId,
-              workspace_id,
-              provider,
-              priority,
-              status: 'pending',
-              attempts: 0,
-              max_attempts: 3,
-            })
-            .select('id')
-            .maybeSingle()
+      // Build all job rows
+      const jobRows = lead_ids.flatMap((leadId) =>
+        providers.map((provider) => ({
+          lead_id: leadId,
+          workspace_id,
+          provider,
+          priority,
+          status: 'pending' as const,
+          attempts: 0,
+          max_attempts: 3,
+        }))
+      )
 
-          if (!error && job) {
-            jobs.push(job.id)
+      // Batch insert all jobs at once
+      const { data: insertedJobs, error } = await supabase
+        .from('enrichment_jobs')
+        .insert(jobRows)
+        .select('id, lead_id, provider')
 
-            // Trigger processing
-            await inngest.send({
-              name: 'enrichment/process',
-              data: {
-                job_id: job.id,
-                lead_id: leadId,
-                workspace_id,
-                provider,
-                priority,
-              },
-            })
-          }
-        }
+      if (error || !insertedJobs) {
+        safeError('[Enrichment Pipeline] Batch job insert failed:', error)
+        return []
       }
 
-      return jobs
+      // Batch send all Inngest events at once
+      await inngest.send(
+        insertedJobs.map((job) => ({
+          name: 'enrichment/process' as const,
+          data: {
+            job_id: job.id,
+            lead_id: job.lead_id,
+            workspace_id,
+            provider: job.provider,
+            priority,
+          },
+        }))
+      )
+
+      return insertedJobs.map((j) => j.id)
     })
 
     return {

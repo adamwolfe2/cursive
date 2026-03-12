@@ -91,16 +91,16 @@ export async function POST(request: NextRequest) {
         }
 
         if (leads && leads.length > 0) {
-          // Use sequential updates to avoid race conditions on concurrent bulk operations
-          for (const lead of leads) {
+          // Parallel updates — each targets a different row so no race condition
+          await Promise.all(leads.map((lead) => {
             const currentTags = (lead.tags as string[]) || []
             const newTags = Array.from(new Set([...currentTags, ...tagsToAdd]))
-            await supabase
+            return supabase
               .from('leads')
               .update({ tags: newTags })
               .eq('id', lead.id)
               .eq('workspace_id', workspaceId)
-          }
+          }))
         }
 
         return NextResponse.json({
@@ -113,7 +113,7 @@ export async function POST(request: NextRequest) {
       case 'remove_tags': {
         const tagsToRemove = z.array(z.string()).parse(validated.data.tags)
 
-        // Fetch all leads first, then update sequentially to avoid race conditions
+        // Fetch all leads first
         const supabase = await createClient()
         const { data: leads, error: fetchError } = await supabase
           .from('leads')
@@ -126,16 +126,16 @@ export async function POST(request: NextRequest) {
         }
 
         if (leads && leads.length > 0) {
-          // Use sequential updates to avoid race conditions on concurrent bulk operations
-          for (const lead of leads) {
+          // Parallel updates — each targets a different row so no race condition
+          await Promise.all(leads.map((lead) => {
             const currentTags = (lead.tags as string[]) || []
             const newTags = currentTags.filter((tag) => !tagsToRemove.includes(tag))
-            await supabase
+            return supabase
               .from('leads')
               .update({ tags: newTags })
               .eq('id', lead.id)
               .eq('workspace_id', workspaceId)
-          }
+          }))
         }
 
         return NextResponse.json({
