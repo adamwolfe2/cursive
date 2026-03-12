@@ -86,7 +86,7 @@ export async function sendBatchFailureAlert(
   totalCount: number,
   timeWindow: string
 ): Promise<void> {
-  const failureRate = (failureCount / totalCount) * 100
+  const failureRate = totalCount > 0 ? (failureCount / totalCount) * 100 : 0
   const threshold = operationType === 'email' ? 10 : 5
 
   if (failureRate > threshold) {

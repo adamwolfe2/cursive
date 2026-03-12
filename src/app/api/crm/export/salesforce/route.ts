@@ -116,21 +116,29 @@ export async function POST(request: NextRequest) {
       errors: [],
     }
 
-    for (const lead of typedLeads) {
-      try {
-        const result = await salesforceService.syncLead(lead as any, user.workspace_id)
+    // Process in parallel batches of 5 (Salesforce rate limits apply)
+    const BATCH_SIZE = 5
+    for (let i = 0; i < typedLeads.length; i += BATCH_SIZE) {
+      const batch = typedLeads.slice(i, i + BATCH_SIZE)
+      const batchResults = await Promise.allSettled(
+        batch.map((lead) => salesforceService.syncLead(lead as any, user.workspace_id))
+      )
 
-        if (result.success) {
+      for (let j = 0; j < batchResults.length; j++) {
+        const outcome = batchResults[j]
+        const lead = batch[j]
+        if (outcome.status === 'fulfilled' && outcome.value.success) {
           results.synced++
         } else {
           results.failed++
-          const errorMsg = result.error || 'Unknown sync error'
+          const errorMsg = outcome.status === 'fulfilled'
+            ? outcome.value.error || 'Unknown sync error'
+            : 'Sync failed'
           results.errors.push(`Lead ${lead.email || lead.id}: ${errorMsg}`)
+          if (outcome.status === 'rejected') {
+            safeError('[Salesforce Export] Sync error for lead: ' + lead.id, outcome.reason)
+          }
         }
-      } catch (syncError: any) {
-        results.failed++
-        safeError('[Salesforce Export] Sync error for lead: ' + lead.id, syncError)
-        results.errors.push(`Lead ${lead.email || lead.id}: Sync failed`)
       }
     }
 

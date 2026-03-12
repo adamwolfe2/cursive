@@ -91,7 +91,7 @@ export function OnboardingChecklist() {
 
   const completedCount = items.filter((item) => item.completed).length
   const totalCount = items.length
-  const progressPercent = (completedCount / totalCount) * 100
+  const progressPercent = totalCount > 0 ? (completedCount / totalCount) * 100 : 0
 
   if (!isVisible) return null
 

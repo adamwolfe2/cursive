@@ -14,7 +14,7 @@ interface ProgressBarProps {
 }
 
 export function ProgressBar({ current, total, label }: ProgressBarProps) {
-  const progress = current / total
+  const progress = total > 0 ? current / total : 0
 
   return (
     <div className="w-full mb-8">
