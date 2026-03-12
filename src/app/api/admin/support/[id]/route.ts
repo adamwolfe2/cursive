@@ -57,7 +57,8 @@ export async function PATCH(
       .maybeSingle()
 
     if (error) {
-      throw new Error(error.message)
+      safeError('[Admin] Support message update error:', error)
+      throw new Error('Failed to update support message')
     }
 
     return NextResponse.json({ message: data })

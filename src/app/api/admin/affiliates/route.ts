@@ -60,7 +60,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     }
 
     const { data: applications, error } = await query
-    if (error) throw new Error(error.message)
+    if (error) {
+      safeError('[Admin] Affiliates fetch error:', error)
+      throw new Error('Failed to fetch affiliate applications')
+    }
 
     const [allApps, affiliatesRes] = await Promise.all([
       admin.from('affiliate_applications').select('status'),

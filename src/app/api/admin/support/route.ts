@@ -22,7 +22,8 @@ export async function GET(request: Request) {
       .range(offset, offset + limit - 1)
 
     if (error) {
-      throw new Error(error.message)
+      safeError('[Admin] Support messages fetch error:', error)
+      throw new Error('Failed to fetch support messages')
     }
 
     // Enrich with user email/name from users table

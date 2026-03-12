@@ -74,7 +74,7 @@ ${validated.message}
 
     if (error) {
       safeError('[API] Contact sales insert error:', error)
-      throw new Error(error.message)
+      throw new Error('Failed to save contact request')
     }
 
     // Send notification email to sales team
