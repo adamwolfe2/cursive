@@ -3,6 +3,8 @@
  * Public click tracking — called fire-and-forget from middleware
  */
 
+export const runtime = 'nodejs'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createHash } from 'crypto'
