@@ -140,7 +140,7 @@ async function handleCreditPurchaseCompleted(session: Stripe.Checkout.Session): 
         amount: session.amount_total ? `$${(session.amount_total / 100).toFixed(2)}` : 'unknown',
         validation_errors: JSON.stringify(metadataValidation.error.format()),
       },
-    }).catch(() => {}) // Never fail the webhook handler over an alert
+    }).catch((err) => safeError('[Stripe Webhook] Slack alert failed:', err)) // Never fail the webhook handler over an alert
     return
   }
 
@@ -242,7 +242,7 @@ async function handleLeadPurchaseCompleted(session: Stripe.Checkout.Session): Pr
         amount: session.amount_total ? `$${(session.amount_total / 100).toFixed(2)}` : 'unknown',
         validation_errors: JSON.stringify(metadataValidation.error.format()),
       },
-    }).catch(() => {}) // Never fail the webhook handler over an alert
+    }).catch((err) => safeError('[Stripe Webhook] Slack alert failed:', err)) // Never fail the webhook handler over an alert
     return
   }
 
