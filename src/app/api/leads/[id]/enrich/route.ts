@@ -208,9 +208,14 @@ export async function POST(
         ? profile.PERSONAL_VERIFIED_EMAILS[0]
         : null
 
-    const enrichedEmail = bve || pve || profile.BUSINESS_EMAIL || (profile.PERSONAL_EMAILS as string)?.split(',')?.[0]?.trim() || null
+    const personalEmail = typeof profile.PERSONAL_EMAILS === 'string'
+      ? profile.PERSONAL_EMAILS.split(',')?.[0]?.trim()
+      : Array.isArray(profile.PERSONAL_EMAILS)
+        ? profile.PERSONAL_EMAILS[0]
+        : null
+    const enrichedEmail = bve || pve || profile.BUSINESS_EMAIL || personalEmail || null
     const enrichedPhone = profile.MOBILE_PHONE || profile.DIRECT_NUMBER || profile.PERSONAL_PHONE || null
-    const enrichedLinkedIn = profile.LINKEDIN_URL as string || null
+    const enrichedLinkedIn = typeof profile.LINKEDIN_URL === 'string' ? profile.LINKEDIN_URL : null
 
     const updates: Record<string, string | null> = {}
     if (!lead.email && enrichedEmail) updates.email = enrichedEmail
