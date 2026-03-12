@@ -98,7 +98,7 @@ vi.mock('@/lib/stripe/config', () => ({
   STRIPE_CONFIG: {
     secretKey: 'sk_test_mock',
     webhookSecret: 'whsec_mock',
-    apiVersion: '2023-10-16',
+    apiVersion: '2025-02-24.acacia',
   },
 }))
 

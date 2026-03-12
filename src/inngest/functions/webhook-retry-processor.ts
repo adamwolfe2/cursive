@@ -195,30 +195,15 @@ async function processWebhookEvent(event: Stripe.Event, supabase: any) {
         })
         .eq('id', creditPurchaseId)
 
-      // Add credits to workspace
-      const { data: existingCredits } = await supabase
-        .from('workspace_credits')
-        .select('*')
-        .eq('workspace_id', workspaceId)
-        .maybeSingle()
+      // Add credits to workspace atomically via RPC
+      const { error: creditError } = await supabase.rpc('add_workspace_credits', {
+        p_workspace_id: workspaceId,
+        p_amount: credits,
+        p_source: 'purchase',
+      })
 
-      if (existingCredits) {
-        await supabase
-          .from('workspace_credits')
-          .update({
-            balance: existingCredits.balance + credits,
-            total_purchased: existingCredits.total_purchased + credits,
-            updated_at: new Date().toISOString(),
-          })
-          .eq('workspace_id', workspaceId)
-      } else {
-        await supabase.from('workspace_credits').insert({
-          workspace_id: workspaceId,
-          balance: credits,
-          total_purchased: credits,
-          total_used: 0,
-          total_earned: 0,
-        })
+      if (creditError) {
+        safeError('[WebhookRetry] Failed to add credits via RPC:', creditError)
       }
 
       return
@@ -252,22 +237,15 @@ async function processWebhookEvent(event: Stripe.Event, supabase: any) {
         })
         .eq('id', creditPurchase.id)
 
-      // Deduct credits from workspace balance
-      const { data: workspaceCredits } = await supabase
-        .from('workspace_credits')
-        .select('balance, total_purchased')
-        .eq('workspace_id', creditPurchase.workspace_id)
-        .maybeSingle()
+      // Deduct credits from workspace balance atomically via RPC
+      const { error: deductError } = await supabase.rpc('deduct_workspace_credits', {
+        p_workspace_id: creditPurchase.workspace_id,
+        p_amount: creditPurchase.credits,
+      })
 
-      if (workspaceCredits) {
-        await supabase
-          .from('workspace_credits')
-          .update({
-            balance: Math.max(0, workspaceCredits.balance - creditPurchase.credits),
-            total_purchased: Math.max(0, workspaceCredits.total_purchased - creditPurchase.credits),
-            updated_at: new Date().toISOString(),
-          })
-          .eq('workspace_id', creditPurchase.workspace_id)
+      if (deductError) {
+        // May fail if balance is insufficient — log but don't throw
+        safeError('[WebhookRetry] Failed to deduct refunded credits:', deductError)
       }
 
       return
@@ -337,22 +315,16 @@ async function processWebhookEvent(event: Stripe.Event, supabase: any) {
         }
       }
 
-      // Return credits to workspace
+      // Return credits to workspace atomically via RPC
       if (marketplacePurchase.credits_used > 0) {
-        const { data: workspaceCredits } = await supabase
-          .from('workspace_credits')
-          .select('balance')
-          .eq('workspace_id', marketplacePurchase.buyer_workspace_id)
-          .maybeSingle()
+        const { error: returnError } = await supabase.rpc('add_workspace_credits', {
+          p_workspace_id: marketplacePurchase.buyer_workspace_id,
+          p_amount: marketplacePurchase.credits_used,
+          p_source: 'purchase',
+        })
 
-        if (workspaceCredits) {
-          await supabase
-            .from('workspace_credits')
-            .update({
-              balance: workspaceCredits.balance + marketplacePurchase.credits_used,
-              updated_at: new Date().toISOString(),
-            })
-            .eq('workspace_id', marketplacePurchase.buyer_workspace_id)
+        if (returnError) {
+          safeError('[WebhookRetry] Failed to return credits on refund:', returnError)
         }
       }
 

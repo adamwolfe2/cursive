@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import type { Workspace } from '@/types'
 
@@ -39,19 +39,26 @@ export function DncClient({ workspaces }: { workspaces: Workspace[] }) {
   const invalidate = () => queryClient.invalidateQueries({ queryKey: ['dnc'] })
 
   const { data, isLoading } = useQuery({
-    queryKey: ['dnc'],
+    queryKey: ['dnc', filterWorkspace],
     queryFn: async () => {
-      const res = await fetch('/api/admin/sdr/dnc')
+      if (!filterWorkspace) {
+        // Fetch all workspaces in parallel when no filter selected
+        const results = await Promise.all(
+          workspaces.map(async (ws) => {
+            const res = await fetch(`/api/admin/sdr/dnc?workspace_id=${ws.id}`)
+            const json = await res.json() as { entries: DncEntry[] }
+            return json.entries || []
+          })
+        )
+        return { entries: results.flat() }
+      }
+      const res = await fetch(`/api/admin/sdr/dnc?workspace_id=${filterWorkspace}`)
       return res.json() as Promise<{ entries: DncEntry[] }>
     },
     staleTime: 5 * 60 * 1000,
   })
 
-  const filtered = useMemo(() => {
-    const entries = data?.entries || []
-    if (!filterWorkspace) return entries
-    return entries.filter((e) => e.workspace_id === filterWorkspace)
-  }, [data, filterWorkspace])
+  const filtered = data?.entries || []
 
   const addMutation = useMutation({
     mutationFn: async ({ workspace_id, emails, reason }: { workspace_id: string; emails: string[]; reason?: string }) => {

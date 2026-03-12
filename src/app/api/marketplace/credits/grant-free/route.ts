@@ -61,49 +61,20 @@ export async function POST() {
       throw grantError
     }
 
-    // Grant recorded successfully — now add credits using admin client
+    // Grant recorded successfully — now add credits atomically
     const adminClient = createAdminClient()
-    const { error: updateError } = await adminClient.rpc('add_workspace_credits', {
+    const credits = FREE_TRIAL_CREDITS.credits
+
+    // Use atomic increment_credits function (handles INSERT + ON CONFLICT)
+    const { error: creditError } = await adminClient.rpc('increment_credits', {
       p_workspace_id: user.workspace_id,
-      p_amount: FREE_TRIAL_CREDITS.credits,
-      p_source: 'free_trial',
+      p_amount: credits,
+      p_field: 'total_earned',
     })
 
-    if (updateError) {
-      safeError('[Grant Free Credits] RPC add_workspace_credits failed, using fallback:', updateError)
-
-      // Atomic upsert with SQL increment — avoids read-then-write race condition
-      const credits = FREE_TRIAL_CREDITS.credits
-      const { error: upsertErr } = await adminClient.rpc('exec_sql', {
-        query: `
-          INSERT INTO workspace_credits (workspace_id, balance, total_purchased, total_used, total_earned)
-          VALUES ($1, $2, 0, 0, $2)
-          ON CONFLICT (workspace_id) DO UPDATE SET
-            balance = workspace_credits.balance + $2,
-            total_earned = workspace_credits.total_earned + $2
-        `.trim(),
-        params: [user.workspace_id, credits],
-      })
-
-      // If the custom RPC isn't available, fall back to safe upsert
-      if (upsertErr) {
-        const { error: fallbackErr } = await adminClient
-          .from('workspace_credits')
-          .upsert(
-            {
-              workspace_id: user.workspace_id,
-              balance: credits,
-              total_purchased: 0,
-              total_used: 0,
-              total_earned: credits,
-            },
-            { onConflict: 'workspace_id' }
-          )
-
-        if (fallbackErr) {
-          throw fallbackErr
-        }
-      }
+    if (creditError) {
+      safeError('[Grant Free Credits] increment_credits RPC failed:', creditError)
+      throw creditError
     }
 
     return NextResponse.json({

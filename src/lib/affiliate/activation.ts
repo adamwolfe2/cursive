@@ -136,8 +136,8 @@ export async function processAffiliateActivation(
     try {
       await admin.rpc('add_workspace_credits', {
         p_workspace_id: await getAffiliateWorkspaceId(affiliate.id, admin),
-        p_credits: 30, // 1 month = 30 lead credits
-        p_source: 'affiliate_activation',
+        p_amount: 30, // 1 month = 30 lead credits
+        p_source: 'referral',
       })
     } catch {
       // Non-fatal if RPC doesn't match exactly — log and continue

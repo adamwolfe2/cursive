@@ -539,37 +539,15 @@ async function addCreditsToWorkspace(
 ): Promise<void> {
   const supabase = createAdminClient()
 
-  const { data: existingCredits } = await supabase
-    .from('workspace_credits')
-    .select('*')
-    .eq('workspace_id', workspaceId)
-    .maybeSingle()
+  // Use atomic RPC — handles INSERT + ON CONFLICT in a single DB call
+  const { error } = await supabase.rpc('add_workspace_credits', {
+    p_workspace_id: workspaceId,
+    p_amount: amount,
+    p_source: source === 'referral' ? 'referral' : 'purchase',
+  })
 
-  if (existingCredits) {
-    const { error: creditUpdateError } = await supabase
-      .from('workspace_credits')
-      .update({
-        balance: existingCredits.balance + amount,
-        total_earned: existingCredits.total_earned + amount,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('workspace_id', workspaceId)
-
-    if (creditUpdateError) {
-      safeError('[Referral] Failed to update workspace credits:', creditUpdateError)
-    }
-  } else {
-    const { error: creditInsertError } = await supabase.from('workspace_credits').insert({
-      workspace_id: workspaceId,
-      balance: amount,
-      total_purchased: 0,
-      total_used: 0,
-      total_earned: amount,
-    })
-
-    if (creditInsertError) {
-      safeError('[Referral] Failed to create workspace credits:', creditInsertError)
-    }
+  if (error) {
+    safeError('[Referral] Failed to add workspace credits via RPC:', error)
   }
 }
 
