@@ -28,6 +28,8 @@ export const ghlOnboardCustomer = inngest.createFunction(
     id: 'ghl-onboard-customer',
     name: 'GHL Onboard Customer',
     retries: 3,
+    timeouts: { finish: '5m' },
+    concurrency: [{ limit: 5 }],
   },
   { event: 'ghl-admin/onboard-customer' },
   async ({ event, step }) => {

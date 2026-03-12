@@ -24,6 +24,7 @@ export const nightlyBalanceAudit = inngest.createFunction(
     id: 'nightly-balance-audit',
     name: 'Nightly Partner Balance Audit',
     retries: 2,
+    timeouts: { finish: '10m' },
   },
   { cron: '0 2 * * *' }, // 2 AM daily
   async ({ step }) => {

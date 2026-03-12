@@ -18,6 +18,7 @@ export const creditAlertChecker = inngest.createFunction(
     id: 'credit-alert-checker',
     name: 'Credit Balance Alert Checker',
     retries: 2,
+    timeouts: { finish: '5m' },
   },
   // Run at 8 AM and 6 PM UTC (matches early morning + end-of-day US awareness)
   { cron: '0 8,18 * * *' },

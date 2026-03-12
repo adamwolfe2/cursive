@@ -38,6 +38,8 @@ export const ghlCreateSubaccount = inngest.createFunction(
     id: 'ghl-create-subaccount',
     name: 'GHL Create Sub-Account',
     retries: 2,
+    timeouts: { finish: '5m' },
+    concurrency: [{ limit: 5 }],
   },
   { event: 'ghl-admin/create-subaccount' },
   async ({ event, step }) => {

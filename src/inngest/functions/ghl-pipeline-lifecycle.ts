@@ -40,6 +40,8 @@ export const ghlPipelineLifecycle = inngest.createFunction(
     id: 'ghl-pipeline-lifecycle',
     name: 'GHL Pipeline Lifecycle Tracker',
     retries: 3,
+    timeouts: { finish: '2m' },
+    concurrency: [{ limit: 5 }],
   },
   { event: 'ghl/pipeline.update' },
   async ({ event, step }) => {

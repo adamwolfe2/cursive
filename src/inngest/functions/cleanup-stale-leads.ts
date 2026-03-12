@@ -36,6 +36,7 @@ export const cleanupStaleLeads = inngest.createFunction(
     id: 'cleanup-stale-leads',
     name: 'Cleanup Stale Audience Labs Leads',
     retries: 1,
+    timeouts: { finish: '10m' },
     concurrency: [{ limit: 1 }],
   },
   { cron: '0 3 * * *' }, // 3am UTC daily (off-peak)

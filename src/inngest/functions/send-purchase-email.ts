@@ -23,6 +23,7 @@ export const sendPurchaseEmail = inngest.createFunction(
     id: 'send-purchase-email',
     name: 'Send Purchase Confirmation Email',
     retries: 3, // Retry 3 times on failure
+    timeouts: { finish: '2m' },
     rateLimit: {
       limit: 50, // 50 emails per minute
       period: '1m',
@@ -112,6 +113,7 @@ export const sendCreditPurchaseEmail = inngest.createFunction(
     id: 'send-credit-purchase-email',
     name: 'Send Credit Purchase Confirmation Email',
     retries: 3,
+    timeouts: { finish: '2m' },
     rateLimit: {
       limit: 50,
       period: '1m',

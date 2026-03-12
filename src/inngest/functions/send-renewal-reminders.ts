@@ -15,6 +15,7 @@ export const sendRenewalReminders = inngest.createFunction(
     id: 'send-renewal-reminders',
     name: 'Send Renewal Reminder Emails',
     retries: 3,
+    timeouts: { finish: '5m' },
   },
   { cron: '0 9 * * *' }, // Daily at 9 AM UTC
   async ({ step }) => {

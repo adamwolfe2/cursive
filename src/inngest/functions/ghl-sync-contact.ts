@@ -27,6 +27,8 @@ export const ghlSyncContact = inngest.createFunction(
     id: 'ghl-sync-contact',
     name: 'GHL Sync Contact to Client Account',
     retries: 3,
+    timeouts: { finish: '2m' },
+    concurrency: [{ limit: 5 }],
   },
   { event: 'ghl/sync-contact' },
   async ({ event, step }) => {
@@ -100,6 +102,8 @@ export const ghlBulkSync = inngest.createFunction(
     id: 'ghl-bulk-sync',
     name: 'GHL Bulk Sync to Client Account',
     retries: 2,
+    timeouts: { finish: '5m' },
+    concurrency: [{ limit: 5 }],
   },
   { event: 'ghl/bulk-sync' },
   async ({ event, step }) => {

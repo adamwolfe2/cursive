@@ -15,6 +15,7 @@ export const sendOnboardingReminders = inngest.createFunction(
     id: 'send-onboarding-reminders',
     name: 'Send Onboarding Reminder Emails',
     retries: 3,
+    timeouts: { finish: '5m' },
   },
   { cron: '0 10 * * *' }, // Daily at 10 AM UTC
   async ({ step }) => {

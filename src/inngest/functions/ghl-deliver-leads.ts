@@ -27,6 +27,8 @@ export const ghlDeliverLeads = inngest.createFunction(
     id: 'ghl-deliver-leads',
     name: 'GHL Deliver Leads',
     retries: 3,
+    timeouts: { finish: '5m' },
+    concurrency: [{ limit: 5 }],
   },
   { event: 'ghl-admin/deliver-leads' },
   async ({ event, step }) => {

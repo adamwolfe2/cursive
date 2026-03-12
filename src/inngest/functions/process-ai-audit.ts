@@ -31,6 +31,7 @@ export const processAiAudit = inngest.createFunction(
     id: 'process-ai-audit',
     name: 'Process AI Audit Submission',
     retries: 3,
+    timeouts: { finish: '5m' },
   },
   { event: 'ai-audit/submitted' },
   async ({ event, step }) => {

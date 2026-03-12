@@ -25,6 +25,7 @@ export const processStripeWebhook = inngest.createFunction(
     id: 'process-stripe-webhook',
     name: 'Process Stripe Webhook',
     retries: 5, // Retry 5 times for webhooks (critical for payments)
+    timeouts: { finish: '2m' },
   },
   { event: 'stripe/webhook.received' },
   async ({ event, step, attempt }) => {
