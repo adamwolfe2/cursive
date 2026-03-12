@@ -84,13 +84,15 @@ function mockSupabaseClient(options: {
   const client = {
     from: vi.fn().mockImplementation((table: string) => {
       if (table === 'ad_campaigns') {
+        const resolve = () => Promise.resolve({
+          data: options.campaign ?? null,
+          error: options.campaignError ?? null,
+        })
         return {
           select: vi.fn().mockReturnThis(),
           eq: vi.fn().mockReturnThis(),
-          single: vi.fn().mockResolvedValue({
-            data: options.campaign ?? null,
-            error: options.campaignError ?? null,
-          }),
+          single: vi.fn().mockImplementation(resolve),
+          maybeSingle: vi.fn().mockImplementation(resolve),
         }
       }
 
@@ -222,9 +224,9 @@ describe('GET /api/ai-studio/campaigns/[id]', () => {
     })
 
     it('should return 404 when campaign belongs to different workspace', async () => {
-      // Simulate database error (no rows match the workspace filter)
+      // maybeSingle returns null when no rows match the workspace filter
       mockSupabaseClient({
-        campaignError: { code: 'PGRST116', message: 'No rows found' },
+        campaign: null,
       })
 
       const request = makeRequest('other-workspace-campaign')
@@ -234,7 +236,7 @@ describe('GET /api/ai-studio/campaigns/[id]', () => {
       const data = await response.json()
 
       expect(response.status).toBe(404)
-      expect(data.error).toBe('Campaign not found')
+      expect(data.error).toContain('not found')
     })
 
     it('should allow access when campaign belongs to user workspace', async () => {
@@ -323,7 +325,7 @@ describe('GET /api/ai-studio/campaigns/[id]', () => {
   // ============================================
 
   describe('Error Handling', () => {
-    it('should return 404 when database query fails with error', async () => {
+    it('should return 500 when database query fails with error', async () => {
       mockSupabaseClient({
         campaignError: { message: 'Database error' },
       })
@@ -334,8 +336,8 @@ describe('GET /api/ai-studio/campaigns/[id]', () => {
       })
       const data = await response.json()
 
-      expect(response.status).toBe(404)
-      expect(data.error).toBe('Campaign not found')
+      expect(response.status).toBe(500)
+      expect(data.error).toBe('Failed to fetch campaign')
     })
 
     it('should return 500 when unexpected error occurs', async () => {

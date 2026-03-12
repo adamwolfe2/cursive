@@ -19,7 +19,6 @@ import {
   extractIpAddress,
   unwrapWebhookPayload,
   LEAD_CREATION_SCORE_THRESHOLD,
-  LEAD_CREATING_EVENT_TYPES,
 } from '@/lib/audiencelab/field-map'
 
 // ============================================
@@ -27,93 +26,110 @@ import {
 // ============================================
 
 describe('isLeadWorthy', () => {
-  describe('Authentication / form events always create leads', () => {
-    it('should return true for authentication events regardless of score', () => {
-      expect(
-        isLeadWorthy({
-          eventType: 'authentication',
-          deliverabilityScore: 0,
-          hasBusinessEmail: false,
-          hasPhone: false,
-        })
-      ).toBe(true)
-    })
-
-    it('should return true for form_submission events regardless of score', () => {
-      expect(
-        isLeadWorthy({
-          eventType: 'form_submission',
-          deliverabilityScore: 10,
-          hasBusinessEmail: false,
-          hasPhone: false,
-        })
-      ).toBe(true)
-    })
-
-    it('should return true for all_form_submissions events regardless of score', () => {
-      expect(
-        isLeadWorthy({
-          eventType: 'all_form_submissions',
-          deliverabilityScore: 0,
-          hasBusinessEmail: false,
-          hasPhone: false,
-        })
-      ).toBe(true)
-    })
-  })
-
-  describe('Score-based lead creation', () => {
-    it('should return true when score >= 60 and has business email', () => {
+  describe('Verified email requirement', () => {
+    it('should return false when hasVerifiedEmail is false', () => {
       expect(
         isLeadWorthy({
           eventType: 'page_view',
-          deliverabilityScore: 60,
-          hasBusinessEmail: true,
-          hasPhone: false,
-        })
-      ).toBe(true)
-    })
-
-    it('should return true when score >= 60 and has phone', () => {
-      expect(
-        isLeadWorthy({
-          eventType: 'page_view',
-          deliverabilityScore: 60,
-          hasBusinessEmail: false,
-          hasPhone: true,
-        })
-      ).toBe(true)
-    })
-
-    it('should return true when score >= 60 and has both', () => {
-      expect(
-        isLeadWorthy({
-          eventType: 'page_view',
-          deliverabilityScore: 80,
+          deliverabilityScore: 100,
+          hasVerifiedEmail: false,
           hasBusinessEmail: true,
           hasPhone: true,
-        })
-      ).toBe(true)
-    })
-
-    it('should return false when score >= 60 but no business email or phone', () => {
-      expect(
-        isLeadWorthy({
-          eventType: 'page_view',
-          deliverabilityScore: 90,
-          hasBusinessEmail: false,
-          hasPhone: false,
+          hasName: true,
         })
       ).toBe(false)
     })
 
-    it('should return false when score < 60 even with contact info', () => {
+    it('should return false for authentication events without verified email', () => {
+      expect(
+        isLeadWorthy({
+          eventType: 'authentication',
+          deliverabilityScore: 100,
+          hasVerifiedEmail: false,
+          hasBusinessEmail: false,
+          hasPhone: false,
+          hasName: true,
+        })
+      ).toBe(false)
+    })
+
+    it('should return false for form_submission events without verified email', () => {
+      expect(
+        isLeadWorthy({
+          eventType: 'form_submission',
+          deliverabilityScore: 100,
+          hasVerifiedEmail: false,
+          hasBusinessEmail: false,
+          hasPhone: false,
+          hasName: true,
+        })
+      ).toBe(false)
+    })
+  })
+
+  describe('Name requirement', () => {
+    it('should return false when hasName is false', () => {
+      expect(
+        isLeadWorthy({
+          eventType: 'page_view',
+          deliverabilityScore: 100,
+          hasVerifiedEmail: true,
+          hasBusinessEmail: true,
+          hasPhone: true,
+          hasName: false,
+        })
+      ).toBe(false)
+    })
+
+    it('should return false when hasName is undefined (defaults to false)', () => {
+      expect(
+        isLeadWorthy({
+          eventType: 'page_view',
+          deliverabilityScore: 100,
+          hasVerifiedEmail: true,
+          hasBusinessEmail: true,
+          hasPhone: true,
+        })
+      ).toBe(false)
+    })
+  })
+
+  describe('Score-based lead creation', () => {
+    it('should return true when score >= 60, verified email, and has name', () => {
+      expect(
+        isLeadWorthy({
+          eventType: 'page_view',
+          deliverabilityScore: 60,
+          hasVerifiedEmail: true,
+          hasBusinessEmail: true,
+          hasPhone: false,
+          hasName: true,
+        })
+      ).toBe(true)
+    })
+
+    it('should return true at exactly the threshold score', () => {
+      expect(
+        isLeadWorthy({
+          eventType: 'page_view',
+          deliverabilityScore: LEAD_CREATION_SCORE_THRESHOLD,
+          hasVerifiedEmail: true,
+          hasBusinessEmail: false,
+          hasPhone: false,
+          hasName: true,
+        })
+      ).toBe(true)
+    })
+
+    it('should return false when score < 60 even with verified email and name', () => {
       expect(
         isLeadWorthy({
           eventType: 'page_view',
           deliverabilityScore: 59,
+          hasVerifiedEmail: true,
           hasBusinessEmail: true,
           hasPhone: true,
+          hasName: true,
         })
       ).toBe(false)
     })
@@ -123,8 +139,10 @@ describe('isLeadWorthy', () => {
         isLeadWorthy({
           eventType: 'unknown',
           deliverabilityScore: 0,
+          hasVerifiedEmail: false,
           hasBusinessEmail: false,
           hasPhone: false,
+          hasName: false,
         })
       ).toBe(false)
     })
@@ -133,13 +151,6 @@ describe('isLeadWorthy', () => {
   describe('Threshold constant', () => {
     it('LEAD_CREATION_SCORE_THRESHOLD should be 60', () => {
       expect(LEAD_CREATION_SCORE_THRESHOLD).toBe(60)
-    })
-
-    it('LEAD_CREATING_EVENT_TYPES should contain the expected types', () => {
-      expect(LEAD_CREATING_EVENT_TYPES.has('authentication')).toBe(true)
-      expect(LEAD_CREATING_EVENT_TYPES.has('all_form_submissions')).toBe(true)
-      expect(LEAD_CREATING_EVENT_TYPES.has('form_submission')).toBe(true)
-      expect(LEAD_CREATING_EVENT_TYPES.has('page_view')).toBe(false)
     })
   })
 })
@@ -643,11 +654,11 @@ describe('normalizeALPayload', () => {
       const result = normalizeALPayload({
         resolution: {
           FIRST_NAME: 'Nested',
-          LAST_NAME: 'User',
+          LAST_NAME: 'Smith',
         },
       })
       expect(result.first_name).toBe('Nested')
-      expect(result.last_name).toBe('User')
+      expect(result.last_name).toBe('Smith')
     })
 
     it('should extract fields from event_data object', () => {

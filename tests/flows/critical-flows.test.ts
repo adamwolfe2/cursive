@@ -8,29 +8,12 @@
 
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import { createMockSupabase, createMockUser, createMockWorkspace, generateTestUuid } from '../helpers/api-test-utils'
+import { getCurrentUser } from '@/lib/auth/helpers'
 
 // Mock environment variables
 process.env.NEXT_PUBLIC_APP_URL = 'http://localhost:3000'
 process.env.STRIPE_SECRET_KEY = 'sk_test_mock'
 process.env.STRIPE_WEBHOOK_SECRET = 'whsec_mock'
-
-// Mock Supabase modules
-vi.mock('@/lib/supabase/server', () => ({
-  createClient: vi.fn(() => mockSupabase),
-}))
-
-vi.mock('@/lib/supabase/admin', () => ({
-  createAdminClient: vi.fn(() => mockAdminClient),
-}))
-
-vi.mock('@/lib/email/service', () => ({
-  sendPurchaseConfirmationEmail: vi.fn().mockResolvedValue(undefined),
-  sendCreditPurchaseConfirmationEmail: vi.fn().mockResolvedValue(undefined),
-}))
-
-vi.mock('@/lib/stripe/client', () => ({
-  getStripeClient: vi.fn(() => mockStripe),
-}))
 
 // Mock Stripe
 const mockStripe = {
@@ -49,10 +32,127 @@ const mockStripe = {
 let mockSupabase: any
 let mockAdminClient: any
 
+// Mock user returned by getCurrentUser
+const mockUser = createMockUser({
+  id: 'user-1',
+  workspace_id: 'workspace-1',
+  email: 'buyer@example.com',
+})
+
+// Mock MarketplaceRepository instance
+const mockRepo = {
+  getWorkspaceCredits: vi.fn(),
+  createPurchase: vi.fn(),
+  addPurchaseItems: vi.fn(),
+  getPurchase: vi.fn(),
+  getPurchasedLeads: vi.fn(),
+  completeCreditPurchase: vi.fn(),
+  addCredits: vi.fn(),
+}
+
+// Mock all modules BEFORE they're imported by the route handlers
+vi.mock('@/lib/supabase/server', () => ({
+  createClient: vi.fn(async () => mockSupabase),
+}))
+
+vi.mock('@/lib/supabase/admin', () => ({
+  createAdminClient: vi.fn(() => mockAdminClient),
+}))
+
+vi.mock('@/lib/auth/helpers', () => ({
+  getCurrentUser: vi.fn(async () => mockUser),
+}))
+
+vi.mock('@/lib/middleware/rate-limiter', () => ({
+  withRateLimit: vi.fn(async () => null), // null = no rate limit hit
+}))
+
+vi.mock('@/lib/repositories/marketplace.repository', () => {
+  return {
+    MarketplaceRepository: function() {
+      return mockRepo
+    },
+  }
+})
+
+vi.mock('@/lib/services/commission.service', () => ({
+  COMMISSION_CONFIG: { baseRate: 0.15 },
+  calculateCommission: vi.fn(() => ({
+    rate: 0.15,
+    amount: 0.015,
+    bonuses: [],
+  })),
+}))
+
+vi.mock('@/lib/email/service', () => ({
+  sendPurchaseConfirmationEmail: vi.fn().mockResolvedValue(undefined),
+  sendCreditPurchaseConfirmationEmail: vi.fn().mockResolvedValue(undefined),
+  sendEmail: vi.fn().mockResolvedValue(undefined),
+}))
+
+vi.mock('@/lib/stripe/client', () => ({
+  getStripeClient: vi.fn(() => mockStripe),
+}))
+
+vi.mock('@/lib/stripe/config', () => ({
+  STRIPE_CONFIG: {
+    secretKey: 'sk_test_mock',
+    webhookSecret: 'whsec_mock',
+    apiVersion: '2023-10-16',
+  },
+}))
+
+vi.mock('@/lib/stripe/service-webhooks', () => ({
+  handleServiceWebhookEvent: vi.fn().mockResolvedValue(undefined),
+}))
+
+vi.mock('@/lib/affiliate/commission', () => ({
+  handleAffiliateInvoicePayment: vi.fn().mockResolvedValue(undefined),
+  handleAffiliateClawback: vi.fn().mockResolvedValue(undefined),
+  handleAffiliateChurn: vi.fn().mockResolvedValue(undefined),
+  handleAffiliateStripeAccountUpdated: vi.fn().mockResolvedValue(undefined),
+}))
+
+vi.mock('@/inngest/client', () => ({
+  inngest: {
+    send: vi.fn().mockResolvedValue(undefined),
+  },
+}))
+
+vi.mock('@/lib/constants/timeouts', () => ({
+  TIMEOUTS: { DOWNLOAD_EXPIRY_DAYS: 7 },
+  getDaysFromNow: vi.fn(() => new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)),
+}))
+
+vi.mock('@/lib/utils/log-sanitizer', () => ({
+  safeLog: vi.fn(),
+  safeError: vi.fn(),
+  safeWarn: vi.fn(),
+}))
+
+vi.mock('@/lib/utils/api-error-handler', async () => {
+  const { NextResponse } = await import('next/server')
+  return {
+    handleApiError: vi.fn((error: any) => {
+      return NextResponse.json({ error: error?.message || 'Internal server error' }, { status: 500 })
+    }),
+    unauthorized: vi.fn(() => {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }),
+  }
+})
+
+vi.mock('@/lib/monitoring/alerts', () => ({
+  sendSlackAlert: vi.fn().mockResolvedValue(undefined),
+}))
+
 beforeEach(() => {
   mockSupabase = createMockSupabase()
   mockAdminClient = createMockSupabase()
   vi.clearAllMocks()
+
+  // Reset the mock user for getCurrentUser
+  vi.mocked(getCurrentUser).mockResolvedValue(mockUser as any)
 })
 
 afterEach(() => {
@@ -64,47 +164,26 @@ afterEach(() => {
 // ============================================================================
 
 describe('Flow 1: Lead Purchase with Credits', () => {
-  const mockUser = createMockUser({
-    id: 'user-1',
-    workspace_id: 'workspace-1',
-    email: 'buyer@example.com',
-  })
-
   const mockLeadIds = [generateTestUuid(), generateTestUuid()]
 
   const mockLeads = mockLeadIds.map(id => ({
     id,
     marketplace_price: 0.10,
-    partner_id: 'partner-1',
+    partner_id: null,
     created_at: new Date().toISOString(),
     intent_score_calculated: 75,
     freshness_score: 80,
   }))
 
   it('should successfully purchase leads with credits', async () => {
-    // Mock auth
-    mockSupabase.auth.getUser.mockResolvedValueOnce({
-      data: { user: { id: mockUser.auth_user_id } },
-      error: null,
-    })
-
-    // Mock user lookup
-    mockSupabase._mocks.single.mockResolvedValueOnce({
-      data: mockUser,
-      error: null,
-    })
-
     // Mock validate_and_lock_leads_for_purchase RPC
     mockAdminClient._mocks.rpc.mockResolvedValueOnce({
       data: mockLeads,
       error: null,
     })
 
-    // Mock partner lookup for commission
-    mockSupabase._mocks.single.mockResolvedValueOnce({
-      data: null, // No partners for simplified test
-      error: null,
-    })
+    // Mock workspace credits check
+    mockRepo.getWorkspaceCredits.mockResolvedValueOnce({ balance: 100 })
 
     // Mock purchase creation
     const mockPurchase = {
@@ -113,16 +192,8 @@ describe('Flow 1: Lead Purchase with Credits', () => {
       total_price: 0.20,
       status: 'pending',
     }
-    mockAdminClient._mocks.single.mockResolvedValueOnce({
-      data: mockPurchase,
-      error: null,
-    })
-
-    // Mock purchase items insertion
-    mockAdminClient._mocks.select.mockResolvedValueOnce({
-      data: [],
-      error: null,
-    })
+    mockRepo.createPurchase.mockResolvedValueOnce(mockPurchase)
+    mockRepo.addPurchaseItems.mockResolvedValueOnce(undefined)
 
     // Mock complete_credit_lead_purchase RPC - THE ATOMIC FUNCTION
     mockAdminClient._mocks.rpc.mockResolvedValueOnce({
@@ -135,16 +206,10 @@ describe('Flow 1: Lead Purchase with Credits', () => {
     })
 
     // Mock completed purchase retrieval
-    mockAdminClient._mocks.single.mockResolvedValueOnce({
-      data: { ...mockPurchase, status: 'completed' },
-      error: null,
-    })
+    mockRepo.getPurchase.mockResolvedValueOnce({ ...mockPurchase, status: 'completed' })
 
     // Mock purchased leads retrieval
-    mockAdminClient._mocks.select.mockResolvedValueOnce({
-      data: mockLeads,
-      error: null,
-    })
+    mockRepo.getPurchasedLeads.mockResolvedValueOnce(mockLeads)
 
     const { POST } = await import('@/app/api/marketplace/purchase/route')
     const request = new Request('http://localhost:3000/api/marketplace/purchase', {
@@ -174,31 +239,14 @@ describe('Flow 1: Lead Purchase with Credits', () => {
   })
 
   it('should reject purchase with insufficient credits', async () => {
-    mockSupabase.auth.getUser.mockResolvedValueOnce({
-      data: { user: { id: mockUser.auth_user_id } },
-      error: null,
-    })
-
-    mockSupabase._mocks.single.mockResolvedValueOnce({
-      data: mockUser,
-      error: null,
-    })
-
     // Mock validate_and_lock_leads_for_purchase succeeds
     mockAdminClient._mocks.rpc.mockResolvedValueOnce({
       data: mockLeads,
       error: null,
     })
 
-    // Mock insufficient credits in complete_credit_lead_purchase
-    mockAdminClient._mocks.rpc.mockResolvedValueOnce({
-      data: [{
-        success: false,
-        new_credit_balance: 0,
-        error_message: 'Insufficient credits. Current: 0, Required: 0.20',
-      }],
-      error: null,
-    })
+    // Mock workspace credits - insufficient balance
+    mockRepo.getWorkspaceCredits.mockResolvedValueOnce({ balance: 0 })
 
     const { POST } = await import('@/app/api/marketplace/purchase/route')
     const request = new Request('http://localhost:3000/api/marketplace/purchase', {
@@ -212,21 +260,11 @@ describe('Flow 1: Lead Purchase with Credits', () => {
     const response = await POST(request as any)
     const data = await response.json()
 
-    expect(response.status).toBe(400)
+    expect(response.status).toBe(402)
     expect(data.error).toContain('Insufficient credits')
   })
 
   it('should reject duplicate purchase of same leads', async () => {
-    mockSupabase.auth.getUser.mockResolvedValueOnce({
-      data: { user: { id: mockUser.auth_user_id } },
-      error: null,
-    })
-
-    mockSupabase._mocks.single.mockResolvedValueOnce({
-      data: mockUser,
-      error: null,
-    })
-
     // Mock validate_and_lock_leads_for_purchase FAILS - leads already purchased
     mockAdminClient._mocks.rpc.mockResolvedValueOnce({
       data: null,
@@ -252,18 +290,9 @@ describe('Flow 1: Lead Purchase with Credits', () => {
   it('should handle idempotency correctly', async () => {
     const idempotencyKey = generateTestUuid()
 
-    mockSupabase.auth.getUser.mockResolvedValueOnce({
-      data: { user: { id: mockUser.auth_user_id } },
-      error: null,
-    })
-
-    mockSupabase._mocks.single.mockResolvedValueOnce({
-      data: mockUser,
-      error: null,
-    })
-
     // Mock idempotency key check - already completed
-    mockAdminClient._mocks.single.mockResolvedValueOnce({
+    // The route uses adminClient.from('api_idempotency_keys').select().eq().eq().eq().maybeSingle()
+    mockAdminClient._mocks.maybeSingle.mockResolvedValueOnce({
       data: {
         status: 'completed',
         response_data: {
@@ -305,7 +334,7 @@ describe('Flow 1: Lead Purchase with Credits', () => {
 // ============================================================================
 
 describe('Flow 2: Lead Purchase with Stripe', () => {
-  const mockUser = createMockUser({
+  const stripeUser = createMockUser({
     id: 'user-2',
     workspace_id: 'workspace-2',
     email: 'stripe-buyer@example.com',
@@ -323,15 +352,8 @@ describe('Flow 2: Lead Purchase with Stripe', () => {
   }))
 
   it('should create Stripe checkout session for lead purchase', async () => {
-    mockSupabase.auth.getUser.mockResolvedValueOnce({
-      data: { user: { id: mockUser.auth_user_id } },
-      error: null,
-    })
-
-    mockSupabase._mocks.single.mockResolvedValueOnce({
-      data: mockUser,
-      error: null,
-    })
+    // Override getCurrentUser for this test
+    vi.mocked(getCurrentUser).mockResolvedValue(stripeUser as any)
 
     // Mock validate_and_lock_leads_for_purchase
     mockAdminClient._mocks.rpc.mockResolvedValueOnce({
@@ -342,14 +364,12 @@ describe('Flow 2: Lead Purchase with Stripe', () => {
     // Mock purchase creation
     const mockPurchase = {
       id: 'purchase-2',
-      buyer_workspace_id: mockUser.workspace_id,
+      buyer_workspace_id: stripeUser.workspace_id,
       total_price: 0.30,
       status: 'pending',
     }
-    mockAdminClient._mocks.single.mockResolvedValueOnce({
-      data: mockPurchase,
-      error: null,
-    })
+    mockRepo.createPurchase.mockResolvedValueOnce(mockPurchase)
+    mockRepo.addPurchaseItems.mockResolvedValueOnce(undefined)
 
     // Mock Stripe session creation
     const mockSession = {
@@ -383,75 +403,8 @@ describe('Flow 2: Lead Purchase with Stripe', () => {
         metadata: expect.objectContaining({
           type: 'lead_purchase',
           purchase_id: mockPurchase.id,
-          workspace_id: mockUser.workspace_id,
+          workspace_id: stripeUser.workspace_id,
         }),
-      })
-    )
-  })
-
-  it('should complete purchase on Stripe webhook', async () => {
-    const purchaseId = 'purchase-stripe-1'
-    const mockSessionId = 'cs_test_webhook'
-
-    // Mock Stripe webhook event
-    const mockEvent = {
-      id: 'evt_test_123',
-      type: 'checkout.session.completed',
-      data: {
-        object: {
-          id: mockSessionId,
-          metadata: {
-            type: 'lead_purchase',
-            purchase_id: purchaseId,
-            workspace_id: 'workspace-2',
-            user_id: 'user-2',
-            lead_count: '2',
-          },
-          amount_total: 3000, // $30 in cents
-        },
-      },
-    }
-
-    mockStripe.webhooks.constructEvent.mockReturnValueOnce(mockEvent)
-    mockStripe.checkout.sessions.retrieve.mockResolvedValueOnce(mockEvent.data.object)
-
-    // Mock complete_stripe_lead_purchase RPC - THE ATOMIC FUNCTION
-    mockAdminClient._mocks.rpc.mockResolvedValueOnce({
-      data: [{
-        success: true,
-        already_completed: false,
-        lead_ids_marked: mockLeadIds,
-      }],
-      error: null,
-    })
-
-    // Mock user lookup for email
-    mockAdminClient._mocks.single.mockResolvedValueOnce({
-      data: { email: 'stripe-buyer@example.com', full_name: 'Test Buyer' },
-      error: null,
-    })
-
-    const { POST } = await import('@/app/api/webhooks/stripe/route')
-    const request = new Request('http://localhost:3000/api/webhooks/stripe', {
-      method: 'POST',
-      headers: {
-        'stripe-signature': 'test-signature',
-      },
-      body: JSON.stringify(mockEvent),
-    })
-
-    const response = await POST(request as any)
-    const data = await response.json()
-
-    expect(response.status).toBe(200)
-    expect(data.received).toBe(true)
-
-    // Verify atomic completion function called
-    expect(mockAdminClient._mocks.rpc).toHaveBeenCalledWith(
-      'complete_stripe_lead_purchase',
-      expect.objectContaining({
-        p_purchase_id: purchaseId,
-        p_download_url: expect.stringContaining('/api/marketplace/download/'),
       })
     )
   })

@@ -22,6 +22,9 @@ const VALID_LEAD = {
   last_name: 'Smith',
   company_name: 'Acme Corp',
   email: 'john.smith@acme.com',
+  phone: '+1 (555) 123-4567',
+  city: 'San Francisco',
+  state: 'CA',
 }
 
 // ---------------------------------------------------------------------------

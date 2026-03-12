@@ -36,7 +36,7 @@ describe('Toast', () => {
 
     const toast = screen.getByRole('alert')
     expect(toast).toBeInTheDocument()
-    expect(toast).toHaveClass('bg-blue-50', 'border-blue-200')
+    expect(toast).toHaveClass('bg-success-muted')
     expect(screen.getByText('Test message')).toBeInTheDocument()
   })
 
@@ -44,21 +44,21 @@ describe('Toast', () => {
     render(<Toast {...defaultProps} type="error" />)
 
     const toast = screen.getByRole('alert')
-    expect(toast).toHaveClass('bg-red-50', 'border-red-200')
+    expect(toast).toHaveClass('bg-destructive-muted')
   })
 
   it('renders warning toast with correct styling', () => {
     render(<Toast {...defaultProps} type="warning" />)
 
     const toast = screen.getByRole('alert')
-    expect(toast).toHaveClass('bg-amber-50', 'border-amber-200')
+    expect(toast).toHaveClass('bg-warning-muted')
   })
 
   it('renders info toast with correct styling', () => {
     render(<Toast {...defaultProps} type="info" />)
 
     const toast = screen.getByRole('alert')
-    expect(toast).toHaveClass('bg-zinc-50', 'border-zinc-200')
+    expect(toast).toHaveClass('bg-info-muted')
   })
 
   it('renders title when provided', () => {
@@ -182,7 +182,7 @@ describe('Toast', () => {
     expect(mockOnClose).toHaveBeenCalledWith('test-toast')
   })
 
-  it('applies exit animation class when closing', () => {
+  it('calls onClose after close button click and animation delay', () => {
     vi.useFakeTimers()
 
     render(<Toast {...defaultProps} />)
@@ -190,10 +190,8 @@ describe('Toast', () => {
     const closeButton = screen.getByLabelText('Close notification')
     fireEvent.click(closeButton)
 
-    const toast = screen.getByRole('alert')
-
-    // Should have exit animation class immediately after click
-    expect(toast).toHaveClass('translate-x-[400px]', 'opacity-0')
+    // onClose not called immediately (waiting for 300ms animation)
+    expect(mockOnClose).not.toHaveBeenCalled()
 
     // onClose called after animation duration
     act(() => {

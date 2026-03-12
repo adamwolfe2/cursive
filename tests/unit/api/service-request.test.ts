@@ -15,50 +15,48 @@ import { NextRequest } from 'next/server'
 // MOCKS
 // ============================================
 
-const mockGetUser = vi.fn()
-const mockUserLookup = vi.fn()
+const mockGetCurrentUser = vi.fn()
 const mockInsert = vi.fn()
-
-function createChainMock(resolvedValue?: any) {
-  const chain: any = {}
-  chain.select = vi.fn().mockReturnValue(chain)
-  chain.insert = vi.fn((data: any) => {
-    return mockInsert(data)
-  })
-  chain.update = vi.fn().mockReturnValue(chain)
-  chain.delete = vi.fn().mockReturnValue(chain)
-  chain.eq = vi.fn().mockReturnValue(chain)
-  chain.neq = vi.fn().mockReturnValue(chain)
-  chain.gte = vi.fn().mockReturnValue(chain)
-  chain.lte = vi.fn().mockReturnValue(chain)
-  chain.gt = vi.fn().mockReturnValue(chain)
-  chain.lt = vi.fn().mockReturnValue(chain)
-  chain.in = vi.fn().mockReturnValue(chain)
-  chain.order = vi.fn().mockReturnValue(chain)
-  chain.limit = vi.fn().mockReturnValue(chain)
-  chain.range = vi.fn().mockReturnValue(chain)
-  chain.single = vi.fn().mockImplementation(() => mockUserLookup())
-  chain.maybeSingle = vi.fn().mockResolvedValue(resolvedValue ?? { data: null, error: null })
-  return chain
-}
-
-// Mock @supabase/ssr — the service-request route creates its own client
-vi.mock('@supabase/ssr', () => ({
-  createServerClient: vi.fn(() => ({
-    auth: { getUser: mockGetUser },
-  })),
-}))
 
 // Store inserted data for test assertions
 let lastInsertedData: any = null
+
+// Mock getCurrentUser from auth helpers
+vi.mock('@/lib/auth/helpers', () => ({
+  getCurrentUser: () => mockGetCurrentUser(),
+}))
+
+// Mock api-error-handler
+vi.mock('@/lib/utils/api-error-handler', () => ({
+  handleApiError: vi.fn().mockImplementation((error: any) => {
+    const { NextResponse: NR } = require('next/server')
+    if (error?.name === 'ZodError') {
+      return NR.json({ error: 'Invalid input', details: error.errors }, { status: 400 })
+    }
+    return NR.json({ error: error?.message || 'Internal server error' }, { status: 500 })
+  }),
+  unauthorized: vi.fn().mockImplementation(() => {
+    const { NextResponse: NR } = require('next/server')
+    return NR.json({ error: 'Unauthorized' }, { status: 401 })
+  }),
+}))
+
+// Mock log-sanitizer
+vi.mock('@/lib/utils/log-sanitizer', () => ({
+  safeLog: vi.fn(),
+  safeError: vi.fn(),
+  safeWarn: vi.fn(),
+}))
+
+// Mock rate limiter
+vi.mock('@/lib/middleware/rate-limiter', () => ({
+  withRateLimit: vi.fn().mockResolvedValue(null), // null = not rate limited
+}))
 
 // Mock admin client for DB operations
 vi.mock('@/lib/supabase/admin', () => ({
   createAdminClient: vi.fn(() => ({
     from: vi.fn((table: string) => {
-      if (table === 'users') {
-        return createChainMock()
-      }
       if (table === 'support_messages') {
         const chain: any = {}
         chain.insert = vi.fn((data: any) => {
@@ -67,7 +65,12 @@ vi.mock('@/lib/supabase/admin', () => ({
         })
         return chain
       }
-      return createChainMock()
+      const fallback: any = {}
+      fallback.select = vi.fn().mockReturnValue(fallback)
+      fallback.eq = vi.fn().mockReturnValue(fallback)
+      fallback.single = vi.fn().mockResolvedValue({ data: null, error: null })
+      fallback.maybeSingle = vi.fn().mockResolvedValue({ data: null, error: null })
+      return fallback
     }),
   })),
 }))
@@ -105,20 +108,14 @@ describe('POST /api/service-request', () => {
     lastInsertedData = null
 
     // Default: authenticated user
-    mockGetUser.mockResolvedValue({
-      data: { user: { id: 'auth-uid-1', email: 'user@acme.com' } },
-      error: null,
-    })
-
-    // Default: user lookup succeeds
-    mockUserLookup.mockResolvedValue({
-      data: {
-        id: 'usr-001',
-        full_name: 'Test User',
-        email: 'user@acme.com',
-        workspace_id: 'ws-001',
-      },
-      error: null,
+    mockGetCurrentUser.mockResolvedValue({
+      id: 'usr-001',
+      auth_user_id: 'auth-uid-1',
+      full_name: 'Test User',
+      email: 'user@acme.com',
+      workspace_id: 'ws-001',
+      role: 'owner',
+      plan: 'pro',
     })
 
     // Default: insert succeeds
@@ -131,10 +128,7 @@ describe('POST /api/service-request', () => {
 
   describe('Authentication', () => {
     it('should return 401 when user is not authenticated', async () => {
-      mockGetUser.mockResolvedValue({
-        data: { user: null },
-        error: null,
-      })
+      mockGetCurrentUser.mockResolvedValue(null)
 
       const request = makeRequest({
         request_type: 'GHL Setup',
@@ -145,23 +139,6 @@ describe('POST /api/service-request', () => {
 
       expect(response.status).toBe(401)
       expect(data.error).toBe('Unauthorized')
-    })
-
-    it('should return 404 when user record not found in users table', async () => {
-      mockUserLookup.mockResolvedValue({
-        data: null,
-        error: { message: 'No rows' },
-      })
-
-      const request = makeRequest({
-        request_type: 'GHL Setup',
-        details: 'Need help',
-      })
-      const response = await POST(request)
-      const data = await response.json()
-
-      expect(response.status).toBe(404)
-      expect(data.error).toBe('User not found')
     })
   })
 
@@ -310,14 +287,14 @@ describe('POST /api/service-request', () => {
     })
 
     it('should use email as name fallback when full_name is null', async () => {
-      mockUserLookup.mockResolvedValue({
-        data: {
-          id: 'usr-001',
-          full_name: null,
-          email: 'user@acme.com',
-          workspace_id: 'ws-001',
-        },
-        error: null,
+      mockGetCurrentUser.mockResolvedValue({
+        id: 'usr-001',
+        auth_user_id: 'auth-uid-1',
+        full_name: null,
+        email: 'user@acme.com',
+        workspace_id: 'ws-001',
+        role: 'owner',
+        plan: 'pro',
       })
 
       const request = makeRequest({

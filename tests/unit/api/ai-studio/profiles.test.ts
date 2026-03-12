@@ -34,9 +34,9 @@ function createQueryChain(resolvedValue?: any) {
   return chain
 }
 
-// Mock authentication helper
-vi.mock('@/lib/auth/helpers', () => ({
-  getCurrentUser: () => mockGetCurrentUser(),
+// Mock fast-auth (profiles route uses fastAuth, not getCurrentUser)
+vi.mock('@/lib/auth/fast-auth', () => ({
+  fastAuth: (request: any) => mockGetCurrentUser(),
 }))
 
 // Mock Supabase server client
@@ -67,13 +67,9 @@ function makeRequest(searchParams: Record<string, string> = {}): NextRequest {
 
 function mockAuthenticatedUser(overrides: any = {}) {
   mockGetCurrentUser.mockResolvedValue({
-    id: 'auth-user-123',
-    auth_user_id: 'auth-user-123',
+    userId: 'auth-user-123',
+    workspaceId: 'workspace-123',
     email: 'test@example.com',
-    full_name: 'Test User',
-    workspace_id: 'workspace-123',
-    role: 'owner',
-    plan: 'pro',
     ...overrides,
   })
 }
@@ -83,29 +79,12 @@ function mockUnauthenticatedUser() {
 }
 
 function mockSupabaseClient(options: {
-  userData?: any
   brandWorkspace?: any
   profiles?: any[]
   profilesError?: any
 } = {}) {
   const client = {
     from: vi.fn().mockImplementation((table: string) => {
-      if (table === 'users') {
-        // Use default only if userData not provided at all
-        const userData = 'userData' in options
-          ? options.userData
-          : { workspace_id: 'workspace-123' }
-
-        return {
-          select: vi.fn().mockReturnThis(),
-          eq: vi.fn().mockReturnThis(),
-          single: vi.fn().mockResolvedValue({
-            data: userData,
-            error: null,
-          }),
-        }
-      }
-
       if (table === 'brand_workspaces') {
         // Use default only if brandWorkspace not provided at all
         const brandWorkspace = 'brandWorkspace' in options
@@ -115,7 +94,7 @@ function mockSupabaseClient(options: {
         return {
           select: vi.fn().mockReturnThis(),
           eq: vi.fn().mockReturnThis(),
-          single: vi.fn().mockResolvedValue({
+          maybeSingle: vi.fn().mockResolvedValue({
             data: brandWorkspace,
             error: null,
           }),
@@ -223,8 +202,8 @@ describe('GET /api/ai-studio/profiles', () => {
   // ============================================
 
   describe('Workspace Ownership', () => {
-    it('should return 403 when user lookup fails', async () => {
-      mockSupabaseClient({ userData: null })
+    it('should return 403 when brand workspace not found', async () => {
+      mockSupabaseClient({ brandWorkspace: null })
 
       const request = makeRequest({ workspace: 'workspace-123' })
       const response = await GET(request)
@@ -236,7 +215,6 @@ describe('GET /api/ai-studio/profiles', () => {
 
     it('should return 403 when brand workspace does not belong to user', async () => {
       mockSupabaseClient({
-        userData: { workspace_id: 'workspace-123' },
         brandWorkspace: null, // Brand workspace not found or doesn't match
       })
 
@@ -250,7 +228,6 @@ describe('GET /api/ai-studio/profiles', () => {
 
     it('should allow access when workspace belongs to user', async () => {
       mockSupabaseClient({
-        userData: { workspace_id: 'workspace-123' },
         brandWorkspace: { id: 'brand-workspace-123' },
       })
 

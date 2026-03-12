@@ -29,6 +29,18 @@ vi.mock('openai', () => {
   }
 })
 
+// Mock api-logger (knowledge.ts now calls logApiCall)
+vi.mock('@/lib/services/api-logger', () => ({
+  logApiCall: vi.fn(),
+}))
+
+// Mock log-sanitizer
+vi.mock('@/lib/utils/log-sanitizer', () => ({
+  safeLog: vi.fn(),
+  safeError: vi.fn(),
+  safeWarn: vi.fn(),
+}))
+
 // Import AFTER mocks
 import { generateKnowledgeBase, generateCustomerProfiles } from '@/lib/ai-studio/knowledge'
 import type { KnowledgeBase } from '@/lib/ai-studio/knowledge'
@@ -293,7 +305,7 @@ describe('Knowledge Base Library', () => {
 
       expect(mockCreate).toHaveBeenCalledWith(
         expect.objectContaining({
-          model: 'gpt-4-turbo-preview',
+          model: 'gpt-4o',
         })
       )
     })

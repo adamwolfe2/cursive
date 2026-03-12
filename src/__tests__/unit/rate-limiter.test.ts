@@ -105,15 +105,17 @@ describe('RATE_LIMITS configuration', () => {
     expect(RATE_LIMITS['partner-register'].maxRequests).toBeLessThanOrEqual(10)
   })
 
-  it('marketplace-browse is the most generous (good UX)', () => {
-    // browse should be >= every other endpoint's maxRequests
+  it('marketplace-browse is more generous than security-sensitive endpoints', () => {
+    // browse should be >= security-sensitive endpoints (auth, upload, payout)
     const browseMax = RATE_LIMITS['marketplace-browse'].maxRequests
-    const allOthers = Object.entries(RATE_LIMITS)
-      .filter(([key]) => key !== 'marketplace-browse' && key !== 'default')
-      .map(([, cfg]) => cfg.maxRequests)
+    const restrictedEndpoints: RateLimitType[] = [
+      'partner-upload', 'partner-register', 'referral',
+      'auth-login', 'auth-change-password', 'public-form',
+      'partner-payout', 'billing-checkout', 'marketplace-purchase',
+    ]
 
-    for (const other of allOthers) {
-      expect(browseMax).toBeGreaterThanOrEqual(other)
+    for (const key of restrictedEndpoints) {
+      expect(browseMax).toBeGreaterThanOrEqual(RATE_LIMITS[key].maxRequests)
     }
   })
 

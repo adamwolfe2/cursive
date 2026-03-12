@@ -13,85 +13,56 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { NextRequest } from 'next/server'
 
 // ============================================
-// HOISTED MOCKS — vi.hoisted runs before vi.mock
+// MOCKS
 // ============================================
 
-const {
-  mockGetUser,
-  userChain,
-  adminPixelChain,
-  createChainMock,
-} = vi.hoisted(() => {
-  const _vi = {
-    fn: (impl?: any) => {
-      const f: any = impl ? impl : () => undefined
-      f.mockReturnValue = (v: any) => { f._returnValue = v; const wrapped: any = (...args: any[]) => f._returnValue; Object.assign(wrapped, f); return wrapped }
-      f.mockResolvedValue = (v: any) => { f._resolvedValue = v; return f }
-      f.mockImplementation = (fn: any) => { Object.assign(f, fn); return f }
-      f.mockReturnThis = () => f
-      return f
-    },
-  }
+const mockGetCurrentUser = vi.fn()
+const mockAdminPixelMaybeSingle = vi.fn()
+const mockAdminPixelInsert = vi.fn()
 
-  // We can't use vi inside vi.hoisted, so we store state and configure in beforeEach
-  return {
-    mockGetUser: null as any, // Placeholder — set up via the mock factory
-    userChain: null as any,
-    adminPixelChain: null as any,
-    createChainMock: null as any,
-  }
-})
+// Mock getCurrentUser from auth helpers
+vi.mock('@/lib/auth/helpers', () => ({
+  getCurrentUser: () => mockGetCurrentUser(),
+}))
 
-// Track mock state via module-level variables set in mock factories
-let _mockGetUser: ReturnType<typeof vi.fn>
-let _userChainSingle: ReturnType<typeof vi.fn>
-let _adminPixelChainMaybeSingle: ReturnType<typeof vi.fn>
-let _adminPixelChainInsert: ReturnType<typeof vi.fn>
-let _adminPixelChainSelect: ReturnType<typeof vi.fn>
-let _adminPixelChainEq: ReturnType<typeof vi.fn>
+// Mock api-error-handler
+vi.mock('@/lib/utils/api-error-handler', () => ({
+  handleApiError: vi.fn().mockImplementation((error: any) => {
+    const { NextResponse: NR } = require('next/server')
+    if (error?.name === 'ZodError') {
+      return NR.json({ error: 'Invalid input' }, { status: 400 })
+    }
+    return NR.json({ error: error?.message || 'Internal server error' }, { status: 500 })
+  }),
+  unauthorized: vi.fn().mockImplementation(() => {
+    const { NextResponse: NR } = require('next/server')
+    return NR.json({ error: 'Unauthorized' }, { status: 401 })
+  }),
+}))
 
-// Supabase server client (auth client — uses cookies)
-vi.mock('@/lib/supabase/server', () => {
-  const _mockGetUser = vi.fn()
-  const chain: any = {}
-  chain.select = vi.fn().mockReturnValue(chain)
-  chain.eq = vi.fn().mockReturnValue(chain)
-  chain.single = vi.fn()
-
-  // Expose for test use via module-level setter
-  ;(globalThis as any).__pixelTest_mockGetUser = _mockGetUser
-  ;(globalThis as any).__pixelTest_userChainSingle = chain.single
-  ;(globalThis as any).__pixelTest_userChainSelect = chain.select
-  ;(globalThis as any).__pixelTest_userChainEq = chain.eq
-
-  return {
-    createClient: vi.fn().mockResolvedValue({
-      auth: { getUser: _mockGetUser },
-      from: vi.fn((table: string) => {
-        if (table === 'users') return chain
-        const fallback: any = {}
-        fallback.select = vi.fn().mockReturnValue(fallback)
-        fallback.eq = vi.fn().mockReturnValue(fallback)
-        fallback.single = vi.fn().mockResolvedValue({ data: null, error: null })
-        return fallback
-      }),
-    }),
-  }
-})
+// Mock log-sanitizer
+vi.mock('@/lib/utils/log-sanitizer', () => ({
+  safeLog: vi.fn(),
+  safeError: vi.fn(),
+  safeWarn: vi.fn(),
+}))
 
 // Supabase admin client (service role — bypasses RLS)
 vi.mock('@/lib/supabase/admin', () => {
   const chain: any = {}
   chain.select = vi.fn().mockReturnValue(chain)
   chain.insert = vi.fn().mockReturnValue(chain)
+  chain.update = vi.fn().mockReturnValue(chain)
   chain.eq = vi.fn().mockReturnValue(chain)
+  chain.is = vi.fn().mockReturnValue(chain)
+  chain.gte = vi.fn().mockReturnValue(chain)
+  chain.order = vi.fn().mockReturnValue(chain)
+  chain.limit = vi.fn().mockReturnValue(chain)
   chain.single = vi.fn()
   chain.maybeSingle = vi.fn()
 
   ;(globalThis as any).__pixelTest_adminPixelChainMaybeSingle = chain.maybeSingle
   ;(globalThis as any).__pixelTest_adminPixelChainInsert = chain.insert
-  ;(globalThis as any).__pixelTest_adminPixelChainSelect = chain.select
-  ;(globalThis as any).__pixelTest_adminPixelChainEq = chain.eq
 
   return {
     createAdminClient: vi.fn(() => ({
@@ -140,15 +111,6 @@ function makeRequest(body: unknown, headers: Record<string, string> = {}): NextR
   })
 }
 
-// Access the mock functions created inside vi.mock factories
-function getMockGetUser() {
-  return (globalThis as any).__pixelTest_mockGetUser as ReturnType<typeof vi.fn>
-}
-
-function getUserChainSingle() {
-  return (globalThis as any).__pixelTest_userChainSingle as ReturnType<typeof vi.fn>
-}
-
 function getAdminPixelChainMaybeSingle() {
   return (globalThis as any).__pixelTest_adminPixelChainMaybeSingle as ReturnType<typeof vi.fn>
 }
@@ -164,6 +126,19 @@ function createInsertChainMock() {
   return { select: selectFn, single: singleFn }
 }
 
+function mockAuthenticatedUser(overrides: any = {}) {
+  mockGetCurrentUser.mockResolvedValue({
+    id: 'usr-001',
+    auth_user_id: 'auth-uid-1',
+    email: 'admin@acme.com',
+    full_name: 'Admin User',
+    workspace_id: 'ws-1',
+    role: 'admin',
+    plan: 'pro',
+    ...overrides,
+  })
+}
+
 // ============================================
 // TESTS
 // ============================================
@@ -173,17 +148,9 @@ describe('POST /api/pixel/provision', () => {
     vi.clearAllMocks()
 
     // Default: authenticated user with admin role
-    getMockGetUser().mockResolvedValue({
-      data: { user: { id: 'auth-uid-1', email: 'admin@acme.com' } },
-      error: null,
-    })
+    mockAuthenticatedUser()
 
-    getUserChainSingle().mockResolvedValue({
-      data: { workspace_id: 'ws-1', full_name: 'Admin User', role: 'admin' },
-      error: null,
-    })
-
-    // Default: no existing pixel
+    // Default: no existing pixel (first maybeSingle = existing pixel check, second = demo pixel check)
     getAdminPixelChainMaybeSingle().mockResolvedValue({ data: null, error: null })
 
     // Default: insert succeeds
@@ -197,10 +164,7 @@ describe('POST /api/pixel/provision', () => {
 
   describe('Authentication', () => {
     it('should return 401 when user is not authenticated', async () => {
-      getMockGetUser().mockResolvedValue({
-        data: { user: null },
-        error: { message: 'Not authenticated' },
-      })
+      mockGetCurrentUser.mockResolvedValue(null)
 
       const request = makeRequest({ website_url: 'https://acme.com' })
       const response = await POST(request)
@@ -211,10 +175,7 @@ describe('POST /api/pixel/provision', () => {
     })
 
     it('should return 400 when user has no workspace', async () => {
-      getUserChainSingle().mockResolvedValue({
-        data: null,
-        error: { message: 'No rows' },
-      })
+      mockAuthenticatedUser({ workspace_id: null })
 
       const request = makeRequest({ website_url: 'https://acme.com' })
       const response = await POST(request)
@@ -231,10 +192,7 @@ describe('POST /api/pixel/provision', () => {
 
   describe('Role enforcement', () => {
     it('should return 403 for member role', async () => {
-      getUserChainSingle().mockResolvedValue({
-        data: { workspace_id: 'ws-1', full_name: 'Member', role: 'member' },
-        error: null,
-      })
+      mockAuthenticatedUser({ role: 'member' })
 
       const request = makeRequest({ website_url: 'https://acme.com' })
       const response = await POST(request)
@@ -245,23 +203,16 @@ describe('POST /api/pixel/provision', () => {
     })
 
     it('should return 403 for viewer role', async () => {
-      getUserChainSingle().mockResolvedValue({
-        data: { workspace_id: 'ws-1', full_name: 'Viewer', role: 'viewer' },
-        error: null,
-      })
+      mockAuthenticatedUser({ role: 'viewer' })
 
       const request = makeRequest({ website_url: 'https://acme.com' })
       const response = await POST(request)
-      const data = await response.json()
 
       expect(response.status).toBe(403)
     })
 
     it('should allow owner role', async () => {
-      getUserChainSingle().mockResolvedValue({
-        data: { workspace_id: 'ws-1', full_name: 'Owner', role: 'owner' },
-        error: null,
-      })
+      mockAuthenticatedUser({ role: 'owner' })
 
       getAdminPixelChainMaybeSingle().mockResolvedValue({ data: null, error: null })
       const insertResult = createInsertChainMock()
@@ -286,10 +237,7 @@ describe('POST /api/pixel/provision', () => {
     })
 
     it('should allow users with null role (legacy users)', async () => {
-      getUserChainSingle().mockResolvedValue({
-        data: { workspace_id: 'ws-1', full_name: 'Legacy User', role: null },
-        error: null,
-      })
+      mockAuthenticatedUser({ role: null })
 
       getAdminPixelChainMaybeSingle().mockResolvedValue({ data: null, error: null })
       const insertResult = createInsertChainMock()
@@ -299,7 +247,7 @@ describe('POST /api/pixel/provision', () => {
       const response = await POST(request)
 
       // null role passes: `userData.role && !['owner', 'admin'].includes(userData.role)`
-      // null is falsy, so the condition short-circuits → allowed
+      // null is falsy, so the condition short-circuits -> allowed
       expect(response.status).not.toBe(403)
     })
   })

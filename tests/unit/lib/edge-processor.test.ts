@@ -62,6 +62,9 @@ vi.mock('@/lib/supabase/admin', () => ({
           chain.single.mockImplementation(() => {
             return Promise.resolve(eventFetchResult)
           })
+          chain.maybeSingle.mockImplementation(() => {
+            return Promise.resolve(eventFetchResult)
+          })
           chain.update.mockImplementation((data: any) => {
             dbOperations.push({ table, op: 'update', data })
             return chain
@@ -74,11 +77,15 @@ vi.mock('@/lib/supabase/admin', () => ({
           chain.single.mockImplementation(() => {
             return Promise.resolve(identityFindResult)
           })
+          chain.maybeSingle.mockImplementation(() => {
+            return Promise.resolve(identityFindResult)
+          })
           // For inserts, return identityInsertResult
           chain.insert.mockImplementation((data: any) => {
             dbOperations.push({ table, op: 'insert', data })
             const insertChain = createChainMock()
             insertChain.single.mockResolvedValue(identityInsertResult)
+            insertChain.maybeSingle.mockResolvedValue(identityInsertResult)
             return insertChain
           })
           chain.update.mockImplementation((data: any) => {
@@ -93,11 +100,15 @@ vi.mock('@/lib/supabase/admin', () => ({
           chain.single.mockImplementation(() => {
             return Promise.resolve(leadCheckResult)
           })
+          chain.maybeSingle.mockImplementation(() => {
+            return Promise.resolve(leadCheckResult)
+          })
           // For lead insert
           chain.insert.mockImplementation((data: any) => {
             dbOperations.push({ table, op: 'insert', data })
             const insertChain = createChainMock()
             insertChain.single.mockResolvedValue(leadInsertResult)
+            insertChain.maybeSingle.mockResolvedValue(leadInsertResult)
             return insertChain
           })
           chain.update.mockImplementation((data: any) => {
@@ -114,6 +125,7 @@ vi.mock('@/lib/supabase/admin', () => ({
           targetChain.select.mockReturnValue(targetChain)
           targetChain.eq.mockReturnValue(targetChain)
           targetChain.single.mockResolvedValue(targetingResult)
+          targetChain.maybeSingle.mockResolvedValue(targetingResult)
           // The actual query doesn't use .single(), it returns array data
           chain.select.mockReturnValue(chain)
 
