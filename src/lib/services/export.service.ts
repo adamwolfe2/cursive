@@ -44,9 +44,15 @@ export async function exportLeads(
 ): Promise<ExportResult> {
   const supabase = await createClient()
 
+  const exportColumns = (options.fields || [
+    'email', 'first_name', 'last_name', 'full_name', 'title',
+    'company_name', 'company_domain', 'phone', 'linkedin_url',
+    'status', 'timezone', 'created_at',
+  ]).join(', ')
+
   let query = supabase
     .from('leads')
-    .select('*')
+    .select(exportColumns)
     .eq('workspace_id', workspaceId)
     .order('created_at', { ascending: false })
 

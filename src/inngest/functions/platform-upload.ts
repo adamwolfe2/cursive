@@ -26,7 +26,7 @@ export const platformUpload = inngest.createFunction(
 
       const { data, error } = await supabase
         .from('leads')
-        .select('*')
+        .select('id, email, first_name, last_name, full_name, phone, company_name, company_domain, job_title, city, state, linkedin_url, status, created_at')
         .in('id', lead_ids)
         .eq('workspace_id', workspace_id)
 
