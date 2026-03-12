@@ -1,5 +1,6 @@
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { fetchWithBackoff } from './rate-limiter'
+import { getCachedResult, setCachedResult, buildCacheKey, CACHE_TTL_DAYS } from './cache'
 
 export interface DeepResearchResult {
   brief: string
@@ -17,6 +18,11 @@ export async function deepResearchPerson(
 ): Promise<DeepResearchResult | null> {
   const apiKey = process.env.PERPLEXITY_API_KEY
   if (!apiKey) return null
+
+  // Check cache first
+  const cacheKey = buildCacheKey('perplexity', { name, company, title, ...(domain ? { domain } : {}) })
+  const cached = await getCachedResult<DeepResearchResult>('perplexity', cacheKey)
+  if (cached) return cached
 
   const systemPrompt = `You are a B2B sales intelligence researcher. Given a person's name, company, and title, produce a concise intelligence dossier for a sales outreach team. Structure your response as JSON with these exact fields:
 {
@@ -68,22 +74,26 @@ Find: their professional background, what they care about, recent news/activity,
       const jsonMatch = content.match(/\{[\s\S]*\}/)
       if (!jsonMatch) throw new Error('No JSON in response')
       const parsed = JSON.parse(jsonMatch[0])
-      return {
+      const result: DeepResearchResult = {
         brief: parsed.brief ?? content,
         keyFacts: parsed.keyFacts ?? [],
         outreachAngle: parsed.outreachAngle ?? '',
         sources: [...(parsed.sources ?? []), ...citations].slice(0, 5),
         model: data.model ?? 'sonar',
       }
+      void setCachedResult('perplexity', cacheKey, result, CACHE_TTL_DAYS.perplexity)
+      return result
     } catch {
       // Fallback: return raw content as brief
-      return {
+      const fallback: DeepResearchResult = {
         brief: content,
         keyFacts: [],
         outreachAngle: '',
         sources: citations.slice(0, 5),
         model: data.model ?? 'sonar',
       }
+      void setCachedResult('perplexity', cacheKey, fallback, CACHE_TTL_DAYS.perplexity)
+      return fallback
     }
   } catch (err) {
     safeError('[Perplexity] Error running deep research', err)

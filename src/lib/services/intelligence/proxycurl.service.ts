@@ -1,5 +1,6 @@
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { fetchWithBackoff } from './rate-limiter'
+import { getCachedResult, setCachedResult, buildCacheKey, CACHE_TTL_DAYS } from './cache'
 
 export interface LinkedInProfile {
   fullName: string
@@ -32,6 +33,14 @@ export async function getLinkedInProfile(
 ): Promise<LinkedInProfile | null> {
   const apiKey = process.env.PROXYCURL_API_KEY
   if (!apiKey) return null
+
+  // Check cache first
+  const cacheKey = buildCacheKey('proxycurl', {
+    ...(linkedinUrl ? { linkedin_url: linkedinUrl } : {}),
+    ...(email ? { email } : {}),
+  })
+  const cached = await getCachedResult<LinkedInProfile>('proxycurl', cacheKey)
+  if (cached) return cached
 
   try {
     let url: string
@@ -69,7 +78,7 @@ export async function getLinkedInProfile(
 
     const currentExp = experiences.find((e: { current: boolean }) => e.current) ?? experiences[0]
 
-    return {
+    const result: LinkedInProfile = {
       fullName: profile.full_name ?? '',
       headline: profile.headline ?? '',
       summary: profile.summary ?? '',
@@ -84,6 +93,8 @@ export async function getLinkedInProfile(
       experiences,
       education,
     }
+    void setCachedResult('proxycurl', cacheKey, result, CACHE_TTL_DAYS.proxycurl)
+    return result
   } catch (err) {
     safeError('[Proxycurl] Error fetching LinkedIn profile', err)
     return null

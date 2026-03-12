@@ -1,5 +1,6 @@
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { fetchWithBackoff } from './rate-limiter'
+import { getCachedResult, setCachedResult, buildCacheKey, CACHE_TTL_DAYS } from './cache'
 
 export interface NewsArticle {
   title: string
@@ -12,6 +13,11 @@ export interface NewsArticle {
 export async function getNewsMentions(name: string, company: string): Promise<NewsArticle[]> {
   const apiKey = process.env.SERPER_API_KEY
   if (!apiKey) return []
+
+  // Check cache first
+  const cacheKey = buildCacheKey('serper', { name, company })
+  const cached = await getCachedResult<NewsArticle[]>('serper', cacheKey)
+  if (cached) return cached
 
   try {
     const query = `"${name}" "${company}"`
@@ -27,13 +33,15 @@ export async function getNewsMentions(name: string, company: string): Promise<Ne
     if (!res.ok) return []
     const data = await res.json()
 
-    return (data.news ?? []).slice(0, 5).map((a: any) => ({
+    const result: NewsArticle[] = (data.news ?? []).slice(0, 5).map((a: any) => ({
       title: a.title ?? '',
       url: a.link ?? '',
       date: a.date ?? '',
       snippet: a.snippet ?? '',
       source: a.source ?? '',
     }))
+    void setCachedResult('serper', cacheKey, result, CACHE_TTL_DAYS.serper)
+    return result
   } catch (err) {
     safeError('[Serper] Error fetching news mentions', err)
     return []
