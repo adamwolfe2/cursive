@@ -15,6 +15,7 @@ export const refreshWorkspaceStats = inngest.createFunction(
     id: 'refresh-workspace-stats',
     name: 'Refresh Workspace Stats Cache',
     retries: 1,
+    timeouts: { finish: '5m' },
   },
   { cron: '*/15 * * * *' }, // Every 15 minutes
   async ({ step }) => {

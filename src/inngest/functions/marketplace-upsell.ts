@@ -115,7 +115,7 @@ function buildUpsellEmail(type: 'data' | 'outbound', userName: string, lifetimeS
 }
 
 export const marketplaceUpsellCheck = inngest.createFunction(
-  { id: 'marketplace-upsell-check', retries: 2 },
+  { id: 'marketplace-upsell-check', retries: 2, timeouts: { finish: '5m' } },
   { event: 'marketplace/credit-purchased' },
   async ({ event, step }) => {
     const { workspace_id, user_id, lifetime_spend } = event.data

@@ -37,6 +37,7 @@ export const distributeDailyLeads = inngest.createFunction(
     id: 'distribute-daily-leads',
     name: 'Distribute Daily Leads',
     retries: 3,
+    timeouts: { finish: '10m' },
   },
   { cron: '0 13 * * *' }, // 8am Central = 1pm UTC
   async ({ event, step }) => {

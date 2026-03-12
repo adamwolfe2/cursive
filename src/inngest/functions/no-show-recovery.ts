@@ -51,6 +51,7 @@ export const calNoShowRecovery = inngest.createFunction(
   {
     id: 'cal-no-show-recovery',
     retries: 2,
+    timeouts: { finish: '15m' },
     cancelOn: [
       {
         event: 'cal/booking.cancelled',

@@ -32,6 +32,7 @@ export const creditAutoRecharge = inngest.createFunction(
     id: 'credit-auto-recharge',
     name: 'Credit Auto-Recharge',
     retries: 3,
+    timeouts: { finish: '2m' },
     // Deduplicate by workspace so we don't stack multiple recharges at once
     idempotency: 'event.data.workspace_id',
   },

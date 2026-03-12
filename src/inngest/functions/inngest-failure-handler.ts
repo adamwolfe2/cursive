@@ -36,6 +36,7 @@ export const universalFailureHandler = inngest.createFunction(
     id: 'universal-failure-handler',
     name: 'Universal Failure Handler',
     retries: 1,
+    timeouts: { finish: '2m' },
   },
   { event: 'inngest/function.failed' },
   async ({ event, step }) => {

@@ -18,6 +18,7 @@ export const firstLeadsArrived = inngest.createFunction(
     id: 'first-leads-arrived',
     name: 'Send First Leads Arrived Email',
     retries: 3,
+    timeouts: { finish: '2m' },
   },
   { event: 'workspace/first-leads-arrived' },
   async ({ event, step }) => {

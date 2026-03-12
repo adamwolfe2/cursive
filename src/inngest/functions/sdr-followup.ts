@@ -54,7 +54,7 @@ Respond with just the email body text, no subject line.`
 }
 
 export const sdrFollowupCron = inngest.createFunction(
-  { id: 'sdr-followup-cron', retries: 1, concurrency: { limit: 1 } },
+  { id: 'sdr-followup-cron', retries: 1, timeouts: { finish: '10m' }, concurrency: { limit: 1 } },
   { cron: 'TZ=America/Chicago 0 9 * * 1-5' }, // 9am CT weekdays
   async ({ step, logger }) => {
     // Step 1: Load all workspaces with follow-up enabled

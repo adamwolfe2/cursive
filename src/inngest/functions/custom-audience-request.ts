@@ -6,7 +6,7 @@ import { safeError } from '@/lib/utils/log-sanitizer'
 import { sendCustomAudienceConfirmationEmail } from '@/lib/email/service'
 
 export const handleCustomAudienceRequest = inngest.createFunction(
-  { id: 'handle-custom-audience-request', retries: 2 },
+  { id: 'handle-custom-audience-request', retries: 2, timeouts: { finish: '5m' } },
   { event: 'marketplace/custom-audience-requested' },
   async ({ event, step, logger }) => {
     const { request_id, workspace_id, user_id, user_email, industry, volume } = event.data

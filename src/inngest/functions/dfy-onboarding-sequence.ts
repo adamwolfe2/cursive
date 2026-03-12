@@ -25,6 +25,7 @@ export const dfyOnboardingSequence = inngest.createFunction(
   {
     id: 'dfy-onboarding-sequence',
     retries: 2,
+    timeouts: { finish: '15m' },
     cancelOn: [{ event: 'subscription/cancelled', match: 'data.workspace_id' }],
   },
   { event: 'dfy/onboarding-completed' },

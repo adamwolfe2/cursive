@@ -117,6 +117,7 @@ export const pixelTrialDrip = inngest.createFunction(
     id: 'pixel-trial-drip',
     name: 'Pixel Trial Email Drip',
     retries: 2,
+    timeouts: { finish: '15m' },
     cancelOn: [{ event: 'subscription/created', match: 'data.workspace_id' }],
     concurrency: { limit: 20 },
   },
@@ -261,6 +262,7 @@ export const checkPixelTrialExpiry = inngest.createFunction(
     id: 'check-pixel-trial-expiry',
     name: 'Check Pixel Trial Expiry',
     retries: 2,
+    timeouts: { finish: '10m' },
   },
   { cron: '0 9 * * *' }, // 9am UTC daily
   async ({ step }) => {

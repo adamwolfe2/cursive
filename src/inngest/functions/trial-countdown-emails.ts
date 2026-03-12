@@ -144,6 +144,7 @@ export const trialCountdownEmails = inngest.createFunction(
     id: 'trial-countdown-emails',
     name: 'Trial Countdown Emails',
     retries: 2,
+    timeouts: { finish: '10m' },
   },
   { cron: '0 9 * * *' }, // 9am UTC daily
   async ({ step }) => {

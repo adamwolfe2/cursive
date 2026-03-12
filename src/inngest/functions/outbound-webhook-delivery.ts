@@ -14,7 +14,7 @@ import {
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 
 export const deliverOutboundWebhooks = inngest.createFunction(
-  { id: 'deliver-outbound-webhooks', retries: 3 },
+  { id: 'deliver-outbound-webhooks', retries: 3, timeouts: { finish: '2m' } },
   { event: 'outbound-webhook/deliver' },
   async ({ event, step }) => {
     const { workspace_id, event_type, payload } = event.data as {

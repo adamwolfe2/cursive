@@ -13,7 +13,7 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://leads.meetcursive.co
 const BOOKING_URL = 'https://cal.com/gotdarrenhill/30min'
 
 export const marketplaceOnboardingSequence = inngest.createFunction(
-  { id: 'marketplace-onboarding-sequence', retries: 2 },
+  { id: 'marketplace-onboarding-sequence', retries: 2, timeouts: { finish: '15m' } },
   { event: 'marketplace/first-purchase' },
   async ({ event, step }) => {
     const { workspace_id, user_id, user_email, user_name, credits } = event.data

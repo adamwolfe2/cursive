@@ -11,6 +11,7 @@ export const refreshEarningsView = inngest.createFunction(
     id: 'refresh-earnings-view',
     name: 'Refresh Partner Earnings Materialized View',
     retries: 2,
+    timeouts: { finish: '5m' },
   },
   { cron: '0 */4 * * *' }, // Every 4 hours (cost: 4x fewer DB refreshes)
   async ({ step }) => {
