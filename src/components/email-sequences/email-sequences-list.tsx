@@ -186,8 +186,37 @@ export function EmailSequencesList() {
   }
 
   if (isLoading) {
-    return <div className="text-center py-12">Loading sequences...</div>
+    return (
+      <div className="space-y-4">
+        {[0, 1, 2].map((i) => (
+          <div key={i} className="border border-border rounded-lg p-5 space-y-3 animate-pulse">
+            <div className="flex items-center justify-between">
+              <div className="space-y-1.5">
+                <div className="h-5 w-48 bg-muted rounded" />
+                <div className="h-4 w-64 bg-muted rounded" />
+              </div>
+              <div className="h-6 w-16 bg-muted rounded-full" />
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="h-3 w-24 bg-muted rounded" />
+              <div className="h-3 w-24 bg-muted rounded" />
+              <div className="h-3 w-24 bg-muted rounded" />
+            </div>
+          </div>
+        ))}
+      </div>
+    )
   }
+
+  const statusLabels: Record<string, string> = {
+    active: 'active',
+    draft: 'draft',
+    paused: 'paused',
+    archived: 'archived',
+    all: '',
+  }
+
+  const statusLabel = statusLabels[statusFilter] ?? ''
 
   return (
     <div className="space-y-6">
@@ -204,13 +233,23 @@ export function EmailSequencesList() {
 
       {/* Sequences List */}
       {sequences.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+        <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border bg-muted/20 py-16 px-4 text-center">
           <div className="rounded-full bg-muted p-4 mb-4">
             <Mail className="h-8 w-8 text-muted-foreground" />
           </div>
-          <h3 className="text-lg font-semibold mb-2">No sequences yet</h3>
+          <h3 className="text-lg font-semibold mb-2">
+            {statusFilter === 'all' ? 'No sequences yet' : `No ${statusLabel} sequences`}
+          </h3>
           <p className="text-muted-foreground mb-6 max-w-md">
-            Create your first automated email sequence to nurture leads.
+            {statusFilter === 'all'
+              ? 'Create your first automated email sequence to nurture and convert leads on autopilot.'
+              : statusFilter === 'active'
+              ? 'No sequences are currently active. Activate a draft sequence or create a new one.'
+              : statusFilter === 'draft'
+              ? 'No draft sequences. Start building a new sequence to get it ready to launch.'
+              : statusFilter === 'paused'
+              ? 'No sequences are paused right now. Paused sequences will appear here.'
+              : 'No archived sequences yet.'}
           </p>
           <Button asChild>
             <Link href="/email-sequences/new">Create Sequence</Link>

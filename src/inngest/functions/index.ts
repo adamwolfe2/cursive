@@ -158,10 +158,8 @@ export { processStripeWebhook, handleWebhookFailure } from './process-stripe-web
 // Operations health monitoring
 export { monitorOperationsHealth } from './monitor-operations-health'
 
-// Alert monitoring
-// NOTE: checkAlerts from ../monitoring/check-alerts.ts is NOT registered because
-// it imports checkAlertRules from @/lib/monitoring/alerts which does not exist.
-// The function needs to be implemented before it can be registered.
+// Alert monitoring (runs every 5 minutes — checks webhook backlogs, platform alerts, email failures)
+export { checkAlerts } from '../monitoring/check-alerts'
 
 // Bulk upload processing
 export {

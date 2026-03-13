@@ -208,13 +208,19 @@ export function LeadsDataTable({
               <TableRow>
                 <TableCell
                   colSpan={table.getAllColumns().length}
-                  className="h-24 text-center"
+                  className="py-0 text-center"
                 >
-                  <div className="flex flex-col items-center justify-center gap-2 py-4">
-                    <Search className="h-8 w-8 text-muted-foreground/50" />
-                    <p className="text-sm font-medium text-foreground">No leads found</p>
-                    <p className="text-xs text-muted-foreground">Try adjusting your filters or browse the marketplace for new leads.</p>
-                    <Button size="sm" variant="outline" asChild className="mt-2">
+                  <div className="flex flex-col items-center justify-center gap-3 py-16 px-8">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
+                      <Search className="h-7 w-7 text-muted-foreground/60" />
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-sm font-semibold text-foreground">No leads found</p>
+                      <p className="text-xs text-muted-foreground max-w-sm">
+                        Try adjusting your filters, or browse the marketplace to purchase verified leads.
+                      </p>
+                    </div>
+                    <Button size="sm" variant="outline" asChild className="mt-1">
                       <Link href="/leads/discover">Browse Marketplace</Link>
                     </Button>
                   </div>

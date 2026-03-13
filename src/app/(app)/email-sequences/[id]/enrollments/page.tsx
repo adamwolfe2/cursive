@@ -255,9 +255,31 @@ export default function EnrollmentsPage() {
             </CardHeader>
             <CardContent className="p-0">
               {filtered.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
-                  <AlertCircle className="mb-3 h-8 w-8 opacity-40" />
-                  <p className="text-sm">No enrollments found for this filter.</p>
+                <div className="flex flex-col items-center justify-center py-16 text-center px-8">
+                  <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-muted">
+                    {total === 0 ? (
+                      <Users className="h-7 w-7 text-muted-foreground" />
+                    ) : (
+                      <AlertCircle className="h-7 w-7 text-muted-foreground" />
+                    )}
+                  </div>
+                  <h3 className="text-base font-semibold text-foreground mb-1">
+                    {total === 0 ? 'No enrollments yet' : `No ${activeFilter === 'all' ? '' : STATUS_LABEL[activeFilter as EnrollmentStatus].toLowerCase() + ' '}enrollments`}
+                  </h3>
+                  <p className="text-sm text-muted-foreground max-w-sm">
+                    {total === 0
+                      ? 'Enroll leads into this sequence to start sending automated emails. Go to your leads and use the enroll action.'
+                      : 'No enrollments match this filter. Try switching to a different status tab.'}
+                  </p>
+                  {total === 0 && (
+                    <Link
+                      href="/crm/leads"
+                      className="mt-5 inline-flex items-center gap-1.5 rounded-lg border border-border bg-background px-4 py-2 text-sm font-medium text-foreground hover:bg-muted transition-colors"
+                    >
+                      <Users className="h-3.5 w-3.5" />
+                      Go to Leads
+                    </Link>
+                  )}
                 </div>
               ) : (
                 <div className="overflow-x-auto">

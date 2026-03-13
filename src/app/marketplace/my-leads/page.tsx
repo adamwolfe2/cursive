@@ -10,6 +10,7 @@ import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { UpsellBanner } from '@/components/marketplace/UpsellBanner'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { ShoppingBag, Search } from 'lucide-react'
 
 interface PurchasedLead {
   id: string
@@ -394,29 +395,37 @@ export default function MyLeadsPage() {
                 ))}
               </div>
             ) : filteredLeads.length === 0 ? (
-              <div className="text-center py-12">
-                <svg
-                  className="w-12 h-12 text-zinc-300 mx-auto mb-3"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.5}
-                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                  />
-                </svg>
-                <p className="text-[13px] text-zinc-500 mb-2">
+              <div className="text-center py-16 px-8">
+                <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-zinc-100">
+                  {leads.length === 0 ? (
+                    <ShoppingBag className="h-7 w-7 text-zinc-400" />
+                  ) : (
+                    <Search className="h-7 w-7 text-zinc-400" />
+                  )}
+                </div>
+                <h3 className="text-[15px] font-semibold text-zinc-900 mb-2">
                   {leads.length === 0 ? 'No purchased leads yet' : 'No leads match your filters'}
+                </h3>
+                <p className="text-[13px] text-zinc-500 mb-5 max-w-sm mx-auto">
+                  {leads.length === 0
+                    ? 'Browse the marketplace to find and purchase verified leads filtered by industry, location, job title, and more.'
+                    : 'Try adjusting your search or filters to find what you\'re looking for.'}
                 </p>
                 {leads.length === 0 ? (
-                  <Link href="/marketplace" className="text-[13px] text-zinc-900 hover:underline">
-                    Browse available leads
+                  <Link
+                    href="/marketplace"
+                    className={cn(
+                      buttonVariants({ variant: 'default', size: 'sm' }),
+                      'bg-zinc-900 hover:bg-zinc-800'
+                    )}
+                  >
+                    Browse Marketplace
                   </Link>
                 ) : (
-                  <button onClick={resetFilters} className="text-[13px] text-zinc-900 hover:underline">
+                  <button
+                    onClick={resetFilters}
+                    className="text-[13px] font-medium text-zinc-900 hover:underline"
+                  >
                     Clear all filters
                   </button>
                 )}
