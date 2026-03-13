@@ -17,19 +17,22 @@ export async function GET(request: NextRequest) {
     const thirtyDaysAgo = new Date()
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
-    // Run all 5 queries in parallel — each is independent
+    // Run 4 queries in parallel.
+    // Queries 1 and 5 (available leads count + price sample) are merged into one
+    // round-trip: fetch up to 100 available leads with their price and an exact
+    // count, then derive both availableCount and avgPrice from the same result.
     const [
-      { count: availableCount, error: availableError },
+      { data: availableLeadsData, count: availableCount, error: availableError },
       { data: creditsData, error: creditsError },
       { count: purchaseCount, error: purchaseError },
       { data: recentPurchases, error: recentError },
-      { data: avgPriceData, error: avgError },
     ] = await Promise.all([
       supabase
         .from('leads')
-        .select('*', { count: 'estimated', head: true })
+        .select('price', { count: 'exact' })
         .neq('workspace_id', workspaceId)
-        .eq('status', 'available'),
+        .eq('status', 'available')
+        .limit(100),
       supabase
         .from('workspace_credits')
         .select('balance')
@@ -45,25 +48,18 @@ export async function GET(request: NextRequest) {
         .eq('buyer_workspace_id', workspaceId)
         .gte('purchased_at', thirtyDaysAgo.toISOString())
         .limit(1000),
-      supabase
-        .from('leads')
-        .select('price')
-        .neq('workspace_id', workspaceId)
-        .eq('status', 'available')
-        .limit(100),
     ])
 
     if (availableError) throw availableError
     if (creditsError) throw creditsError
     if (purchaseError) throw purchaseError
     if (recentError) throw recentError
-    if (avgError) throw avgError
 
     const credits = creditsData?.balance || 0
     const totalSpent =
       recentPurchases?.reduce((sum, p) => sum + (p.price_paid || 0), 0) || 0
-    const avgPrice = avgPriceData?.length
-      ? avgPriceData.reduce((sum, l) => sum + (l.price || 0), 0) / avgPriceData.length
+    const avgPrice = availableLeadsData?.length
+      ? availableLeadsData.reduce((sum, l) => sum + (l.price || 0), 0) / availableLeadsData.length
       : 0
 
     return NextResponse.json({

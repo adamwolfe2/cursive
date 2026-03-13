@@ -66,7 +66,7 @@ export function DemoLeadSequence() {
                 transition={{ duration: 0.3, delay: i * 0.1 }}
                 className={`bg-white border-2 rounded-lg p-4 min-w-[140px] text-center transition-all ${
                   step.status === "active"
-                    ? "border-[#007AFF] shadow-md"
+                    ? "border-primary shadow-md"
                     : step.status === "complete"
                     ? "border-green-300"
                     : "border-gray-200"
@@ -94,12 +94,12 @@ export function DemoLeadSequence() {
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       exit={{ scale: 0 }}
-                      className="inline-flex items-center gap-1.5 px-2 py-1 bg-blue-50 text-[#007AFF] text-xs rounded font-medium"
+                      className="inline-flex items-center gap-1.5 px-2 py-1 bg-blue-50 text-primary text-xs rounded font-medium"
                     >
                       <motion.div
                         animate={{ rotate: 360 }}
                         transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                        className="w-2.5 h-2.5 border-2 border-[#007AFF] border-t-transparent rounded-full"
+                        className="w-2.5 h-2.5 border-2 border-primary border-t-transparent rounded-full"
                       />
                       Active
                     </motion.div>
@@ -120,7 +120,7 @@ export function DemoLeadSequence() {
                 <motion.svg
                   initial={{ opacity: 0 }}
                   animate={{ opacity: step.status !== "pending" ? 1 : 0.3 }}
-                  className="w-5 h-5 text-[#007AFF] flex-shrink-0"
+                  className="w-5 h-5 text-primary flex-shrink-0"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -146,9 +146,9 @@ export function DemoLeadSequence() {
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="flex items-center gap-2 text-xs text-[#007AFF]"
+              className="flex items-center gap-2 text-xs text-primary"
             >
-              <div className="w-3 h-3 border-2 border-[#007AFF] border-t-transparent rounded-full animate-spin" />
+              <div className="w-3 h-3 border-2 border-primary border-t-transparent rounded-full animate-spin" />
               Sending...
             </motion.div>
           )}
@@ -212,7 +212,7 @@ export function DemoLeadSequence() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: 0.8 + i * 0.1 }}
             >
-              <div className="text-3xl text-[#007AFF] mb-1 font-light">
+              <div className="text-3xl text-primary mb-1 font-light">
                 {stat.value}{stat.suffix}
               </div>
               <div className="text-xs text-gray-600">{stat.label}</div>

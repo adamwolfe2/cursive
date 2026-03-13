@@ -6,7 +6,9 @@
   --font-family-cursive: var(--font-dancing-script), cursive;
 
   --color-primary: #007AFF;
+  --color-primary-dark: #0066DD;
   --color-primary-hover: #0066DD;
+  --color-primary-light: #3395FF;
 }
 
 :root {
@@ -36,7 +38,7 @@ body {
 }
 
 .prose a {
-  color: #007AFF;
+  color: var(--color-primary);
   text-decoration: none;
 }
 

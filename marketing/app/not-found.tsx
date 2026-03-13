@@ -13,7 +13,7 @@ export default function NotFound() {
       <Container className="py-24">
         <div className="max-w-2xl mx-auto text-center">
           {/* 404 Badge */}
-          <p className="text-9xl font-bold text-[#007AFF]/10 select-none leading-none mb-6">
+          <p className="text-9xl font-bold text-primary/10 select-none leading-none mb-6">
             404
           </p>
 
@@ -30,7 +30,7 @@ export default function NotFound() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
             <Link
               href="/"
-              className="inline-flex items-center justify-center gap-2 px-6 py-2.5 text-base rounded-lg bg-[#007AFF] text-white hover:bg-[#0066DD] transition-all duration-200"
+              className="inline-flex items-center justify-center gap-2 px-6 py-2.5 text-base rounded-lg bg-primary text-white hover:bg-primary-dark transition-all duration-200"
             >
               Go Home
             </Link>
@@ -50,9 +50,9 @@ export default function NotFound() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <Link
                 href="/pricing"
-                className="group rounded-xl border border-gray-200 p-5 text-left hover:border-[#007AFF]/30 hover:shadow-sm transition-all duration-200"
+                className="group rounded-xl border border-gray-200 p-5 text-left hover:border-primary/30 hover:shadow-sm transition-all duration-200"
               >
-                <p className="font-medium text-zinc-900 group-hover:text-[#007AFF] transition-colors mb-1">
+                <p className="font-medium text-zinc-900 group-hover:text-primary transition-colors mb-1">
                   Pricing
                 </p>
                 <p className="text-sm text-zinc-600">
@@ -61,9 +61,9 @@ export default function NotFound() {
               </Link>
               <Link
                 href="/marketplace"
-                className="group rounded-xl border border-gray-200 p-5 text-left hover:border-[#007AFF]/30 hover:shadow-sm transition-all duration-200"
+                className="group rounded-xl border border-gray-200 p-5 text-left hover:border-primary/30 hover:shadow-sm transition-all duration-200"
               >
-                <p className="font-medium text-zinc-900 group-hover:text-[#007AFF] transition-colors mb-1">
+                <p className="font-medium text-zinc-900 group-hover:text-primary transition-colors mb-1">
                   Lead Marketplace
                 </p>
                 <p className="text-sm text-zinc-600">
@@ -72,9 +72,9 @@ export default function NotFound() {
               </Link>
               <Link
                 href="/blog"
-                className="group rounded-xl border border-gray-200 p-5 text-left hover:border-[#007AFF]/30 hover:shadow-sm transition-all duration-200"
+                className="group rounded-xl border border-gray-200 p-5 text-left hover:border-primary/30 hover:shadow-sm transition-all duration-200"
               >
-                <p className="font-medium text-zinc-900 group-hover:text-[#007AFF] transition-colors mb-1">
+                <p className="font-medium text-zinc-900 group-hover:text-primary transition-colors mb-1">
                   Blog
                 </p>
                 <p className="text-sm text-zinc-600">

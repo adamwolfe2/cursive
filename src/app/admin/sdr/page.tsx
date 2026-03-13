@@ -1,5 +1,3 @@
-export const dynamic = 'force-dynamic'
-
 import { getAllWorkspaces } from '@/lib/auth/admin'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { SdrLandingClient } from './SdrLandingClient'

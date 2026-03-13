@@ -62,7 +62,7 @@ export default function AnalyticsPage() {
             </Link>
 
             <div className="max-w-4xl">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#007AFF] text-white rounded-full text-sm font-medium mb-6">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-full text-sm font-medium mb-6">
                 <BarChart3 className="w-4 h-4" />
                 Analytics
               </div>

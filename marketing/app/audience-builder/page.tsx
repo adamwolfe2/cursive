@@ -35,7 +35,7 @@ export default function AudienceBuilderPage() {
               transition={{ duration: 0.5 }}
               className="text-center max-w-5xl mx-auto"
             >
-              <span className="text-sm text-[#007AFF] mb-4 block font-medium tracking-wide">AUDIENCE BUILDER</span>
+              <span className="text-sm text-primary mb-4 block font-medium tracking-wide">AUDIENCE BUILDER</span>
               <h1 className="text-5xl lg:text-7xl font-light text-gray-900 mb-6">
                 Build Unlimited Audiences. No Caps. No Limits.
               </h1>
@@ -189,9 +189,9 @@ export default function AudienceBuilderPage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.05 }}
-                  className="bg-white rounded-xl p-6 border border-gray-200 hover:border-[#007AFF] hover:shadow-lg transition-all"
+                  className="bg-white rounded-xl p-6 border border-gray-200 hover:border-primary hover:shadow-lg transition-all"
                 >
-                  <benefit.icon className="h-8 w-8 text-[#007AFF] mb-4" />
+                  <benefit.icon className="h-8 w-8 text-primary mb-4" />
                   <h3 className="text-xl text-gray-900 mb-3 font-medium">
                     {benefit.title}
                   </h3>
@@ -246,7 +246,7 @@ export default function AudienceBuilderPage() {
                   transition={{ delay: i * 0.1 }}
                   className="bg-white rounded-xl p-8 border border-gray-200"
                 >
-                  <div className="text-sm text-[#007AFF] font-medium mb-2">FOR {useCase.audience.toUpperCase()}</div>
+                  <div className="text-sm text-primary font-medium mb-2">FOR {useCase.audience.toUpperCase()}</div>
                   <h3 className="text-2xl text-gray-900 mb-4 font-medium">
                     {useCase.scenario}
                   </h3>
@@ -506,15 +506,15 @@ export default function AudienceBuilderPage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.05 }}
-                  className="block bg-gray-50 rounded-xl p-6 border border-gray-200 hover:border-[#007AFF] hover:shadow-lg transition-all group"
+                  className="block bg-gray-50 rounded-xl p-6 border border-gray-200 hover:border-primary hover:shadow-lg transition-all group"
                 >
-                  <h3 className="text-lg text-gray-900 mb-2 font-medium group-hover:text-[#007AFF] transition-colors">
+                  <h3 className="text-lg text-gray-900 mb-2 font-medium group-hover:text-primary transition-colors">
                     {resource.title}
                   </h3>
                   <p className="text-gray-600 text-sm leading-relaxed">
                     {resource.description}
                   </p>
-                  <div className="mt-4 text-[#007AFF] text-sm font-medium flex items-center gap-2">
+                  <div className="mt-4 text-primary text-sm font-medium flex items-center gap-2">
                     Read article <ArrowRight className="h-4 w-4" />
                   </div>
                 </motion.a>
@@ -547,7 +547,7 @@ export default function AudienceBuilderPage() {
                 size="lg"
                 href="https://cal.com/gotdarrenhill/30min"
                 target="_blank"
-                className="bg-[#007AFF] text-white hover:bg-[#0066DD] text-lg px-10 py-5 mb-4"
+                className="bg-primary text-white hover:bg-primary-dark text-lg px-10 py-5 mb-4"
               >
                 Build Your First Audience Now
               </Button>

@@ -29,7 +29,7 @@ export default function DemosPage() {
                 <motion.div
                   animate={{ rotate: 360 }}
                   transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                  className="w-2 h-2 rounded-full bg-[#007AFF]"
+                  className="w-2 h-2 rounded-full bg-primary"
                 />
                 <span className="text-sm text-gray-600">12 Interactive Demos</span>
               </motion.div>
@@ -48,7 +48,7 @@ export default function DemosPage() {
                 <Link
                   href="https://cal.com/gotdarrenhill/30min"
                   target="_blank"
-                  className="px-6 py-3 bg-[#007AFF] text-white rounded-lg font-medium hover:bg-[#0066DD] transition-colors"
+                  className="px-6 py-3 bg-primary text-white rounded-lg font-medium hover:bg-primary-dark transition-colors"
                 >
                   Book a Live Demo
                 </Link>
@@ -99,14 +99,14 @@ export default function DemosPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.6 + i * 0.1 }}
                   whileHover={{ y: -4, scale: 1.02 }}
-                  className="bg-gradient-to-br from-blue-50 to-transparent rounded-xl p-6 border border-gray-200 hover:border-[#007AFF] transition-all"
+                  className="bg-gradient-to-br from-blue-50 to-transparent rounded-xl p-6 border border-gray-200 hover:border-primary transition-all"
                 >
-                  <svg className="w-8 h-8 text-[#007AFF] mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-8 h-8 text-primary mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={category.icon} />
                   </svg>
                   <h3 className="text-lg text-gray-900 font-medium mb-2">{category.title}</h3>
                   <p className="text-sm text-gray-600 mb-3">{category.description}</p>
-                  <div className="text-xs text-[#007AFF] font-medium">{category.count} demos</div>
+                  <div className="text-xs text-primary font-medium">{category.count} demos</div>
                 </motion.div>
               ))}
             </div>

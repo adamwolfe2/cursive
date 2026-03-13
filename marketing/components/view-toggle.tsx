@@ -44,7 +44,7 @@ export function ViewToggle() {
         {view === 'human' && (
           <motion.div
             layoutId="activeView"
-            className="absolute inset-0 bg-[#007AFF] rounded-full shadow-sm"
+            className="absolute inset-0 bg-primary rounded-full shadow-sm"
             transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
           />
         )}
@@ -62,7 +62,7 @@ export function ViewToggle() {
         {view === 'machine' && (
           <motion.div
             layoutId="activeView"
-            className="absolute inset-0 bg-[#007AFF] rounded-full shadow-sm"
+            className="absolute inset-0 bg-primary rounded-full shadow-sm"
             transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
           />
         )}

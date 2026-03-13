@@ -125,7 +125,7 @@ export default function VentureStudioPage() {
                 transition={{ duration: 0.5 }}
                 className="text-center max-w-5xl mx-auto"
               >
-                <span className="text-sm text-[#007AFF] mb-4 block font-medium tracking-wide">VENTURE STUDIO</span>
+                <span className="text-sm text-primary mb-4 block font-medium tracking-wide">VENTURE STUDIO</span>
                 <h1 className="text-5xl lg:text-7xl font-light text-gray-900 mb-6">
                   We Build Your{" "}
                   <span className="block font-cursive text-6xl lg:text-7xl text-gray-500 mt-2">Revenue Engine</span>
@@ -139,8 +139,8 @@ export default function VentureStudioPage() {
                     <span className="text-lg text-gray-500 ml-2">/mo</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Shield className="h-4 w-4 text-[#007AFF]" />
-                    <span className="text-sm text-[#007AFF] font-medium tracking-wide">BY APPLICATION ONLY</span>
+                    <Shield className="h-4 w-4 text-primary" />
+                    <span className="text-sm text-primary font-medium tracking-wide">BY APPLICATION ONLY</span>
                   </div>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -182,9 +182,9 @@ export default function VentureStudioPage() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: i * 0.1 }}
-                    className="bg-white rounded-xl p-6 border border-gray-200 hover:border-[#007AFF] hover:shadow-lg transition-all"
+                    className="bg-white rounded-xl p-6 border border-gray-200 hover:border-primary hover:shadow-lg transition-all"
                   >
-                    <item.icon className="h-8 w-8 text-[#007AFF] mb-4" />
+                    <item.icon className="h-8 w-8 text-primary mb-4" />
                     <h3 className="text-xl text-gray-900 mb-3 font-medium">
                       {item.title}
                     </h3>
@@ -218,7 +218,7 @@ export default function VentureStudioPage() {
                     transition={{ delay: i * 0.15 }}
                     className="bg-[#F7F9FB] rounded-2xl p-8 border border-gray-200"
                   >
-                    <item.icon className="h-10 w-10 text-[#007AFF] mb-5" />
+                    <item.icon className="h-10 w-10 text-primary mb-5" />
                     <h3 className="text-2xl text-gray-900 mb-3 font-medium">
                       {item.title}
                     </h3>
@@ -268,8 +268,8 @@ export default function VentureStudioPage() {
                       </ul>
                     </div>
                     {/* With */}
-                    <div className="bg-white rounded-2xl p-8 border-2 border-[#007AFF]">
-                      <h3 className="text-xl text-[#007AFF] mb-6 font-medium">With Venture Studio</h3>
+                    <div className="bg-white rounded-2xl p-8 border-2 border-primary">
+                      <h3 className="text-xl text-primary mb-6 font-medium">With Venture Studio</h3>
                       <ul className="space-y-4">
                         {[
                           "One integrated platform for everything",
@@ -314,7 +314,7 @@ export default function VentureStudioPage() {
                   size="lg"
                   href="https://cal.com/gotdarrenhill/30min"
                   target="_blank"
-                  className="bg-[#007AFF] text-white hover:bg-[#0066DD] text-lg px-10 py-5"
+                  className="bg-primary text-white hover:bg-primary-dark text-lg px-10 py-5"
                 >
                   Apply for Venture Studio
                   <ArrowRight className="ml-2 h-5 w-5" />

@@ -143,8 +143,8 @@ export default function ServicesPage() {
                   <h4 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-4">How It Works</h4>
                   <div className="space-y-4">
                     <div className="flex items-start gap-4">
-                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#007AFF]/10 flex items-center justify-center">
-                        <span className="text-sm font-medium text-[#007AFF]">1</span>
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                        <span className="text-sm font-medium text-primary">1</span>
                       </div>
                       <div>
                         <div className="font-medium text-gray-900">Week 1: ICP Definition & Targeting Criteria</div>
@@ -152,8 +152,8 @@ export default function ServicesPage() {
                       </div>
                     </div>
                     <div className="flex items-start gap-4">
-                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#007AFF]/10 flex items-center justify-center">
-                        <span className="text-sm font-medium text-[#007AFF]">2</span>
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                        <span className="text-sm font-medium text-primary">2</span>
                       </div>
                       <div>
                         <div className="font-medium text-gray-900">Week 2: First List Delivery</div>
@@ -161,8 +161,8 @@ export default function ServicesPage() {
                       </div>
                     </div>
                     <div className="flex items-start gap-4">
-                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#007AFF]/10 flex items-center justify-center">
-                        <span className="text-sm font-medium text-[#007AFF]">{"\u221E"}</span>
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                        <span className="text-sm font-medium text-primary">{"\u221E"}</span>
                       </div>
                       <div>
                         <div className="font-medium text-gray-900">Ongoing: Monthly Refresh with New Leads</div>
@@ -175,7 +175,7 @@ export default function ServicesPage() {
                 <div className="space-y-4 mb-8">
                   {dataFeatures.map((feature, i) => (
                     <div key={i} className="flex items-start gap-3">
-                      <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full mt-2 flex-shrink-0" />
+                      <div className="w-1.5 h-1.5 bg-primary rounded-full mt-2 flex-shrink-0" />
                       <span className="text-gray-700">{feature}</span>
                     </div>
                   ))}
@@ -235,7 +235,7 @@ export default function ServicesPage() {
                       <div className="space-y-3 text-left bg-white rounded-lg p-4 text-sm">
                         <div className="flex justify-between items-center">
                           <span className="text-gray-600">Sent Today</span>
-                          <span className="text-[#007AFF]">847</span>
+                          <span className="text-primary">847</span>
                         </div>
                         <div className="flex justify-between items-center">
                           <span className="text-gray-600">Open Rate</span>
@@ -243,7 +243,7 @@ export default function ServicesPage() {
                         </div>
                         <div className="flex justify-between items-center">
                           <span className="text-gray-600">Reply Rate</span>
-                          <span className="text-[#007AFF]">12%</span>
+                          <span className="text-primary">12%</span>
                         </div>
                         <div className="flex justify-between items-center">
                           <span className="text-gray-600">Meetings Booked</span>
@@ -278,8 +278,8 @@ export default function ServicesPage() {
                   <h4 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-4">How It Works</h4>
                   <div className="space-y-4">
                     <div className="flex items-start gap-4">
-                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#007AFF]/10 flex items-center justify-center">
-                        <span className="text-sm font-medium text-[#007AFF]">1</span>
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                        <span className="text-sm font-medium text-primary">1</span>
                       </div>
                       <div>
                         <div className="font-medium text-gray-900">Week 1-2: Domain Setup, Inbox Warmup, Brand Voice Training</div>
@@ -287,8 +287,8 @@ export default function ServicesPage() {
                       </div>
                     </div>
                     <div className="flex items-start gap-4">
-                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#007AFF]/10 flex items-center justify-center">
-                        <span className="text-sm font-medium text-[#007AFF]">2</span>
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                        <span className="text-sm font-medium text-primary">2</span>
                       </div>
                       <div>
                         <div className="font-medium text-gray-900">Week 3: Campaign Launch</div>
@@ -296,8 +296,8 @@ export default function ServicesPage() {
                       </div>
                     </div>
                     <div className="flex items-start gap-4">
-                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#007AFF]/10 flex items-center justify-center">
-                        <span className="text-sm font-medium text-[#007AFF]">{"\u221E"}</span>
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                        <span className="text-sm font-medium text-primary">{"\u221E"}</span>
                       </div>
                       <div>
                         <div className="font-medium text-gray-900">Week 4+: Optimization, Meetings Booked</div>
@@ -310,7 +310,7 @@ export default function ServicesPage() {
                 <div className="space-y-4 mb-8">
                   {outboundFeatures.map((feature, i) => (
                     <div key={i} className="flex items-start gap-3">
-                      <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full mt-2 flex-shrink-0" />
+                      <div className="w-1.5 h-1.5 bg-primary rounded-full mt-2 flex-shrink-0" />
                       <span className="text-gray-700">{feature}</span>
                     </div>
                   ))}
@@ -353,8 +353,8 @@ export default function ServicesPage() {
                   <h4 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-4">How It Works</h4>
                   <div className="space-y-4">
                     <div className="flex items-start gap-4">
-                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#007AFF]/10 flex items-center justify-center">
-                        <span className="text-sm font-medium text-[#007AFF]">1</span>
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                        <span className="text-sm font-medium text-primary">1</span>
                       </div>
                       <div>
                         <div className="font-medium text-gray-900">Week 1-3: Full Stack Setup, AI SDR Training</div>
@@ -362,8 +362,8 @@ export default function ServicesPage() {
                       </div>
                     </div>
                     <div className="flex items-start gap-4">
-                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#007AFF]/10 flex items-center justify-center">
-                        <span className="text-sm font-medium text-[#007AFF]">{"\u221E"}</span>
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                        <span className="text-sm font-medium text-primary">{"\u221E"}</span>
                       </div>
                       <div>
                         <div className="font-medium text-gray-900">Week 4+: Autonomous Operation, Continuous Pipeline</div>
@@ -376,7 +376,7 @@ export default function ServicesPage() {
                 <div className="space-y-4 mb-8">
                   {pipelineFeatures.map((feature, i) => (
                     <div key={i} className="flex items-start gap-3">
-                      <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full mt-2 flex-shrink-0" />
+                      <div className="w-1.5 h-1.5 bg-primary rounded-full mt-2 flex-shrink-0" />
                       <span className="text-gray-700">{feature}</span>
                     </div>
                   ))}
@@ -393,15 +393,15 @@ export default function ServicesPage() {
                   <div className="text-center p-8 w-full">
                     <h4 className="text-xl font-light text-gray-900 mb-6">AI SDR Activity</h4>
                     <div className="space-y-3 text-left bg-white rounded-lg p-4 text-sm">
-                      <div className="border-l-2 border-[#007AFF] pl-3 py-2">
+                      <div className="border-l-2 border-primary pl-3 py-2">
                         <div className="text-gray-900">Meeting Booked</div>
                         <div className="text-gray-600 text-xs">Salesforce - 2:30 PM tomorrow</div>
                       </div>
-                      <div className="border-l-2 border-[#007AFF] pl-3 py-2">
+                      <div className="border-l-2 border-primary pl-3 py-2">
                         <div className="text-gray-900">Follow-up Sent</div>
                         <div className="text-gray-600 text-xs">HubSpot - Sequence 3</div>
                       </div>
-                      <div className="border-l-2 border-[#007AFF] pl-3 py-2">
+                      <div className="border-l-2 border-primary pl-3 py-2">
                         <div className="text-gray-900">Research Complete</div>
                         <div className="text-gray-600 text-xs">50 new prospects qualified</div>
                       </div>
@@ -421,8 +421,8 @@ export default function ServicesPage() {
       <section className="py-16 bg-white">
         <Container>
           <div className="max-w-3xl mx-auto">
-            <div className="bg-gradient-to-br from-[#007AFF]/5 to-blue-50 rounded-2xl p-10 text-center border border-blue-100">
-              <ShoppingCart className="w-12 h-12 text-[#007AFF] mx-auto mb-4" />
+            <div className="bg-gradient-to-br from-primary/5 to-blue-50 rounded-2xl p-10 text-center border border-blue-100">
+              <ShoppingCart className="w-12 h-12 text-primary mx-auto mb-4" />
               <h3 className="text-2xl lg:text-3xl font-light text-gray-900 mb-3">
                 Prefer Self-Serve?
               </h3>
@@ -468,19 +468,19 @@ export default function ServicesPage() {
               </p>
               <ul className="space-y-2 mb-6 text-sm">
                 <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full" />
+                  <div className="w-1.5 h-1.5 bg-primary rounded-full" />
                   <span className="text-gray-700">See which companies visit your site</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full" />
+                  <div className="w-1.5 h-1.5 bg-primary rounded-full" />
                   <span className="text-gray-700">Get contact info for decision-makers</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full" />
+                  <div className="w-1.5 h-1.5 bg-primary rounded-full" />
                   <span className="text-gray-700">Export lists or sync to CRM</span>
                 </li>
               </ul>
-              <div className="text-2xl font-light text-[#007AFF] mb-4">
+              <div className="text-2xl font-light text-primary mb-4">
                 Included with all plans
               </div>
               <Button className="w-full" href="/pixel">
@@ -502,19 +502,19 @@ export default function ServicesPage() {
               </p>
               <ul className="space-y-2 mb-6 text-sm">
                 <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full" />
+                  <div className="w-1.5 h-1.5 bg-primary rounded-full" />
                   <span className="text-gray-700">Automated sequences by intent</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full" />
+                  <div className="w-1.5 h-1.5 bg-primary rounded-full" />
                   <span className="text-gray-700">Personalized by pages visited</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full" />
+                  <div className="w-1.5 h-1.5 bg-primary rounded-full" />
                   <span className="text-gray-700">Higher conversion than cold outbound</span>
                 </li>
               </ul>
-              <div className="text-2xl font-light text-[#007AFF] mb-4">
+              <div className="text-2xl font-light text-primary mb-4">
                 $1,500/mo
               </div>
               <Button className="w-full" href="https://cal.com/gotdarrenhill/30min" target="_blank">
@@ -537,19 +537,19 @@ export default function ServicesPage() {
               </p>
               <ul className="space-y-2 mb-6 text-sm">
                 <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full" />
+                  <div className="w-1.5 h-1.5 bg-primary rounded-full" />
                   <span className="text-gray-700">Custom domain (leads.yourbrand.com)</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full" />
+                  <div className="w-1.5 h-1.5 bg-primary rounded-full" />
                   <span className="text-gray-700">Your logo, colors, and branding</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full" />
+                  <div className="w-1.5 h-1.5 bg-primary rounded-full" />
                   <span className="text-gray-700">Full platform access</span>
                 </li>
               </ul>
-              <div className="text-2xl font-light text-[#007AFF] mb-4">
+              <div className="text-2xl font-light text-primary mb-4">
                 $2,000/mo
               </div>
               <Button className="w-full" href="https://cal.com/gotdarrenhill/30min" target="_blank">

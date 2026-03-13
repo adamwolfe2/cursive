@@ -36,7 +36,7 @@ export default function VisitorIdentificationPage() {
               transition={{ duration: 0.5 }}
               className="text-center max-w-5xl mx-auto"
             >
-              <span className="text-sm text-[#007AFF] mb-4 block font-medium tracking-wide">VISITOR IDENTIFICATION</span>
+              <span className="text-sm text-primary mb-4 block font-medium tracking-wide">VISITOR IDENTIFICATION</span>
               <h1 className="text-5xl lg:text-7xl font-light text-gray-900 mb-6">
                 Stop Losing 98% of Your Website Visitors
               </h1>
@@ -190,9 +190,9 @@ export default function VisitorIdentificationPage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.05 }}
-                  className="bg-white rounded-xl p-6 border border-gray-200 hover:border-[#007AFF] hover:shadow-lg transition-all"
+                  className="bg-white rounded-xl p-6 border border-gray-200 hover:border-primary hover:shadow-lg transition-all"
                 >
-                  <benefit.icon className="h-8 w-8 text-[#007AFF] mb-4" />
+                  <benefit.icon className="h-8 w-8 text-primary mb-4" />
                   <h3 className="text-xl text-gray-900 mb-3 font-medium">
                     {benefit.title}
                   </h3>
@@ -247,7 +247,7 @@ export default function VisitorIdentificationPage() {
                   transition={{ delay: i * 0.1 }}
                   className="bg-white rounded-xl p-8 border border-gray-200"
                 >
-                  <div className="text-sm text-[#007AFF] font-medium mb-2">FOR {useCase.audience.toUpperCase()}</div>
+                  <div className="text-sm text-primary font-medium mb-2">FOR {useCase.audience.toUpperCase()}</div>
                   <h3 className="text-2xl text-gray-900 mb-4 font-medium">
                     {useCase.scenario}
                   </h3>
@@ -470,15 +470,15 @@ export default function VisitorIdentificationPage() {
                 <Link
                   key={i}
                   href={product.href}
-                  className="block bg-[#F7F9FB] rounded-xl p-6 border border-gray-200 hover:border-[#007AFF] hover:shadow-lg transition-all group"
+                  className="block bg-[#F7F9FB] rounded-xl p-6 border border-gray-200 hover:border-primary hover:shadow-lg transition-all group"
                 >
-                  <h3 className="text-lg text-gray-900 mb-2 font-medium group-hover:text-[#007AFF] transition-colors">
+                  <h3 className="text-lg text-gray-900 mb-2 font-medium group-hover:text-primary transition-colors">
                     {product.title}
                   </h3>
                   <p className="text-gray-600 text-sm leading-relaxed">
                     {product.description}
                   </p>
-                  <div className="mt-4 text-[#007AFF] text-sm font-medium flex items-center gap-2">
+                  <div className="mt-4 text-primary text-sm font-medium flex items-center gap-2">
                     Learn more <ArrowRight className="h-4 w-4" />
                   </div>
                 </Link>
@@ -502,13 +502,13 @@ export default function VisitorIdentificationPage() {
                   <Link
                     key={i}
                     href={comparison.href}
-                    className="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-[#007AFF] transition-colors group"
+                    className="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-primary transition-colors group"
                   >
                     <div className="flex-1">
-                      <div className="text-gray-900 text-sm font-medium group-hover:text-[#007AFF] transition-colors">{comparison.title}</div>
+                      <div className="text-gray-900 text-sm font-medium group-hover:text-primary transition-colors">{comparison.title}</div>
                       <div className="text-gray-500 text-xs">{comparison.description}</div>
                     </div>
-                    <ArrowRight className="h-4 w-4 text-gray-400 group-hover:text-[#007AFF] flex-shrink-0" />
+                    <ArrowRight className="h-4 w-4 text-gray-400 group-hover:text-primary flex-shrink-0" />
                   </Link>
                 ))}
               </div>
@@ -530,20 +530,20 @@ export default function VisitorIdentificationPage() {
 
             <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
               <div className="bg-white rounded-2xl p-8 border border-gray-200">
-                <div className="text-sm font-medium text-[#007AFF] mb-2">OPTION 1</div>
+                <div className="text-sm font-medium text-primary mb-2">OPTION 1</div>
                 <h3 className="text-2xl font-light text-gray-900 mb-3">Done-For-You Setup</h3>
                 <p className="text-gray-600 mb-4">We install your pixel, configure your CRM integration, and set up automated outreach to identified visitors. Done in 48 hours.</p>
-                <div className="text-2xl font-light text-[#007AFF] mb-6">Starting at $1,000/mo</div>
+                <div className="text-2xl font-light text-primary mb-6">Starting at $1,000/mo</div>
                 <Button className="w-full" href="/pricing">
                   View Plans
                 </Button>
               </div>
 
               <div className="bg-white rounded-2xl p-8 border border-gray-200">
-                <div className="text-sm font-medium text-[#007AFF] mb-2">OPTION 2</div>
+                <div className="text-sm font-medium text-primary mb-2">OPTION 2</div>
                 <h3 className="text-2xl font-light text-gray-900 mb-3">Self-Serve Marketplace</h3>
                 <p className="text-gray-600 mb-4">Browse our database of 420M+ verified B2B and B2C leads. Filter by industry, title, intent, and more. Buy with credits.</p>
-                <div className="text-2xl font-light text-[#007AFF] mb-6">From $0.60/lead</div>
+                <div className="text-2xl font-light text-primary mb-6">From $0.60/lead</div>
                 <Button className="w-full" href="/marketplace">
                   Browse Marketplace
                 </Button>
@@ -576,7 +576,7 @@ export default function VisitorIdentificationPage() {
                 size="lg"
                 href="https://cal.com/gotdarrenhill/30min"
                 target="_blank"
-                className="bg-[#007AFF] text-white hover:bg-[#0066DD] text-lg px-10 py-5 mb-4"
+                className="bg-primary text-white hover:bg-primary-dark text-lg px-10 py-5 mb-4"
               >
                 Book Your Free AI Audit Now
               </Button>

@@ -85,7 +85,7 @@ export function BlogPostLayout({ post, relatedPosts = [] }: BlogPostLayoutProps)
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             {/* Category Badge */}
             <div className="mb-4">
-              <span className="inline-block px-3 py-1 text-sm font-medium text-[#007AFF] bg-blue-50 rounded-full uppercase tracking-wide">
+              <span className="inline-block px-3 py-1 text-sm font-medium text-primary bg-blue-50 rounded-full uppercase tracking-wide">
                 {post.category}
               </span>
             </div>
@@ -166,7 +166,7 @@ export function BlogPostLayout({ post, relatedPosts = [] }: BlogPostLayoutProps)
                         <li key={heading.id} className={heading.level === 3 ? 'ml-4' : ''}>
                           <a
                             href={`#${heading.id}`}
-                            className="text-sm text-gray-600 hover:text-[#007AFF] transition-colors"
+                            className="text-sm text-gray-600 hover:text-primary transition-colors"
                           >
                             {heading.text}
                           </a>
@@ -184,14 +184,14 @@ export function BlogPostLayout({ post, relatedPosts = [] }: BlogPostLayoutProps)
                   prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-4
                   prose-h3:text-2xl prose-h3:mt-8 prose-h3:mb-3
                   prose-p:text-gray-700 prose-p:leading-relaxed prose-p:mb-6
-                  prose-a:text-[#007AFF] prose-a:no-underline hover:prose-a:underline
+                  prose-a:text-primary prose-a:no-underline hover:prose-a:underline
                   prose-strong:text-gray-900 prose-strong:font-semibold
                   prose-ul:my-6 prose-ol:my-6
                   prose-li:text-gray-700 prose-li:mb-2
-                  prose-code:text-[#007AFF] prose-code:bg-gray-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:before:content-[''] prose-code:after:content-['']
+                  prose-code:text-primary prose-code:bg-gray-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:before:content-[''] prose-code:after:content-['']
                   prose-pre:bg-gray-900 prose-pre:text-gray-100
                   prose-img:rounded-lg prose-img:shadow-md
-                  prose-blockquote:border-l-4 prose-blockquote:border-[#007AFF] prose-blockquote:bg-gray-50 prose-blockquote:py-2 prose-blockquote:px-4
+                  prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:bg-gray-50 prose-blockquote:py-2 prose-blockquote:px-4
                   print:prose-sm"
                 dangerouslySetInnerHTML={{
                   __html: DOMPurify.sanitize(post.content, {

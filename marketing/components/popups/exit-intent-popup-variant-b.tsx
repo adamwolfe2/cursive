@@ -191,7 +191,7 @@ export function ExitIntentPopupVariantB({
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           onFocus={() => analytics.trackInteraction()}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007AFF] focus:border-transparent outline-none transition-all text-base"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-base"
                           toolparamdescription="Work email to receive the free visitor report"
                         />
                       </div>
@@ -207,7 +207,7 @@ export function ExitIntentPopupVariantB({
                           placeholder="Company name (optional)"
                           value={company}
                           onChange={(e) => setCompany(e.target.value)}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007AFF] focus:border-transparent outline-none transition-all text-base"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-base"
                         />
                       </div>
 
@@ -225,7 +225,7 @@ export function ExitIntentPopupVariantB({
                         We respect your privacy. Read our{' '}
                         <a
                           href="/privacy"
-                          className="text-[#007AFF] hover:underline"
+                          className="text-primary hover:underline"
                           target="_blank"
                           rel="noopener noreferrer"
                         >

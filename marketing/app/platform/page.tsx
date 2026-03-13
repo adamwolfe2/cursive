@@ -148,7 +148,7 @@ export default function PlatformPage() {
                     Hey [Name],<br /><br />
                     Noticed you're scaling [Company]'s sales team. Most companies at your stage
                     hit a wall around lead quality...<br /><br />
-                    <span className="text-[#007AFF]">View full email →</span>
+                    <span className="text-primary">View full email →</span>
                   </div>
                 </div>
               </div>
@@ -197,20 +197,20 @@ export default function PlatformPage() {
                     { name: "Mike Chen", title: "Head of Growth", company: "Zapier", verified: true },
                     { name: "Emily Rodriguez", title: "Director, Revenue", company: "Stripe", verified: true },
                   ].map((person, i) => (
-                    <div key={i} className="bg-white rounded-lg p-4 border border-gray-200 hover:border-[#007AFF] transition-colors">
+                    <div key={i} className="bg-white rounded-lg p-4 border border-gray-200 hover:border-primary transition-colors">
                       <div className="flex items-center justify-between">
                         <div>
                           <div className="text-gray-900 flex items-center gap-2">
                             {person.name}
                             {person.verified && (
-                              <span className="px-2 py-0.5 bg-blue-100 text-[#007AFF] text-xs rounded">
+                              <span className="px-2 py-0.5 bg-blue-100 text-primary text-xs rounded">
                                 Verified
                               </span>
                             )}
                           </div>
                           <div className="text-sm text-gray-600">{person.title} at {person.company}</div>
                         </div>
-                        <button className="text-[#007AFF] text-sm hover:underline">
+                        <button className="text-primary text-sm hover:underline">
                           View
                         </button>
                       </div>
@@ -245,21 +245,21 @@ export default function PlatformPage() {
 
               <div className="space-y-4 mb-8">
                 <div className="flex items-start gap-3">
-                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full mt-2 flex-shrink-0" />
+                  <div className="w-1.5 h-1.5 bg-primary rounded-full mt-2 flex-shrink-0" />
                   <div>
                     <div className="text-gray-900">Real-time Email Verification</div>
                     <div className="text-gray-600 text-sm">Every email validated before export</div>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full mt-2 flex-shrink-0" />
+                  <div className="w-1.5 h-1.5 bg-primary rounded-full mt-2 flex-shrink-0" />
                   <div>
                     <div className="text-gray-900">LinkedIn Profile Enrichment</div>
                     <div className="text-gray-600 text-sm">Direct links to profiles and activity</div>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full mt-2 flex-shrink-0" />
+                  <div className="w-1.5 h-1.5 bg-primary rounded-full mt-2 flex-shrink-0" />
                   <div>
                     <div className="text-gray-900">Company Firmographics</div>
                     <div className="text-gray-600 text-sm">Revenue, employee count, tech stack, funding</div>
@@ -301,21 +301,21 @@ export default function PlatformPage() {
 
               <div className="space-y-4 mb-8">
                 <div className="flex items-start gap-3">
-                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full mt-2 flex-shrink-0" />
+                  <div className="w-1.5 h-1.5 bg-primary rounded-full mt-2 flex-shrink-0" />
                   <div>
                     <div className="text-gray-900">Instant CSV Download</div>
                     <div className="text-gray-600 text-sm">Purchase and download immediately</div>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full mt-2 flex-shrink-0" />
+                  <div className="w-1.5 h-1.5 bg-primary rounded-full mt-2 flex-shrink-0" />
                   <div>
                     <div className="text-gray-900">Filter by Industry & Title</div>
                     <div className="text-gray-600 text-sm">Find exactly who you're looking for</div>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full mt-2 flex-shrink-0" />
+                  <div className="w-1.5 h-1.5 bg-primary rounded-full mt-2 flex-shrink-0" />
                   <div>
                     <div className="text-gray-900">Credit-Based System</div>
                     <div className="text-gray-600 text-sm">Buy credits, use anytime</div>
@@ -338,7 +338,7 @@ export default function PlatformPage() {
               <div className="mb-4">
                 <h4 className="text-gray-900 mb-3">Featured Lead Lists</h4>
                 <div className="flex gap-2 mb-4">
-                  <button className="px-3 py-1 bg-[#007AFF] text-white rounded-lg text-xs">
+                  <button className="px-3 py-1 bg-primary text-white rounded-lg text-xs">
                     All
                   </button>
                   <button className="px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-xs">
@@ -363,11 +363,11 @@ export default function PlatformPage() {
                         <div className="text-sm text-gray-600">{list.count.toLocaleString()} contacts</div>
                       </div>
                       <div className="text-right">
-                        <div className="text-lg text-[#007AFF]">${list.price}</div>
+                        <div className="text-lg text-primary">${list.price}</div>
                         <div className="text-xs text-gray-600">per lead</div>
                       </div>
                     </div>
-                    <button className="w-full bg-[#007AFF] text-white rounded-lg py-2 text-sm hover:bg-[#0066DD] transition-colors">
+                    <button className="w-full bg-primary text-white rounded-lg py-2 text-sm hover:bg-primary-dark transition-colors">
                       View List
                     </button>
                   </div>
@@ -377,7 +377,7 @@ export default function PlatformPage() {
               <div className="mt-4 p-4 bg-[#F7F9FB] rounded-lg">
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-gray-600">Your Credits</span>
-                  <span className="text-[#007AFF]">250 credits</span>
+                  <span className="text-primary">250 credits</span>
                 </div>
               </div>
             </motion.div>
@@ -410,7 +410,7 @@ export default function PlatformPage() {
                         <div className="flex items-center justify-between mb-3">
                           <div className="text-gray-900 text-sm">{campaign.name}</div>
                           <span className={`px-2 py-1 rounded-full text-xs ${
-                            campaign.status === "Active" ? "bg-blue-100 text-[#007AFF]" : "bg-gray-100 text-gray-600"
+                            campaign.status === "Active" ? "bg-blue-100 text-primary" : "bg-gray-100 text-gray-600"
                           }`}>
                             {campaign.status}
                           </span>
@@ -418,7 +418,7 @@ export default function PlatformPage() {
                         <div className="grid grid-cols-2 gap-3 text-sm">
                           <div>
                             <div className="text-gray-500 text-xs">Sent</div>
-                            <div className="text-[#007AFF]">{campaign.sent.toLocaleString()}</div>
+                            <div className="text-primary">{campaign.sent.toLocaleString()}</div>
                           </div>
                           <div>
                             <div className="text-gray-500 text-xs">Replies</div>
@@ -429,7 +429,7 @@ export default function PlatformPage() {
                     ))}
                   </div>
 
-                  <button className="w-full mt-4 bg-[#007AFF] text-white rounded-lg py-3 text-sm hover:bg-[#0066DD] transition-colors">
+                  <button className="w-full mt-4 bg-primary text-white rounded-lg py-3 text-sm hover:bg-primary-dark transition-colors">
                     Create New Campaign
                   </button>
                 </div>
@@ -457,21 +457,21 @@ export default function PlatformPage() {
 
               <div className="space-y-4 mb-8">
                 <div className="flex items-start gap-3">
-                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full mt-2 flex-shrink-0" />
+                  <div className="w-1.5 h-1.5 bg-primary rounded-full mt-2 flex-shrink-0" />
                   <div>
                     <div className="text-gray-900">AI-Written Sequences</div>
                     <div className="text-gray-600 text-sm">Personalized at scale</div>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full mt-2 flex-shrink-0" />
+                  <div className="w-1.5 h-1.5 bg-primary rounded-full mt-2 flex-shrink-0" />
                   <div>
                     <div className="text-gray-900">A/B Testing Built-in</div>
                     <div className="text-gray-600 text-sm">Test subject lines, copy, timing</div>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full mt-2 flex-shrink-0" />
+                  <div className="w-1.5 h-1.5 bg-primary rounded-full mt-2 flex-shrink-0" />
                   <div>
                     <div className="text-gray-900">Deliverability Optimization</div>
                     <div className="text-gray-600 text-sm">Domain warming, sender reputation</div>
@@ -512,21 +512,21 @@ export default function PlatformPage() {
 
               <div className="space-y-4 mb-8">
                 <div className="flex items-start gap-3">
-                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full mt-2 flex-shrink-0" />
+                  <div className="w-1.5 h-1.5 bg-primary rounded-full mt-2 flex-shrink-0" />
                   <div>
                     <div className="text-gray-900">Company Identification</div>
                     <div className="text-gray-600 text-sm">See which companies visit your site</div>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full mt-2 flex-shrink-0" />
+                  <div className="w-1.5 h-1.5 bg-primary rounded-full mt-2 flex-shrink-0" />
                   <div>
                     <div className="text-gray-900">Decision-Maker Contact Export</div>
                     <div className="text-gray-600 text-sm">Get emails for key stakeholders</div>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full mt-2 flex-shrink-0" />
+                  <div className="w-1.5 h-1.5 bg-primary rounded-full mt-2 flex-shrink-0" />
                   <div>
                     <div className="text-gray-900">Behavior-Based Retargeting</div>
                     <div className="text-gray-600 text-sm">Campaign based on pages visited</div>
@@ -535,7 +535,7 @@ export default function PlatformPage() {
               </div>
 
               <div className="bg-white rounded-xl p-6 mb-8 border border-gray-200">
-                <div className="text-2xl font-light text-[#007AFF] mb-2">
+                <div className="text-2xl font-light text-primary mb-2">
                   Included
                 </div>
                 <p className="text-gray-600 text-sm">Includes pixel installation and setup</p>
@@ -568,7 +568,7 @@ export default function PlatformPage() {
                       <div className="flex items-center justify-between mb-2">
                         <div className="text-gray-900">{visitor.company}</div>
                         <span className={`px-2 py-1 rounded-full text-xs ${
-                          visitor.intent === "High" ? "bg-blue-100 text-[#007AFF]" : "bg-gray-100 text-gray-600"
+                          visitor.intent === "High" ? "bg-blue-100 text-primary" : "bg-gray-100 text-gray-600"
                         }`}>
                           {visitor.intent} Intent
                         </span>
@@ -641,7 +641,7 @@ export default function PlatformPage() {
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full mt-2 flex-shrink-0" />
+                  <div className="w-1.5 h-1.5 bg-primary rounded-full mt-2 flex-shrink-0" />
                   <div>
                     <div className="text-gray-900">Ask Your Data</div>
                     <div className="text-gray-600 text-sm">Natural language querying — type any question about your visitor data in plain English</div>
@@ -715,15 +715,15 @@ export default function PlatformPage() {
               <Link
                 key={feature.href}
                 href={feature.href}
-                className="block bg-white rounded-xl p-6 border border-gray-200 hover:border-[#007AFF] hover:shadow-lg transition-all group"
+                className="block bg-white rounded-xl p-6 border border-gray-200 hover:border-primary hover:shadow-lg transition-all group"
               >
-                <h3 className="text-lg text-gray-900 mb-2 font-medium group-hover:text-[#007AFF] transition-colors">
+                <h3 className="text-lg text-gray-900 mb-2 font-medium group-hover:text-primary transition-colors">
                   {feature.title}
                 </h3>
                 <p className="text-gray-600 text-sm leading-relaxed">
                   {feature.description}
                 </p>
-                <div className="mt-4 text-[#007AFF] text-sm font-medium flex items-center gap-2">
+                <div className="mt-4 text-primary text-sm font-medium flex items-center gap-2">
                   Learn more <ArrowRight className="h-4 w-4" />
                 </div>
               </Link>
@@ -731,19 +731,19 @@ export default function PlatformPage() {
           </div>
 
           <div className="flex flex-wrap justify-center gap-6 text-sm">
-            <Link href="/pricing" className="text-[#007AFF] hover:underline font-medium">
+            <Link href="/pricing" className="text-primary hover:underline font-medium">
               View Pricing
             </Link>
-            <Link href="/marketplace" className="text-[#007AFF] hover:underline font-medium">
+            <Link href="/marketplace" className="text-primary hover:underline font-medium">
               Browse Lead Marketplace
             </Link>
-            <Link href="/case-studies" className="text-[#007AFF] hover:underline font-medium">
+            <Link href="/case-studies" className="text-primary hover:underline font-medium">
               Read Case Studies
             </Link>
-            <Link href="/free-audit" className="text-[#007AFF] hover:underline font-medium">
+            <Link href="/free-audit" className="text-primary hover:underline font-medium">
               Get a Free AI Audit
             </Link>
-            <Link href="/blog" className="text-[#007AFF] hover:underline font-medium">
+            <Link href="/blog" className="text-primary hover:underline font-medium">
               Read the Blog
             </Link>
           </div>

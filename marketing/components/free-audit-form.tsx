@@ -102,8 +102,8 @@ export function FreeAuditForm() {
           </div>
 
           {/* Step 2: Book the call — primary CTA */}
-          <div className="flex gap-3 p-4 bg-[#007AFF]/5 border-2 border-[#007AFF]/40 rounded-xl">
-            <div className="flex-shrink-0 w-8 h-8 bg-[#007AFF] text-white rounded-full flex items-center justify-center text-sm font-bold">2</div>
+          <div className="flex gap-3 p-4 bg-primary/5 border-2 border-primary/40 rounded-xl">
+            <div className="flex-shrink-0 w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center text-sm font-bold">2</div>
             <div className="flex-1">
               <p className="font-semibold text-sm text-gray-900">Book a call — we&apos;ll walk through your results live</p>
               <p className="text-sm text-gray-600 mt-0.5 mb-3">
@@ -115,7 +115,7 @@ export function FreeAuditForm() {
                 href="https://cal.com/gotdarrenhill/30min"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#007AFF] hover:bg-[#0066DD] text-white text-sm font-semibold rounded-lg transition-colors"
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary hover:bg-primary-dark text-white text-sm font-semibold rounded-lg transition-colors"
               >
                 <Calendar className="w-4 h-4" />
                 Book 30 Minutes with Darren →
@@ -143,9 +143,11 @@ export function FreeAuditForm() {
           value={formData.websiteUrl}
           onChange={(e) => setFormData({ ...formData, websiteUrl: e.target.value })}
           placeholder="yourcompany.com"
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007AFF] focus:border-transparent outline-none transition-all"
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
           required
           disabled={isSubmitting}
+          aria-invalid={!!error}
+          aria-describedby={error ? "free-audit-error" : undefined}
         />
       </div>
 
@@ -160,14 +162,20 @@ export function FreeAuditForm() {
           value={formData.email}
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           placeholder="you@company.com"
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007AFF] focus:border-transparent outline-none transition-all"
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
           required
           disabled={isSubmitting}
+          aria-invalid={!!error}
+          aria-describedby={error ? "free-audit-error" : undefined}
         />
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+        <div
+          id="free-audit-error"
+          role="alert"
+          className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm"
+        >
           {error}
         </div>
       )}

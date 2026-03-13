@@ -12,8 +12,6 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { WebsiteVisitorsClient } from './WebsiteVisitorsClient'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'Website Visitors | Cursive',
 }

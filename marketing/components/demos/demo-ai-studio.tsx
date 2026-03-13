@@ -74,7 +74,7 @@ export function DemoAIStudio() {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        className="bg-white rounded-lg p-4 border-2 border-[#007AFF] shadow-sm"
+        className="bg-white rounded-lg p-4 border-2 border-primary shadow-sm"
       >
         <div className="text-xs text-gray-600 mb-2">Enter Your Website URL</div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
@@ -87,7 +87,7 @@ export function DemoAIStudio() {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="px-4 py-2 bg-[#007AFF] text-white rounded text-sm whitespace-nowrap font-medium hover:bg-[#0066DD] transition-colors"
+            className="px-4 py-2 bg-primary text-white rounded text-sm whitespace-nowrap font-medium hover:bg-primary-dark transition-colors"
           >
             Analyze
           </motion.button>
@@ -102,14 +102,14 @@ export function DemoAIStudio() {
       >
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm text-gray-600">Analyzing your brand</span>
-          <span className="text-sm text-[#007AFF] font-medium">{progress}%</span>
+          <span className="text-sm text-primary font-medium">{progress}%</span>
         </div>
         <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
             transition={{ duration: 0.5, ease: "easeOut" }}
-            className="h-full bg-gradient-to-r from-[#007AFF] to-blue-500 rounded-full"
+            className="h-full bg-gradient-to-r from-primary to-blue-500 rounded-full"
           />
         </div>
       </motion.div>
@@ -141,7 +141,7 @@ export function DemoAIStudio() {
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     exit={{ scale: 0 }}
-                    className="w-5 h-5 bg-[#007AFF] rounded-full flex items-center justify-center flex-shrink-0"
+                    className="w-5 h-5 bg-primary rounded-full flex items-center justify-center flex-shrink-0"
                   >
                     <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
@@ -152,7 +152,7 @@ export function DemoAIStudio() {
                     key="active"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="w-5 h-5 border-2 border-[#007AFF] border-t-transparent rounded-full animate-spin flex-shrink-0"
+                    className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin flex-shrink-0"
                   />
                 ) : (
                   <div key="pending" className="w-5 h-5 border-2 border-gray-300 rounded-full flex-shrink-0" />
@@ -176,7 +176,7 @@ export function DemoAIStudio() {
             className="bg-white rounded-lg p-4 border border-gray-200 shadow-sm"
           >
             <div className="flex items-center gap-2 mb-3">
-              <svg className="w-5 h-5 text-[#007AFF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
               <span className="text-sm text-gray-900 font-medium">Brand Knowledge Base Created</span>
@@ -234,7 +234,7 @@ export function DemoAIStudio() {
                   <motion.span
                     animate={{ opacity: [1, 0] }}
                     transition={{ duration: 0.5, repeat: Infinity }}
-                    className="inline-block w-0.5 h-3 bg-[#007AFF] ml-0.5"
+                    className="inline-block w-0.5 h-3 bg-primary ml-0.5"
                   >
                     {" "}
                   </motion.span>

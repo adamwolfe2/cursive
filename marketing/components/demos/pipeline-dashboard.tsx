@@ -14,7 +14,7 @@ export function PipelineDashboard() {
               fill="none"
               stroke="currentColor"
               strokeWidth="1.5"
-              className="w-6 h-6 text-[#007AFF]"
+              className="w-6 h-6 text-primary"
             >
               <path d="M12 2L2 7l10 5 10-5-10-5z" />
               <path d="M2 17l10 5 10-5" />
@@ -36,7 +36,7 @@ export function PipelineDashboard() {
               <br />
               CFO leads
             </div>
-            <button className="bg-[#007AFF] text-white text-xs px-3 py-1 rounded">
+            <button className="bg-primary text-white text-xs px-3 py-1 rounded">
               Apply
             </button>
           </motion.div>
@@ -60,7 +60,7 @@ export function PipelineDashboard() {
                 </div>
               </div>
             </div>
-            <button className="bg-[#007AFF] text-white text-xs px-3 py-1 rounded w-full">
+            <button className="bg-primary text-white text-xs px-3 py-1 rounded w-full">
               Review
             </button>
           </motion.div>
@@ -92,7 +92,7 @@ export function PipelineDashboard() {
                 <span className="text-gray-900">34%</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-1.5">
-                <div className="bg-[#007AFF] h-1.5 rounded-full" style={{ width: "34%" }} />
+                <div className="bg-primary h-1.5 rounded-full" style={{ width: "34%" }} />
               </div>
 
               <div className="flex items-center justify-between text-xs">
@@ -100,7 +100,7 @@ export function PipelineDashboard() {
                 <span className="text-gray-900">35%</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-1.5">
-                <div className="bg-[#007AFF] h-1.5 rounded-full" style={{ width: "35%" }} />
+                <div className="bg-primary h-1.5 rounded-full" style={{ width: "35%" }} />
               </div>
 
               <div className="flex items-center justify-between text-xs">
@@ -108,7 +108,7 @@ export function PipelineDashboard() {
                 <span className="text-gray-900">31%</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-1.5">
-                <div className="bg-[#007AFF] h-1.5 rounded-full" style={{ width: "31%" }} />
+                <div className="bg-primary h-1.5 rounded-full" style={{ width: "31%" }} />
               </div>
             </div>
           </div>
@@ -129,7 +129,7 @@ export function PipelineDashboard() {
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2"
-                className="w-6 h-6 text-[#007AFF]"
+                className="w-6 h-6 text-primary"
               >
                 <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
@@ -143,7 +143,7 @@ export function PipelineDashboard() {
             <div className="bg-white border border-gray-200 rounded-lg p-3">
               <div className="flex items-center justify-between mb-1">
                 <span className="text-xs text-gray-900">Salesforce</span>
-                <span className="bg-blue-100 text-[#007AFF] text-xs px-2 py-0.5 rounded">
+                <span className="bg-blue-100 text-primary text-xs px-2 py-0.5 rounded">
                   contacted
                 </span>
               </div>
@@ -153,7 +153,7 @@ export function PipelineDashboard() {
             <div className="bg-white border border-gray-200 rounded-lg p-3">
               <div className="flex items-center justify-between mb-1">
                 <span className="text-xs text-gray-900">Salesforce Ventures</span>
-                <span className="bg-blue-100 text-[#007AFF] text-xs px-2 py-0.5 rounded">
+                <span className="bg-blue-100 text-primary text-xs px-2 py-0.5 rounded">
                   contacted
                 </span>
               </div>

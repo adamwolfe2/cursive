@@ -46,7 +46,7 @@ export function SuperPixelPopup() {
     >
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden">
         {/* Header bar */}
-        <div className="bg-[#007AFF] px-5 py-3 flex items-center justify-between">
+        <div className="bg-primary px-5 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-300 opacity-75" />
@@ -76,7 +76,7 @@ export function SuperPixelPopup() {
             target="_blank"
             rel="noopener noreferrer"
             onClick={dismiss}
-            className="block w-full text-center py-3 bg-[#007AFF] hover:bg-[#0066DD] text-white font-bold rounded-lg transition-colors"
+            className="block w-full text-center py-3 bg-primary hover:bg-primary-dark text-white font-bold rounded-lg transition-colors"
           >
             Book Your Free Demo →
           </a>

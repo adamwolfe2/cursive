@@ -13,9 +13,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-
-// Email validation regex
-const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+import { emailRegex, escapeHtml, FROM_EMAIL, SUPPORT_EMAIL } from '@/lib/validators'
 
 // In-memory rate limit store: IP -> array of timestamps
 // (per-instance only — acceptable for spam prevention at edge)
@@ -43,25 +41,11 @@ function checkRateLimit(ip: string): boolean {
 }
 
 /**
- * Escape HTML to prevent XSS in email templates
- */
-function escapeHtml(text: string): string {
-  const map: { [key: string]: string } = {
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#039;',
-  }
-  return text.replace(/[&<>"']/g, (char) => map[char])
-}
-
-/**
  * Send emails via Resend: welcome email to subscriber + notification to admin
  */
 async function sendNewsletterEmails(email: string, source: string, ip: string): Promise<void> {
   const resendApiKey = process.env.RESEND_API_KEY
-  const emailFrom = process.env.EMAIL_FROM || 'Cursive <noreply@meetcursive.com>'
+  const emailFrom = FROM_EMAIL
 
   if (!resendApiKey) {
     throw new Error('RESEND_API_KEY is not configured')
@@ -161,7 +145,7 @@ async function sendNewsletterEmails(email: string, source: string, ip: string): 
       },
       body: JSON.stringify({
         from: emailFrom,
-        to: 'hello@meetcursive.com',
+        to: SUPPORT_EMAIL,
         subject: `New newsletter subscriber: ${email}`,
         html: notificationHtml,
       }),

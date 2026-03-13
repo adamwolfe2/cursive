@@ -55,7 +55,7 @@ export default function Error({
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
               onClick={reset}
-              className="inline-flex items-center justify-center gap-2 px-6 py-2.5 text-base rounded-lg bg-[#007AFF] text-white hover:bg-[#0066DD] transition-all duration-200"
+              className="inline-flex items-center justify-center gap-2 px-6 py-2.5 text-base rounded-lg bg-primary text-white hover:bg-primary-dark transition-all duration-200"
             >
               Try Again
             </button>

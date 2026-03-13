@@ -158,7 +158,7 @@ export default async function IntegrationPage({
             <div className="flex flex-wrap gap-4">
               <Link
                 href="/free-audit"
-                className="inline-flex items-center justify-center rounded-lg bg-[#007AFF] px-8 py-3 text-base text-white transition-colors hover:bg-[#0066DD]"
+                className="inline-flex items-center justify-center rounded-lg bg-primary px-8 py-3 text-base text-white transition-colors hover:bg-primary-dark"
               >
                 Get Started Free
               </Link>
@@ -227,7 +227,7 @@ export default async function IntegrationPage({
               Need a field that is not listed?{" "}
               <Link
                 href="/platform"
-                className="text-[#007AFF] hover:underline"
+                className="text-primary hover:underline"
               >
                 Explore the Cursive platform
               </Link>{" "}
@@ -272,7 +272,7 @@ export default async function IntegrationPage({
               These are just the starting point. With Cursive&apos;s{" "}
               <Link
                 href="/visitor-identification"
-                className="text-[#007AFF] hover:underline"
+                className="text-primary hover:underline"
               >
                 visitor identification
               </Link>{" "}
@@ -301,11 +301,11 @@ export default async function IntegrationPage({
               {integration.setupSteps.map((step, idx) => (
                 <li key={idx} className="flex gap-5">
                   <div className="flex-shrink-0">
-                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#007AFF] text-white text-sm font-semibold">
+                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-white text-sm font-semibold">
                       {idx + 1}
                     </span>
                   </div>
-                  <div className="border-l-2 border-[#007AFF]/20 pl-6 pb-2">
+                  <div className="border-l-2 border-primary/20 pl-6 pb-2">
                     <p className="text-gray-800 leading-relaxed">{step}</p>
                   </div>
                 </li>
@@ -321,7 +321,7 @@ export default async function IntegrationPage({
                 during a{" "}
                 <Link
                   href="/free-audit"
-                  className="text-[#007AFF] hover:underline"
+                  className="text-primary hover:underline"
                 >
                   free audit call
                 </Link>
@@ -356,14 +356,14 @@ export default async function IntegrationPage({
               Have a question that is not answered here? Check our{" "}
               <Link
                 href="/pricing"
-                className="text-[#007AFF] hover:underline"
+                className="text-primary hover:underline"
               >
                 pricing page
               </Link>{" "}
               for plan details or{" "}
               <Link
                 href="/free-audit"
-                className="text-[#007AFF] hover:underline"
+                className="text-primary hover:underline"
               >
                 book a free audit
               </Link>{" "}
@@ -393,10 +393,10 @@ export default async function IntegrationPage({
                   <Link
                     key={rel.slug}
                     href={`/integrations/${rel.slug}`}
-                    className="block border border-gray-200 rounded-xl p-6 bg-white hover:border-[#007AFF] hover:shadow-lg transition-all group"
+                    className="block border border-gray-200 rounded-xl p-6 bg-white hover:border-primary hover:shadow-lg transition-all group"
                   >
                     <span className="text-3xl mb-3 block">{rel.logo}</span>
-                    <h3 className="text-base font-medium text-gray-900 mb-1 group-hover:text-[#007AFF] transition-colors">
+                    <h3 className="text-base font-medium text-gray-900 mb-1 group-hover:text-primary transition-colors">
                       {rel.name}
                     </h3>
                     <p className="text-xs text-gray-500">{rel.category}</p>
@@ -407,7 +407,7 @@ export default async function IntegrationPage({
               <div className="mt-10 text-center">
                 <Link
                   href="/integrations"
-                  className="text-[#007AFF] hover:underline text-sm font-medium"
+                  className="text-primary hover:underline text-sm font-medium"
                 >
                   Browse all integrations &rarr;
                 </Link>
@@ -434,7 +434,7 @@ export default async function IntegrationPage({
             <div className="flex flex-wrap justify-center gap-4">
               <Link
                 href="/free-audit"
-                className="inline-flex items-center justify-center rounded-lg bg-[#007AFF] px-8 py-3 text-base text-white transition-colors hover:bg-[#0066DD]"
+                className="inline-flex items-center justify-center rounded-lg bg-primary px-8 py-3 text-base text-white transition-colors hover:bg-primary-dark"
               >
                 Get Free Audit
               </Link>

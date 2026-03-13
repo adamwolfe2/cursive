@@ -20,7 +20,7 @@ export default function CleanRoomPage() {
             transition={{ duration: 0.5 }}
             className="text-center max-w-5xl mx-auto"
           >
-            <span className="text-sm text-[#007AFF] mb-4 block">DATA CLEAN ROOM</span>
+            <span className="text-sm text-primary mb-4 block">DATA CLEAN ROOM</span>
             <h1 className="text-5xl lg:text-7xl font-light text-gray-900 mb-6">
               Secure Data Sharing
               <span className="block font-cursive text-6xl lg:text-7xl text-gray-500 mt-2">

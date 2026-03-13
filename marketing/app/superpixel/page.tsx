@@ -99,10 +99,10 @@ export default function SuperPixelPage() {
       <section className="relative py-24 bg-white">
         <Container>
           <div className="text-center max-w-4xl mx-auto">
-            <div className="inline-flex items-center gap-2 bg-[#007AFF]/8 border border-[#007AFF]/20 text-[#007AFF] text-sm font-medium px-4 py-2 rounded-full mb-8">
+            <div className="inline-flex items-center gap-2 bg-primary/8 border border-primary/20 text-primary text-sm font-medium px-4 py-2 rounded-full mb-8">
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#007AFF] opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#007AFF]" />
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
               </span>
               10-minute setup · First leads in 24 hours
             </div>
@@ -125,11 +125,11 @@ export default function SuperPixelPage() {
             <div className="flex flex-wrap items-center justify-center gap-4 mb-6">
               <a
                 href={BOOK_ANCHOR}
-                className="px-8 py-4 bg-[#007AFF] hover:bg-[#0066DD] text-white font-bold rounded-lg transition-all shadow-lg shadow-[#007AFF]/25 text-lg"
+                className="px-8 py-4 bg-primary hover:bg-primary-dark text-white font-bold rounded-lg transition-all shadow-lg shadow-primary/25 text-lg"
               >
                 See It Running on My Site →
               </a>
-              <a href="#calculator" className="px-6 py-4 border border-gray-300 hover:border-[#007AFF] hover:text-[#007AFF] text-gray-700 font-semibold rounded-lg transition-colors text-base">
+              <a href="#calculator" className="px-6 py-4 border border-gray-300 hover:border-primary hover:text-primary text-gray-700 font-semibold rounded-lg transition-colors text-base">
                 Calculate My Revenue Leak ↓
               </a>
             </div>
@@ -154,7 +154,7 @@ export default function SuperPixelPage() {
       <section id="calculator" className="py-24 bg-[#F7F9FB]">
         <Container>
           <div className="text-center mb-12">
-            <span className="text-sm text-[#007AFF] mb-4 block font-medium tracking-wide uppercase">
+            <span className="text-sm text-primary mb-4 block font-medium tracking-wide uppercase">
               Super Pixel Found Money Calculator
             </span>
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
@@ -178,7 +178,7 @@ export default function SuperPixelPage() {
       <section className="py-24 bg-white">
         <Container>
           <div className="text-center mb-14">
-            <span className="text-sm text-[#007AFF] mb-4 block font-medium tracking-wide uppercase">
+            <span className="text-sm text-primary mb-4 block font-medium tracking-wide uppercase">
               See It In Action
             </span>
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
@@ -193,7 +193,7 @@ export default function SuperPixelPage() {
           </div>
 
           <div className="max-w-lg mx-auto bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
-            <div className="bg-[#007AFF] px-6 py-4 flex items-center justify-between">
+            <div className="bg-primary px-6 py-4 flex items-center justify-between">
               <span className="text-white font-semibold text-sm uppercase tracking-wide">New Lead Identified</span>
               <span className="flex items-center gap-2 text-emerald-400 text-xs font-semibold">
                 <span className="relative flex h-2 w-2">
@@ -252,13 +252,13 @@ export default function SuperPixelPage() {
             {HOW_IT_WORKS.map((step, i) => (
               <div key={i} className="flex flex-col items-center text-center">
                 <div className="w-20 h-20 rounded-2xl bg-white border border-gray-200 flex items-center justify-center mb-4 shadow-sm">
-                  <span className="text-3xl font-light text-[#007AFF]">{step.step}</span>
+                  <span className="text-3xl font-light text-primary">{step.step}</span>
                 </div>
                 <div className="inline-flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold px-3 py-1 rounded-full mb-3">
                   <CheckCircle2 className="w-3 h-3" />
                   {step.time}
                 </div>
-                <div className="text-sm text-[#007AFF] font-medium mb-2">Step {step.step}</div>
+                <div className="text-sm text-primary font-medium mb-2">Step {step.step}</div>
                 <h3 className="text-2xl text-gray-900 mb-3 font-medium">{step.title}</h3>
                 <p className="text-gray-600 leading-relaxed">{step.desc}</p>
               </div>
@@ -376,7 +376,7 @@ export default function SuperPixelPage() {
       <section className="py-24 bg-white">
         <Container>
           <div className="text-center mb-16">
-            <span className="text-sm text-[#007AFF] mb-4 block font-medium tracking-wide uppercase">
+            <span className="text-sm text-primary mb-4 block font-medium tracking-wide uppercase">
               The Technology
             </span>
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
@@ -391,9 +391,9 @@ export default function SuperPixelPage() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
             {DIFFERENTIATORS.map((card, i) => (
-              <div key={i} className="bg-white rounded-xl p-6 border border-gray-200 hover:border-[#007AFF] hover:shadow-lg transition-all flex gap-4">
+              <div key={i} className="bg-white rounded-xl p-6 border border-gray-200 hover:border-primary hover:shadow-lg transition-all flex gap-4">
                 <div className="flex-shrink-0 w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
-                  <card.icon className="w-6 h-6 text-[#007AFF]" />
+                  <card.icon className="w-6 h-6 text-primary" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900 mb-0.5">{card.title}</h3>
@@ -412,7 +412,7 @@ export default function SuperPixelPage() {
           <div className="max-w-4xl mx-auto text-center">
             <p className="text-white/60 text-xs font-mono uppercase tracking-widest mb-3">What competitors don&apos;t tell you</p>
             <p className="text-white text-xl md:text-2xl font-light leading-relaxed">
-              A claimed 60% match rate typically yields only <strong className="text-[#007AFF] font-semibold">~15% usable contacts</strong> after data decay.{' '}
+              A claimed 60% match rate typically yields only <strong className="text-primary font-semibold">~15% usable contacts</strong> after data decay.{' '}
               <strong className="text-white font-semibold">Every match we deliver is a real, contactable person.</strong>
             </p>
           </div>
@@ -435,7 +435,7 @@ export default function SuperPixelPage() {
                 { number: '7B', label: 'Historic Hashed Emails' },
               ].map(stat => (
                 <div key={stat.label} className="bg-[#F7F9FB] rounded-xl p-5 text-center">
-                  <div className="text-3xl font-light text-[#007AFF] mb-1">{stat.number}</div>
+                  <div className="text-3xl font-light text-primary mb-1">{stat.number}</div>
                   <div className="text-sm text-gray-600">{stat.label}</div>
                 </div>
               ))}
@@ -463,7 +463,7 @@ export default function SuperPixelPage() {
                     <th className="text-left py-4 px-4 text-gray-600 font-medium w-1/3">Capability</th>
                     <th className="text-center py-4 px-4 text-gray-500 font-medium">No Pixel</th>
                     <th className="text-center py-4 px-4 text-gray-500 font-medium">Standard Pixel</th>
-                    <th className="text-center py-4 px-4 text-[#007AFF] font-bold">Cursive Super Pixel</th>
+                    <th className="text-center py-4 px-4 text-primary font-bold">Cursive Super Pixel</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
@@ -482,7 +482,7 @@ export default function SuperPixelPage() {
                       <td className="py-3 px-4 text-gray-600">{cap}</td>
                       <td className="py-3 px-4 text-center text-gray-400">{none}</td>
                       <td className="py-3 px-4 text-center text-gray-400">{std}</td>
-                      <td className="py-3 px-4 text-center text-[#007AFF] font-semibold">{cursive}</td>
+                      <td className="py-3 px-4 text-center text-primary font-semibold">{cursive}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -509,9 +509,9 @@ export default function SuperPixelPage() {
                 <div className="text-4xl font-light text-red-500 mb-1">2%</div>
                 <p className="text-sm text-gray-500">Visitor capture rate (forms only)</p>
               </div>
-              <div className="p-6 text-center bg-[#007AFF]/4">
-                <p className="text-xs font-mono uppercase tracking-widest text-[#007AFF] mb-2">After Cursive</p>
-                <div className="text-4xl font-light text-[#007AFF] mb-1">70%</div>
+              <div className="p-6 text-center bg-primary/4">
+                <p className="text-xs font-mono uppercase tracking-widest text-primary mb-2">After Cursive</p>
+                <div className="text-4xl font-light text-primary mb-1">70%</div>
                 <p className="text-sm text-gray-600">Visitor identification rate</p>
               </div>
             </div>
@@ -536,7 +536,7 @@ export default function SuperPixelPage() {
               },
             ].map((t, i) => (
               <div key={i} className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
-                <div className="text-[#007AFF] text-3xl mb-4">&ldquo;</div>
+                <div className="text-primary text-3xl mb-4">&ldquo;</div>
                 <p className="text-gray-700 leading-relaxed mb-6 text-sm">{t.quote}</p>
                 <div>
                   <p className="text-gray-900 font-semibold text-sm">{t.author}</p>
@@ -602,17 +602,17 @@ export default function SuperPixelPage() {
                   </li>
                 ))}
               </ul>
-              <Button href="https://leads.meetcursive.com/signup" className="w-full text-center bg-[#007AFF] text-white hover:bg-[#0066DD]">
+              <Button href="https://leads.meetcursive.com/signup" className="w-full text-center bg-primary text-white hover:bg-primary-dark">
                 Start Free Trial →
               </Button>
             </div>
 
             {/* Growth — Most Popular */}
-            <div className="bg-white border-2 border-[#007AFF] rounded-2xl p-6 shadow-lg relative">
+            <div className="bg-white border-2 border-primary rounded-2xl p-6 shadow-lg relative">
               <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                <span className="px-3 py-1 bg-[#007AFF] text-white text-xs font-bold rounded-full">MOST POPULAR</span>
+                <span className="px-3 py-1 bg-primary text-white text-xs font-bold rounded-full">MOST POPULAR</span>
               </div>
-              <div className="text-[#007AFF] text-sm font-semibold uppercase tracking-wider mb-3">Growth</div>
+              <div className="text-primary text-sm font-semibold uppercase tracking-wider mb-3">Growth</div>
               <div className="text-4xl font-light text-gray-900 mb-1">$499<span className="text-lg font-normal text-gray-500">/mo</span></div>
               <div className="text-gray-500 text-sm mb-6">Up to 5,000 identified visitors/mo</div>
               <ul className="space-y-3 mb-8">
@@ -630,7 +630,7 @@ export default function SuperPixelPage() {
                   </li>
                 ))}
               </ul>
-              <Button href={BOOK_ANCHOR} className="w-full text-center bg-[#007AFF] text-white hover:bg-[#0066DD]">
+              <Button href={BOOK_ANCHOR} className="w-full text-center bg-primary text-white hover:bg-primary-dark">
                 Book a Demo →
               </Button>
             </div>
@@ -694,7 +694,7 @@ export default function SuperPixelPage() {
       <section id="book-demo" className="py-24 bg-white">
         <Container>
           <div className="text-center mb-12">
-            <span className="text-sm text-[#007AFF] mb-4 block font-medium tracking-wide uppercase">
+            <span className="text-sm text-primary mb-4 block font-medium tracking-wide uppercase">
               See Results Before Your Next Monday Meeting
             </span>
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">

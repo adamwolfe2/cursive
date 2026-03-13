@@ -47,7 +47,7 @@ export function CompetitorComparisonGrid() {
             >
               <Link
                 href={`/compare/${competitor.slug}`}
-                className="block bg-white border border-gray-200 rounded-xl p-6 hover:border-[#007AFF] hover:shadow-lg transition-all group"
+                className="block bg-white border border-gray-200 rounded-xl p-6 hover:border-primary hover:shadow-lg transition-all group"
               >
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
@@ -57,7 +57,7 @@ export function CompetitorComparisonGrid() {
                     <h3 className="text-lg font-medium text-gray-900">{competitor.name}</h3>
                   </div>
                 </div>
-                <div className="flex items-center text-sm text-gray-600 group-hover:text-[#007AFF] transition-colors">
+                <div className="flex items-center text-sm text-gray-600 group-hover:text-primary transition-colors">
                   <span>Cursive vs {competitor.name}</span>
                   <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                 </div>
@@ -121,7 +121,7 @@ export function ComparisonPage({ competitorName, competitorLogo, benefits, featu
           <div className="flex gap-4">
             <Link
               href="https://cal.com/gotdarrenhill/30min"
-              className="inline-flex items-center px-6 py-3 bg-[#007AFF] text-white rounded-lg hover:bg-[#0066DD] transition-colors"
+              className="inline-flex items-center px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors"
             >
               Start for free
               <ArrowRight className="w-4 h-4 ml-2" />
@@ -160,7 +160,7 @@ export function ComparisonPage({ competitorName, competitorLogo, benefits, featu
                     <p className="text-gray-700">{benefit.competitor}</p>
                   </div>
                   <div>
-                    <div className="text-sm text-[#007AFF] font-medium mb-2">Cursive:</div>
+                    <div className="text-sm text-primary font-medium mb-2">Cursive:</div>
                     <p className="text-gray-900 font-medium">{benefit.cursive}</p>
                   </div>
                 </div>
@@ -243,7 +243,7 @@ export function ComparisonPage({ competitorName, competitorLogo, benefits, featu
           </p>
           <Link
             href="https://cal.com/gotdarrenhill/30min"
-            className="inline-flex items-center px-8 py-4 bg-[#007AFF] text-white text-lg rounded-lg hover:bg-[#0066DD] transition-colors"
+            className="inline-flex items-center px-8 py-4 bg-primary text-white text-lg rounded-lg hover:bg-primary-dark transition-colors"
           >
             Book Your Free Audit
             <ArrowRight className="w-5 h-5 ml-2" />

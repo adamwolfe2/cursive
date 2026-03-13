@@ -218,7 +218,7 @@ export function DemoVisitorTracking() {
                       <motion.span
                         initial={{ opacity: 0 }}
                         animate={{ opacity: visitor.enrichmentStep >= 2 ? 1 : 0.3 }}
-                        className="text-[10px] text-[#007AFF] truncate"
+                        className="text-[10px] text-primary truncate"
                       >
                         {visitor.enrichmentStep >= 2 ? visitor.page : ""}
                       </motion.span>

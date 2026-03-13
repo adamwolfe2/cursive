@@ -20,7 +20,7 @@ export function ComparisonTable({ results, monthlyVisitors: _monthlyVisitors, vi
             <th className="text-left py-3 px-4 text-gray-500 font-medium w-1/4">Metric</th>
             <th className="text-center py-3 px-4 text-gray-500 font-medium">No Pixel</th>
             <th className="text-center py-3 px-4 text-gray-500 font-medium">Standard Pixel</th>
-            <th className="text-center py-3 px-4 text-[#007AFF] font-bold">Cursive Super Pixel</th>
+            <th className="text-center py-3 px-4 text-primary font-bold">Cursive Super Pixel</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100">
@@ -28,45 +28,45 @@ export function ComparisonTable({ results, monthlyVisitors: _monthlyVisitors, vi
             <td className="py-3 px-4 text-gray-600">Visitor ID Rate</td>
             <td className="py-3 px-4 text-center text-gray-400">~2%</td>
             <td className="py-3 px-4 text-center text-gray-400">~15%</td>
-            <td className="py-3 px-4 text-center text-[#007AFF] font-bold">70%</td>
+            <td className="py-3 px-4 text-center text-primary font-bold">70%</td>
           </tr>
           <tr>
             <td className="py-3 px-4 text-gray-600">Email Bounce Rate</td>
             <td className="py-3 px-4 text-center text-gray-400">N/A</td>
             <td className="py-3 px-4 text-center text-gray-400">~20%</td>
-            <td className="py-3 px-4 text-center text-[#007AFF] font-bold">0.05%</td>
+            <td className="py-3 px-4 text-center text-primary font-bold">0.05%</td>
           </tr>
           <tr>
             <td className="py-3 px-4 text-gray-600">Intent Scoring</td>
             <td className="py-3 px-4 text-center text-gray-400">None</td>
             <td className="py-3 px-4 text-center text-gray-400">None</td>
-            <td className="py-3 px-4 text-center text-[#007AFF] font-bold">High / Med / Low</td>
+            <td className="py-3 px-4 text-center text-primary font-bold">High / Med / Low</td>
           </tr>
           <tr>
             <td className="py-3 px-4 text-gray-600">Data Freshness</td>
             <td className="py-3 px-4 text-center text-gray-400">N/A</td>
             <td className="py-3 px-4 text-center text-gray-400">Quarterly</td>
-            <td className="py-3 px-4 text-center text-[#007AFF] font-bold">30-Day NCOA</td>
+            <td className="py-3 px-4 text-center text-primary font-bold">30-Day NCOA</td>
           </tr>
           <tr className="border-t border-gray-200">
             <td className="py-3 px-4 text-gray-600">Identified / mo</td>
             <td className="py-3 px-4 text-center text-gray-500">{formatNumber(results.noPixel.leads)}</td>
             <td className="py-3 px-4 text-center text-gray-500">{formatNumber(results.competitor.identified)}</td>
-            <td className="py-3 px-4 text-center text-[#007AFF] font-semibold">{formatNumber(results.cursive.identified)}</td>
+            <td className="py-3 px-4 text-center text-primary font-semibold">{formatNumber(results.cursive.identified)}</td>
           </tr>
           <tr>
             <td className="py-3 px-4 text-gray-600">Intent-Qualified / mo</td>
             <td className="py-3 px-4 text-center text-gray-500">{formatNumber(results.noPixel.leads)}</td>
             <td className="py-3 px-4 text-center text-gray-500">{formatNumber(results.competitor.contactable)}</td>
-            <td className="py-3 px-4 text-center text-[#007AFF] font-semibold">{formatNumber(results.cursive.intentQualified)}</td>
+            <td className="py-3 px-4 text-center text-primary font-semibold">{formatNumber(results.cursive.intentQualified)}</td>
           </tr>
           <tr>
             <td className="py-3 px-4 text-gray-600">Est. Monthly Revenue</td>
             <td className="py-3 px-4 text-center text-gray-500">${results.noPixel.monthlyRevenue.toLocaleString()}</td>
             <td className="py-3 px-4 text-center text-gray-500">${results.competitor.monthlyRevenue.toLocaleString()}</td>
-            <td className="py-3 px-4 text-center text-[#007AFF] font-semibold">${results.cursive.monthlyRevenue.toLocaleString()}</td>
+            <td className="py-3 px-4 text-center text-primary font-semibold">${results.cursive.monthlyRevenue.toLocaleString()}</td>
           </tr>
-          <tr className="bg-[#007AFF]/5 border-t-2 border-[#007AFF]/20">
+          <tr className="bg-primary/5 border-t-2 border-primary/20">
             <td className="py-4 px-4 text-gray-900 font-semibold">{isMonthly ? 'Est. Monthly Revenue' : 'Est. Annual Revenue'}</td>
             <td className="py-4 px-4 text-center text-gray-500 font-semibold">
               ${(isMonthly ? results.noPixel.monthlyRevenue : results.noPixel.annualRevenue).toLocaleString()}
@@ -78,7 +78,7 @@ export function ComparisonTable({ results, monthlyVisitors: _monthlyVisitors, vi
               <CountUpNumber
                 value={isMonthly ? results.cursive.monthlyRevenue : results.cursive.annualRevenue}
                 prefix="$"
-                className="text-[#007AFF]"
+                className="text-primary"
               />
             </td>
           </tr>

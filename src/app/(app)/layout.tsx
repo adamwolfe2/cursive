@@ -1,9 +1,6 @@
 // App Layout - Protected layout with navigation
 // Used by email-sequences, segment-builder, analytics, and other app pages
 
-// Force dynamic rendering for all app pages (auth required)
-export const dynamic = 'force-dynamic'
-
 import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'

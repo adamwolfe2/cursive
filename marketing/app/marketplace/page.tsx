@@ -112,7 +112,7 @@ export default function MarketplacePage() {
                 transition={{ duration: 0.8 }}
                 className="text-center max-w-4xl mx-auto"
               >
-                <span className="text-sm text-[#007AFF] mb-4 block font-medium tracking-wide">LEAD MARKETPLACE</span>
+                <span className="text-sm text-primary mb-4 block font-medium tracking-wide">LEAD MARKETPLACE</span>
                 <h1 className="text-5xl lg:text-7xl font-light text-gray-900 mb-6">
                   Browse & Buy Verified
                   <span className="block font-cursive text-6xl lg:text-7xl text-gray-500 mt-2">
@@ -182,7 +182,7 @@ export default function MarketplacePage() {
                       <div className="w-20 h-20 rounded-2xl bg-white border border-gray-200 flex items-center justify-center mb-6">
                         <step.icon className="h-10 w-10 text-gray-700" />
                       </div>
-                      <div className="text-sm text-[#007AFF] font-medium mb-2">Step {step.step}</div>
+                      <div className="text-sm text-primary font-medium mb-2">Step {step.step}</div>
                       <h3 className="text-2xl text-gray-900 mb-3 font-medium">
                         {step.title}
                       </h3>
@@ -217,13 +217,13 @@ export default function MarketplacePage() {
                     transition={{ delay: i * 0.1 }}
                     className={`bg-white rounded-2xl p-8 border transition-all duration-300 hover:shadow-lg relative h-full flex flex-col ${
                       pkg.popular
-                        ? "border-[#007AFF] shadow-xl transform lg:scale-105 z-10"
-                        : "border-gray-200 hover:border-[#007AFF]"
+                        ? "border-primary shadow-xl transform lg:scale-105 z-10"
+                        : "border-gray-200 hover:border-primary"
                     }`}
                   >
                     {pkg.popular && (
                       <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                        <div className="bg-[#007AFF] text-white px-4 py-1 rounded-full text-sm font-medium shadow-lg">
+                        <div className="bg-primary text-white px-4 py-1 rounded-full text-sm font-medium shadow-lg">
                           Most Popular
                         </div>
                       </div>
@@ -231,7 +231,7 @@ export default function MarketplacePage() {
                     <div className="flex-grow">
                       <div className="text-xs font-medium text-gray-500 mb-2 uppercase">{pkg.tier}</div>
                       <h3 className="text-2xl font-light text-gray-900 mb-1">{pkg.credits} Credits</h3>
-                      <div className="text-4xl font-light text-[#007AFF] mb-1">${pkg.price}</div>
+                      <div className="text-4xl font-light text-primary mb-1">${pkg.price}</div>
                       <div className="text-sm text-gray-500 mb-2">${pkg.perCredit}/credit</div>
 
                       <div className="h-7 mb-4">
@@ -287,7 +287,7 @@ export default function MarketplacePage() {
                       { icon: Sparkles, label: "LinkedIn profile and social data" },
                     ].map((field, i) => (
                       <div key={i} className="flex items-center gap-3">
-                        <field.icon className="w-5 h-5 text-[#007AFF] flex-shrink-0" />
+                        <field.icon className="w-5 h-5 text-primary flex-shrink-0" />
                         <span className="text-gray-700">{field.label}</span>
                       </div>
                     ))}
@@ -352,14 +352,14 @@ export default function MarketplacePage() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: i * 0.08 }}
-                    className="bg-white rounded-xl p-6 border border-gray-200 hover:border-[#007AFF] hover:shadow-lg transition-all"
+                    className="bg-white rounded-xl p-6 border border-gray-200 hover:border-primary hover:shadow-lg transition-all"
                   >
-                    <Filter className="h-6 w-6 text-[#007AFF] mb-4" />
+                    <Filter className="h-6 w-6 text-primary mb-4" />
                     <h3 className="text-lg text-gray-900 mb-3 font-medium">{category.name}</h3>
                     <div className="space-y-2">
                       {category.options.map((option, j) => (
                         <div key={j} className="flex items-center gap-2">
-                          <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full flex-shrink-0" />
+                          <div className="w-1.5 h-1.5 bg-primary rounded-full flex-shrink-0" />
                           <span className="text-sm text-gray-600">{option}</span>
                         </div>
                       ))}

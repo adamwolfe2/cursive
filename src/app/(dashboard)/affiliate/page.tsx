@@ -12,8 +12,6 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { PartnerHubClient } from './partner-hub-client'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata = {
   title: 'Partner Hub | Cursive',
 }

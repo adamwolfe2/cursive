@@ -34,7 +34,7 @@ export default function EducationPage() {
               <motion.span
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-sm text-[#007AFF] mb-4 block"
+                className="text-sm text-primary mb-4 block"
               >
                 INDUSTRY SOLUTIONS
               </motion.span>
@@ -141,15 +141,15 @@ export default function EducationPage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.05 }}
-                  className="block bg-gray-50 rounded-xl p-6 border border-gray-200 hover:border-[#007AFF] hover:shadow-lg transition-all group"
+                  className="block bg-gray-50 rounded-xl p-6 border border-gray-200 hover:border-primary hover:shadow-lg transition-all group"
                 >
-                  <h3 className="text-lg text-gray-900 mb-2 font-medium group-hover:text-[#007AFF] transition-colors">
+                  <h3 className="text-lg text-gray-900 mb-2 font-medium group-hover:text-primary transition-colors">
                     {resource.title}
                   </h3>
                   <p className="text-gray-600 text-sm leading-relaxed">
                     {resource.description}
                   </p>
-                  <div className="mt-4 text-[#007AFF] text-sm font-medium flex items-center gap-2">
+                  <div className="mt-4 text-primary text-sm font-medium flex items-center gap-2">
                     Read article <span>→</span>
                   </div>
                 </motion.a>
@@ -181,7 +181,7 @@ export default function EducationPage() {
                 size="lg"
                 href="https://cal.com/gotdarrenhill/30min"
                 target="_blank"
-                className="bg-[#007AFF] text-white hover:bg-[#0066DD] text-lg px-10 py-5 mb-4"
+                className="bg-primary text-white hover:bg-primary-dark text-lg px-10 py-5 mb-4"
               >
                 Book Your Strategy Call Now
               </Button>

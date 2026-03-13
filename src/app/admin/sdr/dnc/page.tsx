@@ -1,5 +1,3 @@
-export const dynamic = 'force-dynamic'
-
 import { getAllWorkspaces } from '@/lib/auth/admin'
 import { DncClient } from './DncClient'
 

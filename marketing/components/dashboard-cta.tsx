@@ -44,7 +44,7 @@ export function DashboardCTA({
             size="lg"
             href={ctaUrl}
             target="_blank"
-            className="bg-[#007AFF] text-white hover:bg-[#0066DD] text-lg px-10 py-5 mb-4"
+            className="bg-primary text-white hover:bg-primary-dark text-lg px-10 py-5 mb-4"
           >
             {ctaText}
           </Button>

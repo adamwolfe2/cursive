@@ -87,15 +87,15 @@ export default function WhatIsAISDRPage() {
 
               <p className="text-lg text-gray-600 mb-8">
                 The AI SDR category has exploded in 2026 as companies face mounting pressure to do more with less. With the average cost of a fully-loaded human SDR exceeding $90,000 per year and typical ramp times of 3-6 months, AI SDRs offer a compelling alternative that can begin producing qualified meetings within weeks at a fraction of the cost. Platforms like{" "}
-                <Link href="/platform" className="text-[#007AFF] hover:underline">Cursive</Link> combine AI SDR capabilities with{" "}
-                <Link href="/visitor-identification" className="text-[#007AFF] hover:underline">visitor identification</Link> and{" "}
-                <Link href="/what-is-b2b-intent-data" className="text-[#007AFF] hover:underline">intent data</Link>, creating an end-to-end pipeline generation engine that identifies who to contact, determines the best time to reach out, and executes personalized outreach automatically.
+                <Link href="/platform" className="text-primary hover:underline">Cursive</Link> combine AI SDR capabilities with{" "}
+                <Link href="/visitor-identification" className="text-primary hover:underline">visitor identification</Link> and{" "}
+                <Link href="/what-is-b2b-intent-data" className="text-primary hover:underline">intent data</Link>, creating an end-to-end pipeline generation engine that identifies who to contact, determines the best time to reach out, and executes personalized outreach automatically.
               </p>
 
               {/* Table of Contents */}
               <nav className="bg-gray-50 rounded-lg p-6 mb-10">
                 <h2 className="text-lg font-semibold text-gray-900 mb-4 mt-0">Table of Contents</h2>
-                <ol className="list-decimal list-inside space-y-2 text-[#007AFF] mb-0">
+                <ol className="list-decimal list-inside space-y-2 text-primary mb-0">
                   <li><a href="#how-ai-sdrs-work" className="hover:underline">How AI SDRs Work</a></li>
                   <li><a href="#ai-sdr-vs-human-sdr" className="hover:underline">AI SDR vs. Human SDR</a></li>
                   <li><a href="#key-capabilities" className="hover:underline">Key Capabilities</a></li>
@@ -123,7 +123,7 @@ export default function WhatIsAISDRPage() {
               </h3>
               <p>
                 The AI SDR pipeline begins with ingesting data about your target market and individual prospects. The system pulls information from multiple sources: your CRM for existing account and contact data,{" "}
-                <Link href="/visitor-identification" className="text-[#007AFF] hover:underline">visitor identification</Link> for companies engaging with your website, intent data for accounts showing buying signals, LinkedIn for professional profiles and company information, news APIs for recent company events and triggers, and enrichment databases for firmographic and technographic data. This research phase is where AI SDRs gain their most significant advantage over human reps. A human SDR might spend 15-30 minutes researching a single prospect. An AI SDR processes thousands of prospects simultaneously, cross-referencing dozens of data points for each one in seconds.
+                <Link href="/visitor-identification" className="text-primary hover:underline">visitor identification</Link> for companies engaging with your website, intent data for accounts showing buying signals, LinkedIn for professional profiles and company information, news APIs for recent company events and triggers, and enrichment databases for firmographic and technographic data. This research phase is where AI SDRs gain their most significant advantage over human reps. A human SDR might spend 15-30 minutes researching a single prospect. An AI SDR processes thousands of prospects simultaneously, cross-referencing dozens of data points for each one in seconds.
               </p>
 
               <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
@@ -287,8 +287,8 @@ export default function WhatIsAISDRPage() {
               </h3>
               <p>
                 The most advanced AI SDRs integrate with{" "}
-                <Link href="/intent-audiences" className="text-[#007AFF] hover:underline">intent data</Link> to prioritize outreach based on real-time buying signals. Rather than working through a static prospect list, the AI automatically increases outreach cadence and personalization for accounts showing active intent. When a target account visits your{" "}
-                <Link href="/what-is-website-visitor-identification" className="text-[#007AFF] hover:underline">website</Link>, researches your product category, or engages with competitors, the AI SDR responds within minutes with relevant, timely outreach. This intent-driven approach generates 3-5x higher response rates than cold outreach.
+                <Link href="/intent-audiences" className="text-primary hover:underline">intent data</Link> to prioritize outreach based on real-time buying signals. Rather than working through a static prospect list, the AI automatically increases outreach cadence and personalization for accounts showing active intent. When a target account visits your{" "}
+                <Link href="/what-is-website-visitor-identification" className="text-primary hover:underline">website</Link>, researches your product category, or engages with competitors, the AI SDR responds within minutes with relevant, timely outreach. This intent-driven approach generates 3-5x higher response rates than cold outreach.
               </p>
 
               {/* Section 4: Use Cases */}
@@ -403,7 +403,7 @@ export default function WhatIsAISDRPage() {
 
               <p>
                 To put these numbers in context, consider a scenario where a company replaces two human SDRs (combined cost: $190,000 per year) with an AI SDR platform ($36,000 per year). The two human SDRs were generating a combined 30 qualified meetings per month. The AI SDR generates 60 qualified meetings per month. The company saves $154,000 annually while doubling meeting output. Even accounting for a slightly lower meeting-to-opportunity conversion rate (30% vs 35%), the AI SDR generates more pipeline at lower cost. When combined with{" "}
-                <Link href="/what-is-b2b-intent-data" className="text-[#007AFF] hover:underline">intent data</Link> to target in-market accounts, the ROI advantage becomes even more pronounced.
+                <Link href="/what-is-b2b-intent-data" className="text-primary hover:underline">intent data</Link> to target in-market accounts, the ROI advantage becomes even more pronounced.
               </p>
 
               {/* Section 6: Implementation Guide */}
@@ -420,7 +420,7 @@ export default function WhatIsAISDRPage() {
               </h3>
               <p>
                 Before activating an AI SDR, you need a clear, data-driven definition of your ideal customer. This includes firmographic criteria (company size, industry, geography, revenue), technographic criteria (technology stack, tools used), and behavioral criteria (intent signals, engagement patterns). The ICP should be based on analysis of your best existing customers rather than aspirational targets. Use Cursive&apos;s{" "}
-                <Link href="/audience-builder" className="text-[#007AFF] hover:underline">audience builder</Link> to create precise ICP segments using real data.
+                <Link href="/audience-builder" className="text-primary hover:underline">audience builder</Link> to create precise ICP segments using real data.
               </p>
 
               <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
@@ -449,7 +449,7 @@ export default function WhatIsAISDRPage() {
               </h3>
               <p>
                 Once the pilot is successful, gradually increase volume while continuously monitoring performance. Key metrics to track include deliverability rate (target 95%+), open rate (target 45-65%), response rate (target 8-15%), positive response rate (target 3-8%), meetings booked per week, meeting show rate, and meeting-to-opportunity conversion rate. Set up weekly review sessions to analyze performance, test new messaging approaches, and refine targeting. Most AI SDR platforms provide analytics dashboards that make this ongoing optimization straightforward. Review{" "}
-                <Link href="/pricing" className="text-[#007AFF] hover:underline">pricing options</Link> to find the plan that scales with your outreach volume.
+                <Link href="/pricing" className="text-primary hover:underline">pricing options</Link> to find the plan that scales with your outreach volume.
               </p>
 
               {/* Section 7: Platform Comparison */}
@@ -520,8 +520,8 @@ export default function WhatIsAISDRPage() {
 
               <p>
                 What sets{" "}
-                <Link href="/platform" className="text-[#007AFF] hover:underline">Cursive</Link> apart is its integrated approach. While most AI SDR tools are standalone outreach platforms that require you to bring your own prospect data and intent signals, Cursive combines visitor identification, intent data, audience building, and AI-powered outreach in a single platform. This means you do not need to stitch together multiple tools or manage data flows between systems. For more on how AI SDRs compare to traditional outbound approaches, read our guide on{" "}
-                <Link href="/blog/ai-sdr-vs-human-bdr" className="text-[#007AFF] hover:underline">AI SDR vs. Human BDR</Link>.
+                <Link href="/platform" className="text-primary hover:underline">Cursive</Link> apart is its integrated approach. While most AI SDR tools are standalone outreach platforms that require you to bring your own prospect data and intent signals, Cursive combines visitor identification, intent data, audience building, and AI-powered outreach in a single platform. This means you do not need to stitch together multiple tools or manage data flows between systems. For more on how AI SDRs compare to traditional outbound approaches, read our guide on{" "}
+                <Link href="/blog/ai-sdr-vs-human-bdr" className="text-primary hover:underline">AI SDR vs. Human BDR</Link>.
               </p>
 
               {/* Section 8: Limitations */}
@@ -559,7 +559,7 @@ export default function WhatIsAISDRPage() {
               </h3>
               <p>
                 Email service providers are continuously improving their ability to detect and filter automated outreach. AI SDRs must be configured carefully to maintain high deliverability. This includes using properly warmed sending domains, maintaining reasonable daily sending volumes, varying message content to avoid pattern detection, and monitoring bounce rates and spam complaints closely. Poor deliverability does not just waste outreach effort; it can damage your domain reputation and affect the deliverability of all your company&apos;s email, including legitimate business correspondence. Learn more about email best practices in our guide on{" "}
-                <Link href="/blog/cold-email-2026" className="text-[#007AFF] hover:underline">cold email in 2026</Link>.
+                <Link href="/blog/cold-email-2026" className="text-primary hover:underline">cold email in 2026</Link>.
               </p>
 
               {/* Section 9: FAQ */}
@@ -587,22 +587,22 @@ export default function WhatIsAISDRPage() {
 
               <ul>
                 <li>
-                  <Link href="/what-is-website-visitor-identification" className="text-[#007AFF] hover:underline">What is Website Visitor Identification?</Link> &mdash; Learn how to identify the companies and people visiting your website to fuel your AI SDR with warm leads.
+                  <Link href="/what-is-website-visitor-identification" className="text-primary hover:underline">What is Website Visitor Identification?</Link> &mdash; Learn how to identify the companies and people visiting your website to fuel your AI SDR with warm leads.
                 </li>
                 <li>
-                  <Link href="/what-is-b2b-intent-data" className="text-[#007AFF] hover:underline">What is B2B Intent Data?</Link> &mdash; Understand how intent signals help your AI SDR target accounts that are actively in-market.
+                  <Link href="/what-is-b2b-intent-data" className="text-primary hover:underline">What is B2B Intent Data?</Link> &mdash; Understand how intent signals help your AI SDR target accounts that are actively in-market.
                 </li>
                 <li>
-                  <Link href="/platform" className="text-[#007AFF] hover:underline">Cursive Platform</Link> &mdash; See how Cursive integrates visitor identification, intent data, and AI SDR into one platform.
+                  <Link href="/platform" className="text-primary hover:underline">Cursive Platform</Link> &mdash; See how Cursive integrates visitor identification, intent data, and AI SDR into one platform.
                 </li>
                 <li>
-                  <Link href="/blog/scaling-outbound" className="text-[#007AFF] hover:underline">Scaling Outbound in 2026</Link> &mdash; Strategies for growing your outbound pipeline with AI-powered tools.
+                  <Link href="/blog/scaling-outbound" className="text-primary hover:underline">Scaling Outbound in 2026</Link> &mdash; Strategies for growing your outbound pipeline with AI-powered tools.
                 </li>
                 <li>
-                  <Link href="/industries/b2b-software" className="text-[#007AFF] hover:underline">AI SDR for B2B Software</Link> &mdash; Industry-specific playbooks for deploying AI SDRs in the software sector.
+                  <Link href="/industries/b2b-software" className="text-primary hover:underline">AI SDR for B2B Software</Link> &mdash; Industry-specific playbooks for deploying AI SDRs in the software sector.
                 </li>
                 <li>
-                  <Link href="/industries/agencies" className="text-[#007AFF] hover:underline">AI SDR for Agencies</Link> &mdash; How agencies use AI SDRs to scale client acquisition and service delivery.
+                  <Link href="/industries/agencies" className="text-primary hover:underline">AI SDR for Agencies</Link> &mdash; How agencies use AI SDRs to scale client acquisition and service delivery.
                 </li>
               </ul>
 
@@ -617,7 +617,7 @@ export default function WhatIsAISDRPage() {
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Link
                     href="/free-audit"
-                    className="inline-flex items-center justify-center px-6 py-3 bg-[#007AFF] text-white font-medium rounded-lg hover:bg-[#0063D1] transition-colors no-underline"
+                    className="inline-flex items-center justify-center px-6 py-3 bg-primary text-white font-medium rounded-lg hover:bg-[#0063D1] transition-colors no-underline"
                   >
                     Get Your Free Audit
                   </Link>

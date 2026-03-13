@@ -12,7 +12,7 @@ export function LeadSequenceFlow() {
           animate={{ opacity: 1, y: 0 }}
           className="flex flex-col items-center"
         >
-          <div className="bg-[#007AFF] text-white px-6 py-3 rounded-lg flex items-center gap-2">
+          <div className="bg-primary text-white px-6 py-3 rounded-lg flex items-center gap-2">
             <svg
               viewBox="0 0 24 24"
               fill="currentColor"
@@ -22,9 +22,9 @@ export function LeadSequenceFlow() {
             </svg>
             <span>Lead Enters Sequence</span>
           </div>
-          <div className="w-px h-8 bg-[#007AFF]" />
+          <div className="w-px h-8 bg-primary" />
           <div className="text-xs text-gray-600 mb-2">Day 1</div>
-          <div className="w-px h-8 bg-[#007AFF]" />
+          <div className="w-px h-8 bg-primary" />
         </motion.div>
 
         {/* First Email */}
@@ -34,18 +34,18 @@ export function LeadSequenceFlow() {
           transition={{ delay: 0.2 }}
           className="flex flex-col items-center mb-8"
         >
-          <div className="bg-blue-100 border-2 border-[#007AFF] px-6 py-4 rounded-lg text-center max-w-xs">
+          <div className="bg-blue-100 border-2 border-primary px-6 py-4 rounded-lg text-center max-w-xs">
             <div className="flex items-center gap-2 mb-2 justify-center">
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2"
-                className="w-5 h-5 text-[#007AFF]"
+                className="w-5 h-5 text-primary"
               >
                 <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
-              <span className="text-sm text-[#007AFF]">Email</span>
+              <span className="text-sm text-primary">Email</span>
             </div>
             <div className="text-xs text-gray-900">Personalized Email</div>
             <div className="text-xs text-gray-600 mt-1">
@@ -67,17 +67,17 @@ export function LeadSequenceFlow() {
               If opened →
             </div>
             <div className="text-xs text-gray-600 mb-2">Day 2</div>
-            <div className="w-px h-8 bg-[#007AFF]" />
-            <div className="bg-blue-100 border-2 border-[#007AFF] px-4 py-3 rounded-lg text-center max-w-xs">
-              <div className="text-xs text-[#007AFF] mb-1">SMS</div>
+            <div className="w-px h-8 bg-primary" />
+            <div className="bg-blue-100 border-2 border-primary px-4 py-3 rounded-lg text-center max-w-xs">
+              <div className="text-xs text-primary mb-1">SMS</div>
               <div className="text-xs text-gray-900">Follow-up SMS</div>
               <div className="text-xs text-gray-600">Quick question about...</div>
             </div>
-            <div className="w-px h-8 bg-[#007AFF] mt-4" />
+            <div className="w-px h-8 bg-primary mt-4" />
             <div className="text-xs text-gray-600 mb-2">Day 3</div>
-            <div className="w-px h-8 bg-[#007AFF]" />
-            <div className="bg-blue-100 border-2 border-[#007AFF] px-4 py-3 rounded-lg text-center max-w-xs">
-              <div className="text-xs text-[#007AFF] mb-1">Call</div>
+            <div className="w-px h-8 bg-primary" />
+            <div className="bg-blue-100 border-2 border-primary px-4 py-3 rounded-lg text-center max-w-xs">
+              <div className="text-xs text-primary mb-1">Call</div>
               <div className="text-xs text-gray-900">Call Task Created</div>
               <div className="text-xs text-gray-600">Assigned to rep</div>
             </div>
@@ -94,9 +94,9 @@ export function LeadSequenceFlow() {
               If no open →
             </div>
             <div className="text-xs text-gray-600 mb-2">Day 5</div>
-            <div className="w-px h-8 bg-[#007AFF]" />
-            <div className="bg-blue-100 border-2 border-[#007AFF] px-4 py-3 rounded-lg text-center max-w-xs">
-              <div className="text-xs text-[#007AFF] mb-1">Email</div>
+            <div className="w-px h-8 bg-primary" />
+            <div className="bg-blue-100 border-2 border-primary px-4 py-3 rounded-lg text-center max-w-xs">
+              <div className="text-xs text-primary mb-1">Email</div>
               <div className="text-xs text-gray-900">Re-engagement Email</div>
               <div className="text-xs text-gray-600">Trying to connect...</div>
             </div>
@@ -109,7 +109,7 @@ export function LeadSequenceFlow() {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.6 }}
-            className="bg-[#007AFF] text-white px-6 py-3 rounded-lg text-center"
+            className="bg-primary text-white px-6 py-3 rounded-lg text-center"
           >
             <svg
               viewBox="0 0 24 24"
@@ -127,7 +127,7 @@ export function LeadSequenceFlow() {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.7 }}
-            className="bg-[#007AFF] text-white px-6 py-3 rounded-lg text-center"
+            className="bg-primary text-white px-6 py-3 rounded-lg text-center"
           >
             <svg
               viewBox="0 0 24 24"
@@ -145,14 +145,14 @@ export function LeadSequenceFlow() {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.8 }}
-            className="bg-blue-100 border-2 border-[#007AFF] px-6 py-3 rounded-lg text-center"
+            className="bg-blue-100 border-2 border-primary px-6 py-3 rounded-lg text-center"
           >
             <svg
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
               strokeWidth="2"
-              className="w-5 h-5 mx-auto mb-1 text-[#007AFF]"
+              className="w-5 h-5 mx-auto mb-1 text-primary"
             >
               <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>

@@ -18,8 +18,6 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { getUserWithRole } from '@/lib/auth/roles'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
-export const dynamic = 'force-dynamic'
-
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 interface DailyRevenue {

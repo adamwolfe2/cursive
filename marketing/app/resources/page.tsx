@@ -55,7 +55,7 @@ export default function ResourcesPage() {
                     </div>
                     <h3 className="text-xl text-gray-900 mb-2">{category.title}</h3>
                     <p className="text-sm text-gray-600 mb-4">{category.description}</p>
-                    <p className="text-sm text-[#007AFF] font-medium">
+                    <p className="text-sm text-primary font-medium">
                       {category.count} articles →
                     </p>
                   </Link>
@@ -92,7 +92,7 @@ export default function ResourcesPage() {
                     <p className="text-sm text-gray-600 mb-4">{article.description}</p>
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-gray-500">{article.readTime}</span>
-                      <span className="text-[#007AFF] font-medium">Read article →</span>
+                      <span className="text-primary font-medium">Read article →</span>
                     </div>
                   </Link>
                 </motion.div>

@@ -24,12 +24,12 @@ export async function GET(req: NextRequest) {
 
   // SSRF protection: validate the domain is a safe public hostname
   if (!isSafeDomain(cleanDomain)) {
-    return NextResponse.json({ error: true }, { status: 200 })
+    return NextResponse.json({ error: 'Invalid domain' }, { status: 400 })
   }
 
   // Max domain length guard
   if (cleanDomain.length > 253) {
-    return NextResponse.json({ error: true }, { status: 200 })
+    return NextResponse.json({ error: 'Domain too long' }, { status: 400 })
   }
 
   try {
@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
 
     const res = await fetch(url, { next: { revalidate: 86400 } })
     if (!res.ok) {
-      return NextResponse.json({ error: true }, { status: 200 })
+      return NextResponse.json({ error: 'Failed to fetch site metadata' }, { status: 502 })
     }
 
     const data = await res.json()
@@ -49,6 +49,6 @@ export async function GET(req: NextRequest) {
       favicon: `https://www.google.com/s2/favicons?domain=${encodeURIComponent(cleanDomain)}&sz=128`,
     })
   } catch {
-    return NextResponse.json({ error: true }, { status: 200 })
+    return NextResponse.json({ error: 'Failed to analyze site' }, { status: 502 })
   }
 }

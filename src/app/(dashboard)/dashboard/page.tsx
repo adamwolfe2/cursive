@@ -32,8 +32,6 @@ import { TrialCountdown } from '@/components/dashboard/TrialCountdown'
 import { FirstEnrichmentModal } from '@/components/onboarding/FirstEnrichmentModal'
 import { ProvisioningWidget } from '@/components/dashboard/ProvisioningWidget'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   title: 'Dashboard | Cursive',
 }

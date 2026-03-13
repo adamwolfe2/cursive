@@ -39,7 +39,7 @@ export function AuthorBox({ author }: AuthorBoxProps) {
                   href={author.social.twitter}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-500 hover:text-[#007AFF] transition-colors"
+                  className="text-gray-500 hover:text-primary transition-colors"
                   aria-label={`${author.name} on Twitter`}
                 >
                   <Twitter className="h-5 w-5" />
@@ -50,7 +50,7 @@ export function AuthorBox({ author }: AuthorBoxProps) {
                   href={author.social.linkedin}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-500 hover:text-[#007AFF] transition-colors"
+                  className="text-gray-500 hover:text-primary transition-colors"
                   aria-label={`${author.name} on LinkedIn`}
                 >
                   <Linkedin className="h-5 w-5" />
@@ -61,7 +61,7 @@ export function AuthorBox({ author }: AuthorBoxProps) {
                   href={author.social.website}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-500 hover:text-[#007AFF] transition-colors"
+                  className="text-gray-500 hover:text-primary transition-colors"
                   aria-label={`${author.name}'s website`}
                 >
                   <Globe className="h-5 w-5" />

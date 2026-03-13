@@ -15,7 +15,7 @@ export default function AffiliateTermsPage() {
     <div className="min-h-screen bg-white">
       <div className="max-w-3xl mx-auto px-6 py-16">
         <div className="mb-8">
-          <Link href="/affiliates" className="text-sm text-gray-400 hover:text-[#007AFF] transition-colors">
+          <Link href="/affiliates" className="text-sm text-gray-400 hover:text-primary transition-colors">
             &larr; Back to Partner Program
           </Link>
         </div>
@@ -146,7 +146,7 @@ export default function AffiliateTermsPage() {
           <div className="pt-4 border-t border-gray-200">
             <p className="text-sm text-gray-400">
               Version 1.0 &mdash; Effective March 4, 2026 &middot; Questions? Contact{' '}
-              <a href="mailto:adam@meetcursive.com" className="text-[#007AFF] hover:underline">
+              <a href="mailto:adam@meetcursive.com" className="text-primary hover:underline">
                 adam@meetcursive.com
               </a>
             </p>

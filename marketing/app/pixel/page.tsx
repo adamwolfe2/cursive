@@ -89,7 +89,7 @@ export default function PixelPage() {
                 transition={{ duration: 0.8 }}
                 className="text-center max-w-4xl mx-auto"
               >
-                <span className="text-sm text-[#007AFF] mb-4 block font-medium tracking-wide">CURSIVE PIXEL</span>
+                <span className="text-sm text-primary mb-4 block font-medium tracking-wide">CURSIVE PIXEL</span>
                 <h1 className="text-5xl lg:text-7xl font-light text-gray-900 mb-6">
                   See Who's Visiting
                   <span className="block font-cursive text-6xl lg:text-7xl text-gray-500 mt-2">
@@ -148,10 +148,10 @@ export default function PixelPage() {
                 className="max-w-2xl mx-auto bg-white rounded-2xl p-10 border border-gray-200 shadow-lg"
               >
                 <div className="text-center mb-8">
-                  <div className="text-sm text-[#007AFF] font-medium mb-3">CURSIVE PIXEL</div>
+                  <div className="text-sm text-primary font-medium mb-3">CURSIVE PIXEL</div>
                   <div className="text-lg text-gray-600 mt-2 mb-1">Starting at</div>
                   <div className="flex items-baseline justify-center gap-2">
-                    <span className="text-5xl font-light text-[#007AFF]">$1,000</span>
+                    <span className="text-5xl font-light text-primary">$1,000</span>
                     <span className="text-xl text-gray-500">/mo</span>
                   </div>
                   <div className="text-lg text-gray-600 mt-2">
@@ -232,9 +232,9 @@ export default function PixelPage() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: i * 0.08 }}
-                    className="bg-white rounded-xl p-6 border border-gray-200 hover:border-[#007AFF] hover:shadow-lg transition-all"
+                    className="bg-white rounded-xl p-6 border border-gray-200 hover:border-primary hover:shadow-lg transition-all"
                   >
-                    <feature.icon className="h-8 w-8 text-[#007AFF] mb-4" />
+                    <feature.icon className="h-8 w-8 text-primary mb-4" />
                     <h3 className="text-xl text-gray-900 mb-3 font-medium">
                       {feature.title}
                     </h3>
@@ -291,7 +291,7 @@ export default function PixelPage() {
                       <div className="w-20 h-20 rounded-2xl bg-white border border-gray-200 flex items-center justify-center mb-6">
                         <step.icon className="h-10 w-10 text-gray-700" />
                       </div>
-                      <div className="text-sm text-[#007AFF] font-medium mb-2">Step {step.step}</div>
+                      <div className="text-sm text-primary font-medium mb-2">Step {step.step}</div>
                       <h3 className="text-2xl text-gray-900 mb-3 font-medium">
                         {step.title}
                       </h3>
@@ -344,8 +344,8 @@ export default function PixelPage() {
                       <div className="text-xs text-gray-500">no usage-based charges</div>
                     </div>
 
-                    <div className="p-6 bg-[#007AFF]/5 rounded-xl text-center border-2 border-[#007AFF]">
-                      <div className="text-sm text-[#007AFF] font-medium mb-2">Identification Rate</div>
+                    <div className="p-6 bg-primary/5 rounded-xl text-center border-2 border-primary">
+                      <div className="text-sm text-primary font-medium mb-2">Identification Rate</div>
                       <div className="text-3xl font-light text-gray-900 mb-1">
                         70%
                       </div>
@@ -384,9 +384,9 @@ export default function PixelPage() {
                   initial={{ opacity: 0, x: -20 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
-                  className="bg-white rounded-2xl p-8 border-2 border-[#007AFF] shadow-lg"
+                  className="bg-white rounded-2xl p-8 border-2 border-primary shadow-lg"
                 >
-                  <div className="text-sm text-[#007AFF] font-medium mb-3">CURSIVE PIXEL</div>
+                  <div className="text-sm text-primary font-medium mb-3">CURSIVE PIXEL</div>
                   <h3 className="text-2xl font-light text-gray-900 mb-4">
                     Website Visitors Who Already Know You
                   </h3>
@@ -489,11 +489,11 @@ export default function PixelPage() {
                 </div>
                 <div className="flex items-center justify-center gap-8 text-sm text-gray-600">
                   <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-[#007AFF]" />
+                    <Clock className="h-4 w-4 text-primary" />
                     <span>48-hour setup</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Zap className="h-4 w-4 text-[#007AFF]" />
+                    <Zap className="h-4 w-4 text-primary" />
                     <span>No technical work required</span>
                   </div>
                 </div>

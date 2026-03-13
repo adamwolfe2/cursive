@@ -9,8 +9,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const corePages = [
     { url: '', priority: 1.0, changefreq: 'weekly' as const },
     { url: '/superpixel', priority: 1.0, changefreq: 'weekly' as const }, // Primary VSL/conversion page (revenue calculator)
-    { url: '/oldsuperpixel', priority: 0.5, changefreq: 'monthly' as const }, // Legacy superpixel page
-    { url: '/platform', priority: 0.9, changefreq: 'weekly' as const },
+{ url: '/platform', priority: 0.9, changefreq: 'weekly' as const },
     { url: '/pricing', priority: 0.9, changefreq: 'weekly' as const },
     { url: '/free-audit', priority: 0.9, changefreq: 'weekly' as const },
     { url: '/marketplace', priority: 0.9, changefreq: 'weekly' as const },

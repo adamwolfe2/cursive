@@ -126,7 +126,7 @@ export function DemoAccountIntelligence() {
             onClick={() => setExpandedSection(section)}
             className={`px-4 py-2 rounded-lg text-sm whitespace-nowrap transition-colors ${
               expandedSection === section
-                ? "bg-[#007AFF] text-white"
+                ? "bg-primary text-white"
                 : "bg-white text-gray-600 border border-gray-200 hover:border-gray-300"
             }`}
           >
@@ -221,7 +221,7 @@ export function DemoAccountIntelligence() {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: i * 0.1 }}
                   whileHover={{ scale: 1.1 }}
-                  className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-700 hover:border-[#007AFF] transition-colors cursor-pointer"
+                  className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-700 hover:border-primary transition-colors cursor-pointer"
                 >
                   {tech}
                 </motion.div>
@@ -243,7 +243,7 @@ export function DemoAccountIntelligence() {
               <motion.div
                 animate={{ opacity: [1, 0.3, 1] }}
                 transition={{ duration: 2, repeat: Infinity }}
-                className="w-2 h-2 bg-[#007AFF] rounded-full"
+                className="w-2 h-2 bg-primary rounded-full"
               />
               <h5 className="text-sm font-medium text-gray-900">Recent Intent Signals</h5>
             </div>
@@ -278,7 +278,7 @@ export function DemoAccountIntelligence() {
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="flex-1 px-4 py-3 bg-[#007AFF] text-white rounded-lg font-medium hover:bg-[#0066DD] transition-colors"
+          className="flex-1 px-4 py-3 bg-primary text-white rounded-lg font-medium hover:bg-primary-dark transition-colors"
         >
           Export Account
         </motion.button>

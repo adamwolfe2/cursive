@@ -41,17 +41,17 @@ export function RelatedPosts({ posts }: RelatedPostsProps) {
             </div>
             <div className="p-5">
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-xs font-medium text-[#007AFF] uppercase tracking-wide">
+                <span className="text-xs font-medium text-primary uppercase tracking-wide">
                   {post.category}
                 </span>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-[#007AFF] transition-colors line-clamp-2">
+              <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-primary transition-colors line-clamp-2">
                 {post.title}
               </h3>
               <p className="text-sm text-gray-600 mb-3 line-clamp-2">
                 {post.description}
               </p>
-              <div className="flex items-center text-sm text-[#007AFF] font-medium">
+              <div className="flex items-center text-sm text-primary font-medium">
                 Read more
                 <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
               </div>

@@ -87,7 +87,7 @@ function TrackingPixelDemo() {
               className="absolute bottom-8 left-1/2 -translate-x-1/2"
             >
               <div className={`px-6 py-3 rounded-full shadow-xl flex items-center gap-3 ${
-                installed ? 'bg-blue-500' : 'bg-[#007AFF]'
+                installed ? 'bg-blue-500' : 'bg-primary'
               } text-white`}>
                 {installed ? (
                   <>
@@ -127,7 +127,7 @@ function TrackingPixelDemo() {
               }}
               className="absolute"
             >
-              <Eye className="w-6 h-6 text-[#007AFF]" />
+              <Eye className="w-6 h-6 text-primary" />
             </motion.div>
           ))}
         </div>
@@ -663,8 +663,8 @@ export function HowItWorksInteractiveDemo() {
             onClick={() => setActiveStep(i)}
             className={`px-6 py-3 rounded-lg font-medium transition-all ${
               activeStep === i
-                ? 'bg-[#007AFF] text-white shadow-lg'
-                : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-[#007AFF]'
+                ? 'bg-primary text-white shadow-lg'
+                : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-primary'
             }`}
           >
             <div className="text-sm opacity-70 mb-1">Step {step.id}</div>

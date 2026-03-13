@@ -6,7 +6,6 @@
  * and the 50 most recent calls. Uses admin client directly — no extra API route.
  */
 
-export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
 
 import { redirect } from 'next/navigation'

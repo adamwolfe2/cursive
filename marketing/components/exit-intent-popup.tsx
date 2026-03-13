@@ -156,6 +156,7 @@ export function ExitIntentPopup() {
             <div
               className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 relative"
               onClick={(e) => e.stopPropagation()}
+              aria-live="polite"
             >
               {/* Close Button */}
               <button
@@ -200,7 +201,7 @@ export function ExitIntentPopup() {
                       href="https://cal.com/gotdarrenhill/30min"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="block w-full text-center py-2.5 bg-[#007AFF] hover:bg-[#0066DD] text-white text-sm font-semibold rounded-lg transition-colors"
+                      className="block w-full text-center py-2.5 bg-primary hover:bg-primary-dark text-white text-sm font-semibold rounded-lg transition-colors"
                     >
                       Book a Free 30-min Call →
                     </a>
@@ -224,12 +225,12 @@ export function ExitIntentPopup() {
                   <div className="space-y-3">
                     <button
                       onClick={() => setSelectedAudit('ai')}
-                      className="w-full bg-white border-2 border-gray-200 hover:border-[#007AFF] rounded-xl p-6 text-left transition-all group"
+                      className="w-full bg-white border-2 border-gray-200 hover:border-primary rounded-xl p-6 text-left transition-all group"
                     >
                       <div className="flex items-start gap-4">
                         <div className="w-12 h-12 bg-blue-50 group-hover:bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors">
                           <svg
-                            className="w-6 h-6 text-[#007AFF]"
+                            className="w-6 h-6 text-primary"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -255,12 +256,12 @@ export function ExitIntentPopup() {
 
                     <button
                       onClick={() => setSelectedAudit('visitor')}
-                      className="w-full bg-white border-2 border-gray-200 hover:border-[#007AFF] rounded-xl p-6 text-left transition-all group"
+                      className="w-full bg-white border-2 border-gray-200 hover:border-primary rounded-xl p-6 text-left transition-all group"
                     >
                       <div className="flex items-start gap-4">
                         <div className="w-12 h-12 bg-blue-50 group-hover:bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors">
                           <svg
-                            className="w-6 h-6 text-[#007AFF]"
+                            className="w-6 h-6 text-primary"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -327,16 +328,22 @@ export function ExitIntentPopup() {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="Enter your work email"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007AFF] focus:border-transparent outline-none transition-all"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                         required
                         disabled={isSubmitting}
                         autoFocus
+                        aria-invalid={!!error}
+                        aria-describedby={error ? "exit-intent-email-error" : undefined}
                         toolparamdescription="Work email to receive the free audit report"
                       />
                     </div>
 
                     {error && (
-                      <div className="bg-gray-50 border border-gray-200 text-gray-700 px-4 py-3 rounded-lg text-sm">
+                      <div
+                        id="exit-intent-email-error"
+                        role="alert"
+                        className="bg-gray-50 border border-gray-200 text-gray-700 px-4 py-3 rounded-lg text-sm"
+                      >
                         {error}
                       </div>
                     )}
@@ -372,7 +379,7 @@ export function ExitIntentPopup() {
                         <>
                           <div className="flex items-center gap-2">
                             <svg
-                              className="w-4 h-4 text-[#007AFF] flex-shrink-0"
+                              className="w-4 h-4 text-primary flex-shrink-0"
                               fill="none"
                               stroke="currentColor"
                               viewBox="0 0 24 24"
@@ -388,7 +395,7 @@ export function ExitIntentPopup() {
                           </div>
                           <div className="flex items-center gap-2">
                             <svg
-                              className="w-4 h-4 text-[#007AFF] flex-shrink-0"
+                              className="w-4 h-4 text-primary flex-shrink-0"
                               fill="none"
                               stroke="currentColor"
                               viewBox="0 0 24 24"
@@ -404,7 +411,7 @@ export function ExitIntentPopup() {
                           </div>
                           <div className="flex items-center gap-2">
                             <svg
-                              className="w-4 h-4 text-[#007AFF] flex-shrink-0"
+                              className="w-4 h-4 text-primary flex-shrink-0"
                               fill="none"
                               stroke="currentColor"
                               viewBox="0 0 24 24"
@@ -423,7 +430,7 @@ export function ExitIntentPopup() {
                         <>
                           <div className="flex items-center gap-2">
                             <svg
-                              className="w-4 h-4 text-[#007AFF] flex-shrink-0"
+                              className="w-4 h-4 text-primary flex-shrink-0"
                               fill="none"
                               stroke="currentColor"
                               viewBox="0 0 24 24"
@@ -439,7 +446,7 @@ export function ExitIntentPopup() {
                           </div>
                           <div className="flex items-center gap-2">
                             <svg
-                              className="w-4 h-4 text-[#007AFF] flex-shrink-0"
+                              className="w-4 h-4 text-primary flex-shrink-0"
                               fill="none"
                               stroke="currentColor"
                               viewBox="0 0 24 24"
@@ -455,7 +462,7 @@ export function ExitIntentPopup() {
                           </div>
                           <div className="flex items-center gap-2">
                             <svg
-                              className="w-4 h-4 text-[#007AFF] flex-shrink-0"
+                              className="w-4 h-4 text-primary flex-shrink-0"
                               fill="none"
                               stroke="currentColor"
                               viewBox="0 0 24 24"

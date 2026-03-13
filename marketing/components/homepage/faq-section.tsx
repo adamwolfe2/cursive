@@ -166,7 +166,7 @@ export function FAQSection() {
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => trackDemoBooked("faq_section")}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-[#007AFF] text-white rounded-lg font-medium hover:bg-[#0066DD] transition-colors"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg font-medium hover:bg-primary-dark transition-colors"
             >
               Book a Free AI Audit
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

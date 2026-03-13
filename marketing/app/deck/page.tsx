@@ -41,7 +41,7 @@ const PROBLEM_STATS = [
   { number: '97%', label: 'of B2B visitors leave without ever identifying themselves', color: 'text-red-500' },
   { number: '<2%', label: 'of your traffic you can currently contact', color: 'text-red-500' },
   { number: '$47', label: 'avg cost-per-click lost to anonymous sessions every day', color: 'text-amber-500' },
-  { number: '8×', label: 'more identified contacts after Super Pixel install', color: 'text-[#007AFF]' },
+  { number: '8×', label: 'more identified contacts after Super Pixel install', color: 'text-primary' },
 ]
 
 const PROBLEMS = [
@@ -126,7 +126,7 @@ function VisitorDemo({ compact = false }: { compact?: boolean }) {
 
   return (
     <div className="border border-gray-200 rounded-xl overflow-hidden bg-white shadow-sm">
-      <div className="bg-[#007AFF] px-4 py-2.5 flex items-center justify-between">
+      <div className="bg-primary px-4 py-2.5 flex items-center justify-between">
         <div className="flex items-center gap-1.5">
           <div className="w-2.5 h-2.5 rounded-full bg-white/25" />
           <div className="w-2.5 h-2.5 rounded-full bg-white/25" />
@@ -148,7 +148,7 @@ function VisitorDemo({ compact = false }: { compact?: boolean }) {
             <p className="text-gray-400 text-sm">Monitoring traffic on meetcursive.com...</p>
             <div className="flex gap-1">
               {[0, 1, 2].map(i => (
-                <div key={i} className="w-1.5 h-1.5 rounded-full bg-[#007AFF] animate-bounce" style={{ animationDelay: `${i * 0.15}s` }} />
+                <div key={i} className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: `${i * 0.15}s` }} />
               ))}
             </div>
           </div>
@@ -164,7 +164,7 @@ function VisitorDemo({ compact = false }: { compact?: boolean }) {
               {([['IP', v.anon.ip], ['Location', v.anon.location], ['Device', v.anon.device], ['Page', v.anon.page], ['Identity', 'Anonymous']] as [string, string][]).map(([l, val]) => (
                 <div key={l} className="flex justify-between text-xs">
                   <span className="text-gray-400">{l}</span>
-                  <span className={l === 'Page' ? 'text-[#007AFF] font-mono' : l === 'Identity' ? 'text-gray-400 italic' : 'text-gray-700'}>{val}</span>
+                  <span className={l === 'Page' ? 'text-primary font-mono' : l === 'Identity' ? 'text-gray-400 italic' : 'text-gray-700'}>{val}</span>
                 </div>
               ))}
             </div>
@@ -174,12 +174,12 @@ function VisitorDemo({ compact = false }: { compact?: boolean }) {
         {phase === 'matching' && (
           <div>
             <div className="flex items-center gap-2 mb-3">
-              <span className="text-[10px] font-semibold bg-blue-50 text-[#007AFF] px-2 py-0.5 rounded">MATCHING IDENTITY GRAPH</span>
+              <span className="text-[10px] font-semibold bg-blue-50 text-primary px-2 py-0.5 rounded">MATCHING IDENTITY GRAPH</span>
             </div>
             <div className="bg-gray-50 border border-gray-100 rounded-lg p-3 mb-4">
               <div className="flex justify-between text-xs">
                 <span className="text-gray-400">Page</span>
-                <span className="text-[#007AFF] font-mono">{v.anon.page}</span>
+                <span className="text-primary font-mono">{v.anon.page}</span>
               </div>
             </div>
             <div className="space-y-2.5">
@@ -188,7 +188,7 @@ function VisitorDemo({ compact = false }: { compact?: boolean }) {
                 <span>{Math.round(progress)}%</span>
               </div>
               <div className="bg-gray-200 rounded-full h-1.5 overflow-hidden">
-                <div className="bg-[#007AFF] h-full rounded-full transition-all duration-150" style={{ width: `${progress}%` }} />
+                <div className="bg-primary h-full rounded-full transition-all duration-150" style={{ width: `${progress}%` }} />
               </div>
               <div className="text-[10px] text-gray-400 space-y-1 mt-1">
                 {progress > 20 && <p>✓ Email graph matched</p>}
@@ -221,7 +221,7 @@ function VisitorDemo({ compact = false }: { compact?: boolean }) {
                   style={{ opacity: fields >= n ? 1 : 0, transform: fields >= n ? 'translateX(0)' : 'translateX(-6px)' }}
                 >
                   <span className="text-gray-400">{l}</span>
-                  <span className={`${mono ? 'font-mono text-[11px]' : ''} ${accent ? 'text-[#007AFF]' : 'text-gray-900 font-medium'}`}>{val}</span>
+                  <span className={`${mono ? 'font-mono text-[11px]' : ''} ${accent ? 'text-primary' : 'text-gray-900 font-medium'}`}>{val}</span>
                 </div>
               ))}
             </div>
@@ -231,9 +231,9 @@ function VisitorDemo({ compact = false }: { compact?: boolean }) {
                   <span className="text-[10px] text-gray-400">Intent Score</span>
                   <div className="flex items-center gap-2">
                     <div className="w-20 bg-gray-200 rounded-full h-1.5 overflow-hidden">
-                      <div className="bg-[#007AFF] h-full rounded-full transition-all duration-1000" style={{ width: `${v.lead.score}%` }} />
+                      <div className="bg-primary h-full rounded-full transition-all duration-1000" style={{ width: `${v.lead.score}%` }} />
                     </div>
-                    <span className="text-[#007AFF] font-bold text-xs">{v.lead.score}</span>
+                    <span className="text-primary font-bold text-xs">{v.lead.score}</span>
                   </div>
                 </div>
               </div>
@@ -246,7 +246,7 @@ function VisitorDemo({ compact = false }: { compact?: boolean }) {
         <span className="text-[10px] text-gray-400">Live identification stream</span>
         <div className="flex gap-1.5">
           {VISITORS.map((_, i) => (
-            <div key={i} className={`w-1.5 h-1.5 rounded-full transition-all ${i === vidx ? 'bg-[#007AFF]' : 'bg-gray-300'}`} />
+            <div key={i} className={`w-1.5 h-1.5 rounded-full transition-all ${i === vidx ? 'bg-primary' : 'bg-gray-300'}`} />
           ))}
         </div>
       </div>
@@ -280,7 +280,7 @@ function S1() {
         <div>
           <div className="flex items-center gap-2 mb-2">
             <Label>Cursive Super Pixel v4</Label>
-            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-[#007AFF] text-white font-mono -mt-4">NEW</span>
+            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-primary text-white font-mono -mt-4">NEW</span>
           </div>
           <h1 className="text-5xl lg:text-6xl font-light text-gray-900 leading-[1.05] mb-6">
             Your website generated pipeline last month.
@@ -299,7 +299,7 @@ function S1() {
               'Income range, net worth & household data',
             ].map(item => (
               <div key={item} className="flex items-center gap-2.5 text-sm text-gray-700">
-                <svg className="w-4 h-4 text-[#007AFF] flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                <svg className="w-4 h-4 text-primary flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
                 </svg>
                 {item}
@@ -346,7 +346,7 @@ function S2() {
           <div className="flex flex-wrap items-center gap-2 text-sm">
             <span className="bg-gray-50 border border-gray-200 px-3 py-1.5 rounded font-mono text-gray-700">Monthly visitors</span>
             <span className="text-gray-400">×</span>
-            <span className="bg-[#007AFF]/8 border border-[#007AFF]/20 px-3 py-1.5 rounded font-mono text-[#007AFF]">70% ID rate</span>
+            <span className="bg-primary/8 border border-primary/20 px-3 py-1.5 rounded font-mono text-primary">70% ID rate</span>
             <span className="text-gray-400">×</span>
             <span className="bg-gray-50 border border-gray-200 px-3 py-1.5 rounded font-mono text-gray-700">Avg deal size</span>
             <span className="text-gray-400">×</span>
@@ -453,7 +453,7 @@ function S4() {
             },
           ].map((p, i) => (
             <div key={i} className="bg-white p-6 lg:p-8">
-              <div className="text-4xl font-light text-[#007AFF]/20 mb-5">{p.num}</div>
+              <div className="text-4xl font-light text-primary/20 mb-5">{p.num}</div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">{p.title}</h3>
               <p className="text-gray-500 text-xs leading-relaxed mb-4">{p.desc}</p>
               <code className="text-[10px] bg-gray-50 border border-gray-200 px-2 py-1 rounded text-gray-400 block leading-snug">{p.detail}</code>
@@ -461,7 +461,7 @@ function S4() {
           ))}
         </div>
         <div className="flex items-center justify-between bg-white border border-gray-200 rounded-xl px-6 py-4">
-          <p className="text-sm text-gray-700 font-medium">From installation to first identified lead: <strong className="text-[#007AFF]">under 5 minutes.</strong></p>
+          <p className="text-sm text-gray-700 font-medium">From installation to first identified lead: <strong className="text-primary">under 5 minutes.</strong></p>
           <div className="flex items-center gap-4 text-[11px] text-gray-400 font-mono">
             <span>✓ GDPR Compliant</span>
             <span>✓ CCPA Compliant</span>
@@ -488,14 +488,14 @@ function S5() {
         <div className="border border-gray-200 rounded-xl overflow-hidden mb-5">
           <div className="bg-gray-50 px-4 py-2 border-b border-gray-200 flex items-center justify-between">
             <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-gray-400">How we compare</p>
-            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-[#007AFF] text-white font-mono">v4</span>
+            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-primary text-white font-mono">v4</span>
           </div>
           <table className="w-full text-xs">
             <thead>
               <tr className="border-b border-gray-100">
                 <th className="text-left py-2 px-4 text-gray-400 font-medium">Metric</th>
                 <th className="text-center py-2 px-3 text-gray-400 font-medium">Others</th>
-                <th className="text-center py-2 px-3 text-[#007AFF] font-bold">Cursive v4</th>
+                <th className="text-center py-2 px-3 text-primary font-bold">Cursive v4</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
@@ -513,7 +513,7 @@ function S5() {
                 <tr key={metric}>
                   <td className="py-2 px-4 text-gray-600">{metric}</td>
                   <td className="py-2 px-3 text-center text-gray-400">{others}</td>
-                  <td className="py-2 px-3 text-center text-[#007AFF] font-semibold">{cursive}</td>
+                  <td className="py-2 px-3 text-center text-primary font-semibold">{cursive}</td>
                 </tr>
               ))}
             </tbody>
@@ -521,7 +521,7 @@ function S5() {
         </div>
 
         <div className="border border-gray-200 rounded-xl overflow-hidden bg-white shadow-sm">
-          <div className="bg-[#007AFF] px-4 py-2.5 flex items-center justify-between">
+          <div className="bg-primary px-4 py-2.5 flex items-center justify-between">
             <div className="flex items-center gap-1.5">
               <div className="w-2.5 h-2.5 rounded-full bg-white/25" /><div className="w-2.5 h-2.5 rounded-full bg-white/25" /><div className="w-2.5 h-2.5 rounded-full bg-white/25" />
               <span className="text-white/70 text-xs ml-2">cursive.io · pixel monitor</span>
@@ -547,7 +547,7 @@ function S5() {
               ] as [string, string][]).map(([l, v]) => (
                 <div key={l} className="flex items-baseline gap-1.5">
                   <span className="text-gray-400 text-[10px]">{l}</span>
-                  <span className={`${l === 'Email' || l === 'Phone' ? 'font-mono text-[11px]' : ''} ${l === 'Signal' ? 'text-[#007AFF]' : 'text-gray-900 font-medium'}`}>{v}</span>
+                  <span className={`${l === 'Email' || l === 'Phone' ? 'font-mono text-[11px]' : ''} ${l === 'Signal' ? 'text-primary' : 'text-gray-900 font-medium'}`}>{v}</span>
                 </div>
               ))}
             </div>
@@ -598,7 +598,7 @@ function S7() {
               'Auto-sync to HubSpot, Salesforce, Pipedrive',
             ].map(item => (
               <div key={item} className="flex items-center gap-2.5 text-sm text-gray-700">
-                <svg className="w-4 h-4 text-[#007AFF] flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                <svg className="w-4 h-4 text-primary flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
                 </svg>
                 {item}
@@ -608,7 +608,7 @@ function S7() {
         </div>
         <div>
           <div className="border border-gray-200 rounded-xl overflow-hidden shadow-sm text-sm">
-            <div className="bg-[#007AFF] px-5 py-3 flex items-center justify-between">
+            <div className="bg-primary px-5 py-3 flex items-center justify-between">
               <span className="text-white font-semibold text-xs uppercase tracking-wide">New Lead Identified</span>
               <span className="flex items-center gap-1.5 text-emerald-300 text-xs font-semibold">
                 <span className="relative flex h-2 w-2">
@@ -647,14 +647,14 @@ function S7() {
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-[10px] font-mono text-gray-400 uppercase tracking-wide">Intent URL</span>
-                  <span className="text-[10px] font-mono text-[#007AFF] font-semibold">/pricing · score 90</span>
+                  <span className="text-[10px] font-mono text-primary font-semibold">/pricing · score 90</span>
                 </div>
               </div>
 
               <div className="border-t border-gray-100 pt-3">
                 <p className="text-[10px] font-mono uppercase tracking-[0.12em] text-gray-400 mb-2">Pages visited this week</p>
                 <div className="space-y-1 text-xs font-mono text-gray-500">
-                  <div className="flex justify-between"><span className="text-[#007AFF]">/pricing</span><span className="text-red-500 font-semibold">3× · 4 min avg</span></div>
+                  <div className="flex justify-between"><span className="text-primary">/pricing</span><span className="text-red-500 font-semibold">3× · 4 min avg</span></div>
                   <div className="flex justify-between"><span>/enterprise-features</span><span className="text-amber-500 font-medium">2×</span></div>
                   <div className="flex justify-between"><span>/integrations/salesforce</span><span>1×</span></div>
                   <div className="flex justify-between text-emerald-600 font-semibold items-center">
@@ -706,7 +706,7 @@ function S8() {
             },
             {
               label: 'Cursive Super Pixel v4',
-              accent: 'text-[#007AFF]',
+              accent: 'text-primary',
               bg: 'bg-white',
               highlight: true,
               items: [
@@ -732,12 +732,12 @@ function S8() {
               ],
             },
           ].map((col, ci) => (
-            <div key={ci} className={`${col.bg} p-6 ${col.highlight ? 'ring-2 ring-[#007AFF] ring-inset bg-[#007AFF]/4' : ''}`}>
+            <div key={ci} className={`${col.bg} p-6 ${col.highlight ? 'ring-2 ring-primary ring-inset bg-primary/4' : ''}`}>
               {col.highlight ? (
                 <div className="flex items-center gap-1.5 mb-4">
                   <img src="/cursive-logo.png" alt="Cursive" className="h-3.5 w-auto" />
-                  <p className="text-[10px] font-mono uppercase tracking-[0.15em] font-black text-[#007AFF]">Super Pixel v4</p>
-                  <span className="text-[8px] font-bold px-1 py-0.5 rounded bg-[#007AFF] text-white font-mono leading-none">NEW</span>
+                  <p className="text-[10px] font-mono uppercase tracking-[0.15em] font-black text-primary">Super Pixel v4</p>
+                  <span className="text-[8px] font-bold px-1 py-0.5 rounded bg-primary text-white font-mono leading-none">NEW</span>
                 </div>
               ) : (
                 <p className={`text-[10px] font-mono uppercase tracking-[0.15em] mb-4 ${col.accent}`}>{col.label}</p>
@@ -745,7 +745,7 @@ function S8() {
               <div className="space-y-2.5">
                 {col.items.map((item, ii) => (
                   <div key={ii} className="flex items-start gap-2 text-xs">
-                    <span className={`flex-shrink-0 font-bold mt-0.5 ${item.ok ? 'text-[#007AFF]' : 'text-red-400'}`}>{item.ok ? '✓' : '✕'}</span>
+                    <span className={`flex-shrink-0 font-bold mt-0.5 ${item.ok ? 'text-primary' : 'text-red-400'}`}>{item.ok ? '✓' : '✕'}</span>
                     <span className={item.ok ? 'text-gray-700' : 'text-gray-400'}>{item.text}</span>
                   </div>
                 ))}
@@ -757,7 +757,7 @@ function S8() {
           {DIFFS.map((d, i) => (
             <div key={i} className="bg-white border border-gray-200 rounded-lg p-4">
               <div className="flex items-baseline gap-2 mb-1">
-                <span className="text-2xl font-light text-[#007AFF]">{d.metric}</span>
+                <span className="text-2xl font-light text-primary">{d.metric}</span>
                 <span className="text-[10px] text-gray-400 font-mono">vs {d.vs}</span>
               </div>
               <p className="text-xs font-semibold text-gray-700">{d.title}</p>
@@ -765,7 +765,7 @@ function S8() {
           ))}
         </div>
         <div className="mt-4 bg-white border border-gray-200 rounded-xl p-5 flex items-start gap-4">
-          <svg className="w-6 h-6 text-[#007AFF]/40 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M11.192 15.757c0-.88-.23-1.618-.69-2.217-.326-.412-.768-.683-1.327-.812-.55-.128-1.07-.137-1.54-.028-.16-.95.1-1.95.78-3 .53-.81 1.24-1.48 2.13-2.02L9.027 6c-.75.506-1.4 1.11-1.94 1.81-.54.7-.95 1.44-1.23 2.22-.28.78-.41 1.58-.4 2.39.02.8.2 1.56.55 2.27.34.71.83 1.27 1.47 1.68.64.41 1.36.62 2.18.62.77 0 1.43-.19 1.98-.57.55-.38.83-.92.83-1.63zm8 0c0-.88-.23-1.618-.69-2.217-.326-.42-.77-.695-1.327-.825-.56-.13-1.07-.14-1.54-.022-.16-.95.1-1.95.78-3 .53-.81 1.24-1.48 2.13-2.02L17.027 6c-.75.506-1.4 1.11-1.94 1.81-.54.7-.95 1.44-1.23 2.22-.28.78-.41 1.58-.4 2.39.02.8.2 1.56.55 2.27.34.71.83 1.27 1.47 1.68.64.41 1.36.62 2.18.62.77 0 1.43-.19 1.98-.57.55-.38.83-.92.83-1.63z"/></svg>
+          <svg className="w-6 h-6 text-primary/40 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M11.192 15.757c0-.88-.23-1.618-.69-2.217-.326-.412-.768-.683-1.327-.812-.55-.128-1.07-.137-1.54-.028-.16-.95.1-1.95.78-3 .53-.81 1.24-1.48 2.13-2.02L9.027 6c-.75.506-1.4 1.11-1.94 1.81-.54.7-.95 1.44-1.23 2.22-.28.78-.41 1.58-.4 2.39.02.8.2 1.56.55 2.27.34.71.83 1.27 1.47 1.68.64.41 1.36.62 2.18.62.77 0 1.43-.19 1.98-.57.55-.38.83-.92.83-1.63zm8 0c0-.88-.23-1.618-.69-2.217-.326-.42-.77-.695-1.327-.825-.56-.13-1.07-.14-1.54-.022-.16-.95.1-1.95.78-3 .53-.81 1.24-1.48 2.13-2.02L17.027 6c-.75.506-1.4 1.11-1.94 1.81-.54.7-.95 1.44-1.23 2.22-.28.78-.41 1.58-.4 2.39.02.8.2 1.56.55 2.27.34.71.83 1.27 1.47 1.68.64.41 1.36.62 2.18.62.77 0 1.43-.19 1.98-.57.55-.38.83-.92.83-1.63z"/></svg>
           <div>
             <p className="text-gray-700 text-sm leading-relaxed italic">"We installed it on a Friday. By Monday we had 47 identified leads from the weekend traffic we would have completely lost. Within two weeks it was our highest-volume lead source."</p>
             <p className="text-[11px] text-gray-400 font-mono mt-2">— VP of Sales · Series B B2B SaaS · 12K monthly visitors</p>
@@ -842,7 +842,7 @@ function PixelInstallModal({ onClose }: { onClose: () => void }) {
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden">
 
         {/* Header */}
-        <div className="bg-[#007AFF] px-6 py-4 flex items-center justify-between">
+        <div className="bg-primary px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <img src="/cursive-logo.png" alt="Cursive" className="h-5 w-auto brightness-0 invert" />
             <span className="text-white/80 text-sm font-mono">Super Pixel · Live Setup</span>
@@ -863,7 +863,7 @@ function PixelInstallModal({ onClose }: { onClose: () => void }) {
               onKeyDown={e => e.key === 'Enter' && provision()}
               placeholder="yourcompany.com"
               autoFocus
-              className="w-full px-4 py-3 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#007AFF]/60 focus:ring-1 focus:ring-[#007AFF]/30 transition-all font-mono text-sm"
+              className="w-full px-4 py-3 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/30 transition-all font-mono text-sm"
             />
             {urlError && <p className="mt-1.5 text-red-500 text-sm">{urlError}</p>}
             <div className="mt-3 text-[11px] text-gray-400 space-y-0.5">
@@ -880,13 +880,13 @@ function PixelInstallModal({ onClose }: { onClose: () => void }) {
               onChange={e => setEmail(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && provision()}
               placeholder="prospect@theircompany.com"
-              className="w-full px-4 py-3 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#007AFF]/60 focus:ring-1 focus:ring-[#007AFF]/30 transition-all text-sm"
+              className="w-full px-4 py-3 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/30 transition-all text-sm"
             />
             <p className="mt-1.5 text-[11px] text-gray-400">We&apos;ll email them the snippet + a link to sign up and see their leads.</p>
 
             <button
               onClick={provision}
-              className="mt-5 w-full py-3 bg-[#007AFF] hover:bg-[#0066DD] text-white font-bold rounded-lg transition-colors"
+              className="mt-5 w-full py-3 bg-primary hover:bg-primary-dark text-white font-bold rounded-lg transition-colors"
             >
               {email.trim() ? 'Generate & Email Pixel →' : 'Generate Pixel →'}
             </button>
@@ -898,15 +898,15 @@ function PixelInstallModal({ onClose }: { onClose: () => void }) {
           <div className="p-6 text-center">
             <div className="flex justify-center mb-5">
               <div className="relative w-14 h-14">
-                <svg className="animate-spin w-14 h-14 text-[#007AFF]/20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" /></svg>
-                <svg className="animate-spin w-14 h-14 text-[#007AFF] absolute inset-0" viewBox="0 0 24 24" fill="none" style={{ animationDuration: '0.75s' }}><path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" /></svg>
+                <svg className="animate-spin w-14 h-14 text-primary/20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" /></svg>
+                <svg className="animate-spin w-14 h-14 text-primary absolute inset-0" viewBox="0 0 24 24" fill="none" style={{ animationDuration: '0.75s' }}><path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" /></svg>
               </div>
             </div>
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Setting up your pixel...</h3>
             <div className="space-y-2 text-sm text-left max-w-xs mx-auto">
               {PROVISION_STEPS.map((s, i) => (
                 <div key={i} className={`flex items-center gap-2.5 transition-all duration-300 ${i <= provStep ? 'opacity-100' : 'opacity-25'}`}>
-                  <span className={`flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center text-[10px] ${i < provStep ? 'bg-emerald-100 text-emerald-600' : i === provStep ? 'bg-[#007AFF] text-white' : 'bg-gray-100 text-gray-400'}`}>
+                  <span className={`flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center text-[10px] ${i < provStep ? 'bg-emerald-100 text-emerald-600' : i === provStep ? 'bg-primary text-white' : 'bg-gray-100 text-gray-400'}`}>
                     {i < provStep ? '✓' : i + 1}
                   </span>
                   <span className={i <= provStep ? 'text-gray-700' : 'text-gray-400'}>{s}</span>
@@ -923,7 +923,7 @@ function PixelInstallModal({ onClose }: { onClose: () => void }) {
               <span className="text-[10px] font-semibold bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded">✓ PIXEL GENERATED</span>
               <span className="text-[10px] font-mono text-gray-400">{result.domain} · {result.pixel_id}</span>
               {result.email_sent && (
-                <span className="text-[10px] font-semibold bg-blue-50 text-[#007AFF] px-2 py-0.5 rounded">📧 Email sent to prospect</span>
+                <span className="text-[10px] font-semibold bg-blue-50 text-primary px-2 py-0.5 rounded">📧 Email sent to prospect</span>
               )}
             </div>
             <h3 className="text-lg font-semibold text-gray-900 mb-1">Your pixel is ready</h3>
@@ -946,7 +946,7 @@ function PixelInstallModal({ onClose }: { onClose: () => void }) {
               </div>
             )}
 
-            <div className="bg-[#007AFF]/5 border border-[#007AFF]/20 rounded-lg p-3 mb-4 text-xs text-gray-600 space-y-1">
+            <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 mb-4 text-xs text-gray-600 space-y-1">
               <p className="font-semibold text-gray-700 mb-1.5">What happens next:</p>
               <p>→ Prospect installs snippet before &lt;/head&gt; on their site</p>
               <p>→ They sign up at <strong>leads.meetcursive.com</strong> to claim their trial</p>
@@ -956,7 +956,7 @@ function PixelInstallModal({ onClose }: { onClose: () => void }) {
             <div className="flex gap-3">
               <button
                 onClick={copy}
-                className={`flex-1 py-2.5 font-bold rounded-lg transition-colors ${copied ? 'bg-emerald-600 text-white' : 'bg-[#007AFF] hover:bg-[#0066DD] text-white'}`}
+                className={`flex-1 py-2.5 font-bold rounded-lg transition-colors ${copied ? 'bg-emerald-600 text-white' : 'bg-primary hover:bg-primary-dark text-white'}`}
               >
                 {copied ? '✓ Copied to Clipboard' : 'Copy Snippet'}
               </button>
@@ -971,7 +971,7 @@ function PixelInstallModal({ onClose }: { onClose: () => void }) {
             <div className="text-4xl mb-3">⚠️</div>
             <h3 className="text-lg font-semibold text-gray-900 mb-2">Something went wrong</h3>
             <p className="text-gray-500 text-sm mb-5">{apiError}</p>
-            <button onClick={() => setStep('url')} className="w-full py-3 bg-[#007AFF] hover:bg-[#0066DD] text-white font-bold rounded-lg transition-colors">
+            <button onClick={() => setStep('url')} className="w-full py-3 bg-primary hover:bg-primary-dark text-white font-bold rounded-lg transition-colors">
               ← Try Again
             </button>
           </div>
@@ -999,8 +999,8 @@ function S9() {
           <span className="block font-cursive text-gray-500 text-6xl">on your site today.</span>
         </h2>
         <div className="grid md:grid-cols-2 gap-6 mb-8">
-          <div className="border-2 border-[#007AFF] rounded-xl p-6 bg-white">
-            <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-[#007AFF] mb-4">Start Today</p>
+          <div className="border-2 border-primary rounded-xl p-6 bg-white">
+            <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-primary mb-4">Start Today</p>
             <h3 className="text-xl font-semibold text-gray-900 mb-3">Install on this call</h3>
             <p className="text-gray-600 text-sm leading-relaxed mb-5">Enter your website URL and we&apos;ll generate a custom pixel for your domain right now — one script tag, 90 seconds, and you&apos;re identifying visitors live.</p>
             <div className="space-y-2 mb-6">
@@ -1011,14 +1011,14 @@ function S9() {
                 '1-on-1 onboarding support included',
               ].map(item => (
                 <div key={item} className="flex items-center gap-2 text-xs text-gray-600">
-                  <span className="text-[#007AFF] font-bold">✓</span>
+                  <span className="text-primary font-bold">✓</span>
                   {item}
                 </div>
               ))}
             </div>
             <button
               onClick={() => setShowModal(true)}
-              className="block w-full text-center px-6 py-3 bg-[#007AFF] hover:bg-[#0066DD] text-white font-bold rounded-lg transition-colors"
+              className="block w-full text-center px-6 py-3 bg-primary hover:bg-primary-dark text-white font-bold rounded-lg transition-colors"
             >
               Install the Pixel on This Call →
             </button>
@@ -1044,7 +1044,7 @@ function S9() {
               href={CAL_LINK}
               target="_blank"
               rel="noopener noreferrer"
-              className="block text-center px-6 py-3 border border-gray-300 hover:border-[#007AFF] hover:text-[#007AFF] text-gray-700 font-semibold rounded-lg transition-colors"
+              className="block text-center px-6 py-3 border border-gray-300 hover:border-primary hover:text-primary text-gray-700 font-semibold rounded-lg transition-colors"
             >
               Schedule Technical Demo
             </a>
@@ -1143,8 +1143,8 @@ function DeckGate({ onUnlock }: { onUnlock: () => void }) {
         {/* Left — copy */}
         <div className="flex flex-col justify-center px-8 py-10 md:px-14 md:border-r md:border-gray-100">
           <div className="max-w-md mx-auto md:mx-0">
-            <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.18em] text-[#007AFF] bg-[#007AFF]/8 px-3 py-1.5 rounded-full mb-6">
-              <span className="relative flex h-1.5 w-1.5"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#007AFF] opacity-75" /><span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#007AFF]" /></span>
+            <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.18em] text-primary bg-primary/8 px-3 py-1.5 rounded-full mb-6">
+              <span className="relative flex h-1.5 w-1.5"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" /><span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-primary" /></span>
               Live slots available today
             </div>
             <h1 className="text-4xl md:text-5xl font-light text-gray-900 leading-tight mb-4">
@@ -1162,7 +1162,7 @@ function DeckGate({ onUnlock }: { onUnlock: () => void }) {
                 '14-day free trial. No credit card required.',
               ].map(item => (
                 <div key={item} className="flex items-start gap-2.5 text-sm text-gray-600">
-                  <span className="text-[#007AFF] font-bold flex-shrink-0 mt-0.5">✓</span>
+                  <span className="text-primary font-bold flex-shrink-0 mt-0.5">✓</span>
                   <span>{item}</span>
                 </div>
               ))}
@@ -1270,7 +1270,7 @@ export default function DeckPage() {
       {/* ── TOP CHROME ── */}
       <div className="fixed top-0 left-0 right-0 z-[110]">
         <div className="h-1 bg-gray-100">
-          <div className="h-full bg-[#007AFF] transition-all duration-500" style={{ width: `${pct}%` }} />
+          <div className="h-full bg-primary transition-all duration-500" style={{ width: `${pct}%` }} />
         </div>
         <div className="bg-white/95 backdrop-blur-sm border-b border-gray-100 px-6 h-12 flex items-center justify-between">
           <a href="/">
@@ -1297,7 +1297,7 @@ export default function DeckPage() {
       <button
         onClick={prev}
         disabled={current === 0}
-        className="fixed left-3 top-1/2 -translate-y-1/2 z-[110] w-12 h-12 flex items-center justify-center rounded-full bg-white border border-gray-200 shadow-md hover:border-[#007AFF] hover:text-[#007AFF] hover:shadow-lg transition-all disabled:opacity-0 text-gray-500"
+        className="fixed left-3 top-1/2 -translate-y-1/2 z-[110] w-12 h-12 flex items-center justify-center rounded-full bg-white border border-gray-200 shadow-md hover:border-primary hover:text-primary hover:shadow-lg transition-all disabled:opacity-0 text-gray-500"
         aria-label="Previous slide"
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
@@ -1307,7 +1307,7 @@ export default function DeckPage() {
       <button
         onClick={next}
         disabled={current === SLIDE_COUNT - 1}
-        className="fixed right-3 top-1/2 -translate-y-1/2 z-[110] w-12 h-12 flex items-center justify-center rounded-full bg-white border border-gray-200 shadow-md hover:border-[#007AFF] hover:text-[#007AFF] hover:shadow-lg transition-all disabled:opacity-0 text-gray-500"
+        className="fixed right-3 top-1/2 -translate-y-1/2 z-[110] w-12 h-12 flex items-center justify-center rounded-full bg-white border border-gray-200 shadow-md hover:border-primary hover:text-primary hover:shadow-lg transition-all disabled:opacity-0 text-gray-500"
         aria-label="Next slide"
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
@@ -1320,7 +1320,7 @@ export default function DeckPage() {
             key={i}
             onClick={() => go(i)}
             title={SLIDE_LABELS[i]}
-            className={`rounded-full transition-all duration-200 ${i === current ? 'w-6 h-2 bg-[#007AFF]' : 'w-2 h-2 bg-gray-300 hover:bg-gray-400'}`}
+            className={`rounded-full transition-all duration-200 ${i === current ? 'w-6 h-2 bg-primary' : 'w-2 h-2 bg-gray-300 hover:bg-gray-400'}`}
             aria-label={`Go to slide ${i + 1}: ${SLIDE_LABELS[i]}`}
           />
         ))}

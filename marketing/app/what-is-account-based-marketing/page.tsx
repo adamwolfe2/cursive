@@ -72,15 +72,15 @@ export default function WhatIsAccountBasedMarketing() {
                 What is Account-Based Marketing (ABM)? Complete Guide (2026)
               </h1>
 
-              <p className="text-xl text-gray-700 leading-relaxed mb-8 border-l-4 border-[#007AFF] pl-6">
+              <p className="text-xl text-gray-700 leading-relaxed mb-8 border-l-4 border-primary pl-6">
                 Account-Based Marketing (ABM) is a strategic B2B marketing approach that focuses resources on a defined set of target accounts, using personalized campaigns across multiple channels to engage specific buying committees and drive revenue from high-value opportunities. It represents a fundamental shift from volume-based lead generation to precision-targeted account engagement.
               </p>
 
               <p className="text-gray-700 leading-relaxed">
                 ABM has moved from an emerging tactic to a core B2B strategy. According to research from ITSMA, 87% of B2B marketers report that ABM delivers higher ROI than any other marketing approach, and 91% of companies using ABM report larger average deal sizes. The strategy works because it aligns marketing and sales around shared revenue goals, concentrating effort on the accounts most likely to close and expand. Platforms like{" "}
-                <Link href="/platform" className="text-[#007AFF] hover:underline">Cursive</Link>{" "}
+                <Link href="/platform" className="text-primary hover:underline">Cursive</Link>{" "}
                 provide the identification and{" "}
-                <Link href="/what-is-b2b-intent-data" className="text-[#007AFF] hover:underline">intent data foundation</Link>{" "}
+                <Link href="/what-is-b2b-intent-data" className="text-primary hover:underline">intent data foundation</Link>{" "}
                 that modern ABM programs require.
               </p>
 
@@ -88,20 +88,20 @@ export default function WhatIsAccountBasedMarketing() {
               <nav className="my-10 p-6 bg-gray-50 rounded-lg border border-gray-200">
                 <h2 className="text-lg font-semibold text-gray-900 mb-4 mt-0">Table of Contents</h2>
                 <ol className="list-decimal list-inside space-y-2 text-gray-700">
-                  <li><a href="#how-abm-works" className="text-[#007AFF] hover:underline">How ABM Works</a></li>
-                  <li><a href="#abm-vs-traditional-marketing" className="text-[#007AFF] hover:underline">ABM vs. Traditional Marketing</a></li>
-                  <li><a href="#types-of-abm" className="text-[#007AFF] hover:underline">Types of ABM</a></li>
-                  <li><a href="#abm-framework" className="text-[#007AFF] hover:underline">The ABM Framework</a></li>
-                  <li><a href="#key-abm-channels" className="text-[#007AFF] hover:underline">Key ABM Channels</a></li>
-                  <li><a href="#account-selection-scoring" className="text-[#007AFF] hover:underline">Account Selection and Scoring</a></li>
-                  <li><a href="#content-strategy" className="text-[#007AFF] hover:underline">Content Strategy for ABM</a></li>
-                  <li><a href="#abm-technology-stack" className="text-[#007AFF] hover:underline">ABM Technology Stack</a></li>
-                  <li><a href="#measuring-abm-success" className="text-[#007AFF] hover:underline">Measuring ABM Success</a></li>
-                  <li><a href="#implementation-guide" className="text-[#007AFF] hover:underline">Implementation Guide</a></li>
-                  <li><a href="#common-mistakes" className="text-[#007AFF] hover:underline">Common ABM Mistakes</a></li>
-                  <li><a href="#provider-comparison" className="text-[#007AFF] hover:underline">Provider Comparison</a></li>
-                  <li><a href="#faqs" className="text-[#007AFF] hover:underline">Frequently Asked Questions</a></li>
-                  <li><a href="#related-resources" className="text-[#007AFF] hover:underline">Related Resources</a></li>
+                  <li><a href="#how-abm-works" className="text-primary hover:underline">How ABM Works</a></li>
+                  <li><a href="#abm-vs-traditional-marketing" className="text-primary hover:underline">ABM vs. Traditional Marketing</a></li>
+                  <li><a href="#types-of-abm" className="text-primary hover:underline">Types of ABM</a></li>
+                  <li><a href="#abm-framework" className="text-primary hover:underline">The ABM Framework</a></li>
+                  <li><a href="#key-abm-channels" className="text-primary hover:underline">Key ABM Channels</a></li>
+                  <li><a href="#account-selection-scoring" className="text-primary hover:underline">Account Selection and Scoring</a></li>
+                  <li><a href="#content-strategy" className="text-primary hover:underline">Content Strategy for ABM</a></li>
+                  <li><a href="#abm-technology-stack" className="text-primary hover:underline">ABM Technology Stack</a></li>
+                  <li><a href="#measuring-abm-success" className="text-primary hover:underline">Measuring ABM Success</a></li>
+                  <li><a href="#implementation-guide" className="text-primary hover:underline">Implementation Guide</a></li>
+                  <li><a href="#common-mistakes" className="text-primary hover:underline">Common ABM Mistakes</a></li>
+                  <li><a href="#provider-comparison" className="text-primary hover:underline">Provider Comparison</a></li>
+                  <li><a href="#faqs" className="text-primary hover:underline">Frequently Asked Questions</a></li>
+                  <li><a href="#related-resources" className="text-primary hover:underline">Related Resources</a></li>
                 </ol>
               </nav>
 
@@ -117,14 +117,14 @@ export default function WhatIsAccountBasedMarketing() {
               <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">1. Identify Target Accounts</h3>
               <p className="text-gray-700 leading-relaxed">
                 The foundation of any ABM program is a well-defined list of target accounts. This list is built by analyzing your ideal customer profile (ICP) against the total addressable market, filtering by firmographic fit (industry, revenue, employee count, geography), technographic signals (technology stack, tool usage), and{" "}
-                <Link href="/intent-audiences" className="text-[#007AFF] hover:underline">intent data</Link>{" "}
+                <Link href="/intent-audiences" className="text-primary hover:underline">intent data</Link>{" "}
                 (research activity indicating buying interest). The best programs combine historical win analysis with predictive modeling to identify accounts with the highest likelihood of closing.
               </p>
 
               <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">2. Map Buying Committees</h3>
               <p className="text-gray-700 leading-relaxed">
                 B2B purchases involve an average of 6-10 decision makers, according to Gartner. ABM requires mapping the full buying committee at each target account, including the economic buyer (budget authority), the technical evaluator (product assessment), the champion (internal advocate), the influencer (opinion leader), and the blocker (potential objection source). Cursive&apos;s{" "}
-                <Link href="/data-access" className="text-[#007AFF] hover:underline">data access platform</Link>{" "}
+                <Link href="/data-access" className="text-primary hover:underline">data access platform</Link>{" "}
                 helps identify these contacts with verified email addresses, direct phone numbers, and job function data.
               </p>
 
@@ -136,7 +136,7 @@ export default function WhatIsAccountBasedMarketing() {
               <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">4. Orchestrate Multi-Channel Campaigns</h3>
               <p className="text-gray-700 leading-relaxed">
                 Effective ABM campaigns coordinate messaging across every channel the buying committee uses. This includes email sequences, LinkedIn outreach, display advertising, website personalization,{" "}
-                <Link href="/direct-mail" className="text-[#007AFF] hover:underline">direct mail</Link>, webinars, and sales calls -- all delivering consistent, account-specific messaging. The key is choreography: each touchpoint builds on the previous one, moving the account through the buying process rather than delivering disconnected impressions.
+                <Link href="/direct-mail" className="text-primary hover:underline">direct mail</Link>, webinars, and sales calls -- all delivering consistent, account-specific messaging. The key is choreography: each touchpoint builds on the previous one, moving the account through the buying process rather than delivering disconnected impressions.
               </p>
 
               <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">5. Measure Account-Level Metrics</h3>
@@ -229,7 +229,7 @@ export default function WhatIsAccountBasedMarketing() {
               <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">Programmatic ABM (One-to-Many)</h3>
               <p className="text-gray-700 leading-relaxed">
                 Programmatic ABM uses technology to deliver personalized experiences to 500+ accounts at scale. It leverages{" "}
-                <Link href="/audience-builder" className="text-[#007AFF] hover:underline">audience building tools</Link>{" "}
+                <Link href="/audience-builder" className="text-primary hover:underline">audience building tools</Link>{" "}
                 and marketing automation to dynamically personalize campaigns based on account attributes and engagement signals. While individual account personalization is lighter, the reach is dramatically greater. Programmatic ABM is particularly effective for mid-market sales motions where the deal size does not justify one-to-one investment but the accounts still benefit from targeted messaging over generic demand generation.
               </p>
 
@@ -302,16 +302,16 @@ export default function WhatIsAccountBasedMarketing() {
               <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">2. Account Selection</h3>
               <p className="text-gray-700 leading-relaxed">
                 With the ICP defined, build your target account list by scoring the total addressable market against ICP criteria and layering in{" "}
-                <Link href="/what-is-b2b-intent-data" className="text-[#007AFF] hover:underline">intent data signals</Link>{" "}
+                <Link href="/what-is-b2b-intent-data" className="text-primary hover:underline">intent data signals</Link>{" "}
                 to identify accounts actively in-market. Prioritize accounts that combine strong ICP fit with active buying signals. Cursive&apos;s{" "}
-                <Link href="/audience-builder" className="text-[#007AFF] hover:underline">audience builder</Link>{" "}
+                <Link href="/audience-builder" className="text-primary hover:underline">audience builder</Link>{" "}
                 automates this process by combining firmographic filters, technographic data, and real-time intent signals to surface the highest-priority accounts.
               </p>
 
               <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">3. Intelligence Gathering</h3>
               <p className="text-gray-700 leading-relaxed">
                 For each target account, gather intelligence on organizational structure, strategic priorities, competitive landscape, and recent events (funding rounds, leadership changes, expansion plans, technology migrations). This intelligence informs the personalization strategy and helps sales develop relevant talking points. Key sources include company websites, SEC filings, press releases, social media, job postings (which reveal technology and strategic priorities), and{" "}
-                <Link href="/visitor-identification" className="text-[#007AFF] hover:underline">visitor identification data</Link>{" "}
+                <Link href="/visitor-identification" className="text-primary hover:underline">visitor identification data</Link>{" "}
                 showing which pages and topics the account is researching.
               </p>
 
@@ -323,7 +323,7 @@ export default function WhatIsAccountBasedMarketing() {
               <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">5. Channel Orchestration</h3>
               <p className="text-gray-700 leading-relaxed">
                 Coordinate campaigns across channels to create a surround-sound effect at each target account. A typical ABM campaign sequence might start with display ads for awareness, followed by personalized email outreach, then LinkedIn engagement, then{" "}
-                <Link href="/direct-mail" className="text-[#007AFF] hover:underline">direct mail</Link>{" "}
+                <Link href="/direct-mail" className="text-primary hover:underline">direct mail</Link>{" "}
                 for physical impact, and finally SDR phone outreach. The exact channel mix depends on the target persona&apos;s preferences and the account&apos;s engagement history.
               </p>
 
@@ -428,14 +428,14 @@ export default function WhatIsAccountBasedMarketing() {
               <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">Technographic Signals</h3>
               <p className="text-gray-700 leading-relaxed">
                 Technographic data reveals what tools and technologies a company uses, indicating both fit and readiness. Key signals include current technology stack (do they use tools that complement or compete with yours), infrastructure maturity (cloud adoption, security posture, data architecture), and technology change signals (new technology adoptions or vendor evaluations). Cursive&apos;s platform provides{" "}
-                <Link href="/data-access" className="text-[#007AFF] hover:underline">real-time technographic data</Link>{" "}
+                <Link href="/data-access" className="text-primary hover:underline">real-time technographic data</Link>{" "}
                 for account scoring.
               </p>
 
               <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">Intent Data</h3>
               <p className="text-gray-700 leading-relaxed">
                 Intent data identifies accounts actively researching topics related to your solution. This includes first-party intent (visiting your website, engaging with your content, attending your events) and third-party intent (researching relevant topics across the broader web). Accounts showing strong intent signals are 2-3x more likely to convert, making intent data one of the most valuable inputs for account prioritization. Learn more in our{" "}
-                <Link href="/what-is-b2b-intent-data" className="text-[#007AFF] hover:underline">guide to B2B intent data</Link>.
+                <Link href="/what-is-b2b-intent-data" className="text-primary hover:underline">guide to B2B intent data</Link>.
               </p>
 
               <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">Engagement Scoring</h3>
@@ -478,19 +478,19 @@ export default function WhatIsAccountBasedMarketing() {
               <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">Identification and Intent Layer</h3>
               <p className="text-gray-700 leading-relaxed">
                 This foundational layer reveals who is visiting your website and which accounts are actively researching your solution category.{" "}
-                <Link href="/platform" className="text-[#007AFF] hover:underline">Cursive</Link>{" "}
+                <Link href="/platform" className="text-primary hover:underline">Cursive</Link>{" "}
                 provides both{" "}
-                <Link href="/visitor-identification" className="text-[#007AFF] hover:underline">visitor identification</Link>{" "}
+                <Link href="/visitor-identification" className="text-primary hover:underline">visitor identification</Link>{" "}
                 (resolving anonymous visitors to companies and contacts) and{" "}
-                <Link href="/intent-audiences" className="text-[#007AFF] hover:underline">intent data</Link>{" "}
+                <Link href="/intent-audiences" className="text-primary hover:underline">intent data</Link>{" "}
                 (tracking research behavior across 60B+ behaviors & URLs scanned weekly). Other tools in this layer include 6sense (predictive intent and account intelligence) and Bombora (B2B intent data from content consumption patterns).
               </p>
 
               <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">Orchestration Layer</h3>
               <p className="text-gray-700 leading-relaxed">
                 Orchestration platforms coordinate multi-channel ABM campaigns, managing targeting, timing, and sequencing across channels. Leading platforms include Demandbase (ABM advertising and website personalization) and Terminus (multi-channel campaign orchestration and account-level analytics). Cursive also provides orchestration capabilities through its{" "}
-                <Link href="/audience-builder" className="text-[#007AFF] hover:underline">audience builder</Link>, which enables teams to build targeted segments and activate them across email, ads, and{" "}
-                <Link href="/direct-mail" className="text-[#007AFF] hover:underline">direct mail</Link>{" "}
+                <Link href="/audience-builder" className="text-primary hover:underline">audience builder</Link>, which enables teams to build targeted segments and activate them across email, ads, and{" "}
+                <Link href="/direct-mail" className="text-primary hover:underline">direct mail</Link>{" "}
                 from a single platform.
               </p>
 
@@ -586,15 +586,15 @@ export default function WhatIsAccountBasedMarketing() {
               <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">Phase 2: Build Your Account List (Weeks 2-3)</h3>
               <p className="text-gray-700 leading-relaxed">
                 Start small. Select 25-50 accounts for your pilot program, scoring each against your ICP criteria and prioritizing those showing{" "}
-                <Link href="/intent-audiences" className="text-[#007AFF] hover:underline">intent signals</Link>. Use Cursive&apos;s{" "}
-                <Link href="/audience-builder" className="text-[#007AFF] hover:underline">audience builder</Link>{" "}
+                <Link href="/intent-audiences" className="text-primary hover:underline">intent signals</Link>. Use Cursive&apos;s{" "}
+                <Link href="/audience-builder" className="text-primary hover:underline">audience builder</Link>{" "}
                 to identify accounts that match your ICP and are actively researching relevant topics. Map the buying committee at each account, identifying 3-5 key contacts with verified contact information.
               </p>
 
               <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">Phase 3: Set Up Your Tech Stack (Weeks 3-4)</h3>
               <p className="text-gray-700 leading-relaxed">
                 You do not need every ABM tool to start. The minimum viable ABM tech stack includes a{" "}
-                <Link href="/visitor-identification" className="text-[#007AFF] hover:underline">visitor identification and intent platform</Link>{" "}
+                <Link href="/visitor-identification" className="text-primary hover:underline">visitor identification and intent platform</Link>{" "}
                 (Cursive), a CRM (Salesforce or HubSpot), and an email automation tool. Install the Cursive pixel on your website to begin capturing visitor intelligence. Configure CRM integrations so that identified accounts and contacts flow directly into your sales workflow. Add additional tools (LinkedIn Sales Navigator, direct mail, display ads) as your program scales.
               </p>
 
@@ -606,7 +606,7 @@ export default function WhatIsAccountBasedMarketing() {
               <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">Phase 5: Launch Campaigns (Weeks 6-8)</h3>
               <p className="text-gray-700 leading-relaxed">
                 Begin with a coordinated multi-channel campaign targeting your pilot accounts. A proven launch sequence is to first run display ads for two weeks to build awareness, then launch personalized email sequences targeting the buying committee, then activate LinkedIn outreach from sales, and finally send{" "}
-                <Link href="/direct-mail" className="text-[#007AFF] hover:underline">direct mail packages</Link>{" "}
+                <Link href="/direct-mail" className="text-primary hover:underline">direct mail packages</Link>{" "}
                 to key decision makers. Monitor account engagement in real time and adjust messaging and channel mix based on what resonates.
               </p>
 
@@ -642,7 +642,7 @@ export default function WhatIsAccountBasedMarketing() {
               <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">4. Ignoring Buying Committees</h3>
               <p className="text-gray-700 leading-relaxed">
                 Many ABM programs target a single contact per account -- typically the perceived decision maker. In reality, B2B purchases involve 6-10 stakeholders, and reaching only one leaves you vulnerable to internal politics, role changes, and incomplete evaluation processes. Map the full buying committee using{" "}
-                <Link href="/data-access" className="text-[#007AFF] hover:underline">contact data platforms</Link>{" "}
+                <Link href="/data-access" className="text-primary hover:underline">contact data platforms</Link>{" "}
                 and develop messaging tailored to each role: technical content for evaluators, ROI analysis for economic buyers, peer validation for champions, and risk mitigation for blockers.
               </p>
 
@@ -658,9 +658,9 @@ export default function WhatIsAccountBasedMarketing() {
 
               <p className="text-gray-700 leading-relaxed mb-6">
                 The ABM technology market includes platforms at different price points and capability levels. Here is how the leading providers compare. For more detail on specific comparisons, see our{" "}
-                <Link href="/blog/6sense-vs-cursive-comparison" className="text-[#007AFF] hover:underline">6sense vs. Cursive comparison</Link>{" "}
+                <Link href="/blog/6sense-vs-cursive-comparison" className="text-primary hover:underline">6sense vs. Cursive comparison</Link>{" "}
                 and{" "}
-                <Link href="/blog/clearbit-alternatives-comparison" className="text-[#007AFF] hover:underline">Clearbit alternatives comparison</Link>.
+                <Link href="/blog/clearbit-alternatives-comparison" className="text-primary hover:underline">Clearbit alternatives comparison</Link>.
               </p>
 
               <div className="overflow-x-auto my-6">
@@ -761,37 +761,37 @@ export default function WhatIsAccountBasedMarketing() {
 
               <ul className="list-disc list-inside text-gray-700 space-y-3">
                 <li>
-                  <Link href="/what-is-website-visitor-identification" className="text-[#007AFF] hover:underline">What is Website Visitor Identification?</Link> -- How visitor identification powers the account intelligence layer of ABM
+                  <Link href="/what-is-website-visitor-identification" className="text-primary hover:underline">What is Website Visitor Identification?</Link> -- How visitor identification powers the account intelligence layer of ABM
                 </li>
                 <li>
-                  <Link href="/what-is-b2b-intent-data" className="text-[#007AFF] hover:underline">What is B2B Intent Data?</Link> -- Understanding intent signals for ABM account selection and prioritization
+                  <Link href="/what-is-b2b-intent-data" className="text-primary hover:underline">What is B2B Intent Data?</Link> -- Understanding intent signals for ABM account selection and prioritization
                 </li>
                 <li>
-                  <Link href="/what-is-ai-sdr" className="text-[#007AFF] hover:underline">What is an AI SDR?</Link> -- How AI-powered sales development automates ABM outreach at scale
+                  <Link href="/what-is-ai-sdr" className="text-primary hover:underline">What is an AI SDR?</Link> -- How AI-powered sales development automates ABM outreach at scale
                 </li>
                 <li>
-                  <Link href="/what-is-lead-enrichment" className="text-[#007AFF] hover:underline">What is Lead Enrichment?</Link> -- Enriching your ABM contact data with firmographic and technographic details
+                  <Link href="/what-is-lead-enrichment" className="text-primary hover:underline">What is Lead Enrichment?</Link> -- Enriching your ABM contact data with firmographic and technographic details
                 </li>
                 <li>
-                  <Link href="/what-is-direct-mail-automation" className="text-[#007AFF] hover:underline">What is Direct Mail Automation?</Link> -- Automating physical touchpoints in your ABM campaigns
+                  <Link href="/what-is-direct-mail-automation" className="text-primary hover:underline">What is Direct Mail Automation?</Link> -- Automating physical touchpoints in your ABM campaigns
                 </li>
                 <li>
-                  <Link href="/visitor-identification" className="text-[#007AFF] hover:underline">Cursive Visitor Identification</Link> -- Identify which target accounts are visiting your website
+                  <Link href="/visitor-identification" className="text-primary hover:underline">Cursive Visitor Identification</Link> -- Identify which target accounts are visiting your website
                 </li>
                 <li>
-                  <Link href="/platform" className="text-[#007AFF] hover:underline">Cursive Platform Overview</Link> -- Explore the full-stack B2B data and outbound automation platform
+                  <Link href="/platform" className="text-primary hover:underline">Cursive Platform Overview</Link> -- Explore the full-stack B2B data and outbound automation platform
                 </li>
                 <li>
-                  <Link href="/blog/6sense-vs-cursive-comparison" className="text-[#007AFF] hover:underline">6sense vs. Cursive Comparison</Link> -- Compare two approaches to account-based intelligence
+                  <Link href="/blog/6sense-vs-cursive-comparison" className="text-primary hover:underline">6sense vs. Cursive Comparison</Link> -- Compare two approaches to account-based intelligence
                 </li>
                 <li>
-                  <Link href="/industries/b2b-software" className="text-[#007AFF] hover:underline">B2B Software Industry Solutions</Link> -- ABM strategies for SaaS and software companies
+                  <Link href="/industries/b2b-software" className="text-primary hover:underline">B2B Software Industry Solutions</Link> -- ABM strategies for SaaS and software companies
                 </li>
                 <li>
-                  <Link href="/industries/agencies" className="text-[#007AFF] hover:underline">Agency Solutions</Link> -- How agencies implement ABM for their clients
+                  <Link href="/industries/agencies" className="text-primary hover:underline">Agency Solutions</Link> -- How agencies implement ABM for their clients
                 </li>
                 <li>
-                  <Link href="/industries/technology" className="text-[#007AFF] hover:underline">Technology Industry Solutions</Link> -- ABM approaches for technology companies
+                  <Link href="/industries/technology" className="text-primary hover:underline">Technology Industry Solutions</Link> -- ABM approaches for technology companies
                 </li>
               </ul>
 
@@ -806,19 +806,19 @@ export default function WhatIsAccountBasedMarketing() {
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Link
                     href="/free-audit"
-                    className="inline-block px-8 py-3 bg-[#007AFF] text-white rounded-lg hover:bg-[#0066DD] transition-colors text-center"
+                    className="inline-block px-8 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors text-center"
                   >
                     Get Your Free Audit
                   </Link>
                   <Link
                     href="/pricing"
-                    className="inline-block px-8 py-3 border border-gray-300 text-gray-700 rounded-lg hover:border-[#007AFF] hover:text-[#007AFF] transition-colors text-center"
+                    className="inline-block px-8 py-3 border border-gray-300 text-gray-700 rounded-lg hover:border-primary hover:text-primary transition-colors text-center"
                   >
                     View Pricing
                   </Link>
                 </div>
                 <p className="text-sm text-gray-500 mt-4">
-                  Questions? <Link href="/contact" className="text-[#007AFF] hover:underline">Contact our team</Link> for a personalized ABM strategy consultation.
+                  Questions? <Link href="/contact" className="text-primary hover:underline">Contact our team</Link> for a personalized ABM strategy consultation.
                 </p>
               </div>
             </article>

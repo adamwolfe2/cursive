@@ -119,11 +119,11 @@ export function DemoEmailValidator() {
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-lg p-2.5 border-2 border-[#007AFF] col-span-2"
+          className="bg-white rounded-lg p-2.5 border-2 border-primary col-span-2"
         >
           <div className="text-[10px] text-gray-600 mb-1">Email to Validate</div>
           <div className="flex items-center gap-2">
-            <svg className="w-3.5 h-3.5 text-[#007AFF] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-3.5 h-3.5 text-primary flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
             <span className="text-xs text-gray-900 font-medium truncate">
@@ -132,7 +132,7 @@ export function DemoEmailValidator() {
                 <motion.span
                   animate={{ opacity: [1, 0] }}
                   transition={{ duration: 0.5, repeat: Infinity }}
-                  className="inline-block w-0.5 h-3 bg-[#007AFF] ml-0.5"
+                  className="inline-block w-0.5 h-3 bg-primary ml-0.5"
                 />
               )}
             </span>
@@ -170,7 +170,7 @@ export function DemoEmailValidator() {
                 : check.status === "warning"
                 ? "border-gray-300 bg-gray-50/30"
                 : check.status === "checking"
-                ? "border-[#007AFF] shadow-sm"
+                ? "border-primary shadow-sm"
                 : "border-gray-200"
             }`}
           >
@@ -183,7 +183,7 @@ export function DemoEmailValidator() {
                       key="pass"
                       initial={{ scale: 0, rotate: -180 }}
                       animate={{ scale: 1, rotate: 0 }}
-                      className="w-4 h-4 rounded-full bg-[#007AFF] flex items-center justify-center"
+                      className="w-4 h-4 rounded-full bg-primary flex items-center justify-center"
                     >
                       <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
@@ -205,7 +205,7 @@ export function DemoEmailValidator() {
                       key="checking"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      className="w-4 h-4 border-2 border-[#007AFF] border-t-transparent rounded-full animate-spin"
+                      className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"
                     />
                   ) : (
                     <div key="pending" className="w-4 h-4 rounded-full border-2 border-gray-300" />
@@ -217,7 +217,7 @@ export function DemoEmailValidator() {
               <div className="flex-1 flex items-center justify-between">
                 <span className="text-xs font-medium text-gray-900">{check.label}</span>
                 {check.status === "checking" && (
-                  <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-[10px] text-[#007AFF]">Checking...</motion.span>
+                  <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-[10px] text-primary">Checking...</motion.span>
                 )}
                 {(check.status === "pass" || check.status === "warning") && (
                   <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-[10px] text-gray-500 truncate ml-2">{check.message}</motion.span>

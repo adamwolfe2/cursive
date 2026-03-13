@@ -33,7 +33,7 @@ export function LeadCaptureForm({ domain, monthlyVisitors, dealSize, industry, r
 
   if (status === 'success') {
     return (
-      <div className="flex items-center gap-2 text-[#007AFF] font-semibold">
+      <div className="flex items-center gap-2 text-primary font-semibold">
         <span>✓</span>
         <span>Report sent! Check your inbox.</span>
       </div>
@@ -49,7 +49,7 @@ export function LeadCaptureForm({ domain, monthlyVisitors, dealSize, industry, r
           onChange={e => { setEmail(e.target.value); if (status === 'error') setStatus('idle') }}
           placeholder="your@email.com"
           required
-          className={`flex-1 px-4 py-3 bg-white border rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#007AFF]/60 focus:ring-1 focus:ring-[#007AFF]/30 transition-all ${status === 'error' ? 'border-red-500' : 'border-gray-200'}`}
+          className={`flex-1 px-4 py-3 bg-white border rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/30 transition-all ${status === 'error' ? 'border-red-500' : 'border-gray-200'}`}
         />
         <button
           type="submit"

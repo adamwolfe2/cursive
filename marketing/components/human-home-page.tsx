@@ -101,7 +101,7 @@ export function HumanHomePage() {
             className="text-center lg:text-left mb-4"
           >
             <span className="inline-flex items-center gap-2 px-3 py-1 bg-gray-50 border border-gray-200 rounded-full text-xs text-gray-600">
-              <Zap className="w-3 h-3 text-[#007AFF]" />
+              <Zap className="w-3 h-3 text-primary" />
               AI Intent Systems That Never Sleep
             </span>
           </motion.div>
@@ -145,7 +145,7 @@ export function HumanHomePage() {
                   size="lg"
                   href="https://cal.com/gotdarrenhill/30min"
                   target="_blank"
-                  className="bg-[#007AFF] text-white hover:bg-[#0066DD] px-6 py-3"
+                  className="bg-primary text-white hover:bg-primary-dark px-6 py-3"
                 >
                   Book Your Free AI Audit
                 </Button>
@@ -203,9 +203,9 @@ export function HumanHomePage() {
                         isActive ? 'bg-blue-50' : 'bg-white'
                       }`}
                     >
-                      <Icon className={`w-4 h-4 ${isActive ? 'text-[#007AFF]' : 'text-gray-400'}`} />
+                      <Icon className={`w-4 h-4 ${isActive ? 'text-primary' : 'text-gray-400'}`} />
                       <span className={`text-[10px] leading-tight text-center ${
-                        isActive ? 'text-[#007AFF] font-medium' : 'text-gray-500'
+                        isActive ? 'text-primary font-medium' : 'text-gray-500'
                       }`}>
                         {feature.shortLabel}
                       </span>
@@ -266,7 +266,7 @@ export function HumanHomePage() {
               className="bg-white rounded-2xl p-8 border border-gray-200 hover:shadow-lg transition-all"
             >
               <div className="w-14 h-14 bg-blue-50 rounded-xl flex items-center justify-center mb-6">
-                <ShoppingCart className="w-7 h-7 text-[#007AFF]" />
+                <ShoppingCart className="w-7 h-7 text-primary" />
               </div>
               <h3 className="text-2xl font-light text-gray-900 mb-3">Browse & Buy Leads</h3>
               <p className="text-gray-600 mb-6">
@@ -274,15 +274,15 @@ export function HumanHomePage() {
               </p>
               <ul className="space-y-2 mb-8 text-sm text-gray-600">
                 <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full" />
+                  <div className="w-1.5 h-1.5 bg-primary rounded-full" />
                   Instant access to leads
                 </li>
                 <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full" />
+                  <div className="w-1.5 h-1.5 bg-primary rounded-full" />
                   Credits from $0.60/lead
                 </li>
                 <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full" />
+                  <div className="w-1.5 h-1.5 bg-primary rounded-full" />
                   No commitment required
                 </li>
               </ul>
@@ -300,7 +300,7 @@ export function HumanHomePage() {
               className="bg-white rounded-2xl p-8 border border-gray-200 hover:shadow-lg transition-all"
             >
               <div className="w-14 h-14 bg-blue-50 rounded-xl flex items-center justify-center mb-6">
-                <Briefcase className="w-7 h-7 text-[#007AFF]" />
+                <Briefcase className="w-7 h-7 text-primary" />
               </div>
               <h3 className="text-2xl font-light text-gray-900 mb-3">Let Us Handle It</h3>
               <p className="text-gray-600 mb-6">
@@ -308,15 +308,15 @@ export function HumanHomePage() {
               </p>
               <ul className="space-y-2 mb-8 text-sm text-gray-600">
                 <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full" />
+                  <div className="w-1.5 h-1.5 bg-primary rounded-full" />
                   Managed by our team
                 </li>
                 <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full" />
+                  <div className="w-1.5 h-1.5 bg-primary rounded-full" />
                   Starting at $1k/mo
                 </li>
                 <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full" />
+                  <div className="w-1.5 h-1.5 bg-primary rounded-full" />
                   Guaranteed results
                 </li>
               </ul>
@@ -405,7 +405,7 @@ export function HumanHomePage() {
                 <ul className="space-y-2">
                   {feature.items.map((item, i) => (
                     <li key={i} className="flex items-center gap-2 text-sm text-gray-600">
-                      <div className="w-1.5 h-1.5 rounded-full bg-[#007AFF] flex-shrink-0" />
+                      <div className="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
                       {item}
                     </li>
                   ))}
@@ -455,7 +455,7 @@ export function HumanHomePage() {
                 transition={{ delay: i * 0.1 }}
                 className="text-center p-6 bg-[#F7F9FB] rounded-xl border border-gray-200"
               >
-                <div className="text-3xl lg:text-4xl font-light text-[#007AFF] mb-2">{stat.metric}</div>
+                <div className="text-3xl lg:text-4xl font-light text-primary mb-2">{stat.metric}</div>
                 <div className="text-gray-900 font-medium mb-1">{stat.label}</div>
                 <div className="text-sm text-gray-500">{stat.detail}</div>
               </motion.div>
@@ -499,7 +499,7 @@ export function HumanHomePage() {
               <Link
                 key={industry.href}
                 href={industry.href}
-                className="block p-4 bg-[#F7F9FB] rounded-lg border border-gray-200 text-center text-gray-900 hover:border-[#007AFF] hover:text-[#007AFF] transition-all text-sm font-medium"
+                className="block p-4 bg-[#F7F9FB] rounded-lg border border-gray-200 text-center text-gray-900 hover:border-primary hover:text-primary transition-all text-sm font-medium"
               >
                 {industry.label}
               </Link>
@@ -511,19 +511,19 @@ export function HumanHomePage() {
               Want to see how Cursive compares to other platforms?
             </p>
             <div className="flex flex-wrap justify-center gap-3">
-              <Link href="/blog/clearbit-alternatives-comparison" className="text-sm text-[#007AFF] hover:underline">
+              <Link href="/blog/clearbit-alternatives-comparison" className="text-sm text-primary hover:underline">
                 Clearbit Alternatives
               </Link>
               <span className="text-gray-300">|</span>
-              <Link href="/blog/zoominfo-vs-cursive-comparison" className="text-sm text-[#007AFF] hover:underline">
+              <Link href="/blog/zoominfo-vs-cursive-comparison" className="text-sm text-primary hover:underline">
                 ZoomInfo vs Cursive
               </Link>
               <span className="text-gray-300">|</span>
-              <Link href="/blog/apollo-vs-cursive-comparison" className="text-sm text-[#007AFF] hover:underline">
+              <Link href="/blog/apollo-vs-cursive-comparison" className="text-sm text-primary hover:underline">
                 Apollo vs Cursive
               </Link>
               <span className="text-gray-300">|</span>
-              <Link href="/blog/6sense-vs-cursive-comparison" className="text-sm text-[#007AFF] hover:underline">
+              <Link href="/blog/6sense-vs-cursive-comparison" className="text-sm text-primary hover:underline">
                 6sense vs Cursive
               </Link>
             </div>

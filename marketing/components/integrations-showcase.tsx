@@ -82,7 +82,7 @@ export function IntegrationsShowcase({
               ease: [0.25, 0.4, 0.25, 1],
             }}
             whileHover={{ scale: 1.05, transition: { duration: 0.15 } }}
-            className="bg-white rounded-lg p-2.5 border border-gray-200 hover:border-[#007AFF] hover:shadow-md transition-all duration-150 cursor-pointer flex items-center justify-center aspect-square"
+            className="bg-white rounded-lg p-2.5 border border-gray-200 hover:border-primary hover:shadow-md transition-all duration-150 cursor-pointer flex items-center justify-center aspect-square"
           >
             <Image
               src={integration.logo}

@@ -89,15 +89,15 @@ export function ResultsDashboard({ results, domain, monthlyVisitors, dealSize, i
 
       {/* ROI Callout — only in non-deck mode */}
       {!deck && (
-        <div className="bg-[#007AFF]/5 border border-[#007AFF]/20 rounded-2xl p-6">
-          <p className="text-[11px] font-mono uppercase tracking-widest text-[#007AFF] mb-3">Your ROI with Cursive</p>
+        <div className="bg-primary/5 border border-primary/20 rounded-2xl p-6">
+          <p className="text-[11px] font-mono uppercase tracking-widest text-primary mb-3">Your ROI with Cursive</p>
           <div className="grid grid-cols-3 gap-4 mb-4">
             <div className="text-center">
               <div className="text-2xl font-light text-gray-500 mb-0.5">$299<span className="text-sm">/mo</span></div>
               <div className="text-xs text-gray-400">Cursive cost</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-[#007AFF] mb-0.5">{formatDollar(results.cursive.annualRevenue)}</div>
+              <div className="text-2xl font-bold text-primary mb-0.5">{formatDollar(results.cursive.annualRevenue)}</div>
               <div className="text-xs text-gray-400">Pipeline recovered/yr</div>
             </div>
             <div className="text-center">
@@ -105,9 +105,9 @@ export function ResultsDashboard({ results, domain, monthlyVisitors, dealSize, i
               <div className="text-xs text-gray-400">ROI</div>
             </div>
           </div>
-          <div className="bg-white rounded-xl border border-[#007AFF]/20 px-4 py-3 text-center">
+          <div className="bg-white rounded-xl border border-primary/20 px-4 py-3 text-center">
             <p className="text-gray-800 font-semibold text-sm">
-              For every <span className="text-[#007AFF]">$1</span> you spend on Cursive, you recover{' '}
+              For every <span className="text-primary">$1</span> you spend on Cursive, you recover{' '}
               <span className="text-emerald-600 font-bold">${dollarPerDollar}</span> in pipeline.
             </p>
           </div>
@@ -117,7 +117,7 @@ export function ResultsDashboard({ results, domain, monthlyVisitors, dealSize, i
       <div className={`${deck ? '' : 'space-y-4'} text-center`}>
         <a
           href={deck ? 'https://leads.meetcursive.com/sign-up' : BOOK_ANCHOR}
-          className={`inline-block w-full sm:w-auto bg-[#007AFF] hover:bg-[#0066DD] text-white font-bold rounded-lg transition-all shadow-lg shadow-[#007AFF]/25 ${deck ? 'px-8 py-3 text-base' : 'px-10 py-4 text-lg'}`}
+          className={`inline-block w-full sm:w-auto bg-primary hover:bg-primary-dark text-white font-bold rounded-lg transition-all shadow-lg shadow-primary/25 ${deck ? 'px-8 py-3 text-base' : 'px-10 py-4 text-lg'}`}
         >
           {deck ? 'Install the Pixel on This Call →' : 'Book a Free Demo — See It Running on Your Site'}
         </a>

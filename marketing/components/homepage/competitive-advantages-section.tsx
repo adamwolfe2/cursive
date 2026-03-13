@@ -94,12 +94,12 @@ export function CompetitiveAdvantagesSection() {
                   duration: 0.3,
                   ease: [0.22, 1, 0.36, 1]
                 }}
-                className="group bg-white rounded-xl border border-gray-200 p-8 hover:shadow-lg hover:border-[#007AFF]/20 transition-all"
+                className="group bg-white rounded-xl border border-gray-200 p-8 hover:shadow-lg hover:border-primary/20 transition-all"
               >
                 <div className="flex items-start gap-4">
                   {/* Icon */}
-                  <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-gradient-to-br from-gray-100 to-gray-50 flex items-center justify-center group-hover:from-[#007AFF]/10 group-hover:to-[#007AFF]/5 transition-all">
-                    <Icon className="w-6 h-6 text-gray-700 group-hover:text-[#007AFF] transition-colors" />
+                  <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-gradient-to-br from-gray-100 to-gray-50 flex items-center justify-center group-hover:from-primary/10 group-hover:to-primary/5 transition-all">
+                    <Icon className="w-6 h-6 text-gray-700 group-hover:text-primary transition-colors" />
                   </div>
 
                   {/* Content */}
@@ -142,7 +142,7 @@ export function CompetitiveAdvantagesSection() {
             href="https://cal.com/gotdarrenhill/30min"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-white text-[#007AFF] border-2 border-[#007AFF] rounded-lg font-medium hover:bg-[#007AFF] hover:text-white transition-all group"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-white text-primary border-2 border-primary rounded-lg font-medium hover:bg-primary hover:text-white transition-all group"
           >
             <span>Book Your Free AI Audit</span>
             <svg

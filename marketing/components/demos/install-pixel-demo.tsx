@@ -87,7 +87,7 @@ export default function InstallPixelDemo() {
               <motion.span
                 animate={{ opacity: [1, 0, 1] }}
                 transition={{ duration: 0.6, repeat: Infinity }}
-                className="inline-block w-2 h-4 bg-[#007AFF] ml-0.5"
+                className="inline-block w-2 h-4 bg-primary ml-0.5"
               />
             )}
           </pre>
@@ -122,7 +122,7 @@ export default function InstallPixelDemo() {
           }}
           className="pointer-events-none"
         >
-          <Eye className="w-6 h-6 text-[#007AFF]" />
+          <Eye className="w-6 h-6 text-primary" />
         </motion.div>
       ))}
     </div>

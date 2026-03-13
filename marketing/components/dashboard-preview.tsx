@@ -40,7 +40,7 @@ export function DashboardPreview() {
               key={i}
               className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
                 item.active
-                  ? "bg-[#007AFF] text-white"
+                  ? "bg-primary text-white"
                   : "text-gray-700 hover:bg-gray-100"
               }`}
             >
@@ -71,7 +71,7 @@ export function DashboardPreview() {
               <div className="text-right text-sm hidden sm:block">
                 <div className="text-gray-600">hello@meetcursive.com</div>
               </div>
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-[#007AFF] rounded-full flex items-center justify-center text-white font-medium text-sm sm:text-base">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary rounded-full flex items-center justify-center text-white font-medium text-sm sm:text-base">
                 A
               </div>
             </div>
@@ -110,7 +110,7 @@ export function DashboardPreview() {
           <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
             <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200 flex items-center justify-between">
               <h2 className="text-sm sm:text-lg font-medium text-gray-900">Recent Leads</h2>
-              <button className="text-sm text-[#007AFF] hover:text-[#0066DD] font-medium">
+              <button className="text-sm text-primary hover:text-primary-dark font-medium">
                 View all →
               </button>
             </div>

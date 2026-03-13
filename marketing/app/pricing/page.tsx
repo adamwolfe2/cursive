@@ -181,7 +181,7 @@ export default function PricingPage() {
           >
             {/* Social Proof */}
             <div className="flex items-center justify-center gap-2 mb-6">
-              <Users className="w-5 h-5 text-[#007AFF]" />
+              <Users className="w-5 h-5 text-primary" />
               <p className="text-sm text-gray-600">
                 Trusted by 1,000+ B2B companies to generate qualified leads
               </p>
@@ -254,13 +254,13 @@ export default function PricingPage() {
                   transition={{ delay: 0.1 }}
                   className={`bg-white rounded-2xl p-6 border transition-all duration-300 hover:shadow-lg relative h-full flex flex-col ${
                     pkg.popular
-                      ? 'border-[#007AFF] shadow-xl'
-                      : 'border-gray-200 hover:border-[#007AFF]'
+                      ? 'border-primary shadow-xl'
+                      : 'border-gray-200 hover:border-primary'
                   }`}
                 >
                   {pkg.popular && (
                     <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                      <div className="bg-[#007AFF] text-white px-3 py-1 rounded-full text-xs font-medium shadow-lg">
+                      <div className="bg-primary text-white px-3 py-1 rounded-full text-xs font-medium shadow-lg">
                         Most Popular
                       </div>
                     </div>
@@ -275,7 +275,7 @@ export default function PricingPage() {
                   </div>
 
                   <div className="mb-4 flex-grow">
-                    <div className="text-3xl font-light text-[#007AFF]">
+                    <div className="text-3xl font-light text-primary">
                       ${pkg.price.toLocaleString()}
                     </div>
                     <div className="text-sm text-gray-500 mt-1">
@@ -308,7 +308,7 @@ export default function PricingPage() {
               </p>
               <p className="text-sm text-gray-500">
                 Need help finding the right leads?{" "}
-                <Link href="/custom-audiences" className="text-[#007AFF] hover:underline">
+                <Link href="/custom-audiences" className="text-primary hover:underline">
                   See custom audiences
                 </Link>
               </p>
@@ -329,7 +329,7 @@ export default function PricingPage() {
                     onClick={() => setBillingCycle('monthly')}
                     className={`px-6 py-2 rounded-lg transition-all ${
                       billingCycle === 'monthly'
-                        ? 'bg-[#007AFF] text-white'
+                        ? 'bg-primary text-white'
                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                     }`}
                   >
@@ -339,7 +339,7 @@ export default function PricingPage() {
                     onClick={() => setBillingCycle('annual')}
                     className={`px-6 py-2 rounded-lg transition-all relative ${
                       billingCycle === 'annual'
-                        ? 'bg-[#007AFF] text-white'
+                        ? 'bg-primary text-white'
                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                     }`}
                   >
@@ -362,7 +362,7 @@ export default function PricingPage() {
                   initial={{ opacity: 0, y: 40 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 }}
-                  className="bg-white rounded-2xl p-8 border border-gray-200 hover:border-[#007AFF] transition-all duration-300 hover:shadow-lg"
+                  className="bg-white rounded-2xl p-8 border border-gray-200 hover:border-primary transition-all duration-300 hover:shadow-lg"
                 >
                   <div className="mb-6">
                     <div className="text-xs font-medium text-gray-500 mb-2">ENTERPRISE</div>
@@ -375,7 +375,7 @@ export default function PricingPage() {
                   <div className="mb-8">
                     {billingCycle === 'annual' ? (
                       <>
-                        <div className="text-4xl font-light text-[#007AFF] mb-1">
+                        <div className="text-4xl font-light text-primary mb-1">
                           $4,000<span className="text-lg text-gray-600">/mo</span>
                         </div>
                         <div className="text-sm text-gray-500 line-through mb-1">$5,000/mo</div>
@@ -384,7 +384,7 @@ export default function PricingPage() {
                         </div>
                       </>
                     ) : (
-                      <div className="text-4xl font-light text-[#007AFF] mb-2">
+                      <div className="text-4xl font-light text-primary mb-2">
                         $5,000<span className="text-lg text-gray-600">/mo</span>
                       </div>
                     )}
@@ -401,27 +401,27 @@ export default function PricingPage() {
 
                   <ul className="space-y-3 mb-8">
                     <li className="flex items-start gap-3">
-                      <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0" />
+                      <Check className="w-5 h-5 text-primary flex-shrink-0" />
                       <span className="text-gray-700">Everything in Outbound</span>
                     </li>
                     <li className="flex items-start gap-3">
-                      <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0" />
+                      <Check className="w-5 h-5 text-primary flex-shrink-0" />
                       <span className="text-gray-700">AI SDR agents (24/7 automated)</span>
                     </li>
                     <li className="flex items-start gap-3">
-                      <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0" />
+                      <Check className="w-5 h-5 text-primary flex-shrink-0" />
                       <span className="text-gray-700">Multi-channel campaigns (email, LinkedIn, SMS)</span>
                     </li>
                     <li className="flex items-start gap-3">
-                      <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0" />
+                      <Check className="w-5 h-5 text-primary flex-shrink-0" />
                       <span className="text-gray-700">Unlimited lead enrichment</span>
                     </li>
                     <li className="flex items-start gap-3">
-                      <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0" />
+                      <Check className="w-5 h-5 text-primary flex-shrink-0" />
                       <span className="text-gray-700">API access + CRM integrations</span>
                     </li>
                     <li className="flex items-start gap-3">
-                      <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0" />
+                      <Check className="w-5 h-5 text-primary flex-shrink-0" />
                       <span className="text-gray-700">Dedicated success manager</span>
                     </li>
                   </ul>
@@ -445,10 +445,10 @@ export default function PricingPage() {
                   initial={{ opacity: 0, y: 40 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="bg-white rounded-2xl p-8 border border-[#007AFF] shadow-xl relative transform lg:scale-105 z-10"
+                  className="bg-white rounded-2xl p-8 border border-primary shadow-xl relative transform lg:scale-105 z-10"
                 >
                   <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <div className="bg-[#007AFF] text-white px-4 py-1 rounded-full text-sm font-medium shadow-lg">
+                    <div className="bg-primary text-white px-4 py-1 rounded-full text-sm font-medium shadow-lg">
                       Most Popular
                     </div>
                   </div>
@@ -464,7 +464,7 @@ export default function PricingPage() {
                   <div className="mb-8">
                     {billingCycle === 'annual' ? (
                       <>
-                        <div className="text-4xl font-light text-[#007AFF] mb-1">
+                        <div className="text-4xl font-light text-primary mb-1">
                           $2,000<span className="text-lg text-gray-600">/mo</span>
                         </div>
                         <div className="text-sm text-gray-500 line-through mb-1">$2,500/mo</div>
@@ -473,7 +473,7 @@ export default function PricingPage() {
                         </div>
                       </>
                     ) : (
-                      <div className="text-4xl font-light text-[#007AFF] mb-2">
+                      <div className="text-4xl font-light text-primary mb-2">
                         $2,500<span className="text-lg text-gray-600">/mo</span>
                       </div>
                     )}
@@ -490,27 +490,27 @@ export default function PricingPage() {
 
                   <ul className="space-y-3 mb-8">
                     <li className="flex items-start gap-3">
-                      <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0" />
+                      <Check className="w-5 h-5 text-primary flex-shrink-0" />
                       <span className="text-gray-700">Everything in Data plan</span>
                     </li>
                     <li className="flex items-start gap-3">
-                      <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0" />
+                      <Check className="w-5 h-5 text-primary flex-shrink-0" />
                       <span className="text-gray-700">AI-powered email personalization</span>
                     </li>
                     <li className="flex items-start gap-3">
-                      <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0" />
+                      <Check className="w-5 h-5 text-primary flex-shrink-0" />
                       <span className="text-gray-700">Email infrastructure setup + warmup</span>
                     </li>
                     <li className="flex items-start gap-3">
-                      <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0" />
+                      <Check className="w-5 h-5 text-primary flex-shrink-0" />
                       <span className="text-gray-700">500 verified leads included monthly</span>
                     </li>
                     <li className="flex items-start gap-3">
-                      <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0" />
+                      <Check className="w-5 h-5 text-primary flex-shrink-0" />
                       <span className="text-gray-700">A/B testing + continuous optimization</span>
                     </li>
                     <li className="flex items-start gap-3">
-                      <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0" />
+                      <Check className="w-5 h-5 text-primary flex-shrink-0" />
                       <span className="text-gray-700">Weekly strategy calls</span>
                     </li>
                   </ul>
@@ -534,7 +534,7 @@ export default function PricingPage() {
                   initial={{ opacity: 0, y: 40 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
-                  className="bg-white rounded-2xl p-8 border border-gray-200 hover:border-[#007AFF] transition-all duration-300 hover:shadow-lg"
+                  className="bg-white rounded-2xl p-8 border border-gray-200 hover:border-primary transition-all duration-300 hover:shadow-lg"
                 >
                   <div className="mb-6">
                     <div className="text-xs font-medium text-gray-500 mb-2">STARTER</div>
@@ -547,7 +547,7 @@ export default function PricingPage() {
                   <div className="mb-8">
                     {billingCycle === 'annual' ? (
                       <>
-                        <div className="text-4xl font-light text-[#007AFF] mb-1">
+                        <div className="text-4xl font-light text-primary mb-1">
                           $800<span className="text-lg text-gray-600">/mo</span>
                         </div>
                         <div className="text-sm text-gray-500 line-through mb-1">$1,000/mo</div>
@@ -556,7 +556,7 @@ export default function PricingPage() {
                         </div>
                       </>
                     ) : (
-                      <div className="text-4xl font-light text-[#007AFF] mb-2">
+                      <div className="text-4xl font-light text-primary mb-2">
                         $1,000<span className="text-lg text-gray-600">/mo</span>
                       </div>
                     )}
@@ -574,27 +574,27 @@ export default function PricingPage() {
 
                   <ul className="space-y-3 mb-8">
                     <li className="flex items-start gap-3">
-                      <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0" />
+                      <Check className="w-5 h-5 text-primary flex-shrink-0" />
                       <span className="text-gray-700">Verified & enriched contacts (95%+ accuracy)</span>
                     </li>
                     <li className="flex items-start gap-3">
-                      <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0" />
+                      <Check className="w-5 h-5 text-primary flex-shrink-0" />
                       <span className="text-gray-700">Custom ICP targeting</span>
                     </li>
                     <li className="flex items-start gap-3">
-                      <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0" />
+                      <Check className="w-5 h-5 text-primary flex-shrink-0" />
                       <span className="text-gray-700">Monthly list refresh</span>
                     </li>
                     <li className="flex items-start gap-3">
-                      <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0" />
+                      <Check className="w-5 h-5 text-primary flex-shrink-0" />
                       <span className="text-gray-700">CSV export + CRM integration</span>
                     </li>
                     <li className="flex items-start gap-3">
-                      <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0" />
+                      <Check className="w-5 h-5 text-primary flex-shrink-0" />
                       <span className="text-gray-700">Email support</span>
                     </li>
                     <li className="flex items-start gap-3">
-                      <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0" />
+                      <Check className="w-5 h-5 text-primary flex-shrink-0" />
                       <span className="text-gray-700">Dedicated account manager</span>
                     </li>
                   </ul>
@@ -617,7 +617,7 @@ export default function PricingPage() {
               {/* Upgrade Path Clarity */}
               <div className="mt-16 max-w-4xl mx-auto text-center">
                 <div className="bg-blue-50 rounded-2xl p-8 border border-blue-100">
-                  <TrendingUp className="w-12 h-12 text-[#007AFF] mx-auto mb-4" />
+                  <TrendingUp className="w-12 h-12 text-primary mx-auto mb-4" />
                   <h3 className="text-2xl font-light text-gray-900 mb-3">
                     Easy Upgrade Path
                   </h3>
@@ -658,9 +658,9 @@ export default function PricingPage() {
             </p>
             <div className="grid md:grid-cols-3 gap-6">
               <Link href="/pixel" className="block">
-                <div className="bg-white rounded-xl p-6 text-center border border-gray-200 hover:border-[#007AFF] transition-all h-full">
-                  <Zap className="w-10 h-10 text-[#007AFF] mx-auto mb-3" />
-                  <div className="text-2xl font-light text-[#007AFF] mb-2">Included</div>
+                <div className="bg-white rounded-xl p-6 text-center border border-gray-200 hover:border-primary transition-all h-full">
+                  <Zap className="w-10 h-10 text-primary mx-auto mb-3" />
+                  <div className="text-2xl font-light text-primary mb-2">Included</div>
                   <div className="text-sm font-medium text-gray-900 mb-2">Website Visitor Tracking</div>
                   <div className="text-xs text-gray-600 mb-4">With all service plans</div>
                   <p className="text-xs text-gray-500">
@@ -668,18 +668,18 @@ export default function PricingPage() {
                   </p>
                 </div>
               </Link>
-              <div className="bg-white rounded-xl p-6 text-center border border-gray-200 hover:border-[#007AFF] transition-all">
-                <TrendingUp className="w-10 h-10 text-[#007AFF] mx-auto mb-3" />
-                <div className="text-2xl font-light text-[#007AFF] mb-2">$1,500/mo</div>
+              <div className="bg-white rounded-xl p-6 text-center border border-gray-200 hover:border-primary transition-all">
+                <TrendingUp className="w-10 h-10 text-primary mx-auto mb-3" />
+                <div className="text-2xl font-light text-primary mb-2">$1,500/mo</div>
                 <div className="text-sm font-medium text-gray-900 mb-2">Visitor Retargeting</div>
                 <div className="text-xs text-gray-600 mb-4">Requires Visitor Tracking</div>
                 <p className="text-xs text-gray-500">
                   Auto-engage visitors with email and ad campaigns
                 </p>
               </div>
-              <div className="bg-white rounded-xl p-6 text-center border border-gray-200 hover:border-[#007AFF] transition-all">
-                <Users className="w-10 h-10 text-[#007AFF] mx-auto mb-3" />
-                <div className="text-2xl font-light text-[#007AFF] mb-2">$2,000/mo</div>
+              <div className="bg-white rounded-xl p-6 text-center border border-gray-200 hover:border-primary transition-all">
+                <Users className="w-10 h-10 text-primary mx-auto mb-3" />
+                <div className="text-2xl font-light text-primary mb-2">$2,000/mo</div>
                 <div className="text-sm font-medium text-gray-900 mb-2">White Label Platform</div>
                 <div className="text-xs text-gray-600 mb-4">Includes 10 user seats</div>
                 <p className="text-xs text-gray-500">
@@ -695,11 +695,11 @@ export default function PricingPage() {
                 <p className="text-gray-400 mb-4">
                   Full-service growth partnership for high-growth companies. Custom strategy, dedicated team, and guaranteed pipeline.
                 </p>
-                <div className="text-3xl font-light text-[#007AFF] mb-2">$25k+/mo</div>
+                <div className="text-3xl font-light text-primary mb-2">$25k+/mo</div>
                 <p className="text-sm text-gray-500 mb-6">By application only</p>
                 <Button
                   href="/venture-studio"
-                  className="bg-[#007AFF] text-white hover:bg-[#0066DD]"
+                  className="bg-primary text-white hover:bg-primary-dark"
                 >
                   Apply
                   <ArrowRight className="w-4 h-4" />
@@ -711,12 +711,12 @@ export default function PricingPage() {
       </section>
 
       {/* Why Cursive Wins Section */}
-      <section className="py-16 bg-gradient-to-br from-[#007AFF]/5 to-blue-50">
+      <section className="py-16 bg-gradient-to-br from-primary/5 to-blue-50">
         <Container>
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-10">
               <div className="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm mb-4">
-                <Calculator className="w-5 h-5 text-[#007AFF]" />
+                <Calculator className="w-5 h-5 text-primary" />
                 <span className="text-sm font-medium text-gray-900">Why Cursive Wins</span>
               </div>
               <h2 className="text-3xl lg:text-4xl font-light text-gray-900 mb-3">
@@ -766,8 +766,8 @@ export default function PricingPage() {
                 </div>
 
                 {/* Cursive */}
-                <div className="p-6 bg-[#007AFF]/5 rounded-xl border-2 border-[#007AFF]">
-                  <div className="text-sm font-medium text-[#007AFF] mb-4 uppercase tracking-wide">With Cursive</div>
+                <div className="p-6 bg-primary/5 rounded-xl border-2 border-primary">
+                  <div className="text-sm font-medium text-primary mb-4 uppercase tracking-wide">With Cursive</div>
                   <div className="space-y-4">
                     <div className="flex items-start gap-3">
                       <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -795,7 +795,7 @@ export default function PricingPage() {
                     </div>
                     <div className="pt-4 border-t border-blue-200">
                       <div className="text-2xl font-light text-gray-900">From $1,000<span className="text-base text-gray-500">/mo</span></div>
-                      <div className="text-xs text-[#007AFF] mt-1">Unlimited visitors. Flat rate.</div>
+                      <div className="text-xs text-primary mt-1">Unlimited visitors. Flat rate.</div>
                     </div>
                   </div>
                 </div>
@@ -826,7 +826,7 @@ export default function PricingPage() {
                     <th className="text-center py-4 px-6 font-light text-gray-900">Data</th>
                     <th className="text-center py-4 px-6 font-light text-gray-900 bg-blue-50">
                       Outbound
-                      <div className="text-xs text-[#007AFF] font-medium mt-1">Most Popular</div>
+                      <div className="text-xs text-primary font-medium mt-1">Most Popular</div>
                     </th>
                     <th className="text-center py-4 px-6 font-light text-gray-900">Pipeline</th>
                   </tr>
@@ -1004,8 +1004,8 @@ export default function PricingPage() {
           <div className="max-w-4xl mx-auto">
             <div className="bg-white rounded-2xl p-10 shadow-lg border border-gray-200">
               <div className="text-center mb-8">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-[#007AFF]/10 rounded-full mb-4">
-                  <Users className="w-8 h-8 text-[#007AFF]" />
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-4">
+                  <Users className="w-8 h-8 text-primary" />
                 </div>
                 <h2 className="text-3xl lg:text-4xl font-light text-gray-900 mb-3">
                   Need Something Custom?
@@ -1017,15 +1017,15 @@ export default function PricingPage() {
 
               <div className="grid md:grid-cols-3 gap-6 mb-8">
                 <div className="text-center p-4">
-                  <div className="text-[#007AFF] font-light text-2xl mb-2">10,000+</div>
+                  <div className="text-primary font-light text-2xl mb-2">10,000+</div>
                   <div className="text-sm text-gray-600">Leads per month</div>
                 </div>
                 <div className="text-center p-4">
-                  <div className="text-[#007AFF] font-light text-2xl mb-2">White Label</div>
+                  <div className="text-primary font-light text-2xl mb-2">White Label</div>
                   <div className="text-sm text-gray-600">For agencies</div>
                 </div>
                 <div className="text-center p-4">
-                  <div className="text-[#007AFF] font-light text-2xl mb-2">Custom</div>
+                  <div className="text-primary font-light text-2xl mb-2">Custom</div>
                   <div className="text-sm text-gray-600">Integrations</div>
                 </div>
               </div>
@@ -1146,7 +1146,7 @@ export default function PricingPage() {
               size="lg"
               href="https://cal.com/gotdarrenhill/30min"
               target="_blank"
-              className="bg-[#007AFF] text-white hover:bg-[#0066DD] text-lg px-10 py-5 mb-4"
+              className="bg-primary text-white hover:bg-primary-dark text-lg px-10 py-5 mb-4"
             >
               Book Your Free Audit Now
             </Button>
@@ -1364,7 +1364,7 @@ export default function PricingPage() {
               <option value="pipeline">Cursive Pipeline ($5,000/mo)</option>
             </select>
           </div>
-          <button type="submit" className="px-4 py-2 bg-[#007AFF] text-white rounded-lg">
+          <button type="submit" className="px-4 py-2 bg-primary text-white rounded-lg">
             Get Details
           </button>
         </form>

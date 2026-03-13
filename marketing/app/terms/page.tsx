@@ -177,7 +177,7 @@ export default function TermsPage() {
             Upon your written request, Cursive will enter into a mutually agreed Data Processing Agreement
             consistent with Article 28 of the GDPR and applicable data protection law. The DPA governs
             our processing of personal data on your behalf and constitutes part of these Terms.
-            To request a DPA, contact <a href="mailto:privacy@meetcursive.com" className="text-[#007AFF]">privacy@meetcursive.com</a>.
+            To request a DPA, contact <a href="mailto:privacy@meetcursive.com" className="text-primary">privacy@meetcursive.com</a>.
           </p>
 
           <h2>8. Intellectual Property</h2>
@@ -274,9 +274,9 @@ export default function TermsPage() {
             to report a compliance concern, please contact us:
           </p>
           <ul>
-            <li>Legal &amp; Compliance: <a href="mailto:legal@meetcursive.com" className="text-[#007AFF] hover:underline">legal@meetcursive.com</a></li>
-            <li>Privacy requests: <a href="mailto:privacy@meetcursive.com" className="text-[#007AFF] hover:underline">privacy@meetcursive.com</a></li>
-            <li>General inquiries: <a href="mailto:hello@meetcursive.com" className="text-[#007AFF] hover:underline">hello@meetcursive.com</a></li>
+            <li>Legal &amp; Compliance: <a href="mailto:legal@meetcursive.com" className="text-primary hover:underline">legal@meetcursive.com</a></li>
+            <li>Privacy requests: <a href="mailto:privacy@meetcursive.com" className="text-primary hover:underline">privacy@meetcursive.com</a></li>
+            <li>General inquiries: <a href="mailto:hello@meetcursive.com" className="text-primary hover:underline">hello@meetcursive.com</a></li>
           </ul>
         </div>
       </Container>

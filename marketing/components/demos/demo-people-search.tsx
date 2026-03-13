@@ -103,20 +103,20 @@ export function DemoPeopleSearch() {
                 animate={{ opacity: 1 }}
                 className="absolute right-3 top-1/2 -translate-y-1/2"
               >
-                <div className="w-4 h-4 border-2 border-[#007AFF] border-t-transparent rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
               </motion.div>
             )}
           </div>
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="px-6 py-2 bg-[#007AFF] text-white rounded text-sm whitespace-nowrap font-medium hover:bg-[#0066DD] transition-colors"
+            className="px-6 py-2 bg-primary text-white rounded text-sm whitespace-nowrap font-medium hover:bg-primary-dark transition-colors"
           >
             Search
           </motion.button>
         </div>
         <div className="flex items-center gap-2 text-xs text-gray-600">
-          <svg className="w-4 h-4 text-[#007AFF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
           </svg>
           500M+ verified contacts
@@ -135,7 +135,7 @@ export function DemoPeopleSearch() {
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
-              className="w-12 h-12 border-3 border-[#007AFF] border-t-transparent rounded-full mx-auto mb-3"
+              className="w-12 h-12 border-3 border-primary border-t-transparent rounded-full mx-auto mb-3"
             />
             <div className="text-sm text-gray-600">Searching 500M+ contacts...</div>
           </motion.div>

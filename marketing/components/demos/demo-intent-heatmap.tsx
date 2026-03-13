@@ -151,12 +151,12 @@ export function DemoIntentHeatmap() {
                 repeat: Infinity,
                 delay: i * 0.2,
               }}
-              className="absolute w-8 h-8 -left-4 -top-4 rounded-full bg-[#007AFF] opacity-30"
+              className="absolute w-8 h-8 -left-4 -top-4 rounded-full bg-primary opacity-30"
             />
             {/* Center dot */}
             <motion.div
               whileHover={{ scale: 1.5 }}
-              className="w-3 h-3 rounded-full bg-[#007AFF] shadow-lg cursor-pointer"
+              className="w-3 h-3 rounded-full bg-primary shadow-lg cursor-pointer"
             />
           </motion.div>
         ))}
@@ -247,7 +247,7 @@ export function DemoIntentHeatmap() {
                 <span className="text-gray-600">
                   {signal.city} - <span className="text-gray-900">{signal.category}</span>
                 </span>
-                <span className="text-[#007AFF]">Just now</span>
+                <span className="text-primary">Just now</span>
               </motion.div>
             ))}
           </AnimatePresence>

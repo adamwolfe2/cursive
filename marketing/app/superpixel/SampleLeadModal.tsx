@@ -33,7 +33,7 @@ export function SampleLeadModal() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="mt-4 text-[#007AFF] text-sm font-medium hover:underline flex items-center gap-1 mx-auto"
+        className="mt-4 text-primary text-sm font-medium hover:underline flex items-center gap-1 mx-auto"
       >
         See Full Data Profile →
       </button>
@@ -44,7 +44,7 @@ export function SampleLeadModal() {
           onClick={e => { if (e.target === e.currentTarget) setOpen(false) }}
         >
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[85vh] overflow-hidden flex flex-col">
-            <div className="bg-[#007AFF] px-6 py-4 flex items-center justify-between flex-shrink-0">
+            <div className="bg-primary px-6 py-4 flex items-center justify-between flex-shrink-0">
               <div>
                 <p className="text-white font-semibold text-sm">Full Data Profile</p>
                 <p className="text-white/70 text-xs">James Sullivan · Meridian Technology Group</p>

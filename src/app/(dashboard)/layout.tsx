@@ -1,10 +1,5 @@
 // Dashboard Layout - Protected layout with navigation
 
-// Force dynamic rendering for all dashboard pages (auth required).
-// Note: unstable_cache is used below for individual DB queries — this lets us
-// skip Next.js page cache (which can't vary by user) while still caching data.
-export const dynamic = 'force-dynamic'
-
 import { Suspense } from 'react'
 import { unstable_cache } from 'next/cache'
 import { redirect } from 'next/navigation'

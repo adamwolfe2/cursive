@@ -85,16 +85,16 @@ export default function WhatIsLeadEnrichment() {
               <nav className="bg-gray-50 rounded-lg p-6 mb-10">
                 <h2 className="text-lg font-semibold text-gray-900 mb-3">Table of Contents</h2>
                 <ol className="list-decimal list-inside space-y-2 text-gray-700">
-                  <li><a href="#how-lead-enrichment-works" className="text-[#007AFF] hover:underline">How Lead Enrichment Works</a></li>
-                  <li><a href="#types-of-enrichment-data" className="text-[#007AFF] hover:underline">Types of Enrichment Data</a></li>
-                  <li><a href="#enrichment-methods" className="text-[#007AFF] hover:underline">Enrichment Methods</a></li>
-                  <li><a href="#benefits-of-lead-enrichment" className="text-[#007AFF] hover:underline">Benefits of Lead Enrichment</a></li>
-                  <li><a href="#use-cases" className="text-[#007AFF] hover:underline">Use Cases</a></li>
-                  <li><a href="#data-quality-metrics" className="text-[#007AFF] hover:underline">Data Quality Metrics</a></li>
-                  <li><a href="#implementation-guide" className="text-[#007AFF] hover:underline">Implementation Guide</a></li>
-                  <li><a href="#provider-comparison" className="text-[#007AFF] hover:underline">Provider Comparison</a></li>
-                  <li><a href="#faq" className="text-[#007AFF] hover:underline">Frequently Asked Questions</a></li>
-                  <li><a href="#related-resources" className="text-[#007AFF] hover:underline">Related Resources</a></li>
+                  <li><a href="#how-lead-enrichment-works" className="text-primary hover:underline">How Lead Enrichment Works</a></li>
+                  <li><a href="#types-of-enrichment-data" className="text-primary hover:underline">Types of Enrichment Data</a></li>
+                  <li><a href="#enrichment-methods" className="text-primary hover:underline">Enrichment Methods</a></li>
+                  <li><a href="#benefits-of-lead-enrichment" className="text-primary hover:underline">Benefits of Lead Enrichment</a></li>
+                  <li><a href="#use-cases" className="text-primary hover:underline">Use Cases</a></li>
+                  <li><a href="#data-quality-metrics" className="text-primary hover:underline">Data Quality Metrics</a></li>
+                  <li><a href="#implementation-guide" className="text-primary hover:underline">Implementation Guide</a></li>
+                  <li><a href="#provider-comparison" className="text-primary hover:underline">Provider Comparison</a></li>
+                  <li><a href="#faq" className="text-primary hover:underline">Frequently Asked Questions</a></li>
+                  <li><a href="#related-resources" className="text-primary hover:underline">Related Resources</a></li>
                 </ol>
               </nav>
 
@@ -112,7 +112,7 @@ export default function WhatIsLeadEnrichment() {
               </h3>
               <p className="text-gray-600 leading-relaxed mb-4">
                 The enrichment process begins with data matching, where your existing lead record is compared against the provider&apos;s database using one or more identifiers. The most common matching keys include email address, company domain, LinkedIn profile URL, phone number, and company name combined with location. Advanced providers use fuzzy matching algorithms to handle variations in company names, job titles, and other fields. For example, &quot;IBM&quot; and &quot;International Business Machines&quot; would both match to the same company record. Platforms like{" "}
-                <Link href="/platform" className="text-[#007AFF] hover:underline">Cursive&apos;s unified platform</Link>{" "}
+                <Link href="/platform" className="text-primary hover:underline">Cursive&apos;s unified platform</Link>{" "}
                 use multi-source matching to achieve higher match rates, typically identifying 60-80% of B2B leads compared to the 40-50% industry average for single-source providers.
               </p>
 
@@ -121,7 +121,7 @@ export default function WhatIsLeadEnrichment() {
               </h3>
               <p className="text-gray-600 leading-relaxed mb-4">
                 Once a match is found, the enrichment engine makes API calls to retrieve the associated data points. Modern enrichment platforms aggregate data from multiple sources, including public business registrations, web scraping of corporate websites, social media profiles, job postings, technology detection scripts, and proprietary data partnerships. The{" "}
-                <Link href="/data-access" className="text-[#007AFF] hover:underline">data access layer</Link>{" "}
+                <Link href="/data-access" className="text-primary hover:underline">data access layer</Link>{" "}
                 in enterprise-grade platforms may query dozens of data sources in parallel to maximize the completeness of the returned profile. This waterfall approach means that if one source lacks a particular data point, the system checks the next source until the field is populated.
               </p>
 
@@ -146,7 +146,7 @@ export default function WhatIsLeadEnrichment() {
 
               <p className="text-gray-600 leading-relaxed mb-6">
                 Lead enrichment encompasses several categories of data, each serving different purposes in the sales and marketing workflow. Understanding these categories helps you define which data points matter most for your{" "}
-                <Link href="/audience-builder" className="text-[#007AFF] hover:underline">audience building</Link>{" "}
+                <Link href="/audience-builder" className="text-primary hover:underline">audience building</Link>{" "}
                 and outreach strategies.
               </p>
 
@@ -205,7 +205,7 @@ export default function WhatIsLeadEnrichment() {
 
               <p className="text-gray-600 leading-relaxed mb-4">
                 <strong>Firmographic data</strong> describes the company itself: employee count, annual revenue, industry classification, headquarters location, and founding year. This data is essential for{" "}
-                <Link href="/intent-audiences" className="text-[#007AFF] hover:underline">intent audience</Link>{" "}
+                <Link href="/intent-audiences" className="text-primary hover:underline">intent audience</Link>{" "}
                 segmentation and ensuring leads match your ideal customer profile (ICP). For example, if your product serves mid-market SaaS companies with 100-500 employees, firmographic enrichment lets you instantly filter and prioritize matching accounts.
               </p>
 
@@ -219,13 +219,13 @@ export default function WhatIsLeadEnrichment() {
 
               <p className="text-gray-600 leading-relaxed mb-4">
                 <strong>Behavioral data</strong> tracks how leads interact with your brand: website page views, content downloads, webinar registrations, email opens, and ad clicks. When combined with{" "}
-                <Link href="/visitor-identification" className="text-[#007AFF] hover:underline">visitor identification</Link>,{" "}
+                <Link href="/visitor-identification" className="text-primary hover:underline">visitor identification</Link>,{" "}
                 behavioral enrichment reveals which anonymous website visitors are engaging with your high-intent pages like pricing and case studies.
               </p>
 
               <p className="text-gray-600 leading-relaxed mb-4">
                 <strong>Intent data</strong> captures signals that suggest a company is actively researching solutions in your category. This includes third-party signals like topic consumption on review sites, content networks, and industry publications. Learn more in our guide to{" "}
-                <Link href="/what-is-b2b-intent-data" className="text-[#007AFF] hover:underline">B2B intent data</Link>.
+                <Link href="/what-is-b2b-intent-data" className="text-primary hover:underline">B2B intent data</Link>.
               </p>
 
               {/* Enrichment Methods */}
@@ -256,7 +256,7 @@ export default function WhatIsLeadEnrichment() {
               </h3>
               <p className="text-gray-600 leading-relaxed mb-4">
                 Progressive enrichment builds lead profiles over time by appending new data with each interaction. On the first form fill, you might capture just an email address. The enrichment engine adds company name and job title. On the next visit, behavioral data is layered in. Over subsequent interactions, technographic and intent data accumulate. This approach mirrors how relationships develop in the real world and reduces form friction by asking for minimal upfront information. Progressive enrichment works especially well with{" "}
-                <Link href="/what-is-website-visitor-identification" className="text-[#007AFF] hover:underline">website visitor identification</Link>{" "}
+                <Link href="/what-is-website-visitor-identification" className="text-primary hover:underline">website visitor identification</Link>{" "}
                 systems that track repeat visits.
               </p>
 
@@ -265,7 +265,7 @@ export default function WhatIsLeadEnrichment() {
               </h3>
               <p className="text-gray-600 leading-relaxed mb-4">
                 Reverse enrichment works in the opposite direction from traditional enrichment. Instead of starting with a known lead and adding data, reverse enrichment starts with an anonymous signal (like an IP address from a website visit) and resolves it to a company or individual. This is the foundation of{" "}
-                <Link href="/visitor-identification" className="text-[#007AFF] hover:underline">Cursive&apos;s visitor identification</Link>{" "}
+                <Link href="/visitor-identification" className="text-primary hover:underline">Cursive&apos;s visitor identification</Link>{" "}
                 technology, which identifies the companies and contacts visiting your website even when they never fill out a form. Reverse enrichment is particularly powerful because it captures demand that would otherwise be invisible to your sales team.
               </p>
 
@@ -332,7 +332,7 @@ export default function WhatIsLeadEnrichment() {
               </h3>
               <p className="text-gray-600 leading-relaxed mb-4">
                 Personalized outreach generates 2-3x higher response rates than generic messaging, but personalization requires data. Enrichment provides the specific details needed to craft relevant messages: mentioning a prospect&apos;s technology stack, referencing their company&apos;s recent funding round, or acknowledging their industry&apos;s regulatory challenges. When paired with{" "}
-                <Link href="/what-is-ai-sdr" className="text-[#007AFF] hover:underline">AI SDR tools</Link>,{" "}
+                <Link href="/what-is-ai-sdr" className="text-primary hover:underline">AI SDR tools</Link>,{" "}
                 enriched data enables hyper-personalized sequences at a scale that would be impossible for human reps alone.
               </p>
 
@@ -395,7 +395,7 @@ export default function WhatIsLeadEnrichment() {
               </h3>
               <p className="text-gray-600 leading-relaxed mb-4">
                 ABM programs depend on comprehensive account data to identify target accounts and map buying committees within them. Enrichment provides the firmographic data to select ICP-matching accounts, the demographic data to identify all relevant stakeholders within each account, and the technographic and intent data to time outreach for maximum impact. Leading{" "}
-                <Link href="/industries/b2b-software" className="text-[#007AFF] hover:underline">B2B software companies</Link>{" "}
+                <Link href="/industries/b2b-software" className="text-primary hover:underline">B2B software companies</Link>{" "}
                 use enrichment to build target account lists of 500-2,000 companies and then identify 5-10 key contacts at each account for multi-threaded outreach.
               </p>
 
@@ -495,7 +495,7 @@ export default function WhatIsLeadEnrichment() {
               </h3>
               <p className="text-gray-600 leading-relaxed mb-4">
                 Start by evaluating providers against your specific requirements. Key criteria include: data coverage for your target market (geography, industry, company size), accuracy guarantees and SLAs, integration options with your existing CRM and marketing stack, pricing model (per-record vs. subscription), compliance certifications, and data source transparency. Request sample enrichment on a set of your existing records to benchmark accuracy and completeness before committing. Platforms like{" "}
-                <Link href="/platform" className="text-[#007AFF] hover:underline">Cursive</Link>{" "}
+                <Link href="/platform" className="text-primary hover:underline">Cursive</Link>{" "}
                 offer integrated enrichment alongside visitor identification and outreach, eliminating the need for multiple point solutions.
               </p>
 
@@ -525,7 +525,7 @@ export default function WhatIsLeadEnrichment() {
               </h3>
               <p className="text-gray-600 leading-relaxed mb-4">
                 After launch, establish ongoing monitoring dashboards to track enrichment health. Key metrics to monitor include: match rate trends (declining rates may indicate data source issues), email bounce rates on enriched addresses, field-level accuracy scores, enrichment latency (for real-time APIs), and cost per enriched record. Review these metrics monthly and optimize by adjusting trigger rules, adding supplementary data sources, or switching providers for specific data types that underperform. You can also request a{" "}
-                <Link href="/free-audit" className="text-[#007AFF] hover:underline">free data audit</Link>{" "}
+                <Link href="/free-audit" className="text-primary hover:underline">free data audit</Link>{" "}
                 to identify gaps in your current enrichment strategy.
               </p>
 
@@ -536,9 +536,9 @@ export default function WhatIsLeadEnrichment() {
 
               <p className="text-gray-600 leading-relaxed mb-6">
                 The lead enrichment market includes both standalone providers and integrated platforms. Here is how the leading options compare across key dimensions. For deeper dives, see our comparisons of{" "}
-                <Link href="/blog/clearbit-alternatives-comparison" className="text-[#007AFF] hover:underline">Clearbit alternatives</Link>,{" "}
-                <Link href="/blog/apollo-vs-cursive-comparison" className="text-[#007AFF] hover:underline">Apollo vs. Cursive</Link>, and{" "}
-                <Link href="/blog/zoominfo-vs-cursive-comparison" className="text-[#007AFF] hover:underline">ZoomInfo vs. Cursive</Link>.
+                <Link href="/blog/clearbit-alternatives-comparison" className="text-primary hover:underline">Clearbit alternatives</Link>,{" "}
+                <Link href="/blog/apollo-vs-cursive-comparison" className="text-primary hover:underline">Apollo vs. Cursive</Link>, and{" "}
+                <Link href="/blog/zoominfo-vs-cursive-comparison" className="text-primary hover:underline">ZoomInfo vs. Cursive</Link>.
               </p>
 
               <table className="w-full border-collapse border border-gray-200 mb-8">
@@ -592,11 +592,11 @@ export default function WhatIsLeadEnrichment() {
 
               <p className="text-gray-600 leading-relaxed mb-4">
                 When choosing a provider, consider your complete workflow. Standalone enrichment tools require additional solutions for visitor identification, outreach, and campaign management. Integrated platforms like{" "}
-                <Link href="/platform" className="text-[#007AFF] hover:underline">Cursive</Link>{" "}
+                <Link href="/platform" className="text-primary hover:underline">Cursive</Link>{" "}
                 combine enrichment with{" "}
-                <Link href="/visitor-identification" className="text-[#007AFF] hover:underline">visitor identification</Link>,{" "}
-                <Link href="/audience-builder" className="text-[#007AFF] hover:underline">audience building</Link>, and multi-channel outreach in a single platform, reducing tool sprawl and ensuring data consistency across your go-to-market stack. Visit our{" "}
-                <Link href="/pricing" className="text-[#007AFF] hover:underline">pricing page</Link>{" "}
+                <Link href="/visitor-identification" className="text-primary hover:underline">visitor identification</Link>,{" "}
+                <Link href="/audience-builder" className="text-primary hover:underline">audience building</Link>, and multi-channel outreach in a single platform, reducing tool sprawl and ensuring data consistency across your go-to-market stack. Visit our{" "}
+                <Link href="/pricing" className="text-primary hover:underline">pricing page</Link>{" "}
                 to compare plans and find the right fit for your team.
               </p>
 
@@ -625,37 +625,37 @@ export default function WhatIsLeadEnrichment() {
 
               <ul className="space-y-3 mb-12">
                 <li>
-                  <Link href="/what-is-website-visitor-identification" className="text-[#007AFF] hover:underline">
+                  <Link href="/what-is-website-visitor-identification" className="text-primary hover:underline">
                     What is Website Visitor Identification? Complete Guide
                   </Link>
                 </li>
                 <li>
-                  <Link href="/what-is-b2b-intent-data" className="text-[#007AFF] hover:underline">
+                  <Link href="/what-is-b2b-intent-data" className="text-primary hover:underline">
                     What is B2B Intent Data? Everything You Need to Know
                   </Link>
                 </li>
                 <li>
-                  <Link href="/what-is-ai-sdr" className="text-[#007AFF] hover:underline">
+                  <Link href="/what-is-ai-sdr" className="text-primary hover:underline">
                     What is an AI SDR? The Complete Guide
                   </Link>
                 </li>
                 <li>
-                  <Link href="/blog/clearbit-alternatives-comparison" className="text-[#007AFF] hover:underline">
+                  <Link href="/blog/clearbit-alternatives-comparison" className="text-primary hover:underline">
                     Clearbit Alternatives: Top Providers Compared
                   </Link>
                 </li>
                 <li>
-                  <Link href="/blog/apollo-vs-cursive-comparison" className="text-[#007AFF] hover:underline">
+                  <Link href="/blog/apollo-vs-cursive-comparison" className="text-primary hover:underline">
                     Apollo vs. Cursive: Which Platform is Right for You?
                   </Link>
                 </li>
                 <li>
-                  <Link href="/blog/zoominfo-vs-cursive-comparison" className="text-[#007AFF] hover:underline">
+                  <Link href="/blog/zoominfo-vs-cursive-comparison" className="text-primary hover:underline">
                     ZoomInfo vs. Cursive: Detailed Comparison
                   </Link>
                 </li>
                 <li>
-                  <Link href="/industries/b2b-software" className="text-[#007AFF] hover:underline">
+                  <Link href="/industries/b2b-software" className="text-primary hover:underline">
                     Lead Enrichment for B2B Software Companies
                   </Link>
                 </li>
@@ -672,7 +672,7 @@ export default function WhatIsLeadEnrichment() {
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Link
                     href="/free-audit"
-                    className="inline-flex items-center justify-center px-6 py-3 bg-[#007AFF] text-white font-semibold rounded-lg hover:bg-blue-600 transition-colors"
+                    className="inline-flex items-center justify-center px-6 py-3 bg-primary text-white font-semibold rounded-lg hover:bg-blue-600 transition-colors"
                   >
                     Get a Free Data Audit
                   </Link>

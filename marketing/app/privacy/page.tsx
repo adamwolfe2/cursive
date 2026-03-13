@@ -123,7 +123,7 @@ export default function PrivacyPage() {
             We maintain records of consent decisions including the date, time, and version of the consent
             notice presented. These records are retained for audit and compliance purposes. You may withdraw
             your consent at any time by clearing your browser&apos;s local storage or contacting us at{" "}
-            <a href="mailto:privacy@meetcursive.com" className="text-[#007AFF]">privacy@meetcursive.com</a>.
+            <a href="mailto:privacy@meetcursive.com" className="text-primary">privacy@meetcursive.com</a>.
           </p>
 
           <h3>2.5 Consent Requirements for Cursive Customers</h3>
@@ -157,10 +157,10 @@ export default function PrivacyPage() {
           <h3>3.2 Third-Party Tracking Services</h3>
           <p>Our site uses the following third-party services that may set their own cookies:</p>
           <ul>
-            <li><strong>Google Analytics (Google LLC):</strong> Web analytics service. <a href="https://policies.google.com/privacy" className="text-[#007AFF]">Google Privacy Policy</a></li>
-            <li><strong>Crisp (Crisp IM SAS):</strong> Live chat and customer messaging. <a href="https://crisp.chat/en/privacy/" className="text-[#007AFF]">Crisp Privacy Policy</a></li>
-            <li><strong>Stripe (Stripe Inc.):</strong> Payment processing. <a href="https://stripe.com/privacy" className="text-[#007AFF]">Stripe Privacy Policy</a></li>
-            <li><strong>AudienceLab (AudienceLab Inc.):</strong> Visitor identification and identity resolution technology. <a href="https://audiencelab.io/privacy" className="text-[#007AFF]">AudienceLab Privacy Policy</a></li>
+            <li><strong>Google Analytics (Google LLC):</strong> Web analytics service. <a href="https://policies.google.com/privacy" className="text-primary">Google Privacy Policy</a></li>
+            <li><strong>Crisp (Crisp IM SAS):</strong> Live chat and customer messaging. <a href="https://crisp.chat/en/privacy/" className="text-primary">Crisp Privacy Policy</a></li>
+            <li><strong>Stripe (Stripe Inc.):</strong> Payment processing. <a href="https://stripe.com/privacy" className="text-primary">Stripe Privacy Policy</a></li>
+            <li><strong>AudienceLab (AudienceLab Inc.):</strong> Visitor identification and identity resolution technology. <a href="https://audiencelab.io/privacy" className="text-primary">AudienceLab Privacy Policy</a></li>
           </ul>
 
           <h3>3.3 Managing Cookies</h3>
@@ -216,7 +216,7 @@ export default function PrivacyPage() {
           </ul>
           <p>
             You may request a copy of our Legitimate Interests Assessment (LIA) by contacting{" "}
-            <a href="mailto:privacy@meetcursive.com" className="text-[#007AFF]">privacy@meetcursive.com</a>.
+            <a href="mailto:privacy@meetcursive.com" className="text-primary">privacy@meetcursive.com</a>.
           </p>
 
           <h2>8. Data Security</h2>
@@ -267,7 +267,7 @@ export default function PrivacyPage() {
           <ul>
             <li>Decline cookies via our cookie consent banner</li>
             <li>Use browser privacy settings or &ldquo;Do Not Track&rdquo; signals</li>
-            <li>Contact us at <a href="mailto:privacy@meetcursive.com" className="text-[#007AFF]">privacy@meetcursive.com</a> to request removal from our database</li>
+            <li>Contact us at <a href="mailto:privacy@meetcursive.com" className="text-primary">privacy@meetcursive.com</a> to request removal from our database</li>
           </ul>
 
           <h2>11. Children&apos;s Privacy</h2>
@@ -295,8 +295,8 @@ export default function PrivacyPage() {
             If you have questions about this Privacy Policy or wish to exercise your privacy rights, please contact us at:
           </p>
           <ul>
-            <li>Email: <a href="mailto:privacy@meetcursive.com" className="text-[#007AFF] hover:underline">privacy@meetcursive.com</a></li>
-            <li>General inquiries: <a href="mailto:hello@meetcursive.com" className="text-[#007AFF] hover:underline">hello@meetcursive.com</a></li>
+            <li>Email: <a href="mailto:privacy@meetcursive.com" className="text-primary hover:underline">privacy@meetcursive.com</a></li>
+            <li>General inquiries: <a href="mailto:hello@meetcursive.com" className="text-primary hover:underline">hello@meetcursive.com</a></li>
           </ul>
         </div>
       </Container>

@@ -179,7 +179,7 @@ export function DemoAttributionFlow() {
           transition={{ delay: 0.2 }}
           className="bg-white rounded-lg p-2 border border-gray-200 text-center"
         >
-          <div className="text-lg text-[#007AFF] font-light">{rate}%</div>
+          <div className="text-lg text-primary font-light">{rate}%</div>
           <div className="text-[10px] text-gray-600">Conv. Rate</div>
         </motion.div>
       </div>
@@ -191,7 +191,7 @@ export function DemoAttributionFlow() {
           <motion.div
             animate={{ scale: [1, 1.2, 1] }}
             transition={{ duration: 2, repeat: Infinity }}
-            className="w-1.5 h-1.5 rounded-full bg-[#007AFF]"
+            className="w-1.5 h-1.5 rounded-full bg-primary"
           />
         </div>
 

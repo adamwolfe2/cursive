@@ -94,12 +94,12 @@ export default function LaunchCampaignsDemo() {
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.2, type: "spring" }}
-                  className="text-xs text-[#007AFF] mt-2 flex items-center justify-center gap-1"
+                  className="text-xs text-primary mt-2 flex items-center justify-center gap-1"
                 >
                   <motion.div
                     animate={{ scale: [1, 1.3, 1] }}
                     transition={{ duration: 1.5, repeat: Infinity }}
-                    className="w-1.5 h-1.5 bg-[#007AFF] rounded-full"
+                    className="w-1.5 h-1.5 bg-primary rounded-full"
                   />
                   Active
                 </motion.div>
@@ -155,7 +155,7 @@ export default function LaunchCampaignsDemo() {
       >
         <div className="grid md:grid-cols-2 gap-6">
           <div className="flex items-start gap-3">
-            <div className="w-6 h-6 bg-[#007AFF] rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+            <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0 mt-1">
               <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
@@ -166,7 +166,7 @@ export default function LaunchCampaignsDemo() {
             </div>
           </div>
           <div className="flex items-start gap-3">
-            <div className="w-6 h-6 bg-[#007AFF] rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+            <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0 mt-1">
               <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
@@ -177,7 +177,7 @@ export default function LaunchCampaignsDemo() {
             </div>
           </div>
           <div className="flex items-start gap-3">
-            <div className="w-6 h-6 bg-[#007AFF] rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+            <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0 mt-1">
               <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
@@ -188,7 +188,7 @@ export default function LaunchCampaignsDemo() {
             </div>
           </div>
           <div className="flex items-start gap-3">
-            <div className="w-6 h-6 bg-[#007AFF] rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+            <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0 mt-1">
               <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>

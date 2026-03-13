@@ -91,7 +91,7 @@ export default function IntegrationsPage() {
         <section className="pt-24 pb-20 bg-white">
           <Container>
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="text-center max-w-5xl mx-auto">
-              <span className="text-sm text-[#007AFF] mb-4 block">INTEGRATIONS</span>
+              <span className="text-sm text-primary mb-4 block">INTEGRATIONS</span>
               <h1 className="text-5xl lg:text-7xl font-light text-gray-900 mb-6">
                 Seamlessly Sync Data
                 <span className="block font-cursive text-6xl lg:text-8xl text-gray-500 mt-2">With Your Stack</span>
@@ -134,7 +134,7 @@ export default function IntegrationsPage() {
                     >
                       <Link
                         href={`/integrations/${integration.slug}`}
-                        className="block border border-gray-200 rounded-xl p-5 bg-white hover:border-[#007AFF] hover:shadow-lg transition-all group h-full"
+                        className="block border border-gray-200 rounded-xl p-5 bg-white hover:border-primary hover:shadow-lg transition-all group h-full"
                       >
                         <div className="flex items-start justify-between mb-3">
                           {integration.logo.startsWith('/') ? (
@@ -144,7 +144,7 @@ export default function IntegrationsPage() {
                           )}
                           {connectionBadge(integration.connectionMethod)}
                         </div>
-                        <h4 className="text-base font-medium text-gray-900 mb-1 group-hover:text-[#007AFF] transition-colors">
+                        <h4 className="text-base font-medium text-gray-900 mb-1 group-hover:text-primary transition-colors">
                           {integration.name}
                         </h4>
                         <p className="text-xs text-gray-500 mb-2">
@@ -224,15 +224,15 @@ export default function IntegrationsPage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.05 }}
-                  className="block bg-gray-50 rounded-xl p-6 border border-gray-200 hover:border-[#007AFF] hover:shadow-lg transition-all group"
+                  className="block bg-gray-50 rounded-xl p-6 border border-gray-200 hover:border-primary hover:shadow-lg transition-all group"
                 >
-                  <h3 className="text-lg text-gray-900 mb-2 font-medium group-hover:text-[#007AFF] transition-colors">
+                  <h3 className="text-lg text-gray-900 mb-2 font-medium group-hover:text-primary transition-colors">
                     {resource.title}
                   </h3>
                   <p className="text-gray-600 text-sm leading-relaxed">
                     {resource.description}
                   </p>
-                  <div className="mt-4 text-[#007AFF] text-sm font-medium flex items-center gap-2">
+                  <div className="mt-4 text-primary text-sm font-medium flex items-center gap-2">
                     Read article <ArrowRight className="h-4 w-4" />
                   </div>
                 </motion.a>

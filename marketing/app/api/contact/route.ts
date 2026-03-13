@@ -4,9 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-
-// Email validation regex
-const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+import { emailRegex, escapeHtml, FROM_EMAIL, SUPPORT_EMAIL } from '@/lib/validators'
 
 // In-memory rate limit: 5 submissions per IP per hour
 const rateLimitMap = new Map<string, number[]>()
@@ -82,8 +80,8 @@ function validateContactForm(data: Record<string, unknown>): { valid: boolean; e
  */
 async function sendContactEmail(formData: ContactFormData): Promise<void> {
   const resendApiKey = process.env.RESEND_API_KEY
-  const emailFrom = process.env.EMAIL_FROM || 'Cursive <noreply@meetcursive.com>'
-  const supportEmail = process.env.SUPPORT_EMAIL || 'hello@meetcursive.com'
+  const emailFrom = FROM_EMAIL
+  const supportEmail = SUPPORT_EMAIL
 
   if (!resendApiKey) {
     throw new Error('RESEND_API_KEY is not configured')
@@ -190,20 +188,6 @@ async function sendContactEmail(formData: ContactFormData): Promise<void> {
     console.error('Failed to send customer confirmation email:', errorData)
     // Don't throw here as the internal email was sent successfully
   }
-}
-
-/**
- * Escape HTML to prevent XSS
- */
-function escapeHtml(text: string): string {
-  const map: { [key: string]: string } = {
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#039;',
-  }
-  return text.replace(/[&<>"']/g, (char) => map[char])
 }
 
 /**

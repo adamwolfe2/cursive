@@ -53,7 +53,7 @@ export default function FreeAuditPage() {
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-light text-gray-900 mb-6 leading-tight">
               See Who's Visiting Your Site{" "}
-              <span className="text-[#007AFF]">Right Now</span>
+              <span className="text-primary">Right Now</span>
             </h1>
             <p className="text-xl md:text-2xl text-gray-600 mb-4 font-light">
               Get a Free Audit of Your Last 100 Website Visitors
@@ -79,7 +79,7 @@ export default function FreeAuditPage() {
                   <div key={benefit.title} className="flex gap-4 p-6 rounded-xl hover:bg-gray-50 transition-colors">
                     <div className="flex-shrink-0">
                       <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center">
-                        <Icon className="w-6 h-6 text-[#007AFF]" />
+                        <Icon className="w-6 h-6 text-primary" />
                       </div>
                     </div>
                     <div>
@@ -145,7 +145,7 @@ export default function FreeAuditPage() {
             </h2>
             <div className="space-y-8">
               <div className="flex gap-6 items-start">
-                <div className="flex-shrink-0 w-12 h-12 bg-[#007AFF] text-white rounded-full flex items-center justify-center text-xl font-medium">
+                <div className="flex-shrink-0 w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center text-xl font-medium">
                   1
                 </div>
                 <div>
@@ -159,7 +159,7 @@ export default function FreeAuditPage() {
               </div>
 
               <div className="flex gap-6 items-start">
-                <div className="flex-shrink-0 w-12 h-12 bg-[#007AFF] text-white rounded-full flex items-center justify-center text-xl font-medium">
+                <div className="flex-shrink-0 w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center text-xl font-medium">
                   2
                 </div>
                 <div>
@@ -173,7 +173,7 @@ export default function FreeAuditPage() {
               </div>
 
               <div className="flex gap-6 items-start">
-                <div className="flex-shrink-0 w-12 h-12 bg-[#007AFF] text-white rounded-full flex items-center justify-center text-xl font-medium">
+                <div className="flex-shrink-0 w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center text-xl font-medium">
                   3
                 </div>
                 <div>
@@ -208,7 +208,7 @@ export default function FreeAuditPage() {
                   We identify up to 100 of your most recent website visitors by name, company, and role. Each profile includes the individual's full name, job title, company name, verified work email address, LinkedIn profile, and phone number when available. This is not just company-level identification. We resolve down to the specific person who visited your site.
                 </p>
                 <p className="text-gray-500 text-sm">
-                  Powered by the same <Link href="/pixel" className="text-[#007AFF] hover:underline">visitor identification technology</Link> used by over 1,000 B2B companies.
+                  Powered by the same <Link href="/pixel" className="text-primary hover:underline">visitor identification technology</Link> used by over 1,000 B2B companies.
                 </p>
               </div>
 
@@ -218,7 +218,7 @@ export default function FreeAuditPage() {
                   For every identified visitor, we include full company data: industry, employee count, annual revenue, funding stage, technology stack, and headquarters location. This firmographic data helps you instantly determine whether each visitor fits your ideal customer profile and is worth pursuing.
                 </p>
                 <p className="text-gray-500 text-sm">
-                  Data sourced from our <Link href="/data-access" className="text-[#007AFF] hover:underline">280M US consumer and 140M+ business profiles</Link>.
+                  Data sourced from our <Link href="/data-access" className="text-primary hover:underline">280M US consumer and 140M+ business profiles</Link>.
                 </p>
               </div>
 
@@ -242,14 +242,14 @@ export default function FreeAuditPage() {
                   We do not just tell you who visited. We give you ready-to-send outreach templates for your highest-intent visitors. Each template references the specific pages they viewed, the problems they were researching, and a relevant value proposition from your site. These are not generic cold emails. They are personalized messages built from real behavior data.
                 </p>
                 <p className="text-gray-500 text-sm">
-                  See how our AI personalization compares to <Link href="/blog/ai-sdr-vs-human-bdr" className="text-[#007AFF] hover:underline">traditional BDR outreach</Link>.
+                  See how our AI personalization compares to <Link href="/blog/ai-sdr-vs-human-bdr" className="text-primary hover:underline">traditional BDR outreach</Link>.
                 </p>
               </div>
 
               <div className="bg-white rounded-xl p-8 border border-gray-200">
                 <h3 className="text-xl font-medium text-gray-900 mb-4">30-Minute Strategy Call</h3>
                 <p className="text-gray-600 mb-4">
-                  After you review your report, schedule an optional 30-minute strategy call with a Cursive growth specialist. We will walk through your top visitors together, discuss which ones to prioritize, review the outreach templates, and recommend next steps. We will also explain how Cursive can automate this entire process on an ongoing basis with our <Link href="/pricing" className="text-[#007AFF] hover:underline">managed service plans</Link>.
+                  After you review your report, schedule an optional 30-minute strategy call with a Cursive growth specialist. We will walk through your top visitors together, discuss which ones to prioritize, review the outreach templates, and recommend next steps. We will also explain how Cursive can automate this entire process on an ongoing basis with our <Link href="/pricing" className="text-primary hover:underline">managed service plans</Link>.
                 </p>
               </div>
             </div>
@@ -269,19 +269,19 @@ export default function FreeAuditPage() {
             </p>
             <div className="grid md:grid-cols-4 gap-6">
               <div className="text-center bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-8 border border-blue-200">
-                <div className="text-4xl text-[#007AFF] mb-2">97%</div>
+                <div className="text-4xl text-primary mb-2">97%</div>
                 <p className="text-gray-600 text-sm">Of website visitors leave without converting or filling out a form</p>
               </div>
               <div className="text-center bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-8 border border-blue-200">
-                <div className="text-4xl text-[#007AFF] mb-2">70%</div>
+                <div className="text-4xl text-primary mb-2">70%</div>
                 <p className="text-gray-600 text-sm">Of anonymous visitors can be identified by our pixel technology</p>
               </div>
               <div className="text-center bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-8 border border-blue-200">
-                <div className="text-4xl text-[#007AFF] mb-2">3-5x</div>
+                <div className="text-4xl text-primary mb-2">3-5x</div>
                 <p className="text-gray-600 text-sm">Higher response rates when outreach references actual browsing behavior</p>
               </div>
               <div className="text-center bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-8 border border-blue-200">
-                <div className="text-4xl text-[#007AFF] mb-2">24hr</div>
+                <div className="text-4xl text-primary mb-2">24hr</div>
                 <p className="text-gray-600 text-sm">Average turnaround time from form submission to completed audit report</p>
               </div>
             </div>
@@ -315,14 +315,14 @@ export default function FreeAuditPage() {
               <div className="bg-white rounded-xl p-6 border border-gray-200">
                 <h3 className="text-gray-900 font-medium mb-2">Do I need to install anything on my website?</h3>
                 <p className="text-gray-600 text-sm leading-relaxed">
-                  No installation is required for the initial free audit. We use our existing data network to identify visitors based on your website URL. If you decide to continue with Cursive after the audit, we will help you install our lightweight <Link href="/pixel" className="text-[#007AFF] hover:underline">visitor identification pixel</Link> for real-time, ongoing identification.
+                  No installation is required for the initial free audit. We use our existing data network to identify visitors based on your website URL. If you decide to continue with Cursive after the audit, we will help you install our lightweight <Link href="/pixel" className="text-primary hover:underline">visitor identification pixel</Link> for real-time, ongoing identification.
                 </p>
               </div>
 
               <div className="bg-white rounded-xl p-6 border border-gray-200">
                 <h3 className="text-gray-900 font-medium mb-2">What types of websites work best with the audit?</h3>
                 <p className="text-gray-600 text-sm leading-relaxed">
-                  The audit works best for B2B websites that receive at least a few hundred visitors per month. This includes SaaS product sites, professional services firms, agencies, consulting practices, and B2B eCommerce stores. If your site gets primarily B2C consumer traffic, we can still run the audit but the results may be less actionable for sales outreach. We serve companies across <Link href="/industries/b2b-software" className="text-[#007AFF] hover:underline">B2B software</Link>, <Link href="/industries/agencies" className="text-[#007AFF] hover:underline">agencies</Link>, <Link href="/industries/financial-services" className="text-[#007AFF] hover:underline">financial services</Link>, and more.
+                  The audit works best for B2B websites that receive at least a few hundred visitors per month. This includes SaaS product sites, professional services firms, agencies, consulting practices, and B2B eCommerce stores. If your site gets primarily B2C consumer traffic, we can still run the audit but the results may be less actionable for sales outreach. We serve companies across <Link href="/industries/b2b-software" className="text-primary hover:underline">B2B software</Link>, <Link href="/industries/agencies" className="text-primary hover:underline">agencies</Link>, <Link href="/industries/financial-services" className="text-primary hover:underline">financial services</Link>, and more.
                 </p>
               </div>
 
@@ -336,7 +336,7 @@ export default function FreeAuditPage() {
               <div className="bg-white rounded-xl p-6 border border-gray-200">
                 <h3 className="text-gray-900 font-medium mb-2">How is this different from Google Analytics?</h3>
                 <p className="text-gray-600 text-sm leading-relaxed">
-                  Google Analytics shows you aggregate traffic data, things like page views, bounce rates, and geographic regions. It does not tell you who specifically visited your site. The Cursive audit identifies the actual people behind your traffic: their names, email addresses, companies, and job titles. It turns anonymous analytics data into actionable sales leads. Read our <Link href="/blog/visitor-tracking" className="text-[#007AFF] hover:underline">complete guide to website visitor tracking</Link> for a deeper comparison.
+                  Google Analytics shows you aggregate traffic data, things like page views, bounce rates, and geographic regions. It does not tell you who specifically visited your site. The Cursive audit identifies the actual people behind your traffic: their names, email addresses, companies, and job titles. It turns anonymous analytics data into actionable sales leads. Read our <Link href="/blog/visitor-tracking" className="text-primary hover:underline">complete guide to website visitor tracking</Link> for a deeper comparison.
                 </p>
               </div>
             </div>

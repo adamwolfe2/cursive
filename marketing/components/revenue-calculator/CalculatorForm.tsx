@@ -47,7 +47,7 @@ export function CalculatorForm({ onSubmit }: Props) {
           value={domain}
           onChange={e => setDomain(e.target.value)}
           placeholder="yourcompany.com"
-          className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#007AFF]/60 focus:ring-1 focus:ring-[#007AFF]/30 transition-all"
+          className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/30 transition-all"
         />
         {errors.domain && <p className="mt-1 text-red-600 text-sm">{errors.domain}</p>}
       </div>
@@ -57,7 +57,7 @@ export function CalculatorForm({ onSubmit }: Props) {
         <select
           value={trafficRange}
           onChange={e => setTrafficRange(e.target.value)}
-          className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:border-[#007AFF]/60 focus:ring-1 focus:ring-[#007AFF]/30 transition-all appearance-none"
+          className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/30 transition-all appearance-none"
         >
           <option value="">Select traffic range...</option>
           {Object.keys(TRAFFIC_RANGES).map(r => (
@@ -77,7 +77,7 @@ export function CalculatorForm({ onSubmit }: Props) {
               onClick={() => { setDealSize(chip); setCustomDeal('') }}
               className={`px-3 py-1.5 rounded-md text-sm font-medium border transition-all ${
                 dealSize === chip
-                  ? 'bg-[#007AFF]/10 border-[#007AFF]/60 text-[#007AFF]'
+                  ? 'bg-primary/10 border-primary/60 text-primary'
                   : 'bg-gray-50 border-gray-200 text-gray-600 hover:border-gray-400'
               }`}
             >
@@ -90,7 +90,7 @@ export function CalculatorForm({ onSubmit }: Props) {
           value={customDeal}
           onChange={e => { setCustomDeal(e.target.value); setDealSize('') }}
           placeholder="Custom amount..."
-          className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#007AFF]/60 focus:ring-1 focus:ring-[#007AFF]/30 transition-all"
+          className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/30 transition-all"
         />
         {errors.deal && <p className="mt-1 text-red-600 text-sm">{errors.deal}</p>}
       </div>
@@ -108,7 +108,7 @@ export function CalculatorForm({ onSubmit }: Props) {
             min="0.1"
             max="50"
             step="0.1"
-            className="w-full px-4 py-3 pr-12 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#007AFF]/60 focus:ring-1 focus:ring-[#007AFF]/30 transition-all"
+            className="w-full px-4 py-3 pr-12 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/30 transition-all"
           />
           <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium text-sm">%</span>
         </div>
@@ -119,7 +119,7 @@ export function CalculatorForm({ onSubmit }: Props) {
         <select
           value={industry}
           onChange={e => setIndustry(e.target.value)}
-          className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:border-[#007AFF]/60 focus:ring-1 focus:ring-[#007AFF]/30 transition-all appearance-none"
+          className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/30 transition-all appearance-none"
         >
           {INDUSTRIES.map(i => (
             <option key={i} value={i}>{i}</option>
@@ -129,7 +129,7 @@ export function CalculatorForm({ onSubmit }: Props) {
 
       <button
         type="submit"
-        className="w-full py-4 px-8 bg-[#007AFF] hover:bg-[#0066DD] text-white font-bold text-lg rounded-lg transition-all duration-200 shadow-lg shadow-[#007AFF]/25 hover:shadow-[#007AFF]/40"
+        className="w-full py-4 px-8 bg-primary hover:bg-primary-dark text-white font-bold text-lg rounded-lg transition-all duration-200 shadow-lg shadow-primary/25 hover:shadow-primary/40"
       >
         Reveal My Invisible Revenue →
       </button>

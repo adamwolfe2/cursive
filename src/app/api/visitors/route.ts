@@ -56,6 +56,18 @@ export async function GET(req: NextRequest) {
       query = query.neq('enrichment_status', 'enriched')
     }
 
+    // When no enrichment filter is active, visitorsResult already counts the full
+    // unfiltered set — reuse that count instead of firing a redundant totalResult query.
+    // When a filter IS active, we need a separate unfiltered count for stats.total.
+    const totalResultPromise = enrichmentFilter
+      ? adminSupabase
+          .from('leads')
+          .select('*', { count: 'exact', head: true })
+          .eq('workspace_id', workspaceId)
+          .or('source.ilike.%pixel%,source.ilike.%superpixel%')
+          .gte('created_at', since)
+      : Promise.resolve({ count: null as number | null, error: null })
+
     // Fire main query + all stats queries + pixel info in parallel
     const [
       visitorsResult,
@@ -66,12 +78,7 @@ export async function GET(req: NextRequest) {
       pixelResult,
     ] = await Promise.all([
       query,
-      adminSupabase
-        .from('leads')
-        .select('*', { count: 'exact', head: true })
-        .eq('workspace_id', workspaceId)
-        .or('source.ilike.%pixel%,source.ilike.%superpixel%')
-        .gte('created_at', since),
+      totalResultPromise,
       adminSupabase
         .from('leads')
         .select('*', { count: 'exact', head: true })
@@ -106,11 +113,13 @@ export async function GET(req: NextRequest) {
     if (thisWeekResult.error) safeError('[Visitors API] This week count query failed:', thisWeekResult.error)
     if (scoreResult.error) safeError('[Visitors API] Score query failed:', scoreResult.error)
 
-    const totalCount = totalResult.count
     const enrichedCount = enrichedResult.count
     const thisWeekCount = thisWeekResult.count
     const scoreData = scoreResult.data
     const pixel = pixelResult.data
+
+    // When no enrichment filter is active, visitorsResult.count IS the unfiltered total
+    const totalCount = enrichmentFilter ? totalResult.count : visitorsResult.count
 
     const scores = (scoreData ?? []).map((l) => l.intent_score_calculated).filter((s): s is number => s !== null)
     const avgScore = scores.length ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0

@@ -8,10 +8,15 @@ const DASHBOARD_URL = 'https://leads.meetcursive.com'
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json().catch(() => ({}))
-    const { websiteUrl } = body as { websiteUrl?: string }
+    let body: { websiteUrl?: string } = {}
+    try {
+      body = await req.json()
+    } catch {
+      return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
+    }
+    const { websiteUrl } = body
 
-    if (!websiteUrl) {
+    if (!websiteUrl || typeof websiteUrl !== 'string' || !websiteUrl.trim()) {
       return NextResponse.json({ error: 'Website URL is required' }, { status: 400 })
     }
 

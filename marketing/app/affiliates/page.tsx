@@ -132,7 +132,7 @@ function EarningsCalculator() {
           <label className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
             Activations per month
           </label>
-          <span className="text-3xl font-light text-[#007AFF]">{activations}</span>
+          <span className="text-3xl font-light text-primary">{activations}</span>
         </div>
         <input
           type="range"
@@ -175,9 +175,9 @@ function EarningsCalculator() {
       </div>
 
       {commissionRate > 0 && (
-        <div className="bg-[#007AFF]/6 border border-[#007AFF]/20 rounded-xl p-5 text-center mb-6">
-          <p className="text-xs text-[#007AFF] uppercase tracking-wide font-medium mb-1">Annual Recurring Income</p>
-          <p className="text-4xl font-light text-[#007AFF]">${annualRecurring.toLocaleString()}</p>
+        <div className="bg-primary/6 border border-primary/20 rounded-xl p-5 text-center mb-6">
+          <p className="text-xs text-primary uppercase tracking-wide font-medium mb-1">Annual Recurring Income</p>
+          <p className="text-4xl font-light text-primary">${annualRecurring.toLocaleString()}</p>
           <p className="text-sm text-gray-500 mt-1">passive income — every year, for life</p>
         </div>
       )}
@@ -185,7 +185,7 @@ function EarningsCalculator() {
       {nextMilestone && (
         <div className="flex items-center gap-3 bg-blue-50 border border-blue-200 rounded-xl p-4">
           <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-            <Zap className="w-4 h-4 text-[#007AFF]" />
+            <Zap className="w-4 h-4 text-primary" />
           </div>
           <div>
             <p className="text-sm font-semibold text-blue-900">
@@ -208,7 +208,7 @@ function FAQ() {
       {FAQS.map((faq, i) => (
         <div
           key={i}
-          className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:border-[#007AFF]/40 transition-colors"
+          className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:border-primary/40 transition-colors"
         >
           <button
             className="w-full px-6 py-5 text-left flex items-center justify-between gap-4"
@@ -307,7 +307,7 @@ function ApplicationForm() {
             required
             value={form.firstName}
             onChange={(e) => setForm((f) => ({ ...f, firstName: e.target.value }))}
-            className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-[#007AFF] focus:ring-1 focus:ring-[#007AFF]/20 transition"
+            className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition"
             placeholder="Jane"
           />
         </div>
@@ -318,7 +318,7 @@ function ApplicationForm() {
             required
             value={form.lastName}
             onChange={(e) => setForm((f) => ({ ...f, lastName: e.target.value }))}
-            className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-[#007AFF] focus:ring-1 focus:ring-[#007AFF]/20 transition"
+            className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition"
             placeholder="Smith"
           />
         </div>
@@ -331,7 +331,7 @@ function ApplicationForm() {
           required
           value={form.email}
           onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
-          className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-[#007AFF] focus:ring-1 focus:ring-[#007AFF]/20 transition"
+          className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition"
           placeholder="jane@example.com"
         />
       </div>
@@ -343,7 +343,7 @@ function ApplicationForm() {
             type="tel"
             value={form.phone}
             onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
-            className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-[#007AFF] focus:ring-1 focus:ring-[#007AFF]/20 transition"
+            className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition"
             placeholder="+1 (555) 000-0000"
           />
         </div>
@@ -353,7 +353,7 @@ function ApplicationForm() {
             type="url"
             value={form.website}
             onChange={(e) => setForm((f) => ({ ...f, website: e.target.value }))}
-            className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-[#007AFF] focus:ring-1 focus:ring-[#007AFF]/20 transition"
+            className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition"
             placeholder="https://yournewsletter.com"
           />
         </div>
@@ -369,8 +369,8 @@ function ApplicationForm() {
               onClick={() => setForm((f) => ({ ...f, audienceSize: s.value }))}
               className={`px-4 py-2 rounded-lg text-sm font-medium border transition-all ${
                 form.audienceSize === s.value
-                  ? 'bg-[#007AFF] border-[#007AFF] text-white'
-                  : 'bg-white border-gray-200 text-gray-700 hover:border-[#007AFF] hover:text-[#007AFF]'
+                  ? 'bg-primary border-primary text-white'
+                  : 'bg-white border-gray-200 text-gray-700 hover:border-primary hover:text-primary'
               }`}
             >
               {s.label}
@@ -389,8 +389,8 @@ function ApplicationForm() {
               onClick={() => toggleAudienceType(t)}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-all ${
                 form.audienceTypes.includes(t)
-                  ? 'bg-[#007AFF] border-[#007AFF] text-white'
-                  : 'bg-white border-gray-200 text-gray-700 hover:border-[#007AFF] hover:text-[#007AFF]'
+                  ? 'bg-primary border-primary text-white'
+                  : 'bg-white border-gray-200 text-gray-700 hover:border-primary hover:text-primary'
               }`}
             >
               {t}
@@ -409,7 +409,7 @@ function ApplicationForm() {
           value={form.promotionPlan}
           onChange={(e) => setForm((f) => ({ ...f, promotionPlan: e.target.value }))}
           rows={4}
-          className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-[#007AFF] focus:ring-1 focus:ring-[#007AFF]/20 transition resize-none"
+          className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition resize-none"
           placeholder="Tell us about your audience, the type of content you create, and how you plan to introduce Cursive to them..."
         />
         <p className="text-xs text-gray-400 mt-1">Be specific — this is what we review. Quality over quantity.</p>
@@ -424,7 +424,7 @@ function ApplicationForm() {
       <button
         type="submit"
         disabled={submitting}
-        className="w-full px-8 py-4 bg-[#007AFF] hover:bg-[#0066DD] disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold rounded-lg transition-all shadow-lg shadow-[#007AFF]/25 text-lg"
+        className="w-full px-8 py-4 bg-primary hover:bg-primary-dark disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold rounded-lg transition-all shadow-lg shadow-primary/25 text-lg"
       >
         {submitting ? 'Submitting...' : 'Apply to the Partner Program →'}
       </button>
@@ -445,10 +445,10 @@ export default function AffiliatesPage() {
       <section className="relative py-24 bg-white">
         <Container>
           <div className="text-center max-w-4xl mx-auto">
-            <div className="inline-flex items-center gap-2 bg-[#007AFF]/8 border border-[#007AFF]/20 text-[#007AFF] text-sm font-medium px-4 py-2 rounded-full mb-8">
+            <div className="inline-flex items-center gap-2 bg-primary/8 border border-primary/20 text-primary text-sm font-medium px-4 py-2 rounded-full mb-8">
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#007AFF] opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#007AFF]" />
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
               </span>
               Now accepting partners · First 100 spots only
             </div>
@@ -472,13 +472,13 @@ export default function AffiliatesPage() {
             <div className="flex flex-wrap items-center justify-center gap-4 mb-6">
               <a
                 href="#apply"
-                className="px-8 py-4 bg-[#007AFF] hover:bg-[#0066DD] text-white font-bold rounded-lg transition-all shadow-lg shadow-[#007AFF]/25 text-lg"
+                className="px-8 py-4 bg-primary hover:bg-primary-dark text-white font-bold rounded-lg transition-all shadow-lg shadow-primary/25 text-lg"
               >
                 Apply to Become a Partner →
               </a>
               <a
                 href="#calculator"
-                className="px-6 py-4 border border-gray-300 hover:border-[#007AFF] hover:text-[#007AFF] text-gray-700 font-semibold rounded-lg transition-colors text-base"
+                className="px-6 py-4 border border-gray-300 hover:border-primary hover:text-primary text-gray-700 font-semibold rounded-lg transition-colors text-base"
               >
                 Calculate My Earnings ↓
               </a>
@@ -511,7 +511,7 @@ export default function AffiliatesPage() {
               { number: 'For life', label: 'Commissions never expire' },
             ].map((stat) => (
               <div key={stat.label}>
-                <p className="text-3xl font-light text-[#007AFF] mb-1">{stat.number}</p>
+                <p className="text-3xl font-light text-primary mb-1">{stat.number}</p>
                 <p className="text-sm text-gray-500">{stat.label}</p>
               </div>
             ))}
@@ -523,7 +523,7 @@ export default function AffiliatesPage() {
       <section id="calculator" className="py-24 bg-[#F7F9FB]">
         <Container>
           <div className="text-center mb-12">
-            <span className="text-sm text-[#007AFF] mb-4 block font-medium tracking-wide uppercase">
+            <span className="text-sm text-primary mb-4 block font-medium tracking-wide uppercase">
               Partner Earnings Calculator
             </span>
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
@@ -545,7 +545,7 @@ export default function AffiliatesPage() {
       <section className="py-24 bg-white">
         <Container>
           <div className="text-center mb-16">
-            <span className="text-sm text-[#007AFF] mb-4 block font-medium tracking-wide uppercase">
+            <span className="text-sm text-primary mb-4 block font-medium tracking-wide uppercase">
               Milestone Rewards
             </span>
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
@@ -563,11 +563,11 @@ export default function AffiliatesPage() {
                 key={i}
                 className={`rounded-2xl p-6 border text-center transition-all hover:shadow-lg ${
                   i === MILESTONES.length - 1
-                    ? 'bg-[#007AFF] border-[#007AFF] text-white'
-                    : 'bg-white border-gray-200 hover:border-[#007AFF]/40'
+                    ? 'bg-primary border-primary text-white'
+                    : 'bg-white border-gray-200 hover:border-primary/40'
                 }`}
               >
-                <div className={`text-3xl font-light mb-1 ${i === MILESTONES.length - 1 ? 'text-white' : 'text-[#007AFF]'}`}>
+                <div className={`text-3xl font-light mb-1 ${i === MILESTONES.length - 1 ? 'text-white' : 'text-primary'}`}>
                   ${m.bonus.toLocaleString()}
                 </div>
                 <div className={`text-sm font-medium ${i === MILESTONES.length - 1 ? 'text-white/80' : 'text-gray-500'}`}>
@@ -575,7 +575,7 @@ export default function AffiliatesPage() {
                 </div>
                 {i >= 4 && (
                   <div className={`mt-2 text-xs font-semibold px-2 py-0.5 rounded-full inline-block ${
-                    i === MILESTONES.length - 1 ? 'bg-white/20 text-white' : 'bg-[#007AFF]/10 text-[#007AFF]'
+                    i === MILESTONES.length - 1 ? 'bg-white/20 text-white' : 'bg-primary/10 text-primary'
                   }`}>
                     + {i === 4 ? '10%' : '20%'} recurring commission unlocks
                   </div>
@@ -587,15 +587,15 @@ export default function AffiliatesPage() {
           <div className="max-w-4xl mx-auto bg-[#F7F9FB] border border-gray-200 rounded-2xl p-6">
             <div className="grid md:grid-cols-3 gap-6 text-center">
               <div>
-                <div className="text-2xl font-light text-[#007AFF] mb-1">1 activation</div>
+                <div className="text-2xl font-light text-primary mb-1">1 activation</div>
                 <div className="text-sm text-gray-500">= 1 free month of Cursive for you</div>
               </div>
               <div>
-                <div className="text-2xl font-light text-[#007AFF] mb-1">50 activations</div>
+                <div className="text-2xl font-light text-primary mb-1">50 activations</div>
                 <div className="text-sm text-gray-500">= 10% recurring commission, for life</div>
               </div>
               <div>
-                <div className="text-2xl font-light text-[#007AFF] mb-1">100 activations</div>
+                <div className="text-2xl font-light text-primary mb-1">100 activations</div>
                 <div className="text-sm text-gray-500">= 20% recurring commission, for life</div>
               </div>
             </div>
@@ -619,13 +619,13 @@ export default function AffiliatesPage() {
             {HOW_IT_WORKS.map((step, i) => (
               <div key={i} className="flex flex-col items-center text-center">
                 <div className="w-20 h-20 rounded-2xl bg-white border border-gray-200 flex items-center justify-center mb-4 shadow-sm">
-                  <span className="text-3xl font-light text-[#007AFF]">{step.step}</span>
+                  <span className="text-3xl font-light text-primary">{step.step}</span>
                 </div>
                 <div className="inline-flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold px-3 py-1 rounded-full mb-3">
                   <CheckCircle2 className="w-3 h-3" />
                   {step.time}
                 </div>
-                <div className="text-sm text-[#007AFF] font-medium mb-2">Step {step.step}</div>
+                <div className="text-sm text-primary font-medium mb-2">Step {step.step}</div>
                 <h3 className="text-2xl text-gray-900 mb-3 font-medium">{step.title}</h3>
                 <p className="text-gray-600 leading-relaxed">{step.desc}</p>
               </div>
@@ -638,7 +638,7 @@ export default function AffiliatesPage() {
       <section className="py-24 bg-white">
         <Container>
           <div className="text-center mb-16">
-            <span className="text-sm text-[#007AFF] mb-4 block font-medium tracking-wide uppercase">
+            <span className="text-sm text-primary mb-4 block font-medium tracking-wide uppercase">
               Who This Is For
             </span>
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
@@ -656,10 +656,10 @@ export default function AffiliatesPage() {
             {ICPS.map((icp, i) => (
               <div
                 key={i}
-                className="bg-white rounded-xl p-6 border border-gray-200 hover:border-[#007AFF] hover:shadow-lg transition-all flex gap-4"
+                className="bg-white rounded-xl p-6 border border-gray-200 hover:border-primary hover:shadow-lg transition-all flex gap-4"
               >
                 <div className="flex-shrink-0 w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
-                  <icp.icon className="w-6 h-6 text-[#007AFF]" />
+                  <icp.icon className="w-6 h-6 text-primary" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900 mb-1">{icp.title}</h3>
@@ -672,13 +672,13 @@ export default function AffiliatesPage() {
       </section>
 
       {/* ── CALLOUT ───────────────────────────────────────── */}
-      <section className="py-12 bg-[#007AFF]/6 border-y border-[#007AFF]/15">
+      <section className="py-12 bg-primary/6 border-y border-primary/15">
         <Container>
           <div className="max-w-4xl mx-auto text-center">
-            <p className="text-[#007AFF] text-xs font-mono uppercase tracking-widest mb-3">What makes this program different</p>
+            <p className="text-primary text-xs font-mono uppercase tracking-widest mb-3">What makes this program different</p>
             <p className="text-gray-900 text-xl md:text-2xl font-light leading-relaxed">
               Most affiliate programs pay once.{' '}
-              <strong className="text-[#007AFF] font-semibold">Ours pays every month, forever.</strong>{' '}
+              <strong className="text-primary font-semibold">Ours pays every month, forever.</strong>{' '}
               Refer once. Earn as long as they&apos;re a customer.
             </p>
           </div>
@@ -689,7 +689,7 @@ export default function AffiliatesPage() {
       <section className="py-24 bg-[#F7F9FB]">
         <Container>
           <div className="text-center mb-16">
-            <span className="text-sm text-[#007AFF] mb-4 block font-medium tracking-wide uppercase">
+            <span className="text-sm text-primary mb-4 block font-medium tracking-wide uppercase">
               Why Partners Choose Cursive
             </span>
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
@@ -726,9 +726,9 @@ export default function AffiliatesPage() {
                 desc: 'Your partner link works indefinitely. Refer 5 people or 500 — the commission rate scales up, not down, the more you refer.',
               },
             ].map((card, i) => (
-              <div key={i} className="bg-white rounded-xl p-6 border border-gray-200 hover:border-[#007AFF]/40 hover:shadow-lg transition-all flex gap-4">
+              <div key={i} className="bg-white rounded-xl p-6 border border-gray-200 hover:border-primary/40 hover:shadow-lg transition-all flex gap-4">
                 <div className="flex-shrink-0 mt-1">
-                  <CheckCircle2 className="w-5 h-5 text-[#007AFF]" />
+                  <CheckCircle2 className="w-5 h-5 text-primary" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900 mb-1">{card.title}</h3>
@@ -744,7 +744,7 @@ export default function AffiliatesPage() {
       <section className="py-24 bg-white">
         <Container>
           <div className="text-center mb-12">
-            <span className="text-sm text-[#007AFF] mb-4 block font-medium tracking-wide uppercase">
+            <span className="text-sm text-primary mb-4 block font-medium tracking-wide uppercase">
               Frequently Asked Questions
             </span>
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
@@ -758,11 +758,11 @@ export default function AffiliatesPage() {
           <div className="mt-8 text-center">
             <p className="text-sm text-gray-500">
               More questions?{' '}
-              <a href="mailto:adam@meetcursive.com" className="text-[#007AFF] hover:underline">
+              <a href="mailto:adam@meetcursive.com" className="text-primary hover:underline">
                 Email us directly
               </a>{' '}
               or view the full{' '}
-              <a href="/affiliates/terms" className="text-[#007AFF] hover:underline">
+              <a href="/affiliates/terms" className="text-primary hover:underline">
                 Partner Program Terms
               </a>
               .
@@ -775,7 +775,7 @@ export default function AffiliatesPage() {
       <section id="apply" className="py-24 bg-[#F7F9FB]">
         <Container>
           <div className="text-center mb-12">
-            <span className="text-sm text-[#007AFF] mb-4 block font-medium tracking-wide uppercase">
+            <span className="text-sm text-primary mb-4 block font-medium tracking-wide uppercase">
               Partner Application
             </span>
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">

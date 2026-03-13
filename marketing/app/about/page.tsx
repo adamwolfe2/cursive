@@ -96,7 +96,7 @@ export default function AboutPage() {
                 viewport={{ once: true }}
                 className="bg-white rounded-2xl p-8 text-center border border-gray-200"
               >
-                <div className="w-16 h-16 bg-[#007AFF] rounded-full flex items-center justify-center mx-auto mb-6">
+                <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-6">
                   <span className="text-white text-2xl font-light">1</span>
                 </div>
                 <h3 className="text-xl font-light text-gray-900 mb-3">Buy the Data</h3>
@@ -112,7 +112,7 @@ export default function AboutPage() {
                 transition={{ delay: 0.1 }}
                 className="bg-white rounded-2xl p-8 text-center border border-gray-200"
               >
-                <div className="w-16 h-16 bg-[#007AFF] rounded-full flex items-center justify-center mx-auto mb-6">
+                <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-6">
                   <span className="text-white text-2xl font-light">2</span>
                 </div>
                 <h3 className="text-xl font-light text-gray-900 mb-3">Let Us Run It</h3>
@@ -128,7 +128,7 @@ export default function AboutPage() {
                 transition={{ delay: 0.2 }}
                 className="bg-white rounded-2xl p-8 text-center border border-gray-200"
               >
-                <div className="w-16 h-16 bg-[#007AFF] rounded-full flex items-center justify-center mx-auto mb-6">
+                <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-6">
                   <span className="text-white text-2xl font-light">3</span>
                 </div>
                 <h3 className="text-xl font-light text-gray-900 mb-3">Full Pipeline</h3>
@@ -158,7 +158,7 @@ export default function AboutPage() {
                 className="space-y-8"
               >
                 {/* Definition block */}
-                <div className="border-l-4 border-[#007AFF] pl-6">
+                <div className="border-l-4 border-primary pl-6">
                   <p className="text-sm tracking-widest text-gray-400 mb-1">re·cur·sive</p>
                   <p className="text-gray-600 italic">/rəˈkərsiv/ — relating to or involving a process that calls itself, using its own output as its next input.</p>
                 </div>
@@ -201,7 +201,7 @@ export default function AboutPage() {
                         transition={{ delay: i * 0.1 }}
                         className="flex items-start gap-3"
                       >
-                        <div className="w-6 h-6 bg-[#007AFF] rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                           <span className="text-xs text-white font-bold">{i + 1}</span>
                         </div>
                         <div>
@@ -217,10 +217,10 @@ export default function AboutPage() {
                       transition={{ delay: 0.6 }}
                       className="flex items-center gap-3 pt-2"
                     >
-                      <div className="w-6 h-6 bg-[#007AFF] rounded-full flex items-center justify-center flex-shrink-0">
+                      <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
                         <span className="text-xs text-white">↻</span>
                       </div>
-                      <span className="text-[#007AFF] font-semibold italic">REPEAT SMARTER</span>
+                      <span className="text-primary font-semibold italic">REPEAT SMARTER</span>
                     </motion.div>
                   </div>
                 </div>
@@ -245,8 +245,8 @@ export default function AboutPage() {
                       <li>Repeat (without learning)</li>
                     </ul>
                   </div>
-                  <div className="bg-[#007AFF]/8 border border-[#007AFF]/20 rounded-xl p-6">
-                    <h4 className="text-sm font-semibold text-[#007AFF] tracking-widest mb-4">CURSIVE BUSINESSES</h4>
+                  <div className="bg-primary/8 border border-primary/20 rounded-xl p-6">
+                    <h4 className="text-sm font-semibold text-primary tracking-widest mb-4">CURSIVE BUSINESSES</h4>
                     <ul className="space-y-3 text-sm text-gray-700">
                       <li>Identify who&apos;s already interested</li>
                       <li>Enrich with real-time context</li>
@@ -258,9 +258,9 @@ export default function AboutPage() {
                 </div>
 
                 {/* Quote */}
-                <div className="bg-white border border-[#007AFF]/20 rounded-xl p-6">
+                <div className="bg-white border border-primary/20 rounded-xl p-6">
                   <p className="text-lg font-light text-gray-800 leading-relaxed">
-                    &ldquo;While your competitors treat every lead like the first lead they&apos;ve ever gotten, Cursive treats every lead like the thousandth. <em className="text-[#007AFF]">Because it is.</em>&rdquo;
+                    &ldquo;While your competitors treat every lead like the first lead they&apos;ve ever gotten, Cursive treats every lead like the thousandth. <em className="text-primary">Because it is.</em>&rdquo;
                   </p>
                   <p className="text-sm text-gray-500 mt-3">The result: your CAC drops, your LTV rises, your growth compounds instead of plateaus.</p>
                 </div>
@@ -295,7 +295,7 @@ export default function AboutPage() {
               className="text-center"
             >
               <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-6 border border-gray-200">
-                <div className="w-3 h-3 bg-[#007AFF] rounded-full" />
+                <div className="w-3 h-3 bg-primary rounded-full" />
               </div>
               <h3 className="text-2xl font-light text-gray-900 mb-3">Speed Over Perfection</h3>
               <p className="text-gray-600 leading-relaxed">
@@ -311,7 +311,7 @@ export default function AboutPage() {
               className="text-center"
             >
               <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-6 border border-gray-200">
-                <div className="w-3 h-3 bg-[#007AFF] rounded-full" />
+                <div className="w-3 h-3 bg-primary rounded-full" />
               </div>
               <h3 className="text-2xl font-light text-gray-900 mb-3">Quality Over Quantity</h3>
               <p className="text-gray-600 leading-relaxed">
@@ -327,7 +327,7 @@ export default function AboutPage() {
               className="text-center"
             >
               <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-6 border border-gray-200">
-                <div className="w-3 h-3 bg-[#007AFF] rounded-full" />
+                <div className="w-3 h-3 bg-primary rounded-full" />
               </div>
               <h3 className="text-2xl font-light text-gray-900 mb-3">Transparency Always</h3>
               <p className="text-gray-600 leading-relaxed">
@@ -391,7 +391,7 @@ export default function AboutPage() {
             >
               <h3 className="text-xl font-light text-gray-900 mb-3">AI-Powered Personalization</h3>
               <p className="text-gray-600 leading-relaxed">
-                Our AI models analyze thousands of data points per contact to generate hyper-personalized outreach. Every email, subject line, and call-to-action is tailored to the recipient's role, company, recent activity, and buying intent. This is not template-based mail merge. It is genuine one-to-one personalization at scale, which is why our clients see 3 to 5 times higher response rates compared to traditional cold email. Learn more about our <Link href="/services" className="text-[#007AFF] hover:underline">outbound services</Link>.
+                Our AI models analyze thousands of data points per contact to generate hyper-personalized outreach. Every email, subject line, and call-to-action is tailored to the recipient's role, company, recent activity, and buying intent. This is not template-based mail merge. It is genuine one-to-one personalization at scale, which is why our clients see 3 to 5 times higher response rates compared to traditional cold email. Learn more about our <Link href="/services" className="text-primary hover:underline">outbound services</Link>.
               </p>
             </motion.div>
 
@@ -404,7 +404,7 @@ export default function AboutPage() {
             >
               <h3 className="text-xl font-light text-gray-900 mb-3">Real-Time Data Verification</h3>
               <p className="text-gray-600 leading-relaxed">
-                Unlike legacy data providers who batch-process records monthly, Cursive verifies every contact at the point of delivery. We cross-reference data from over 200 sources to ensure 95%+ accuracy on every email, phone number, and company record. If anything bounces, we replace it for free. Explore our <Link href="/data-access" className="text-[#007AFF] hover:underline">data access platform</Link> to see the full scope of available data.
+                Unlike legacy data providers who batch-process records monthly, Cursive verifies every contact at the point of delivery. We cross-reference data from over 200 sources to ensure 95%+ accuracy on every email, phone number, and company record. If anything bounces, we replace it for free. Explore our <Link href="/data-access" className="text-primary hover:underline">data access platform</Link> to see the full scope of available data.
               </p>
             </motion.div>
 
@@ -417,7 +417,7 @@ export default function AboutPage() {
             >
               <h3 className="text-xl font-light text-gray-900 mb-3">Website Visitor Intelligence</h3>
               <p className="text-gray-600 leading-relaxed">
-                Our proprietary <Link href="/pixel" className="text-[#007AFF] hover:underline">visitor identification pixel</Link> identifies up to 70% of anonymous website visitors, revealing not just the company but the specific individual visiting your site. Combined with intent scoring and page-level behavior tracking, you always know which prospects are ready to buy and how to reach them.
+                Our proprietary <Link href="/pixel" className="text-primary hover:underline">visitor identification pixel</Link> identifies up to 70% of anonymous website visitors, revealing not just the company but the specific individual visiting your site. Combined with intent scoring and page-level behavior tracking, you always know which prospects are ready to buy and how to reach them.
               </p>
             </motion.div>
 
@@ -430,7 +430,7 @@ export default function AboutPage() {
             >
               <h3 className="text-xl font-light text-gray-900 mb-3">Multi-Channel Orchestration</h3>
               <p className="text-gray-600 leading-relaxed">
-                Cursive does not limit you to a single channel. Our platform orchestrates coordinated campaigns across email, LinkedIn, SMS, and direct mail. AI determines the optimal channel mix, timing, and message for each prospect, ensuring your outreach meets buyers wherever they are. See our full <Link href="/platform" className="text-[#007AFF] hover:underline">platform capabilities</Link>.
+                Cursive does not limit you to a single channel. Our platform orchestrates coordinated campaigns across email, LinkedIn, SMS, and direct mail. AI determines the optimal channel mix, timing, and message for each prospect, ensuring your outreach meets buyers wherever they are. See our full <Link href="/platform" className="text-primary hover:underline">platform capabilities</Link>.
               </p>
             </motion.div>
           </div>
@@ -455,7 +455,7 @@ export default function AboutPage() {
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             <div className="text-center">
               <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                <div className="w-3 h-3 bg-[#007AFF] rounded-full" />
+                <div className="w-3 h-3 bg-primary rounded-full" />
               </div>
               <h3 className="text-lg font-light text-gray-900 mb-2">Async by Default</h3>
               <p className="text-gray-600 text-sm leading-relaxed">
@@ -464,7 +464,7 @@ export default function AboutPage() {
             </div>
             <div className="text-center">
               <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                <div className="w-3 h-3 bg-[#007AFF] rounded-full" />
+                <div className="w-3 h-3 bg-primary rounded-full" />
               </div>
               <h3 className="text-lg font-light text-gray-900 mb-2">Outcome-Driven</h3>
               <p className="text-gray-600 text-sm leading-relaxed">
@@ -473,7 +473,7 @@ export default function AboutPage() {
             </div>
             <div className="text-center">
               <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                <div className="w-3 h-3 bg-[#007AFF] rounded-full" />
+                <div className="w-3 h-3 bg-primary rounded-full" />
               </div>
               <h3 className="text-lg font-light text-gray-900 mb-2">Continuous Learning</h3>
               <p className="text-gray-600 text-sm leading-relaxed">
@@ -506,7 +506,7 @@ export default function AboutPage() {
               viewport={{ once: true }}
               className="text-center bg-white rounded-xl p-8 border border-gray-200"
             >
-              <div className="text-4xl text-[#007AFF] mb-2">3x</div>
+              <div className="text-4xl text-primary mb-2">3x</div>
               <p className="text-gray-600 text-sm">Average pipeline increase within 90 days</p>
             </motion.div>
             <motion.div
@@ -516,7 +516,7 @@ export default function AboutPage() {
               transition={{ delay: 0.1 }}
               className="text-center bg-white rounded-xl p-8 border border-gray-200"
             >
-              <div className="text-4xl text-[#007AFF] mb-2">95%+</div>
+              <div className="text-4xl text-primary mb-2">95%+</div>
               <p className="text-gray-600 text-sm">Email deliverability rate across all data</p>
             </motion.div>
             <motion.div
@@ -526,7 +526,7 @@ export default function AboutPage() {
               transition={{ delay: 0.2 }}
               className="text-center bg-white rounded-xl p-8 border border-gray-200"
             >
-              <div className="text-4xl text-[#007AFF] mb-2">67%</div>
+              <div className="text-4xl text-primary mb-2">67%</div>
               <p className="text-gray-600 text-sm">Average cost-per-lead reduction vs. traditional methods</p>
             </motion.div>
             <motion.div
@@ -536,7 +536,7 @@ export default function AboutPage() {
               transition={{ delay: 0.3 }}
               className="text-center bg-white rounded-xl p-8 border border-gray-200"
             >
-              <div className="text-4xl text-[#007AFF] mb-2">1,000+</div>
+              <div className="text-4xl text-primary mb-2">1,000+</div>
               <p className="text-gray-600 text-sm">B2B companies trust Cursive for lead generation</p>
             </motion.div>
           </div>

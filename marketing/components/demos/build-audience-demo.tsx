@@ -55,7 +55,7 @@ export default function BuildAudienceDemo() {
           className="bg-white rounded-xl p-8 border border-gray-200 text-center"
         >
           <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center mx-auto mb-4">
-            <Users className="w-6 h-6 text-[#007AFF]" />
+            <Users className="w-6 h-6 text-primary" />
           </div>
           <div className="text-4xl font-light text-gray-900 mb-2">280M+</div>
           <div className="text-sm text-gray-600">Total Profiles</div>
@@ -69,7 +69,7 @@ export default function BuildAudienceDemo() {
           className="bg-white rounded-xl p-8 border border-gray-200 text-center"
         >
           <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center mx-auto mb-4">
-            <Filter className="w-6 h-6 text-[#007AFF]" />
+            <Filter className="w-6 h-6 text-primary" />
           </div>
           <div className="text-4xl font-light text-gray-900 mb-2">30,000+</div>
           <div className="text-sm text-gray-600">Intent Categories</div>
@@ -83,7 +83,7 @@ export default function BuildAudienceDemo() {
           className="bg-white rounded-xl p-8 border border-gray-200 text-center"
         >
           <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center mx-auto mb-4">
-            <Zap className="w-6 h-6 text-[#007AFF]" />
+            <Zap className="w-6 h-6 text-primary" />
           </div>
           <div className="text-4xl font-light text-gray-900 mb-2">Instant</div>
           <div className="text-sm text-gray-600">Sync Speed</div>
@@ -133,7 +133,7 @@ export default function BuildAudienceDemo() {
               <motion.div
                 animate={{ rotate: 360 }}
                 transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                className="w-4 h-4 border-2 border-[#007AFF] border-t-transparent rounded-full"
+                className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full"
               />
               <span>Adding new contacts...</span>
             </div>
@@ -151,7 +151,7 @@ export default function BuildAudienceDemo() {
       >
         <div className="grid md:grid-cols-2 gap-6">
           <div className="flex items-start gap-3">
-            <div className="w-6 h-6 bg-[#007AFF] rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+            <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0 mt-1">
               <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
@@ -162,7 +162,7 @@ export default function BuildAudienceDemo() {
             </div>
           </div>
           <div className="flex items-start gap-3">
-            <div className="w-6 h-6 bg-[#007AFF] rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+            <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0 mt-1">
               <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
@@ -173,7 +173,7 @@ export default function BuildAudienceDemo() {
             </div>
           </div>
           <div className="flex items-start gap-3">
-            <div className="w-6 h-6 bg-[#007AFF] rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+            <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0 mt-1">
               <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
@@ -184,7 +184,7 @@ export default function BuildAudienceDemo() {
             </div>
           </div>
           <div className="flex items-start gap-3">
-            <div className="w-6 h-6 bg-[#007AFF] rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+            <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0 mt-1">
               <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>

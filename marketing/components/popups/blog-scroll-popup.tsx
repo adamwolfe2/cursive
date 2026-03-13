@@ -146,7 +146,7 @@ export function BlogScrollPopup({
               exit={{ opacity: 0, y: 20, scale: 0.9 }}
               transition={{ duration: 0.3 }}
               onClick={handleExpand}
-              className="bg-[#007AFF] text-white px-6 py-3 rounded-full shadow-lg hover:bg-[#0066DD] transition-colors flex items-center gap-2 ml-auto"
+              className="bg-primary text-white px-6 py-3 rounded-full shadow-lg hover:bg-primary-dark transition-colors flex items-center gap-2 ml-auto"
               aria-label="Expand newsletter signup"
             >
               <Mail className="h-5 w-5" />
@@ -169,7 +169,7 @@ export function BlogScrollPopup({
               {/* Header Bar */}
               <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-5 py-3 flex items-center justify-between border-b border-gray-100">
                 <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-[#007AFF] rounded-full animate-pulse" />
+                  <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
                   <span className="text-sm font-medium text-gray-700">B2B Growth Insights</span>
                 </div>
                 <button
@@ -188,7 +188,7 @@ export function BlogScrollPopup({
                     {/* Icon */}
                     <div className="mb-4">
                       <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                        <Mail className="h-6 w-6 text-[#007AFF]" />
+                        <Mail className="h-6 w-6 text-primary" />
                       </div>
                     </div>
 
@@ -228,7 +228,7 @@ export function BlogScrollPopup({
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           onFocus={() => analytics.trackInteraction()}
-                          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007AFF] focus:border-transparent outline-none transition-all text-sm"
+                          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-sm"
                           toolparamdescription="Email address to receive weekly B2B growth insights"
                         />
                       </div>

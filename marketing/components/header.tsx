@@ -159,12 +159,16 @@ export function Header() {
                   onMouseLeave={() => setOpenDropdown(null)}
                 >
                   {link.dropdown ? (
-                    <button className="flex items-center gap-1 text-gray-700 hover:text-[#007AFF] transition-colors">
+                    <button
+                      className="flex items-center gap-1 text-gray-700 hover:text-primary transition-colors"
+                      aria-haspopup="true"
+                      aria-expanded={openDropdown === link.label}
+                    >
                       {link.label}
                       <ChevronDown className="w-4 h-4" />
                     </button>
                   ) : (
-                    <Link href={link.href!} className="text-gray-700 hover:text-[#007AFF] transition-colors">
+                    <Link href={link.href!} className="text-gray-700 hover:text-primary transition-colors">
                       {link.label}
                     </Link>
                   )}
@@ -191,10 +195,10 @@ export function Header() {
                               className="flex items-start gap-3 p-3 rounded-lg hover:bg-[#F7F9FB] transition-colors group"
                             >
                               <div className="w-10 h-10 flex-shrink-0 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-blue-50 transition-colors">
-                                <Icon className="w-5 h-5 text-gray-600 group-hover:text-[#007AFF] transition-colors" />
+                                <Icon className="w-5 h-5 text-gray-600 group-hover:text-primary transition-colors" />
                               </div>
                               <div className="flex-1 min-w-0">
-                                <div className="font-medium text-gray-900 mb-0.5 group-hover:text-[#007AFF] transition-colors">
+                                <div className="font-medium text-gray-900 mb-0.5 group-hover:text-primary transition-colors">
                                   {item.label}
                                 </div>
                                 <div className="text-sm text-gray-600 leading-snug">
@@ -225,7 +229,7 @@ export function Header() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 text-gray-700 hover:text-[#007AFF] transition-colors"
+              className="md:hidden p-2 text-gray-700 hover:text-primary transition-colors"
               aria-label="Toggle menu"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -262,7 +266,9 @@ export function Header() {
                       <div>
                         <button
                           onClick={() => setOpenDropdown(openDropdown === link.label ? null : link.label)}
-                          className="w-full px-4 py-3 text-left text-gray-900 hover:bg-[#F7F9FB] hover:text-[#007AFF] rounded-lg transition-colors flex items-center justify-between"
+                          className="w-full px-4 py-3 text-left text-gray-900 hover:bg-[#F7F9FB] hover:text-primary rounded-lg transition-colors flex items-center justify-between"
+                          aria-haspopup="true"
+                          aria-expanded={openDropdown === link.label}
                         >
                           {link.label}
                           <ChevronDown className={`w-4 h-4 transition-transform ${openDropdown === link.label ? 'rotate-180' : ''}`} />
@@ -299,7 +305,7 @@ export function Header() {
                       <Link
                         href={link.href!}
                         onClick={() => setMobileMenuOpen(false)}
-                        className="block px-4 py-3 text-gray-900 hover:bg-[#F7F9FB] hover:text-[#007AFF] rounded-lg transition-colors"
+                        className="block px-4 py-3 text-gray-900 hover:bg-[#F7F9FB] hover:text-primary rounded-lg transition-colors"
                       >
                         {link.label}
                       </Link>

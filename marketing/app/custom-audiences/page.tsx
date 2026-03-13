@@ -167,7 +167,7 @@ export default function CustomAudiencesPage() {
                 transition={{ duration: 0.5 }}
                 className="text-center max-w-5xl mx-auto"
               >
-                <span className="text-sm text-[#007AFF] mb-4 block font-medium tracking-wide">CUSTOM AUDIENCES</span>
+                <span className="text-sm text-primary mb-4 block font-medium tracking-wide">CUSTOM AUDIENCES</span>
                 <h1 className="text-5xl lg:text-7xl font-light text-gray-900 mb-6">
                   Need a Specific Audience?{" "}
                   <span className="block font-cursive text-6xl lg:text-7xl text-gray-500 mt-2">We'll Build It.</span>
@@ -226,7 +226,7 @@ export default function CustomAudiencesPage() {
                         required
                         value={formData.industry}
                         onChange={(e) => setFormData({ ...formData, industry: e.target.value })}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007AFF] focus:border-transparent bg-white"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white"
                         toolparamdescription="Target industry for the custom audience"
                       >
                         <option value="">Select an industry</option>
@@ -248,7 +248,7 @@ export default function CustomAudiencesPage() {
                         required
                         value={formData.geography}
                         onChange={(e) => setFormData({ ...formData, geography: e.target.value })}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007AFF] focus:border-transparent"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                         placeholder="e.g., US, UK, DACH region"
                         toolparamdescription="Geographic region to target (e.g., US, UK, DACH, APAC)"
                       />
@@ -265,7 +265,7 @@ export default function CustomAudiencesPage() {
                         required
                         value={formData.companySize}
                         onChange={(e) => setFormData({ ...formData, companySize: e.target.value })}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007AFF] focus:border-transparent bg-white"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white"
                         toolparamdescription="Target company size by employee count"
                       >
                         <option value="">Select company size</option>
@@ -286,8 +286,8 @@ export default function CustomAudiencesPage() {
                             key={level}
                             className={`flex items-center gap-2 px-4 py-2.5 rounded-lg border cursor-pointer transition-all ${
                               formData.seniorityLevels.includes(level)
-                                ? "bg-[#007AFF] text-white border-[#007AFF]"
-                                : "bg-white text-gray-700 border-gray-300 hover:border-[#007AFF]"
+                                ? "bg-primary text-white border-primary"
+                                : "bg-white text-gray-700 border-gray-300 hover:border-primary"
                             }`}
                           >
                             <input
@@ -316,7 +316,7 @@ export default function CustomAudiencesPage() {
                         value={formData.intentSignals}
                         onChange={(e) => setFormData({ ...formData, intentSignals: e.target.value })}
                         rows={3}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007AFF] focus:border-transparent resize-none"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
                         placeholder="e.g., Actively researching CRM solutions, evaluating marketing automation tools"
                         toolparamdescription="Specific purchase intent signals to target (e.g., researching CRM solutions)"
                       />
@@ -334,7 +334,7 @@ export default function CustomAudiencesPage() {
                           required
                           value={formData.desiredVolume}
                           onChange={(e) => setFormData({ ...formData, desiredVolume: e.target.value })}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007AFF] focus:border-transparent bg-white"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white"
                           toolparamdescription="Number of leads desired"
                         >
                           <option value="">Select volume</option>
@@ -353,7 +353,7 @@ export default function CustomAudiencesPage() {
                           required
                           value={formData.budgetRange}
                           onChange={(e) => setFormData({ ...formData, budgetRange: e.target.value })}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007AFF] focus:border-transparent bg-white"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white"
                           toolparamdescription="Monthly budget range for lead generation"
                         >
                           <option value="">Select budget</option>
@@ -377,7 +377,7 @@ export default function CustomAudiencesPage() {
                           required
                           value={formData.email}
                           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007AFF] focus:border-transparent"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                           placeholder="you@company.com"
                           toolparamdescription="Work email to receive the custom audience sample"
                         />
@@ -392,7 +392,7 @@ export default function CustomAudiencesPage() {
                           name="companyName"
                           value={formData.companyName}
                           onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007AFF] focus:border-transparent"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                           placeholder="Your company name (optional)"
                         />
                       </div>
@@ -478,7 +478,7 @@ export default function CustomAudiencesPage() {
                       <div className="w-16 h-16 rounded-2xl bg-[#F7F9FB] border border-gray-200 flex items-center justify-center mb-5">
                         <step.icon className="h-8 w-8 text-gray-700" />
                       </div>
-                      <div className="text-sm text-[#007AFF] font-medium mb-2">STEP {step.step}</div>
+                      <div className="text-sm text-primary font-medium mb-2">STEP {step.step}</div>
                       <h3 className="text-xl text-gray-900 mb-3 font-medium">
                         {step.title}
                       </h3>
@@ -505,7 +505,7 @@ export default function CustomAudiencesPage() {
                   Simple, Transparent Pricing
                 </h2>
                 <div className="bg-white rounded-2xl p-8 border border-gray-200 mb-8">
-                  <div className="text-5xl font-light text-[#007AFF] mb-2">$0.50</div>
+                  <div className="text-5xl font-light text-primary mb-2">$0.50</div>
                   <div className="text-xl text-gray-600 mb-6">per lead, volume discounts available</div>
                   <div className="grid md:grid-cols-3 gap-6 text-left">
                     {[
@@ -515,7 +515,7 @@ export default function CustomAudiencesPage() {
                     ].map((tier, i) => (
                       <div key={i} className="bg-[#F7F9FB] rounded-xl p-4">
                         <div className="text-gray-900 font-medium mb-1">{tier.volume}</div>
-                        <div className="text-[#007AFF]">{tier.price}</div>
+                        <div className="text-primary">{tier.price}</div>
                       </div>
                     ))}
                   </div>
@@ -537,7 +537,7 @@ export default function CustomAudiencesPage() {
                 className="text-center max-w-3xl mx-auto"
               >
                 <div className="bg-[#F7F9FB] rounded-2xl p-10 border border-gray-200">
-                  <ShoppingCart className="h-10 w-10 text-[#007AFF] mx-auto mb-4" />
+                  <ShoppingCart className="h-10 w-10 text-primary mx-auto mb-4" />
                   <h3 className="text-2xl lg:text-3xl font-light text-gray-900 mb-3">
                     Need Leads Right Now?
                   </h3>

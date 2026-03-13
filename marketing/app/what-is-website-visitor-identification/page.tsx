@@ -87,13 +87,13 @@ export default function WhatIsWebsiteVisitorIdentificationPage() {
 
               <p className="text-lg text-gray-600 mb-8">
                 In 2026, visitor identification has become a foundational capability for B2B revenue teams. With buyer journeys happening increasingly online and anonymously, the ability to see who is researching your product before they raise their hand gives sales and marketing teams a decisive competitive advantage. According to Forrester, 68% of the B2B buying process now happens digitally, making the ability to identify anonymous visitors more valuable than ever. Platforms like{" "}
-                <Link href="/platform" className="text-[#007AFF] hover:underline">Cursive</Link> now achieve identification rates of up to 70%, a substantial leap from the 20-30% industry average just two years ago.
+                <Link href="/platform" className="text-primary hover:underline">Cursive</Link> now achieve identification rates of up to 70%, a substantial leap from the 20-30% industry average just two years ago.
               </p>
 
               {/* Table of Contents */}
               <nav className="bg-gray-50 rounded-lg p-6 mb-10">
                 <h2 className="text-lg font-semibold text-gray-900 mb-4 mt-0">Table of Contents</h2>
-                <ol className="list-decimal list-inside space-y-2 text-[#007AFF] mb-0">
+                <ol className="list-decimal list-inside space-y-2 text-primary mb-0">
                   <li><a href="#how-it-works" className="hover:underline">How Website Visitor Identification Works</a></li>
                   <li><a href="#identification-methods" className="hover:underline">Visitor Identification Methods</a></li>
                   <li><a href="#accuracy-match-rates" className="hover:underline">Accuracy and Match Rates</a></li>
@@ -121,7 +121,7 @@ export default function WhatIsWebsiteVisitorIdentificationPage() {
               </h3>
               <p>
                 The process begins with a lightweight JavaScript tracking pixel placed on your website. This code snippet, typically just a few lines, loads asynchronously so it does not affect page performance. When a visitor lands on any page where the pixel is installed, it begins collecting session data. Modern pixels like{" "}
-                <Link href="/visitor-identification" className="text-[#007AFF] hover:underline">Cursive&apos;s identification pixel</Link> are designed to be privacy-compliant by default and add less than 20ms of page load time.
+                <Link href="/visitor-identification" className="text-primary hover:underline">Cursive&apos;s identification pixel</Link> are designed to be privacy-compliant by default and add less than 20ms of page load time.
               </p>
 
               <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
@@ -157,7 +157,7 @@ export default function WhatIsWebsiteVisitorIdentificationPage() {
               </h3>
               <p>
                 Once a visitor is identified, their profile is enriched with additional firmographic and demographic data. This includes company details such as industry, employee count, annual revenue, and technology stack, as well as individual details like job title, department, seniority level, and verified contact information. Platforms like Cursive pull from multiple{" "}
-                <Link href="/data-access" className="text-[#007AFF] hover:underline">data sources</Link> to ensure enrichment accuracy and completeness.
+                <Link href="/data-access" className="text-primary hover:underline">data sources</Link> to ensure enrichment accuracy and completeness.
               </p>
 
               <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
@@ -165,7 +165,7 @@ export default function WhatIsWebsiteVisitorIdentificationPage() {
               </h3>
               <p>
                 The final step is delivering identified visitor data to your sales and marketing tools in real time. This includes CRM platforms, marketing automation tools, Slack notifications, and outbound engagement platforms. The speed of delivery matters because{" "}
-                <Link href="/what-is-b2b-intent-data" className="text-[#007AFF] hover:underline">intent signals</Link> decay rapidly. A visitor browsing your pricing page right now is far more valuable than one who visited last week. Real-time webhooks and native integrations ensure your team can act on fresh intent within minutes.
+                <Link href="/what-is-b2b-intent-data" className="text-primary hover:underline">intent signals</Link> decay rapidly. A visitor browsing your pricing page right now is far more valuable than one who visited last week. Real-time webhooks and native integrations ensure your team can act on fresh intent within minutes.
               </p>
 
               {/* Section 2: Identification Methods */}
@@ -326,7 +326,7 @@ export default function WhatIsWebsiteVisitorIdentificationPage() {
               <ol>
                 <li><strong>Implement the pixel site-wide:</strong> Install the tracking pixel on every page, not just high-intent pages. More touchpoints create more opportunities for matching.</li>
                 <li><strong>Use multiple identification methods:</strong> Choose a platform like{" "}
-                  <Link href="/visitor-identification" className="text-[#007AFF] hover:underline">Cursive</Link> that combines IP lookup, fingerprinting, and cookie matching rather than relying on a single method.</li>
+                  <Link href="/visitor-identification" className="text-primary hover:underline">Cursive</Link> that combines IP lookup, fingerprinting, and cookie matching rather than relying on a single method.</li>
                 <li><strong>Drive authenticated traffic:</strong> Encourage visitors to log in or create accounts. Even a single authenticated session permanently links that visitor to their identity.</li>
                 <li><strong>Optimize for business traffic:</strong> Focus paid advertising on channels that reach decision-makers during business hours from corporate networks.</li>
                 <li><strong>Keep data fresh:</strong> Use platforms that continuously update their databases rather than relying on static lookups that degrade over time.</li>
@@ -346,7 +346,7 @@ export default function WhatIsWebsiteVisitorIdentificationPage() {
               </h3>
               <p>
                 Company-level (firmographic) data reveals the organization behind the visitor. This includes the company name, domain, industry classification (SIC/NAICS codes), employee count, annual revenue range, headquarters location, number of office locations, funding status, technology stack, and social media profiles. This data helps sales teams instantly qualify whether a visiting company matches their{" "}
-                <Link href="/audience-builder" className="text-[#007AFF] hover:underline">ideal customer profile</Link>.
+                <Link href="/audience-builder" className="text-primary hover:underline">ideal customer profile</Link>.
               </p>
 
               <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
@@ -361,7 +361,7 @@ export default function WhatIsWebsiteVisitorIdentificationPage() {
               </h3>
               <p>
                 Beyond identity, visitor identification captures detailed behavioral data about each session. This includes pages viewed, time spent on each page, scroll depth, number of visits, referring source, UTM parameters, content downloaded, and video watched. Behavioral data transforms raw identification into actionable{" "}
-                <Link href="/intent-audiences" className="text-[#007AFF] hover:underline">intent signals</Link> by revealing not just who visited, but what they were interested in.
+                <Link href="/intent-audiences" className="text-primary hover:underline">intent signals</Link> by revealing not just who visited, but what they were interested in.
               </p>
 
               <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
@@ -369,7 +369,7 @@ export default function WhatIsWebsiteVisitorIdentificationPage() {
               </h3>
               <p>
                 The most sophisticated platforms synthesize identity and behavioral data into composite intent scores. These signals indicate how likely a visitor is to be in an active buying cycle. High-intent signals include visiting the pricing page, viewing competitor comparison content, returning multiple times in a short window, and researching product features across multiple sessions. Understanding{" "}
-                <Link href="/what-is-b2b-intent-data" className="text-[#007AFF] hover:underline">B2B intent data</Link> helps teams prioritize the hottest opportunities and focus outreach where it will have the greatest impact.
+                <Link href="/what-is-b2b-intent-data" className="text-primary hover:underline">B2B intent data</Link> helps teams prioritize the hottest opportunities and focus outreach where it will have the greatest impact.
               </p>
 
               {/* Section 5: Use Cases */}
@@ -386,7 +386,7 @@ export default function WhatIsWebsiteVisitorIdentificationPage() {
               </h3>
               <p>
                 The most common use case is turning anonymous traffic into a pipeline of qualified leads. Instead of waiting for the 2% of visitors who fill out forms, visitor identification captures the other 98%. A mid-market SaaS company with 20,000 monthly visitors and a 70% identification rate generates 14,000 identified visitors per month. If 10% match their ICP, that is 1,400 qualified leads, compared to roughly 400 from forms alone, representing a 3.5x increase in lead volume. Platforms like{" "}
-                <Link href="/platform" className="text-[#007AFF] hover:underline">Cursive</Link> automate the process from identification through outreach, so these leads enter your pipeline without manual effort.
+                <Link href="/platform" className="text-primary hover:underline">Cursive</Link> automate the process from identification through outreach, so these leads enter your pipeline without manual effort.
               </p>
 
               <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
@@ -394,7 +394,7 @@ export default function WhatIsWebsiteVisitorIdentificationPage() {
               </h3>
               <p>
                 For ABM programs, visitor identification reveals which target accounts are already engaging with your brand. Instead of cold outreach to an account list, marketing and sales can prioritize accounts that have shown intent by visiting the website. This intent-driven approach to ABM typically increases engagement rates by 2-3x because you are reaching out at the moment of interest. You can build{" "}
-                <Link href="/audience-builder" className="text-[#007AFF] hover:underline">targeted audiences</Link> from identified visitors who match your ABM account list.
+                <Link href="/audience-builder" className="text-primary hover:underline">targeted audiences</Link> from identified visitors who match your ABM account list.
               </p>
 
               <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
@@ -409,7 +409,7 @@ export default function WhatIsWebsiteVisitorIdentificationPage() {
               </h3>
               <p>
                 Identified visitors can be used to build high-intent retargeting audiences for paid advertising. Rather than retargeting every visitor with generic ads, you can segment audiences based on firmographic fit and behavioral signals. Show pricing-focused ads to visitors who viewed your pricing page. Deliver case study ads to visitors from specific industries. This approach typically reduces cost per acquisition by 40-60% compared to broad retargeting. Cursive&apos;s{" "}
-                <Link href="/intent-audiences" className="text-[#007AFF] hover:underline">intent audiences</Link> feature makes it easy to push these segments to your ad platforms automatically.
+                <Link href="/intent-audiences" className="text-primary hover:underline">intent audiences</Link> feature makes it easy to push these segments to your ad platforms automatically.
               </p>
 
               <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
@@ -483,7 +483,7 @@ export default function WhatIsWebsiteVisitorIdentificationPage() {
               </h3>
               <p>
                 Evaluate platforms based on match rate, data accuracy, integration ecosystem, compliance posture, and pricing model. Request a proof of concept or free trial where the provider runs their identification against your actual website traffic so you can measure real match rates rather than relying on marketing claims. Cursive offers a{" "}
-                <Link href="/free-audit" className="text-[#007AFF] hover:underline">free website audit</Link> that shows exactly how many of your visitors can be identified before you commit.
+                <Link href="/free-audit" className="text-primary hover:underline">free website audit</Link> that shows exactly how many of your visitors can be identified before you commit.
               </p>
 
               <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
@@ -505,8 +505,8 @@ export default function WhatIsWebsiteVisitorIdentificationPage() {
               </h3>
               <p>
                 Configure automated workflows to route identified visitors to the right teams and trigger timely actions. Common workflows include sending Slack alerts when a target account visits your pricing page, automatically creating leads in your CRM for visitors matching your ICP, triggering{" "}
-                <Link href="/what-is-ai-sdr" className="text-[#007AFF] hover:underline">AI SDR</Link> outreach sequences for high-intent visitors, and adding identified visitors to{" "}
-                <Link href="/direct-mail" className="text-[#007AFF] hover:underline">direct mail</Link> campaigns for high-value accounts.
+                <Link href="/what-is-ai-sdr" className="text-primary hover:underline">AI SDR</Link> outreach sequences for high-intent visitors, and adding identified visitors to{" "}
+                <Link href="/direct-mail" className="text-primary hover:underline">direct mail</Link> campaigns for high-value accounts.
               </p>
 
               <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
@@ -521,7 +521,7 @@ export default function WhatIsWebsiteVisitorIdentificationPage() {
               </h3>
               <p>
                 Track key metrics to continuously improve your visitor identification program. Monitor match rate trends over time, qualified leads generated, pipeline influenced, revenue attributed, and cost per identified lead. Compare these metrics against your pre-identification baselines to quantify ROI. Use the data to refine your ICP, optimize your website for business traffic, and improve your outreach sequences. Visit{" "}
-                <Link href="/pricing" className="text-[#007AFF] hover:underline">Cursive&apos;s pricing page</Link> to explore plans that scale with your traffic.
+                <Link href="/pricing" className="text-primary hover:underline">Cursive&apos;s pricing page</Link> to explore plans that scale with your traffic.
               </p>
 
               {/* Section 8: Platform Comparison */}
@@ -592,9 +592,9 @@ export default function WhatIsWebsiteVisitorIdentificationPage() {
 
               <p>
                 For a detailed head-to-head analysis, see our{" "}
-                <Link href="/blog/clearbit-alternatives-comparison" className="text-[#007AFF] hover:underline">Clearbit alternatives comparison</Link>,{" "}
-                <Link href="/blog/warmly-vs-cursive-comparison" className="text-[#007AFF] hover:underline">Warmly vs. Cursive comparison</Link>, and{" "}
-                <Link href="/blog/apollo-vs-cursive-comparison" className="text-[#007AFF] hover:underline">Apollo vs. Cursive comparison</Link>.
+                <Link href="/blog/clearbit-alternatives-comparison" className="text-primary hover:underline">Clearbit alternatives comparison</Link>,{" "}
+                <Link href="/blog/warmly-vs-cursive-comparison" className="text-primary hover:underline">Warmly vs. Cursive comparison</Link>, and{" "}
+                <Link href="/blog/apollo-vs-cursive-comparison" className="text-primary hover:underline">Apollo vs. Cursive comparison</Link>.
               </p>
 
               {/* Section 9: FAQ */}
@@ -622,22 +622,22 @@ export default function WhatIsWebsiteVisitorIdentificationPage() {
 
               <ul>
                 <li>
-                  <Link href="/what-is-b2b-intent-data" className="text-[#007AFF] hover:underline">What is B2B Intent Data?</Link> &mdash; Understand how intent signals reveal which companies are actively researching solutions like yours.
+                  <Link href="/what-is-b2b-intent-data" className="text-primary hover:underline">What is B2B Intent Data?</Link> &mdash; Understand how intent signals reveal which companies are actively researching solutions like yours.
                 </li>
                 <li>
-                  <Link href="/what-is-ai-sdr" className="text-[#007AFF] hover:underline">What is an AI SDR?</Link> &mdash; Learn how AI-powered sales development automates outreach to identified visitors.
+                  <Link href="/what-is-ai-sdr" className="text-primary hover:underline">What is an AI SDR?</Link> &mdash; Learn how AI-powered sales development automates outreach to identified visitors.
                 </li>
                 <li>
-                  <Link href="/visitor-identification" className="text-[#007AFF] hover:underline">Cursive Visitor Identification</Link> &mdash; See how Cursive identifies up to 70% of your website traffic.
+                  <Link href="/visitor-identification" className="text-primary hover:underline">Cursive Visitor Identification</Link> &mdash; See how Cursive identifies up to 70% of your website traffic.
                 </li>
                 <li>
-                  <Link href="/audience-builder" className="text-[#007AFF] hover:underline">Audience Builder</Link> &mdash; Build targeted segments from identified visitors using firmographic and behavioral filters.
+                  <Link href="/audience-builder" className="text-primary hover:underline">Audience Builder</Link> &mdash; Build targeted segments from identified visitors using firmographic and behavioral filters.
                 </li>
                 <li>
-                  <Link href="/industries/b2b-software" className="text-[#007AFF] hover:underline">Visitor Identification for B2B Software</Link> &mdash; Industry-specific strategies for SaaS and technology companies.
+                  <Link href="/industries/b2b-software" className="text-primary hover:underline">Visitor Identification for B2B Software</Link> &mdash; Industry-specific strategies for SaaS and technology companies.
                 </li>
                 <li>
-                  <Link href="/blog/clearbit-alternatives-comparison" className="text-[#007AFF] hover:underline">Clearbit Alternatives Comparison</Link> &mdash; Evaluate the top visitor identification platforms available in 2026.
+                  <Link href="/blog/clearbit-alternatives-comparison" className="text-primary hover:underline">Clearbit Alternatives Comparison</Link> &mdash; Evaluate the top visitor identification platforms available in 2026.
                 </li>
               </ul>
 
@@ -652,7 +652,7 @@ export default function WhatIsWebsiteVisitorIdentificationPage() {
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Link
                     href="/free-audit"
-                    className="inline-flex items-center justify-center px-6 py-3 bg-[#007AFF] text-white font-medium rounded-lg hover:bg-[#0063D1] transition-colors no-underline"
+                    className="inline-flex items-center justify-center px-6 py-3 bg-primary text-white font-medium rounded-lg hover:bg-[#0063D1] transition-colors no-underline"
                   >
                     Get Your Free Audit
                   </Link>

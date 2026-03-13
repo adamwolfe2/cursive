@@ -238,8 +238,6 @@ const navigationItems: NavItemConfig[] = [
       </svg>
     ),
   },
-  // People Search removed — requires Clay API (not configured)
-  // Route still accessible at /people-search for future use
   // ── Account ──
   {
     name: 'Settings',

@@ -72,13 +72,13 @@ export default function WhatIsVisitorDeanonymization() {
                 What is Visitor Deanonymization? Complete Technical Guide (2026)
               </h1>
 
-              <p className="text-xl text-gray-700 leading-relaxed mb-8 border-l-4 border-[#007AFF] pl-6">
+              <p className="text-xl text-gray-700 leading-relaxed mb-8 border-l-4 border-primary pl-6">
                 Visitor deanonymization is the technical process of resolving anonymous website visitor sessions into identified individual profiles by matching device fingerprints, IP signals, and behavioral patterns against databases of known business contacts. It transforms unknown traffic into actionable sales intelligence that revenue teams can use to prioritize outreach and accelerate pipeline.
               </p>
 
               <p className="text-gray-700 leading-relaxed">
                 In B2B marketing, approximately 97% of website visitors leave without ever filling out a form or identifying themselves. Visitor deanonymization bridges this gap by using a combination of technical signals and data science to reveal who is visiting your site, what company they represent, and how engaged they are with your content. Platforms like{" "}
-                <Link href="/platform" className="text-[#007AFF] hover:underline">Cursive</Link>{" "}
+                <Link href="/platform" className="text-primary hover:underline">Cursive</Link>{" "}
                 use advanced identity resolution to help revenue teams convert this anonymous traffic into qualified pipeline.
               </p>
 
@@ -86,16 +86,16 @@ export default function WhatIsVisitorDeanonymization() {
               <nav className="my-10 p-6 bg-gray-50 rounded-lg border border-gray-200">
                 <h2 className="text-lg font-semibold text-gray-900 mb-4 mt-0">Table of Contents</h2>
                 <ol className="list-decimal list-inside space-y-2 text-gray-700">
-                  <li><a href="#how-visitor-deanonymization-works" className="text-[#007AFF] hover:underline">How Visitor Deanonymization Works</a></li>
-                  <li><a href="#technical-methods" className="text-[#007AFF] hover:underline">Technical Methods of Deanonymization</a></li>
-                  <li><a href="#identity-resolution-process" className="text-[#007AFF] hover:underline">The Identity Resolution Process</a></li>
-                  <li><a href="#accuracy-confidence-scoring" className="text-[#007AFF] hover:underline">Accuracy and Confidence Scoring</a></li>
-                  <li><a href="#privacy-ethics" className="text-[#007AFF] hover:underline">Privacy and Ethics</a></li>
-                  <li><a href="#technical-implementation" className="text-[#007AFF] hover:underline">Technical Implementation</a></li>
-                  <li><a href="#challenges" className="text-[#007AFF] hover:underline">Challenges in Visitor Deanonymization</a></li>
-                  <li><a href="#provider-comparison" className="text-[#007AFF] hover:underline">Provider Comparison</a></li>
-                  <li><a href="#faqs" className="text-[#007AFF] hover:underline">Frequently Asked Questions</a></li>
-                  <li><a href="#related-resources" className="text-[#007AFF] hover:underline">Related Resources</a></li>
+                  <li><a href="#how-visitor-deanonymization-works" className="text-primary hover:underline">How Visitor Deanonymization Works</a></li>
+                  <li><a href="#technical-methods" className="text-primary hover:underline">Technical Methods of Deanonymization</a></li>
+                  <li><a href="#identity-resolution-process" className="text-primary hover:underline">The Identity Resolution Process</a></li>
+                  <li><a href="#accuracy-confidence-scoring" className="text-primary hover:underline">Accuracy and Confidence Scoring</a></li>
+                  <li><a href="#privacy-ethics" className="text-primary hover:underline">Privacy and Ethics</a></li>
+                  <li><a href="#technical-implementation" className="text-primary hover:underline">Technical Implementation</a></li>
+                  <li><a href="#challenges" className="text-primary hover:underline">Challenges in Visitor Deanonymization</a></li>
+                  <li><a href="#provider-comparison" className="text-primary hover:underline">Provider Comparison</a></li>
+                  <li><a href="#faqs" className="text-primary hover:underline">Frequently Asked Questions</a></li>
+                  <li><a href="#related-resources" className="text-primary hover:underline">Related Resources</a></li>
                 </ol>
               </nav>
 
@@ -106,7 +106,7 @@ export default function WhatIsVisitorDeanonymization() {
 
               <p className="text-gray-700 leading-relaxed">
                 Visitor deanonymization operates through a multi-stage pipeline that collects signals, generates identity candidates, scores matches, and assembles enriched profiles. Each stage adds confidence to the identification, and the process typically executes in milliseconds so that sales teams receive real-time intelligence. Understanding this pipeline is essential for evaluating{" "}
-                <Link href="/visitor-identification" className="text-[#007AFF] hover:underline">visitor identification platforms</Link>{" "}
+                <Link href="/visitor-identification" className="text-primary hover:underline">visitor identification platforms</Link>{" "}
                 and choosing the right approach for your business.
               </p>
 
@@ -123,7 +123,7 @@ export default function WhatIsVisitorDeanonymization() {
               <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">3. Identity Resolution</h3>
               <p className="text-gray-700 leading-relaxed">
                 The fingerprint and associated signals are matched against one or more identity graphs -- large databases that map device signatures, IP ranges, email addresses, and behavioral patterns to known business contacts. This is where the core intelligence of deanonymization platforms resides. Cursive&apos;s{" "}
-                <Link href="/data-access" className="text-[#007AFF] hover:underline">data access platform</Link>{" "}
+                <Link href="/data-access" className="text-primary hover:underline">data access platform</Link>{" "}
                 maintains an identity graph of over 200 million B2B contacts, cross-referenced with company IP ranges, device profiles, and engagement histories to achieve high match rates.
               </p>
 
@@ -135,7 +135,7 @@ export default function WhatIsVisitorDeanonymization() {
               <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">5. Profile Assembly</h3>
               <p className="text-gray-700 leading-relaxed">
                 Once a high-confidence match is established, the system assembles a complete visitor profile by enriching the identification with firmographic, technographic, and behavioral data. This enrichment process pulls from multiple data sources to attach company information (industry, revenue, employee count), contact details (name, title, email, phone), technology stack usage, and{" "}
-                <Link href="/what-is-b2b-intent-data" className="text-[#007AFF] hover:underline">intent signals</Link>{" "}
+                <Link href="/what-is-b2b-intent-data" className="text-primary hover:underline">intent signals</Link>{" "}
                 to the identified visitor. The assembled profile is then delivered to sales and marketing teams through CRM integrations, webhooks, or the platform dashboard.
               </p>
 
@@ -262,7 +262,7 @@ export default function WhatIsVisitorDeanonymization() {
 
               <p className="text-gray-700 leading-relaxed">
                 The identity resolution pipeline transforms raw visitor signals into enriched, actionable profiles through five sequential stages. This process executes in real time (typically under 200 milliseconds) so that{" "}
-                <Link href="/intent-audiences" className="text-[#007AFF] hover:underline">intent-based audiences</Link>{" "}
+                <Link href="/intent-audiences" className="text-primary hover:underline">intent-based audiences</Link>{" "}
                 and sales alerts can be triggered immediately upon identification.
               </p>
 
@@ -289,8 +289,8 @@ export default function WhatIsVisitorDeanonymization() {
               <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">Stage 5: Enrichment</h3>
               <p className="text-gray-700 leading-relaxed">
                 Once matched, the selected profile is enriched with comprehensive data from Cursive&apos;s{" "}
-                <Link href="/data-access" className="text-[#007AFF] hover:underline">data access layer</Link>. Enrichment appends firmographic details (company name, industry, revenue range, employee count, headquarters location), contact information (verified email, direct phone, LinkedIn URL), technographic data (technology stack, tools used, recent technology changes), and behavioral context (pages viewed, session duration, content engagement score). The enriched profile is then routed to configured destinations -- CRM records, Slack notifications, sales engagement platforms, or{" "}
-                <Link href="/audience-builder" className="text-[#007AFF] hover:underline">audience builder segments</Link>.
+                <Link href="/data-access" className="text-primary hover:underline">data access layer</Link>. Enrichment appends firmographic details (company name, industry, revenue range, employee count, headquarters location), contact information (verified email, direct phone, LinkedIn URL), technographic data (technology stack, tools used, recent technology changes), and behavioral context (pages viewed, session duration, content engagement score). The enriched profile is then routed to configured destinations -- CRM records, Slack notifications, sales engagement platforms, or{" "}
+                <Link href="/audience-builder" className="text-primary hover:underline">audience builder segments</Link>.
               </p>
 
               {/* Accuracy & Confidence Scoring */}
@@ -348,7 +348,7 @@ export default function WhatIsVisitorDeanonymization() {
 
               <p className="text-gray-700 leading-relaxed">
                 The distinction between these tiers is critical for{" "}
-                <Link href="/what-is-lead-enrichment" className="text-[#007AFF] hover:underline">lead enrichment</Link>{" "}
+                <Link href="/what-is-lead-enrichment" className="text-primary hover:underline">lead enrichment</Link>{" "}
                 workflows. High-confidence identifications can trigger immediate sales alerts and personalized outreach sequences. Moderate-confidence matches are better suited for marketing nurture campaigns where a misidentification carries lower risk. Low-confidence matches should be used only for aggregate reporting and audience sizing, not individual-level actions.
               </p>
 
@@ -391,7 +391,7 @@ export default function WhatIsVisitorDeanonymization() {
               <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">Pixel Installation</h3>
               <p className="text-gray-700 leading-relaxed">
                 The deanonymization pixel is a lightweight JavaScript tag (typically 2-5 KB gzipped) that is added to every page of the website. It can be deployed directly in the HTML head, through a tag manager (Google Tag Manager, Segment), or via a server-side integration. The pixel loads asynchronously to avoid impacting page performance and begins signal collection immediately upon execution. Cursive&apos;s{" "}
-                <Link href="/platform" className="text-[#007AFF] hover:underline">platform</Link>{" "}
+                <Link href="/platform" className="text-primary hover:underline">platform</Link>{" "}
                 provides a one-line pixel installation that works with any website framework.
               </p>
 
@@ -403,7 +403,7 @@ export default function WhatIsVisitorDeanonymization() {
               <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">Webhook Configuration</h3>
               <p className="text-gray-700 leading-relaxed">
                 Webhooks provide real-time event-driven data delivery. When a visitor is identified, the platform sends an HTTP POST request to your configured endpoint with the enriched visitor profile. This enables immediate action -- triggering a Slack notification, updating a CRM record, or adding the visitor to a{" "}
-                <Link href="/intent-audiences" className="text-[#007AFF] hover:underline">real-time intent audience</Link>. Webhook payloads typically include visitor identity (name, email, title), company data (firmographics, technographics), session data (pages viewed, referral source, time on site), and the confidence score.
+                <Link href="/intent-audiences" className="text-primary hover:underline">real-time intent audience</Link>. Webhook payloads typically include visitor identity (name, email, title), company data (firmographics, technographics), session data (pages viewed, referral source, time on site), and the confidence score.
               </p>
 
               <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">Real-Time vs. Batch Processing</h3>
@@ -445,7 +445,7 @@ export default function WhatIsVisitorDeanonymization() {
 
               <p className="text-gray-700 leading-relaxed mb-6">
                 The visitor deanonymization market includes several platforms with different strengths. Here is how the leading providers compare across key capabilities. For a deeper analysis, see our{" "}
-                <Link href="/blog/clearbit-alternatives-comparison" className="text-[#007AFF] hover:underline">Clearbit alternatives comparison</Link>.
+                <Link href="/blog/clearbit-alternatives-comparison" className="text-primary hover:underline">Clearbit alternatives comparison</Link>.
               </p>
 
               <div className="overflow-x-auto my-6">
@@ -546,31 +546,31 @@ export default function WhatIsVisitorDeanonymization() {
 
               <ul className="list-disc list-inside text-gray-700 space-y-3">
                 <li>
-                  <Link href="/what-is-website-visitor-identification" className="text-[#007AFF] hover:underline">What is Website Visitor Identification?</Link> -- A comprehensive overview of how visitor identification works at the company and individual level
+                  <Link href="/what-is-website-visitor-identification" className="text-primary hover:underline">What is Website Visitor Identification?</Link> -- A comprehensive overview of how visitor identification works at the company and individual level
                 </li>
                 <li>
-                  <Link href="/what-is-b2b-intent-data" className="text-[#007AFF] hover:underline">What is B2B Intent Data?</Link> -- Understanding how intent signals reveal buying behavior and accelerate pipeline
+                  <Link href="/what-is-b2b-intent-data" className="text-primary hover:underline">What is B2B Intent Data?</Link> -- Understanding how intent signals reveal buying behavior and accelerate pipeline
                 </li>
                 <li>
-                  <Link href="/what-is-lead-enrichment" className="text-[#007AFF] hover:underline">What is Lead Enrichment?</Link> -- How enrichment platforms append firmographic, technographic, and contact data to your leads
+                  <Link href="/what-is-lead-enrichment" className="text-primary hover:underline">What is Lead Enrichment?</Link> -- How enrichment platforms append firmographic, technographic, and contact data to your leads
                 </li>
                 <li>
-                  <Link href="/visitor-identification" className="text-[#007AFF] hover:underline">Cursive Visitor Identification</Link> -- See how Cursive identifies anonymous visitors in real time
+                  <Link href="/visitor-identification" className="text-primary hover:underline">Cursive Visitor Identification</Link> -- See how Cursive identifies anonymous visitors in real time
                 </li>
                 <li>
-                  <Link href="/platform" className="text-[#007AFF] hover:underline">Cursive Platform Overview</Link> -- Explore the full-stack B2B data and outbound automation platform
+                  <Link href="/platform" className="text-primary hover:underline">Cursive Platform Overview</Link> -- Explore the full-stack B2B data and outbound automation platform
                 </li>
                 <li>
-                  <Link href="/blog/clearbit-alternatives-comparison" className="text-[#007AFF] hover:underline">Clearbit Alternatives Comparison</Link> -- Compare leading data enrichment and identification providers
+                  <Link href="/blog/clearbit-alternatives-comparison" className="text-primary hover:underline">Clearbit Alternatives Comparison</Link> -- Compare leading data enrichment and identification providers
                 </li>
                 <li>
-                  <Link href="/blog/warmly-vs-cursive-comparison" className="text-[#007AFF] hover:underline">Warmly vs. Cursive Comparison</Link> -- A detailed comparison of two visitor identification approaches
+                  <Link href="/blog/warmly-vs-cursive-comparison" className="text-primary hover:underline">Warmly vs. Cursive Comparison</Link> -- A detailed comparison of two visitor identification approaches
                 </li>
                 <li>
-                  <Link href="/industries/b2b-software" className="text-[#007AFF] hover:underline">B2B Software Industry Solutions</Link> -- How SaaS companies use deanonymization to grow pipeline
+                  <Link href="/industries/b2b-software" className="text-primary hover:underline">B2B Software Industry Solutions</Link> -- How SaaS companies use deanonymization to grow pipeline
                 </li>
                 <li>
-                  <Link href="/industries/technology" className="text-[#007AFF] hover:underline">Technology Industry Solutions</Link> -- Visitor identification strategies for technology companies
+                  <Link href="/industries/technology" className="text-primary hover:underline">Technology Industry Solutions</Link> -- Visitor identification strategies for technology companies
                 </li>
               </ul>
 
@@ -585,19 +585,19 @@ export default function WhatIsVisitorDeanonymization() {
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Link
                     href="/free-audit"
-                    className="inline-block px-8 py-3 bg-[#007AFF] text-white rounded-lg hover:bg-[#0066DD] transition-colors text-center"
+                    className="inline-block px-8 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors text-center"
                   >
                     Get Your Free Audit
                   </Link>
                   <Link
                     href="/pricing"
-                    className="inline-block px-8 py-3 border border-gray-300 text-gray-700 rounded-lg hover:border-[#007AFF] hover:text-[#007AFF] transition-colors text-center"
+                    className="inline-block px-8 py-3 border border-gray-300 text-gray-700 rounded-lg hover:border-primary hover:text-primary transition-colors text-center"
                   >
                     View Pricing
                   </Link>
                 </div>
                 <p className="text-sm text-gray-500 mt-4">
-                  Questions? <Link href="/contact" className="text-[#007AFF] hover:underline">Contact our team</Link> for a personalized walkthrough.
+                  Questions? <Link href="/contact" className="text-primary hover:underline">Contact our team</Link> for a personalized walkthrough.
                 </p>
               </div>
             </article>

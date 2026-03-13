@@ -12,7 +12,7 @@ export function CredibilityBar() {
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 py-8 border-y border-gray-200">
       {STATS.map(s => (
         <div key={s.label} className="text-center">
-          <div className="text-[#007AFF] font-bold text-xl">{s.value}</div>
+          <div className="text-primary font-bold text-xl">{s.value}</div>
           <div className="text-gray-500 text-xs mt-0.5">{s.label}</div>
         </div>
       ))}

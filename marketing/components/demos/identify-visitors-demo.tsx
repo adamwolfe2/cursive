@@ -96,7 +96,7 @@ export default function IdentifyVisitorsDemo() {
               }}
               className="pointer-events-none"
             >
-              <Eye className="w-5 h-5 text-[#007AFF]" />
+              <Eye className="w-5 h-5 text-primary" />
             </motion.div>
           ))}
         </motion.div>

@@ -85,17 +85,17 @@ export default function WhatIsDirectMailAutomation() {
               <nav className="bg-gray-50 rounded-lg p-6 mb-10">
                 <h2 className="text-lg font-semibold text-gray-900 mb-3">Table of Contents</h2>
                 <ol className="list-decimal list-inside space-y-2 text-gray-700">
-                  <li><a href="#how-direct-mail-automation-works" className="text-[#007AFF] hover:underline">How Direct Mail Automation Works</a></li>
-                  <li><a href="#types-of-automated-direct-mail" className="text-[#007AFF] hover:underline">Types of Automated Direct Mail</a></li>
-                  <li><a href="#trigger-events" className="text-[#007AFF] hover:underline">Trigger Events</a></li>
-                  <li><a href="#personalization-capabilities" className="text-[#007AFF] hover:underline">Personalization Capabilities</a></li>
-                  <li><a href="#roi-and-performance" className="text-[#007AFF] hover:underline">ROI and Performance Benchmarks</a></li>
-                  <li><a href="#use-cases" className="text-[#007AFF] hover:underline">Use Cases</a></li>
-                  <li><a href="#implementation-guide" className="text-[#007AFF] hover:underline">Implementation Guide</a></li>
-                  <li><a href="#provider-comparison" className="text-[#007AFF] hover:underline">Provider Comparison</a></li>
-                  <li><a href="#integration-with-digital" className="text-[#007AFF] hover:underline">Integration with Digital Campaigns</a></li>
-                  <li><a href="#faq" className="text-[#007AFF] hover:underline">Frequently Asked Questions</a></li>
-                  <li><a href="#related-resources" className="text-[#007AFF] hover:underline">Related Resources</a></li>
+                  <li><a href="#how-direct-mail-automation-works" className="text-primary hover:underline">How Direct Mail Automation Works</a></li>
+                  <li><a href="#types-of-automated-direct-mail" className="text-primary hover:underline">Types of Automated Direct Mail</a></li>
+                  <li><a href="#trigger-events" className="text-primary hover:underline">Trigger Events</a></li>
+                  <li><a href="#personalization-capabilities" className="text-primary hover:underline">Personalization Capabilities</a></li>
+                  <li><a href="#roi-and-performance" className="text-primary hover:underline">ROI and Performance Benchmarks</a></li>
+                  <li><a href="#use-cases" className="text-primary hover:underline">Use Cases</a></li>
+                  <li><a href="#implementation-guide" className="text-primary hover:underline">Implementation Guide</a></li>
+                  <li><a href="#provider-comparison" className="text-primary hover:underline">Provider Comparison</a></li>
+                  <li><a href="#integration-with-digital" className="text-primary hover:underline">Integration with Digital Campaigns</a></li>
+                  <li><a href="#faq" className="text-primary hover:underline">Frequently Asked Questions</a></li>
+                  <li><a href="#related-resources" className="text-primary hover:underline">Related Resources</a></li>
                 </ol>
               </nav>
 
@@ -113,7 +113,7 @@ export default function WhatIsDirectMailAutomation() {
               </h3>
               <p className="text-gray-600 leading-relaxed mb-4">
                 Every automated mail piece begins with a trigger -- a specific event or condition that initiates the send. Triggers can come from your CRM (deal stage change, lead score threshold), marketing automation platform (email non-response after three attempts), website behavior (visited pricing page, viewed case study),{" "}
-                <Link href="/visitor-identification" className="text-[#007AFF] hover:underline">visitor identification</Link>{" "}
+                <Link href="/visitor-identification" className="text-primary hover:underline">visitor identification</Link>{" "}
                 data (high-value company identified browsing your site), or calendar events (contract renewal approaching, anniversary date). The trigger fires through a webhook or native integration, passing the recipient&apos;s data to the direct mail platform.
               </p>
 
@@ -152,7 +152,7 @@ export default function WhatIsDirectMailAutomation() {
 
               <p className="text-gray-600 leading-relaxed mb-6">
                 Different mail formats serve different purposes in the buyer&apos;s journey. Understanding the strengths, costs, and response rates of each format helps you build an effective{" "}
-                <Link href="/direct-mail" className="text-[#007AFF] hover:underline">direct mail strategy</Link>.
+                <Link href="/direct-mail" className="text-primary hover:underline">direct mail strategy</Link>.
               </p>
 
               <table className="w-full border-collapse border border-gray-200 mb-8">
@@ -237,7 +237,7 @@ export default function WhatIsDirectMailAutomation() {
               </h3>
               <ul className="list-disc pl-6 space-y-2 text-gray-600 mb-6">
                 <li><strong>Website visit to high-intent pages:</strong> When{" "}
-                  <Link href="/visitor-identification" className="text-[#007AFF] hover:underline">visitor identification</Link>{" "}
+                  <Link href="/visitor-identification" className="text-primary hover:underline">visitor identification</Link>{" "}
                   reveals a target account browsing your pricing or product pages, trigger a personalized postcard within 24 hours. The speed and relevance of this touchpoint creates a powerful &quot;they know me&quot; effect.</li>
                 <li><strong>Content download or webinar registration:</strong> Follow up a digital engagement with a physical touchpoint to reinforce the relationship. A handwritten thank-you note after a webinar attendance stands out among the flood of automated follow-up emails.</li>
                 <li><strong>Trade show or event attendance:</strong> Send a personalized postcard referencing the specific event and conversation within days of the event, while the memory is fresh.</li>
@@ -250,7 +250,7 @@ export default function WhatIsDirectMailAutomation() {
                 <li><strong>Demo no-show:</strong> When a prospect misses a scheduled demo, an automated handwritten note expressing understanding and offering to reschedule has a 25-40% re-booking rate, significantly higher than the typical email follow-up.</li>
                 <li><strong>Proposal sent but no response:</strong> Three days after sending a proposal with no response, trigger a dimensional mailer that creates urgency and reminds the prospect of the value discussed.</li>
                 <li><strong>Competitor evaluation signal:</strong> When{" "}
-                  <Link href="/what-is-b2b-intent-data" className="text-[#007AFF] hover:underline">intent data</Link>{" "}
+                  <Link href="/what-is-b2b-intent-data" className="text-primary hover:underline">intent data</Link>{" "}
                   reveals a target account researching competitors, send a comparison-focused postcard highlighting your differentiation.</li>
               </ul>
 
@@ -292,7 +292,7 @@ export default function WhatIsDirectMailAutomation() {
               </h3>
               <p className="text-gray-600 leading-relaxed mb-4">
                 PURLs like <em>yourcompany.com/john-smith</em> create a premium, personalized experience that reinforces the one-to-one nature of the outreach. When the recipient visits their PURL, you capture the visit in your analytics and CRM, enabling immediate sales follow-up. PURLs work especially well for executive outreach where the personal touch justifies the setup effort. They can be combined with{" "}
-                <Link href="/what-is-lead-enrichment" className="text-[#007AFF] hover:underline">lead enrichment</Link>{" "}
+                <Link href="/what-is-lead-enrichment" className="text-primary hover:underline">lead enrichment</Link>{" "}
                 data to pre-populate the landing page with the recipient&apos;s company information and relevant use cases.
               </p>
 
@@ -301,7 +301,7 @@ export default function WhatIsDirectMailAutomation() {
               </h3>
               <p className="text-gray-600 leading-relaxed mb-4">
                 The most sophisticated personalization in direct mail automation is robotic handwriting. Platforms use actual pens (not printers) to write messages in custom handwriting fonts that can be created from any team member&apos;s actual handwriting. The result is a note that feels genuinely personal, complete with realistic pen pressure variations and slight imperfections that make it indistinguishable from a hand-written message. This technology is particularly impactful for sales development teams using{" "}
-                <Link href="/what-is-ai-sdr" className="text-[#007AFF] hover:underline">AI SDR tools</Link>{" "}
+                <Link href="/what-is-ai-sdr" className="text-primary hover:underline">AI SDR tools</Link>{" "}
                 to automate outreach at scale while maintaining a personal touch.
               </p>
 
@@ -389,7 +389,7 @@ export default function WhatIsDirectMailAutomation() {
               </h3>
               <p className="text-gray-600 leading-relaxed mb-4">
                 Organizations that integrate direct mail into their outbound sequences report measurable pipeline improvements. Industry studies show that multi-channel sequences including direct mail generate 28% more pipeline than email-only sequences. Meeting booking rates increase by 3-5x when a physical touchpoint precedes the call. Deal velocity improves by 15-20% when direct mail is used strategically at key decision points. These numbers are amplified when direct mail is combined with{" "}
-                <Link href="/intent-audiences" className="text-[#007AFF] hover:underline">intent audience</Link>{" "}
+                <Link href="/intent-audiences" className="text-primary hover:underline">intent audience</Link>{" "}
                 targeting, ensuring you are sending expensive physical pieces only to prospects showing active buying signals.
               </p>
 
@@ -403,7 +403,7 @@ export default function WhatIsDirectMailAutomation() {
               </h3>
               <p className="text-gray-600 leading-relaxed mb-4">
                 Sales development teams use automated direct mail to break through inbox fatigue and get meetings with hard-to-reach executives. A typical workflow: an SDR identifies a target account, the automation platform sends a handwritten note introducing the rep and referencing a specific business challenge, followed by a call 3-4 days later. Because the recipient has a physical reminder on their desk, the call connects at a much higher rate. This approach is particularly effective when combined with{" "}
-                <Link href="/audience-builder" className="text-[#007AFF] hover:underline">audience builder</Link>{" "}
+                <Link href="/audience-builder" className="text-primary hover:underline">audience builder</Link>{" "}
                 tools that identify the right contacts at target accounts.
               </p>
 
@@ -433,7 +433,7 @@ export default function WhatIsDirectMailAutomation() {
               </h3>
               <p className="text-gray-600 leading-relaxed mb-4">
                 The{" "}
-                <Link href="/industries/real-estate" className="text-[#007AFF] hover:underline">real estate industry</Link>{" "}
+                <Link href="/industries/real-estate" className="text-primary hover:underline">real estate industry</Link>{" "}
                 is one of the largest adopters of direct mail automation. Agents use triggered postcards for just-listed and just-sold notifications in target neighborhoods, market update mailers personalized with local statistics, anniversary cards sent on the anniversary of a home purchase, and automated farming campaigns that maintain presence in target zip codes. The tangibility of direct mail aligns perfectly with the tangible nature of real estate, and automation enables individual agents to maintain consistent marketing without administrative overhead.
               </p>
 
@@ -442,7 +442,7 @@ export default function WhatIsDirectMailAutomation() {
               </h3>
               <p className="text-gray-600 leading-relaxed mb-4">
                 For{" "}
-                <Link href="/industries/ecommerce" className="text-[#007AFF] hover:underline">ecommerce brands</Link>,{" "}
+                <Link href="/industries/ecommerce" className="text-primary hover:underline">ecommerce brands</Link>,{" "}
                 direct mail automation reactivates lapsed customers who are no longer opening emails. Triggered by periods of inactivity (30, 60, or 90 days without a purchase), personalized postcards featuring the customer&apos;s previously browsed products, a limited-time discount code, and a QR code linking to their personalized cart create urgency that re-engages dormant customers. Ecommerce brands using automated win-back mail report 5-10% reactivation rates, recovering revenue that would otherwise be lost.
               </p>
 
@@ -460,7 +460,7 @@ export default function WhatIsDirectMailAutomation() {
               </h3>
               <p className="text-gray-600 leading-relaxed mb-4">
                 Evaluate platforms based on your specific needs. Key criteria include: CRM and marketing automation integrations (native integrations reduce setup time), mail format options (do they support the formats you need?), personalization capabilities (variable data, handwriting, QR codes), address verification and deliverability rates, tracking and attribution features, production speed and geographic coverage, and minimum order requirements. Platforms like{" "}
-                <Link href="/platform" className="text-[#007AFF] hover:underline">Cursive</Link>{" "}
+                <Link href="/platform" className="text-primary hover:underline">Cursive</Link>{" "}
                 combine direct mail automation with visitor identification and digital outreach, enabling true multi-channel orchestration from a single platform.
               </p>
 
@@ -483,7 +483,7 @@ export default function WhatIsDirectMailAutomation() {
               </h3>
               <p className="text-gray-600 leading-relaxed mb-4">
                 Start with a single use case and a small audience. A common pilot: send automated handwritten notes to the 50-100 highest-value prospects who have visited your website in the last 30 days (using{" "}
-                <Link href="/visitor-identification" className="text-[#007AFF] hover:underline">visitor identification data</Link>).{" "}
+                <Link href="/visitor-identification" className="text-primary hover:underline">visitor identification data</Link>).{" "}
                 Measure delivery rate, response rate, meetings booked, and pipeline generated. Compare results against your digital-only outreach to the same segment. Use the pilot results to refine your templates, timing, and targeting before scaling.
               </p>
 
@@ -492,7 +492,7 @@ export default function WhatIsDirectMailAutomation() {
               </h3>
               <p className="text-gray-600 leading-relaxed mb-4">
                 After launching your pilot, establish a regular optimization cadence. Track response rates by template, format, trigger type, and audience segment. A/B test headlines, offers, formats, and timing. Monitor cost per response and cost per meeting to ensure ROI targets are met. Gradually expand to additional trigger events and audience segments based on what works. Request a{" "}
-                <Link href="/free-audit" className="text-[#007AFF] hover:underline">free audit</Link>{" "}
+                <Link href="/free-audit" className="text-primary hover:underline">free audit</Link>{" "}
                 to identify the highest-impact opportunities for adding direct mail to your existing go-to-market motions.
               </p>
 
@@ -556,9 +556,9 @@ export default function WhatIsDirectMailAutomation() {
 
               <p className="text-gray-600 leading-relaxed mb-4">
                 The right provider depends on your primary use case. For B2B teams that want direct mail as part of a broader multi-channel strategy,{" "}
-                <Link href="/platform" className="text-[#007AFF] hover:underline">Cursive&apos;s integrated platform</Link>{" "}
+                <Link href="/platform" className="text-primary hover:underline">Cursive&apos;s integrated platform</Link>{" "}
                 eliminates the need to stitch together separate tools for visitor identification, data enrichment, email sequencing, and direct mail. For teams focused exclusively on gifting and swag, Sendoso offers the broadest marketplace. For engineering teams building custom mail workflows, Lob&apos;s API-first approach provides maximum flexibility. Compare{" "}
-                <Link href="/pricing" className="text-[#007AFF] hover:underline">pricing options</Link>{" "}
+                <Link href="/pricing" className="text-primary hover:underline">pricing options</Link>{" "}
                 to find the right fit.
               </p>
 
@@ -583,7 +583,7 @@ export default function WhatIsDirectMailAutomation() {
               </h3>
               <p className="text-gray-600 leading-relaxed mb-4">
                 Timing is critical when coordinating physical and digital touches. Account for mail delivery time (3-5 business days for first-class) when planning sequence cadence. Use USPS Informed Delivery tracking to trigger digital follow-up on the estimated delivery date. Send an email the day a mail piece is expected to arrive, referencing the physical piece: &quot;You should have received something from us today...&quot; This creates a synchronized experience that feels intentional and coordinated. The{" "}
-                <Link href="/what-is-account-based-marketing" className="text-[#007AFF] hover:underline">account-based marketing</Link>{" "}
+                <Link href="/what-is-account-based-marketing" className="text-primary hover:underline">account-based marketing</Link>{" "}
                 methodology is particularly well-suited to this kind of orchestrated outreach.
               </p>
 
@@ -619,37 +619,37 @@ export default function WhatIsDirectMailAutomation() {
 
               <ul className="space-y-3 mb-12">
                 <li>
-                  <Link href="/direct-mail" className="text-[#007AFF] hover:underline">
+                  <Link href="/direct-mail" className="text-primary hover:underline">
                     Cursive Direct Mail Platform
                   </Link>
                 </li>
                 <li>
-                  <Link href="/what-is-website-visitor-identification" className="text-[#007AFF] hover:underline">
+                  <Link href="/what-is-website-visitor-identification" className="text-primary hover:underline">
                     What is Website Visitor Identification? Complete Guide
                   </Link>
                 </li>
                 <li>
-                  <Link href="/what-is-b2b-intent-data" className="text-[#007AFF] hover:underline">
+                  <Link href="/what-is-b2b-intent-data" className="text-primary hover:underline">
                     What is B2B Intent Data? Everything You Need to Know
                   </Link>
                 </li>
                 <li>
-                  <Link href="/what-is-ai-sdr" className="text-[#007AFF] hover:underline">
+                  <Link href="/what-is-ai-sdr" className="text-primary hover:underline">
                     What is an AI SDR? The Complete Guide
                   </Link>
                 </li>
                 <li>
-                  <Link href="/what-is-lead-enrichment" className="text-[#007AFF] hover:underline">
+                  <Link href="/what-is-lead-enrichment" className="text-primary hover:underline">
                     What is Lead Enrichment? Complete Guide
                   </Link>
                 </li>
                 <li>
-                  <Link href="/industries/real-estate" className="text-[#007AFF] hover:underline">
+                  <Link href="/industries/real-estate" className="text-primary hover:underline">
                     Direct Mail Automation for Real Estate
                   </Link>
                 </li>
                 <li>
-                  <Link href="/industries/ecommerce" className="text-[#007AFF] hover:underline">
+                  <Link href="/industries/ecommerce" className="text-primary hover:underline">
                     Direct Mail for Ecommerce Brands
                   </Link>
                 </li>
@@ -666,7 +666,7 @@ export default function WhatIsDirectMailAutomation() {
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Link
                     href="/free-audit"
-                    className="inline-flex items-center justify-center px-6 py-3 bg-[#007AFF] text-white font-semibold rounded-lg hover:bg-blue-600 transition-colors"
+                    className="inline-flex items-center justify-center px-6 py-3 bg-primary text-white font-semibold rounded-lg hover:bg-blue-600 transition-colors"
                   >
                     Get a Free Audit
                   </Link>

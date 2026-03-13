@@ -87,14 +87,14 @@ export default function WhatIsB2BIntentDataPage() {
 
               <p className="text-lg text-gray-600 mb-8">
                 In 2026, intent data has evolved from a niche capability used by enterprise marketing teams into a core component of every modern B2B go-to-market strategy. According to Gartner, 70% of B2B marketers now use intent data in some form, up from just 28% in 2021. The shift is driven by a fundamental change in buyer behavior: decision-makers complete 70-80% of their research online before ever contacting a vendor. Platforms like{" "}
-                <Link href="/platform" className="text-[#007AFF] hover:underline">Cursive</Link> combine intent data with{" "}
-                <Link href="/visitor-identification" className="text-[#007AFF] hover:underline">visitor identification</Link> to give revenue teams a complete picture of who is interested and what they are researching.
+                <Link href="/platform" className="text-primary hover:underline">Cursive</Link> combine intent data with{" "}
+                <Link href="/visitor-identification" className="text-primary hover:underline">visitor identification</Link> to give revenue teams a complete picture of who is interested and what they are researching.
               </p>
 
               {/* Table of Contents */}
               <nav className="bg-gray-50 rounded-lg p-6 mb-10">
                 <h2 className="text-lg font-semibold text-gray-900 mb-4 mt-0">Table of Contents</h2>
-                <ol className="list-decimal list-inside space-y-2 text-[#007AFF] mb-0">
+                <ol className="list-decimal list-inside space-y-2 text-primary mb-0">
                   <li><a href="#how-it-works" className="hover:underline">How B2B Intent Data Works</a></li>
                   <li><a href="#types-of-intent-data" className="hover:underline">Types of Intent Data</a></li>
                   <li><a href="#intent-data-sources" className="hover:underline">Intent Data Sources</a></li>
@@ -122,7 +122,7 @@ export default function WhatIsB2BIntentDataPage() {
               </h3>
               <p>
                 The intent data pipeline begins with collecting behavioral signals from across the internet. These signals come from multiple sources: website visits tracked through{" "}
-                <Link href="/what-is-website-visitor-identification" className="text-[#007AFF] hover:underline">visitor identification</Link> pixels, content consumption on publisher networks, search engine queries, social media engagement, review site activity, and event registrations. Each signal type provides a different view into a company&apos;s research activity. The breadth and depth of signal collection is what separates basic intent tools from comprehensive platforms.
+                <Link href="/what-is-website-visitor-identification" className="text-primary hover:underline">visitor identification</Link> pixels, content consumption on publisher networks, search engine queries, social media engagement, review site activity, and event registrations. Each signal type provides a different view into a company&apos;s research activity. The breadth and depth of signal collection is what separates basic intent tools from comprehensive platforms.
               </p>
 
               <p>
@@ -141,7 +141,7 @@ export default function WhatIsB2BIntentDataPage() {
               </h3>
               <p>
                 The final stage converts processed signals into quantified intent scores that are delivered to your go-to-market tools. Scoring models weight different signal types based on their predictive value. Visiting a pricing page is weighted more heavily than reading a general industry article. Multiple signals from the same company in a short time window create a &quot;surge&quot; that indicates heightened buying activity. These scores are then pushed to CRMs, marketing automation platforms, and sales engagement tools in real time, enabling immediate action. Cursive&apos;s{" "}
-                <Link href="/intent-audiences" className="text-[#007AFF] hover:underline">intent audiences</Link> feature automatically segments companies by their intent level and routes them to the appropriate workflow.
+                <Link href="/intent-audiences" className="text-primary hover:underline">intent audiences</Link> feature automatically segments companies by their intent level and routes them to the appropriate workflow.
               </p>
 
               {/* Section 2: Types of Intent Data */}
@@ -161,7 +161,7 @@ export default function WhatIsB2BIntentDataPage() {
               </p>
               <p>
                 The primary limitation of first-party data is scope. You can only observe behavior that happens on your own properties, which represents a small fraction of a buyer&apos;s total research activity. A prospect might spend weeks researching a category before ever visiting your website. To capture these earlier-stage signals, you need second-party and third-party data.{" "}
-                <Link href="/visitor-identification" className="text-[#007AFF] hover:underline">Visitor identification</Link> is the foundation of first-party intent because without it, 95-98% of your website visitors remain anonymous.
+                <Link href="/visitor-identification" className="text-primary hover:underline">Visitor identification</Link> is the foundation of first-party intent because without it, 95-98% of your website visitors remain anonymous.
               </p>
 
               <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
@@ -266,7 +266,7 @@ export default function WhatIsB2BIntentDataPage() {
               </h3>
               <p>
                 Knowing which companies are visiting your competitors&apos; websites is enormously valuable. This signal indicates active comparison shopping and evaluation. Through{" "}
-                <Link href="/what-is-website-visitor-identification" className="text-[#007AFF] hover:underline">visitor identification technology</Link> and data cooperative networks, some providers can surface when target accounts are engaging with competitor content. This is particularly useful for competitive displacement campaigns and for timing outreach to coincide with active evaluation windows.
+                <Link href="/what-is-website-visitor-identification" className="text-primary hover:underline">visitor identification technology</Link> and data cooperative networks, some providers can surface when target accounts are engaging with competitor content. This is particularly useful for competitive displacement campaigns and for timing outreach to coincide with active evaluation windows.
               </p>
 
               <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
@@ -327,7 +327,7 @@ export default function WhatIsB2BIntentDataPage() {
               </h3>
               <p>
                 The most immediate application of intent data is helping sales teams prioritize which accounts to contact first. Instead of working through a static account list alphabetically or by company size, reps focus on accounts showing active buying signals. Research from SiriusDecisions found that accounts showing intent are 2.5x more likely to convert to opportunities compared to accounts contacted through cold outreach. By integrating intent data with your CRM, reps see real-time intent scores on their accounts and can prioritize their daily outreach accordingly. Cursive&apos;s{" "}
-                <Link href="/audience-builder" className="text-[#007AFF] hover:underline">audience builder</Link> makes it easy to create dynamic lists of high-intent accounts that update automatically.
+                <Link href="/audience-builder" className="text-primary hover:underline">audience builder</Link> makes it easy to create dynamic lists of high-intent accounts that update automatically.
               </p>
 
               <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
@@ -335,7 +335,7 @@ export default function WhatIsB2BIntentDataPage() {
               </h3>
               <p>
                 Intent data transforms ABM from a spray-and-pray approach into precision targeting. Instead of running ads and campaigns to your entire target account list, you focus budget on the accounts actively researching your category. This means your display ads, LinkedIn campaigns, and{" "}
-                <Link href="/direct-mail" className="text-[#007AFF] hover:underline">direct mail</Link> pieces reach accounts when they are most receptive. ABM programs powered by intent data typically see 40-60% higher engagement rates and 25-35% lower cost per qualified opportunity because marketing spend is concentrated on accounts that are already in-market.
+                <Link href="/direct-mail" className="text-primary hover:underline">direct mail</Link> pieces reach accounts when they are most receptive. ABM programs powered by intent data typically see 40-60% higher engagement rates and 25-35% lower cost per qualified opportunity because marketing spend is concentrated on accounts that are already in-market.
               </p>
 
               <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
@@ -410,7 +410,7 @@ export default function WhatIsB2BIntentDataPage() {
               </h3>
               <p>
                 Start by evaluating providers based on the criteria that matter most for your business. Consider the types of intent data offered (first-party, second-party, third-party), topic taxonomy coverage for your industry, geographic coverage if you sell internationally, integration capabilities with your existing stack, and pricing model. Request sample data for your target accounts to evaluate quality before committing. Cursive&apos;s{" "}
-                <Link href="/free-audit" className="text-[#007AFF] hover:underline">free audit</Link> lets you see intent data for your actual website visitors before making a purchase decision.
+                <Link href="/free-audit" className="text-primary hover:underline">free audit</Link> lets you see intent data for your actual website visitors before making a purchase decision.
               </p>
 
               <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
@@ -425,7 +425,7 @@ export default function WhatIsB2BIntentDataPage() {
               </h3>
               <p>
                 The final phase is building operational workflows that turn intent data into action. Define what should happen when an account shows different levels of intent. High-intent accounts (surging on your product category, visiting your website, engaging with competitors) should trigger immediate sales outreach and targeted advertising. Medium-intent accounts (researching your category but not yet engaged with you) should enter nurture campaigns and ABM programs. Low-intent accounts should continue to be monitored until they show stronger signals. Setting up these automated workflows ensures consistent follow-through and maximum ROI from your intent data investment. Pair intent data with an{" "}
-                <Link href="/what-is-ai-sdr" className="text-[#007AFF] hover:underline">AI SDR</Link> to automate personalized outreach at scale.
+                <Link href="/what-is-ai-sdr" className="text-primary hover:underline">AI SDR</Link> to automate personalized outreach at scale.
               </p>
 
               {/* Section 8: Provider Comparison */}
@@ -496,8 +496,8 @@ export default function WhatIsB2BIntentDataPage() {
 
               <p>
                 For a detailed comparison of how Cursive&apos;s intent data capabilities stack up against 6sense, see our{" "}
-                <Link href="/blog/6sense-vs-cursive-comparison" className="text-[#007AFF] hover:underline">6sense vs. Cursive comparison</Link>. You can also learn more about how intent data integrates with visitor identification on our{" "}
-                <Link href="/data-access" className="text-[#007AFF] hover:underline">data access</Link> page.
+                <Link href="/blog/6sense-vs-cursive-comparison" className="text-primary hover:underline">6sense vs. Cursive comparison</Link>. You can also learn more about how intent data integrates with visitor identification on our{" "}
+                <Link href="/data-access" className="text-primary hover:underline">data access</Link> page.
               </p>
 
               {/* Section 9: FAQ */}
@@ -525,22 +525,22 @@ export default function WhatIsB2BIntentDataPage() {
 
               <ul>
                 <li>
-                  <Link href="/what-is-website-visitor-identification" className="text-[#007AFF] hover:underline">What is Website Visitor Identification?</Link> &mdash; Learn how to identify the companies and individuals behind your anonymous website traffic.
+                  <Link href="/what-is-website-visitor-identification" className="text-primary hover:underline">What is Website Visitor Identification?</Link> &mdash; Learn how to identify the companies and individuals behind your anonymous website traffic.
                 </li>
                 <li>
-                  <Link href="/what-is-ai-sdr" className="text-[#007AFF] hover:underline">What is an AI SDR?</Link> &mdash; Discover how AI-powered sales development automates follow-up on intent signals.
+                  <Link href="/what-is-ai-sdr" className="text-primary hover:underline">What is an AI SDR?</Link> &mdash; Discover how AI-powered sales development automates follow-up on intent signals.
                 </li>
                 <li>
-                  <Link href="/intent-audiences" className="text-[#007AFF] hover:underline">Intent Audiences</Link> &mdash; Build dynamic audience segments based on real-time intent signals.
+                  <Link href="/intent-audiences" className="text-primary hover:underline">Intent Audiences</Link> &mdash; Build dynamic audience segments based on real-time intent signals.
                 </li>
                 <li>
-                  <Link href="/platform" className="text-[#007AFF] hover:underline">Cursive Platform</Link> &mdash; See how Cursive combines visitor identification, intent data, and AI outreach in one platform.
+                  <Link href="/platform" className="text-primary hover:underline">Cursive Platform</Link> &mdash; See how Cursive combines visitor identification, intent data, and AI outreach in one platform.
                 </li>
                 <li>
-                  <Link href="/industries/b2b-software" className="text-[#007AFF] hover:underline">Intent Data for B2B Software</Link> &mdash; Industry-specific strategies for leveraging intent data in the software sector.
+                  <Link href="/industries/b2b-software" className="text-primary hover:underline">Intent Data for B2B Software</Link> &mdash; Industry-specific strategies for leveraging intent data in the software sector.
                 </li>
                 <li>
-                  <Link href="/industries/technology" className="text-[#007AFF] hover:underline">Intent Data for Technology Companies</Link> &mdash; How technology companies use intent signals to accelerate pipeline.
+                  <Link href="/industries/technology" className="text-primary hover:underline">Intent Data for Technology Companies</Link> &mdash; How technology companies use intent signals to accelerate pipeline.
                 </li>
               </ul>
 
@@ -555,7 +555,7 @@ export default function WhatIsB2BIntentDataPage() {
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Link
                     href="/free-audit"
-                    className="inline-flex items-center justify-center px-6 py-3 bg-[#007AFF] text-white font-medium rounded-lg hover:bg-[#0063D1] transition-colors no-underline"
+                    className="inline-flex items-center justify-center px-6 py-3 bg-primary text-white font-medium rounded-lg hover:bg-[#0063D1] transition-colors no-underline"
                   >
                     Get Your Free Audit
                   </Link>

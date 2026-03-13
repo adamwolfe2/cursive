@@ -201,7 +201,7 @@ export function DemoAudienceBuilder() {
             <motion.div
               animate={{ scale: [1, 1.2, 1] }}
               transition={{ duration: 2, repeat: Infinity }}
-              className="w-1.5 h-1.5 rounded-full bg-[#007AFF]"
+              className="w-1.5 h-1.5 rounded-full bg-primary"
             />
           </div>
           <div className="space-y-1">

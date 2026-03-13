@@ -56,7 +56,7 @@ export function VisitorTrackingFlow() {
                     fill="none"
                     stroke="currentColor"
                     strokeWidth="1.5"
-                    className="w-full h-full text-[#007AFF]"
+                    className="w-full h-full text-primary"
                   >
                     <path d={node.iconPath} />
                   </svg>

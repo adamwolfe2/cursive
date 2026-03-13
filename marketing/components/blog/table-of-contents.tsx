@@ -72,7 +72,7 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
                 className={cn(
                   'block py-1 px-3 text-sm transition-colors border-l-2 -ml-[2px]',
                   activeId === heading.id
-                    ? 'border-[#007AFF] text-[#007AFF] font-medium'
+                    ? 'border-primary text-primary font-medium'
                     : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-400'
                 )}
               >

@@ -11,8 +11,6 @@ import { getUserWithRole } from '@/lib/auth/roles'
 import { createAdminClient } from '@/lib/supabase/admin'
 import AdminNav from './_components/AdminNav'
 
-export const dynamic = 'force-dynamic'
-
 export default async function AdminLayout({
   children,
 }: {

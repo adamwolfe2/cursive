@@ -74,7 +74,7 @@ interface MachineLinkProps {
 
 export function MachineLink({ href, children }: MachineLinkProps) {
   return (
-    <a href={href} className="text-[#007AFF] hover:text-[#0066DD] transition-colors underline">
+    <a href={href} className="text-primary hover:text-primary-dark transition-colors underline">
       [{children}]({href})
     </a>
   )

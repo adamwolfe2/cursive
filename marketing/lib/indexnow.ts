@@ -7,7 +7,11 @@
  * @see https://www.indexnow.org/
  */
 
-const INDEXNOW_KEY = process.env.INDEXNOW_KEY || '7c33bde0a15b132aa38f5bea1dd15077'
+const _rawKey = process.env.INDEXNOW_KEY
+if (!_rawKey) {
+  throw new Error('INDEXNOW_KEY environment variable is not set')
+}
+const INDEXNOW_KEY = _rawKey
 const BASE_URL = 'https://www.meetcursive.com'
 
 // IndexNow API endpoints (submit to any one and it propagates to all participating search engines)

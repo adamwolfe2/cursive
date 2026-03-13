@@ -68,11 +68,11 @@ export function DemoEnrichmentWaterfall() {
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-lg p-2.5 border-2 border-[#007AFF]"
+          className="bg-white rounded-lg p-2.5 border-2 border-primary"
         >
           <div className="text-[10px] text-gray-600 mb-1">Input Email</div>
           <div className="flex items-center gap-2">
-            <svg className="w-3.5 h-3.5 text-[#007AFF] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-3.5 h-3.5 text-primary flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
             <span className="text-xs text-gray-900 font-medium truncate">sarah.j@salesforce.com</span>
@@ -98,7 +98,7 @@ export function DemoEnrichmentWaterfall() {
             <motion.div
               animate={{ width: `${completionPercent}%` }}
               transition={{ duration: 0.3 }}
-              className="h-full bg-gradient-to-r from-[#007AFF] to-green-500 rounded-full"
+              className="h-full bg-gradient-to-r from-primary to-green-500 rounded-full"
             />
           </div>
         </motion.div>
@@ -116,7 +116,7 @@ export function DemoEnrichmentWaterfall() {
               step.status === "complete"
                 ? "border-blue-300 bg-blue-50/30"
                 : step.status === "processing"
-                ? "border-[#007AFF] shadow-sm"
+                ? "border-primary shadow-sm"
                 : "border-gray-200"
             }`}
           >
@@ -130,7 +130,7 @@ export function DemoEnrichmentWaterfall() {
                       initial={{ scale: 0, rotate: -180 }}
                       animate={{ scale: 1, rotate: 0 }}
                       exit={{ scale: 0 }}
-                      className="w-5 h-5 rounded-full bg-[#007AFF] flex items-center justify-center"
+                      className="w-5 h-5 rounded-full bg-primary flex items-center justify-center"
                     >
                       <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
@@ -142,7 +142,7 @@ export function DemoEnrichmentWaterfall() {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                      className="w-5 h-5 border-2 border-[#007AFF] border-t-transparent rounded-full animate-spin"
+                      className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin"
                     />
                   ) : (
                     <div key="pending" className="w-5 h-5 rounded-full border-2 border-gray-300 flex items-center justify-center">
@@ -160,7 +160,7 @@ export function DemoEnrichmentWaterfall() {
                     <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-[10px] text-gray-500 ml-2">{step.value}</motion.span>
                   )}
                   {step.status === "processing" && (
-                    <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-[10px] text-[#007AFF] ml-2">Finding...</motion.span>
+                    <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-[10px] text-primary ml-2">Finding...</motion.span>
                   )}
                 </div>
                 {step.status === "complete" && (

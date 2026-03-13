@@ -28,7 +28,7 @@ function CycleStep({ icon: Icon, label, subtitle, delay }: { icon: React.Compone
       className="flex flex-col items-center w-[110px]"
     >
       <div className="w-12 h-12 bg-white rounded-xl border border-gray-200 flex items-center justify-center shadow-sm mb-1.5">
-        <Icon className="h-5 w-5 text-[#007AFF]" />
+        <Icon className="h-5 w-5 text-primary" />
       </div>
       <span className="text-xs font-semibold text-gray-900 mb-0.5">{label}</span>
       <span className="text-[10px] text-gray-500 text-center leading-tight">{subtitle}</span>
@@ -90,7 +90,7 @@ export default function CallBookedPage() {
                       className="bg-[#F7F9FB] rounded-xl p-5 border border-gray-200 text-center"
                     >
                       <span className="text-4xl font-light text-gray-200 block mb-2">1</span>
-                      <div className="w-10 h-10 bg-[#007AFF] rounded-full flex items-center justify-center mx-auto mb-3">
+                      <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
                         <Mail className="h-5 w-5 text-white" />
                       </div>
                       <p className="text-gray-900 font-medium mb-1">Confirm your meeting</p>
@@ -110,7 +110,7 @@ export default function CallBookedPage() {
                       className="bg-[#F7F9FB] rounded-xl p-5 border border-gray-200 text-center"
                     >
                       <span className="text-4xl font-light text-gray-200 block mb-2">2</span>
-                      <div className="w-10 h-10 bg-[#007AFF] rounded-full flex items-center justify-center mx-auto mb-3">
+                      <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
                         <Search className="h-5 w-5 text-white" />
                       </div>
                       <p className="text-gray-900 font-medium mb-1">Explore Cursive below</p>
@@ -130,7 +130,7 @@ export default function CallBookedPage() {
                       className="bg-[#F7F9FB] rounded-xl p-5 border border-gray-200 text-center"
                     >
                       <span className="text-4xl font-light text-gray-200 block mb-2">3</span>
-                      <div className="w-10 h-10 bg-[#007AFF] rounded-full flex items-center justify-center mx-auto mb-3">
+                      <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
                         <Gift className="h-5 w-5 text-white" />
                       </div>
                       <p className="text-gray-900 font-medium mb-1">Grab your free gift</p>
@@ -162,7 +162,7 @@ export default function CallBookedPage() {
                 viewport={{ once: true }}
                 className="text-center max-w-4xl mx-auto mb-16"
               >
-                <span className="text-sm text-[#007AFF] mb-4 block font-medium tracking-wide">THE PLATFORM</span>
+                <span className="text-sm text-primary mb-4 block font-medium tracking-wide">THE PLATFORM</span>
                 <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-6">
                   What is <span className="font-cursive text-6xl lg:text-7xl text-gray-500">Cursive</span>?
                 </h2>
@@ -190,7 +190,7 @@ export default function CallBookedPage() {
                     transition={{ delay: i * 0.1 }}
                     className="bg-white rounded-xl p-6 border border-gray-200 text-center"
                   >
-                    <item.icon className="h-8 w-8 text-[#007AFF] mx-auto mb-3" />
+                    <item.icon className="h-8 w-8 text-primary mx-auto mb-3" />
                     <div className="text-3xl lg:text-4xl font-light text-gray-900 mb-1">{item.stat}</div>
                     <div className="text-sm text-gray-500">{item.label}</div>
                   </motion.div>
@@ -211,7 +211,7 @@ export default function CallBookedPage() {
                   viewport={{ once: true }}
                   className="text-center mb-16"
                 >
-                  <span className="text-sm text-[#007AFF] mb-4 block font-medium tracking-wide">OUR PHILOSOPHY</span>
+                  <span className="text-sm text-primary mb-4 block font-medium tracking-wide">OUR PHILOSOPHY</span>
                   <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
                     Why We Built Cursive:
                   </h2>
@@ -219,7 +219,7 @@ export default function CallBookedPage() {
                     Recursive Intelligence
                   </p>
                   <div className="inline-block bg-white rounded-xl px-8 py-4 border border-gray-200 shadow-sm">
-                    <p className="text-sm text-[#007AFF] font-medium tracking-wide mb-1">re·cur·sive <span className="text-gray-400">(adj.)</span></p>
+                    <p className="text-sm text-primary font-medium tracking-wide mb-1">re·cur·sive <span className="text-gray-400">(adj.)</span></p>
                     <p className="text-lg text-gray-900">A system that improves itself by learning from itself.</p>
                   </div>
                 </motion.div>
@@ -273,7 +273,7 @@ export default function CallBookedPage() {
 
                       <div className="relative flex-shrink-0">
                         <div className="w-20 h-20 lg:w-24 lg:h-24 rounded-full border-2 border-dashed border-gray-200 flex items-center justify-center">
-                          <div className="w-16 h-16 lg:w-20 lg:h-20 bg-white rounded-full flex items-center justify-center shadow-lg border border-[#007AFF]/20">
+                          <div className="w-16 h-16 lg:w-20 lg:h-20 bg-white rounded-full flex items-center justify-center shadow-lg border border-primary/20">
                             <Image
                               src="/cursive-logo.png"
                               alt="Cursive"
@@ -326,7 +326,7 @@ export default function CallBookedPage() {
                 viewport={{ once: true }}
                 className="text-center mb-16"
               >
-                <span className="text-sm text-[#007AFF] mb-4 block font-medium tracking-wide">SOLUTIONS</span>
+                <span className="text-sm text-primary mb-4 block font-medium tracking-wide">SOLUTIONS</span>
                 <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
                   One Platform. Every Growth Channel.
                 </h2>
@@ -420,16 +420,16 @@ export default function CallBookedPage() {
                   >
                     <Link
                       href={solution.href}
-                      className="block bg-white rounded-xl p-6 border border-gray-200 hover:border-[#007AFF] hover:shadow-lg transition-all h-full group"
+                      className="block bg-white rounded-xl p-6 border border-gray-200 hover:border-primary hover:shadow-lg transition-all h-full group"
                     >
-                      <solution.icon className="h-8 w-8 text-[#007AFF] mb-4" />
-                      <h3 className="text-xl text-gray-900 mb-3 font-medium group-hover:text-[#007AFF] transition-colors">
+                      <solution.icon className="h-8 w-8 text-primary mb-4" />
+                      <h3 className="text-xl text-gray-900 mb-3 font-medium group-hover:text-primary transition-colors">
                         {solution.title}
                       </h3>
                       <p className="text-gray-600 leading-relaxed text-sm mb-4">
                         {solution.description}
                       </p>
-                      <div className="text-[#007AFF] text-sm font-medium flex items-center gap-2">
+                      <div className="text-primary text-sm font-medium flex items-center gap-2">
                         Learn more <ArrowRight className="h-4 w-4" />
                       </div>
                     </Link>
@@ -450,7 +450,7 @@ export default function CallBookedPage() {
                 viewport={{ once: true }}
                 className="text-center mb-16"
               >
-                <span className="text-sm text-[#007AFF] mb-4 block font-medium tracking-wide">PRICING</span>
+                <span className="text-sm text-primary mb-4 block font-medium tracking-wide">PRICING</span>
                 <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
                   Choose Your Growth Path
                 </h2>
@@ -467,7 +467,7 @@ export default function CallBookedPage() {
                 className="max-w-5xl mx-auto mb-16"
               >
                 <div className="bg-[#F7F9FB] rounded-2xl p-8 lg:p-10 border border-gray-200">
-                  <div className="text-sm font-medium text-[#007AFF] mb-2">SELF-SERVE</div>
+                  <div className="text-sm font-medium text-primary mb-2">SELF-SERVE</div>
                   <h3 className="text-3xl font-light text-gray-900 mb-2">Lead Marketplace</h3>
                   <p className="text-gray-600 mb-8">Buy credits, find leads instantly. No commitment required.</p>
 
@@ -497,7 +497,7 @@ export default function CallBookedPage() {
 
               {/* Done-For-You Services */}
               <div className="max-w-6xl mx-auto">
-                <div className="text-sm font-medium text-[#007AFF] mb-4 text-center">DONE-FOR-YOU SERVICES</div>
+                <div className="text-sm font-medium text-primary mb-4 text-center">DONE-FOR-YOU SERVICES</div>
                 <div className="grid md:grid-cols-3 gap-6 mb-8">
                   {[
                     {
@@ -550,12 +550,12 @@ export default function CallBookedPage() {
                       transition={{ delay: i * 0.1 }}
                       className={`relative bg-white rounded-xl p-6 border ${
                         tier.popular
-                          ? "border-[#007AFF] shadow-lg ring-1 ring-[#007AFF]"
+                          ? "border-primary shadow-lg ring-1 ring-primary"
                           : "border-gray-200"
                       }`}
                     >
                       {tier.popular && (
-                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#007AFF] text-white text-xs font-medium px-4 py-1 rounded-full">
+                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-white text-xs font-medium px-4 py-1 rounded-full">
                           Most Popular
                         </div>
                       )}
@@ -593,11 +593,11 @@ export default function CallBookedPage() {
                 >
                   <Link
                     href="/venture-studio"
-                    className="block bg-gradient-to-r from-[#F7F9FB] to-blue-50 rounded-xl p-6 lg:p-8 border border-gray-200 hover:border-[#007AFF] hover:shadow-lg transition-all group"
+                    className="block bg-gradient-to-r from-[#F7F9FB] to-blue-50 rounded-xl p-6 lg:p-8 border border-gray-200 hover:border-primary hover:shadow-lg transition-all group"
                   >
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                       <div>
-                        <div className="text-sm text-[#007AFF] font-medium mb-1">WHITE-GLOVE</div>
+                        <div className="text-sm text-primary font-medium mb-1">WHITE-GLOVE</div>
                         <h4 className="text-2xl font-light text-gray-900 mb-2">Venture Studio</h4>
                         <p className="text-gray-600 max-w-xl">
                           Dedicated team, custom integrations, weekly strategy sessions. For companies that want a fully embedded growth partner.
@@ -608,7 +608,7 @@ export default function CallBookedPage() {
                           <span className="text-3xl font-light text-gray-900">$25,000+</span>
                           <span className="text-gray-500">/mo</span>
                         </div>
-                        <ArrowRight className="h-6 w-6 text-gray-400 group-hover:text-[#007AFF] transition-colors" />
+                        <ArrowRight className="h-6 w-6 text-gray-400 group-hover:text-primary transition-colors" />
                       </div>
                     </div>
                   </Link>
@@ -634,7 +634,7 @@ export default function CallBookedPage() {
                 viewport={{ once: true }}
                 className="text-center mb-16"
               >
-                <span className="text-sm text-[#007AFF] mb-4 block font-medium tracking-wide">RESULTS</span>
+                <span className="text-sm text-primary mb-4 block font-medium tracking-wide">RESULTS</span>
                 <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
                   Real Results From Real Companies
                 </h2>
@@ -684,13 +684,13 @@ export default function CallBookedPage() {
                   >
                     <div className="flex items-center gap-3 mb-4">
                       <div className="w-10 h-10 bg-[#F7F9FB] rounded-lg border border-gray-200 flex items-center justify-center">
-                        <study.icon className="h-5 w-5 text-[#007AFF]" />
+                        <study.icon className="h-5 w-5 text-primary" />
                       </div>
                       <span className="text-sm text-gray-500 font-medium">{study.industry}</span>
                     </div>
                     <div className="text-4xl font-light text-gray-900 mb-1">{study.stat}</div>
                     <div className="text-gray-600 mb-2">{study.label}</div>
-                    <div className="text-sm text-[#007AFF] font-medium">{study.detail}</div>
+                    <div className="text-sm text-primary font-medium">{study.detail}</div>
                   </motion.div>
                 ))}
               </div>
@@ -714,7 +714,7 @@ export default function CallBookedPage() {
                 viewport={{ once: true }}
                 className="text-center mb-16"
               >
-                <span className="text-sm text-[#007AFF] mb-4 block font-medium tracking-wide">HOW IT WORKS</span>
+                <span className="text-sm text-primary mb-4 block font-medium tracking-wide">HOW IT WORKS</span>
                 <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
                   From Website Visitor to Your Customer in 4 Steps
                 </h2>
@@ -759,12 +759,12 @@ export default function CallBookedPage() {
                     >
                       <div className="text-5xl font-light text-gray-200 mb-4">{step.step}</div>
                       <div className="w-16 h-16 rounded-2xl bg-[#F7F9FB] border border-gray-200 flex items-center justify-center mx-auto mb-4 relative z-10">
-                        <step.icon className="h-8 w-8 text-[#007AFF]" />
+                        <step.icon className="h-8 w-8 text-primary" />
                       </div>
                       {/* Arrow between steps (desktop) */}
                       {i < 3 && (
                         <div className="hidden lg:block absolute top-[68px] -right-4 z-20">
-                          <ChevronRight className="h-5 w-5 text-[#007AFF]/40" />
+                          <ChevronRight className="h-5 w-5 text-primary/40" />
                         </div>
                       )}
                       {/* Arrow between steps (mobile) */}
@@ -793,7 +793,7 @@ export default function CallBookedPage() {
                 viewport={{ once: true }}
                 className="text-center mb-16"
               >
-                <span className="text-sm text-[#007AFF] mb-4 block font-medium tracking-wide">INDUSTRIES</span>
+                <span className="text-sm text-primary mb-4 block font-medium tracking-wide">INDUSTRIES</span>
                 <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
                   Built For Your Industry
                 </h2>
@@ -822,10 +822,10 @@ export default function CallBookedPage() {
                   >
                     <Link
                       href={industry.href}
-                      className="flex items-center gap-3 bg-white rounded-xl p-4 border border-gray-200 hover:border-[#007AFF] hover:shadow-md transition-all group"
+                      className="flex items-center gap-3 bg-white rounded-xl p-4 border border-gray-200 hover:border-primary hover:shadow-md transition-all group"
                     >
-                      <industry.icon className="h-5 w-5 text-[#007AFF] flex-shrink-0" />
-                      <span className="text-gray-900 text-sm font-medium group-hover:text-[#007AFF] transition-colors">
+                      <industry.icon className="h-5 w-5 text-primary flex-shrink-0" />
+                      <span className="text-gray-900 text-sm font-medium group-hover:text-primary transition-colors">
                         {industry.name}
                       </span>
                       <ChevronRight className="h-4 w-4 text-gray-400 ml-auto flex-shrink-0" />
@@ -847,7 +847,7 @@ export default function CallBookedPage() {
                 viewport={{ once: true }}
                 className="text-center max-w-4xl mx-auto"
               >
-                <span className="text-sm text-[#007AFF] mb-4 block font-medium tracking-wide">INTEGRATIONS</span>
+                <span className="text-sm text-primary mb-4 block font-medium tracking-wide">INTEGRATIONS</span>
                 <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-6">
                   Works With Your Existing Stack
                 </h2>
@@ -881,7 +881,7 @@ export default function CallBookedPage() {
                       whileInView={{ opacity: 1, scale: 1 }}
                       viewport={{ once: true }}
                       transition={{ delay: i * 0.03 }}
-                      className="bg-[#F7F9FB] rounded-xl p-4 border border-gray-200 flex flex-col items-center justify-center gap-2 hover:border-[#007AFF]/30 hover:shadow-sm transition-all aspect-square"
+                      className="bg-[#F7F9FB] rounded-xl p-4 border border-gray-200 flex flex-col items-center justify-center gap-2 hover:border-primary/30 hover:shadow-sm transition-all aspect-square"
                     >
                       <Image
                         src={tool.logo}
@@ -915,7 +915,7 @@ export default function CallBookedPage() {
                 viewport={{ once: true }}
                 className="text-center mb-16"
               >
-                <span className="text-sm text-[#007AFF] mb-4 block font-medium tracking-wide">FAQ</span>
+                <span className="text-sm text-primary mb-4 block font-medium tracking-wide">FAQ</span>
                 <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
                   Everything You Might Be Wondering
                 </h2>
@@ -927,7 +927,7 @@ export default function CallBookedPage() {
               <div className="max-w-4xl mx-auto">
                 {/* About Cursive */}
                 <div className="mb-10">
-                  <h3 className="text-lg font-medium text-[#007AFF] mb-4">About Cursive</h3>
+                  <h3 className="text-lg font-medium text-primary mb-4">About Cursive</h3>
                   <div className="space-y-3">
                     {[
                       {
@@ -977,7 +977,7 @@ export default function CallBookedPage() {
 
                 {/* Visitor Identification */}
                 <div className="mb-10">
-                  <h3 className="text-lg font-medium text-[#007AFF] mb-4">Visitor Identification</h3>
+                  <h3 className="text-lg font-medium text-primary mb-4">Visitor Identification</h3>
                   <div className="space-y-3">
                     {[
                       {
@@ -1027,7 +1027,7 @@ export default function CallBookedPage() {
 
                 {/* Data & Audiences */}
                 <div className="mb-10">
-                  <h3 className="text-lg font-medium text-[#007AFF] mb-4">Data & Audiences</h3>
+                  <h3 className="text-lg font-medium text-primary mb-4">Data & Audiences</h3>
                   <div className="space-y-3">
                     {[
                       {
@@ -1077,7 +1077,7 @@ export default function CallBookedPage() {
 
                 {/* Services & Pricing */}
                 <div className="mb-10">
-                  <h3 className="text-lg font-medium text-[#007AFF] mb-4">Services & Pricing</h3>
+                  <h3 className="text-lg font-medium text-primary mb-4">Services & Pricing</h3>
                   <div className="space-y-3">
                     {[
                       {
@@ -1131,7 +1131,7 @@ export default function CallBookedPage() {
 
                 {/* Getting Started */}
                 <div className="mb-10">
-                  <h3 className="text-lg font-medium text-[#007AFF] mb-4">Getting Started</h3>
+                  <h3 className="text-lg font-medium text-primary mb-4">Getting Started</h3>
                   <div className="space-y-3">
                     {[
                       {
@@ -1212,9 +1212,9 @@ export default function CallBookedPage() {
                     whileInView={{ scale: 1 }}
                     viewport={{ once: true }}
                     transition={{ type: "spring", stiffness: 200, damping: 15 }}
-                    className="w-20 h-20 bg-[#007AFF]/10 rounded-full flex items-center justify-center mx-auto mb-6"
+                    className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6"
                   >
-                    <Gift className="h-10 w-10 text-[#007AFF]" />
+                    <Gift className="h-10 w-10 text-primary" />
                   </motion.div>
                   <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
                     Your Free Gift
@@ -1229,7 +1229,7 @@ export default function CallBookedPage() {
 
                 <div className="bg-[#F7F9FB] rounded-2xl p-8 lg:p-10 border border-gray-200 text-center">
                   <div className="flex items-center justify-center gap-3 mb-4">
-                    <div className="w-10 h-10 bg-[#007AFF] rounded-xl flex items-center justify-center">
+                    <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
                       <ShoppingCart className="h-5 w-5 text-white" />
                     </div>
                     <h3 className="text-2xl font-light text-gray-900">Lead Marketplace</h3>
@@ -1243,9 +1243,9 @@ export default function CallBookedPage() {
                       <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
                     <div className="flex items-center gap-6 text-sm text-gray-500">
-                      <span className="flex items-center gap-1.5"><Check className="h-4 w-4 text-[#007AFF]" /> 100 free credits</span>
-                      <span className="flex items-center gap-1.5"><Check className="h-4 w-4 text-[#007AFF]" /> No credit card</span>
-                      <span className="flex items-center gap-1.5"><Check className="h-4 w-4 text-[#007AFF]" /> Instant access</span>
+                      <span className="flex items-center gap-1.5"><Check className="h-4 w-4 text-primary" /> 100 free credits</span>
+                      <span className="flex items-center gap-1.5"><Check className="h-4 w-4 text-primary" /> No credit card</span>
+                      <span className="flex items-center gap-1.5"><Check className="h-4 w-4 text-primary" /> Instant access</span>
                     </div>
                   </div>
                 </div>
@@ -1253,7 +1253,7 @@ export default function CallBookedPage() {
                 <div className="text-center mt-10">
                   <p className="text-sm text-gray-400">
                     Questions before your call? Email us at{" "}
-                    <a href="mailto:hello@meetcursive.com" className="text-[#007AFF] hover:underline">
+                    <a href="mailto:hello@meetcursive.com" className="text-primary hover:underline">
                       hello@meetcursive.com
                     </a>
                   </p>

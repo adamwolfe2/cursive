@@ -82,7 +82,7 @@ export function CTABox({
       <div className="flex flex-col md:flex-row md:items-center gap-6">
         <div className="flex-1">
           <div className="flex items-start gap-3 mb-3">
-            <Icon className="h-6 w-6 text-[#007AFF] flex-shrink-0 mt-1" />
+            <Icon className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
             <div>
               <h3 className="text-xl md:text-2xl font-semibold text-gray-900 mb-2">
                 {title}

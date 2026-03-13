@@ -96,7 +96,7 @@ export function CookieConsent() {
             {/* Icon + heading */}
             <div className="flex items-center gap-2.5 mb-3">
               <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                <Cookie className="w-4 h-4 text-[#007AFF]" />
+                <Cookie className="w-4 h-4 text-primary" />
               </div>
               <h3 className="text-sm font-medium text-gray-900">
                 We use cookies &amp; tracking
@@ -108,7 +108,7 @@ export function CookieConsent() {
               We use cookies, visitor identification pixels, and analytics to
               understand site traffic and improve your experience. Declining
               disables non-essential tracking. See our{" "}
-              <Link href="/privacy" className="text-[#007AFF] hover:underline">
+              <Link href="/privacy" className="text-primary hover:underline">
                 Privacy Policy
               </Link>{" "}
               for details.
@@ -118,7 +118,7 @@ export function CookieConsent() {
             <div className="flex items-center gap-3">
               <button
                 onClick={accept}
-                className="flex-1 px-4 py-2 text-sm bg-[#007AFF] text-white rounded-lg hover:bg-[#0066DD] transition-colors"
+                className="flex-1 px-4 py-2 text-sm bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors"
               >
                 Accept
               </button>

@@ -194,14 +194,16 @@ export default function ContactPage() {
                         setFieldErrors({ ...fieldErrors, name: "" })
                       }
                     }}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#007AFF] focus:border-transparent ${
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
                       fieldErrors.name ? "border-red-500" : "border-gray-300"
                     }`}
                     placeholder="Your name"
+                    aria-invalid={!!fieldErrors.name}
+                    aria-describedby={fieldErrors.name ? "name-error" : undefined}
                     toolparamdescription="Full name of the person contacting Cursive"
                   />
                   {fieldErrors.name && (
-                    <p className="text-red-500 text-sm mt-1">{fieldErrors.name}</p>
+                    <p id="name-error" className="text-red-500 text-sm mt-1">{fieldErrors.name}</p>
                   )}
                 </div>
 
@@ -221,14 +223,16 @@ export default function ContactPage() {
                         setFieldErrors({ ...fieldErrors, email: "" })
                       }
                     }}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#007AFF] focus:border-transparent ${
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
                       fieldErrors.email ? "border-red-500" : "border-gray-300"
                     }`}
                     placeholder="you@company.com"
+                    aria-invalid={!!fieldErrors.email}
+                    aria-describedby={fieldErrors.email ? "email-error" : undefined}
                     toolparamdescription="Work email address for reply"
                   />
                   {fieldErrors.email && (
-                    <p className="text-red-500 text-sm mt-1">{fieldErrors.email}</p>
+                    <p id="email-error" className="text-red-500 text-sm mt-1">{fieldErrors.email}</p>
                   )}
                 </div>
 
@@ -247,14 +251,16 @@ export default function ContactPage() {
                         setFieldErrors({ ...fieldErrors, company: "" })
                       }
                     }}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#007AFF] focus:border-transparent ${
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
                       fieldErrors.company ? "border-red-500" : "border-gray-300"
                     }`}
                     placeholder="Your company name"
+                    aria-invalid={!!fieldErrors.company}
+                    aria-describedby={fieldErrors.company ? "company-error" : undefined}
                     toolparamdescription="Company or organization name"
                   />
                   {fieldErrors.company && (
-                    <p className="text-red-500 text-sm mt-1">{fieldErrors.company}</p>
+                    <p id="company-error" className="text-red-500 text-sm mt-1">{fieldErrors.company}</p>
                   )}
                 </div>
 
@@ -278,10 +284,12 @@ export default function ContactPage() {
                       fieldErrors.message ? "border-red-500" : "border-gray-300"
                     }`}
                     placeholder="Tell us about your needs..."
+                    aria-invalid={!!fieldErrors.message}
+                    aria-describedby={fieldErrors.message ? "message-error" : undefined}
                     toolparamdescription="Message describing what you need help with (e.g., demo request, pricing question, partnership inquiry)"
                   />
                   {fieldErrors.message && (
-                    <p className="text-red-500 text-sm mt-1">{fieldErrors.message}</p>
+                    <p id="message-error" className="text-red-500 text-sm mt-1">{fieldErrors.message}</p>
                   )}
                 </div>
 
@@ -325,7 +333,7 @@ export default function ContactPage() {
                   rel="noopener noreferrer"
                   className="flex items-start gap-4 p-6 bg-[#F7F9FB] rounded-xl border border-gray-200 hover:shadow-lg transition-all duration-300"
                 >
-                  <div className="w-12 h-12 bg-[#007AFF] rounded-lg flex items-center justify-center flex-shrink-0">
+                  <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
                     <Calendar className="w-6 h-6 text-white" />
                   </div>
                   <div>
@@ -333,7 +341,7 @@ export default function ContactPage() {
                     <p className="text-gray-600 text-sm">
                       Schedule a 15-minute intro call. We'll answer questions and show you a demo.
                     </p>
-                    <span className="text-[#007AFF] text-sm mt-2 inline-block">
+                    <span className="text-primary text-sm mt-2 inline-block">
                       View available times →
                     </span>
                   </div>
@@ -345,7 +353,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="text-lg text-gray-900 mb-1">Email Us</h3>
-                    <a href="mailto:hello@meetcursive.com" className="text-[#007AFF] hover:underline">
+                    <a href="mailto:hello@meetcursive.com" className="text-primary hover:underline">
                       hello@meetcursive.com
                     </a>
                     <p className="text-gray-600 text-sm mt-1">We respond within 24 hours</p>
@@ -361,7 +369,7 @@ export default function ContactPage() {
                     <p className="text-gray-600 text-sm">
                       Available Monday-Friday, 9am-6pm EST
                     </p>
-                    <button className="text-[#007AFF] text-sm mt-2 hover:underline">
+                    <button className="text-primary text-sm mt-2 hover:underline">
                       Start chat →
                     </button>
                   </div>
@@ -421,27 +429,27 @@ export default function ContactPage() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <Link href="/industries/b2b-software" className="bg-[#F7F9FB] rounded-xl p-6 border border-gray-200 hover:border-[#007AFF] hover:shadow-lg transition-all">
+            <Link href="/industries/b2b-software" className="bg-[#F7F9FB] rounded-xl p-6 border border-gray-200 hover:border-primary hover:shadow-lg transition-all">
               <h3 className="text-lg text-gray-900 mb-2">B2B Software Companies</h3>
               <p className="text-gray-600 text-sm">Scale outbound, identify website visitors, and build multi-channel pipeline with AI-powered campaigns.</p>
             </Link>
-            <Link href="/industries/agencies" className="bg-[#F7F9FB] rounded-xl p-6 border border-gray-200 hover:border-[#007AFF] hover:shadow-lg transition-all">
+            <Link href="/industries/agencies" className="bg-[#F7F9FB] rounded-xl p-6 border border-gray-200 hover:border-primary hover:shadow-lg transition-all">
               <h3 className="text-lg text-gray-900 mb-2">Digital Agencies</h3>
               <p className="text-gray-600 text-sm">White-label our platform and offer data-driven lead generation as a service to your clients.</p>
             </Link>
-            <Link href="/industries/financial-services" className="bg-[#F7F9FB] rounded-xl p-6 border border-gray-200 hover:border-[#007AFF] hover:shadow-lg transition-all">
+            <Link href="/industries/financial-services" className="bg-[#F7F9FB] rounded-xl p-6 border border-gray-200 hover:border-primary hover:shadow-lg transition-all">
               <h3 className="text-lg text-gray-900 mb-2">Financial Services</h3>
               <p className="text-gray-600 text-sm">Reach decision-makers with compliant, verified data and personalized outreach sequences.</p>
             </Link>
-            <Link href="/industries/ecommerce" className="bg-[#F7F9FB] rounded-xl p-6 border border-gray-200 hover:border-[#007AFF] hover:shadow-lg transition-all">
+            <Link href="/industries/ecommerce" className="bg-[#F7F9FB] rounded-xl p-6 border border-gray-200 hover:border-primary hover:shadow-lg transition-all">
               <h3 className="text-lg text-gray-900 mb-2">eCommerce Brands</h3>
               <p className="text-gray-600 text-sm">Identify anonymous visitors, retarget high-intent shoppers, and increase conversions with our pixel technology.</p>
             </Link>
-            <Link href="/industries/home-services" className="bg-[#F7F9FB] rounded-xl p-6 border border-gray-200 hover:border-[#007AFF] hover:shadow-lg transition-all">
+            <Link href="/industries/home-services" className="bg-[#F7F9FB] rounded-xl p-6 border border-gray-200 hover:border-primary hover:shadow-lg transition-all">
               <h3 className="text-lg text-gray-900 mb-2">Home Services</h3>
               <p className="text-gray-600 text-sm">Target homeowners by demographics, location, and purchase intent to fill your service calendar.</p>
             </Link>
-            <Link href="/industries/education" className="bg-[#F7F9FB] rounded-xl p-6 border border-gray-200 hover:border-[#007AFF] hover:shadow-lg transition-all">
+            <Link href="/industries/education" className="bg-[#F7F9FB] rounded-xl p-6 border border-gray-200 hover:border-primary hover:shadow-lg transition-all">
               <h3 className="text-lg text-gray-900 mb-2">Education</h3>
               <p className="text-gray-600 text-sm">Reach prospective students and corporate training buyers with targeted campaigns and verified contacts.</p>
             </Link>
@@ -466,31 +474,31 @@ export default function ContactPage() {
 
           <div className="max-w-4xl mx-auto space-y-6">
             <div className="flex gap-6 items-start bg-white rounded-xl p-6 border border-gray-200">
-              <div className="w-12 h-12 bg-[#007AFF] rounded-full flex items-center justify-center flex-shrink-0 text-white font-light text-xl">1</div>
+              <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center flex-shrink-0 text-white font-light text-xl">1</div>
               <div>
                 <h3 className="text-lg text-gray-900 mb-2">Submit Your Website URL</h3>
-                <p className="text-gray-600 text-sm">Fill out our <Link href="/free-audit" className="text-[#007AFF] hover:underline">free audit form</Link> or reach out through any of our contact methods. All we need to get started is your website URL and work email address.</p>
+                <p className="text-gray-600 text-sm">Fill out our <Link href="/free-audit" className="text-primary hover:underline">free audit form</Link> or reach out through any of our contact methods. All we need to get started is your website URL and work email address.</p>
               </div>
             </div>
             <div className="flex gap-6 items-start bg-white rounded-xl p-6 border border-gray-200">
-              <div className="w-12 h-12 bg-[#007AFF] rounded-full flex items-center justify-center flex-shrink-0 text-white font-light text-xl">2</div>
+              <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center flex-shrink-0 text-white font-light text-xl">2</div>
               <div>
                 <h3 className="text-lg text-gray-900 mb-2">We Analyze Your Traffic</h3>
                 <p className="text-gray-600 text-sm">Within 24 to 48 hours, our team runs a comprehensive analysis of your website visitors. We identify companies, contacts, and intent signals from your recent traffic patterns.</p>
               </div>
             </div>
             <div className="flex gap-6 items-start bg-white rounded-xl p-6 border border-gray-200">
-              <div className="w-12 h-12 bg-[#007AFF] rounded-full flex items-center justify-center flex-shrink-0 text-white font-light text-xl">3</div>
+              <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center flex-shrink-0 text-white font-light text-xl">3</div>
               <div>
                 <h3 className="text-lg text-gray-900 mb-2">Receive Your Custom Report</h3>
                 <p className="text-gray-600 text-sm">Get a detailed report showing your last 100 identified visitors, including company data, contact information, pages viewed, time spent, and AI-generated intent scores.</p>
               </div>
             </div>
             <div className="flex gap-6 items-start bg-white rounded-xl p-6 border border-gray-200">
-              <div className="w-12 h-12 bg-[#007AFF] rounded-full flex items-center justify-center flex-shrink-0 text-white font-light text-xl">4</div>
+              <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center flex-shrink-0 text-white font-light text-xl">4</div>
               <div>
                 <h3 className="text-lg text-gray-900 mb-2">Strategy Call (30 Minutes)</h3>
-                <p className="text-gray-600 text-sm">Schedule an optional 30-minute strategy call to walk through your results. We will discuss which visitors are most likely to convert, suggest outreach templates, and recommend the right <Link href="/pricing" className="text-[#007AFF] hover:underline">Cursive plan</Link> for your goals.</p>
+                <p className="text-gray-600 text-sm">Schedule an optional 30-minute strategy call to walk through your results. We will discuss which visitors are most likely to convert, suggest outreach templates, and recommend the right <Link href="/pricing" className="text-primary hover:underline">Cursive plan</Link> for your goals.</p>
               </div>
             </div>
           </div>
@@ -520,7 +528,7 @@ export default function ContactPage() {
             <div className="bg-[#F7F9FB] rounded-xl p-6 border border-gray-200">
               <h3 className="text-gray-900 mb-2">What is included in the free audit?</h3>
               <p className="text-gray-600 text-sm">
-                The free audit includes identification of your last 100 website visitors with company names, job titles, verified work emails, pages they viewed, time spent on your site, AI-powered intent scores, and personalized outreach templates. It also includes an optional 30-minute strategy call to review the results. There is no credit card required and no obligation to purchase. <Link href="/free-audit" className="text-[#007AFF] hover:underline">Request your free audit here</Link>.
+                The free audit includes identification of your last 100 website visitors with company names, job titles, verified work emails, pages they viewed, time spent on your site, AI-powered intent scores, and personalized outreach templates. It also includes an optional 30-minute strategy call to review the results. There is no credit card required and no obligation to purchase. <Link href="/free-audit" className="text-primary hover:underline">Request your free audit here</Link>.
               </p>
             </div>
             <div className="bg-[#F7F9FB] rounded-xl p-6 border border-gray-200">
@@ -532,7 +540,7 @@ export default function ContactPage() {
             <div className="bg-[#F7F9FB] rounded-xl p-6 border border-gray-200">
               <h3 className="text-gray-900 mb-2">Do you offer enterprise plans or custom solutions?</h3>
               <p className="text-gray-600 text-sm">
-                Yes. For companies needing more than 10,000 leads per month, white-label solutions, custom API integrations, or dedicated account teams, we offer tailored enterprise packages. Enterprise pricing is based on volume, channels, and specific requirements. <Link href="/pricing" className="text-[#007AFF] hover:underline">View our standard pricing</Link> or contact us directly to discuss enterprise options.
+                Yes. For companies needing more than 10,000 leads per month, white-label solutions, custom API integrations, or dedicated account teams, we offer tailored enterprise packages. Enterprise pricing is based on volume, channels, and specific requirements. <Link href="/pricing" className="text-primary hover:underline">View our standard pricing</Link> or contact us directly to discuss enterprise options.
               </p>
             </div>
             <div className="bg-[#F7F9FB] rounded-xl p-6 border border-gray-200">
@@ -565,21 +573,21 @@ export default function ContactPage() {
 
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto mb-12">
             <div className="bg-white rounded-xl p-6 border border-gray-200 text-center">
-              <Mail className="w-10 h-10 text-[#007AFF] mx-auto mb-4" />
+              <Mail className="w-10 h-10 text-primary mx-auto mb-4" />
               <h3 className="text-gray-900 mb-2">General Inquiries</h3>
-              <a href="mailto:hello@meetcursive.com" className="text-[#007AFF] hover:underline text-sm">hello@meetcursive.com</a>
+              <a href="mailto:hello@meetcursive.com" className="text-primary hover:underline text-sm">hello@meetcursive.com</a>
               <p className="text-gray-600 text-sm mt-2">For questions about products, pricing, or partnerships.</p>
             </div>
             <div className="bg-white rounded-xl p-6 border border-gray-200 text-center">
-              <Calendar className="w-10 h-10 text-[#007AFF] mx-auto mb-4" />
+              <Calendar className="w-10 h-10 text-primary mx-auto mb-4" />
               <h3 className="text-gray-900 mb-2">Book a Demo</h3>
-              <a href="https://cal.com/gotdarrenhill/30min" target="_blank" rel="noopener noreferrer" className="text-[#007AFF] hover:underline text-sm">Schedule on Cal.com</a>
+              <a href="https://cal.com/gotdarrenhill/30min" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline text-sm">Schedule on Cal.com</a>
               <p className="text-gray-600 text-sm mt-2">15-minute intro call with a live platform walkthrough.</p>
             </div>
             <div className="bg-white rounded-xl p-6 border border-gray-200 text-center">
-              <MessageCircle className="w-10 h-10 text-[#007AFF] mx-auto mb-4" />
+              <MessageCircle className="w-10 h-10 text-primary mx-auto mb-4" />
               <h3 className="text-gray-900 mb-2">Sales Inquiries</h3>
-              <a href="mailto:hello@meetcursive.com" className="text-[#007AFF] hover:underline text-sm">hello@meetcursive.com</a>
+              <a href="mailto:hello@meetcursive.com" className="text-primary hover:underline text-sm">hello@meetcursive.com</a>
               <p className="text-gray-600 text-sm mt-2">For enterprise pricing, white-label, and custom solutions. Response within 4 hours.</p>
             </div>
           </div>

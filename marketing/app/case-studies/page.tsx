@@ -30,7 +30,7 @@ export default function CaseStudiesPage() {
               <Button
                 size="lg"
                 href="https://cal.com/gotdarrenhill/30min"
-                className="bg-[#007AFF] hover:bg-[#0066DD]"
+                className="bg-primary hover:bg-primary-dark"
               >
                 Get Results Like These
                 <ArrowRight className="w-5 h-5 ml-2" />
@@ -49,8 +49,8 @@ export default function CaseStudiesPage() {
                 viewport={{ once: true }}
                 className="bg-white rounded-xl p-8 border border-gray-200 hover:shadow-lg transition-shadow"
               >
-                <TrendingUp className="w-12 h-12 text-[#007AFF] mx-auto mb-4" />
-                <div className="text-sm text-[#007AFF] font-medium mb-2 text-center">AI SaaS Company</div>
+                <TrendingUp className="w-12 h-12 text-primary mx-auto mb-4" />
+                <div className="text-sm text-primary font-medium mb-2 text-center">AI SaaS Company</div>
                 <h3 className="text-2xl text-gray-900 mb-3 text-center font-light">40x ROI in 30 days</h3>
                 <p className="text-gray-600 text-sm text-center">
                   $250K ad spend generated $11M in revenue using intent-based audience targeting
@@ -64,8 +64,8 @@ export default function CaseStudiesPage() {
                 transition={{ delay: 0.1 }}
                 className="bg-white rounded-xl p-8 border border-gray-200 hover:shadow-lg transition-shadow"
               >
-                <Shield className="w-12 h-12 text-[#007AFF] mx-auto mb-4" />
-                <div className="text-sm text-[#007AFF] font-medium mb-2 text-center">Insurtech App</div>
+                <Shield className="w-12 h-12 text-primary mx-auto mb-4" />
+                <div className="text-sm text-primary font-medium mb-2 text-center">Insurtech App</div>
                 <h3 className="text-2xl text-gray-900 mb-3 text-center font-light">5x CPC reduction</h3>
                 <p className="text-gray-600 text-sm text-center">
                   Precision targeting slashed cost-per-click and generated 1,200+ qualified leads
@@ -79,8 +79,8 @@ export default function CaseStudiesPage() {
                 transition={{ delay: 0.2 }}
                 className="bg-white rounded-xl p-8 border border-gray-200 hover:shadow-lg transition-shadow"
               >
-                <Target className="w-12 h-12 text-[#007AFF] mx-auto mb-4" />
-                <div className="text-sm text-[#007AFF] font-medium mb-2 text-center">Medical Technology</div>
+                <Target className="w-12 h-12 text-primary mx-auto mb-4" />
+                <div className="text-sm text-primary font-medium mb-2 text-center">Medical Technology</div>
                 <h3 className="text-2xl text-gray-900 mb-3 text-center font-light">$24M pipeline in 3 days</h3>
                 <p className="text-gray-600 text-sm text-center">
                   600+ qualified leads from 60K medical professionals using intent targeting
@@ -94,8 +94,8 @@ export default function CaseStudiesPage() {
                 transition={{ delay: 0.3 }}
                 className="bg-white rounded-xl p-8 border border-gray-200 hover:shadow-lg transition-shadow"
               >
-                <ShoppingCart className="w-12 h-12 text-[#007AFF] mx-auto mb-4" />
-                <div className="text-sm text-[#007AFF] font-medium mb-2 text-center">E-Commerce Brand</div>
+                <ShoppingCart className="w-12 h-12 text-primary mx-auto mb-4" />
+                <div className="text-sm text-primary font-medium mb-2 text-center">E-Commerce Brand</div>
                 <h3 className="text-2xl text-gray-900 mb-3 text-center font-light">$200K in 90 days</h3>
                 <p className="text-gray-600 text-sm text-center">
                   Identity resolution drove 500 new customers with 80% email open rates
@@ -110,8 +110,8 @@ export default function CaseStudiesPage() {
           <Container>
             <div className="max-w-4xl mx-auto">
               <div className="flex items-center gap-3 mb-4">
-                <TrendingUp className="w-8 h-8 text-[#007AFF]" />
-                <span className="text-sm text-[#007AFF] font-medium uppercase tracking-wide">AI SaaS Company</span>
+                <TrendingUp className="w-8 h-8 text-primary" />
+                <span className="text-sm text-primary font-medium uppercase tracking-wide">AI SaaS Company</span>
               </div>
               <h2 className="text-3xl lg:text-4xl font-light text-gray-900 mb-6">
                 $11M in 30 Days: How an AI SaaS Company Supercharged Growth
@@ -119,15 +119,15 @@ export default function CaseStudiesPage() {
 
               <div className="grid md:grid-cols-3 gap-6 mb-8">
                 <div className="bg-blue-50 rounded-xl p-6 text-center border border-blue-100">
-                  <div className="text-3xl text-[#007AFF] mb-1">40x</div>
+                  <div className="text-3xl text-primary mb-1">40x</div>
                   <p className="text-gray-600 text-sm">Return on investment</p>
                 </div>
                 <div className="bg-blue-50 rounded-xl p-6 text-center border border-blue-100">
-                  <div className="text-3xl text-[#007AFF] mb-1">$11M</div>
+                  <div className="text-3xl text-primary mb-1">$11M</div>
                   <p className="text-gray-600 text-sm">Revenue generated in 30 days</p>
                 </div>
                 <div className="bg-blue-50 rounded-xl p-6 text-center border border-blue-100">
-                  <div className="text-3xl text-[#007AFF] mb-1">50%</div>
+                  <div className="text-3xl text-primary mb-1">50%</div>
                   <p className="text-gray-600 text-sm">Lead quality improvement</p>
                 </div>
               </div>
@@ -143,7 +143,7 @@ export default function CaseStudiesPage() {
                 <div>
                   <h3 className="text-lg font-medium text-gray-900 mb-2">The Cursive Solution</h3>
                   <p className="text-gray-600 leading-relaxed">
-                    Cursive&apos;s <Link href="/intent-audiences" className="text-[#007AFF] hover:underline">intent audience builder</Link> was deployed to pinpoint agencies above a certain revenue threshold. This data was then cross-referenced with Cursive&apos;s pre-built segment for AI technologies and voice model product searches. The resulting high-intent audience was synced daily to the client&apos;s ad platforms, ensuring consistently fresh and relevant targeting data.
+                    Cursive&apos;s <Link href="/intent-audiences" className="text-primary hover:underline">intent audience builder</Link> was deployed to pinpoint agencies above a certain revenue threshold. This data was then cross-referenced with Cursive&apos;s pre-built segment for AI technologies and voice model product searches. The resulting high-intent audience was synced daily to the client&apos;s ad platforms, ensuring consistently fresh and relevant targeting data.
                   </p>
                 </div>
 
@@ -159,19 +159,19 @@ export default function CaseStudiesPage() {
                 <h4 className="text-sm font-medium text-gray-900 mb-3 uppercase tracking-wide">Key Benefits</h4>
                 <div className="grid md:grid-cols-2 gap-3">
                   <div className="flex items-start gap-2">
-                    <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0 mt-0.5" />
+                    <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                     <span className="text-sm text-gray-600"><strong className="text-gray-900">Precision B2B Targeting</strong> -- Granular targeting based on company size, revenue, and specific intent signals</span>
                   </div>
                   <div className="flex items-start gap-2">
-                    <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0 mt-0.5" />
+                    <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                     <span className="text-sm text-gray-600"><strong className="text-gray-900">Dynamic Audience Syncing</strong> -- Daily updates ensured ads always reached current, high-intent prospects</span>
                   </div>
                   <div className="flex items-start gap-2">
-                    <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0 mt-0.5" />
+                    <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                     <span className="text-sm text-gray-600"><strong className="text-gray-900">Improved Lead Quality</strong> -- Focusing on intent and qualification delivered leads more likely to convert</span>
                   </div>
                   <div className="flex items-start gap-2">
-                    <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0 mt-0.5" />
+                    <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                     <span className="text-sm text-gray-600"><strong className="text-gray-900">Exceptional ROI</strong> -- 40x return demonstrating the power of data-driven campaign targeting</span>
                   </div>
                 </div>
@@ -185,8 +185,8 @@ export default function CaseStudiesPage() {
           <Container>
             <div className="max-w-4xl mx-auto">
               <div className="flex items-center gap-3 mb-4">
-                <Shield className="w-8 h-8 text-[#007AFF]" />
-                <span className="text-sm text-[#007AFF] font-medium uppercase tracking-wide">Insurtech App</span>
+                <Shield className="w-8 h-8 text-primary" />
+                <span className="text-sm text-primary font-medium uppercase tracking-wide">Insurtech App</span>
               </div>
               <h2 className="text-3xl lg:text-4xl font-light text-gray-900 mb-6">
                 Precision Targeting Triumph: How an Insurtech App Slashed CPC by 5x
@@ -194,15 +194,15 @@ export default function CaseStudiesPage() {
 
               <div className="grid md:grid-cols-3 gap-6 mb-8">
                 <div className="bg-white rounded-xl p-6 text-center border border-gray-200">
-                  <div className="text-3xl text-[#007AFF] mb-1">5x</div>
+                  <div className="text-3xl text-primary mb-1">5x</div>
                   <p className="text-gray-600 text-sm">CPC reduction vs previous campaigns</p>
                 </div>
                 <div className="bg-white rounded-xl p-6 text-center border border-gray-200">
-                  <div className="text-3xl text-[#007AFF] mb-1">2.24%</div>
+                  <div className="text-3xl text-primary mb-1">2.24%</div>
                   <p className="text-gray-600 text-sm">Click-through rate achieved</p>
                 </div>
                 <div className="bg-white rounded-xl p-6 text-center border border-gray-200">
-                  <div className="text-3xl text-[#007AFF] mb-1">1,200+</div>
+                  <div className="text-3xl text-primary mb-1">1,200+</div>
                   <p className="text-gray-600 text-sm">Qualified leads in 90 days</p>
                 </div>
               </div>
@@ -218,7 +218,7 @@ export default function CaseStudiesPage() {
                 <div>
                   <h3 className="text-lg font-medium text-gray-900 mb-2">The Cursive Solution</h3>
                   <p className="text-gray-600 leading-relaxed">
-                    Cursive deployed a multi-faceted approach to solve this targeting puzzle. We utilized our <Link href="/custom-audiences" className="text-[#007AFF] hover:underline">pre-built intent segment</Link> for insurance keywords and behaviors, then layered specific demographic parameters to further refine the audience. This highly targeted group was synced directly to the client&apos;s ad platforms via Cursive&apos;s audience sync feature, ensuring fresh data was pushed daily for optimal relevance and timing.
+                    Cursive deployed a multi-faceted approach to solve this targeting puzzle. We utilized our <Link href="/custom-audiences" className="text-primary hover:underline">pre-built intent segment</Link> for insurance keywords and behaviors, then layered specific demographic parameters to further refine the audience. This highly targeted group was synced directly to the client&apos;s ad platforms via Cursive&apos;s audience sync feature, ensuring fresh data was pushed daily for optimal relevance and timing.
                   </p>
                 </div>
 
@@ -234,19 +234,19 @@ export default function CaseStudiesPage() {
                 <h4 className="text-sm font-medium text-gray-900 mb-3 uppercase tracking-wide">Key Benefits</h4>
                 <div className="grid md:grid-cols-2 gap-3">
                   <div className="flex items-start gap-2">
-                    <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0 mt-0.5" />
+                    <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                     <span className="text-sm text-gray-600"><strong className="text-gray-900">Precision Targeting</strong> -- Pre-built segments and layered targeting for pinpoint accuracy in niche audiences</span>
                   </div>
                   <div className="flex items-start gap-2">
-                    <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0 mt-0.5" />
+                    <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                     <span className="text-sm text-gray-600"><strong className="text-gray-900">Cost Efficiency</strong> -- High-intent prospect focus significantly reduced wasted ad spend</span>
                   </div>
                   <div className="flex items-start gap-2">
-                    <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0 mt-0.5" />
+                    <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                     <span className="text-sm text-gray-600"><strong className="text-gray-900">Fresh, Dynamic Data</strong> -- Daily syncing ensured campaigns always leveraged current intent signals</span>
                   </div>
                   <div className="flex items-start gap-2">
-                    <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0 mt-0.5" />
+                    <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                     <span className="text-sm text-gray-600"><strong className="text-gray-900">Scalable Lead Generation</strong> -- Steady stream of qualified leads even in specialized markets</span>
                   </div>
                 </div>
@@ -260,8 +260,8 @@ export default function CaseStudiesPage() {
           <Container>
             <div className="max-w-4xl mx-auto">
               <div className="flex items-center gap-3 mb-4">
-                <Target className="w-8 h-8 text-[#007AFF]" />
-                <span className="text-sm text-[#007AFF] font-medium uppercase tracking-wide">Medical Technology</span>
+                <Target className="w-8 h-8 text-primary" />
+                <span className="text-sm text-primary font-medium uppercase tracking-wide">Medical Technology</span>
               </div>
               <h2 className="text-3xl lg:text-4xl font-light text-gray-900 mb-6">
                 Generating a $24M Pipeline: B2B Lead Generation for Medical Technology
@@ -269,15 +269,15 @@ export default function CaseStudiesPage() {
 
               <div className="grid md:grid-cols-3 gap-6 mb-8">
                 <div className="bg-blue-50 rounded-xl p-6 text-center border border-blue-100">
-                  <div className="text-3xl text-[#007AFF] mb-1">$24M</div>
+                  <div className="text-3xl text-primary mb-1">$24M</div>
                   <p className="text-gray-600 text-sm">Pipeline value generated</p>
                 </div>
                 <div className="bg-blue-50 rounded-xl p-6 text-center border border-blue-100">
-                  <div className="text-3xl text-[#007AFF] mb-1">600+</div>
+                  <div className="text-3xl text-primary mb-1">600+</div>
                   <p className="text-gray-600 text-sm">Quality leads produced</p>
                 </div>
                 <div className="bg-blue-50 rounded-xl p-6 text-center border border-blue-100">
-                  <div className="text-3xl text-[#007AFF] mb-1">3 days</div>
+                  <div className="text-3xl text-primary mb-1">3 days</div>
                   <p className="text-gray-600 text-sm">From setup to results</p>
                 </div>
               </div>
@@ -293,7 +293,7 @@ export default function CaseStudiesPage() {
                 <div>
                   <h3 className="text-lg font-medium text-gray-900 mb-2">The Cursive Solution</h3>
                   <p className="text-gray-600 leading-relaxed">
-                    Cursive&apos;s <Link href="/custom-audiences" className="text-[#007AFF] hover:underline">custom audience builder</Link> was deployed, utilizing the client&apos;s competitor list and ideal keywords. The system identified user profiles actively searching for &ldquo;diagnostic medical equipment&rdquo; within a 24-hour period. Cursive&apos;s intent targeting then filtered for medical professionals only. This highly targeted audience was directly synced to the client&apos;s outbound B2B team for immediate follow-up.
+                    Cursive&apos;s <Link href="/custom-audiences" className="text-primary hover:underline">custom audience builder</Link> was deployed, utilizing the client&apos;s competitor list and ideal keywords. The system identified user profiles actively searching for &ldquo;diagnostic medical equipment&rdquo; within a 24-hour period. Cursive&apos;s intent targeting then filtered for medical professionals only. This highly targeted audience was directly synced to the client&apos;s outbound B2B team for immediate follow-up.
                   </p>
                 </div>
 
@@ -309,19 +309,19 @@ export default function CaseStudiesPage() {
                 <h4 className="text-sm font-medium text-gray-900 mb-3 uppercase tracking-wide">Key Benefits</h4>
                 <div className="grid md:grid-cols-2 gap-3">
                   <div className="flex items-start gap-2">
-                    <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0 mt-0.5" />
+                    <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                     <span className="text-sm text-gray-600"><strong className="text-gray-900">Precision Targeting</strong> -- Custom models pinpoint exactly who&apos;s in-market, even in niche B2B sectors</span>
                   </div>
                   <div className="flex items-start gap-2">
-                    <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0 mt-0.5" />
+                    <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                     <span className="text-sm text-gray-600"><strong className="text-gray-900">Rapid Deployment</strong> -- From setup to results in just 3 days without sacrificing quality</span>
                   </div>
                   <div className="flex items-start gap-2">
-                    <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0 mt-0.5" />
+                    <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                     <span className="text-sm text-gray-600"><strong className="text-gray-900">Scalable Pipeline</strong> -- Transform raw data into millions in potential revenue with intent-based targeting</span>
                   </div>
                   <div className="flex items-start gap-2">
-                    <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0 mt-0.5" />
+                    <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                     <span className="text-sm text-gray-600"><strong className="text-gray-900">Cross-Platform Integration</strong> -- Seamlessly sync high-quality leads to sales teams for immediate action</span>
                   </div>
                 </div>
@@ -335,8 +335,8 @@ export default function CaseStudiesPage() {
           <Container>
             <div className="max-w-4xl mx-auto">
               <div className="flex items-center gap-3 mb-4">
-                <ShoppingCart className="w-8 h-8 text-[#007AFF]" />
-                <span className="text-sm text-[#007AFF] font-medium uppercase tracking-wide">E-Commerce Brand</span>
+                <ShoppingCart className="w-8 h-8 text-primary" />
+                <span className="text-sm text-primary font-medium uppercase tracking-wide">E-Commerce Brand</span>
               </div>
               <h2 className="text-3xl lg:text-4xl font-light text-gray-900 mb-6">
                 Unlocking $200K in 90 Days: E-Commerce Success with Identity Resolution
@@ -344,15 +344,15 @@ export default function CaseStudiesPage() {
 
               <div className="grid md:grid-cols-3 gap-6 mb-8">
                 <div className="bg-white rounded-xl p-6 text-center border border-gray-200">
-                  <div className="text-3xl text-[#007AFF] mb-1">$200K+</div>
+                  <div className="text-3xl text-primary mb-1">$200K+</div>
                   <p className="text-gray-600 text-sm">Additional revenue in 90 days</p>
                 </div>
                 <div className="bg-white rounded-xl p-6 text-center border border-gray-200">
-                  <div className="text-3xl text-[#007AFF] mb-1">80%</div>
+                  <div className="text-3xl text-primary mb-1">80%</div>
                   <p className="text-gray-600 text-sm">Email open rate achieved</p>
                 </div>
                 <div className="bg-white rounded-xl p-6 text-center border border-gray-200">
-                  <div className="text-3xl text-[#007AFF] mb-1">500</div>
+                  <div className="text-3xl text-primary mb-1">500</div>
                   <p className="text-gray-600 text-sm">New customers acquired</p>
                 </div>
               </div>
@@ -368,7 +368,7 @@ export default function CaseStudiesPage() {
                 <div>
                   <h3 className="text-lg font-medium text-gray-900 mb-2">The Cursive Solution</h3>
                   <p className="text-gray-600 leading-relaxed">
-                    The <Link href="/pixel" className="text-[#007AFF] hover:underline">Cursive Pixel</Link> was seamlessly integrated into the client&apos;s website. This advanced tool leveraged intent-based identity resolution, dramatically improving match rates by 20% over the previous solution, reaching an impressive 60% overall. Identified visitors were automatically enrolled in personalized reactivation email sequences.
+                    The <Link href="/pixel" className="text-primary hover:underline">Cursive Pixel</Link> was seamlessly integrated into the client&apos;s website. This advanced tool leveraged intent-based identity resolution, dramatically improving match rates by 20% over the previous solution, reaching an impressive 60% overall. Identified visitors were automatically enrolled in personalized reactivation email sequences.
                   </p>
                 </div>
 
@@ -384,19 +384,19 @@ export default function CaseStudiesPage() {
                 <h4 className="text-sm font-medium text-gray-900 mb-3 uppercase tracking-wide">Key Benefits</h4>
                 <div className="grid md:grid-cols-2 gap-3">
                   <div className="flex items-start gap-2">
-                    <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0 mt-0.5" />
+                    <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                     <span className="text-sm text-gray-600"><strong className="text-gray-900">Superior Match Rates</strong> -- Cursive Pixel consistently outperforms competitors with more accurate customer data</span>
                   </div>
                   <div className="flex items-start gap-2">
-                    <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0 mt-0.5" />
+                    <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                     <span className="text-sm text-gray-600"><strong className="text-gray-900">Rapid ROI</strong> -- $200K revenue boost in just three months from identity resolution alone</span>
                   </div>
                   <div className="flex items-start gap-2">
-                    <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0 mt-0.5" />
+                    <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                     <span className="text-sm text-gray-600"><strong className="text-gray-900">Enhanced Engagement</strong> -- 80% open rates and 40% CTR demonstrate precise, intent-based targeting</span>
                   </div>
                   <div className="flex items-start gap-2">
-                    <Check className="w-5 h-5 text-[#007AFF] flex-shrink-0 mt-0.5" />
+                    <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                     <span className="text-sm text-gray-600"><strong className="text-gray-900">Scalable Growth</strong> -- Unlock previously unreachable audiences for accelerated expansion</span>
                   </div>
                 </div>
@@ -420,30 +420,30 @@ export default function CaseStudiesPage() {
 
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
                 <div className="text-center bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-8 border border-blue-200">
-                  <Zap className="w-8 h-8 text-[#007AFF] mx-auto mb-3" />
-                  <div className="text-3xl text-[#007AFF] mb-2">40x</div>
+                  <Zap className="w-8 h-8 text-primary mx-auto mb-3" />
+                  <div className="text-3xl text-primary mb-2">40x</div>
                   <p className="text-gray-600 text-sm">Best-in-class ROI from intent-based audience targeting</p>
                 </div>
                 <div className="text-center bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-8 border border-blue-200">
-                  <Clock className="w-8 h-8 text-[#007AFF] mx-auto mb-3" />
-                  <div className="text-3xl text-[#007AFF] mb-2">3 days</div>
+                  <Clock className="w-8 h-8 text-primary mx-auto mb-3" />
+                  <div className="text-3xl text-primary mb-2">3 days</div>
                   <p className="text-gray-600 text-sm">Fastest time from setup to qualified pipeline results</p>
                 </div>
                 <div className="text-center bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-8 border border-blue-200">
-                  <Users className="w-8 h-8 text-[#007AFF] mx-auto mb-3" />
-                  <div className="text-3xl text-[#007AFF] mb-2">60%+</div>
+                  <Users className="w-8 h-8 text-primary mx-auto mb-3" />
+                  <div className="text-3xl text-primary mb-2">60%+</div>
                   <p className="text-gray-600 text-sm">Identity resolution match rates across e-commerce clients</p>
                 </div>
                 <div className="text-center bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-8 border border-blue-200">
-                  <BarChart3 className="w-8 h-8 text-[#007AFF] mx-auto mb-3" />
-                  <div className="text-3xl text-[#007AFF] mb-2">5x</div>
+                  <BarChart3 className="w-8 h-8 text-primary mx-auto mb-3" />
+                  <div className="text-3xl text-primary mb-2">5x</div>
                   <p className="text-gray-600 text-sm">Average CPC improvement with precision targeting</p>
                 </div>
               </div>
 
               <div className="text-center">
                 <p className="text-gray-600 mb-6">
-                  Ready to see what Cursive can do for your pipeline? Start with a <Link href="/free-audit" className="text-[#007AFF] hover:underline">free website visitor audit</Link> or <Link href="/pricing" className="text-[#007AFF] hover:underline">explore our pricing plans</Link>.
+                  Ready to see what Cursive can do for your pipeline? Start with a <Link href="/free-audit" className="text-primary hover:underline">free website visitor audit</Link> or <Link href="/pricing" className="text-primary hover:underline">explore our pricing plans</Link>.
                 </p>
                 <div className="flex items-center justify-center gap-4">
                   <Button size="lg" href="/free-audit">

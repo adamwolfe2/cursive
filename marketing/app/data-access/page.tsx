@@ -83,7 +83,7 @@ export default function DataAccessPage() {
               { value: '30,000+', label: 'Intent Categories' },
             ].map((stat, i) => (
               <motion.div key={i} initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="text-center bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-8 border border-blue-200">
-                <div className="text-5xl text-[#007AFF] mb-2">{stat.value}</div>
+                <div className="text-5xl text-primary mb-2">{stat.value}</div>
                 <div className="text-gray-600">{stat.label}</div>
               </motion.div>
             ))}
@@ -102,25 +102,25 @@ export default function DataAccessPage() {
             </div>
             <div className="grid md:grid-cols-2 gap-8">
               <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="bg-white rounded-xl p-8 border border-gray-200">
-                <Database className="w-10 h-10 text-[#007AFF] mb-4" />
+                <Database className="w-10 h-10 text-primary mb-4" />
                 <h3 className="text-xl font-light text-gray-900 mb-3">280M Consumer Profiles</h3>
                 <p className="text-gray-600 text-sm mb-4">Our consumer database covers over 220 million individuals across the United States with detailed demographic, lifestyle, and behavioral data points.</p>
                 <ul className="space-y-2">
-                  <li className="flex items-start gap-2 text-gray-600 text-sm"><Check className="w-4 h-4 text-[#007AFF] flex-shrink-0 mt-0.5" /> Verified email addresses and phone numbers</li>
-                  <li className="flex items-start gap-2 text-gray-600 text-sm"><Check className="w-4 h-4 text-[#007AFF] flex-shrink-0 mt-0.5" /> Age, income, education, and homeownership data</li>
-                  <li className="flex items-start gap-2 text-gray-600 text-sm"><Check className="w-4 h-4 text-[#007AFF] flex-shrink-0 mt-0.5" /> Purchase behavior and brand affinities</li>
-                  <li className="flex items-start gap-2 text-gray-600 text-sm"><Check className="w-4 h-4 text-[#007AFF] flex-shrink-0 mt-0.5" /> Lifestyle interests and online activity</li>
+                  <li className="flex items-start gap-2 text-gray-600 text-sm"><Check className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" /> Verified email addresses and phone numbers</li>
+                  <li className="flex items-start gap-2 text-gray-600 text-sm"><Check className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" /> Age, income, education, and homeownership data</li>
+                  <li className="flex items-start gap-2 text-gray-600 text-sm"><Check className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" /> Purchase behavior and brand affinities</li>
+                  <li className="flex items-start gap-2 text-gray-600 text-sm"><Check className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" /> Lifestyle interests and online activity</li>
                 </ul>
               </motion.div>
               <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }} className="bg-white rounded-xl p-8 border border-gray-200">
-                <Database className="w-10 h-10 text-[#007AFF] mb-4" />
+                <Database className="w-10 h-10 text-primary mb-4" />
                 <h3 className="text-xl font-light text-gray-900 mb-3">140M+ Business Profiles</h3>
                 <p className="text-gray-600 text-sm mb-4">Our business database includes over 140 million professional profiles with firmographic data, technographic insights, and real-time intent signals.</p>
                 <ul className="space-y-2">
-                  <li className="flex items-start gap-2 text-gray-600 text-sm"><Check className="w-4 h-4 text-[#007AFF] flex-shrink-0 mt-0.5" /> Job title, seniority, and department information</li>
-                  <li className="flex items-start gap-2 text-gray-600 text-sm"><Check className="w-4 h-4 text-[#007AFF] flex-shrink-0 mt-0.5" /> Company revenue, employee count, and funding data</li>
-                  <li className="flex items-start gap-2 text-gray-600 text-sm"><Check className="w-4 h-4 text-[#007AFF] flex-shrink-0 mt-0.5" /> Technology stack and tool usage</li>
-                  <li className="flex items-start gap-2 text-gray-600 text-sm"><Check className="w-4 h-4 text-[#007AFF] flex-shrink-0 mt-0.5" /> 30,000+ intent categories tracked in real-time</li>
+                  <li className="flex items-start gap-2 text-gray-600 text-sm"><Check className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" /> Job title, seniority, and department information</li>
+                  <li className="flex items-start gap-2 text-gray-600 text-sm"><Check className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" /> Company revenue, employee count, and funding data</li>
+                  <li className="flex items-start gap-2 text-gray-600 text-sm"><Check className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" /> Technology stack and tool usage</li>
+                  <li className="flex items-start gap-2 text-gray-600 text-sm"><Check className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" /> 30,000+ intent categories tracked in real-time</li>
                 </ul>
               </motion.div>
             </div>
@@ -141,21 +141,21 @@ export default function DataAccessPage() {
             <div className="grid md:grid-cols-3 gap-8">
               <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center">
                 <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-[#007AFF] text-2xl font-light">1</span>
+                  <span className="text-primary text-2xl font-light">1</span>
                 </div>
                 <h3 className="text-lg font-light text-gray-900 mb-2">Multi-Source Aggregation</h3>
                 <p className="text-gray-600 text-sm">We aggregate data from hundreds of public and licensed sources, cross-referencing each record against multiple databases to ensure completeness and reduce duplicates.</p>
               </motion.div>
               <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }} className="text-center">
                 <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-[#007AFF] text-2xl font-light">2</span>
+                  <span className="text-primary text-2xl font-light">2</span>
                 </div>
                 <h3 className="text-lg font-light text-gray-900 mb-2">Real-Time Verification</h3>
                 <p className="text-gray-600 text-sm">Every email address, phone number, and company record undergoes real-time validation at the point of delivery. This is not batch verification from last month. It happens when you request the data.</p>
               </motion.div>
               <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }} className="text-center">
                 <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-[#007AFF] text-2xl font-light">3</span>
+                  <span className="text-primary text-2xl font-light">3</span>
                 </div>
                 <h3 className="text-lg font-light text-gray-900 mb-2">Bounce Replacement Guarantee</h3>
                 <p className="text-gray-600 text-sm">If any delivered email address bounces, we replace it for free. We guarantee 95%+ email deliverability across all plans and data exports, so you never pay for bad data.</p>
@@ -177,22 +177,22 @@ export default function DataAccessPage() {
             </div>
             <div className="grid md:grid-cols-3 gap-8">
               <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="bg-white rounded-xl p-8 border border-gray-200">
-                <Zap className="w-10 h-10 text-[#007AFF] mb-4" />
+                <Zap className="w-10 h-10 text-primary mb-4" />
                 <h3 className="text-xl font-light text-gray-900 mb-3">API Access</h3>
                 <p className="text-gray-600 text-sm mb-3">Programmatic queries with our RESTful API. Build data enrichment into your product, power internal tools, or sync directly to your CRM. Includes real-time lookups, contact enrichment endpoints, and batch processing.</p>
-                <p className="text-gray-500 text-xs">Available on Pipeline plan and above. <Link href="/pricing" className="text-[#007AFF] hover:underline">See pricing</Link></p>
+                <p className="text-gray-500 text-xs">Available on Pipeline plan and above. <Link href="/pricing" className="text-primary hover:underline">See pricing</Link></p>
               </motion.div>
               <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }} className="bg-white rounded-xl p-8 border border-gray-200">
-                <FileText className="w-10 h-10 text-[#007AFF] mb-4" />
+                <FileText className="w-10 h-10 text-primary mb-4" />
                 <h3 className="text-xl font-light text-gray-900 mb-3">Bulk Exports</h3>
                 <p className="text-gray-600 text-sm mb-3">Download large datasets filtered by your targeting criteria. Export in CSV, JSON, or custom formats. Schedule recurring exports or run them on demand. Perfect for loading into your CRM, data warehouse, or marketing automation platform.</p>
-                <p className="text-gray-500 text-xs">Available on all plans. <Link href="/marketplace" className="text-[#007AFF] hover:underline">Try the marketplace</Link></p>
+                <p className="text-gray-500 text-xs">Available on all plans. <Link href="/marketplace" className="text-primary hover:underline">Try the marketplace</Link></p>
               </motion.div>
               <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }} className="bg-white rounded-xl p-8 border border-gray-200">
-                <Database className="w-10 h-10 text-[#007AFF] mb-4" />
+                <Database className="w-10 h-10 text-primary mb-4" />
                 <h3 className="text-xl font-light text-gray-900 mb-3">Real-Time Lookups</h3>
                 <p className="text-gray-600 text-sm mb-3">Instant contact enrichment and verification. Match an email to a full profile, perform reverse lookups by company or domain, and verify contact information in real-time. Ideal for form enrichment, lead scoring, and sales workflows.</p>
-                <p className="text-gray-500 text-xs">Available on Outbound and Pipeline. <Link href="/contact" className="text-[#007AFF] hover:underline">Contact sales</Link></p>
+                <p className="text-gray-500 text-xs">Available on Outbound and Pipeline. <Link href="/contact" className="text-primary hover:underline">Contact sales</Link></p>
               </motion.div>
             </div>
           </div>
@@ -204,7 +204,7 @@ export default function DataAccessPage() {
         <Container>
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-12">
-              <Shield className="w-12 h-12 text-[#007AFF] mx-auto mb-4" />
+              <Shield className="w-12 h-12 text-primary mx-auto mb-4" />
               <h2 className="text-3xl lg:text-4xl font-light text-gray-900 mb-4">Compliance and Security</h2>
               <p className="text-gray-600 max-w-3xl mx-auto">
                 Cursive takes data privacy and security seriously. Our data practices comply with all major regulatory frameworks, and our infrastructure meets enterprise-grade security standards.
@@ -229,7 +229,7 @@ export default function DataAccessPage() {
               </div>
             </div>
             <p className="text-center text-gray-500 text-sm mt-8">
-              Questions about data privacy or compliance? <Link href="/contact" className="text-[#007AFF] hover:underline">Contact our team</Link> or review our <Link href="/privacy" className="text-[#007AFF] hover:underline">privacy policy</Link>.
+              Questions about data privacy or compliance? <Link href="/contact" className="text-primary hover:underline">Contact our team</Link> or review our <Link href="/privacy" className="text-primary hover:underline">privacy policy</Link>.
             </p>
           </div>
         </Container>

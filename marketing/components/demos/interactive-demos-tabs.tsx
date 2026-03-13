@@ -63,7 +63,7 @@ export function InteractiveDemosTabs() {
                 {activeTab === tab.id && (
                   <motion.div
                     layoutId="activeTab"
-                    className="absolute inset-0 bg-[#007AFF] rounded-md"
+                    className="absolute inset-0 bg-primary rounded-md"
                     transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
                   />
                 )}

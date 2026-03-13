@@ -46,7 +46,7 @@ export default function FAQPage() {
             </h1>
             <p className="text-xl text-gray-600 mb-8">
               Everything you need to know about <span className="font-cursive text-2xl text-gray-500">Cursive</span>. Can't find what you're looking for?{" "}
-              <a href="/contact" className="text-[#007AFF] hover:underline">Contact us</a>.
+              <a href="/contact" className="text-primary hover:underline">Contact us</a>.
             </p>
 
             {/* Search */}
@@ -57,7 +57,7 @@ export default function FAQPage() {
                 placeholder="Search for answers..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#007AFF] focus:border-transparent text-lg"
+                className="w-full pl-12 pr-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent text-lg"
               />
             </div>
           </motion.div>
@@ -75,7 +75,7 @@ export default function FAQPage() {
                 onClick={() => setActiveCategory(category.value)}
                 className={`px-6 py-3 rounded-lg transition-all ${
                   activeCategory === category.value
-                    ? "bg-[#007AFF] text-white shadow-lg"
+                    ? "bg-primary text-white shadow-lg"
                     : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                 }`}
               >
@@ -91,7 +91,7 @@ export default function FAQPage() {
                 <p className="text-gray-600 mb-4">No results found for "{searchQuery}"</p>
                 <button
                   onClick={() => setSearchQuery("")}
-                  className="text-[#007AFF] hover:underline"
+                  className="text-primary hover:underline"
                 >
                   Clear search
                 </button>
@@ -110,7 +110,7 @@ export default function FAQPage() {
                     className="w-full px-6 py-5 flex items-start justify-between text-left hover:bg-gray-50 transition-colors"
                   >
                     <div className="flex items-start gap-4 flex-1">
-                      <div className="w-1.5 h-1.5 bg-[#007AFF] rounded-full flex-shrink-0 mt-3" />
+                      <div className="w-1.5 h-1.5 bg-primary rounded-full flex-shrink-0 mt-3" />
                       <span className="text-lg text-gray-900">{faq.question}</span>
                     </div>
                     <div className="text-gray-400 ml-4 text-2xl">

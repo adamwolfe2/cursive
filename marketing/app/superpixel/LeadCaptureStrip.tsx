@@ -35,7 +35,7 @@ export function LeadCaptureStrip() {
 
   if (submitted) {
     return (
-      <div className="bg-[#007AFF]/8 border border-[#007AFF]/20 rounded-2xl px-8 py-10 text-center max-w-2xl mx-auto">
+      <div className="bg-primary/8 border border-primary/20 rounded-2xl px-8 py-10 text-center max-w-2xl mx-auto">
         <div className="text-4xl mb-3">🎯</div>
         <h3 className="text-xl font-semibold text-gray-900 mb-2">You're in — check your inbox.</h3>
         <p className="text-gray-500 text-sm">
@@ -60,7 +60,7 @@ export function LeadCaptureStrip() {
           placeholder="First name (optional)"
           value={firstName}
           onChange={e => setFirstName(e.target.value)}
-          className="flex-none w-full sm:w-36 px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-500 text-sm focus:outline-none focus:border-[#007AFF] transition-colors"
+          className="flex-none w-full sm:w-36 px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-500 text-sm focus:outline-none focus:border-primary transition-colors"
         />
         <input
           type="email"
@@ -68,12 +68,12 @@ export function LeadCaptureStrip() {
           placeholder="Work email"
           value={email}
           onChange={e => setEmail(e.target.value)}
-          className="flex-1 px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-500 text-sm focus:outline-none focus:border-[#007AFF] transition-colors"
+          className="flex-1 px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-500 text-sm focus:outline-none focus:border-primary transition-colors"
         />
         <button
           type="submit"
           disabled={loading || !email.trim()}
-          className="flex-none px-6 py-3 bg-[#007AFF] hover:bg-[#0066DD] disabled:opacity-50 text-white font-semibold rounded-lg text-sm transition-colors whitespace-nowrap"
+          className="flex-none px-6 py-3 bg-primary hover:bg-primary-dark disabled:opacity-50 text-white font-semibold rounded-lg text-sm transition-colors whitespace-nowrap"
         >
           {loading ? 'Sending...' : 'Send My Leads →'}
         </button>

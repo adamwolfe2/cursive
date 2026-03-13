@@ -49,7 +49,7 @@ export default function RetargetingPage() {
             </Link>
 
             <div className="max-w-4xl">
-              <div className="inline-block px-3 py-1 bg-[#007AFF] text-white rounded-full text-sm font-medium mb-4">
+              <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
                 Retargeting
               </div>
               <h1 className="text-5xl font-bold mb-6">

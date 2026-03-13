@@ -4,8 +4,8 @@ import { motion } from "framer-motion"
 import { useState, useEffect } from "react"
 
 const leadLists = [
-  { title: "SaaS Founders - Series A", leads: 500, price: 250, verified: 99, tag: "Popular", tagColor: "bg-[#007AFF]" },
-  { title: "VP Marketing - Tech", leads: 1000, price: 450, verified: 98, tag: "New", tagColor: "bg-[#007AFF]" },
+  { title: "SaaS Founders - Series A", leads: 500, price: 250, verified: 99, tag: "Popular", tagColor: "bg-primary" },
+  { title: "VP Marketing - Tech", leads: 1000, price: 450, verified: 98, tag: "New", tagColor: "bg-primary" },
   { title: "Head of Sales - B2B", leads: 750, price: 350, verified: 97, tag: "Trending", tagColor: "bg-blue-600" },
 ]
 
@@ -73,7 +73,7 @@ export function DemoMarketplace() {
                   <motion.div
                     animate={{ scale: [1, 1.2, 1] }}
                     transition={{ duration: 2, repeat: Infinity }}
-                    className="w-2 h-2 rounded-full bg-[#007AFF]"
+                    className="w-2 h-2 rounded-full bg-primary"
                   />
                   <span className="text-sm text-blue-700 font-medium">{list.verified}%</span>
                 </motion.div>
@@ -86,7 +86,7 @@ export function DemoMarketplace() {
 
             {/* Price & Action */}
             <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-              <div className="text-2xl text-[#007AFF] font-light">
+              <div className="text-2xl text-primary font-light">
                 ${list.price}
               </div>
               <motion.button
@@ -94,7 +94,7 @@ export function DemoMarketplace() {
                 whileTap={{ scale: 0.95 }}
                 onClick={() => handlePurchase(i)}
                 disabled={downloading === i}
-                className="px-4 py-2 bg-[#007AFF] text-white rounded-lg text-sm font-medium hover:bg-[#0066DD] transition-colors disabled:opacity-50"
+                className="px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary-dark transition-colors disabled:opacity-50"
               >
                 {downloading === i ? (
                   <span className="flex items-center gap-2">
@@ -118,7 +118,7 @@ export function DemoMarketplace() {
         className="bg-white rounded-xl p-6 border border-gray-200"
       >
         <div className="flex items-center gap-2 mb-4">
-          <svg className="w-5 h-5 text-[#007AFF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           <span className="text-sm text-gray-900 font-medium">What's Included</span>
