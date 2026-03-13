@@ -312,6 +312,32 @@ export async function middleware(req: NextRequest) {
     // Set affiliate ref cookie on first visit with ?ref= param
     applyAffiliateCookie(req, client.response)
 
+    // Add X-Robots-Tag: noindex for all non-marketing routes.
+    // The app domain (leads.meetcursive.com) should never be indexed.
+    // Marketing paths (/ and static assets) are already excluded by the
+    // quick-return at the top of the function.
+    const isAppRoute =
+      pathname.startsWith('/dashboard') ||
+      pathname.startsWith('/settings') ||
+      pathname.startsWith('/admin') ||
+      pathname.startsWith('/api') ||
+      pathname.startsWith('/login') ||
+      pathname.startsWith('/signup') ||
+      pathname.startsWith('/welcome') ||
+      pathname.startsWith('/onboarding') ||
+      pathname.startsWith('/role-selection') ||
+      pathname.startsWith('/forgot-password') ||
+      pathname.startsWith('/reset-password') ||
+      pathname.startsWith('/verify-email') ||
+      pathname.startsWith('/auth') ||
+      pathname.startsWith('/partner') ||
+      pathname.startsWith('/affiliate') ||
+      pathname.startsWith('/affiliates') ||
+      pathname.startsWith('/superpixel')
+    if (isAppRoute) {
+      client.response.headers.set('X-Robots-Tag', 'noindex, nofollow')
+    }
+
     // Add custom headers for subdomain information
     if (subdomain) {
       client.response.headers.set('x-subdomain', subdomain)

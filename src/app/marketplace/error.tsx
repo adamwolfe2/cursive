@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import * as Sentry from '@sentry/nextjs'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 export default function MarketplaceError({
@@ -12,6 +13,11 @@ export default function MarketplaceError({
 }) {
   useEffect(() => {
     safeError('[MarketplaceError]', 'Page error:', error.message, error.digest)
+    // Marketplace errors are revenue-critical — capture to Sentry immediately
+    Sentry.captureException(error, {
+      tags: { source: 'next_error_boundary', route: 'marketplace' },
+      extra: { digest: error.digest },
+    })
   }, [error])
 
   return (

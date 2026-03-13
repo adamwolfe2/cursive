@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback, useMemo } from 'react'
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react'
 import Link from 'next/link'
 import { NavBar } from '@/components/nav-bar'
 import { useDebounce } from '@/hooks/use-debounce'
@@ -44,6 +44,9 @@ export default function MarketplacePage() {
   const [selectedLeads, setSelectedLeads] = useState<Set<string>>(new Set())
   const [showSuccessMessage, setShowSuccessMessage] = useState(false)
   const [purchasedLeadCount, setPurchasedLeadCount] = useState(0)
+
+  // Ref-based lock: prevents double-submits in the gap before isPurchasing becomes true
+  const purchaseInFlight = useRef(false)
 
   // Upgrade modal state — shown on 402 / insufficient_credits errors
   const { isOpen: upgradeModalOpen, trigger: upgradeTrigger, context: upgradeContext, showUpgradeModal, closeModal: closeUpgradeModal } = useUpgradeModal()
@@ -145,9 +148,13 @@ export default function MarketplacePage() {
   }, [filters])
 
   // Purchase selected leads via mutation
+  // Uses a ref-based lock (purchaseInFlight) to block duplicate calls that
+  // arrive before React re-renders and isPurchasing becomes true.
   const purchaseSelected = useCallback(async () => {
     if (selectedLeads.size === 0) return
+    if (purchaseInFlight.current) return
 
+    purchaseInFlight.current = true
     const leadIds = Array.from(selectedLeads)
     purchaseMutation.mutate(leadIds, {
       onSuccess: (data) => {
@@ -167,6 +174,9 @@ export default function MarketplacePage() {
           )
         }
         // The usePurchaseLeads onError still shows a generic toast for other errors
+      },
+      onSettled: () => {
+        purchaseInFlight.current = false
       },
     })
   }, [selectedLeads, purchaseMutation, showUpgradeModal])

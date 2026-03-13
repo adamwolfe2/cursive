@@ -3,6 +3,7 @@ export const runtime = 'nodejs'
 
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
+import * as Sentry from '@sentry/nextjs'
 import { z } from 'zod'
 import { handleServiceWebhookEvent } from '@/lib/stripe/service-webhooks'
 import { MarketplaceRepository } from '@/lib/repositories/marketplace.repository'
@@ -130,6 +131,13 @@ async function handleCreditPurchaseCompleted(session: Stripe.Checkout.Session): 
       errors: metadataValidation.error.format(),
       metadata: session.metadata,
     })
+    Sentry.captureException(new Error('Invalid credit purchase metadata'), {
+      tags: { source: 'stripe_webhook', error_type: 'invalid_credit_metadata' },
+      extra: {
+        stripe_session_id: session.id,
+        validation_errors: metadataValidation.error.format(),
+      },
+    })
     // Alert ops — this payment will NOT be processed without manual intervention
     await sendSlackAlert({
       type: 'stripe_payment',
@@ -231,6 +239,13 @@ async function handleLeadPurchaseCompleted(session: Stripe.Checkout.Session): Pr
     safeError('[Stripe Webhook] Invalid lead purchase metadata', {
       errors: metadataValidation.error.format(),
       metadata: session.metadata,
+    })
+    Sentry.captureException(new Error('Invalid lead purchase metadata'), {
+      tags: { source: 'stripe_webhook', error_type: 'invalid_lead_metadata' },
+      extra: {
+        stripe_session_id: session.id,
+        validation_errors: metadataValidation.error.format(),
+      },
     })
     // Alert ops — this payment will NOT be processed without manual intervention
     await sendSlackAlert({
@@ -662,6 +677,9 @@ export async function POST(request: NextRequest) {
       )
     } catch (err) {
       safeError('[Stripe Webhook] Signature verification failed:', err)
+      Sentry.captureException(err, {
+        tags: { source: 'stripe_webhook', error_type: 'signature_verification_failed' },
+      })
       return NextResponse.json(
         { error: 'Invalid signature' },
         { status: 400 }
@@ -815,6 +833,17 @@ export async function POST(request: NextRequest) {
     } catch (err) {
       processingError = err instanceof Error ? err : new Error(String(err))
       safeError('[Stripe Webhook] Error processing event:', processingError)
+      Sentry.captureException(processingError, {
+        tags: {
+          source: 'stripe_webhook',
+          event_type: event.type,
+          error_type: 'processing_error',
+        },
+        extra: {
+          stripe_event_id: event.id,
+          stripe_event_type: event.type,
+        },
+      })
     }
 
     // ========================================================================
@@ -846,6 +875,9 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     // Outer catch for unexpected errors (signature verification, etc.)
     safeError('[Stripe Webhook] Fatal error in webhook handler:', error)
+    Sentry.captureException(error, {
+      tags: { source: 'stripe_webhook', error_type: 'fatal_handler_error' },
+    })
     return NextResponse.json(
       { error: 'Webhook handler failed' },
       { status: 500 }

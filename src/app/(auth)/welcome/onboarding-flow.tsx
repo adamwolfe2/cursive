@@ -5,7 +5,7 @@
 
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { getStoredRefCode } from '@/components/affiliate/affiliate-ref-capture'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -20,6 +20,27 @@ import {
   partnerQ3Options,
 } from '@/lib/utils/waitlist-validation'
 import { createClient } from '@/lib/supabase/client'
+
+// How long to wait for the OAuth redirect before showing a recovery UI (ms)
+const OAUTH_REDIRECT_TIMEOUT_MS = 12000
+
+// Map raw Supabase/network error messages to user-friendly strings
+function friendlyOAuthError(raw: string): string {
+  const lower = raw.toLowerCase()
+  if (lower.includes('popup') || lower.includes('blocked')) {
+    return 'Your browser blocked the Google sign-in popup. Please allow popups for this site and try again.'
+  }
+  if (lower.includes('network') || lower.includes('fetch') || lower.includes('failed to fetch')) {
+    return 'A network error occurred. Please check your connection and try again.'
+  }
+  if (lower.includes('cancelled') || lower.includes('canceled') || lower.includes('closed')) {
+    return 'Sign-in was cancelled. You can try again or use email instead.'
+  }
+  if (lower.includes('already registered') || lower.includes('already exists')) {
+    return 'An account with that Google email already exists. Try signing in instead.'
+  }
+  return 'Something went wrong with Google sign-in. Please try again or use email instead.'
+}
 
 // Screen components
 import { TitleScreen } from '@/components/waitlist/title-screen'
@@ -59,6 +80,25 @@ export function OnboardingFlow({ isMarketplace, isCallProspect = false, prefille
   const [submittedRequiresConfirmation, setSubmittedRequiresConfirmation] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  // Tracks whether we are mid-OAuth-redirect so a timeout can surface recovery UI
+  const [oauthPending, setOauthPending] = useState(false)
+  const oauthTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // Clear any outstanding OAuth timeout when unmounting
+  useEffect(() => {
+    return () => {
+      if (oauthTimeoutRef.current) clearTimeout(oauthTimeoutRef.current)
+    }
+  }, [])
+
+  const startOauthTimeout = useCallback(() => {
+    if (oauthTimeoutRef.current) clearTimeout(oauthTimeoutRef.current)
+    oauthTimeoutRef.current = setTimeout(() => {
+      setOauthPending(false)
+      setIsSubmitting(false)
+      setError("Google sign-in is taking longer than expected. Please try again or use email instead.")
+    }, OAUTH_REDIRECT_TIMEOUT_MS)
+  }, [])
 
   const handleBusinessSubmit = useCallback(async (data: BusinessFormData, authMethod: 'email' | 'google', password?: string) => {
     setError(null)
@@ -76,6 +116,8 @@ export function OnboardingFlow({ isMarketplace, isCallProspect = false, prefille
       const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || window.location.origin).replace(/\/+$/, '')
       // Trigger Google OAuth
       const nextUrl = isMarketplace ? '/welcome?returning=true&source=marketplace' : '/welcome?returning=true'
+      setOauthPending(true)
+      startOauthTimeout()
       const { error: oauthError } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -83,10 +125,12 @@ export function OnboardingFlow({ isMarketplace, isCallProspect = false, prefille
         },
       })
       if (oauthError) {
-        setError(oauthError.message)
+        if (oauthTimeoutRef.current) clearTimeout(oauthTimeoutRef.current)
+        setOauthPending(false)
+        setError(friendlyOAuthError(oauthError.message))
         setIsSubmitting(false)
       }
-      // Don't reset isSubmitting on success — page will redirect
+      // On success the browser navigates away — timeout will clear itself on unmount
       return
     }
 
@@ -159,7 +203,7 @@ export function OnboardingFlow({ isMarketplace, isCallProspect = false, prefille
       setError(err.message || 'Something went wrong')
       setIsSubmitting(false)
     }
-  }, [isMarketplace, goToScreen, router])
+  }, [isMarketplace, goToScreen, router, startOauthTimeout])
 
   const handlePartnerSubmit = useCallback(async (data: PartnerFormData, authMethod: 'email' | 'google', password?: string) => {
     setError(null)
@@ -174,6 +218,8 @@ export function OnboardingFlow({ isMarketplace, isCallProspect = false, prefille
       }))
       // Use NEXT_PUBLIC_SITE_URL for consistent redirect (must match Supabase allowed redirects)
       const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || window.location.origin).replace(/\/+$/, '')
+      setOauthPending(true)
+      startOauthTimeout()
       const { error: oauthError } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -181,10 +227,12 @@ export function OnboardingFlow({ isMarketplace, isCallProspect = false, prefille
         },
       })
       if (oauthError) {
-        setError(oauthError.message)
+        if (oauthTimeoutRef.current) clearTimeout(oauthTimeoutRef.current)
+        setOauthPending(false)
+        setError(friendlyOAuthError(oauthError.message))
         setIsSubmitting(false)
       }
-      // Don't reset isSubmitting on success — page will redirect
+      // On success the browser navigates away — timeout will clear itself on unmount
       return
     }
 
@@ -250,7 +298,7 @@ export function OnboardingFlow({ isMarketplace, isCallProspect = false, prefille
       setError(err.message || 'Something went wrong')
       setIsSubmitting(false)
     }
-  }, [isMarketplace, goToScreen, router])
+  }, [isMarketplace, goToScreen, router, startOauthTimeout])
 
   const renderScreen = () => {
     switch (currentScreen) {
@@ -324,7 +372,9 @@ export function OnboardingFlow({ isMarketplace, isCallProspect = false, prefille
             onSubmit={handleBusinessSubmit}
             onBack={goBack}
             error={error}
+            onClearError={() => setError(null)}
             isSubmitting={isSubmitting}
+            oauthPending={oauthPending}
           />
         )
 
@@ -396,7 +446,9 @@ export function OnboardingFlow({ isMarketplace, isCallProspect = false, prefille
             onSubmit={handlePartnerSubmit}
             onBack={goBack}
             error={error}
+            onClearError={() => setError(null)}
             isSubmitting={isSubmitting}
+            oauthPending={oauthPending}
           />
         )
 

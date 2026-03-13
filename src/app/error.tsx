@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import Link from 'next/link'
+import * as Sentry from '@sentry/nextjs'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { safeError } from '@/lib/utils/log-sanitizer'
@@ -16,6 +17,11 @@ export default function Error({
   useEffect(() => {
     // Log the error to an error reporting service
     safeError('[AppError]', 'Application error:', error)
+    // Capture to Sentry with digest for cross-referencing server logs
+    Sentry.captureException(error, {
+      tags: { source: 'next_error_boundary', route: 'root' },
+      extra: { digest: error.digest },
+    })
   }, [error])
 
   return (

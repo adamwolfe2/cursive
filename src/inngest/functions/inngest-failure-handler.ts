@@ -9,6 +9,7 @@
  * This ensures NOTHING fails silently — every error is visible in Slack.
  */
 
+import * as Sentry from '@sentry/nextjs'
 import { inngest } from '../client'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { recordFailedOperation } from '@/lib/monitoring/failed-operations'
@@ -55,6 +56,23 @@ export const universalFailureHandler = inngest.createFunction(
     safeError(`[Failure Handler] ${functionId} failed`, {
       error: error?.message,
       runId,
+    })
+
+    // Capture all Inngest job failures to Sentry with structured context
+    Sentry.captureException(new Error(error?.message || 'Inngest function failed'), {
+      tags: {
+        source: 'inngest_failure_handler',
+        function_id: functionId,
+        severity,
+        is_critical: String(isCritical),
+      },
+      extra: {
+        run_id: runId,
+        event_name: event.data.event?.name,
+        workspace_id: event.data.event?.data?.workspace_id,
+        attempt: event.data.attempt,
+        error_stack: error?.stack,
+      },
     })
 
     // Step 1: Send Slack alert

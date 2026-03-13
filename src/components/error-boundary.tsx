@@ -1,6 +1,7 @@
 'use client'
 
 import { Component, ReactNode } from 'react'
+import * as Sentry from '@sentry/nextjs'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface Props {
@@ -33,10 +34,11 @@ export class ErrorBoundary extends Component<Props, State> {
     // Call optional error handler
     this.props.onError?.(error, errorInfo)
 
-    // Sentry integration available via src/lib/monitoring/sentry.ts
-    // Uncomment to enable error tracking:
-    // import { captureError } from '@/lib/monitoring/sentry'
-    // captureError(error, { errorInfo })
+    // Capture client-side component errors to Sentry
+    Sentry.captureException(error, {
+      tags: { source: 'error_boundary' },
+      extra: { componentStack: errorInfo.componentStack },
+    })
   }
 
   handleReset = () => {

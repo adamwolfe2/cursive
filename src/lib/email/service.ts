@@ -87,8 +87,9 @@ export async function sendEmail(options: SendEmailOptions): Promise<EmailResult>
       replyTo: options.replyTo,
       tags: options.tags,
       headers: {
-        'List-Unsubscribe': `<${APP_URL}/settings/notifications>`,
+        'List-Unsubscribe': `<mailto:unsubscribe@meetcursive.com>, <${APP_URL}/settings/notifications>`,
         'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+        'List-ID': 'Cursive Notifications <notifications.meetcursive.com>',
         ...options.headers,
       },
     })

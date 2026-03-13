@@ -28,10 +28,13 @@ interface BusinessSignupFormProps {
   onSubmit: (data: BusinessFormData, authMethod: 'email' | 'google', password?: string) => Promise<void>
   onBack: () => void
   error: string | null
+  onClearError?: () => void
   isSubmitting?: boolean
+  /** True when we are waiting for a Google OAuth redirect */
+  oauthPending?: boolean
 }
 
-export function BusinessSignupForm({ vslAnswers, onSubmit, onBack, error, isSubmitting: parentSubmitting }: BusinessSignupFormProps) {
+export function BusinessSignupForm({ vslAnswers, onSubmit, onBack, error, onClearError, isSubmitting: parentSubmitting, oauthPending }: BusinessSignupFormProps) {
   const [localSubmitting, setLocalSubmitting] = useState(false)
   const isSubmitting = localSubmitting || !!parentSubmitting
   const [password, setPassword] = useState('')
@@ -90,8 +93,12 @@ export function BusinessSignupForm({ vslAnswers, onSubmit, onBack, error, isSubm
 
     setLocalSubmitting(true)
     const data = getValues()
-    await onSubmit(data, 'google')
-    // Don't set isSubmitting false — page will redirect
+    try {
+      await onSubmit(data, 'google')
+    } finally {
+      // Reset local flag — parent controls isSubmitting during the OAuth redirect window
+      setLocalSubmitting(false)
+    }
   }
 
   return (
@@ -119,9 +126,33 @@ export function BusinessSignupForm({ vslAnswers, onSubmit, onBack, error, isSubm
               Get qualified leads delivered to your inbox daily
             </motion.p>
 
+            {oauthPending && !error && (
+              <div className="rounded-lg bg-muted border border-border p-3 mb-4 flex items-center gap-3">
+                <div className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin flex-shrink-0" />
+                <p className="text-sm text-muted-foreground">Redirecting to Google sign-in&hellip;</p>
+              </div>
+            )}
+
             {error && (
               <div className="rounded-lg bg-destructive/10 border border-destructive/20 p-3 mb-4">
-                <p className="text-sm text-destructive">{error}</p>
+                <p className="text-sm text-destructive font-medium">{error}</p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => { onClearError?.(); onGoogleSubmit() }}
+                    className="text-xs font-medium text-destructive hover:underline"
+                  >
+                    Try Google again
+                  </button>
+                  <span className="text-xs text-muted-foreground">or</span>
+                  <button
+                    type="button"
+                    onClick={onClearError}
+                    className="text-xs font-medium text-primary hover:underline"
+                  >
+                    Continue with email instead
+                  </button>
+                </div>
               </div>
             )}
 

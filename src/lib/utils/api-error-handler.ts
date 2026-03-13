@@ -3,6 +3,7 @@
 
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
+import * as Sentry from '@sentry/nextjs'
 import { FeatureNotAvailableError, LimitExceededError } from '@/lib/tier/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
@@ -79,6 +80,10 @@ export function handleApiError(error: unknown): NextResponse {
 
   if (!isExpectedError) {
     safeError('[API Error]:', error)
+    // Capture unexpected server errors to Sentry (skip client/validation errors)
+    Sentry.captureException(error, {
+      tags: { source: 'api_error_handler' },
+    })
   }
 
   // Zod validation errors

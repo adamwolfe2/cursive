@@ -138,13 +138,20 @@ async function fetchMarketplaceStats(): Promise<MarketplaceStatsResponse> {
   return { totalSpent: data.totalSpent || 0, leadCount: data.totalPurchased || 0 }
 }
 
-async function purchaseLeads(leadIds: string[]): Promise<PurchaseResponse> {
+async function purchaseLeads({
+  leadIds,
+  idempotencyKey,
+}: {
+  leadIds: string[]
+  idempotencyKey: string
+}): Promise<PurchaseResponse> {
   const response = await fetch('/api/marketplace/purchase', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       leadIds,
       paymentMethod: 'credits',
+      idempotencyKey,
     }),
   })
 
@@ -224,7 +231,8 @@ export function usePurchaseLeads() {
   const { toast } = useToast()
 
   return useMutation({
-    mutationFn: (leadIds: string[]) => purchaseLeads(leadIds),
+    mutationFn: (leadIds: string[]) =>
+      purchaseLeads({ leadIds, idempotencyKey: crypto.randomUUID() }),
     onSuccess: (data, leadIds) => {
       // Invalidate marketplace leads so purchased ones disappear
       queryClient.invalidateQueries({ queryKey: ['marketplace-leads'] })

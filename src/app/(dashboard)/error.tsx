@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import Link from 'next/link'
+import * as Sentry from '@sentry/nextjs'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { safeError } from '@/lib/utils/log-sanitizer'
@@ -16,6 +17,11 @@ export default function DashboardError({
   useEffect(() => {
     // Only log error message, not full object to avoid leaking sensitive data
     safeError('[DashboardError]', 'Dashboard error:', error.message)
+    // Capture to Sentry — dashboard errors surface broken pages for authenticated users
+    Sentry.captureException(error, {
+      tags: { source: 'next_error_boundary', route: 'dashboard' },
+      extra: { digest: error.digest },
+    })
   }, [error])
 
   return (
