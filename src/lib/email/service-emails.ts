@@ -12,6 +12,7 @@ import {
   createOnboardingReminderEmail,
   createRenewalReminderEmail,
   createDeliveryNotificationEmail,
+  createDunningEmail,
 } from './service-templates'
 
 interface ServiceSubscriptionEmailData {
@@ -161,6 +162,36 @@ export async function sendRenewalReminderEmail(data: RenewalReminderEmailData) {
   return sendEmail({
     to: data.customerEmail,
     subject: 'Upcoming Renewal',
+    html,
+    text,
+  })
+}
+
+interface DunningEmailData {
+  customerEmail: string
+  customerName: string
+  tierName: string
+  amount: number
+}
+
+/**
+ * Send dunning email when a subscription invoice payment fails (past_due).
+ * Links directly to /settings/billing so the customer can update their card.
+ */
+export async function sendDunningEmail(data: DunningEmailData) {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_BASE_URL || 'https://leads.meetcursive.com'
+  const billingUrl = `${appUrl}/settings/billing`
+
+  const { html, text } = createDunningEmail({
+    customerName: data.customerName,
+    tierName: data.tierName,
+    amount: data.amount,
+    billingUrl,
+  })
+
+  return sendEmail({
+    to: data.customerEmail,
+    subject: 'Action Required: Your payment failed',
     html,
     text,
   })

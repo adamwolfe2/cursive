@@ -11,6 +11,7 @@ import {
   sendPaymentSuccessEmail,
   sendPaymentFailedEmail,
   sendCancellationEmail,
+  sendDunningEmail,
 } from '@/lib/email/service-emails'
 import { logger } from '@/lib/monitoring/logger'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
@@ -452,7 +453,7 @@ export async function handleInvoicePaymentFailed(invoice: Stripe.Invoice): Promi
       throw new Error(`Failed to update subscription status: ${updateError.message}`)
     }
 
-    // Send payment failed notification email
+    // Dunning: send email prompting the customer to update their payment method
     try {
       const { data: subscription } = await supabase
         .from('service_subscriptions')
@@ -463,15 +464,46 @@ export async function handleInvoicePaymentFailed(invoice: Stripe.Invoice): Promi
       if (subscription) {
         const emailInfo = await getWorkspaceEmailInfo(subscription.workspace_id)
         const tier = subscription.service_tier as any
-        await sendPaymentFailedEmail({
+        const tierName = tier?.name || 'Cursive Service'
+        const amount = (invoice.amount_due || 0) / 100
+
+        logger.info('[Dunning] Sending dunning email for failed invoice', {
+          stripeSubscriptionId: invoice.subscription,
+          stripeInvoiceId: invoice.id,
+          workspaceId: subscription.workspace_id,
+          customerEmail: emailInfo.customerEmail,
+          tierName,
+          amount,
+          attemptCount: invoice.attempt_count,
+        })
+
+        await sendDunningEmail({
           customerEmail: emailInfo.customerEmail,
           customerName: emailInfo.customerName,
-          tierName: tier?.name || 'Cursive Service',
-          amount: (invoice.amount_due || 0) / 100,
+          tierName,
+          amount,
+        })
+
+        // Alert ops so the team is aware of the failed payment
+        await sendSlackAlert({
+          type: 'stripe_payment',
+          severity: 'warning',
+          message: `Payment failed for ${emailInfo.customerName} (${emailInfo.customerEmail}) — ${tierName} $${amount}/mo. Dunning email sent. Attempt #${invoice.attempt_count ?? 1}.`,
+          metadata: {
+            customer_email: emailInfo.customerEmail,
+            customer_name: emailInfo.customerName,
+            tier: tierName,
+            amount: `$${amount}`,
+            stripe_subscription_id: invoice.subscription as string,
+            stripe_invoice_id: invoice.id,
+            attempt_count: String(invoice.attempt_count ?? 1),
+          },
+        }).catch((slackError: any) => {
+          logger.error('[Dunning] Failed to send Slack alert', { error: slackError instanceof Error ? slackError.message : String(slackError) })
         })
       }
     } catch (emailError: any) {
-      logger.error('[Webhook] Failed to send payment failed email', { error: emailError instanceof Error ? emailError.message : String(emailError) })
+      logger.error('[Dunning] Failed to send dunning email', { error: emailError instanceof Error ? emailError.message : String(emailError) })
     }
 
   } catch (error: any) {

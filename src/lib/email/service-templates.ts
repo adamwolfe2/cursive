@@ -469,6 +469,78 @@ Adam
 }
 
 /**
+ * Dunning Email - Sent when invoice.payment_failed fires (subscription past_due)
+ * Links to /settings/billing so the customer can update their payment method directly.
+ */
+export function createDunningEmail({
+  customerName,
+  tierName,
+  amount,
+  billingUrl,
+}: {
+  customerName: string
+  tierName: string
+  amount: number
+  billingUrl: string
+}) {
+  const safeCustomerName = escapeHtml(customerName)
+  const safeTierName = escapeHtml(tierName)
+
+  const content = `
+    <h1 class="email-title">Your payment failed — please update your payment method</h1>
+
+    <p class="email-text">
+      Hi ${safeCustomerName},
+    </p>
+
+    <p class="email-text">
+      We couldn't process your $${amount.toLocaleString()} payment for ${safeTierName}. This usually means your card expired or your bank declined the charge.
+    </p>
+
+    <p class="email-text">
+      Your subscription is currently paused. Update your payment method to keep it active:
+    </p>
+
+    <a href="${billingUrl}" class="email-button">
+      Update Payment Method
+    </a>
+
+    <p class="email-text">
+      If you need help or want to talk through your options, just reply here.
+    </p>
+
+    <p class="email-text">
+      Adam
+    </p>
+  `
+
+  const text = `
+Your payment failed — please update your payment method
+
+Hi ${customerName},
+
+We couldn't process your $${amount.toLocaleString()} payment for ${tierName}. This usually means your card expired or your bank declined the charge.
+
+Your subscription is currently paused. Update your payment method to keep it active:
+
+${billingUrl}
+
+If you need help or want to talk through your options, just reply here.
+
+Adam
+  `.trim()
+
+  return {
+    html: createEmailTemplate({
+      preheader: `Payment failed for ${tierName} — update your payment method`,
+      title: `Your payment failed — please update your payment method`,
+      content,
+    }),
+    text,
+  }
+}
+
+/**
  * Delivery Notification - Sent when lead list or report is delivered
  */
 export function createDeliveryNotificationEmail({
