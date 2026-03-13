@@ -16,6 +16,7 @@ import {
   fetchAudienceRecords,
   type ALAudienceSegmentFilters,
 } from '@/lib/audiencelab/api-client'
+import { withRateLimit, getRequestIdentifier } from '@/lib/middleware/rate-limiter'
 
 const runSchema = z.object({
   action: z.enum(['preview', 'pull']),
@@ -35,6 +36,10 @@ export async function POST(
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
+
+    // Rate limit: segment runs call Audiencelab API and deduct credits — 20/hour per user
+    const rateLimitResponse = await withRateLimit(request, 'segment-run', getRequestIdentifier(request, user.id))
+    if (rateLimitResponse) return rateLimitResponse
 
     const { id } = await params
     const body = await request.json()

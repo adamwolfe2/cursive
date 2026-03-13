@@ -11,6 +11,7 @@ import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { createClient } from '@/lib/supabase/server'
 import { safeLog } from '@/lib/utils/log-sanitizer'
 import { inngest } from '@/inngest/client'
+import { withRateLimit, getRequestIdentifier } from '@/lib/middleware/rate-limiter'
 
 const enrollSchema = z.object({
   lead_ids: z.array(z.string().uuid()).min(1).max(1000),
@@ -24,6 +25,10 @@ export async function POST(
     const { id: sequenceId } = await params
     const user = await getCurrentUser()
     if (!user) return unauthorized()
+
+    // Rate limit: each enrollment triggers Inngest batch jobs for up to 1000 leads — 20/hour per user
+    const rateLimitResponse = await withRateLimit(req, 'sequence-enroll', getRequestIdentifier(req, user.id))
+    if (rateLimitResponse) return rateLimitResponse
 
     const supabase = await createClient()
 

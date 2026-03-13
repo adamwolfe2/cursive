@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -140,6 +140,16 @@ export default function SegmentBuilderPage() {
   const [segmentToDelete, setSegmentToDelete] = useState<string | null>(null)
   const [runningSegmentId, setRunningSegmentId] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState('builder')
+
+  // Ref to track the in-flight preview AbortController so we can cancel it
+  const previewControllerRef = useRef<AbortController | null>(null)
+
+  // Abort any pending preview request when the component unmounts
+  useEffect(() => {
+    return () => {
+      previewControllerRef.current?.abort()
+    }
+  }, [])
 
   // Catalog state
   const [catalogSearch, setCatalogSearch] = useState('')
@@ -309,7 +319,10 @@ export default function SegmentBuilderPage() {
         }
       })
 
+      // Abort any previous in-flight preview request before starting a new one
+      previewControllerRef.current?.abort()
       const controller = new AbortController()
+      previewControllerRef.current = controller
       const timeoutId = setTimeout(() => controller.abort(), 20000)
 
       let response: Response
@@ -322,6 +335,10 @@ export default function SegmentBuilderPage() {
         })
       } finally {
         clearTimeout(timeoutId)
+        // Clear the ref once this request has settled
+        if (previewControllerRef.current === controller) {
+          previewControllerRef.current = null
+        }
       }
 
       const data = await response.json()
@@ -429,6 +446,7 @@ export default function SegmentBuilderPage() {
       if (response.ok) {
         toast.success(`Pulled ${data.pulled} leads! Charged ${data.credits_charged} credits`)
         setPreview(null)
+        queryClient.invalidateQueries({ queryKey: ['segments'] })
       } else {
         if (response.status === 402) {
           showUpgradeModal(

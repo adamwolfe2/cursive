@@ -43,21 +43,31 @@ export async function POST(
       )
     }
 
-    // Get lead and verify not already sold
+    // Get lead and verify it is marketplace-listed, not already sold, and not owned by the buyer
     const { data: lead, error: leadError } = await supabase
       .from('leads')
-      .select('id, business_name, industry, uploaded_by_partner_id, status, marketplace_price')
+      .select('id, business_name, industry, uploaded_by_partner_id, status, marketplace_price, is_marketplace_listed, sold_at, workspace_id')
       .eq('id', id)
+      .eq('is_marketplace_listed', true)
       .maybeSingle()
 
     if (leadError || !lead) {
       return NextResponse.json({ error: 'Lead not found' }, { status: 404 })
     }
 
-    if (lead.status === 'sold') {
+    // Prevent purchasing a lead that has already been sold
+    if (lead.sold_at !== null || lead.status === 'sold') {
       return NextResponse.json(
         { error: 'This lead has already been sold' },
         { status: 400 }
+      )
+    }
+
+    // Prevent a workspace from purchasing its own leads
+    if (lead.workspace_id && lead.workspace_id === user.workspace_id) {
+      return NextResponse.json(
+        { error: 'You cannot purchase leads from your own workspace' },
+        { status: 403 }
       )
     }
 

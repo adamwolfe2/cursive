@@ -112,6 +112,41 @@ export const RATE_LIMITS = {
     message: 'Email generation limit reached. Please wait before generating more emails.',
   },
 
+  // Sequence enrollment - triggers Inngest batch jobs, potentially 1000 leads
+  'sequence-enroll': {
+    windowMs: 60 * 60 * 1000, // 1 hour
+    maxRequests: 20, // 20 enrollment operations per hour per user
+    message: 'Sequence enrollment limit reached. Please wait before enrolling more leads.',
+  },
+
+  // Sequence creation - DB writes with steps
+  'sequence-create': {
+    windowMs: 60 * 60 * 1000, // 1 hour
+    maxRequests: 30, // 30 sequences per hour per user
+    message: 'Sequence creation limit reached. Please wait before creating more sequences.',
+  },
+
+  // Global search - 3 parallel DB queries per call
+  'search': {
+    windowMs: 60 * 1000, // 1 minute
+    maxRequests: 30, // 30 searches per minute per user
+    message: 'Too many search requests. Please slow down.',
+  },
+
+  // Segment run - Audiencelab API calls + credit deduction, expensive
+  'segment-run': {
+    windowMs: 60 * 60 * 1000, // 1 hour
+    maxRequests: 20, // 20 segment runs per hour per user
+    message: 'Segment run limit reached. Please wait before running more segments.',
+  },
+
+  // Activation requests (campaign/audience) - Slack alerts + DB writes
+  'activate-request': {
+    windowMs: 60 * 60 * 1000, // 1 hour
+    maxRequests: 5, // 5 activation requests per hour per user (low — these are DFY requests)
+    message: 'Too many activation requests. Please wait before submitting another.',
+  },
+
   // Default fallback
   'default': {
     windowMs: 60 * 1000, // 1 minute

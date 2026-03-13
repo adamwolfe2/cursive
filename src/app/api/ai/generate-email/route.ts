@@ -10,6 +10,7 @@ import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { createClient } from '@/lib/supabase/server'
 import { generateSalesEmail } from '@/lib/services/ai/claude.service'
+import { withRateLimit, getRequestIdentifier } from '@/lib/middleware/rate-limiter'
 
 /** Structure of the ai_analysis JSONB column on leads */
 interface LeadAiAnalysis {
@@ -43,6 +44,10 @@ export async function POST(req: NextRequest) {
   try {
     const user = await getCurrentUser()
     if (!user) return unauthorized()
+
+    // Rate limit: AI email generation is expensive (Claude API) — 100/hour per user
+    const rateLimitResponse = await withRateLimit(req, 'ai-generate-email', getRequestIdentifier(req, user.id))
+    if (rateLimitResponse) return rateLimitResponse
 
     const supabase = await createClient()
 

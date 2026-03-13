@@ -14,6 +14,7 @@ import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
+import { withRateLimit, getRequestIdentifier } from '@/lib/middleware/rate-limiter'
 
 const schema = z.object({
   // ICP definition
@@ -46,6 +47,10 @@ export async function POST(req: NextRequest) {
   try {
     const user = await getCurrentUser()
     if (!user) return unauthorized()
+
+    // Rate limit: each request triggers Slack alerts + DB writes — 5/hour per user
+    const rateLimitResponse = await withRateLimit(req, 'activate-request', getRequestIdentifier(req, user.id))
+    if (rateLimitResponse) return rateLimitResponse
 
     const body = await req.json()
     const validated = schema.parse(body)

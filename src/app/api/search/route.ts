@@ -7,6 +7,7 @@ import { getCurrentUser } from '@/lib/auth/helpers'
 import { createClient } from '@/lib/supabase/server'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { sanitizeSearchTerm } from '@/lib/utils/sanitize-search'
+import { withRateLimit, getRequestIdentifier } from '@/lib/middleware/rate-limiter'
 
 const searchSchema = z.object({
   q: z.string().min(2, 'Query must be at least 2 characters').max(100, 'Query too long'),
@@ -46,6 +47,10 @@ export async function GET(request: NextRequest) {
     if (!user) {
       return unauthorized()
     }
+
+    // Rate limit: search fires 3 parallel DB queries — 30/minute per user
+    const rateLimitResponse = await withRateLimit(request, 'search', getRequestIdentifier(request, user.id))
+    if (rateLimitResponse) return rateLimitResponse
 
     // 2. Validate input
     const searchParams = request.nextUrl.searchParams

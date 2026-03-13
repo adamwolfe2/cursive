@@ -50,6 +50,7 @@ export function SequenceBuilder({ sequenceId }: SequenceBuilderProps) {
       if (response.ok) {
         const result = await response.json()
         toast.success(`Sequence duplicated as "${result.sequence.name}"`)
+        queryClient.invalidateQueries({ queryKey: ['email-sequences'] })
         router.push(`/email-sequences/${result.sequence.id}`)
       } else {
         const result = await response.json()
@@ -86,6 +87,7 @@ export function SequenceBuilder({ sequenceId }: SequenceBuilderProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['email-sequence', sequenceId] })
+      queryClient.invalidateQueries({ queryKey: ['email-sequences'] })
       toast.success('Sequence updated')
     },
     onError: (error: Error) => {

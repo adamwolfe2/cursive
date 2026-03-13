@@ -7,7 +7,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -48,6 +48,7 @@ type CreateSequenceForm = z.infer<typeof createSequenceSchema>
 
 export function CreateSequenceForm() {
   const router = useRouter()
+  const queryClient = useQueryClient()
   const [triggerType, setTriggerType] = useState<string>('manual')
 
   const form = useForm<CreateSequenceForm>({
@@ -74,6 +75,7 @@ export function CreateSequenceForm() {
     },
     onSuccess: (data) => {
       toast.success('Sequence created')
+      queryClient.invalidateQueries({ queryKey: ['email-sequences'] })
       router.push(`/email-sequences/${data.sequence.id}`)
     },
     onError: (error: Error) => {

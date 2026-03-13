@@ -10,6 +10,7 @@ import { z } from 'zod'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { createClient } from '@/lib/supabase/server'
+import { withRateLimit, getRequestIdentifier } from '@/lib/middleware/rate-limiter'
 
 const createSequenceSchema = z.object({
   name: z.string().min(1).max(100),
@@ -58,6 +59,10 @@ export async function POST(req: NextRequest) {
   try {
     const user = await getCurrentUser()
     if (!user) return unauthorized()
+
+    // Rate limit: sequence creation — 30/hour per user
+    const rateLimitResponse = await withRateLimit(req, 'sequence-create', getRequestIdentifier(req, user.id))
+    if (rateLimitResponse) return rateLimitResponse
 
     const supabase = await createClient()
 

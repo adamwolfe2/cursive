@@ -16,6 +16,7 @@ export default function ReferralsPage() {
   const { user } = useUser()
   const [stats, setStats] = useState<ReferralStats | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
   const [origin, setOrigin] = useState('')
 
@@ -25,14 +26,18 @@ export default function ReferralsPage() {
   }, [])
 
   const fetchStats = useCallback(async () => {
+    setError(null)
     try {
       const response = await fetch('/api/referrals')
       if (response.ok) {
         const data = await response.json()
         setStats(data)
+      } else {
+        setError('Failed to load referral stats. Please refresh the page.')
       }
     } catch (error) {
       safeError('[ReferralsPage]', 'Failed to fetch referral stats:', error)
+      setError('Failed to load referral stats. Please refresh the page.')
     } finally {
       setIsLoading(false)
     }
@@ -79,6 +84,12 @@ export default function ReferralsPage() {
         <h1 className="text-xl font-semibold text-zinc-900">Referral Program</h1>
         <p className="text-[13px] text-zinc-500 mt-1">Invite friends and earn credits</p>
       </div>
+
+      {error && (
+        <div className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {error}
+        </div>
+      )}
 
       {/* How it works */}
       <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg p-6 mb-8 text-white">

@@ -92,6 +92,7 @@ export function EmailSequencesList() {
       if (response.ok) {
         const result = await response.json()
         toast.success(`Sequence duplicated as "${result.sequence.name}"`)
+        queryClient.invalidateQueries({ queryKey: ['email-sequences'] })
         router.push(`/email-sequences/${result.sequence.id}`)
       } else {
         const result = await response.json()
