@@ -13,6 +13,7 @@ import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { RefreshCw, TrendingUp, TrendingDown, AlertTriangle, CheckCircle } from 'lucide-react'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { METRICS_REFRESH_MS } from '@/lib/constants/timeouts'
 
 interface HealthMetrics {
   emailDeliveryRate: number
@@ -63,7 +64,7 @@ export default function OperationsHealthPage() {
   useEffect(() => {
     loadMetrics()
     // Refresh every 30 seconds
-    const interval = setInterval(loadMetrics, 30000)
+    const interval = setInterval(loadMetrics, METRICS_REFRESH_MS)
     return () => clearInterval(interval)
   }, [])
 

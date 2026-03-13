@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useToast } from '@/lib/hooks/use-toast'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { METRICS_REFRESH_MS } from '@/lib/constants/timeouts'
 
 interface RoutingRule {
   id: string
@@ -113,7 +114,7 @@ export default function AdminDashboard() {
     fetchRules()
     fetchLeads()
     fetchKpis()
-    const interval = setInterval(fetchLeads, 5000)
+    const interval = setInterval(fetchLeads, METRICS_REFRESH_MS)
     return () => clearInterval(interval)
   }, [])
 

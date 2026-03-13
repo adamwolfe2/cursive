@@ -17,6 +17,7 @@ import {
   Zap,
 } from 'lucide-react'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { METRICS_REFRESH_MS } from '@/lib/constants/timeouts'
 
 interface SystemMetrics {
   apiResponseTime: {
@@ -109,7 +110,7 @@ export default function MonitoringPage() {
 
   useEffect(() => {
     fetchMetrics()
-    const interval = setInterval(fetchMetrics, 30000) // Refresh every 30s
+    const interval = setInterval(fetchMetrics, METRICS_REFRESH_MS)
     return () => clearInterval(interval)
   }, [])
 

@@ -42,6 +42,7 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { PREVIEW_TIMEOUT_MS, BULK_OPERATION_TIMEOUT_MS } from '@/lib/constants/timeouts'
 import { SkeletonCard } from '@/components/ui/skeleton'
 import { UpgradeModal } from '@/components/marketplace/UpgradeModal'
 import { useUpgradeModal } from '@/lib/hooks/use-upgrade-modal'
@@ -323,7 +324,7 @@ export default function SegmentBuilderPage() {
       previewControllerRef.current?.abort()
       const controller = new AbortController()
       previewControllerRef.current = controller
-      const timeoutId = setTimeout(() => controller.abort(), 20000)
+      const timeoutId = setTimeout(() => controller.abort(), PREVIEW_TIMEOUT_MS)
 
       let response: Response
       try {
@@ -427,7 +428,7 @@ export default function SegmentBuilderPage() {
       })
 
       const pullController = new AbortController()
-      const pullTimeoutId = setTimeout(() => pullController.abort(), 30000)
+      const pullTimeoutId = setTimeout(() => pullController.abort(), BULK_OPERATION_TIMEOUT_MS)
 
       let response: Response
       try {

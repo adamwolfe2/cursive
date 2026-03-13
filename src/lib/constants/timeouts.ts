@@ -3,6 +3,18 @@
  * Centralized constants for timeouts, expiry periods, and rate limits
  */
 
+/** API fetch timeout for preview/validation operations (e.g. segment preview) */
+export const PREVIEW_TIMEOUT_MS = 20_000
+
+/** API fetch timeout for bulk operations (pull leads, exports, AI calls) */
+export const BULK_OPERATION_TIMEOUT_MS = 30_000
+
+/** UI feedback duration for success/canceled banner messages */
+export const SUCCESS_MESSAGE_MS = 5_000
+
+/** Dashboard metrics auto-refresh interval */
+export const METRICS_REFRESH_MS = 30_000
+
 export const TIMEOUTS = {
   // Download expiry
   DOWNLOAD_EXPIRY_DAYS: 90,

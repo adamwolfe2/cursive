@@ -22,6 +22,7 @@ import {
   type MarketplaceFilters,
 } from '@/lib/hooks/use-marketplace-leads'
 import { useQueryClient } from '@tanstack/react-query'
+import { SUCCESS_MESSAGE_MS } from '@/lib/constants/timeouts'
 
 // Re-use Filters type from the hook
 type Filters = MarketplaceFilters
@@ -102,7 +103,7 @@ export default function MarketplacePage() {
     if (urlParams.get('success') === 'true') {
       setShowSuccessMessage(true)
       window.history.replaceState({}, '', '/marketplace')
-      const timer = setTimeout(() => setShowSuccessMessage(false), 5000)
+      const timer = setTimeout(() => setShowSuccessMessage(false), SUCCESS_MESSAGE_MS)
       return () => clearTimeout(timer)
     }
   }, [])
@@ -162,7 +163,7 @@ export default function MarketplacePage() {
         setPurchasedLeadCount(count)
         setShowSuccessMessage(true)
         setSelectedLeads(new Set())
-        setTimeout(() => setShowSuccessMessage(false), 5000)
+        setTimeout(() => setShowSuccessMessage(false), SUCCESS_MESSAGE_MS)
       },
       onError: (error: Error) => {
         // Show the upgrade modal instead of a toast when credits are exhausted

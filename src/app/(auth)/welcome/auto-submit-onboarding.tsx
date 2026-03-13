@@ -35,7 +35,21 @@ export function AutoSubmitOnboarding({ isMarketplace, isReturning }: AutoSubmitO
     if (submittedRef.current) return
     submittedRef.current = true
 
+    const RETRY_KEY = 'cursive_onboarding_retries'
+    const MAX_SUBMIT_ATTEMPTS = 3
+
     const submit = async () => {
+      // Check how many times we've already failed to submit.
+      // This counter lives in localStorage so it survives page reloads.
+      const submitAttempts = parseInt(localStorage.getItem(RETRY_KEY) || '0', 10)
+      if (submitAttempts >= MAX_SUBMIT_ATTEMPTS) {
+        localStorage.removeItem('cursive_onboarding')
+        localStorage.removeItem(RETRY_KEY)
+        setError('Setup failed after multiple attempts. Please start over.')
+        setStatus('error')
+        return
+      }
+
       try {
         // If returning=true was set by the OAuth callback, verify whether the
         // workspace was already created (e.g. user hit back after a successful
@@ -176,6 +190,7 @@ export function AutoSubmitOnboarding({ isMarketplace, isReturning }: AutoSubmitO
           if (body409.workspace_id) {
             // Already has workspace — redirect to dashboard
             localStorage.removeItem('cursive_onboarding')
+            localStorage.removeItem(RETRY_KEY)
             router.push(isMarketplace ? '/marketplace' : '/dashboard?onboarding=complete')
             return
           }
@@ -234,10 +249,23 @@ export function AutoSubmitOnboarding({ isMarketplace, isReturning }: AutoSubmitO
             : Promise.resolve(),
         ])
 
-        // Clear storage and redirect to dashboard
+        // Clear storage (including retry counter) and redirect to dashboard
         localStorage.removeItem('cursive_onboarding')
+        localStorage.removeItem(RETRY_KEY)
         router.push(isMarketplace ? '/marketplace' : '/dashboard?onboarding=complete')
       } catch (err: any) {
+        // Increment the persistent failure counter so reloads don't cause
+        // an infinite retry loop.
+        const prevAttempts = parseInt(localStorage.getItem(RETRY_KEY) || '0', 10)
+        const nextAttempts = prevAttempts + 1
+        if (nextAttempts >= MAX_SUBMIT_ATTEMPTS) {
+          // Give up — clear stored data so the user must restart the flow.
+          localStorage.removeItem('cursive_onboarding')
+          localStorage.removeItem(RETRY_KEY)
+        } else {
+          localStorage.setItem(RETRY_KEY, String(nextAttempts))
+        }
+
         // Provide specific error messages based on error type
         if (err instanceof TypeError && err.message === 'Failed to fetch') {
           setError('Network error. Please check your connection and try again.')
@@ -270,6 +298,7 @@ export function AutoSubmitOnboarding({ isMarketplace, isReturning }: AutoSubmitO
             <button
               onClick={() => {
                 localStorage.removeItem('cursive_onboarding')
+                localStorage.removeItem('cursive_onboarding_retries')
                 window.location.href = '/welcome'
               }}
               className="h-10 px-6 text-muted-foreground font-medium rounded-lg hover:text-foreground transition-colors"

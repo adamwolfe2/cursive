@@ -129,11 +129,22 @@ const nextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://client.crisp.chat https://browser.sentry-cdn.com https://*.vercel-scripts.com",
+              // 'unsafe-inline' is required for:
+              //   - Crisp chat bootstrap (dangerouslySetInnerHTML inline script)
+              //   - Next.js inline hydration chunks injected at runtime
+              // 'strict-dynamic' is added so modern browsers ignore 'unsafe-inline' and
+              //   instead trust only scripts loaded by already-trusted scripts (e.g. Crisp
+              //   injecting its own <script> tag). Older browsers fall back to 'unsafe-inline'.
+              // 'unsafe-eval' has been intentionally omitted — nothing in this codebase
+              //   requires it (Stripe.js, Sentry, Crisp, and Next.js all work without it).
+              "script-src 'self' 'unsafe-inline' 'strict-dynamic' https://js.stripe.com https://client.crisp.chat https://browser.sentry-cdn.com https://*.vercel-scripts.com",
+              // 'unsafe-inline' is required for Tailwind utility classes applied as inline
+              //   styles and for any CSS-in-JS style injections from third-party widgets.
               "style-src 'self' 'unsafe-inline'",
               "font-src 'self' https://fonts.gstatic.com data:",
               "img-src 'self' data: blob: https: http:",
-              "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.stripe.com https://*.sentry.io https://sentry.io https://client.crisp.chat",
+              // wss://client.crisp.chat — Crisp uses a WebSocket relay for real-time chat.
+              "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.stripe.com https://*.sentry.io https://sentry.io https://client.crisp.chat wss://client.crisp.chat",
               "frame-src 'self' https://js.stripe.com https://hooks.stripe.com",
               "object-src 'none'",
               "base-uri 'self'",

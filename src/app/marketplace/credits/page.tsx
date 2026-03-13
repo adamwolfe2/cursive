@@ -9,6 +9,7 @@ import { useUser } from '@/hooks/use-user'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { CREDIT_PACKAGES, type CreditPackage } from '@/lib/constants/credit-packages'
+import { SUCCESS_MESSAGE_MS } from '@/lib/constants/timeouts'
 import { getCreditLink } from '@/lib/stripe/payment-links'
 import { UpsellBanner } from '@/components/marketplace/UpsellBanner'
 import { safeError } from '@/lib/utils/log-sanitizer'
@@ -82,11 +83,11 @@ export default function CreditsPage() {
       }
       setShowSuccess(true)
       window.history.replaceState({}, '', '/marketplace/credits')
-      timers.push(setTimeout(() => setShowSuccess(false), 5000))
+      timers.push(setTimeout(() => setShowSuccess(false), SUCCESS_MESSAGE_MS))
     } else if (urlParams.get('canceled') === 'true') {
       setShowCanceled(true)
       window.history.replaceState({}, '', '/marketplace/credits')
-      timers.push(setTimeout(() => setShowCanceled(false), 5000))
+      timers.push(setTimeout(() => setShowCanceled(false), SUCCESS_MESSAGE_MS))
     }
 
     return () => {

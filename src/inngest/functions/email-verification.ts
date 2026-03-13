@@ -33,6 +33,9 @@ export const processEmailVerificationQueue = inngest.createFunction(
     id: 'email-verification-queue',
     name: 'Process Email Verification Queue',
     retries: 3,
+    // CONCURRENCY SAFETY: limit:1 + finish:"5m" is safe. If the function runs
+    // longer than 5 minutes, Inngest terminates it and automatically releases
+    // the concurrency slot — no manual cleanup needed and no deadlock risk.
     timeouts: { finish: "5m" },
     concurrency: {
       limit: 1, // Only one instance at a time
@@ -42,6 +45,7 @@ export const processEmailVerificationQueue = inngest.createFunction(
   async ({ step, logger }) => {
     // Check kill switch
     if (!isVerificationEnabled()) {
+      console.warn('[email-verification] Skipped: kill-switch is active (EMAIL_VERIFICATION_KILL_SWITCH)')
       return { skipped: true, reason: 'Verification disabled' }
     }
 
@@ -81,6 +85,18 @@ export const processEmailVerificationQueue = inngest.createFunction(
 
 /**
  * Continue processing when there are more items
+ *
+ * BACKLOG RISK: This function is triggered exclusively via sendEvent from
+ * processEmailVerificationQueue. If that function crashes before it can fire
+ * the continuation event (e.g., mid-step after processing but before the
+ * sendEvent call), in-flight items will sit in the queue until the next
+ * 15-minute cron tick picks them up. There is no separate sweep/fallback
+ * beyond the cron schedule. The retry-failed-jobs cron does NOT cover this
+ * gap because the parent job itself succeeds (it processes items and then
+ * crashes before sending the continuation). Mitigation: the 15-minute cron
+ * acts as a natural recovery window — worst-case delay is 15 minutes.
+ * If tighter SLAs are needed, consider a dedicated sweep cron that checks
+ * for pending queue items and fires this event directly.
  */
 export const continueEmailVerification = inngest.createFunction(
   {
@@ -95,6 +111,7 @@ export const continueEmailVerification = inngest.createFunction(
   { event: 'email-verification/continue' },
   async ({ step, logger }) => {
     if (!isVerificationEnabled()) {
+      console.warn('[email-verification] Skipped: kill-switch is active (EMAIL_VERIFICATION_KILL_SWITCH)')
       return { skipped: true }
     }
 
@@ -125,6 +142,7 @@ export const queueNewLeadsForVerification = inngest.createFunction(
   { event: 'partner/upload-completed' },
   async ({ event, step, logger }) => {
     if (!isVerificationEnabled()) {
+      console.warn('[email-verification] Skipped: kill-switch is active (EMAIL_VERIFICATION_KILL_SWITCH)')
       return { skipped: true, reason: 'Verification disabled' }
     }
 
@@ -175,6 +193,7 @@ export const reverifyStaleLeads = inngest.createFunction(
   { cron: '0 3 * * *' }, // 3 AM daily
   async ({ step, logger }) => {
     if (!isVerificationEnabled()) {
+      console.warn('[email-verification] Skipped: kill-switch is active (EMAIL_VERIFICATION_KILL_SWITCH)')
       return { skipped: true, reason: 'Verification disabled' }
     }
 
