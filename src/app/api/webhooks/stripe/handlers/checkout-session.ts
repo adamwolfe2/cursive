@@ -1,6 +1,5 @@
 import Stripe from 'stripe'
 import * as Sentry from '@sentry/nextjs'
-import { MarketplaceRepository } from '@/lib/repositories/marketplace.repository'
 import { createAdminClient } from '@/lib/supabase/admin'
 import {
   sendCreditPurchaseConfirmationEmail,
@@ -112,26 +111,35 @@ async function handleCreditPurchaseCompleted(session: Stripe.Checkout.Session): 
 
   safeLog(`[Stripe Webhook] Processing credit purchase: ${credit_purchase_id}`)
 
-  const repo = new MarketplaceRepository()
   const adminClient = createAdminClient()
 
-  // IDEMPOTENCY: Check if already completed before adding credits
-  const { data: existingPurchase } = await adminClient
-    .from('credit_purchases')
-    .select('id, status, completed_at')
-    .eq('id', credit_purchase_id)
-    .maybeSingle()
+  // ATOMIC: Complete purchase + add credits in a single transaction
+  // Prevents double-credit or lost-credit race conditions on webhook retries
+  const { data: completionResult, error: completionError } = await adminClient.rpc(
+    'complete_stripe_credit_purchase',
+    {
+      p_credit_purchase_id: credit_purchase_id,
+      p_workspace_id: workspace_id,
+      p_credits: creditsAmount,
+      p_source: 'purchase',
+    }
+  )
 
-  if (existingPurchase?.status === 'completed') {
-    safeLog(`[Stripe Webhook] Credit purchase ${credit_purchase_id} already completed, skipping`)
+  if (completionError) {
+    safeError('[Stripe Webhook] Failed to complete credit purchase', { error: completionError.message })
+    throw new Error(`Failed to complete credit purchase: ${completionError.message}`)
+  }
+
+  const result = completionResult?.[0] ?? completionResult
+
+  if (result?.already_completed) {
+    safeLog(`[Stripe Webhook] Credit purchase ${credit_purchase_id} already completed (idempotent), skipping`)
     return
   }
 
-  // Mark the credit purchase record as completed
-  const completedPurchase = await repo.completeCreditPurchase(credit_purchase_id)
+  const newBalance = result?.new_balance ?? creditsAmount
 
-  // Add credits to the workspace
-  await repo.addCredits(workspace_id, creditsAmount, 'purchase')
+  safeLog(`[Stripe Webhook] Credit purchase completed: ${credit_purchase_id}, credits added: ${creditsAmount}, new balance: ${newBalance}`)
 
   // Emit Inngest event for downstream automation (e.g. email sequences, analytics)
   await inngest.send({
@@ -144,23 +152,19 @@ async function handleCreditPurchaseCompleted(session: Stripe.Checkout.Session): 
     },
   })
 
-  // Get the new balance
-  const { data: creditsData } = await adminClient
-    .from('workspace_credits')
-    .select('balance')
-    .eq('workspace_id', workspace_id)
-    .maybeSingle()
-
-  const newBalance = creditsData?.balance ?? creditsAmount
-
-  safeLog(`[Stripe Webhook] Credit purchase completed: ${credit_purchase_id}, credits added: ${creditsAmount}, new balance: ${newBalance}`)
-
   // Send confirmation email (don't fail purchase for email errors)
   try {
     const { data: userData } = await adminClient
       .from('users')
       .select('email, full_name')
       .eq('id', user_id)
+      .maybeSingle()
+
+    // Get package name for email
+    const { data: purchaseData } = await adminClient
+      .from('credit_purchases')
+      .select('package_name')
+      .eq('id', credit_purchase_id)
       .maybeSingle()
 
     if (userData?.email) {
@@ -170,7 +174,7 @@ async function handleCreditPurchaseCompleted(session: Stripe.Checkout.Session): 
         {
           creditsAmount,
           totalPrice: (session.amount_total || 0) / 100, // Stripe amounts are in cents
-          packageName: completedPurchase.package_name || 'Credit Package',
+          packageName: purchaseData?.package_name || 'Credit Package',
           newBalance,
         }
       )
