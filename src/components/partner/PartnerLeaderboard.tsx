@@ -375,7 +375,7 @@ function LeaderboardRow({
       className={cn(
         'grid grid-cols-[40px_1fr_auto_auto_auto] items-center gap-3 px-6 py-3 transition-colors',
         entry.is_current_user
-          ? 'bg-blue-50 dark:bg-blue-950/20'
+          ? 'bg-blue-50'
           : 'hover:bg-muted/30'
       )}
       style={
@@ -394,7 +394,7 @@ function LeaderboardRow({
         <span
           className={cn(
             'truncate text-sm font-medium',
-            entry.is_current_user && 'text-blue-700 dark:text-blue-300'
+            entry.is_current_user && 'text-blue-700'
           )}
         >
           {entry.partner_name}

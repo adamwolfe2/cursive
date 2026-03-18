@@ -536,8 +536,8 @@ export default function AboutPage() {
               transition={{ delay: 0.3 }}
               className="text-center bg-white rounded-xl p-8 border border-gray-200"
             >
-              <div className="text-4xl text-primary mb-2">1,000+</div>
-              <p className="text-gray-600 text-sm">B2B companies trust Cursive for lead generation</p>
+              <div className="text-4xl text-primary mb-2">$2</div>
+              <p className="text-gray-600 text-sm">Average cost per lead vs $50 industry average</p>
             </motion.div>
           </div>
 
@@ -696,7 +696,7 @@ export default function AboutPage() {
           "3x average pipeline increase within 90 days",
           "95%+ email deliverability rate across all data",
           "67% average cost-per-lead reduction vs traditional methods",
-          "1,000+ B2B companies trust Cursive for lead generation",
+          "Powering lead generation for B2B sales teams across multiple verticals",
           "4.2x ROAS on visitor retargeting campaigns",
           "$2 per lead vs $50 industry average"
         ]} />

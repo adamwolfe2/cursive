@@ -26,24 +26,27 @@ export function CustomerLogos() {
           transition={{ duration: 0.3 }}
           className="text-center"
         >
-          <h2 className="text-2xl lg:text-3xl font-light text-gray-900 mb-12">
-            Trusted by 500+ B2B companies
+          <h2 className="text-2xl lg:text-3xl font-light text-gray-900 mb-4">
+            Integrates with your existing stack
           </h2>
+          <p className="text-gray-500 text-base mb-12">
+            Push enriched leads directly into the tools you already use
+          </p>
 
           {/* Desktop: 2x4 Grid, Mobile: 2x2 Grid - Fixed height to prevent layout shifts */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 max-w-5xl mx-auto">
             {companies.map((company, index) => (
               <div
                 key={company.name}
-                className="flex items-center justify-center h-12"
+                className="flex items-center justify-center h-16"
               >
                 <div className="hover:scale-110 transition-all duration-300">
                   <Image
                     src={company.logo}
                     alt={`${company.name} logo`}
-                    width={32}
-                    height={32}
-                    className="object-contain w-8 h-8"
+                    width={48}
+                    height={48}
+                    className="object-contain w-12 h-12"
                     priority={index < 4}
                   />
                 </div>

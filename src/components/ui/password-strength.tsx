@@ -61,7 +61,7 @@ export function PasswordStrength({ password, className }: PasswordStrengthProps)
             key={index}
             className={cn(
               'h-1.5 flex-1 rounded-full transition-colors',
-              index < strength ? strengthColors[strength - 1] : 'bg-gray-200 dark:bg-gray-700'
+              index < strength ? strengthColors[strength - 1] : 'bg-gray-200'
             )}
           />
         ))}
@@ -74,10 +74,10 @@ export function PasswordStrength({ password, className }: PasswordStrengthProps)
           <span
             className={cn(
               'font-medium',
-              strength === 1 && 'text-red-600 dark:text-red-400',
-              strength === 2 && 'text-orange-600 dark:text-orange-400',
-              strength === 3 && 'text-yellow-600 dark:text-yellow-400',
-              strength === 4 && 'text-green-600 dark:text-green-400'
+              strength === 1 && 'text-red-600',
+              strength === 2 && 'text-orange-600',
+              strength === 3 && 'text-yellow-600',
+              strength === 4 && 'text-green-600'
             )}
           >
             {strengthLabels[strength - 1] || 'Too weak'}
@@ -93,7 +93,7 @@ export function PasswordStrength({ password, className }: PasswordStrengthProps)
             className={cn(
               'flex items-center gap-2 transition-colors',
               check.passed
-                ? 'text-green-600 dark:text-green-400'
+                ? 'text-green-600'
                 : 'text-muted-foreground'
             )}
           >
@@ -101,8 +101,8 @@ export function PasswordStrength({ password, className }: PasswordStrengthProps)
               className={cn(
                 'flex h-4 w-4 items-center justify-center rounded-full text-xs font-bold transition-colors',
                 check.passed
-                  ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
-                  : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400'
+                  ? 'bg-green-100 text-green-700'
+                  : 'bg-gray-100 text-gray-500'
               )}
             >
               {check.passed ? '✓' : '○'}
@@ -137,7 +137,7 @@ export function PasswordStrengthCompact({ password, className }: PasswordStrengt
           key={index}
           className={cn(
             'h-1 flex-1 rounded-full transition-colors',
-            index < strength ? strengthColors[strength - 1] : 'bg-gray-200 dark:bg-gray-700'
+            index < strength ? strengthColors[strength - 1] : 'bg-gray-200'
           )}
         />
       ))}

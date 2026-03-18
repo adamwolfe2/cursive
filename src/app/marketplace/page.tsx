@@ -272,22 +272,20 @@ export default function MarketplacePage() {
                 </svg>
                 <span className="text-[13px] font-medium text-zinc-900">${credits.toFixed(2)}</span>
               </div>
-              <Link
-                href="/marketplace/my-leads"
-                className="h-11 sm:h-9 px-4 text-[13px] font-medium border border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50 rounded-lg transition-all duration-150 inline-flex items-center gap-2"
-              >
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-                <span className="hidden sm:inline">My Leads</span>
-              </Link>
-              <Link
-                href="/marketplace/credits"
-                className="h-11 sm:h-9 px-4 text-[13px] font-medium bg-primary text-white hover:bg-primary/90 rounded-lg transition-all duration-150 inline-flex items-center"
-              >
-                <span className="hidden sm:inline">Buy Credits</span>
-                <span className="sm:hidden">Buy</span>
-              </Link>
+              <Button asChild variant="outline" size="sm">
+                <Link href="/marketplace/my-leads" className="gap-2">
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                  <span className="hidden sm:inline">My Leads</span>
+                </Link>
+              </Button>
+              <Button asChild size="sm">
+                <Link href="/marketplace/credits">
+                  <span className="hidden sm:inline">Buy Credits</span>
+                  <span className="sm:hidden">Buy</span>
+                </Link>
+              </Button>
             </div>
 
             {/* Desktop: Show all buttons */}
@@ -298,45 +296,40 @@ export default function MarketplacePage() {
                 </svg>
                 <span className="text-[13px] font-medium text-zinc-900">${credits.toFixed(2)} credits</span>
               </div>
-              <Link
-                href="/marketplace/custom-audience"
-                className="h-9 px-4 text-[13px] font-medium border-2 border-emerald-500 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg transition-all duration-150 inline-flex items-center gap-2"
-              >
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-                </svg>
-                Request Custom Audience
-              </Link>
-              <Link
-                href="/marketplace/my-leads"
-                className="h-9 px-4 text-[13px] font-medium border border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50 rounded-lg transition-all duration-150 inline-flex items-center gap-2"
-              >
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-                My Leads
-              </Link>
-              <Link
-                href="/marketplace/credits"
-                className="h-9 px-4 text-[13px] font-medium bg-primary text-white hover:bg-primary/90 rounded-lg transition-all duration-150 inline-flex items-center"
-              >
-                Buy Credits
-              </Link>
-              <Link
-                href="/marketplace/history"
-                className="h-9 px-4 text-[13px] font-medium bg-zinc-900 text-white hover:bg-zinc-800 rounded-lg transition-all duration-150 inline-flex items-center"
-              >
-                Purchase History
-              </Link>
-              <Link
-                href="/marketplace/referrals"
-                className="h-9 px-4 text-[13px] font-medium border border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50 rounded-lg transition-all duration-150 inline-flex items-center gap-1.5"
-              >
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                </svg>
-                Refer &amp; Earn
-              </Link>
+              <Button asChild variant="outline" size="sm">
+                <Link href="/marketplace/custom-audience" className="gap-2">
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                  </svg>
+                  Request Custom Audience
+                </Link>
+              </Button>
+              <Button asChild variant="outline" size="sm">
+                <Link href="/marketplace/my-leads" className="gap-2">
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                  My Leads
+                </Link>
+              </Button>
+              <Button asChild size="sm">
+                <Link href="/marketplace/credits">
+                  Buy Credits
+                </Link>
+              </Button>
+              <Button asChild size="sm">
+                <Link href="/marketplace/history">
+                  Purchase History
+                </Link>
+              </Button>
+              <Button asChild variant="outline" size="sm">
+                <Link href="/marketplace/referrals" className="gap-1.5">
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
+                  Refer &amp; Earn
+                </Link>
+              </Button>
             </div>
           </div>
 
@@ -362,15 +355,17 @@ export default function MarketplacePage() {
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                   {/* Desktop: Toggle Filters Sidebar */}
-                  <button
+                  <Button
                     onClick={() => setShowFilters(!showFilters)}
-                    className="hidden lg:inline-flex h-9 px-3 text-[13px] font-medium border border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50 rounded-lg items-center gap-2"
+                    variant="outline"
+                    size="sm"
+                    className="hidden lg:inline-flex gap-2"
                   >
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                     </svg>
                     Filters
-                  </button>
+                  </Button>
 
                   {/* Save Search Button — desktop only, shown next to Filters toggle */}
                   <div className="hidden lg:block">
@@ -514,33 +509,33 @@ export default function MarketplacePage() {
                     <p className="text-[13px] text-emerald-700 mb-4">
                       Get a <span className="font-semibold">free 25-lead sample</span> tailored to your exact criteria within 48 hours.
                     </p>
-                    <Link
-                      href="/marketplace/custom-audience"
-                      className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg transition-colors text-sm shadow-sm"
-                    >
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                      </svg>
-                      Request Custom Audience
-                    </Link>
+                    <Button asChild>
+                      <Link
+                        href="/marketplace/custom-audience"
+                        className="gap-2"
+                      >
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                        </svg>
+                        Request Custom Audience
+                      </Link>
+                    </Button>
                   </div>
 
                   {credits === 0 && (
                     <div className="mt-6 pt-6 border-t border-zinc-200">
                       <p className="text-[13px] text-zinc-600 mb-3">Or browse our data plans</p>
                       <div className="flex items-center justify-center gap-3">
-                        <a
-                          href={getServiceLink('data')}
-                          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors text-sm"
-                        >
-                          Explore Data Plans
-                        </a>
-                        <Link
-                          href="/marketplace/credits"
-                          className="inline-flex items-center gap-2 px-4 py-2 border border-zinc-300 hover:border-zinc-400 text-zinc-700 font-medium rounded-lg transition-colors text-sm"
-                        >
-                          Buy Credits
-                        </Link>
+                        <Button asChild>
+                          <a href={getServiceLink('data')} className="gap-2">
+                            Explore Data Plans
+                          </a>
+                        </Button>
+                        <Button asChild variant="outline">
+                          <Link href="/marketplace/credits" className="gap-2">
+                            Buy Credits
+                          </Link>
+                        </Button>
                       </div>
                     </div>
                   )}

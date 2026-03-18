@@ -204,10 +204,10 @@ export function StepReview({ formData }: StepReviewProps) {
             </svg>
           </div>
           <div className="ml-3">
-            <h4 className="text-sm font-medium text-amber-700 dark:text-amber-400">
+            <h4 className="text-sm font-medium text-amber-700">
               Human Review Required
             </h4>
-            <p className="mt-1 text-sm text-amber-600 dark:text-amber-300">
+            <p className="mt-1 text-sm text-amber-600">
               This campaign will be created in <strong>draft</strong> status. You&apos;ll need to review
               and approve it before any emails are sent. All AI-generated content will also require
               human approval.

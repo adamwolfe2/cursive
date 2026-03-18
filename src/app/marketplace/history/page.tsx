@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { NavBar } from '@/components/nav-bar'
 import { useUser } from '@/hooks/use-user'
-import { buttonVariants } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
@@ -148,18 +148,14 @@ export default function PurchaseHistoryPage() {
               <h1 className="text-xl font-semibold text-zinc-900">Purchase History</h1>
               <p className="text-[13px] text-zinc-500 mt-1">View and download your purchased leads</p>
             </div>
-            <Link
-              href="/marketplace"
-              className={cn(
-                buttonVariants({ variant: 'default', size: 'sm' }),
-                'bg-zinc-900 hover:bg-zinc-800 gap-2'
-              )}
-            >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
-              Back to Marketplace
-            </Link>
+            <Button asChild size="sm">
+              <Link href="/marketplace" className="gap-2">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Back to Marketplace
+              </Link>
+            </Button>
           </div>
 
           {/* Stats */}
@@ -211,12 +207,11 @@ export default function PurchaseHistoryPage() {
                 <p className="text-[13px] text-zinc-500 mb-4">
                   Browse the marketplace to find and purchase qualified leads for your business.
                 </p>
-                <Link
-                  href="/marketplace"
-                  className="inline-flex items-center gap-1.5 rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 transition-colors"
-                >
-                  Browse Marketplace
-                </Link>
+                <Button asChild size="sm">
+                  <Link href="/marketplace">
+                    Browse Marketplace
+                  </Link>
+                </Button>
               </div>
             ) : (
               <div className="divide-y divide-zinc-100">
@@ -289,18 +284,20 @@ export default function PurchaseHistoryPage() {
                       <div className="mt-4 pt-4 border-t border-zinc-100">
                         <div className="flex items-center justify-between mb-3">
                           <span className="text-[13px] font-medium text-zinc-700">Lead Details</span>
-                          <button
+                          <Button
                             onClick={(e) => {
                               e.stopPropagation()
                               downloadLeads(purchaseLeads[purchase.id])
                             }}
-                            className="h-8 px-3 text-[12px] font-medium border border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50 rounded-lg inline-flex items-center gap-1.5"
+                            variant="outline"
+                            size="sm"
+                            className="gap-1.5"
                           >
                             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                             </svg>
                             Download CSV
-                          </button>
+                          </Button>
                         </div>
                         <div className="overflow-x-auto">
                           <table className="w-full text-[12px]">

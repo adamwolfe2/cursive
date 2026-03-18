@@ -166,7 +166,7 @@ export default function MonitoringPage() {
 
       {/* Active Alerts */}
       {activeAlerts.length > 0 && (
-        <Card className="border-red-500 bg-red-50 dark:bg-red-950">
+        <Card className="border-red-500 bg-red-50">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <AlertTriangle className="h-5 w-5 text-red-600" />
@@ -178,7 +178,7 @@ export default function MonitoringPage() {
               {activeAlerts.map((alert) => (
                 <div
                   key={alert.id}
-                  className="flex items-center justify-between rounded-lg border bg-white p-3 dark:bg-gray-900"
+                  className="flex items-center justify-between rounded-lg border bg-white p-3"
                 >
                   <div>
                     <div className="flex items-center gap-2">

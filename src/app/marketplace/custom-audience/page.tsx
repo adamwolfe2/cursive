@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { PageContainer, PageHeader } from '@/components/layout/page-container'
 import { GradientCard } from '@/components/ui/gradient-card'
 import { Check, ArrowRight, Loader2 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 const INDUSTRIES = [
   'SaaS / Software',
@@ -204,23 +205,22 @@ export default function CustomAudiencePage() {
               </div>
             )}
 
-            <button
+            <Button
               type="submit"
               disabled={submitting || formData.seniorityLevels.length === 0}
-              className="w-full px-6 py-3 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              loading={submitting}
+              size="lg"
+              className="w-full gap-2"
             >
               {submitting ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Submitting...
-                </>
+                'Submitting...'
               ) : (
                 <>
                   Submit Request
                   <ArrowRight className="h-4 w-4" />
                 </>
               )}
-            </button>
+            </Button>
           </form>
         </GradientCard>
 

@@ -183,7 +183,7 @@ export default function PricingPage() {
             <div className="flex items-center justify-center gap-2 mb-6">
               <Users className="w-5 h-5 text-primary" />
               <p className="text-sm text-gray-600">
-                Trusted by 1,000+ B2B companies to generate qualified leads
+                Powering lead generation for B2B sales teams
               </p>
             </div>
 

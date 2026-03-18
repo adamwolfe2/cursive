@@ -46,12 +46,9 @@ const pages = [
 
 const areaCodes = ["555", "415", "212", "512", "206", "305", "617", "310", "720", "503"]
 
-let nameIndex = 0
-
 function generateVisitor(): Omit<Visitor, "id" | "enrichmentStep"> {
-  const first = firstNames[nameIndex % firstNames.length]
-  const last = lastNames[Math.floor(nameIndex / firstNames.length) % lastNames.length]
-  nameIndex++
+  const first = firstNames[Math.floor(Math.random() * firstNames.length)]
+  const last = lastNames[Math.floor(Math.random() * lastNames.length)]
   const domain = domains[Math.floor(Math.random() * domains.length)]
   const emailPrefix = `${first.toLowerCase().charAt(0)}.${last.toLowerCase()}`
   const areaCode = areaCodes[Math.floor(Math.random() * areaCodes.length)]

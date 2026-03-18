@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { NavBar } from '@/components/nav-bar'
 import { useUser } from '@/hooks/use-user'
+import { Button } from '@/components/ui/button'
 import { buyerProfileSchema, type BuyerProfileFormData } from '@/lib/validation/schemas'
 import {
   FormField,
@@ -118,15 +119,14 @@ export default function BuyerProfilePage() {
         <div className="max-w-3xl mx-auto px-4 sm:px-8 py-8">
           <div className="flex items-center justify-between mb-8">
             <h1 className="text-xl font-semibold text-zinc-900">Buyer Profile Setup</h1>
-            <Link
-              href="/marketplace"
-              className="h-9 px-4 text-[13px] font-medium border border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50 rounded-lg inline-flex items-center gap-2"
-            >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
-              Back to Marketplace
-            </Link>
+            <Button asChild variant="outline" size="sm">
+              <Link href="/marketplace" className="gap-2">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Back to Marketplace
+              </Link>
+            </Button>
           </div>
 
           <FormError message={error || undefined} className="mb-6" />
@@ -209,21 +209,23 @@ export default function BuyerProfilePage() {
                 </FormField>
 
                 <div className="flex gap-3 pt-4">
-                  <button
+                  <Button
                     type="submit"
                     disabled={saving || Object.keys(errors).length > 0}
-                    className="flex-1 h-9 px-4 text-[13px] font-medium bg-zinc-900 text-white hover:bg-zinc-800 rounded-lg transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+                    loading={saving}
+                    className="flex-1"
                   >
                     {saving ? 'Saving...' : 'Save Profile'}
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     type="button"
                     onClick={() => router.push('/marketplace')}
                     disabled={saving}
-                    className="flex-1 h-9 px-4 text-[13px] font-medium border border-zinc-300 text-zinc-700 hover:bg-zinc-50 rounded-lg transition-all duration-150 disabled:opacity-50"
+                    variant="outline"
+                    className="flex-1"
                   >
                     Cancel
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>

@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { NavBar } from '@/components/nav-bar'
 import { useToast } from '@/lib/hooks/use-toast'
 import { useUser } from '@/hooks/use-user'
-import { buttonVariants } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { UpsellBanner } from '@/components/marketplace/UpsellBanner'
 import { safeError } from '@/lib/utils/log-sanitizer'
@@ -258,15 +258,11 @@ export default function MyLeadsPage() {
               >
                 View by Purchase
               </Link>
-              <Link
-                href="/marketplace"
-                className={cn(
-                  buttonVariants({ variant: 'default', size: 'sm' }),
-                  'bg-zinc-900 hover:bg-zinc-800 gap-2'
-                )}
-              >
-                Browse Marketplace
-              </Link>
+              <Button asChild size="sm">
+                <Link href="/marketplace" className="gap-2">
+                  Browse Marketplace
+                </Link>
+              </Button>
             </div>
           </div>
 
@@ -294,10 +290,10 @@ export default function MyLeadsPage() {
                   )}
                 </div>
               </div>
-              <button
+              <Button
                 onClick={downloadLeads}
                 disabled={filteredLeads.length === 0}
-                className="h-10 px-4 text-[13px] font-medium bg-blue-600 text-white hover:bg-blue-700 rounded-lg inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="gap-2"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path
@@ -308,7 +304,7 @@ export default function MyLeadsPage() {
                   />
                 </svg>
                 Export {filteredLeads.length} Lead{filteredLeads.length !== 1 ? 's' : ''} to CSV
-              </button>
+              </Button>
             </div>
           </div>
 
@@ -376,12 +372,14 @@ export default function MyLeadsPage() {
                 <span className="text-[13px] text-zinc-600">
                   Showing {filteredLeads.length} of {leads.length} leads
                 </span>
-                <button
+                <Button
                   onClick={resetFilters}
-                  className="text-[13px] text-zinc-600 hover:text-zinc-900 underline"
+                  variant="ghost"
+                  size="sm"
+                  className="underline"
                 >
                   Reset filters
-                </button>
+                </Button>
               </div>
             )}
           </div>
@@ -412,22 +410,19 @@ export default function MyLeadsPage() {
                     : 'Try adjusting your search or filters to find what you\'re looking for.'}
                 </p>
                 {leads.length === 0 ? (
-                  <Link
-                    href="/marketplace"
-                    className={cn(
-                      buttonVariants({ variant: 'default', size: 'sm' }),
-                      'bg-zinc-900 hover:bg-zinc-800'
-                    )}
-                  >
-                    Browse Marketplace
-                  </Link>
+                  <Button asChild size="sm">
+                    <Link href="/marketplace">
+                      Browse Marketplace
+                    </Link>
+                  </Button>
                 ) : (
-                  <button
+                  <Button
                     onClick={resetFilters}
-                    className="text-[13px] font-medium text-zinc-900 hover:underline"
+                    variant="ghost"
+                    size="sm"
                   >
                     Clear all filters
-                  </button>
+                  </Button>
                 )}
               </div>
             ) : (

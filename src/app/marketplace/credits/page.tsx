@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { NavBar } from '@/components/nav-bar'
 import { useToast } from '@/lib/hooks/use-toast'
 import { useUser } from '@/hooks/use-user'
-import { buttonVariants } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { CREDIT_PACKAGES, type CreditPackage } from '@/lib/constants/credit-packages'
 import { SUCCESS_MESSAGE_MS } from '@/lib/constants/timeouts'
@@ -279,27 +279,14 @@ export default function CreditsPage() {
                   )}
                 </div>
 
-                <button
+                <Button
                   onClick={() => purchaseCredits(pkg)}
                   disabled={isPurchasing !== null}
-                  className={`w-full h-10 text-[13px] font-medium rounded-lg transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed ${
-                    pkg.popular
-                      ? 'bg-blue-600 text-white hover:bg-blue-700'
-                      : 'bg-zinc-900 text-white hover:bg-zinc-800'
-                  }`}
+                  loading={isPurchasing === pkg.id}
+                  className="w-full"
                 >
-                  {isPurchasing === pkg.id ? (
-                    <span className="inline-flex items-center gap-2">
-                      <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                      </svg>
-                      Processing...
-                    </span>
-                  ) : (
-                    'Buy Now'
-                  )}
-                </button>
+                  {isPurchasing === pkg.id ? 'Processing...' : 'Buy Now'}
+                </Button>
               </div>
             ))}
           </div>

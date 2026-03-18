@@ -10,17 +10,17 @@ const statusBadgeVariants = cva(
   {
     variants: {
       status: {
-        new: 'bg-blue-50/80 text-blue-700 ring-blue-200/50 dark:bg-blue-950 dark:text-blue-300',
+        new: 'bg-blue-50/80 text-blue-700 ring-blue-200/50',
         contacted:
-          'bg-yellow-50/80 text-yellow-700 ring-yellow-200/50 dark:bg-yellow-950 dark:text-yellow-300',
+          'bg-yellow-50/80 text-yellow-700 ring-yellow-200/50',
         qualified:
-          'bg-emerald-50/80 text-emerald-700 ring-emerald-200/50 dark:bg-emerald-950 dark:text-emerald-300',
+          'bg-emerald-50/80 text-emerald-700 ring-emerald-200/50',
         proposal:
-          'bg-blue-50/80 text-blue-700 ring-blue-200/50 dark:bg-blue-950 dark:text-blue-300',
+          'bg-blue-50/80 text-blue-700 ring-blue-200/50',
         negotiation:
-          'bg-orange-50/80 text-orange-700 ring-orange-200/50 dark:bg-orange-950 dark:text-orange-300',
-        won: 'bg-green-50/80 text-green-700 ring-green-200/50 dark:bg-green-950 dark:text-green-300',
-        lost: 'bg-zinc-50/80 text-zinc-600 ring-zinc-200/50 dark:bg-zinc-800 dark:text-zinc-300',
+          'bg-orange-50/80 text-orange-700 ring-orange-200/50',
+        won: 'bg-green-50/80 text-green-700 ring-green-200/50',
+        lost: 'bg-zinc-50/80 text-zinc-600 ring-zinc-200/50',
       },
       variant: {
         solid: '',
@@ -31,37 +31,37 @@ const statusBadgeVariants = cva(
       {
         status: 'new',
         variant: 'outline',
-        className: 'border-blue-200 text-blue-700 dark:border-blue-800',
+        className: 'border-blue-200 text-blue-700',
       },
       {
         status: 'contacted',
         variant: 'outline',
-        className: 'border-yellow-200 text-yellow-700 dark:border-yellow-800',
+        className: 'border-yellow-200 text-yellow-700',
       },
       {
         status: 'qualified',
         variant: 'outline',
-        className: 'border-blue-200 text-blue-700 dark:border-blue-800',
+        className: 'border-blue-200 text-blue-700',
       },
       {
         status: 'proposal',
         variant: 'outline',
-        className: 'border-blue-200 text-blue-700 dark:border-blue-800',
+        className: 'border-blue-200 text-blue-700',
       },
       {
         status: 'negotiation',
         variant: 'outline',
-        className: 'border-orange-200 text-orange-700 dark:border-orange-800',
+        className: 'border-orange-200 text-orange-700',
       },
       {
         status: 'won',
         variant: 'outline',
-        className: 'border-green-200 text-green-700 dark:border-green-800',
+        className: 'border-green-200 text-green-700',
       },
       {
         status: 'lost',
         variant: 'outline',
-        className: 'border-gray-200 text-gray-700 dark:border-gray-700',
+        className: 'border-gray-200 text-gray-700',
       },
     ],
     defaultVariants: {
