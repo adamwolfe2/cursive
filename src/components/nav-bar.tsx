@@ -70,7 +70,7 @@ export function NavBar() {
     },
     {
       name: 'API Tests',
-      href: '/api-test',
+      href: '/admin/monitoring',
       roles: ['owner', 'admin'],
     },
   ]

@@ -136,7 +136,7 @@ export function LeadsByStatusChart({
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="size-8">
+            <Button variant="ghost" size="icon" className="size-8" aria-label="Chart options">
               <MoreHorizontal className="size-4 text-muted-foreground" />
             </Button>
           </DropdownMenuTrigger>
