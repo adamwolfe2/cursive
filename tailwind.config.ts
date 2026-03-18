@@ -1,8 +1,8 @@
 import type { Config } from 'tailwindcss'
 
 const config: Config = {
-  // Light-only design — no dark mode
-  darkMode: 'class',
+  // Light-only design — dark mode disabled (no dark: classes used anywhere)
+  darkMode: ['class', 'never-match'],
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
