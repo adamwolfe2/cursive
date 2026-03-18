@@ -14,7 +14,8 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Select } from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
-import { formatNumber, formatPercentage, formatCurrency } from '@/lib/design-system'
+import { formatPercentage } from '@/lib/design-system'
+import { formatNumber, formatCurrency } from '@/lib/utils'
 import {
   BarChart,
   DonutChart,

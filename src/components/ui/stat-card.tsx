@@ -1,7 +1,8 @@
 'use client'
 
 import * as React from 'react'
-import { cn, formatNumber, formatPercentage } from '@/lib/design-system'
+import { cn, formatPercentage } from '@/lib/design-system'
+import { formatNumber } from '@/lib/utils'
 import { Card } from './card'
 
 export interface StatCardProps {

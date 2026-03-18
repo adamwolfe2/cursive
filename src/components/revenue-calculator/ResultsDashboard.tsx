@@ -3,7 +3,7 @@ import { ComparisonTable } from './ComparisonTable'
 import { CountUpNumber } from './CountUpNumber'
 import { CredibilityBar } from './CredibilityBar'
 import { LeadCaptureForm } from './LeadCaptureForm'
-import { formatNumber } from '@/lib/superpixel-constants'
+import { formatNumber } from '@/lib/utils'
 import type { calculateScenarios } from '@/lib/superpixel-constants'
 import { BookDemoButton } from '@/components/ui/cal-inline-booking'
 

@@ -12,7 +12,7 @@ import { cn } from '@/lib/design-system'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
-import { formatNumber, formatCurrency } from '@/lib/design-system'
+import { formatNumber, formatCurrency } from '@/lib/utils'
 
 // ============================================
 // TYPES

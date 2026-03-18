@@ -12,7 +12,8 @@ import * as React from 'react'
 import { cn } from '@/lib/design-system'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import { formatNumber, formatPercentage } from '@/lib/design-system'
+import { formatPercentage } from '@/lib/design-system'
+import { formatNumber } from '@/lib/utils'
 
 // ============================================
 // TYPES

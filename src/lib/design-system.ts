@@ -380,44 +380,10 @@ export function getEnrichmentClasses(status: keyof typeof enrichmentColors) {
 }
 
 /**
- * Format number with commas
- */
-export function formatNumber(num: number): string {
-  return new Intl.NumberFormat('en-US').format(num)
-}
-
-/**
- * Format currency
- */
-export function formatCurrency(amount: number, currency = 'USD'): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency,
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
-  }).format(amount)
-}
-
-/**
  * Format percentage
  */
 export function formatPercentage(value: number, decimals = 1): string {
   return `${value.toFixed(decimals)}%`
-}
-
-/**
- * Format relative time
- */
-export function formatRelativeTime(date: Date): string {
-  const now = new Date()
-  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000)
-
-  if (diffInSeconds < 60) return 'just now'
-  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`
-  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`
-  if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d ago`
-
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 }
 
 /**

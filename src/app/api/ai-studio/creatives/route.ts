@@ -65,7 +65,7 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json({ creatives: creatives || [] })
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('[Creatives GET] Error:', error)
     return handleApiError(error)
   }

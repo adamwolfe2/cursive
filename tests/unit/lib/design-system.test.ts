@@ -9,8 +9,6 @@
 
 import { describe, it, expect } from 'vitest'
 import {
-  formatNumber,
-  formatCurrency,
   formatPercentage,
   getInitials,
   getStatusClasses,
@@ -20,7 +18,7 @@ import {
   intentColors,
   planColors,
 } from '@/lib/design-system'
-import { cn } from '@/lib/utils'
+import { cn, formatNumber, formatCurrency } from '@/lib/utils'
 
 describe('formatNumber', () => {
   it('formats numbers with commas', () => {

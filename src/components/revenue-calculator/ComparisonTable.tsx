@@ -1,6 +1,6 @@
 'use client'
 import { CountUpNumber } from './CountUpNumber'
-import { formatNumber } from '@/lib/superpixel-constants'
+import { formatNumber } from '@/lib/utils'
 import type { calculateScenarios } from '@/lib/superpixel-constants'
 
 interface Props {

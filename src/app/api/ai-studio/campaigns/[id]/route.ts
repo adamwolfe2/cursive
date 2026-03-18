@@ -55,7 +55,7 @@ export async function GET(
 
     return NextResponse.json({ campaign })
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('[Campaign GET] Error:', error)
     return NextResponse.json(
       { error: 'Failed to fetch campaign' },
