@@ -1,8 +1,10 @@
 /**
  * Email Bison API Service
  *
- * Handles email campaign account provisioning
- * Note: API documentation not yet available - using placeholder implementation
+ * Handles email campaign account provisioning.
+ * All endpoints below are intentional placeholders — the Email Bison API
+ * documentation is not yet available. The request/response shapes are
+ * best-guess scaffolding and will be updated once the API is documented.
  */
 
 const EMAILBISON_API_URL = process.env.EMAILBISON_API_URL || 'https://send.meetcursive.com'
@@ -35,8 +37,7 @@ export async function createEmailBisonAccount(userData: {
   }
 
   try {
-    // TODO: Replace with actual Email Bison API endpoint
-    // This is a placeholder implementation
+    // Placeholder endpoint — update when Email Bison API docs are available
     const response = await fetch(`${EMAILBISON_API_URL}/api/accounts`, {
       method: 'POST',
       headers: {
@@ -81,7 +82,7 @@ export async function getEmailBisonAccount(accountId: string): Promise<EmailBiso
   }
 
   try {
-    // TODO: Replace with actual Email Bison API endpoint
+    // Placeholder endpoint — update when Email Bison API docs are available
     const response = await fetch(`${EMAILBISON_API_URL}/api/accounts/${accountId}`, {
       method: 'GET',
       headers: {
@@ -115,7 +116,7 @@ export async function deleteEmailBisonAccount(accountId: string): Promise<void> 
     throw new Error('EMAILBISON_API_KEY not configured')
   }
 
-  // TODO: Replace with actual Email Bison API endpoint
+  // Placeholder endpoint — update when Email Bison API docs are available
   const response = await fetch(`${EMAILBISON_API_URL}/api/accounts/${accountId}`, {
     method: 'DELETE',
     headers: {
@@ -129,14 +130,5 @@ export async function deleteEmailBisonAccount(accountId: string): Promise<void> 
   }
 }
 
-/**
- * NOTE FOR FUTURE IMPLEMENTATION:
- *
- * Once Email Bison API documentation is available, update this service with:
- * 1. Actual API endpoints
- * 2. Proper request/response formats
- * 3. Error handling for specific Email Bison error codes
- * 4. Campaign creation methods
- * 5. Contact list sync methods
- * 6. Template management methods
- */
+// FUTURE: Once Email Bison API docs are available, update endpoints, request/response
+// formats, error codes, and add campaign creation, contact list sync, and template methods.

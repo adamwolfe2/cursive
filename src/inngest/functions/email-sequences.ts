@@ -48,6 +48,7 @@ export const processSequenceEnrollment = inngest.createFunction(
     name: 'Process Sequence Enrollment',
     retries: 3,
     timeouts: { finish: "5m" },
+    concurrency: { limit: 5 },
   },
   { event: 'sequence/enroll' },
   async ({ event, step, logger }) => {
@@ -138,6 +139,7 @@ export const processSequenceStep = inngest.createFunction(
     name: 'Process Sequence Step',
     retries: 3,
     timeouts: { finish: "5m" },
+    concurrency: { limit: 5 },
   },
   { event: 'sequence/process-step' },
   async ({ event, step, logger }) => {

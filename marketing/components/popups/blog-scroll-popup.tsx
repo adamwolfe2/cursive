@@ -17,6 +17,7 @@ import {
   markPopupShown,
   markPopupDismissed,
 } from '@/lib/popup-storage'
+import { trackNewsletterSignup } from '@/lib/analytics'
 
 const POPUP_ID = 'blog-scroll-newsletter'
 
@@ -116,6 +117,9 @@ export function BlogScrollPopup({
       if (onSubmit) {
         await onSubmit({ email })
       }
+
+      // Track successful newsletter signup
+      trackNewsletterSignup('blog_scroll_popup')
 
       // Show success state
       setIsSuccess(true)

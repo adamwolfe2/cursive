@@ -11,6 +11,7 @@ import { z } from 'zod'
 import { fastAuth } from '@/lib/auth/fast-auth'
 import { createClient } from '@/lib/supabase/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { handleApiError, unauthorized, badRequest } from '@/lib/utils/api-error-handler'
 
 const CreateClientSchema = z.object({
   client_name: z.string().min(1, 'Client name is required'),
@@ -68,7 +69,7 @@ export async function GET(req: NextRequest) {
   try {
     const user = await fastAuth(req)
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
     }
 
     const supabase = await createClient()
@@ -93,13 +94,13 @@ export async function GET(req: NextRequest) {
 
     if (error) {
       safeError('[Clients API] Failed to fetch clients:', error)
-      return NextResponse.json({ error: 'Failed to fetch clients' }, { status: 500 })
+      return handleApiError(error)
     }
 
     return NextResponse.json({ data })
   } catch (error) {
     safeError('[Clients API] Get clients error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return handleApiError(error)
   }
 }
 
@@ -107,17 +108,14 @@ export async function POST(req: NextRequest) {
   try {
     const user = await fastAuth(req)
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
     }
 
     const body = await req.json()
     const parsed = CreateClientSchema.safeParse(body)
 
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: 'Invalid request body', details: parsed.error.issues },
-        { status: 400 }
-      )
+      return badRequest('Invalid request body', parsed.error.issues)
     }
 
     const supabase = await createClient()
@@ -139,12 +137,12 @@ export async function POST(req: NextRequest) {
         )
       }
       safeError('[Clients API] Failed to create client:', error)
-      return NextResponse.json({ error: 'Failed to create client' }, { status: 500 })
+      return handleApiError(error)
     }
 
     return NextResponse.json({ data }, { status: 201 })
   } catch (error) {
     safeError('[Clients API] Create client error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return handleApiError(error)
   }
 }

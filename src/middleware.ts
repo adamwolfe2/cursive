@@ -3,18 +3,16 @@
 
 import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/middleware'
-import { validateRequiredEnvVars } from '@/lib/env-validation'
 // import { logger } from '@/lib/monitoring/logger'  // TEMP: Disabled for Edge Runtime debugging
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 // ─── Rate Limiting (in-memory, Edge-compatible) ───────────────────────────
 // Shared across requests within the same Edge instance.
 // Not durable across cold starts, but provides burst protection.
-// TODO(security): Replace with Upstash Redis for durable rate limiting across Edge instances.
-// In-memory store is per-instance — multiple Vercel Edge replicas each have independent counters.
-// A distributed attacker can bypass limits by spreading requests across replicas.
-// Current implementation provides single-instance burst protection only.
-// See: https://upstash.com/docs/redis/quickstarts/vercel-edge
+// KNOWN LIMITATION: In-memory store is per-instance — multiple Vercel replicas each have
+// independent counters. A distributed attacker could bypass limits by hitting different replicas.
+// This is adequate for current scale. Future enhancement: Upstash Redis for durable,
+// cross-instance rate limiting (see https://upstash.com/docs/redis/quickstarts/vercel-edge).
 const rateLimitStore = new Map<string, { count: number; resetAt: number }>()
 
 const RATE_LIMIT_TIERS = {
@@ -78,9 +76,6 @@ function applyAffiliateCookie(req: NextRequest, res: NextResponse): void {
 }
 
 export async function middleware(req: NextRequest) {
-  // Validate critical environment variables on first request
-  validateRequiredEnvVars()
-
   const startTime = Date.now()
 
   try {

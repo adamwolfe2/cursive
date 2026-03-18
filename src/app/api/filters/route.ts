@@ -8,15 +8,28 @@ import { NextRequest, NextResponse } from 'next/server'
 import { fastAuth } from '@/lib/auth/fast-auth'
 import { createClient } from '@/lib/supabase/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
-import { getErrorMessage } from '@/lib/utils/error-messages'
+
 import { z } from 'zod'
-import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
+import { handleApiError, unauthorized, badRequest, notFound } from '@/lib/utils/api-error-handler'
+
+// JSON-safe filter value: primitives, arrays of primitives, or nested records of the same
+const filterValue: z.ZodType<string | number | boolean | null | string[] | number[]> = z.union([
+  z.string(),
+  z.number(),
+  z.boolean(),
+  z.null(),
+  z.array(z.string()),
+  z.array(z.number()),
+])
 
 // Validation schemas
 const createFilterSchema = z.object({
   name: z.string().min(1).max(100),
   filter_type: z.enum(['marketplace', 'leads', 'campaigns', 'partners', 'audit_logs', 'earnings']),
-  filters: z.record(z.any()),
+  filters: z.record(filterValue).refine(
+    (obj) => Object.keys(obj).length <= 50,
+    { message: 'Too many filter keys (max 50)' }
+  ),
   is_default: z.boolean().optional(),
   is_shared: z.boolean().optional(),
 })
@@ -24,7 +37,10 @@ const createFilterSchema = z.object({
 const updateFilterSchema = z.object({
   id: z.string().uuid(),
   name: z.string().min(1).max(100).optional(),
-  filters: z.record(z.any()).optional(),
+  filters: z.record(filterValue).refine(
+    (obj) => Object.keys(obj).length <= 50,
+    { message: 'Too many filter keys (max 50)' }
+  ).optional(),
   is_default: z.boolean().optional(),
   is_shared: z.boolean().optional(),
 })
@@ -37,7 +53,7 @@ export async function GET(request: NextRequest) {
   try {
     const user = await fastAuth(request)
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
     }
 
     const { searchParams } = new URL(request.url)
@@ -65,10 +81,7 @@ export async function GET(request: NextRequest) {
 
     if (ownError) {
       safeError('[Filters API] Query error:', ownError)
-      return NextResponse.json(
-        { error: 'Failed to fetch filters' },
-        { status: 500 }
-      )
+      return handleApiError(ownError)
     }
 
     let sharedFilters: any[] = []
@@ -102,10 +115,7 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     safeError('[Filters API] GET error:', error)
-    return NextResponse.json(
-      { error: getErrorMessage(error) },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }
 
@@ -117,7 +127,7 @@ export async function POST(request: NextRequest) {
   try {
     const user = await fastAuth(request)
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
     }
 
     const body = await request.json()
@@ -148,10 +158,7 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       safeError('[Filters API] Create error:', error)
-      return NextResponse.json(
-        { error: 'Failed to create filter' },
-        { status: 500 }
-      )
+      return handleApiError(error)
     }
 
     return NextResponse.json({ filter }, { status: 201 })
@@ -169,7 +176,7 @@ export async function PATCH(request: NextRequest) {
   try {
     const user = await fastAuth(request)
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
     }
 
     const body = await request.json()
@@ -210,17 +217,11 @@ export async function PATCH(request: NextRequest) {
 
     if (error) {
       safeError('[Filters API] Update error:', error)
-      return NextResponse.json(
-        { error: 'Failed to update filter' },
-        { status: 500 }
-      )
+      return handleApiError(error)
     }
 
     if (!filter) {
-      return NextResponse.json(
-        { error: 'Filter not found' },
-        { status: 404 }
-      )
+      return notFound('Filter not found')
     }
 
     return NextResponse.json({ filter })
@@ -238,17 +239,14 @@ export async function DELETE(request: NextRequest) {
   try {
     const user = await fastAuth(request)
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return unauthorized()
     }
 
     const { searchParams } = new URL(request.url)
     const filterId = searchParams.get('id')
 
     if (!filterId) {
-      return NextResponse.json(
-        { error: 'Filter ID is required' },
-        { status: 400 }
-      )
+      return badRequest('Filter ID is required')
     }
 
     const supabase = await createClient()
@@ -263,18 +261,12 @@ export async function DELETE(request: NextRequest) {
 
     if (error) {
       safeError('[Filters API] Delete error:', error)
-      return NextResponse.json(
-        { error: 'Failed to delete filter' },
-        { status: 500 }
-      )
+      return handleApiError(error)
     }
 
     return NextResponse.json({ success: true })
   } catch (error) {
     safeError('[Filters API] DELETE error:', error)
-    return NextResponse.json(
-      { error: getErrorMessage(error) },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

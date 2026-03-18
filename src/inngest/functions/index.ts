@@ -263,3 +263,9 @@ export { cleanupRateLimitLogs } from './cleanup-rate-limit-logs'
 
 // Webhook events cleanup (daily — deletes events older than 30 days to prevent unbounded table growth)
 export { cleanupWebhookEvents } from './cleanup-webhook-events'
+
+// Audit logs cleanup (daily 4am UTC — deletes entries older than 90 days)
+export { cleanupAuditLogs } from './cleanup-audit-logs'
+
+// Failed operations cleanup (daily 4:30am UTC — deletes resolved entries older than 30 days)
+export { cleanupFailedOperations } from './cleanup-failed-operations'

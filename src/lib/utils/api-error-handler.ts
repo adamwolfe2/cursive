@@ -240,6 +240,21 @@ export function success<T>(data: T, status: number = 200) {
   return NextResponse.json({ success: true, data }, { status })
 }
 
+export function successWithPagination<T>(
+  data: T,
+  pagination: { total: number; page: number; limit: number; has_more?: boolean }
+) {
+  return NextResponse.json({
+    success: true,
+    data,
+    pagination: {
+      ...pagination,
+      total_pages: Math.ceil(pagination.total / pagination.limit),
+      has_more: pagination.has_more ?? (pagination.page * pagination.limit < pagination.total),
+    },
+  })
+}
+
 export function created<T>(data: T) {
   return NextResponse.json({ success: true, data }, { status: 201 })
 }

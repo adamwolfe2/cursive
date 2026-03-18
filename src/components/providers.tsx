@@ -13,6 +13,7 @@ import { ErrorBoundary } from './error-boundary'
 import { initGlobalErrorHandler } from '@/lib/utils/global-error-handler'
 import { ToastProvider } from '@/lib/contexts/toast-context'
 import { PostHogProvider } from './providers/posthog-provider'
+import { queryDefaults } from '@/lib/hooks/query-defaults'
 
 // Redirect to login when any query/mutation returns 401 (expired JWT)
 function handle401(error: unknown) {
@@ -30,9 +31,10 @@ function makeQueryClient() {
     mutationCache: new MutationCache({ onError: handle401 }),
     defaultOptions: {
       queries: {
-        // With SSR, we usually want to set some default staleTime
-        // above 0 to avoid refetching immediately on the client
-        staleTime: 60 * 1000,
+        // Default to "static" category — slow-changing data (60s stale, 10min gc)
+        // Individual hooks can override with queryDefaults.realtime or .standard
+        staleTime: queryDefaults.static.staleTime,
+        gcTime: queryDefaults.static.gcTime,
         retry: (failureCount, error: any) => {
           // Don't retry on 4xx errors
           if (error?.status >= 400 && error?.status < 500) {

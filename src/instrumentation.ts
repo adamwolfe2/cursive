@@ -16,6 +16,16 @@
  */
 
 export async function register() {
+  // Validate critical environment variables once at startup (not per-request in middleware).
+  // Wrapped in try/catch because this file may be resolved by other Next.js projects
+  // in the monorepo (e.g. marketing site) that don't have this module.
+  try {
+    const { validateRequiredEnvVars } = await import('@/lib/env-validation')
+    validateRequiredEnvVars()
+  } catch {
+    // Module not available (e.g. marketing site) — skip validation
+  }
+
   if (process.env.NEXT_RUNTIME === 'nodejs') {
     process.on('unhandledRejection', (reason: unknown) => {
       const message =

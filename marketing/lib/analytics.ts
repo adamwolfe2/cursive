@@ -37,13 +37,9 @@ const safeGtagCall = (
   }
 }
 
-// ============================================================================
-// CONVERSION TRACKING FUNCTIONS
-// ============================================================================
-
 /**
  * Track when a user books a demo call
- * @param source - Where the demo was booked from (e.g., "homepage_hero", "faq_section", "exit_intent_popup")
+ * @param source - Where the demo was booked from (e.g., "homepage_hero", "faq_section")
  */
 export const trackDemoBooked = (source: string): void => {
   safeGtagCall('demo_booking', {
@@ -56,22 +52,8 @@ export const trackDemoBooked = (source: string): void => {
 }
 
 /**
- * Track when a user starts a trial
- * @param plan - The plan type selected (e.g., "starter", "growth", "enterprise")
- */
-export const trackTrialStarted = (plan: string): void => {
-  safeGtagCall('trial_started', {
-    event_category: 'conversion',
-    event_label: plan,
-    value: 1,
-    conversion_type: 'trial_start',
-    plan_type: plan,
-  })
-}
-
-/**
  * Track newsletter signups
- * @param source - Where the signup occurred (e.g., "homepage_footer", "blog_sidebar", "exit_intent_popup")
+ * @param source - Where the signup occurred (e.g., "blog_scroll_popup", "footer")
  */
 export const trackNewsletterSignup = (source: string): void => {
   safeGtagCall('newsletter_signup', {
@@ -85,7 +67,7 @@ export const trackNewsletterSignup = (source: string): void => {
 
 /**
  * Track lead capture events
- * @param source - Where the lead was captured (e.g., "free_audit_form", "exit_intent_popup", "contact_form")
+ * @param source - Where the lead was captured (e.g., "free_audit_form", "exit_intent_popup")
  */
 export const trackLeadCaptured = (source: string): void => {
   safeGtagCall('generate_lead', {
@@ -95,32 +77,6 @@ export const trackLeadCaptured = (source: string): void => {
     conversion_type: 'lead_capture',
     source_location: source,
   })
-}
-
-// ============================================================================
-// ENGAGEMENT TRACKING FUNCTIONS
-// ============================================================================
-
-/**
- * Track outbound link clicks
- * @param url - The destination URL
- * @param label - Optional label for the link
- */
-export const trackOutboundLink = (url: string, label?: string): void => {
-  safeGtagCall('click', {
-    event_category: 'outbound',
-    event_label: label || url,
-    transport_type: 'beacon',
-    url: url,
-  })
-}
-
-/**
- * Track demo booking clicks (legacy - use trackDemoBooked instead)
- * @deprecated Use trackDemoBooked for consistency
- */
-export const trackDemoBooking = (source: string): void => {
-  trackDemoBooked(source)
 }
 
 /**
@@ -146,69 +102,5 @@ export const trackCTAClick = (ctaText: string, location: string): void => {
     event_label: `${location}: ${ctaText}`,
     cta_text: ctaText,
     cta_location: location,
-  })
-}
-
-/**
- * Track scroll depth
- * @param percentage - Percentage scrolled (25, 50, 75, 100)
- * @param page - The page being tracked
- */
-export const trackScrollDepth = (percentage: number, page: string): void => {
-  safeGtagCall('scroll_depth', {
-    event_category: 'engagement',
-    event_label: page,
-    value: percentage,
-  })
-}
-
-/**
- * Track video plays
- * @param videoTitle - Title of the video
- * @param videoUrl - URL of the video
- */
-export const trackVideoPlay = (videoTitle: string, videoUrl: string): void => {
-  safeGtagCall('video_start', {
-    event_category: 'engagement',
-    event_label: videoTitle,
-    video_url: videoUrl,
-  })
-}
-
-/**
- * Track search queries
- * @param searchTerm - The search term entered
- */
-export const trackSearch = (searchTerm: string): void => {
-  safeGtagCall('search', {
-    event_category: 'engagement',
-    event_label: searchTerm,
-    search_term: searchTerm,
-  })
-}
-
-/**
- * Track file downloads
- * @param fileName - Name of the downloaded file
- * @param fileUrl - URL of the file
- */
-export const trackFileDownload = (fileName: string, fileUrl: string): void => {
-  safeGtagCall('file_download', {
-    event_category: 'engagement',
-    event_label: fileName,
-    file_url: fileUrl,
-  })
-}
-
-/**
- * Track error pages
- * @param errorCode - HTTP error code
- * @param errorMessage - Error message
- */
-export const trackError = (errorCode: string, errorMessage: string): void => {
-  safeGtagCall('error', {
-    event_category: 'error',
-    event_label: `${errorCode}: ${errorMessage}`,
-    error_code: errorCode,
   })
 }

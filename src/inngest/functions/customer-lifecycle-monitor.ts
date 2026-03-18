@@ -27,6 +27,16 @@ interface StuckCustomer {
   days_stuck: number
 }
 
+interface WorkspaceJoin {
+  name: string
+  settings: Record<string, unknown> | null
+}
+
+interface UserJoin {
+  email: string
+  full_name: string | null
+}
+
 export const customerLifecycleMonitor = inngest.createFunction(
   {
     id: 'customer-lifecycle-monitor',
@@ -69,8 +79,8 @@ export const customerLifecycleMonitor = inngest.createFunction(
 
       const stuck: StuckCustomer[] = []
       for (const sub of subscriptions || []) {
-        const workspace = sub.workspaces as any
-        const user = sub.users as any
+        const workspace = sub.workspaces as unknown as WorkspaceJoin
+        const user = sub.users as unknown as UserJoin
         const settings = (workspace?.settings as Record<string, unknown>) || {}
 
         // Only flag if they have a GHL location (sub-account was created)
@@ -118,8 +128,8 @@ export const customerLifecycleMonitor = inngest.createFunction(
 
       const stuck: StuckCustomer[] = []
       for (const sub of subscriptions || []) {
-        const workspace = sub.workspaces as any
-        const user = sub.users as any
+        const workspace = sub.workspaces as unknown as WorkspaceJoin
+        const user = sub.users as unknown as UserJoin
         const daysSince = Math.floor(
           (Date.now() - new Date(sub.updated_at).getTime()) / (1000 * 60 * 60 * 24)
         )
@@ -162,8 +172,8 @@ export const customerLifecycleMonitor = inngest.createFunction(
 
       const stuck: StuckCustomer[] = []
       for (const sub of subscriptions || []) {
-        const workspace = sub.workspaces as any
-        const user = sub.users as any
+        const workspace = sub.workspaces as unknown as WorkspaceJoin
+        const user = sub.users as unknown as UserJoin
         const settings = (workspace?.settings as Record<string, unknown>) || {}
 
         // Check if any leads have been delivered to this workspace

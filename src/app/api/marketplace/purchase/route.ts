@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getCurrentUser } from '@/lib/auth/helpers'
-import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
+import { handleApiError, unauthorized, notFound, badRequest, forbidden } from '@/lib/utils/api-error-handler'
 import { MarketplaceRepository } from '@/lib/repositories/marketplace.repository'
 import { COMMISSION_CONFIG, calculateCommission } from '@/lib/services/commission.service'
 import { sendPurchaseConfirmationEmail } from '@/lib/email/service'
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (!user.workspace_id) {
-      return NextResponse.json({ error: 'No workspace found' }, { status: 404 })
+      return notFound('No workspace found')
     }
 
     workspaceId = user.workspace_id
@@ -62,10 +62,7 @@ export async function POST(request: NextRequest) {
     const parseResult = purchaseSchema.safeParse(body)
 
     if (!parseResult.success) {
-      return NextResponse.json(
-        { error: 'Invalid request', details: parseResult.error.flatten().fieldErrors },
-        { status: 400 }
-      )
+      return badRequest('Invalid request', parseResult.error.flatten().fieldErrors)
     }
 
     const validated = parseResult.data
@@ -126,19 +123,13 @@ export async function POST(request: NextRequest) {
       }
 
       if (!lockedLeads || lockedLeads.length !== validated.leadIds.length) {
-        return NextResponse.json(
-          { error: 'Some leads are no longer available for purchase' },
-          { status: 400 }
-        )
+        return badRequest('Some leads are no longer available for purchase')
       }
 
       leads = lockedLeads
     } catch (error: any) {
       safeError('Failed to validate and lock leads:', error)
-      return NextResponse.json(
-        { error: 'Failed to validate lead availability' },
-        { status: 500 }
-      )
+      return handleApiError(error)
     }
 
     // Fetch partner data for commission calculation with bonuses
@@ -243,18 +234,12 @@ export async function POST(request: NextRequest) {
 
       if (completionError || !completionResult || completionResult.length === 0) {
         safeError('Failed to complete purchase:', completionError)
-        return NextResponse.json(
-          { error: 'Failed to complete purchase' },
-          { status: 500 }
-        )
+        return handleApiError(completionError || new Error('Failed to complete purchase'))
       }
 
       const result = completionResult[0]
       if (!result.success) {
-        return NextResponse.json(
-          { error: result.error_message || 'Failed to complete purchase' },
-          { status: 400 }
-        )
+        return badRequest(result.error_message || 'Failed to complete purchase')
       }
 
       const completedPurchase = await repo.getPurchase(purchase.id, user.workspace_id)
@@ -484,7 +469,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (!user.workspace_id) {
-      return NextResponse.json({ error: 'User workspace not found' }, { status: 403 })
+      return forbidden('User workspace not found')
     }
 
     const queryResult = purchaseQuerySchema.safeParse({
@@ -492,10 +477,7 @@ export async function GET(request: NextRequest) {
     })
 
     if (!queryResult.success) {
-      return NextResponse.json(
-        { error: 'Invalid request', details: queryResult.error.flatten().fieldErrors },
-        { status: 400 }
-      )
+      return badRequest('Invalid request', queryResult.error.flatten().fieldErrors)
     }
 
     const { purchaseId } = queryResult.data
@@ -504,7 +486,7 @@ export async function GET(request: NextRequest) {
     const purchase = await repo.getPurchase(purchaseId, user.workspace_id)
 
     if (!purchase) {
-      return NextResponse.json({ error: 'Purchase not found' }, { status: 404 })
+      return notFound('Purchase not found')
     }
 
     const leads = await repo.getPurchasedLeads(purchaseId, user.workspace_id)

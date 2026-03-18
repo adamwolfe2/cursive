@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { logger } from '@/lib/monitoring/logger'
+import { getErrorMessage, isNotFoundError } from '@/lib/utils/error-helpers'
 
 // These tables are not yet in the generated database types, so we define them manually
 interface ServiceTier {
@@ -71,7 +72,7 @@ export class ServiceTierRepository {
   async getAllPublicTiers(): Promise<ServiceTier[]> {
     const supabase = await createClient()
 
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('service_tiers')
       .select('*')
       .eq('is_public', true)
@@ -79,7 +80,7 @@ export class ServiceTierRepository {
 
     if (error) {
       logger.error('[ServiceTierRepo] Error fetching public tiers:', error)
-      throw new Error(`Failed to fetch service tiers: ${(error as any).message}`)
+      throw new Error(`Failed to fetch service tiers: ${getErrorMessage(error)}`)
     }
 
     return (data as ServiceTier[]) || []
@@ -91,14 +92,14 @@ export class ServiceTierRepository {
   async getAllTiers(): Promise<ServiceTier[]> {
     const supabase = await createClient()
 
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('service_tiers')
       .select('*')
       .order('display_order', { ascending: true })
 
     if (error) {
       logger.error('[ServiceTierRepo] Error fetching all tiers:', error)
-      throw new Error(`Failed to fetch service tiers: ${(error as any).message}`)
+      throw new Error(`Failed to fetch service tiers: ${getErrorMessage(error)}`)
     }
 
     return (data as ServiceTier[]) || []
@@ -110,18 +111,18 @@ export class ServiceTierRepository {
   async getTierBySlug(slug: string): Promise<ServiceTier | null> {
     const supabase = await createClient()
 
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('service_tiers')
       .select('*')
       .eq('slug', slug)
       .maybeSingle()
 
     if (error) {
-      if ((error as any).code === 'PGRST116') {
+      if (isNotFoundError(error)) {
         return null
       }
       logger.error('[ServiceTierRepo] Error fetching tier by slug:', error)
-      throw new Error(`Failed to fetch service tier: ${(error as any).message}`)
+      throw new Error(`Failed to fetch service tier: ${getErrorMessage(error)}`)
     }
 
     return data as ServiceTier
@@ -133,18 +134,18 @@ export class ServiceTierRepository {
   async getTierById(id: string): Promise<ServiceTier | null> {
     const supabase = await createClient()
 
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('service_tiers')
       .select('*')
       .eq('id', id)
       .maybeSingle()
 
     if (error) {
-      if ((error as any).code === 'PGRST116') {
+      if (isNotFoundError(error)) {
         return null
       }
       logger.error('[ServiceTierRepo] Error fetching tier by ID:', error)
-      throw new Error(`Failed to fetch service tier: ${(error as any).message}`)
+      throw new Error(`Failed to fetch service tier: ${getErrorMessage(error)}`)
     }
 
     return data as ServiceTier
@@ -156,7 +157,7 @@ export class ServiceTierRepository {
   async getWorkspaceActiveSubscription(workspaceId: string): Promise<ServiceSubscription | null> {
     const supabase = await createClient()
 
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('service_subscriptions')
       .select('*, service_tiers(*)')
       .eq('workspace_id', workspaceId)
@@ -164,11 +165,11 @@ export class ServiceTierRepository {
       .maybeSingle()
 
     if (error) {
-      if ((error as any).code === 'PGRST116') {
+      if (isNotFoundError(error)) {
         return null
       }
       logger.error('[ServiceTierRepo] Error fetching active subscription:', error)
-      throw new Error(`Failed to fetch subscription: ${(error as any).message}`)
+      throw new Error(`Failed to fetch subscription: ${getErrorMessage(error)}`)
     }
 
     return data as ServiceSubscription
@@ -180,7 +181,7 @@ export class ServiceTierRepository {
   async getWorkspaceSubscriptions(workspaceId: string): Promise<ServiceSubscription[]> {
     const supabase = await createClient()
 
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('service_subscriptions')
       .select('*')
       .eq('workspace_id', workspaceId)
@@ -188,7 +189,7 @@ export class ServiceTierRepository {
 
     if (error) {
       logger.error('[ServiceTierRepo] Error fetching workspace subscriptions:', error)
-      throw new Error(`Failed to fetch subscriptions: ${(error as any).message}`)
+      throw new Error(`Failed to fetch subscriptions: ${getErrorMessage(error)}`)
     }
 
     return (data as ServiceSubscription[]) || []
@@ -200,18 +201,18 @@ export class ServiceTierRepository {
   async getSubscriptionWithTier(subscriptionId: string): Promise<(ServiceSubscription & { service_tier: ServiceTier }) | null> {
     const supabase = await createClient()
 
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('service_subscriptions')
       .select('*, service_tier:service_tiers(*)')
       .eq('id', subscriptionId)
       .maybeSingle()
 
     if (error) {
-      if ((error as any).code === 'PGRST116') {
+      if (isNotFoundError(error)) {
         return null
       }
       logger.error('[ServiceTierRepo] Error fetching subscription with tier:', error)
-      throw new Error(`Failed to fetch subscription: ${(error as any).message}`)
+      throw new Error(`Failed to fetch subscription: ${getErrorMessage(error)}`)
     }
 
     return data as unknown as (ServiceSubscription & { service_tier: ServiceTier })
@@ -223,7 +224,7 @@ export class ServiceTierRepository {
   async createSubscription(data: ServiceSubscriptionInsert): Promise<ServiceSubscription> {
     const adminSupabase = createAdminClient()
 
-    const { data: subscription, error } = await (adminSupabase as any)
+    const { data: subscription, error } = await adminSupabase
       .from('service_subscriptions')
       .insert(data)
       .select()
@@ -231,7 +232,7 @@ export class ServiceTierRepository {
 
     if (error) {
       logger.error('[ServiceTierRepo] Error creating subscription:', error)
-      throw new Error(`Failed to create subscription: ${(error as any).message}`)
+      throw new Error(`Failed to create subscription: ${getErrorMessage(error)}`)
     }
 
     return subscription as ServiceSubscription
@@ -243,7 +244,7 @@ export class ServiceTierRepository {
   async updateSubscription(id: string, updates: ServiceSubscriptionUpdate): Promise<ServiceSubscription> {
     const adminSupabase = createAdminClient()
 
-    const { data, error } = await (adminSupabase as any)
+    const { data, error } = await adminSupabase
       .from('service_subscriptions')
       .update(updates)
       .eq('id', id)
@@ -252,7 +253,7 @@ export class ServiceTierRepository {
 
     if (error) {
       logger.error('[ServiceTierRepo] Error updating subscription:', error)
-      throw new Error(`Failed to update subscription: ${(error as any).message}`)
+      throw new Error(`Failed to update subscription: ${getErrorMessage(error)}`)
     }
 
     return data as ServiceSubscription
@@ -264,18 +265,18 @@ export class ServiceTierRepository {
   async getSubscriptionByStripeId(stripeSubscriptionId: string): Promise<ServiceSubscription | null> {
     const adminSupabase = createAdminClient()
 
-    const { data, error } = await (adminSupabase as any)
+    const { data, error } = await adminSupabase
       .from('service_subscriptions')
       .select('*')
       .eq('stripe_subscription_id', stripeSubscriptionId)
       .maybeSingle()
 
     if (error) {
-      if ((error as any).code === 'PGRST116') {
+      if (isNotFoundError(error)) {
         return null
       }
       logger.error('[ServiceTierRepo] Error fetching subscription by Stripe ID:', error)
-      throw new Error(`Failed to fetch subscription: ${(error as any).message}`)
+      throw new Error(`Failed to fetch subscription: ${getErrorMessage(error)}`)
     }
 
     return data as ServiceSubscription
@@ -297,7 +298,7 @@ export class ServiceTierRepository {
   async createDelivery(data: ServiceDeliveryInsert): Promise<ServiceDelivery> {
     const adminSupabase = createAdminClient()
 
-    const { data: delivery, error } = await (adminSupabase as any)
+    const { data: delivery, error } = await adminSupabase
       .from('service_deliveries')
       .insert(data)
       .select()
@@ -305,7 +306,7 @@ export class ServiceTierRepository {
 
     if (error) {
       logger.error('[ServiceTierRepo] Error creating delivery:', error)
-      throw new Error(`Failed to create delivery: ${(error as any).message}`)
+      throw new Error(`Failed to create delivery: ${getErrorMessage(error)}`)
     }
 
     return delivery as ServiceDelivery
@@ -317,7 +318,7 @@ export class ServiceTierRepository {
   async getSubscriptionDeliveries(subscriptionId: string): Promise<ServiceDelivery[]> {
     const supabase = await createClient()
 
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('service_deliveries')
       .select('*')
       .eq('service_subscription_id', subscriptionId)
@@ -325,7 +326,7 @@ export class ServiceTierRepository {
 
     if (error) {
       logger.error('[ServiceTierRepo] Error fetching deliveries:', error)
-      throw new Error(`Failed to fetch deliveries: ${(error as any).message}`)
+      throw new Error(`Failed to fetch deliveries: ${getErrorMessage(error)}`)
     }
 
     return (data as ServiceDelivery[]) || []
@@ -337,7 +338,7 @@ export class ServiceTierRepository {
   async updateDelivery(id: string, updates: Partial<ServiceDelivery>): Promise<ServiceDelivery> {
     const adminSupabase = createAdminClient()
 
-    const { data, error } = await (adminSupabase as any)
+    const { data, error } = await adminSupabase
       .from('service_deliveries')
       .update(updates)
       .eq('id', id)
@@ -346,7 +347,7 @@ export class ServiceTierRepository {
 
     if (error) {
       logger.error('[ServiceTierRepo] Error updating delivery:', error)
-      throw new Error(`Failed to update delivery: ${(error as any).message}`)
+      throw new Error(`Failed to update delivery: ${getErrorMessage(error)}`)
     }
 
     return data as ServiceDelivery
@@ -358,7 +359,7 @@ export class ServiceTierRepository {
   async getPendingDeliveries(): Promise<ServiceDelivery[]> {
     const adminSupabase = createAdminClient()
 
-    const { data, error } = await (adminSupabase as any)
+    const { data, error } = await adminSupabase
       .from('service_deliveries')
       .select('*')
       .in('status', ['scheduled', 'in_progress'])
@@ -366,7 +367,7 @@ export class ServiceTierRepository {
 
     if (error) {
       logger.error('[ServiceTierRepo] Error fetching pending deliveries:', error)
-      throw new Error(`Failed to fetch pending deliveries: ${(error as any).message}`)
+      throw new Error(`Failed to fetch pending deliveries: ${getErrorMessage(error)}`)
     }
 
     return (data as ServiceDelivery[]) || []
@@ -378,7 +379,7 @@ export class ServiceTierRepository {
   async getAllActiveSubscriptions(): Promise<ServiceSubscription[]> {
     const adminSupabase = createAdminClient()
 
-    const { data, error } = await (adminSupabase as any)
+    const { data, error } = await adminSupabase
       .from('service_subscriptions')
       .select('*')
       .eq('status', 'active')
@@ -386,7 +387,7 @@ export class ServiceTierRepository {
 
     if (error) {
       logger.error('[ServiceTierRepo] Error fetching active subscriptions:', error)
-      throw new Error(`Failed to fetch active subscriptions: ${(error as any).message}`)
+      throw new Error(`Failed to fetch active subscriptions: ${getErrorMessage(error)}`)
     }
 
     return (data as ServiceSubscription[]) || []

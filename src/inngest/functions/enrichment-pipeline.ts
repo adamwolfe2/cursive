@@ -43,8 +43,17 @@ interface EnrichmentJobData {
 interface LeadData {
   id: string
   workspace_id: string
-  company_data: any
-  contact_data: any
+  email?: string
+  first_name?: string
+  last_name?: string
+  full_name?: string
+  job_title?: string
+  company_name?: string
+  company_domain?: string
+  linkedin_url?: string
+  metadata?: Record<string, unknown>
+  company_data: LeadCompanyData | null
+  contact_data: LeadContactData | null
   enrichment_status: string
 }
 
@@ -647,7 +656,7 @@ async function enrichWithEmailRep(lead: LeadData): Promise<{
 }> {
   const contactData = lead.contact_data as LeadContactData | null
   const email =
-    (lead as any).email ||
+    lead.email ||
     contactData?.contacts?.[0]?.email ||
     contactData?.primary_contact?.email
 
@@ -665,7 +674,7 @@ async function enrichWithEmailRep(lead: LeadData): Promise<{
       success: true,
       data: {
         metadata: {
-          ...(lead as any).metadata,
+          ...lead.metadata,
           email_quality: result,
         },
       },
@@ -689,19 +698,19 @@ async function enrichWithProxyCurl(lead: LeadData): Promise<{
   const companyData = lead.company_data as LeadCompanyData | null
 
   const email =
-    (lead as any).email ||
+    lead.email ||
     contactData?.contacts?.[0]?.email ||
     contactData?.primary_contact?.email
   const linkedinUrl =
-    (lead as any).linkedin_url || contactData?.contacts?.[0]?.linkedin_url
+    lead.linkedin_url || contactData?.contacts?.[0]?.linkedin_url
   const firstName =
-    (lead as any).first_name || contactData?.contacts?.[0]?.first_name
+    lead.first_name || contactData?.contacts?.[0]?.first_name
   const lastName =
-    (lead as any).last_name || contactData?.contacts?.[0]?.last_name
+    lead.last_name || contactData?.contacts?.[0]?.last_name
   const fullName =
-    (lead as any).full_name ||
+    lead.full_name ||
     (firstName && lastName ? `${firstName} ${lastName}` : undefined)
-  const companyName = companyData?.name || (lead as any).company_name
+  const companyName = companyData?.name || lead.company_name
 
   try {
     const result = await getLinkedInProfile(linkedinUrl, email, fullName, companyName)
@@ -732,7 +741,7 @@ async function enrichWithFullContact(lead: LeadData): Promise<{
 }> {
   const contactData = lead.contact_data as LeadContactData | null
   const email =
-    (lead as any).email ||
+    lead.email ||
     contactData?.contacts?.[0]?.email ||
     contactData?.primary_contact?.email
 
@@ -771,13 +780,13 @@ async function enrichWithSerperNews(lead: LeadData): Promise<{
   const companyData = lead.company_data as LeadCompanyData | null
 
   const firstName =
-    (lead as any).first_name || contactData?.contacts?.[0]?.first_name
+    lead.first_name || contactData?.contacts?.[0]?.first_name
   const lastName =
-    (lead as any).last_name || contactData?.contacts?.[0]?.last_name
+    lead.last_name || contactData?.contacts?.[0]?.last_name
   const fullName =
-    (lead as any).full_name ||
+    lead.full_name ||
     (firstName && lastName ? `${firstName} ${lastName}` : undefined)
-  const companyName = companyData?.name || (lead as any).company_name
+  const companyName = companyData?.name || lead.company_name
 
   if (!fullName || !companyName) {
     return { success: false, error: 'Name and company name required for Serper news search' }
@@ -814,16 +823,16 @@ async function enrichWithPerplexityDeep(lead: LeadData): Promise<{
   const companyData = lead.company_data as LeadCompanyData | null
 
   const firstName =
-    (lead as any).first_name || contactData?.contacts?.[0]?.first_name
+    lead.first_name || contactData?.contacts?.[0]?.first_name
   const lastName =
-    (lead as any).last_name || contactData?.contacts?.[0]?.last_name
+    lead.last_name || contactData?.contacts?.[0]?.last_name
   const fullName =
-    (lead as any).full_name ||
+    lead.full_name ||
     (firstName && lastName ? `${firstName} ${lastName}` : undefined)
-  const companyName = companyData?.name || (lead as any).company_name
+  const companyName = companyData?.name || lead.company_name
   const jobTitle =
-    (lead as any).job_title || contactData?.contacts?.[0]?.title
-  const domain = companyData?.domain || (lead as any).company_domain
+    lead.job_title || contactData?.contacts?.[0]?.title
+  const domain = companyData?.domain || lead.company_domain
 
   if (!fullName) {
     return { success: false, error: 'Name required for deep research' }

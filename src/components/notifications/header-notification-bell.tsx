@@ -5,16 +5,19 @@
  *
  * Client-side wrapper that fetches notifications from the API
  * and renders the NotificationDropdown in the header.
+ * Uses React Query for polling consistency with the rest of the app.
  */
 
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { NotificationBell } from './notification-center'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/design-system'
 import { formatDistanceToNow } from 'date-fns'
+import { queryDefaults } from '@/lib/hooks/query-defaults'
 
 interface ApiNotification {
   id: string
@@ -28,59 +31,67 @@ interface ApiNotification {
   created_at: string
 }
 
+async function fetchNotificationCount(): Promise<number> {
+  const res = await fetch('/api/notifications', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'get_count' }),
+  })
+  if (!res.ok) return 0
+  const { data } = await res.json()
+  return data?.unread_count ?? 0
+}
+
+async function fetchNotifications(): Promise<{
+  notifications: ApiNotification[]
+  unread_count: number
+}> {
+  const res = await fetch('/api/notifications?limit=20')
+  if (!res.ok) return { notifications: [], unread_count: 0 }
+  const { data } = await res.json()
+  return {
+    notifications: data?.notifications ?? [],
+    unread_count: data?.unread_count ?? 0,
+  }
+}
+
 export function HeaderNotificationBell() {
   const router = useRouter()
+  const queryClient = useQueryClient()
   const [isOpen, setIsOpen] = React.useState(false)
-  const [notifications, setNotifications] = React.useState<ApiNotification[]>([])
-  const [unreadCount, setUnreadCount] = React.useState(0)
-  const [isLoading, setIsLoading] = React.useState(false)
   const dropdownRef = React.useRef<HTMLDivElement>(null)
 
-  // Fetch unread count on mount and periodically
-  const fetchCount = React.useCallback(async () => {
-    try {
-      const res = await fetch('/api/notifications', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'get_count' }),
-      })
-      if (res.ok) {
-        const { data } = await res.json()
-        setUnreadCount(data?.unread_count ?? 0)
-      }
-    } catch {
-      // Silent fail — notification count is non-critical
-    }
-  }, [])
+  // Poll unread count every 60s (same interval as the old setInterval)
+  const { data: unreadCount = 0 } = useQuery({
+    queryKey: ['notifications', 'count'],
+    queryFn: fetchNotificationCount,
+    refetchInterval: 60_000,
+    ...queryDefaults.realtime,
+  })
 
-  React.useEffect(() => {
-    fetchCount()
-    const interval = setInterval(fetchCount, 60_000) // Poll every 60s
-    return () => clearInterval(interval)
-  }, [fetchCount])
+  // Fetch full notifications only when dropdown is open
+  const {
+    data: notificationsData,
+    isLoading,
+  } = useQuery({
+    queryKey: ['notifications', 'list'],
+    queryFn: fetchNotifications,
+    enabled: isOpen,
+    ...queryDefaults.realtime,
+  })
 
-  // Fetch full notifications when dropdown opens
-  const fetchNotifications = React.useCallback(async () => {
-    setIsLoading(true)
-    try {
-      const res = await fetch('/api/notifications?limit=20')
-      if (res.ok) {
-        const { data } = await res.json()
-        setNotifications(data?.notifications ?? [])
-        setUnreadCount(data?.unread_count ?? 0)
-      }
-    } catch {
-      // Silent fail
-    } finally {
-      setIsLoading(false)
-    }
-  }, [])
+  const notifications = notificationsData?.notifications ?? []
+  // When the dropdown is open and we have fresh data, prefer its unread_count
+  const displayCount = isOpen && notificationsData
+    ? notificationsData.unread_count
+    : unreadCount
 
   const handleToggle = () => {
     const opening = !isOpen
     setIsOpen(opening)
     if (opening) {
-      fetchNotifications()
+      // Refetch notifications list when opening
+      queryClient.invalidateQueries({ queryKey: ['notifications', 'list'] })
     }
   }
 
@@ -103,10 +114,24 @@ export function HeaderNotificationBell() {
         body: JSON.stringify({ is_read: true }),
       })
       if (res.ok) {
-        setNotifications((prev) =>
-          prev.map((n) => (n.id === id ? { ...n, is_read: true } : n))
+        // Optimistically update the list cache
+        queryClient.setQueryData<{ notifications: ApiNotification[]; unread_count: number }>(
+          ['notifications', 'list'],
+          (old) => {
+            if (!old) return old
+            return {
+              notifications: old.notifications.map((n) =>
+                n.id === id ? { ...n, is_read: true } : n
+              ),
+              unread_count: Math.max(0, old.unread_count - 1),
+            }
+          }
         )
-        setUnreadCount((prev) => Math.max(0, prev - 1))
+        // Update the count cache too
+        queryClient.setQueryData<number>(
+          ['notifications', 'count'],
+          (old) => Math.max(0, (old ?? 1) - 1)
+        )
       }
     } catch {
       // Silent fail — non-critical
@@ -121,8 +146,17 @@ export function HeaderNotificationBell() {
         body: JSON.stringify({ action: 'mark_all_read' }),
       })
       if (res.ok) {
-        setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })))
-        setUnreadCount(0)
+        queryClient.setQueryData<{ notifications: ApiNotification[]; unread_count: number }>(
+          ['notifications', 'list'],
+          (old) => {
+            if (!old) return old
+            return {
+              notifications: old.notifications.map((n) => ({ ...n, is_read: true })),
+              unread_count: 0,
+            }
+          }
+        )
+        queryClient.setQueryData<number>(['notifications', 'count'], 0)
       }
     } catch {
       // Silent fail — non-critical
@@ -141,7 +175,7 @@ export function HeaderNotificationBell() {
 
   return (
     <div className="relative" ref={dropdownRef}>
-      <NotificationBell count={unreadCount} onClick={handleToggle} />
+      <NotificationBell count={displayCount} onClick={handleToggle} />
 
       {isOpen && (
         <Card className="absolute right-0 top-full mt-2 w-80 z-50 shadow-lg overflow-hidden">
@@ -149,13 +183,13 @@ export function HeaderNotificationBell() {
           <div className="flex items-center justify-between px-4 py-3 border-b border-border">
             <div className="flex items-center gap-2">
               <span className="font-medium text-foreground text-sm">Notifications</span>
-              {unreadCount > 0 && (
+              {displayCount > 0 && (
                 <Badge variant="default" size="sm">
-                  {unreadCount}
+                  {displayCount}
                 </Badge>
               )}
             </div>
-            {unreadCount > 0 && (
+            {displayCount > 0 && (
               <Button variant="ghost" size="sm" onClick={handleMarkAllRead}>
                 Mark all read
               </Button>

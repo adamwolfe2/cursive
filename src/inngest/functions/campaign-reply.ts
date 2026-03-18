@@ -52,6 +52,7 @@ export const processReply = inngest.createFunction(
     name: 'Process Campaign Reply',
     retries: 3,
     timeouts: { finish: "5m" },
+    concurrency: { limit: 3 },
   },
   { event: 'emailbison/reply-received' },
   async ({ event, step, logger }) => {
@@ -314,6 +315,7 @@ export const batchProcessReplies = inngest.createFunction(
     name: 'Batch Process Unclassified Replies',
     retries: 2,
     timeouts: { finish: "5m" },
+    concurrency: { limit: 3 },
   },
   { cron: '*/15 * * * *' }, // Every 15 minutes
   async ({ step, logger }) => {

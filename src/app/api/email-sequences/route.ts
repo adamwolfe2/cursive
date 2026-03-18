@@ -8,7 +8,7 @@ import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { safeError } from '@/lib/utils/log-sanitizer'
-import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
+import { handleApiError, unauthorized, badRequest } from '@/lib/utils/api-error-handler'
 
 
 const createSequenceSchema = z.object({
@@ -69,10 +69,7 @@ export async function GET(request: NextRequest) {
 
     if (error) {
       safeError('Failed to fetch email sequences:', error)
-      return NextResponse.json(
-        { error: 'Failed to fetch sequences' },
-        { status: 500 }
-      )
+      return handleApiError(error)
     }
 
     return NextResponse.json({
@@ -118,16 +115,10 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       if (error.code === '23505') {
-        return NextResponse.json(
-          { error: 'Sequence name already exists' },
-          { status: 400 }
-        )
+        return badRequest('Sequence name already exists')
       }
       safeError('Failed to create email sequence:', error)
-      return NextResponse.json(
-        { error: 'Failed to create sequence' },
-        { status: 500 }
-      )
+      return handleApiError(error)
     }
 
     return NextResponse.json({ sequence }, { status: 201 })
