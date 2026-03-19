@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ users })
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('[Workspace Users] Error:', error)
     return NextResponse.json(
       { error: 'Failed to fetch workspace users' },

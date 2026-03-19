@@ -2,6 +2,7 @@ import { inngest } from '../client'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { sendOnboardingReminderEmail } from '@/lib/email/service-emails'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { getErrorMessage } from '@/lib/utils/error-helpers'
 
 /**
  * Send onboarding reminder emails
@@ -76,9 +77,9 @@ export const sendOnboardingReminders = inngest.createFunction(
           })
 
           sent.push(subscription.id)
-        } catch (error: any) {
+        } catch (error: unknown) {
           safeError(`[Inngest] Failed to send reminder for ${subscription.id}:`, error)
-          failed.push({ id: subscription.id, error: error.message })
+          failed.push({ id: subscription.id, error: getErrorMessage(error) })
         }
       }
 

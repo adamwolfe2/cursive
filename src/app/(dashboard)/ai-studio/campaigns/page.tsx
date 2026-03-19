@@ -24,6 +24,7 @@ import {
   Megaphone,
 } from 'lucide-react'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { getErrorMessage } from '@/lib/utils/error-helpers'
 
 interface Creative {
   id: string
@@ -175,9 +176,9 @@ function CampaignsPageInner() {
         throw new Error('No checkout URL returned')
       }
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       safeError('[AICampaignsPage]', 'Checkout error:', error)
-      setCheckoutError(error.message || 'Failed to create checkout session')
+      setCheckoutError(getErrorMessage(error) || 'Failed to create checkout session')
       setIsCreatingCheckout(false)
     }
   }

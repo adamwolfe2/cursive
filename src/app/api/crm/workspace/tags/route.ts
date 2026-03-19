@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ tags })
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('[Workspace Tags] Error:', error)
     return handleApiError(error)
   }
@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
     // Return the new tag (no DB storage needed as tags are stored on leads)
     return NextResponse.json({ tag: name, success: true })
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('[Workspace Tags] Create Error:', error)
     return handleApiError(error)
   }

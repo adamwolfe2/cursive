@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({ success: true })
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('Analytics tracking error:', error)
     // Always return success - don't disrupt user experience
     return NextResponse.json({ success: true })

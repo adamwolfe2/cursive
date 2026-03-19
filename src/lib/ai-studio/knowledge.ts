@@ -6,6 +6,7 @@
 import OpenAI from 'openai'
 import type { BrandDNA } from './firecrawl'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { getErrorMessage } from '@/lib/utils/error-helpers'
 import { logApiCall } from '@/lib/services/api-logger'
 
 function getOpenAIClient() {
@@ -182,9 +183,9 @@ Analyze this content deeply and generate a comprehensive, actionable knowledge b
     const knowledgeBase = JSON.parse(content) as KnowledgeBase
 
     return knowledgeBase
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('[Knowledge] Error generating knowledge base:', error)
-    throw new Error(`Failed to generate knowledge base: ${error.message}`)
+    throw new Error(`Failed to generate knowledge base: ${getErrorMessage(error)}`)
   }
 }
 
@@ -268,9 +269,9 @@ Generate 3-5 detailed buyer personas in the exact JSON format specified.`
     const result = JSON.parse(content)
 
     return result.personas || []
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('[Knowledge] Error generating customer profiles:', error)
-    throw new Error(`Failed to generate customer profiles: ${error.message}`)
+    throw new Error(`Failed to generate customer profiles: ${getErrorMessage(error)}`)
   }
 }
 

@@ -196,7 +196,7 @@ export async function POST(request: NextRequest) {
       message_id: inboundMessage.id,
       matched: !!emailSend || !!lead,
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('Inbound email webhook error:', error)
     return NextResponse.json({ error: 'Webhook processing failed' }, { status: 500 })
   }

@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
       gainers,
       losers,
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     return handleApiError(error)
   }
 }

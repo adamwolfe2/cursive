@@ -22,6 +22,7 @@ import {
   ChevronDown,
 } from 'lucide-react'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { getErrorMessage } from '@/lib/utils/error-helpers'
 import { PromptTemplateLibrary } from '@/components/ai-studio/PromptTemplateLibrary'
 
 interface Creative {
@@ -143,8 +144,8 @@ function CreativesPageInner() {
       // Add new creative to the list
       setCreatives([data.creative, ...creatives])
       setPrompt('')
-    } catch (error: any) {
-      setGenerationError(error.message || 'Failed to generate creative')
+    } catch (error: unknown) {
+      setGenerationError(getErrorMessage(error) || 'Failed to generate creative')
     } finally {
       setIsGenerating(false)
     }

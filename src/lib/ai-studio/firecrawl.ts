@@ -6,6 +6,7 @@
 import FirecrawlApp from '@mendable/firecrawl-js'
 import { logApiCall } from '@/lib/services/api-logger'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { getErrorMessage } from '@/lib/utils/error-helpers'
 
 function getFirecrawlClient() {
   if (!process.env.FIRECRAWL_API_KEY) {
@@ -196,9 +197,9 @@ export async function extractBrandDNA(url: string): Promise<FirecrawlResult> {
         meta_description: extractResult.extract?.meta_description || '',
       }
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('[Firecrawl] Error extracting brand DNA:', error)
-    throw new Error(`Failed to extract brand DNA: ${error.message}`)
+    throw new Error(`Failed to extract brand DNA: ${getErrorMessage(error)}`)
   }
 }
 

@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
     })
 
     return applyProtectionHeaders(response, request, PROTECTION_PRESETS.search)
-  } catch (error: any) {
+  } catch (error: unknown) {
     return handleApiError(error)
   }
 }
@@ -128,7 +128,7 @@ export async function GET(request: NextRequest) {
     // 3. Return response with rate limit headers
     const response = success(savedSearches)
     return applyProtectionHeaders(response, request, PROTECTION_PRESETS.authenticated)
-  } catch (error: any) {
+  } catch (error: unknown) {
     return handleApiError(error)
   }
 }

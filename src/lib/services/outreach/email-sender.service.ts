@@ -12,6 +12,7 @@
 import { Resend } from 'resend'
 import { createClient } from '@/lib/supabase/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { getErrorMessage } from '@/lib/utils/error-helpers'
 
 // ============================================================================
 // TYPES
@@ -127,10 +128,10 @@ async function sendWithResend(request: EmailSendRequest): Promise<EmailSendResul
       messageId: data?.id,
       provider: 'resend',
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     return {
       success: false,
-      error: error.message || 'Failed to send email',
+      error: getErrorMessage(error) || 'Failed to send email',
       provider: 'resend',
     }
   }
@@ -249,10 +250,10 @@ async function sendWithGmail(
       messageId: data.id,
       provider: 'gmail',
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     return {
       success: false,
-      error: error.message || 'Gmail send failed',
+      error: getErrorMessage(error) || 'Gmail send failed',
       provider: 'gmail',
     }
   }
@@ -356,10 +357,10 @@ async function sendWithOutlook(
       messageId: `outlook-${Date.now()}`,
       provider: 'outlook',
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     return {
       success: false,
-      error: error.message || 'Outlook send failed',
+      error: getErrorMessage(error) || 'Outlook send failed',
       provider: 'outlook',
     }
   }
@@ -421,10 +422,10 @@ async function sendWithSmtp(
       messageId: info.messageId,
       provider: 'smtp',
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     return {
       success: false,
-      error: error.message || 'SMTP send failed',
+      error: getErrorMessage(error) || 'SMTP send failed',
       provider: 'smtp',
     }
   }

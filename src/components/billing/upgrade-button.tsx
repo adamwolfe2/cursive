@@ -53,7 +53,7 @@ export function UpgradeButton({
       } else {
         throw new Error('No checkout URL returned')
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Final fallback: use payment link directly
       safeError('[UpgradeButton]', 'Upgrade error, using payment link fallback:', error)
       try {

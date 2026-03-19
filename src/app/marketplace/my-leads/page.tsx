@@ -1,15 +1,15 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { NavBar } from '@/components/nav-bar'
-import { useToast } from '@/lib/hooks/use-toast'
 import { useUser } from '@/hooks/use-user'
+import { useQuery } from '@tanstack/react-query'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { UpsellBanner } from '@/components/marketplace/UpsellBanner'
-import { safeError } from '@/lib/utils/log-sanitizer'
+import { queryDefaults } from '@/lib/hooks/query-defaults'
 import { ShoppingBag, Search } from 'lucide-react'
 
 interface PurchasedLead {
@@ -36,104 +36,113 @@ interface PurchasedLead {
   purchase_total: number
 }
 
+interface MyLeadsResponse {
+  leads: PurchasedLead[]
+}
+
+// ── Fetch Functions ───────────────────────────────────────────────────────────
+
+async function fetchMyLeads(): Promise<PurchasedLead[]> {
+  const response = await fetch('/api/marketplace/my-leads')
+  if (!response.ok) {
+    if (response.status === 401) {
+      window.location.href = '/login'
+      return []
+    }
+    throw new Error('Failed to fetch purchased leads')
+  }
+  const data: MyLeadsResponse = await response.json()
+  return data.leads || []
+}
+
+async function fetchCreditsBalance(): Promise<number> {
+  const response = await fetch('/api/marketplace/credits')
+  if (!response.ok) return 0
+  const data = await response.json()
+  return data.balance || 0
+}
+
+async function fetchTotalSpend(): Promise<number> {
+  const response = await fetch('/api/marketplace/stats')
+  if (!response.ok) return 0
+  const data = await response.json()
+  return data.totalSpent || 0
+}
+
+// ── Query Keys ────────────────────────────────────────────────────────────────
+
+const myLeadsKeys = {
+  leads: ['my-leads'] as const,
+  credits: ['marketplace-credits'] as const,
+  stats: ['marketplace-stats'] as const,
+}
+
 export default function MyLeadsPage() {
   const router = useRouter()
-  const { toast } = useToast()
   const { user, isLoading: userLoading } = useUser()
-  const [leads, setLeads] = useState<PurchasedLead[]>([])
-  const [filteredLeads, setFilteredLeads] = useState<PurchasedLead[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [creditsBalance, setCreditsBalance] = useState(0)
-  const [totalSpend, setTotalSpend] = useState(0)
+
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedIndustry, setSelectedIndustry] = useState<string>('all')
   const [selectedState, setSelectedState] = useState<string>('all')
   const [selectedPurchase, setSelectedPurchase] = useState<string>('all')
 
-  // Derived filter options
-  const [industries, setIndustries] = useState<string[]>([])
-  const [states, setStates] = useState<string[]>([])
-  const [purchases, setPurchases] = useState<{ id: string; date: string }[]>([])
+  // ── Data fetching via React Query ─────────────────────────────────────────
 
-  // Redirect to login if not authenticated
-  useEffect(() => {
-    if (!userLoading && !user) {
-      router.push('/login')
-    }
-  }, [user, userLoading, router])
+  const {
+    data: leads = [],
+    isLoading,
+  } = useQuery({
+    queryKey: myLeadsKeys.leads,
+    queryFn: fetchMyLeads,
+    enabled: !!user,
+    ...queryDefaults.lists,
+  })
 
-  const fetchLeads = useCallback(async () => {
-    try {
-      const response = await fetch('/api/marketplace/my-leads')
-      if (response.ok) {
-        const data = await response.json()
-        setLeads(data.leads || [])
-        setFilteredLeads(data.leads || [])
+  const { data: creditsBalance = 0 } = useQuery({
+    queryKey: myLeadsKeys.credits,
+    queryFn: fetchCreditsBalance,
+    enabled: !!user,
+    ...queryDefaults.dashboard,
+  })
 
-        // Extract unique filter values
-        const uniqueIndustries = [...new Set(data.leads.map((l: PurchasedLead) => l.company_industry).filter(Boolean))]
-        const uniqueStates = [...new Set(data.leads.map((l: PurchasedLead) => l.state).filter(Boolean))]
-        // Deduplicate purchases by id
-        const purchaseMap = new Map<string, string>()
-        data.leads.forEach((l: PurchasedLead) => {
-          if (!purchaseMap.has(l.purchase_id)) {
-            purchaseMap.set(l.purchase_id, l.purchased_at)
-          }
-        })
-        const uniquePurchases = Array.from(purchaseMap.entries()).map(([id, date]) => ({ id, date }))
+  const { data: totalSpend = 0 } = useQuery({
+    queryKey: myLeadsKeys.stats,
+    queryFn: fetchTotalSpend,
+    enabled: !!user,
+    ...queryDefaults.dashboard,
+  })
 
-        setIndustries((uniqueIndustries as string[]).sort())
-        setStates((uniqueStates as string[]).sort())
-        setPurchases(uniquePurchases.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()))
-      } else if (response.status === 401) {
-        router.push('/login')
-        return
-      } else {
-        toast({
-          title: 'Failed to load leads',
-          message: 'Could not fetch your purchased leads',
-          type: 'error',
-        })
+  // ── Derived filter options ────────────────────────────────────────────────
+
+  const industries = useMemo(
+    () =>
+      [...new Set(leads.map((l) => l.company_industry).filter(Boolean))]
+        .sort() as string[],
+    [leads]
+  )
+
+  const states = useMemo(
+    () =>
+      [...new Set(leads.map((l) => l.state).filter(Boolean))]
+        .sort() as string[],
+    [leads]
+  )
+
+  const purchases = useMemo(() => {
+    const purchaseMap = new Map<string, string>()
+    leads.forEach((l) => {
+      if (!purchaseMap.has(l.purchase_id)) {
+        purchaseMap.set(l.purchase_id, l.purchased_at)
       }
-    } catch (error) {
-      safeError('[MarketplaceMyLeads]', 'Failed to fetch leads:', error)
-      toast({
-        title: 'Error',
-        message: 'An error occurred while loading leads',
-        type: 'error',
-      })
-    } finally {
-      setIsLoading(false)
-    }
-  }, [toast, router])
+    })
+    return Array.from(purchaseMap.entries())
+      .map(([id, date]) => ({ id, date }))
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+  }, [leads])
 
-  const fetchUpsellData = useCallback(async () => {
-    try {
-      const [creditsRes, statsRes] = await Promise.all([
-        fetch('/api/marketplace/credits'),
-        fetch('/api/marketplace/stats'),
-      ])
-      if (creditsRes.ok) {
-        const creditsData = await creditsRes.json()
-        setCreditsBalance(creditsData.balance || 0)
-      }
-      if (statsRes.ok) {
-        const statsData = await statsRes.json()
-        setTotalSpend(statsData.totalSpent || 0)
-      }
-    } catch (error) {
-      safeError('[MarketplaceMyLeads]', 'Failed to fetch upsell data:', error)
-    }
-  }, [])
+  // ── Client-side filtering ─────────────────────────────────────────────────
 
-  useEffect(() => {
-    if (!user) return
-    fetchLeads()
-    fetchUpsellData()
-  }, [fetchLeads, fetchUpsellData, user])
-
-  // Apply filters
-  useEffect(() => {
+  const filteredLeads = useMemo(() => {
     let filtered = leads
 
     if (searchQuery) {
@@ -160,8 +169,10 @@ export default function MyLeadsPage() {
       filtered = filtered.filter((lead) => lead.purchase_id === selectedPurchase)
     }
 
-    setFilteredLeads(filtered)
+    return filtered
   }, [searchQuery, selectedIndustry, selectedState, selectedPurchase, leads])
+
+  // ── Actions ───────────────────────────────────────────────────────────────
 
   const downloadLeads = () => {
     const headers = [
@@ -221,6 +232,11 @@ export default function MyLeadsPage() {
     setSelectedIndustry('all')
     setSelectedState('all')
     setSelectedPurchase('all')
+  }
+
+  // Redirect to login if not authenticated
+  if (!userLoading && !user) {
+    router.push('/login')
   }
 
   // Show loading while checking auth

@@ -73,7 +73,7 @@ export class VerificationService {
       })
 
       return result
-    } catch (error: any) {
+    } catch (error: unknown) {
       safeError('[VerificationService] Email verification error:', error)
       throw error
     }
@@ -119,7 +119,7 @@ export class VerificationService {
       })
 
       return result
-    } catch (error: any) {
+    } catch (error: unknown) {
       safeError('[VerificationService] Phone verification error:', error)
       throw error
     }

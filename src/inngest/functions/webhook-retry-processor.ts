@@ -5,6 +5,7 @@ import { inngest } from '../client'
 import { createAdminClient } from '@/lib/supabase/admin'
 import Stripe from 'stripe'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { getErrorMessage } from '@/lib/utils/error-helpers'
 
 export const webhookRetryProcessor = inngest.createFunction(
   {
@@ -61,15 +62,15 @@ export const webhookRetryProcessor = inngest.createFunction(
 
           logger.info(`✅ Successfully processed webhook: ${webhook.stripe_event_id}`)
           succeeded++
-        } catch (error: any) {
-          logger.error(`❌ Failed to process webhook ${webhook.stripe_event_id}:`, error)
+        } catch (error: unknown) {
+          logger.error(`Failed to process webhook ${webhook.stripe_event_id}:`, error)
 
           // Queue for next retry (the queue_webhook_retry function will increment retry_count)
           await supabase.rpc('queue_webhook_retry', {
             p_stripe_event_id: webhook.stripe_event_id,
             p_event_type: webhook.event_type,
             p_event_data: webhook.event_data,
-            p_error: error.message || 'Unknown error',
+            p_error: getErrorMessage(error) || 'Unknown error',
           })
 
           failed++

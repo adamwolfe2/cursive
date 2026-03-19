@@ -7,7 +7,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAdmin, getAdminContext, logAdminAction } from '@/lib/auth/admin'
-import { getLeadProviderService, type LeadSearchFilters } from '@/lib/services/lead-provider.service'
+import { getLeadProviderService, LeadLimitExceededError, type LeadSearchFilters } from '@/lib/services/lead-provider.service'
 import { createClient } from '@/lib/supabase/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { checkRateLimit, RATE_LIMIT_CONFIGS } from '@/lib/utils/rate-limit'
@@ -132,10 +132,10 @@ export async function POST(request: NextRequest) {
       success: true,
       ...result,
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('Admin lead search error:', error)
 
-    if (error.name === 'LeadLimitExceededError') {
+    if (error instanceof LeadLimitExceededError) {
       return NextResponse.json(
         {
           error: error.message,
@@ -228,7 +228,7 @@ export async function GET(request: NextRequest) {
       crossWorkspaceQuery: allWorkspaces && !workspaceId,
       warning: allWorkspaces && !workspaceId ? 'Results include leads from all workspaces' : undefined,
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('[Admin Lead Search History] Error:', error)
     return NextResponse.json(
       { error: 'Failed to get lead history' },

@@ -8,6 +8,7 @@ import type { BrandDNA } from './firecrawl'
 import type { CustomerProfile, KnowledgeBase } from './knowledge'
 import { logApiCall } from '@/lib/services/api-logger'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { getErrorMessage } from '@/lib/utils/error-helpers'
 
 function configureFal() {
   if (!process.env.FAL_KEY) {
@@ -101,9 +102,9 @@ export async function generateAdCreative({
       imageUrl,
       enhancedPrompt,
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('[ImageGen] Error generating creative:', error)
-    throw new Error(`Failed to generate creative: ${error.message}`)
+    throw new Error(`Failed to generate creative: ${getErrorMessage(error)}`)
   }
 }
 

@@ -212,7 +212,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(
       new URL('/settings/integrations?success=ghl_connected', req.url)
     )
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('[GHL OAuth] Callback error:', error)
     return NextResponse.redirect(
       new URL('/settings/integrations?error=ghl_callback_failed', req.url)

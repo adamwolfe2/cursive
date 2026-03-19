@@ -3,6 +3,7 @@
 
 import { ClayClient } from '@/lib/integrations/clay'
 import { safeWarn, safeError } from '@/lib/utils/log-sanitizer'
+import { getErrorMessage } from '@/lib/utils/error-helpers'
 import type { PeopleSearchFilters } from '@/lib/repositories/people-search.repository'
 
 export interface PersonResult {
@@ -93,9 +94,9 @@ export class PeopleSearchService {
 
       // No valid search criteria
       throw new Error('Please provide either a company domain or company name')
-    } catch (error: any) {
+    } catch (error: unknown) {
       safeError('[PeopleSearchService] Search error:', error)
-      throw new Error(`Failed to search people: ${error.message}`)
+      throw new Error(`Failed to search people: ${getErrorMessage(error)}`)
     }
   }
 

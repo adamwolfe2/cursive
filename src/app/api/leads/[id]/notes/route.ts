@@ -57,7 +57,7 @@ export async function GET(
     })
 
     return success({ notes })
-  } catch (error: any) {
+  } catch (error: unknown) {
     return handleApiError(error)
   }
 }
@@ -105,7 +105,7 @@ export async function POST(
     })
 
     return success({ note }, 201)
-  } catch (error: any) {
+  } catch (error: unknown) {
     return handleApiError(error)
   }
 }

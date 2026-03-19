@@ -119,7 +119,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
     let leadsToImport: LeadToImport[]
     try {
       leadsToImport = await parseLeadsFromInput(validated, user.workspace_id, supabase)
-    } catch (error: any) {
+    } catch (error: unknown) {
       safeError('[Lead Import] Parse error:', error)
       return badRequest('Failed to parse leads from input')
     }

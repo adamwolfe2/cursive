@@ -388,6 +388,7 @@ export async function POST(request: NextRequest) {
 
     // 10. Create user targeting for business users (enables lead routing)
     let targetStatesForProvisioning: string[] = []
+    let targetingFailed = false
     if (validated.role === 'business') {
       try {
         targetStatesForProvisioning = parseTargetLocations(validated.targetLocations)
@@ -410,6 +411,7 @@ export async function POST(request: NextRequest) {
           })
 
         if (targetingInsertError) {
+          targetingFailed = true
           safeError('[Onboarding] CRITICAL: User targeting insert failed — provision event will NOT fire, user may receive zero leads:', {
             message: targetingInsertError.message,
             code: targetingInsertError.code,
@@ -460,6 +462,7 @@ export async function POST(request: NextRequest) {
         }
       } catch (targetingError) {
         // Non-fatal: user can set targeting later from dashboard, but ops must know
+        targetingFailed = true
         safeError('[Onboarding] CRITICAL: User targeting creation threw unexpectedly — provision event skipped, user may receive zero leads:', targetingError instanceof Error ? targetingError.message : targetingError)
         sendSlackAlert({
           type: 'system_error',
@@ -586,7 +589,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Build the response FIRST, then fire non-blocking side effects
-    const response = NextResponse.json({ workspace_id: workspace.id, pixel_claimed: pixelClaimed })
+    const response = NextResponse.json({
+      workspace_id: workspace.id,
+      pixel_claimed: pixelClaimed,
+      // Surface targeting failure to the client so it can show a corrective banner
+      ...(targetingFailed && { targeting_failed: true }),
+    })
 
     // Non-blocking logo fetch from email domain — runs after response via next/server after()
     const GENERIC_DOMAINS = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'aol.com', 'icloud.com', 'protonmail.com', 'mail.com', 'live.com', 'msn.com']

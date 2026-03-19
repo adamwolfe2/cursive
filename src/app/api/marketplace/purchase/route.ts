@@ -90,19 +90,29 @@ export async function POST(request: NextRequest) {
           )
         }
       } else {
-        await adminClient.from('api_idempotency_keys').insert({
+        const { error: insertError } = await adminClient.from('api_idempotency_keys').insert({
           idempotency_key: validated.idempotencyKey,
           workspace_id: user.workspace_id,
           endpoint: '/api/marketplace/purchase',
           status: 'processing',
         })
+
+        if (insertError) {
+          if (insertError.code === '23505') {
+            return NextResponse.json(
+              { error: 'Duplicate request detected. Please retry with a new idempotency key.' },
+              { status: 409 }
+            )
+          }
+          throw insertError
+        }
       }
     }
 
     const repo = new MarketplaceRepository()
 
     // RACE CONDITION FIX: Use atomic validation with row-level locks
-    let leads: any[]
+    let leads: Array<{ id: string; partner_id?: string; marketplace_price?: number; intent_score_calculated?: number; freshness_score?: number; created_at: string; [key: string]: unknown }>
     try {
       const { data: lockedLeads, error: lockError } = await adminClient.rpc(
         'validate_and_lock_leads_for_purchase',
@@ -127,14 +137,14 @@ export async function POST(request: NextRequest) {
       }
 
       leads = lockedLeads
-    } catch (error: any) {
+    } catch (error: unknown) {
       safeError('Failed to validate and lock leads:', error)
       return handleApiError(error)
     }
 
     // Fetch partner data for commission calculation with bonuses
     const uniquePartnerIds = [...new Set(leads.map(l => l.partner_id).filter(Boolean))] as string[]
-    const partnersMap = new Map<string, any>()
+    const partnersMap = new Map<string, { id: string; verification_pass_rate: number | null; bonus_commission_rate: number | null; base_commission_rate: number | null }>()
 
     if (uniquePartnerIds.length > 0) {
       const { createClient } = await import('@/lib/supabase/server')
@@ -334,7 +344,7 @@ export async function POST(request: NextRequest) {
         totalPrice,
         paymentMethod: 'stripe',
         creditsUsed: 0,
-      } as any)
+      })
 
       const purchaseItems = leads.map((lead) => {
         const price = lead.marketplace_price || 0.05

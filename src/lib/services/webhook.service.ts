@@ -6,6 +6,7 @@
  */
 
 import { hmacSha256Hex, timingSafeEqual } from '@/lib/utils/crypto'
+import { getErrorMessage } from '@/lib/utils/error-helpers'
 
 export interface WebhookPayload {
   event: string
@@ -110,8 +111,8 @@ export async function deliverWebhook(
       responseBody,
       error: `HTTP ${response.status}: ${response.statusText}`,
     }
-  } catch (error: any) {
-    if (error.name === 'AbortError') {
+  } catch (error: unknown) {
+    if (error instanceof DOMException && error.name === 'AbortError') {
       return {
         success: false,
         error: 'Request timeout',
@@ -120,7 +121,7 @@ export async function deliverWebhook(
 
     return {
       success: false,
-      error: error.message || 'Unknown error',
+      error: getErrorMessage(error) || 'Unknown error',
     }
   }
 }

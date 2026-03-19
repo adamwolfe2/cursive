@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
     })
 
     return applyProtectionHeaders(response, request, PROTECTION_PRESETS.emailReveal)
-  } catch (error: any) {
+  } catch (error: unknown) {
     return handleApiError(error)
   }
 }

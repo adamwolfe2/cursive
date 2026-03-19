@@ -64,7 +64,7 @@ export async function GET(request: NextRequest) {
 
     // 3. Return response
     return success(queries)
-  } catch (error: any) {
+  } catch (error: unknown) {
     return handleApiError(error)
   }
 }
@@ -106,7 +106,7 @@ export async function POST(request: NextRequest) {
 
     // 5. Return response
     return created(query)
-  } catch (error: any) {
+  } catch (error: unknown) {
     return handleApiError(error)
   }
 }

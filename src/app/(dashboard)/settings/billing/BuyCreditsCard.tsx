@@ -5,6 +5,7 @@ import { useToast } from '@/lib/hooks/use-toast'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { CREDIT_PACKAGES } from '@/lib/constants/credit-packages'
+import { getErrorMessage } from '@/lib/utils/error-helpers'
 
 export function BuyCreditsCard() {
   const toast = useToast()
@@ -40,8 +41,8 @@ export function BuyCreditsCard() {
       if (url) {
         window.location.href = url
       }
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to start purchase')
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error) || 'Failed to start purchase')
     } finally {
       setPurchasingPackage(null)
       // Keep button disabled for 5 seconds after click to prevent rapid re-clicks

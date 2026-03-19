@@ -57,30 +57,72 @@ export default async function AnalyticsPage() {
   const getPipelineStats = unstable_cache(
     async (wsId: string) => {
       const admin = createAdminClient()
-      const { data } = await admin
+
+      // ── Database-level counts (no rows loaded into memory) ──
+
+      const [
+        total,
+        enriched,
+        contacted,
+        qualified,
+        won,
+        lost,
+        hot,
+        warm,
+        cold,
+        noScore,
+      ] = await Promise.all([
+        // Total
+        admin.from('leads').select('*', { count: 'exact', head: true })
+          .eq('workspace_id', wsId)
+          .then(({ count }) => count ?? 0),
+        // Enriched
+        admin.from('leads').select('*', { count: 'exact', head: true })
+          .eq('workspace_id', wsId).eq('enrichment_status', 'enriched')
+          .then(({ count }) => count ?? 0),
+        // Contacted (contacted + qualified + proposal + negotiation + won)
+        admin.from('leads').select('*', { count: 'exact', head: true })
+          .eq('workspace_id', wsId).in('status', ['contacted', 'qualified', 'proposal', 'negotiation', 'won'])
+          .then(({ count }) => count ?? 0),
+        // Qualified (qualified + proposal + negotiation + won)
+        admin.from('leads').select('*', { count: 'exact', head: true })
+          .eq('workspace_id', wsId).in('status', ['qualified', 'proposal', 'negotiation', 'won'])
+          .then(({ count }) => count ?? 0),
+        // Won
+        admin.from('leads').select('*', { count: 'exact', head: true })
+          .eq('workspace_id', wsId).eq('status', 'won')
+          .then(({ count }) => count ?? 0),
+        // Lost
+        admin.from('leads').select('*', { count: 'exact', head: true })
+          .eq('workspace_id', wsId).eq('status', 'lost')
+          .then(({ count }) => count ?? 0),
+        // Hot (intent >= 70)
+        admin.from('leads').select('*', { count: 'exact', head: true })
+          .eq('workspace_id', wsId).gte('intent_score_calculated', 70)
+          .then(({ count }) => count ?? 0),
+        // Warm (intent 40-69)
+        admin.from('leads').select('*', { count: 'exact', head: true })
+          .eq('workspace_id', wsId).gte('intent_score_calculated', 40).lt('intent_score_calculated', 70)
+          .then(({ count }) => count ?? 0),
+        // Cold (intent < 40, not null)
+        admin.from('leads').select('*', { count: 'exact', head: true })
+          .eq('workspace_id', wsId).lt('intent_score_calculated', 40).not('intent_score_calculated', 'is', null)
+          .then(({ count }) => count ?? 0),
+        // No score (null intent)
+        admin.from('leads').select('*', { count: 'exact', head: true })
+          .eq('workspace_id', wsId).is('intent_score_calculated', null)
+          .then(({ count }) => count ?? 0),
+      ])
+
+      // ── Source breakdown + weekly trend need lightweight column data ──
+      // Only fetch source and date columns (not full rows)
+      const { data: sourceAndDateRows } = await admin
         .from('leads')
-        .select('status, enrichment_status, intent_score_calculated, source, created_at, delivered_at')
+        .select('source, created_at, delivered_at')
         .eq('workspace_id', wsId)
-        .order('delivered_at', { ascending: false, nullsFirst: false })
-        .limit(5000) // Cap to prevent timeout on large workspaces
-      const rows = data ?? []
 
-      const total = rows.length
-      const enriched = rows.filter(r => r.enrichment_status === 'enriched').length
+      const rows = sourceAndDateRows ?? []
 
-      // Pipeline funnel
-      const contacted = rows.filter(r => ['contacted', 'qualified', 'proposal', 'negotiation', 'won'].includes(r.status || '')).length
-      const qualified = rows.filter(r => ['qualified', 'proposal', 'negotiation', 'won'].includes(r.status || '')).length
-      const won = rows.filter(r => r.status === 'won').length
-      const lost = rows.filter(r => r.status === 'lost').length
-
-      // Intent distribution
-      const hot = rows.filter(r => (r.intent_score_calculated ?? 0) >= 70).length
-      const warm = rows.filter(r => (r.intent_score_calculated ?? 0) >= 40 && (r.intent_score_calculated ?? 0) < 70).length
-      const cold = rows.filter(r => r.intent_score_calculated !== null && (r.intent_score_calculated ?? 0) < 40).length
-      const noScore = rows.filter(r => r.intent_score_calculated === null).length
-
-      // Source breakdown
       const sourceMap: Record<string, number> = {}
       for (const r of rows) {
         const src = r.source || 'unknown'

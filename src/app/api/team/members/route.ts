@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
     })
 
     return success({ members: sortedMembers })
-  } catch (error: any) {
+  } catch (error: unknown) {
     return handleApiError(error)
   }
 }

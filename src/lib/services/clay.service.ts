@@ -6,6 +6,8 @@
  * Clay provides company and contact data enrichment.
  */
 
+import { getErrorMessage } from '@/lib/utils/error-helpers'
+
 export interface ClayEnrichmentRequest {
   email?: string
   first_name?: string
@@ -130,10 +132,10 @@ export async function enrichLeadWithClay(
       },
       credits_used: 1,
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     return {
       success: false,
-      error: error.message || 'Clay enrichment failed',
+      error: getErrorMessage(error) || 'Clay enrichment failed',
     }
   }
 }
@@ -195,10 +197,10 @@ export async function enrichCompanyWithClay(
       },
       credits_used: 1,
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     return {
       success: false,
-      error: error.message || 'Clay company enrichment failed',
+      error: getErrorMessage(error) || 'Clay company enrichment failed',
     }
   }
 }

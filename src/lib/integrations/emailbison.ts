@@ -20,6 +20,7 @@
 
 import { fetchWithTimeout } from '@/lib/utils/retry'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { getErrorMessage } from '@/lib/utils/error-helpers'
 
 // ============================================================================
 // CONFIGURATION
@@ -739,10 +740,10 @@ export async function exportCampaignToEmailBison(options: {
       stepsAdded,
       leadsAdded,
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     return {
       success: false,
-      error: error.message,
+      error: getErrorMessage(error),
     }
   }
 }

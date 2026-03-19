@@ -9,6 +9,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Download, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
+import { getErrorMessage } from '@/lib/utils/error-helpers'
 
 interface ExportButtonProps {
   filters?: Record<string, any>
@@ -65,10 +66,10 @@ export function ExportButton({
           description: 'CSV file downloaded successfully',
         })
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       const isTimeout = error instanceof DOMException && error.name === 'AbortError'
       toast.error(
-        isTimeout ? 'Export timed out' : (error.message || 'Export failed'),
+        isTimeout ? 'Export timed out' : (getErrorMessage(error) || 'Export failed'),
         { description: isTimeout ? 'Try exporting with fewer filters.' : undefined }
       )
     } finally {

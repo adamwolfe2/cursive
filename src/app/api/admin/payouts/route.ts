@@ -102,7 +102,7 @@ export async function GET(req: NextRequest) {
         totalPages: Math.ceil((count || 0) / limit),
       },
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('[Admin Payouts] Error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },

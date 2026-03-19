@@ -211,7 +211,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(
       new URL('/settings/integrations?success=salesforce_connected', req.url)
     )
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('[Salesforce OAuth] Callback error:', error)
     return NextResponse.redirect(
       new URL('/settings/integrations?error=sf_callback_failed', req.url)

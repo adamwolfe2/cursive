@@ -138,7 +138,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({ creative, message: 'Creative generated successfully' })
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('[Creatives] Error:', error)
     return handleApiError(error)
   }

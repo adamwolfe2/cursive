@@ -55,7 +55,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
         trends: sortedTrends,
       },
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('[Trend History] Error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },

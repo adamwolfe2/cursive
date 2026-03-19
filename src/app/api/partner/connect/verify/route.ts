@@ -103,7 +103,7 @@ export async function GET(request: NextRequest) {
       payoutsEnabled: account.payouts_enabled,
       detailsSubmitted: account.details_submitted,
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError("[Verify Connect] Error:", error)
     return handleApiError(error)
   }

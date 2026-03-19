@@ -52,7 +52,7 @@ export async function GET(
       success: true,
       data: deal,
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     return handleApiError(error)
   }
 }
@@ -87,7 +87,7 @@ export async function PUT(
       success: true,
       data: deal,
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     return handleApiError(error)
   }
 }
@@ -115,7 +115,7 @@ export async function DELETE(
       success: true,
       message: 'Deal deleted successfully',
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     return handleApiError(error)
   }
 }

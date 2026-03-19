@@ -13,6 +13,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
+import { getErrorMessage } from '@/lib/utils/error-helpers'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
@@ -101,8 +102,8 @@ export function EditLeadDialog({ open, onOpenChange, lead, onSuccess }: EditLead
       toast.success('Lead updated successfully')
       onOpenChange(false)
       onSuccess?.()
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to update lead')
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error) || 'Failed to update lead')
     } finally {
       setIsSubmitting(false)
     }

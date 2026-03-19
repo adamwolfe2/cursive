@@ -8,6 +8,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { fetchWithTimeout } from '@/lib/utils/retry'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { getErrorMessage } from '@/lib/utils/error-helpers'
 
 // Configuration
 const GHL_TIMEOUT = 30000 // 30 seconds
@@ -235,8 +236,8 @@ export async function syncContactToGhl(
     )
 
     return { success: true, contactId: created.contact.id }
-  } catch (error: any) {
-    return { success: false, error: error.message }
+  } catch (error: unknown) {
+    return { success: false, error: getErrorMessage(error) }
   }
 }
 
@@ -315,8 +316,8 @@ export async function createGhlOpportunity(
     )
 
     return { success: true, opportunityId: created.opportunity.id }
-  } catch (error: any) {
-    return { success: false, error: error.message }
+  } catch (error: unknown) {
+    return { success: false, error: getErrorMessage(error) }
   }
 }
 
@@ -351,8 +352,8 @@ export async function updateGhlOpportunityStatus(
     )
 
     return { success: true }
-  } catch (error: any) {
-    return { success: false, error: error.message }
+  } catch (error: unknown) {
+    return { success: false, error: getErrorMessage(error) }
   }
 }
 
@@ -417,8 +418,8 @@ export async function triggerGhlWorkflow(
     )
 
     return { success: true }
-  } catch (error: any) {
-    return { success: false, error: error.message }
+  } catch (error: unknown) {
+    return { success: false, error: getErrorMessage(error) }
   }
 }
 

@@ -279,7 +279,7 @@ export async function POST(req: NextRequest) {
       routing_summary: routingSummary,
       errors: errors.slice(0, 10), // Return first 10 errors
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('[Bulk Upload] Error:', error)
     return NextResponse.json(
       { error: 'Failed to process upload' },

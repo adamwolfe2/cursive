@@ -13,6 +13,7 @@ import { UsageCard } from './UsageCard'
 import { EnrichmentActivityCard } from './EnrichmentActivityCard'
 import { BuyCreditsCard } from './BuyCreditsCard'
 import { AutoRechargeCard } from './AutoRechargeCard'
+import { getErrorMessage } from '@/lib/utils/error-helpers'
 import { ServiceTiersCard } from './ServiceTiersCard'
 
 interface EnrichmentEntry {
@@ -140,8 +141,8 @@ export default function BillingClient() {
       } else {
         setLoading(false)
       }
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to open billing portal')
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error) || 'Failed to open billing portal')
       setLoading(false)
     }
   }

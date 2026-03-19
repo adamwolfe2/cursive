@@ -250,7 +250,7 @@ export async function handleSubscriptionCreated(subscription: Stripe.Subscriptio
       }
     }
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     logger.error('[Webhook] Error handling subscription.created', { error: error instanceof Error ? error.message : String(error) })
     throw error
   }
@@ -355,7 +355,7 @@ export async function handleSubscriptionUpdated(subscription: Stripe.Subscriptio
       }
     }
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     logger.error('[Webhook] Error handling subscription.updated', { error: error instanceof Error ? error.message : String(error) })
     throw error
   }
@@ -422,7 +422,7 @@ export async function handleSubscriptionDeleted(subscription: Stripe.Subscriptio
     // FUTURE: Schedule data retention/deletion if applicable
     // This will be implemented when we add automated data cleanup policies
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     logger.error('[Webhook] Error handling subscription.deleted', { error: error instanceof Error ? error.message : String(error) })
     throw error
   }
@@ -506,7 +506,7 @@ export async function handleInvoicePaymentFailed(invoice: Stripe.Invoice): Promi
       logger.error('[Dunning] Failed to send dunning email', { error: emailError instanceof Error ? emailError.message : String(emailError) })
     }
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     logger.error('[Webhook] Error handling invoice.payment_failed', { error: error instanceof Error ? error.message : String(error) })
     throw error
   }
@@ -581,7 +581,7 @@ export async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice): Pr
     // FUTURE: Schedule next delivery if applicable
     // This will be implemented when we add recurring delivery scheduling
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     logger.error('[Webhook] Error handling invoice.payment_succeeded', { error: error instanceof Error ? error.message : String(error) })
     throw error
   }
@@ -616,7 +616,7 @@ export async function handleServiceWebhookEvent(event: Stripe.Event): Promise<vo
       default:
         break
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     logger.error('[Webhook] Error processing event', { eventType: event.type, error: error instanceof Error ? error.message : String(error) })
     throw error
   }

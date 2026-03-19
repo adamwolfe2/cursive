@@ -9,6 +9,7 @@ import {
   updateCampaignLeadOptimalTimes,
   inferTimezone,
 } from '@/lib/services/campaign/timezone-scheduling.service'
+import { getErrorMessage } from '@/lib/utils/error-helpers'
 
 /**
  * Recalculate optimal send times for all active campaigns
@@ -63,8 +64,8 @@ export const recalculateOptimalTimes = inngest.createFunction(
             leads_updated: result.updated,
             errors_count: result.errors.length,
           })
-        } catch (error: any) {
-          logger.warn(`Failed to update campaign ${campaign.id}: ${error.message}`)
+        } catch (error: unknown) {
+          logger.warn(`Failed to update campaign ${campaign.id}: ${getErrorMessage(error)}`)
           processed.push({
             campaign_id: campaign.id,
             name: campaign.name,

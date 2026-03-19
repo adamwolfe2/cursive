@@ -284,7 +284,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(
       new URL('/settings/integrations?success=slack_connected', req.url)
     )
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('[Slack OAuth] Callback error:', error)
     return NextResponse.redirect(
       new URL('/settings/integrations?error=slack_callback_failed', req.url)

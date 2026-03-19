@@ -40,7 +40,7 @@ export async function GET(
     const activities = await activityRepo.getActivities(id, user.workspace_id, limit)
 
     return success({ activities })
-  } catch (error: any) {
+  } catch (error: unknown) {
     return handleApiError(error)
   }
 }

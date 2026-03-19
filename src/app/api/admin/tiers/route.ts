@@ -46,7 +46,7 @@ export async function GET() {
       success: true,
       tiers,
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('[Admin Tiers GET] Error:', error)
     return NextResponse.json(
       { error: 'Failed to get tiers' },
@@ -138,7 +138,7 @@ export async function POST(request: NextRequest) {
       workspaceTier,
       message: `Workspace upgraded to ${tier.name}`,
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('[Admin Tiers POST] Error:', error)
     return NextResponse.json(
       { error: 'Failed to assign tier' },
@@ -237,7 +237,7 @@ export async function PATCH(request: NextRequest) {
       workspaceTier: updatedTier,
       message: 'Tier overrides updated',
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('[Admin Tiers PATCH] Error:', error)
     return NextResponse.json(
       { error: 'Failed to update overrides' },

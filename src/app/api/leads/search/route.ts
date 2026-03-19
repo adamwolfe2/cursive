@@ -135,7 +135,7 @@ export async function POST(request: NextRequest) {
         monthly: { limit: updatedLimits.monthlyLimit, used: updatedLimits.monthlyUsed, remaining: updatedLimits.monthlyRemaining },
       },
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('Lead search error:', error)
     return handleApiError(error)
   }

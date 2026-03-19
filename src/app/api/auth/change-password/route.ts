@@ -50,7 +50,12 @@ export async function POST(req: NextRequest) {
     }
 
     // Validate request body
-    const body = await req.json()
+    let body: unknown
+    try {
+      body = await req.json()
+    } catch {
+      return NextResponse.json({ error: 'Invalid JSON in request body' }, { status: 400 })
+    }
     const validation = changePasswordSchema.safeParse(body)
 
     if (!validation.success) {

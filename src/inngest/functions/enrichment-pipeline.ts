@@ -27,6 +27,7 @@ import {
 } from '@/lib/services/intelligence'
 import type { LeadContactData, LeadCompanyData } from '@/types'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { getErrorMessage } from '@/lib/utils/error-helpers'
 
 // ============================================================================
 // TYPES
@@ -456,10 +457,10 @@ async function enrichWithAI(
       },
       creditsUsed: 2, // AI analysis costs credits
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     return {
       success: false,
-      error: error.message || 'AI analysis failed',
+      error: getErrorMessage(error) || 'AI analysis failed',
     }
   }
 }
@@ -555,10 +556,10 @@ async function enrichWithClay(lead: LeadData): Promise<{
       data: enrichedData,
       creditsUsed: (companyResult.credits_used || 0) + (personResult?.credits_used || 0),
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     return {
       success: false,
-      error: error.message || 'Clay enrichment failed',
+      error: getErrorMessage(error) || 'Clay enrichment failed',
     }
   }
 }
@@ -603,10 +604,10 @@ async function enrichWithWebScrape(lead: LeadData): Promise<{
       },
       creditsUsed: 1,
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     return {
       success: false,
-      error: error.message || 'Web scrape failed',
+      error: getErrorMessage(error) || 'Web scrape failed',
     }
   }
 }
@@ -640,8 +641,8 @@ async function enrichWithBuiltWith(lead: LeadData): Promise<{
       },
       creditsUsed: 0,
     }
-  } catch (error: any) {
-    return { success: false, error: error.message || 'BuiltWith enrichment failed' }
+  } catch (error: unknown) {
+    return { success: false, error: getErrorMessage(error) || 'BuiltWith enrichment failed' }
   }
 }
 
@@ -680,8 +681,8 @@ async function enrichWithEmailRep(lead: LeadData): Promise<{
       },
       creditsUsed: 0,
     }
-  } catch (error: any) {
-    return { success: false, error: error.message || 'EmailRep enrichment failed' }
+  } catch (error: unknown) {
+    return { success: false, error: getErrorMessage(error) || 'EmailRep enrichment failed' }
   }
 }
 
@@ -725,8 +726,8 @@ async function enrichWithProxyCurl(lead: LeadData): Promise<{
       },
       creditsUsed: 0,
     }
-  } catch (error: any) {
-    return { success: false, error: error.message || 'ProxyCurl enrichment failed' }
+  } catch (error: unknown) {
+    return { success: false, error: getErrorMessage(error) || 'ProxyCurl enrichment failed' }
   }
 }
 
@@ -762,8 +763,8 @@ async function enrichWithFullContact(lead: LeadData): Promise<{
       },
       creditsUsed: 0,
     }
-  } catch (error: any) {
-    return { success: false, error: error.message || 'FullContact enrichment failed' }
+  } catch (error: unknown) {
+    return { success: false, error: getErrorMessage(error) || 'FullContact enrichment failed' }
   }
 }
 
@@ -805,8 +806,8 @@ async function enrichWithSerperNews(lead: LeadData): Promise<{
       },
       creditsUsed: 0,
     }
-  } catch (error: any) {
-    return { success: false, error: error.message || 'Serper news enrichment failed' }
+  } catch (error: unknown) {
+    return { success: false, error: getErrorMessage(error) || 'Serper news enrichment failed' }
   }
 }
 
@@ -867,8 +868,8 @@ async function enrichWithPerplexityDeep(lead: LeadData): Promise<{
       },
       creditsUsed: 0,
     }
-  } catch (error: any) {
-    return { success: false, error: error.message || 'Perplexity deep research failed' }
+  } catch (error: unknown) {
+    return { success: false, error: getErrorMessage(error) || 'Perplexity deep research failed' }
   }
 }
 

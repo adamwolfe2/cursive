@@ -11,6 +11,7 @@ import { unauthorized } from '@/lib/utils/api-error-handler'
 import { getStripeClient } from '@/lib/stripe/client'
 import { withRateLimit } from '@/lib/middleware/rate-limiter'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { isStripeError } from '@/lib/utils/error-helpers'
 
 export async function POST(
   request: NextRequest,
@@ -92,8 +93,8 @@ export async function POST(
         },
         description: `Lead purchase: ${lead.business_name || 'Unknown'} (${lead.industry || 'N/A'})`,
       })
-    } catch (stripeErr: any) {
-      if (stripeErr?.type?.startsWith('Stripe')) {
+    } catch (stripeErr: unknown) {
+      if (isStripeError(stripeErr) && stripeErr.type.startsWith('Stripe')) {
         safeError('[Lead Purchase] Stripe error:', stripeErr.message)
         return NextResponse.json(
           { error: 'Payment processing failed. Please try again or contact support.' },

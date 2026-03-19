@@ -10,6 +10,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { firecrawlService } from '@/lib/services/firecrawl.service'
 import { tavilyService } from '@/lib/services/tavily.service'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { getErrorMessage } from '@/lib/utils/error-helpers'
 
 export const scrapeWebsite = inngest.createFunction(
   {
@@ -39,9 +40,10 @@ export const scrapeWebsite = inngest.createFunction(
       try {
         const data = await firecrawlService.scrapeWebsite(websiteUrl)
         return { success: true as const, data }
-      } catch (error: any) {
-        safeError('Firecrawl failed:', error.message)
-        return { success: false as const, data: null, error: error.message }
+      } catch (error: unknown) {
+        const msg = getErrorMessage(error)
+        safeError('Firecrawl failed:', msg)
+        return { success: false as const, data: null, error: msg }
       }
     })
 
@@ -57,9 +59,10 @@ export const scrapeWebsite = inngest.createFunction(
 
           const data = await tavilyService.searchCompany(companyName, domain)
           return { success: true as const, data }
-        } catch (error: any) {
-          safeError('Tavily failed:', error.message)
-          return { success: false as const, data: null, error: error.message }
+        } catch (error: unknown) {
+          const msg = getErrorMessage(error)
+          safeError('Tavily failed:', msg)
+          return { success: false as const, data: null, error: msg }
         }
       })
 

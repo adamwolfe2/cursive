@@ -7,6 +7,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { getErrorMessage } from '@/lib/utils/error-helpers'
 
 // ============================================================================
 // TYPES
@@ -110,10 +111,10 @@ export async function sendSms(
       messageId: message.sid,
       status: message.status,
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     return {
       success: false,
-      error: error.message || 'Failed to send SMS',
+      error: getErrorMessage(error) || 'Failed to send SMS',
     }
   }
 }

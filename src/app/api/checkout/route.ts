@@ -15,6 +15,7 @@ import { getStripeClient } from '@/lib/stripe/client'
 import type Stripe from 'stripe'
 import { z } from 'zod'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { isStripeError } from '@/lib/utils/error-helpers'
 
 // Request validation schema
 const checkoutSchema = z.object({
@@ -33,13 +34,18 @@ export async function POST(req: NextRequest) {
     const supabase = await createClient()
 
     // Validate request body
-    const body = await req.json()
+    let body: unknown
+    try {
+      body = await req.json()
+    } catch {
+      return NextResponse.json({ error: 'Invalid JSON in request body' }, { status: 400 })
+    }
     const { leadId, buyerEmail, buyerName, companyName } = checkoutSchema.parse(body)
 
     // Get lead details - ensure user has access to this lead
     const { data: lead, error: leadError } = await supabase
       .from('leads')
-      .select('id, workspace_id, company_name, company_industry, company_location')
+      .select('id, workspace_id, company_name, company_industry, company_location, marketplace_price')
       .eq('id', leadId)
       .eq('workspace_id', user.workspaceId)
       .maybeSingle()
@@ -121,7 +127,7 @@ export async function POST(req: NextRequest) {
                   industry: lead.company_industry || 'N/A',
                 },
               },
-              unit_amount: 5000, // $50.00
+              unit_amount: Math.round((lead.marketplace_price || 50) * 100),
             },
             quantity: 1,
           },
@@ -149,8 +155,8 @@ export async function POST(req: NextRequest) {
         sessionId: session.id,
         url: session.url,
       })
-    } catch (stripeErr: any) {
-      if (stripeErr?.type?.startsWith('Stripe')) {
+    } catch (stripeErr: unknown) {
+      if (isStripeError(stripeErr) && stripeErr.type.startsWith('Stripe')) {
         safeError('[Checkout] Stripe error:', stripeErr.message)
         return NextResponse.json(
           { error: 'Payment processing failed. Please try again or contact support.' },

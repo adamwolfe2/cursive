@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
       success: true,
       message: `Enrichment queued for lead ${lead_id}`,
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('[Admin Trigger Enrichment] Error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },

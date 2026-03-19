@@ -60,7 +60,7 @@ export async function GET(
       success: true,
       data: company,
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     return handleApiError(error)
   }
 }
@@ -95,7 +95,7 @@ export async function PUT(
       success: true,
       data: company,
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     return handleApiError(error)
   }
 }
@@ -123,7 +123,7 @@ export async function DELETE(
       success: true,
       message: 'Company deleted successfully',
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     return handleApiError(error)
   }
 }

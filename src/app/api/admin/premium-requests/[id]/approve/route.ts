@@ -110,7 +110,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       success: true,
       message: `Feature access granted for ${featureRequest.feature_type}`,
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     return handleApiError(error)
   }
 }

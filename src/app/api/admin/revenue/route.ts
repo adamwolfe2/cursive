@@ -221,7 +221,7 @@ export async function GET() {
         topPartners,
       },
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('Admin revenue error:', error)
     return NextResponse.json({ error: 'Failed to fetch revenue data' }, { status: 500 })
   }

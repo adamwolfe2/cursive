@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { ArrowRight, Send, Loader2, CheckCircle } from 'lucide-react'
 import { useToast } from '@/lib/hooks/use-toast'
+import { getErrorMessage } from '@/lib/utils/error-helpers'
 
 export default function ContactSalesPage() {
   const [loading, setLoading] = useState(false)
@@ -39,8 +40,8 @@ export default function ContactSalesPage() {
 
       setSubmitted(true)
       toast.success('Inquiry submitted successfully!')
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to submit inquiry')
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error) || 'Failed to submit inquiry')
       setLoading(false)
     }
   }

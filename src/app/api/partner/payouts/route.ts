@@ -87,7 +87,7 @@ export async function GET(request: NextRequest) {
       },
       payout_history: payoutHistory || [],
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError("Partner payouts error:", error)
     return handleApiError(error)
   }

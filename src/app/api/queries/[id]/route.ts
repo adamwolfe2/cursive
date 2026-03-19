@@ -79,7 +79,7 @@ export async function GET(
 
     // 3. Return response
     return success(query)
-  } catch (error: any) {
+  } catch (error: unknown) {
     return handleApiError(error)
   }
 }
@@ -114,7 +114,7 @@ export async function PATCH(
 
     // 4. Return response
     return success(query)
-  } catch (error: any) {
+  } catch (error: unknown) {
     return handleApiError(error)
   }
 }
@@ -141,7 +141,7 @@ export async function DELETE(
 
     // 3. Return response
     return success({ message: 'Query deleted successfully' })
-  } catch (error: any) {
+  } catch (error: unknown) {
     return handleApiError(error)
   }
 }

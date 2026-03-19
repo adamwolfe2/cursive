@@ -98,7 +98,7 @@ export const platformUpload = inngest.createFunction(
         )
 
         return platformResult
-      } catch (error: any) {
+      } catch (error: unknown) {
         logger.error('Platform upload failed:', error)
         throw error
       }
@@ -212,7 +212,7 @@ async function uploadToTechPlatform(
       message: 'Uploaded to tech platform',
       uploaded_count: leads.length,
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('[TechPlatform] Upload error:', error)
     throw error
   }

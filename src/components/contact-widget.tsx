@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { MessageCircle, X, Send } from 'lucide-react'
 import { useToast } from '@/lib/hooks/use-toast'
+import { getErrorMessage } from '@/lib/utils/error-helpers'
 
 export function ContactWidget() {
   const [isOpen, setIsOpen] = useState(false)
@@ -35,8 +36,8 @@ export function ContactWidget() {
       toast.success('Message sent successfully!')
       setFormData({ name: '', email: '', subject: '', message: '' })
       setIsOpen(false)
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to send message')
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error) || 'Failed to send message')
     } finally {
       setLoading(false)
     }

@@ -3,6 +3,7 @@
 
 import { retryFetch, DEFAULT_TIMEOUT } from '@/lib/utils/retry'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { getErrorMessage } from '@/lib/utils/error-helpers'
 
 // Configuration
 const CLAY_TIMEOUT = 30000 // 30 seconds for enrichment requests
@@ -108,9 +109,9 @@ export class ClayClient {
       }
 
       return await response.json()
-    } catch (error: any) {
+    } catch (error: unknown) {
       safeError('[Clay] Enrichment error:', error)
-      throw new Error(`Failed to enrich company: ${error.message}`)
+      throw new Error(`Failed to enrich company: ${getErrorMessage(error)}`)
     }
   }
 
@@ -128,9 +129,9 @@ export class ClayClient {
         limit: 10,
       })
       return response.contacts
-    } catch (error: any) {
+    } catch (error: unknown) {
       safeError('[Clay] Find contacts error:', error)
-      throw new Error(`Failed to find contacts: ${error.message}`)
+      throw new Error(`Failed to find contacts: ${getErrorMessage(error)}`)
     }
   }
 
@@ -160,9 +161,9 @@ export class ClayClient {
       }
 
       return await response.json()
-    } catch (error: any) {
+    } catch (error: unknown) {
       safeError('[Clay] Email verification error:', error)
-      return { valid: false, reason: error.message }
+      return { valid: false, reason: getErrorMessage(error) }
     }
   }
 
@@ -201,9 +202,9 @@ export class ClayClient {
       }
 
       return await response.json()
-    } catch (error: any) {
+    } catch (error: unknown) {
       safeError('[Clay] Batch enrichment error:', error)
-      throw new Error(`Failed to batch enrich: ${error.message}`)
+      throw new Error(`Failed to batch enrich: ${getErrorMessage(error)}`)
     }
   }
 
@@ -236,9 +237,9 @@ export class ClayClient {
       }
 
       return await response.json()
-    } catch (error: any) {
+    } catch (error: unknown) {
       safeError('[Clay] Job status error:', error)
-      throw new Error(`Failed to get job status: ${error.message}`)
+      throw new Error(`Failed to get job status: ${getErrorMessage(error)}`)
     }
   }
 
@@ -263,8 +264,8 @@ export class ClayClient {
         { maxRetries: 1 }
       )
       return { healthy: response.ok }
-    } catch (error: any) {
-      return { healthy: false, error: error.message }
+    } catch (error: unknown) {
+      return { healthy: false, error: getErrorMessage(error) }
     }
   }
 }

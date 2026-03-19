@@ -7,6 +7,7 @@ import { getCurrentUser } from '@/lib/auth/helpers'
 import { PartnerRepository } from '@/lib/repositories/partner.repository'
 import { getStripeClient } from '@/lib/stripe/client'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { isStripeError } from '@/lib/utils/error-helpers'
 
 export async function POST(request: NextRequest) {
   try {
@@ -69,8 +70,8 @@ export async function POST(request: NextRequest) {
       })
 
       return NextResponse.json({ url: accountLink.url })
-    } catch (stripeErr: any) {
-      if (stripeErr?.type?.startsWith('Stripe')) {
+    } catch (stripeErr: unknown) {
+      if (isStripeError(stripeErr) && stripeErr.type.startsWith('Stripe')) {
         safeError('[Partner Connect] Stripe error:', stripeErr.message)
         return NextResponse.json(
           { error: 'Failed to set up payment account. Please try again or contact support.' },

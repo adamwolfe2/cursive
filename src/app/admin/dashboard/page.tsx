@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useToast } from '@/lib/hooks/use-toast'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { getErrorMessage } from '@/lib/utils/error-helpers'
 import { METRICS_REFRESH_MS } from '@/lib/constants/timeouts'
 
 interface RoutingRule {
@@ -168,8 +169,8 @@ export default function AdminDashboard() {
       const data = await response.json()
       setWebhookResponse(JSON.stringify(data, null, 2))
       fetchLeads()
-    } catch (error: any) {
-      setWebhookResponse(`Error: ${error.message}`)
+    } catch (error: unknown) {
+      setWebhookResponse(`Error: ${getErrorMessage(error)}`)
     }
     setLoading(false)
   }
@@ -193,10 +194,10 @@ export default function AdminDashboard() {
         message: 'CSV file uploaded and processed successfully',
         type: 'success',
       })
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: 'Upload failed',
-        message: error.message || 'Failed to upload CSV file. Please try again.',
+        message: getErrorMessage(error) || 'Failed to upload CSV file. Please try again.',
         type: 'error',
       })
     }

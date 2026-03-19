@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
 
     // Apply rate limit headers to successful response
     return applyRateLimitHeaders(response, rateLimitResult)
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('Partner auth error:', error)
     return NextResponse.json({ error: 'Authentication failed' }, { status: 500 })
   }

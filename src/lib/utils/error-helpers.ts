@@ -35,3 +35,10 @@ export function getErrorCode(error: unknown): string | undefined {
 export function isNotFoundError(error: unknown): boolean {
   return getErrorCode(error) === 'PGRST116'
 }
+
+/**
+ * Check if an error is a Stripe API error (has a `type` string property starting with "Stripe").
+ */
+export function isStripeError(error: unknown): error is Error & { type: string } {
+  return error instanceof Error && 'type' in error && typeof (error as Record<string, unknown>).type === 'string'
+}

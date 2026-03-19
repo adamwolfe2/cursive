@@ -32,6 +32,7 @@ import {
 import Link from 'next/link'
 import { getServiceLink } from '@/lib/stripe/payment-links'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { getErrorMessage } from '@/lib/utils/error-helpers'
 
 interface BrandWorkspace {
   id: string
@@ -205,10 +206,10 @@ export default function AIStudioPage() {
       }, 30000)
       timeoutIdRef.current = timeoutId
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       if (pollInterval) clearInterval(pollInterval)
       if (timeoutId) clearTimeout(timeoutId)
-      setExtractionError(error.message || 'Failed to extract brand DNA')
+      setExtractionError(getErrorMessage(error) || 'Failed to extract brand DNA')
       setIsExtracting(false)
     }
   }

@@ -28,6 +28,8 @@ import { formatDistanceToNow } from 'date-fns'
 import { OnboardingChecklist } from '@/components/onboarding/OnboardingChecklist'
 import { WhatsNewModal } from '@/components/dashboard/WhatsNewModal'
 import { FirstLeadsBanner } from '@/components/dashboard/FirstLeadsBanner'
+import { PendingLeadsBanner } from '@/components/dashboard/PendingLeadsBanner'
+import { TargetingMissingBanner } from '@/components/dashboard/TargetingMissingBanner'
 import { TrialCountdown } from '@/components/dashboard/TrialCountdown'
 import { FirstEnrichmentModal } from '@/components/onboarding/FirstEnrichmentModal'
 import { ProvisioningWidget } from '@/components/dashboard/ProvisioningWidget'
@@ -145,16 +147,34 @@ const getCachedHotLeads = unstable_cache(
 const getCachedPipelineStats = unstable_cache(
   async (wsId: string) => {
     const admin = createAdminClient()
-    const { data } = await admin
+    const statuses = ['new', 'contacted', 'qualified', 'proposal', 'negotiation', 'won', 'lost'] as const
+
+    // Run all count queries in parallel — no rows loaded into memory
+    const results = await Promise.all(
+      statuses.map(status =>
+        admin
+          .from('leads')
+          .select('*', { count: 'exact', head: true })
+          .eq('workspace_id', wsId)
+          .eq('status', status)
+          .then(({ count }) => [status, count ?? 0] as const)
+      )
+    )
+
+    // Also count rows with null/empty status (treated as 'new')
+    const { count: nullStatusCount } = await admin
       .from('leads')
-      .select('status')
+      .select('*', { count: 'exact', head: true })
       .eq('workspace_id', wsId)
-    const counts = { new: 0, contacted: 0, qualified: 0, proposal: 0, negotiation: 0, won: 0, lost: 0 }
-    for (const row of data ?? []) {
-      const s = (row.status || 'new') as keyof typeof counts
-      if (s in counts) counts[s]++
+      .is('status', null)
+
+    const counts: Record<string, number> = {}
+    for (const [status, count] of results) {
+      counts[status] = count
     }
-    return counts
+    counts.new = (counts.new ?? 0) + (nullStatusCount ?? 0)
+
+    return counts as { new: number; contacted: number; qualified: number; proposal: number; negotiation: number; won: number; lost: number }
   },
   ['pipeline-stats'],
   { revalidate: 120 },
@@ -671,9 +691,9 @@ function DashboardMainGridSkeleton() {
 export default async function DashboardPage({
   searchParams,
 }: {
-  searchParams: Promise<{ onboarding?: string }>
+  searchParams: Promise<{ onboarding?: string; targeting_failed?: string }>
 }) {
-  const { onboarding } = await searchParams
+  const { onboarding, targeting_failed } = await searchParams
   const supabase = await createClient()
 
   const { data: { session } } = await supabase.auth.getSession()
@@ -854,25 +874,29 @@ export default async function DashboardPage({
           </div>
         )}
 
-        {/* Zero leads banner */}
-        {totalCount === 0 && onboarding !== 'complete' && (
-          <div className="rounded-xl bg-blue-50 border border-blue-200 p-5 flex items-start gap-3">
-            <Calendar className="h-5 w-5 text-blue-600 shrink-0 mt-0.5" />
-            <div>
-              <p className="font-semibold text-blue-900">Your first leads will arrive by 8am CT tomorrow</p>
-              <p className="text-sm text-blue-700 mt-1">
-                We&apos;re matching leads to your industry and location preferences right now. You&apos;ll get up to {dailyLimit} fresh leads every morning.
-                {!hasPreferences && <> <Link href="/my-leads/preferences" className="font-medium underline">Set your targeting preferences</Link> so we can match the most relevant leads for you.</>}
-                {hasPreferences && !hasPixel && <> While you wait, <Link href="/settings/pixel" className="font-medium underline">install the pixel</Link> to identify website visitors too.</>}
-              </p>
-              <p className="text-sm text-zinc-500 mt-2">
-                Questions?{' '}
-                <a href="/settings/pixel" className="text-blue-600 hover:underline">Check your pixel setup</a>
-                {' · '}
-                <a href="/my-leads/preferences" className="text-blue-600 hover:underline">Review your targeting preferences</a>
-              </p>
-            </div>
-          </div>
+        {/* Targeting failed during onboarding — immediate corrective action */}
+        {targeting_failed === 'true' && !hasPreferences && (
+          <TargetingMissingBanner />
+        )}
+
+        {/* Zero leads — targeting missing warning (takes priority over pending banner) */}
+        {totalCount === 0 && onboarding !== 'complete' && !hasPreferences && workspaceAgeHours >= 48 && (
+          <TargetingMissingBanner />
+        )}
+
+        {/* Zero leads — new workspace pending banner (< 48h, or missing prefs on fresh account) */}
+        {totalCount === 0 && onboarding !== 'complete' && (hasPreferences || workspaceAgeHours < 48) && (
+          <>
+            {!hasPreferences && workspaceAgeHours < 48 && (
+              <TargetingMissingBanner />
+            )}
+            <PendingLeadsBanner
+              workspaceAgeHours={workspaceAgeHours}
+              hasPreferences={hasPreferences}
+              hasPixel={hasPixel}
+              dailyLimit={dailyLimit}
+            />
+          </>
         )}
 
         {/* Single priority banner */}

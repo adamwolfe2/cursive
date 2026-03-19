@@ -14,6 +14,7 @@ import { getCurrentUser } from '@/lib/auth/helpers'
 import { extractBrandDNA, isValidUrl } from '@/lib/ai-studio/firecrawl'
 import { generateKnowledgeBase, generateCustomerProfiles } from '@/lib/ai-studio/knowledge'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { getErrorMessage } from '@/lib/utils/error-helpers'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'
 import type { SupabaseClient } from '@supabase/supabase-js'
@@ -108,7 +109,7 @@ export async function POST(request: NextRequest) {
       message: 'Brand extraction started. This may take 30-60 seconds.'
     })
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('[Brand Extract] Error:', error)
     return handleApiError(error)
   }
@@ -131,11 +132,11 @@ async function processBrandExtractionWithTimeout(
       processBrandExtraction(workspaceId, url, supabase),
       timeoutPromise,
     ])
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('[Brand Extract] Background extraction failed:', error)
     // Sanitize error message — don't store raw error.message which may contain internal details
     const safeErrorMessage =
-      error?.message === 'Processing timed out'
+      getErrorMessage(error) === 'Processing timed out'
         ? 'Processing timed out — please try again'
         : 'Extraction failed — please try again'
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -232,7 +233,7 @@ async function processBrandExtraction(
         .insert(offersData)
     }
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('[Brand Extract] Background process error:', error)
     throw error
   }

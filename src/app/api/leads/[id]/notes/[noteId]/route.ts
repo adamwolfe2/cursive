@@ -44,7 +44,7 @@ export async function PATCH(
     const note = await activityRepo.updateNote(noteId, user.workspace_id, validationResult.data)
 
     return success({ note })
-  } catch (error: any) {
+  } catch (error: unknown) {
     return handleApiError(error)
   }
 }
@@ -67,7 +67,7 @@ export async function DELETE(
     await activityRepo.deleteNote(noteId, user.workspace_id)
 
     return success({ message: 'Note deleted successfully' })
-  } catch (error: any) {
+  } catch (error: unknown) {
     return handleApiError(error)
   }
 }

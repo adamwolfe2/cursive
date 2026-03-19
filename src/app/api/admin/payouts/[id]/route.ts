@@ -233,7 +233,7 @@ export async function PATCH(
       success: true,
       message: `Payout request ${action}${action === 'process' ? 'ed' : 'd'} successfully`,
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('Payout action error:', error)
     return NextResponse.json({ error: 'Failed to process action' }, { status: 500 })
   }

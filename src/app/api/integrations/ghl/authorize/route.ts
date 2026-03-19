@@ -81,7 +81,7 @@ export async function GET(req: NextRequest) {
     oauthUrl.searchParams.set('state', state)
 
     return NextResponse.redirect(oauthUrl.toString())
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('[GHL OAuth] Authorization error:', error)
     return NextResponse.redirect(
       new URL('/settings/integrations?error=oauth_failed', req.url)

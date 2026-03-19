@@ -202,7 +202,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(
       new URL('/settings/integrations?success=google_sheets_connected', req.url)
     )
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('[Google Sheets OAuth] Callback error:', error)
     return NextResponse.redirect(
       new URL('/settings/integrations?error=gs_callback_failed', req.url)

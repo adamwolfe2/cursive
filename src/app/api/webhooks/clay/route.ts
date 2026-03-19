@@ -293,7 +293,7 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json(response)
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('[Clay Webhook] Error:', error)
 
     // Mark idempotency key as failed to allow retry

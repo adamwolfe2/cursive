@@ -51,7 +51,7 @@ export async function GET(
       success: true,
       data: activity,
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     return handleApiError(error)
   }
 }
@@ -86,7 +86,7 @@ export async function PUT(
       success: true,
       data: activity,
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     return handleApiError(error)
   }
 }
@@ -114,7 +114,7 @@ export async function DELETE(
       success: true,
       message: 'Activity deleted successfully',
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     return handleApiError(error)
   }
 }

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
 import { useToast } from '@/lib/hooks/use-toast'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { getErrorMessage } from '@/lib/utils/error-helpers'
 
 interface Partner {
   id: string
@@ -131,8 +132,8 @@ export default function AdminPayoutsPage() {
       } else {
         toast({ type: 'error', message: `Failed: ${data.error}` })
       }
-    } catch (error: any) {
-      toast({ type: 'error', message: error.message })
+    } catch (error: unknown) {
+      toast({ type: 'error', message: getErrorMessage(error) })
     } finally {
       setProcessingPayoutId(null)
     }
@@ -156,8 +157,8 @@ export default function AdminPayoutsPage() {
       } else {
         toast({ type: 'error', message: `Failed: ${data.error}` })
       }
-    } catch (error: any) {
-      toast({ type: 'error', message: error.message })
+    } catch (error: unknown) {
+      toast({ type: 'error', message: getErrorMessage(error) })
     } finally {
       setProcessingPayoutId(null)
     }

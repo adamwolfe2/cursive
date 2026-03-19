@@ -265,7 +265,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(
       new URL('/settings/integrations?success=hubspot_connected', req.url)
     )
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('[HubSpot OAuth] Callback error:', error)
     return NextResponse.redirect(
       new URL('/settings/integrations?error=hs_callback_failed', req.url)

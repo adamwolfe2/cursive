@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
       logoUrl,
       domain,
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('[Logo Fetch] Error:', error)
     return NextResponse.json(
       { error: 'Failed to fetch logo' },

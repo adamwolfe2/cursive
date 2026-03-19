@@ -351,7 +351,7 @@ export async function POST(request: NextRequest) {
       routing: routingStats,
     })
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('[Admin Bulk Upload] Error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },

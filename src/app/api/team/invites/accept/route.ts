@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
       message: 'Invitation accepted successfully',
       user,
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     return handleApiError(error)
   }
 }

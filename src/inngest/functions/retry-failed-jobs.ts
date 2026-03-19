@@ -11,6 +11,7 @@ import {
   markRetryFailed,
   cleanupOldJobs,
 } from '@/lib/services/error-handling.service'
+import { getErrorMessage } from '@/lib/utils/error-helpers'
 
 /**
  * Process retry queue every 5 minutes
@@ -61,13 +62,14 @@ export const processRetryQueue = inngest.createFunction(
               error: 'Execution returned false',
             })
           }
-        } catch (error: any) {
-          await markRetryFailed(job.id, error.message || 'Unknown error')
+        } catch (error: unknown) {
+          const msg = getErrorMessage(error)
+          await markRetryFailed(job.id, msg || 'Unknown error')
           processed.push({
             jobId: job.id,
             jobType: job.jobType,
             success: false,
-            error: error.message,
+            error: msg,
           })
         }
       }
@@ -226,8 +228,8 @@ export const onJobRetryRequested = inngest.createFunction(
           payload: job.payload,
           workspaceId: job.workspace_id,
         })
-      } catch (error: any) {
-        await markRetryFailed(job.id, error.message)
+      } catch (error: unknown) {
+        await markRetryFailed(job.id, getErrorMessage(error))
         return false
       }
     })

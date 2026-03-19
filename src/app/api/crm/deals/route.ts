@@ -114,7 +114,7 @@ export async function GET(request: NextRequest) {
       data: result.data,
       pagination: result.pagination,
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     return handleApiError(error)
   }
 }
@@ -148,7 +148,7 @@ export async function POST(request: NextRequest) {
       },
       { status: 201 }
     )
-  } catch (error: any) {
+  } catch (error: unknown) {
     return handleApiError(error)
   }
 }

@@ -7,6 +7,7 @@
  */
 
 import { Resend } from 'resend'
+import { getErrorMessage } from '@/lib/utils/error-helpers'
 
 export interface EmailSendRequest {
   to: string
@@ -72,10 +73,10 @@ export async function sendEmailWithResend(
       success: true,
       messageId: data?.id,
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     return {
       success: false,
-      error: error.message || 'Failed to send email',
+      error: getErrorMessage(error) || 'Failed to send email',
     }
   }
 }
@@ -136,10 +137,10 @@ export async function sendEmailWithEmailBison(
       success: true,
       messageId: data.message_id,
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     return {
       success: false,
-      error: error.message || 'Failed to send email',
+      error: getErrorMessage(error) || 'Failed to send email',
     }
   }
 }

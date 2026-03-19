@@ -10,6 +10,7 @@ import { LeadRoutingService } from '@/lib/services/lead-routing.service'
 import { ClayClient } from '@/lib/integrations/clay'
 const clay = new ClayClient()
 import crypto from 'crypto'
+import { getErrorMessage } from '@/lib/utils/error-helpers'
 
 /**
  * Process bulk upload job in background
@@ -143,9 +144,9 @@ export const processBulkUpload = inngest.createFunction(
               })
             }
 
-          } catch (error: any) {
+          } catch (error: unknown) {
             results.failed++
-            results.errors.push({ row: i + batch.indexOf(row), error: error.message })
+            results.errors.push({ row: i + batch.indexOf(row), error: getErrorMessage(error) })
           }
         }
 

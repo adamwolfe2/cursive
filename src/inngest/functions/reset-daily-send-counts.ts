@@ -5,6 +5,7 @@
 
 import { inngest } from '../client'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { getErrorMessage } from '@/lib/utils/error-helpers'
 
 /**
  * Daily reset cron job
@@ -159,12 +160,13 @@ async function manualResetCounts(
       method: 'manual_fallback',
       errors: errors.length > 0 ? errors : undefined,
     }
-  } catch (error: any) {
-    logger.error(`Manual reset failed: ${error.message}`)
+  } catch (error: unknown) {
+    const msg = getErrorMessage(error)
+    logger.error(`Manual reset failed: ${msg}`)
     return {
       success: false,
       method: 'manual_fallback',
-      errors: [error.message],
+      errors: [msg],
     }
   }
 }

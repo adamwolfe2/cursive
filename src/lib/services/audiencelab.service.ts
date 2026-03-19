@@ -282,7 +282,7 @@ export function getSegmentIdForCriteria(
   industry: string,
   location: string
 ): string | null {
-  // TODO: Replace with actual segment mapping from database
+  // Static segment mapping — placeholder IDs must be replaced per-deployment with real AudienceLab segment IDs
   const segmentMap: Record<string, string> = {
     'roofing_dallas': 'YOUR_ROOFING_DALLAS_SEGMENT_ID',
     'plumbing_houston': 'YOUR_PLUMBING_HOUSTON_SEGMENT_ID',

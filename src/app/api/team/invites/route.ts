@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
     }
 
     return success({ invites: invites || [] })
-  } catch (error: any) {
+  } catch (error: unknown) {
     return handleApiError(error)
   }
 }
@@ -142,7 +142,7 @@ export async function POST(request: NextRequest) {
     }
 
     return success({ invite, message: 'Invitation sent successfully' }, 201)
-  } catch (error: any) {
+  } catch (error: unknown) {
     return handleApiError(error)
   }
 }

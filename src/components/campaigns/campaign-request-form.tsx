@@ -25,6 +25,7 @@ import {
   SelectValue,
 } from '@/components/ui/select-radix'
 import { useToast } from '@/lib/hooks/use-toast'
+import { getErrorMessage } from '@/lib/utils/error-helpers'
 
 const campaignRequestSchema = z.object({
   company_name: z.string().min(2, 'Company name is required'),
@@ -140,8 +141,8 @@ export function CampaignRequestForm() {
 
       toast.success('Campaign request submitted successfully!')
       router.push('/campaigns/request/success')
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to submit request')
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error) || 'Failed to submit request')
     } finally {
       setIsSubmitting(false)
     }

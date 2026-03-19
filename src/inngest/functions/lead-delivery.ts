@@ -96,7 +96,7 @@ export const leadDelivery = inngest.createFunction(
 
           await Promise.all(emailPromises)
           logger.info(`Email sent to ${users.length} users`)
-        } catch (error: any) {
+        } catch (error: unknown) {
           logger.error('Email delivery failed:', error)
           // Don't throw - continue with other channels
         }
@@ -178,7 +178,7 @@ export const leadDelivery = inngest.createFunction(
               logger.info('Slack notification sent')
             }
           }
-        } catch (error: any) {
+        } catch (error: unknown) {
           logger.error('Slack delivery failed:', error)
           // Don't throw - continue with other channels
         }
@@ -220,7 +220,7 @@ export const leadDelivery = inngest.createFunction(
               logger.info('Webhook notification sent')
             }
           }
-        } catch (error: any) {
+        } catch (error: unknown) {
           logger.error('Webhook delivery failed:', error)
           // Don't throw - continue
         }

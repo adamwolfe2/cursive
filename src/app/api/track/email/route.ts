@@ -157,7 +157,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({ success: true })
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('[Email Track POST] Email click tracking error:', error)
     return NextResponse.json({ error: 'Tracking failed' }, { status: 500 })
   }

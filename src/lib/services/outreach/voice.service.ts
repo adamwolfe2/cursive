@@ -9,6 +9,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { getErrorMessage } from '@/lib/utils/error-helpers'
 
 // ============================================================================
 // TYPES
@@ -132,10 +133,10 @@ export async function makeAiVoiceCall(
       callId: data.call_id,
       status: 'queued',
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     return {
       success: false,
-      error: error.message || 'Failed to initiate AI call',
+      error: getErrorMessage(error) || 'Failed to initiate AI call',
     }
   }
 }
@@ -268,10 +269,10 @@ export async function sendRinglessVoicemail(
       success: false,
       error: text,
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     return {
       success: false,
-      error: error.message || 'Failed to send ringless voicemail',
+      error: getErrorMessage(error) || 'Failed to send ringless voicemail',
     }
   }
 }

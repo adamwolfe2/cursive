@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
       success: true,
       url: session.url,
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     return handleApiError(error)
   }
 }

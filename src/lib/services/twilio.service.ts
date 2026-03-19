@@ -4,6 +4,7 @@
 import Twilio from 'twilio'
 import { createClient } from '@/lib/supabase/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { getErrorMessage } from '@/lib/utils/error-helpers'
 
 const twilioClient = process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN
   ? Twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN)
@@ -81,10 +82,11 @@ export class TwilioService {
       }
 
       return { success: true, sid: message.sid }
-    } catch (error: any) {
+    } catch (error: unknown) {
       safeError('[TwilioService] Send SMS error:', error)
 
       // Log failed attempt
+      const msg = getErrorMessage(error)
       await supabase.from('communication_logs').insert({
         workspace_id: params.workspaceId,
         lead_id: params.leadId,
@@ -95,11 +97,11 @@ export class TwilioService {
         from_number: this.fromNumber,
         to_number: params.to,
         message_body: params.body,
-        error_code: error.code?.toString(),
-        error_message: error.message,
+        error_code: (error as any)?.code?.toString(),
+        error_message: msg,
       })
 
-      return { success: false, error: error.message }
+      return { success: false, error: msg }
     }
   }
 
@@ -139,9 +141,9 @@ export class TwilioService {
       })
 
       return { success: true, sid: call.sid }
-    } catch (error: any) {
+    } catch (error: unknown) {
       safeError('[TwilioService] Make call error:', error)
-      return { success: false, error: error.message }
+      return { success: false, error: getErrorMessage(error) }
     }
   }
 
@@ -170,9 +172,9 @@ export class TwilioService {
         carrier: lookup.lineTypeIntelligence?.carrierName,
         country: lookup.countryCode,
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       safeError('[TwilioService] Lookup error:', error)
-      return { valid: false, error: error.message }
+      return { valid: false, error: getErrorMessage(error) }
     }
   }
 

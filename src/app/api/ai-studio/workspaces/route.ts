@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
       workspaces: workspaces || [],
     })
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('[Workspaces] Error:', error)
     return NextResponse.json(
       { error: 'Failed to fetch workspaces' },

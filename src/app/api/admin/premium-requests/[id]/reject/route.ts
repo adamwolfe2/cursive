@@ -48,7 +48,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       success: true,
       message: 'Request rejected',
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     return handleApiError(error)
   }
 }

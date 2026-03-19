@@ -15,6 +15,7 @@
 
 import { fetchWithTimeout } from '@/lib/utils/retry'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { getErrorMessage } from '@/lib/utils/error-helpers'
 
 // ============================================================================
 // CONFIGURATION
@@ -181,16 +182,17 @@ export async function createCursiveContact(
     })
 
     return { success: true, contactId: result.contact?.id }
-  } catch (error: any) {
+  } catch (error: unknown) {
     // Handle duplicate contact (400 error)
-    if (error.message?.includes('Duplicate')) {
+    const msg = getErrorMessage(error)
+    if (msg.includes('Duplicate')) {
       // Try to find existing contact
       const existing = await findCursiveContactByEmail(contact.email || '')
       if (existing) {
         return { success: true, contactId: existing }
       }
     }
-    return { success: false, error: error.message }
+    return { success: false, error: msg }
   }
 }
 
@@ -237,8 +239,8 @@ export async function updateCursiveContact(
       }),
     })
     return { success: true }
-  } catch (error: any) {
-    return { success: false, error: error.message }
+  } catch (error: unknown) {
+    return { success: false, error: getErrorMessage(error) }
   }
 }
 
@@ -255,8 +257,8 @@ export async function addCursiveContactTags(
       body: JSON.stringify({ tags }),
     })
     return { success: true }
-  } catch (error: any) {
-    return { success: false, error: error.message }
+  } catch (error: unknown) {
+    return { success: false, error: getErrorMessage(error) }
   }
 }
 
@@ -285,8 +287,8 @@ export async function createCursiveOpportunity(
     })
 
     return { success: true, opportunityId: result.opportunity?.id }
-  } catch (error: any) {
-    return { success: false, error: error.message }
+  } catch (error: unknown) {
+    return { success: false, error: getErrorMessage(error) }
   }
 }
 
@@ -307,8 +309,8 @@ export async function updateCursiveOpportunityStage(
       body: JSON.stringify(updateData),
     })
     return { success: true }
-  } catch (error: any) {
-    return { success: false, error: error.message }
+  } catch (error: unknown) {
+    return { success: false, error: getErrorMessage(error) }
   }
 }
 
@@ -353,8 +355,8 @@ export async function createClientSubAccount(
     }
 
     return { success: true, locationId }
-  } catch (error: any) {
-    return { success: false, error: error.message }
+  } catch (error: unknown) {
+    return { success: false, error: getErrorMessage(error) }
   }
 }
 
@@ -428,9 +430,10 @@ export async function deliverLeadsToSubAccount(
 
       delivered++
       results.push({ email: lead.email, success: true, contactId: result.contact?.id })
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Handle duplicate - still count as delivered
-      if (error.message?.includes('Duplicate')) {
+      const msg = getErrorMessage(error)
+      if (msg.includes('Duplicate')) {
         delivered++
         results.push({ email: lead.email, success: true })
       } else {
@@ -521,12 +524,13 @@ export async function createLocationUser(
     })
 
     return { success: true, userId: result?.id || result?.userId }
-  } catch (error: any) {
+  } catch (error: unknown) {
     // If user already exists, that's fine
-    if (error.message?.includes('already exists') || error.message?.includes('Duplicate')) {
+    const msg = getErrorMessage(error)
+    if (msg.includes('already exists') || msg.includes('Duplicate')) {
       return { success: true, error: 'User already exists (OK)' }
     }
-    return { success: false, error: error.message }
+    return { success: false, error: msg }
   }
 }
 
@@ -585,8 +589,8 @@ export async function deleteLocationPipeline(
       { method: 'DELETE', useAgencyToken: true }
     )
     return { success: true }
-  } catch (error: any) {
-    return { success: false, error: error.message }
+  } catch (error: unknown) {
+    return { success: false, error: getErrorMessage(error) }
   }
 }
 
@@ -620,8 +624,8 @@ export async function deleteLocationCustomField(
       { method: 'DELETE', useAgencyToken: true }
     )
     return { success: true }
-  } catch (error: any) {
-    return { success: false, error: error.message }
+  } catch (error: unknown) {
+    return { success: false, error: getErrorMessage(error) }
   }
 }
 

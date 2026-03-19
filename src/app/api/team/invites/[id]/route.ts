@@ -50,7 +50,7 @@ export async function DELETE(
     }
 
     return success({ message: 'Invite cancelled successfully' })
-  } catch (error: any) {
+  } catch (error: unknown) {
     return handleApiError(error)
   }
 }

@@ -89,7 +89,7 @@ export async function PATCH(
         is_suspended: action === 'suspend',
       },
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('[Admin] Suspend workspace error:', error)
     return handleApiError(error)
   }

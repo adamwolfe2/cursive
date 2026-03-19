@@ -316,7 +316,7 @@ export async function POST(request: NextRequest) {
       },
       queries: queries?.map(q => ({ id: q.id, name: q.name })),
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('[Seed Demo Data] Error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },

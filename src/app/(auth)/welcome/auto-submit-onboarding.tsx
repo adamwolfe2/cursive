@@ -203,10 +203,15 @@ export function AutoSubmitOnboarding({ isMarketplace, isReturning }: AutoSubmitO
           throw new Error('Your session may have expired. Please sign in again.')
         }
 
+        // Parse the response body once (stream can only be read once)
+        const responseBody = await lastResponse.json().catch(() => ({}))
+
         if (!lastResponse.ok) {
-          const body = await lastResponse.json().catch(() => ({}))
-          throw new Error(body.error || 'Failed to create workspace')
+          throw new Error(responseBody.error || 'Failed to create workspace')
         }
+
+        // Check if targeting failed (workspace created but lead matching may not work)
+        const targetingFailed = responseBody?.targeting_failed === true
 
         // Fire both post-onboarding tasks in parallel (non-blocking):
         // 1. Populate initial leads immediately
@@ -252,7 +257,10 @@ export function AutoSubmitOnboarding({ isMarketplace, isReturning }: AutoSubmitO
         // Clear storage (including retry counter) and redirect to dashboard
         localStorage.removeItem('cursive_onboarding')
         localStorage.removeItem(RETRY_KEY)
-        router.push(isMarketplace ? '/marketplace' : '/dashboard?onboarding=complete')
+        const dashboardUrl = isMarketplace
+          ? '/marketplace'
+          : `/dashboard?onboarding=complete${targetingFailed ? '&targeting_failed=true' : ''}`
+        router.push(dashboardUrl)
       } catch (err: any) {
         // Increment the persistent failure counter so reloads don't cause
         // an infinite retry loop.

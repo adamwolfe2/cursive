@@ -69,7 +69,7 @@ export async function PATCH(
     }
 
     return success({ message: 'Role updated successfully', user: data })
-  } catch (error: any) {
+  } catch (error: unknown) {
     return handleApiError(error)
   }
 }
@@ -117,7 +117,7 @@ export async function DELETE(
     }
 
     return success({ message: 'Member removed successfully' })
-  } catch (error: any) {
+  } catch (error: unknown) {
     return handleApiError(error)
   }
 }

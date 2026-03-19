@@ -14,6 +14,7 @@
 
 import { createClient, createAdminClient } from '@/lib/supabase/server'
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
+import { getErrorMessage } from '@/lib/utils/error-helpers'
 import type { Database } from '@/types/database.types'
 
 // No Node.js 'crypto' import needed — crypto.randomUUID() is available globally in Edge runtime
@@ -235,9 +236,10 @@ export class LeadRoutingService {
         routingReason,
         confidence,
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       safeError('[Lead Routing] Unexpected error:', error)
-      await this.handleRoutingFailure(supabase, leadId, lockOwnerId, error.message, maxRetries)
+      const msg = getErrorMessage(error)
+      await this.handleRoutingFailure(supabase, leadId, lockOwnerId, msg, maxRetries)
       return {
         success: false,
         destinationWorkspaceId: null,
@@ -245,7 +247,7 @@ export class LeadRoutingService {
         matchedRuleName: null,
         routingReason: 'Unexpected routing error',
         confidence: 0,
-        error: error.message,
+        error: msg,
       }
     }
   }
@@ -267,7 +269,7 @@ export class LeadRoutingService {
         p_lock_owner: lockOwnerId,
         p_max_attempts: maxRetries,
       })
-    } catch (error: any) {
+    } catch (error: unknown) {
       safeError('[Lead Routing] Failed to handle routing failure:', error)
     }
   }
@@ -443,12 +445,12 @@ export class LeadRoutingService {
             error: routingResult.error || 'Unknown error',
           })
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
         result.failed++
         result.errors.push({
           index: i,
           leadId: leadIds[i],
-          error: error.message,
+          error: getErrorMessage(error),
         })
       }
     }
@@ -529,11 +531,11 @@ export class LeadRoutingService {
             safeError('[Lead Routing] Failed to update queue error count:', queueUpdateError)
           }
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
         result.failed++
         result.errors.push({
           leadId: item.lead_id,
-          error: error.message,
+          error: getErrorMessage(error),
         })
         safeError('[Lead Routing] Error processing retry queue item:', error)
       }
@@ -724,7 +726,7 @@ export class LeadRoutingService {
       }
 
       return { released: released || 0 }
-    } catch (error: any) {
+    } catch (error: unknown) {
       safeError('[Lead Routing] Error cleaning up stale locks:', error)
       return { released: 0 }
     }
@@ -749,7 +751,7 @@ export class LeadRoutingService {
       }
 
       return { expired: expired || 0 }
-    } catch (error: any) {
+    } catch (error: unknown) {
       safeError('[Lead Routing] Error marking expired leads:', error)
       return { expired: 0 }
     }

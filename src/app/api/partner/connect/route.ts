@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
       url: accountLink.url,
       accountId,
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('[Stripe Connect] Error:', error)
     return handleApiError(error)
   }

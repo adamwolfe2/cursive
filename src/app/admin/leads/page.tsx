@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import { useToast } from '@/lib/hooks/use-toast'
+import { getErrorMessage } from '@/lib/utils/error-helpers'
 
 interface Lead {
   id: string
@@ -137,8 +138,8 @@ export default function AdminLeadsPage() {
       await refetchQueue()
       await refetch()
       toast({ type: 'success', message: 'Lead approved successfully' })
-    } catch (error: any) {
-      toast({ type: 'error', message: error.message || 'Failed to approve lead' })
+    } catch (error: unknown) {
+      toast({ type: 'error', message: getErrorMessage(error) || 'Failed to approve lead' })
     } finally {
       setActionLoading(null)
     }
@@ -173,8 +174,8 @@ export default function AdminLeadsPage() {
       await refetchQueue()
       await refetch()
       toast({ type: 'success', message: 'Lead rejected successfully' })
-    } catch (error: any) {
-      toast({ type: 'error', message: error.message || 'Failed to reject lead' })
+    } catch (error: unknown) {
+      toast({ type: 'error', message: getErrorMessage(error) || 'Failed to reject lead' })
     } finally {
       setActionLoading(null)
     }
@@ -201,13 +202,13 @@ export default function AdminLeadsPage() {
       if (result.success) {
         refetch()
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       setUploadResult({
         success: false,
         total: 0,
         successful: 0,
         failed: 0,
-        errors: [error.message || 'Upload failed'],
+        errors: [getErrorMessage(error) || 'Upload failed'],
         routing_summary: {},
       })
     }

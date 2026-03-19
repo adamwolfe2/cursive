@@ -3,6 +3,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { getErrorMessage } from '@/lib/utils/error-helpers'
 
 const HUBSPOT_API_BASE = 'https://api.hubapi.com'
 
@@ -199,7 +200,7 @@ export class HubSpotService {
       )
 
       return { id: result.id, created: true }
-    } catch (error: any) {
+    } catch (error: unknown) {
       safeError('[HubSpotService] Upsert contact error:', error)
       throw error
     }
@@ -284,10 +285,11 @@ export class HubSpotService {
       })
 
       return { success: true, contactId }
-    } catch (error: any) {
+    } catch (error: unknown) {
       safeError('[HubSpotService] Sync lead error:', error)
 
       // Log failed sync
+      const msg = getErrorMessage(error)
       const supabase = await createClient()
       await supabase.from('crm_sync_log').insert({
         connection_id: this.workspaceId,
@@ -296,10 +298,10 @@ export class HubSpotService {
         sync_direction: 'to_crm',
         crm_record_type: 'contact',
         success: false,
-        error_message: error.message,
+        error_message: msg,
       })
 
-      return { success: false, error: error.message }
+      return { success: false, error: msg }
     }
   }
 

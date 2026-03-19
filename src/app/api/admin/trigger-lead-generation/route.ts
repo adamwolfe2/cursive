@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
         note: 'Use Inngest dashboard to manually invoke the daily-lead-generation function',
       })
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('[Admin Trigger Lead Generation] Error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },

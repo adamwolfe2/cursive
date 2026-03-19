@@ -75,7 +75,7 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json({ offers: offers || [] })
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('[Offers] Error:', error)
     return handleApiError(error)
   }
@@ -135,7 +135,7 @@ export async function POST(request: NextRequest) {
       },
       { status: 201 }
     )
-  } catch (error: any) {
+  } catch (error: unknown) {
     safeError('[Offers] Create error:', error)
     return handleApiError(error)
   }
