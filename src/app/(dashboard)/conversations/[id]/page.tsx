@@ -178,7 +178,7 @@ export default function ConversationDetailPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           action: 'reply',
-          body_html: `<p>${body.replace(/\n/g, '<br/>')}</p>`,
+          body_html: `<p>${body.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/\n/g, '<br/>')}</p>`,
           body_text: body,
         }),
       })
