@@ -15,9 +15,9 @@ The Cursive platform has strong foundational security — Supabase RLS, JWT veri
 
 | Severity | Count | Status |
 |----------|-------|--------|
-| CRITICAL | 2     | Fixing |
-| HIGH     | 3     | Fixing |
-| MEDIUM   | 4     | Fixing |
+| CRITICAL | 2     | FIXED (commits 10ddce61, 1bb1d0ae) |
+| HIGH     | 3     | 1 FIXED (89aa6cb8), 1 already fixed, 1 N/A |
+| MEDIUM   | 4     | 1 FIXED (b266c613), 1 already fixed, 2 tracked |
 | LOW      | 5     | Documented |
 
 ---
@@ -130,16 +130,12 @@ Other targets:
 
 ---
 
-### HIGH-03: Hardcoded Checkout Price
+### ~~HIGH-03: Hardcoded Checkout Price~~ — ALREADY FIXED
 
-**File**: `src/app/api/checkout/route.ts` (line ~124)
-**CVSS**: 7.4
+**File**: `src/app/api/checkout/route.ts`
+**Status**: Previously fixed in an earlier wave.
 
-**Description**: The Stripe checkout session uses `unit_amount: 5000` (hardcoded $50) instead of reading the lead's `marketplace_price` from the database. This means all leads are charged at $50 regardless of their actual price.
-
-**Impact**: Revenue loss if leads should cost more than $50, or overcharging if leads should cost less.
-
-**Remediation**: Include `marketplace_price` in the lead query select and use `Math.round((lead.marketplace_price || 50) * 100)` for the unit_amount.
+The checkout route already includes `marketplace_price` in the select (line 47) and uses `Math.round((lead.marketplace_price || 50) * 100)` (line 129). JSON parse safety is also already implemented (lines 37-41).
 
 ---
 
@@ -294,4 +290,10 @@ The following security controls are properly implemented:
 
 ---
 
-**Last Updated**: 2026-03-19T12:00:00Z
+## Verification
+
+- Build: PASSES (all routes compile)
+- Tests: 1233 passed, 49 skipped, 0 failed
+- Branch: `security-audit/2026-03-19` (5 commits)
+
+**Last Updated**: 2026-03-19T13:30:00Z
