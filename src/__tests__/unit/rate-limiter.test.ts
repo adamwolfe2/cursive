@@ -9,7 +9,7 @@
  * are covered.
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 
 // Mock supabase admin before importing the module (it runs at module init)
 vi.mock('@/lib/supabase/admin', () => ({

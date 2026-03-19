@@ -9,7 +9,7 @@ export const handleCustomAudienceRequest = inngest.createFunction(
   { id: 'handle-custom-audience-request', retries: 2, timeouts: { finish: '5m' } },
   { event: 'marketplace/custom-audience-requested' },
   async ({ event, step, logger }) => {
-    const { request_id, workspace_id, user_id, user_email, industry, volume } = event.data
+    const { request_id, workspace_id: _workspace_id, user_id, user_email, industry, volume } = event.data
 
     // Step 1: Send confirmation email to user
     await step.run('send-confirmation-email', async () => {

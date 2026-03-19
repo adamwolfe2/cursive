@@ -8,7 +8,7 @@
  * - Idempotency
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 
 // Commission configuration
 const COMMISSION_CONFIG = {
@@ -126,7 +126,7 @@ describe('Partner Payout Flow', () => {
       const tenDaysAgo = new Date(Date.now() - 10 * 24 * 60 * 60 * 1000)
 
       // Create 10 commissions
-      const partnerCommissions = Array.from({ length: 10 }, (_, i) =>
+      const partnerCommissions = Array.from({ length: 10 }, (_) =>
         processHoldback(createCommission({
           partnerId: 'partner-1',
           amount: 5,
@@ -390,7 +390,7 @@ function processHoldback(commission: Commission): Commission {
   return commission
 }
 
-function markCommissionPaid(commission: Commission, payoutId: string): Commission {
+function markCommissionPaid(commission: Commission, _payoutId: string): Commission {
   commission.status = 'paid'
   return commission
 }

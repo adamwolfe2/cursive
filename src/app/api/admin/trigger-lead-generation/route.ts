@@ -1,7 +1,6 @@
 // Admin API: Manually Trigger Lead Generation
 // Used for testing and manual runs
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'

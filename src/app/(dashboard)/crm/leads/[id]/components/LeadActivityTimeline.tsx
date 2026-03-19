@@ -34,7 +34,7 @@ interface Activity {
   created_at: string
 }
 
-interface StatusChange {
+interface _StatusChange {
   id: string
   lead_id: string
   from_status: string | null

@@ -21,7 +21,7 @@ import type { Database } from '@/types/database.types'
 
 type Lead = Database['public']['Tables']['leads']['Row']
 type RoutingRule = Database['public']['Tables']['lead_routing_rules']['Row']
-type Workspace = Database['public']['Tables']['workspaces']['Row']
+type _Workspace = Database['public']['Tables']['workspaces']['Row']
 
 export interface RouteLeadParams {
   leadId: string
@@ -63,7 +63,7 @@ export class LeadRoutingService {
    */
   static async routeLead(params: RouteLeadParams): Promise<RoutingResult> {
     const supabase = createAdminClient() // Use admin client for atomic operations
-    const { leadId, sourceWorkspaceId, userId, maxRetries = 3 } = params
+    const { leadId, sourceWorkspaceId, userId: _userId, maxRetries = 3 } = params
 
     // Generate lock owner ID for this routing operation
     const lockOwnerId = crypto.randomUUID()

@@ -3,7 +3,6 @@
  * POST /api/crm/export/salesforce - Sync CRM leads to Salesforce
  */
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized, badRequest } from '@/lib/utils/api-error-handler'

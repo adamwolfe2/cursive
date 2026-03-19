@@ -197,7 +197,7 @@ export class ClientProfileRepository {
     }
 
     // Create copy without id and timestamps
-    const { id: _, created_at, updated_at, ...profileData } = original
+    const { id: _, created_at: _created_at, updated_at: _updated_at, ...profileData } = original
     const newProfile: ClientProfileInsert = {
       ...profileData,
       company_name: newName || `${original.company_name} (Copy)`,

@@ -106,12 +106,13 @@ export default function MonitoringPage() {
       setAuthChecked(true)
     }
     checkAdmin()
-  }, [])
+  }, [supabase])
 
   useEffect(() => {
     fetchMetrics()
     const interval = setInterval(fetchMetrics, METRICS_REFRESH_MS)
     return () => clearInterval(interval)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- runs once on mount, fetchMetrics is stable
   }, [])
 
   async function fetchMetrics() {

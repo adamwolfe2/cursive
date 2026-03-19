@@ -370,7 +370,7 @@ export class TemplateRepository {
     workspaceId: string,
     newName?: string
   ): Promise<EmailTemplate> {
-    const supabase = await createClient()
+    const _supabase = await createClient()
 
     // Get original template
     const original = await this.findById(id, workspaceId)
@@ -379,7 +379,7 @@ export class TemplateRepository {
     }
 
     // Create copy without id, with new name and reset stats
-    const { id: _, created_at, updated_at, ...templateData } = original
+    const { id: _, created_at: _created_at, updated_at: _updated_at, ...templateData } = original
     const newTemplate: EmailTemplateInsert = {
       ...templateData,
       name: newName || `${original.name} (Copy)`,

@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { cn } from '@/lib/design-system'
 import { Sidebar, SidebarMobile } from './sidebar'
 import { Header } from './header'
@@ -298,7 +299,7 @@ const navigationItems: NavItemConfig[] = [
     section: 'admin',
     adminOnly: true,
     icon: (
-      <img src="/cursive-logo.png" alt="Cursive" className="h-5 w-5 object-contain" />
+      <Image src="/cursive-logo.png" alt="Cursive" width={20} height={20} className="h-5 w-5 object-contain" />
     ),
   },
   {

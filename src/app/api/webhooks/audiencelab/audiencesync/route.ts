@@ -14,7 +14,6 @@ import { AudienceSyncEventSchema } from '@/lib/audiencelab/schemas'
 import { processEventInline } from '@/lib/audiencelab/edge-processor'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 
-
 const LOG_PREFIX = '[AL AudienceSync]'
 const MAX_BODY_SIZE = 3 * 1024 * 1024 // 3MB
 

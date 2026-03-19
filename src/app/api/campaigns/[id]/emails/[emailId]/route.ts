@@ -2,7 +2,6 @@
 // PATCH /api/campaigns/[id]/emails/[emailId] - Update an email
 // GET /api/campaigns/[id]/emails/[emailId] - Get a single email
 
-
 import { NextResponse, type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'

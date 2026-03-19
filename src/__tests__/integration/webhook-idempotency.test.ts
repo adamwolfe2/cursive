@@ -5,7 +5,7 @@
  * duplicate processing of payment events.
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 
 // Simulated database
 let processedEvents: Map<string, { eventId: string; processedAt: Date; eventType: string }>

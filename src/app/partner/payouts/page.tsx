@@ -50,7 +50,7 @@ export default function PartnerPayoutsPage() {
         const errorData = await response.json()
         setError(errorData.error || 'Failed to load payout data')
       }
-    } catch (err) {
+    } catch (_err) {
       setError('Failed to fetch payout data')
     } finally {
       setLoading(false)
@@ -97,7 +97,7 @@ export default function PartnerPayoutsPage() {
       } else {
         setError(data.error || 'Failed to submit request')
       }
-    } catch (err) {
+    } catch (_err) {
       setError('Failed to submit payout request')
     }
 
@@ -115,7 +115,7 @@ export default function PartnerPayoutsPage() {
       if (data.url) {
         window.location.href = data.url
       }
-    } catch (err) {
+    } catch (_err) {
       setError('Failed to initiate Stripe connection')
     }
   }

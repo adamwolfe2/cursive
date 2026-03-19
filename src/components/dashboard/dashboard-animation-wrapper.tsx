@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { SLIDE_UP, STAGGER_CHILDREN } from '@/lib/animations'
+import { STAGGER_CHILDREN } from '@/lib/animations'
 
 interface DashboardAnimationWrapperProps {
   children: React.ReactNode

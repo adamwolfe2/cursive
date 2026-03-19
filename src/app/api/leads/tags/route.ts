@@ -2,7 +2,6 @@
 // GET /api/leads/tags - Get all tags
 // POST /api/leads/tags - Create a new tag
 
-
 import { NextRequest } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
@@ -16,7 +15,7 @@ const createTagSchema = z.object({
   description: z.string().max(200).optional(),
 })
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const user = await getCurrentUser()
     if (!user) return unauthorized()

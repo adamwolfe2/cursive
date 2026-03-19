@@ -175,7 +175,7 @@ describe('isLeadWorthy', () => {
   })
 
   it('returns false when hasName is undefined (defaults to false)', () => {
-    const { hasName, ...rest } = VALID_PARAMS
+    const { hasName: _hasName, ...rest } = VALID_PARAMS
     expect(isLeadWorthy(rest)).toBe(false)
   })
 

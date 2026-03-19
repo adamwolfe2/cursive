@@ -3,7 +3,6 @@
  * GET /api/leads/limits - Get current workspace lead limits and usage
  */
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { fastAuth } from '@/lib/auth/fast-auth'
 import { getLeadProviderService } from '@/lib/services/lead-provider.service'

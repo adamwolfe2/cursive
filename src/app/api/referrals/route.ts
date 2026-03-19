@@ -1,7 +1,6 @@
 // Referrals API
 // Get referral stats and manage referral codes
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { fastAuth } from '@/lib/auth/fast-auth'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'

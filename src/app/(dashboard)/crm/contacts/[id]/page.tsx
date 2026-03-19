@@ -13,7 +13,6 @@ import {
   Twitter,
   Phone,
   Mail,
-  Globe,
   Building,
   Briefcase,
   User,

@@ -47,16 +47,12 @@ import {
   Pencil,
   Trash2,
   Copy,
-  FileSpreadsheet,
-  FileText,
-  Database,
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
   Plus,
   Mail,
-  Phone,
 } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 import type { LeadTableRow } from '@/types/crm.types'
@@ -80,7 +76,7 @@ const PAGE_SIZE_OPTIONS = [10, 20, 30, 50]
 export const EnhancedLeadsTable = React.forwardRef<EnhancedLeadsTableHandle, EnhancedLeadsTableProps>(function EnhancedLeadsTable({
   data,
   onRowClick,
-  onCreateClick,
+  onCreateClick: _onCreateClick,
   onSelectionChange,
   isLoading = false,
 }, ref) {

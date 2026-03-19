@@ -22,7 +22,7 @@ const ALLOWED_EVENTS = [
   'credit.purchased',
 ] as const
 
-type AllowedEvent = (typeof ALLOWED_EVENTS)[number]
+type _AllowedEvent = (typeof ALLOWED_EVENTS)[number]
 
 // ─── Validation schemas ──────────────────────────────────────────────────────
 
@@ -263,7 +263,7 @@ describe('Payload shape validation — lead.purchased', () => {
   })
 
   it('requires purchase_id', () => {
-    const { purchase_id, ...without } = validPayload
+    const { purchase_id: _purchase_id, ...without } = validPayload
     expect(leadPurchasedPayloadSchema.safeParse(without).success).toBe(false)
   })
 

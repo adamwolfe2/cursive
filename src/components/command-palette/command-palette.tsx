@@ -9,15 +9,13 @@
 
 import * as React from 'react'
 import { cn } from '@/lib/design-system'
-import { Modal, ModalContent } from '@/components/ui/modal'
+import { Modal } from '@/components/ui/modal'
 import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
   useShortcut,
   useArrowNavigation,
   useEscapeKey,
-  useTypeAhead,
 } from '@/lib/keyboard/hooks'
 import { formatKeyCombo } from '@/lib/keyboard/shortcuts'
 

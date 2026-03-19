@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useToast } from '@/lib/hooks/use-toast'
 import { safeError } from '@/lib/utils/log-sanitizer'
@@ -63,7 +63,7 @@ export default function AdminDashboard() {
   // NOTE: Admin role verification now handled by middleware.ts server-side
   // This prevents client-side auth bypass attacks
 
-  const fetchRules = async () => {
+  const fetchRules = useCallback(async () => {
     setRulesLoading(true)
     try {
       const { data } = await supabase
@@ -77,9 +77,9 @@ export default function AdminDashboard() {
     } finally {
       setRulesLoading(false)
     }
-  }
+  }, [supabase])
 
-  const fetchLeads = async () => {
+  const fetchLeads = useCallback(async () => {
     setLeadsLoading(true)
     try {
       const { data } = await supabase
@@ -99,7 +99,7 @@ export default function AdminDashboard() {
     } finally {
       setLeadsLoading(false)
     }
-  }
+  }, [supabase])
 
   async function fetchKpis() {
     try {
@@ -117,7 +117,7 @@ export default function AdminDashboard() {
     fetchKpis()
     const interval = setInterval(fetchLeads, METRICS_REFRESH_MS)
     return () => clearInterval(interval)
-  }, [])
+  }, [fetchRules, fetchLeads])
 
   const deleteRule = async (id: string) => {
     await supabase.from('lead_routing_rules').delete().eq('id', id)

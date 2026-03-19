@@ -19,7 +19,6 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
-
 export async function GET(request: NextRequest) {
   // Auth: Vercel Cron sends CRON_SECRET automatically
   const authHeader = request.headers.get('authorization')

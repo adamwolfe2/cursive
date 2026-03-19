@@ -19,7 +19,7 @@ import type { LeadContactData, LeadCompanyData } from '@/types'
 // TYPES
 // ============================================================================
 
-interface SequenceEnrollmentData {
+interface _SequenceEnrollmentData {
   enrollment_id: string
   sequence_id: string
   lead_id: string
@@ -394,7 +394,7 @@ async function executeEmailStep(
 
       subject = emailDraft.subject
       body = emailDraft.body
-    } catch (error) {
+    } catch (_error) {
       return { success: false, error: 'Failed to generate email content' }
     }
   }
@@ -446,7 +446,7 @@ async function executeEmailStep(
 }
 
 async function executeWaitStep(
-  sequenceStep: SequenceStep
+  _sequenceStep: SequenceStep
 ): Promise<{ success: boolean; error?: string }> {
   // Wait steps are handled by scheduling, just return success
   return { success: true }
@@ -609,7 +609,7 @@ export const batchEnrollSequence = inngest.createFunction(
             },
           })
           enrolled++
-        } catch (error) {
+        } catch (_error) {
           failed++
         }
       }

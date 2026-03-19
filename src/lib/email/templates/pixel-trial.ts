@@ -13,7 +13,7 @@
  *  Day 14 — Trial expired: reclaim your data
  */
 
-import { emailLayout, ctaButton, secondaryButton, divider, footnote, escapeHtml, BRAND, URLS } from './layout'
+import { emailLayout, ctaButton, secondaryButton, divider, escapeHtml, BRAND, URLS } from './layout'
 
 // ============================================
 // TYPES

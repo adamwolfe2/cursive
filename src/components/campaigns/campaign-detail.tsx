@@ -64,7 +64,7 @@ export function CampaignDetail({ campaignId }: CampaignDetailProps) {
         } else {
           setError('Campaign not found')
         }
-      } catch (err) {
+      } catch (_err) {
         setError('Failed to load campaign')
       } finally {
         setLoading(false)
@@ -89,7 +89,7 @@ export function CampaignDetail({ campaignId }: CampaignDetailProps) {
         const result = await response.json()
         setError(result.error || 'Failed to submit for review')
       }
-    } catch (err) {
+    } catch (_err) {
       setError('Failed to submit for review')
     } finally {
       setSubmitting(false)

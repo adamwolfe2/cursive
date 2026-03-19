@@ -166,7 +166,7 @@ export default function VisitorsPage() {
       setAuthChecked(true)
     }
     checkAdmin()
-  }, [])
+  }, [supabase])
 
   const { data, isLoading } = useQuery<VisitorsData>({
     queryKey: ['admin', 'ops', 'visitors', days, minScore, enrichmentFilter, page],

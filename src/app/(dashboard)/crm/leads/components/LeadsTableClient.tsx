@@ -10,10 +10,8 @@ import { useCRMStore } from '@/lib/crm/crm-state'
 import { LeadsDataTable } from './LeadsDataTable'
 import { LeadsFilterBar, type LeadsFilterBarRef } from './LeadsFilterBar'
 import { BulkActionsToolbar } from './BulkActionsToolbar'
-import { Skeleton } from '@/components/ui/skeleton'
 import { TableViewControls } from './TableViewControls'
 import { useKeyboardShortcuts } from '../hooks/use-keyboard-shortcuts'
-import type { WorkspaceUser } from './LeadsTableColumns'
 
 export function LeadsTableClient() {
   const { filters } = useCRMStore()

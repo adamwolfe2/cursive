@@ -40,7 +40,7 @@ export const cleanupStaleLeads = inngest.createFunction(
     concurrency: [{ limit: 1 }],
   },
   { cron: '0 3 * * *' }, // 3am UTC daily (off-peak)
-  async ({ event, step }) => {
+  async ({ event: _event, step }) => {
     const supabase = createAdminClient()
 
     const cutoffDate = new Date()

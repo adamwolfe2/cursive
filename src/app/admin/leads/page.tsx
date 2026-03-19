@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { useQuery, useMutation } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import { useToast } from '@/lib/hooks/use-toast'
 import { getErrorMessage } from '@/lib/utils/error-helpers'
@@ -72,7 +72,7 @@ export default function AdminLeadsPage() {
       setAuthChecked(true)
     }
     checkAdmin()
-  }, [])
+  }, [supabase])
 
   // Fetch leads
   const { data: leads, isLoading, refetch } = useQuery({

@@ -7,9 +7,7 @@ import type {
   EmailCampaignInsert,
   EmailCampaignUpdate,
   CampaignLead,
-  CampaignLeadInsert,
   CampaignReview,
-  CampaignReviewInsert,
 } from '@/types'
 import { DatabaseError } from '@/types'
 

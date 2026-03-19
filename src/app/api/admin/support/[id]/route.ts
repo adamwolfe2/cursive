@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { requireAdmin } from '@/lib/auth/admin'
 import { getCurrentUser } from '@/lib/auth/helpers'
-import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
+import { unauthorized } from '@/lib/utils/api-error-handler'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 const updateSchema = z.object({

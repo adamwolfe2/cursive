@@ -5,7 +5,7 @@
  * Upload the 20k CSV, search segments, browse by category/type.
  */
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Upload, RefreshCw, Search, X } from 'lucide-react'
 import { safeError } from '@/lib/utils/log-sanitizer'
@@ -116,17 +116,13 @@ export default function SegmentCatalogPage() {
       setAuthChecked(true)
     }
     check()
-  }, [])
+  }, [supabase])
 
   useEffect(() => {
     if (authChecked && isAdmin) {
       loadStats()
     }
   }, [authChecked, isAdmin])
-
-  useEffect(() => {
-    if (authChecked && isAdmin) loadSegments()
-  }, [query, typeFilter, categoryFilter, authChecked, isAdmin])
 
   // ── Stats: use API route (service role) for accurate counts ─────────────────
   const loadStats = async () => {
@@ -140,7 +136,7 @@ export default function SegmentCatalogPage() {
     } catch {}
   }
 
-  const loadSegments = async () => {
+  const loadSegments = useCallback(async () => {
     setLoading(true)
     let q = supabase.from('al_segment_catalog')
       .select('segment_id, name, category, sub_category, description, keywords, type')
@@ -154,7 +150,11 @@ export default function SegmentCatalogPage() {
     const { data } = await q
     setSegments(data ?? [])
     setLoading(false)
-  }
+  }, [supabase, query, typeFilter, categoryFilter])
+
+  useEffect(() => {
+    if (authChecked && isAdmin) loadSegments()
+  }, [loadSegments, authChecked, isAdmin])
 
   // ── CSV Import: write directly to Supabase (no Vercel, no rate limits) ──────
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {

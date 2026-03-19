@@ -80,7 +80,7 @@ export function useWaitlistFlow() {
   // Submit business form
   const submitBusinessForm = useCallback(
     (formData: BusinessFormData) => {
-      const waitlistData = {
+      const _waitlistData = {
         userType: 'business' as UserType,
         vslAnswers,
         formData,
@@ -95,7 +95,7 @@ export function useWaitlistFlow() {
   // Submit partner form
   const submitPartnerForm = useCallback(
     (formData: PartnerFormData) => {
-      const waitlistData = {
+      const _waitlistData = {
         userType: 'partner' as UserType,
         vslAnswers,
         formData,

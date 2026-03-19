@@ -6,7 +6,6 @@
  * from the crm_connections table.
  */
 
-
 import { NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { createAdminClient } from '@/lib/supabase/admin'

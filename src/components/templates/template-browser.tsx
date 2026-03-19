@@ -144,6 +144,7 @@ export function TemplateBrowser() {
       }
     }
     fetchTemplates()
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- toast is stable, fetchTemplates is defined inline
   }, [filters])
 
   // Filter by search query and active category

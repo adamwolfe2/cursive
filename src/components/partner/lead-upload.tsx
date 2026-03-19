@@ -24,7 +24,6 @@ import {
   Upload,
   FileText,
   CheckCircle,
-  XCircle,
   AlertCircle,
   Loader2,
   DollarSign,

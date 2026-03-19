@@ -3,7 +3,7 @@
 import * as React from 'react'
 import { cn } from '@/lib/design-system'
 import { Button } from './button'
-import { generateAriaId, trapFocus, getFocusableElements } from '@/lib/accessibility'
+import { trapFocus, getFocusableElements } from '@/lib/accessibility'
 
 interface ModalProps {
   isOpen: boolean

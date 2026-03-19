@@ -1,7 +1,6 @@
 // Partner Registration API
 // POST /api/partner/register - Create new partner account
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { withRateLimit, getRequestIdentifier } from '@/lib/middleware/rate-limiter'

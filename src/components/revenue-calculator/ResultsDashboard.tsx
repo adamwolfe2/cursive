@@ -1,4 +1,5 @@
 'use client'
+import Image from 'next/image'
 import { ComparisonTable } from './ComparisonTable'
 import { CountUpNumber } from './CountUpNumber'
 import { CredibilityBar } from './CredibilityBar'
@@ -23,7 +24,7 @@ export function ResultsDashboard({ results, domain, monthlyVisitors, dealSize, i
       {/* Site info header */}
       <div className="flex items-center gap-4">
         {siteData?.favicon && (
-          <img src={siteData.favicon} alt="" className="w-8 h-8 rounded" />
+          <Image src={siteData.favicon} alt="" width={32} height={32} unoptimized className="w-8 h-8 rounded" />
         )}
         <div>
           <h3 className="text-white font-bold text-lg">{domain}</h3>

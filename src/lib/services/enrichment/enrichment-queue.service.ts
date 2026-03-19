@@ -74,7 +74,7 @@ export interface EnrichmentResult {
 // CONSTANTS
 // ============================================================================
 
-const PRIORITY_ORDER: Record<EnrichmentPriority, number> = {
+const _PRIORITY_ORDER: Record<EnrichmentPriority, number> = {
   critical: 0,
   high: 1,
   normal: 2,

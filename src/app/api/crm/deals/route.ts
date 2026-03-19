@@ -4,7 +4,6 @@
  * POST /api/crm/deals - Create a new deal
  */
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { DealRepository } from '@/lib/repositories/deal.repository'

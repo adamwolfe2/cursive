@@ -2,12 +2,11 @@
 // Manages user credits and daily limits
 
 import { createClient } from '@/lib/supabase/server'
-import type { Database } from '@/types/database.types'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 export type CreditAction = 'lead_generation' | 'email_reveal' | 'export' | 'people_search'
 
-interface CreditCost {
+interface _CreditCost {
   action: CreditAction
   cost: number
 }

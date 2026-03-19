@@ -105,7 +105,7 @@ export const audienceLabSegmentPuller = inngest.createFunction(
     { cron: '0 */6 * * *' }, // Every 6 hours
     { event: 'audiencelab/segment-pull' }, // On-demand trigger
   ],
-  async ({ event, step }) => {
+  async ({ event: _event, step }) => {
     const supabase = createAdminClient()
 
     // Step 1: Check if AL API key is configured
@@ -203,7 +203,7 @@ export const audienceLabSegmentPuller = inngest.createFunction(
             if (previewCount === 0) {
               return { inserted: 0, skipped: 0, error: null as string | null }
             }
-          } catch (previewErr) {
+          } catch (_previewErr) {
             // Preview endpoint might not exist — continue anyway
             safeLog(`${LOG_PREFIX} Preview not available, attempting direct audience creation`)
           }

@@ -156,7 +156,7 @@ export function reportError(error: Error, context?: Record<string, any>) {
  * Handle unhandled promise rejections
  */
 if (typeof window === 'undefined') {
-  process.on('unhandledRejection', (reason: any, promise: Promise<any>) => {
+  process.on('unhandledRejection', (reason: any, _promise: Promise<any>) => {
     logger.error({
       type: 'unhandled_rejection',
       reason: reason instanceof Error ? {

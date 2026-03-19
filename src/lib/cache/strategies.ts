@@ -3,7 +3,6 @@
 
 import {
   getCached,
-  setCache,
   deleteCache,
   deleteCachePattern,
   buildCacheKey,

@@ -1,7 +1,6 @@
 // Stripe Connect Onboarding API
 // POST /api/partner/connect - Initiate Stripe Connect account creation
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getStripeClient } from '@/lib/stripe/client'

@@ -158,7 +158,7 @@ export async function middleware(req: NextRequest) {
 
     // Extract subdomain for multi-tenant routing
     const hostname = req.headers.get('host') || ''
-    const host = hostname.split(':')[0] // Remove port if present
+    const _host = hostname.split(':')[0] // Remove port if present
     const subdomain = getSubdomain(hostname)
 
     // Admin-only routes

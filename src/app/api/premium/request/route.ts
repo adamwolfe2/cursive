@@ -137,7 +137,7 @@ ${validatedData.budget_range ? `*Budget:* ${validatedData.budget_range}\n` : ''}
  * GET /api/premium/request
  * Get all premium feature requests for the current workspace
  */
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     // Get authenticated user
     const userProfile = await getCurrentUser()

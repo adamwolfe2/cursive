@@ -11,7 +11,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import {
   Calendar, Users, AlertTriangle, CheckCircle2, Activity,
-  ArrowRight, TrendingUp, Clock, Mail, Kanban, Eye,
+  ArrowRight, TrendingUp, Kanban, Eye,
 } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 
@@ -114,7 +114,7 @@ export default function OpsHubPage() {
       setAuthChecked(true)
     }
     checkAdmin()
-  }, [])
+  }, [supabase])
 
   const { data, isLoading } = useQuery<SummaryData>({
     queryKey: ['admin', 'ops', 'summary'],

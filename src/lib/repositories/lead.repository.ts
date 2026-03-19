@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import { sanitizeSearchTerm } from '@/lib/utils/sanitize-search'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import type { Lead, LeadInsert, LeadUpdate } from '@/types'
-import type { LeadWithRelations, LeadStatus } from '@/types/crm.types'
+import type { LeadWithRelations } from '@/types/crm.types'
 
 export interface LeadFilters {
   query_id?: string

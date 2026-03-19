@@ -5,7 +5,6 @@
  * No database required - pure logic testing.
  */
 
-import { LeadRoutingService } from '../lead-routing.service'
 
 // ============================================================================
 // MOCK WORKSPACES
@@ -1020,11 +1019,13 @@ export function formatRoutingResults(data: Awaited<ReturnType<typeof runRoutingS
  * Main execution function
  */
 export async function main() {
+  // eslint-disable-next-line no-console
   console.log('Starting lead routing simulation...\n')
 
   const simulationData = await runRoutingSimulation()
   const formattedOutput = formatRoutingResults(simulationData)
 
+  // eslint-disable-next-line no-console
   console.log(formattedOutput)
 
   // Write to file
@@ -1033,7 +1034,8 @@ export async function main() {
   const outputPath = path.join(process.cwd(), 'routing-simulation-results.txt')
   fs.writeFileSync(outputPath, formattedOutput)
 
-  console.log(`\n✅ Results saved to: ${outputPath}\n`)
+  // eslint-disable-next-line no-console
+  console.log(`\n Results saved to: ${outputPath}\n`)
 
   return simulationData
 }

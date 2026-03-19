@@ -7,10 +7,11 @@
 
 import { Suspense, useState, useEffect, useCallback } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { GradientCard, GradientBadge } from '@/components/ui/gradient-card'
-import { PageContainer, PageHeader, PageSection } from '@/components/layout/page-container'
+import { PageContainer, PageSection } from '@/components/layout/page-container'
 import { PageLoading } from '@/components/ui/loading-states'
 import {
   Loader2,
@@ -341,9 +342,12 @@ function CampaignsPageInner() {
                       )
                     }}
                   >
-                    <img
+                    <Image
                       src={creative.image_url}
                       alt={creative.prompt}
+                      width={200}
+                      height={200}
+                      unoptimized
                       className="w-full aspect-square object-cover"
                     />
                     {selectedCreatives.includes(creative.id) && (

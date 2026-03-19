@@ -37,7 +37,7 @@ interface PaymentFormProps {
 
 function PaymentForm({
   leadId,
-  clientSecret,
+  clientSecret: _clientSecret,
   onSuccess,
   onError,
 }: PaymentFormProps) {
@@ -169,7 +169,7 @@ export function BuyLeadButton({ lead, onPurchaseComplete }: BuyLeadButtonProps) 
       } else {
         setError(data.error || 'Failed to initiate purchase')
       }
-    } catch (err) {
+    } catch (_err) {
       setError('Network error. Please try again.')
     }
 

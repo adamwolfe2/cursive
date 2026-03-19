@@ -118,7 +118,7 @@ export function CampaignRequestForm() {
     register,
     handleSubmit,
     setValue,
-    watch,
+    watch: _watch,
     formState: { errors },
   } = useForm<CampaignRequestFormData>({
     resolver: zodResolver(campaignRequestSchema),

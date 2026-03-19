@@ -1,7 +1,6 @@
 // People Search API
 // POST /api/people-search - Search for people
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { protectRoute, consumeCredits, applyProtectionHeaders, PROTECTION_PRESETS } from '@/lib/middleware/api-protection'
 import { PeopleSearchService } from '@/lib/services/people-search.service'

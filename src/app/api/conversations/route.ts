@@ -3,8 +3,7 @@
  * List and manage email conversation threads
  */
 
-
-import { NextResponse, type NextRequest } from 'next/server'
+import { type NextRequest } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized, success, badRequest } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'

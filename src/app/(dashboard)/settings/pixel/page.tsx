@@ -49,7 +49,7 @@ export default function PixelSettingsPage() {
   const queryClient = useQueryClient()
   const [websiteUrl, setWebsiteUrl] = useState('')
   const [websiteName, setWebsiteName] = useState('')
-  const [copied, setCopied] = useState(false)
+  const [_copied, setCopied] = useState(false)
   const [verifyState, setVerifyState] = useState<VerifyState>('idle')
   const [verifyResult, setVerifyResult] = useState<VerifyResult | null>(null)
   const [showTroubleshooting, setShowTroubleshooting] = useState(false)
@@ -166,7 +166,7 @@ export default function PixelSettingsPage() {
     })
   }
 
-  const handleCopySnippet = (snippet: string) => {
+  const _handleCopySnippet = (snippet: string) => {
     navigator.clipboard.writeText(snippet)
     setCopied(true)
     toast.success('Snippet copied to clipboard!')
@@ -194,7 +194,7 @@ export default function PixelSettingsPage() {
     // 1. If snippet already contains a <script tag, use it as-is
     // 2. If install_url is available, wrap it in a script tag
     // 3. Fallback: generate from pixel_id using the known V3 SuperPixel CDN format
-    const installSnippet = (() => {
+    const _installSnippet = (() => {
       if (data.pixel!.snippet && data.pixel!.snippet.includes('<script')) {
         return data.pixel!.snippet
       }

@@ -105,7 +105,7 @@ export const nonNegativeNumberField = z.number().min(0)
  * Creates a password confirmation refinement
  */
 export function passwordConfirmationRefinement<T extends { password: string; confirm_password: string }>(
-  message: string = "Passwords don't match"
+  _message: string = "Passwords don't match"
 ) {
   return (data: T) => data.password === data.confirm_password
 }
@@ -132,7 +132,7 @@ export function rangeRefinement<T extends { min?: number; max?: number }>(
  */
 export function atLeastOneOf<T extends Record<string, unknown>>(
   fields: (keyof T)[],
-  message: string = 'At least one field is required'
+  _message: string = 'At least one field is required'
 ) {
   return (data: T) => {
     return fields.some((field) => {
@@ -149,7 +149,7 @@ export function conditionalRequired<T extends Record<string, unknown>>(
   conditionField: keyof T,
   requiredField: keyof T,
   conditionValue: unknown = true,
-  message?: string
+  _message?: string
 ) {
   return (data: T) => {
     if (data[conditionField] === conditionValue) {

@@ -5,7 +5,6 @@ import { createClient } from '@/lib/supabase/server'
 
 export const metadata: Metadata = { title: 'Agent Details | Cursive' }
 import { redirect, notFound } from 'next/navigation'
-import Link from 'next/link'
 import { AgentRepository } from '@/lib/repositories/agent.repository'
 import { PageContainer, PageHeader } from '@/components/layout'
 import { Button } from '@/components/ui/button'

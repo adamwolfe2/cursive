@@ -3,7 +3,6 @@
  * GET /api/crm/connections - List active CRM connections for the workspace
  */
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
@@ -18,7 +17,7 @@ interface ConnectionResponse {
   connectedAt: string | null
 }
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     // 1. Auth check
     const user = await getCurrentUser()

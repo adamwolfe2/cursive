@@ -8,7 +8,7 @@ import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
-import { ChevronLeft, CheckCircle2, XCircle, Clock, PauseCircle, AlertTriangle } from 'lucide-react'
+import { ChevronLeft, CheckCircle2, XCircle, PauseCircle, AlertTriangle } from 'lucide-react'
 import { format } from 'date-fns'
 import { useToast } from '@/lib/hooks/use-toast'
 
@@ -77,7 +77,7 @@ export default function AdminAffiliateDetailPage({ params }: { params: Promise<{
       setAuthChecked(true)
     }
     check()
-  }, [])
+  }, [supabase, params])
 
   const { data, isLoading } = useQuery<ApplicationDetail>({
     queryKey: ['admin', 'affiliates', id],

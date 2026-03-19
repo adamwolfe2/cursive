@@ -1,7 +1,6 @@
 // Templates API Routes
 // List all templates and create new templates
 
-
 import { type NextRequest } from 'next/server'
 import { TemplateRepository } from '@/lib/repositories/template.repository'
 import { getCurrentUser } from '@/lib/auth/helpers'

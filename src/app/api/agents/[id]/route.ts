@@ -1,8 +1,7 @@
 // Agent Detail API Routes
 // Get, update, and delete a specific agent
 
-
-import { NextResponse, type NextRequest } from 'next/server'
+import { type NextRequest } from 'next/server'
 import { AgentRepository } from '@/lib/repositories/agent.repository'
 import { fastAuth } from '@/lib/auth/fast-auth'
 import { handleApiError, unauthorized, notFound, success } from '@/lib/utils/api-error-handler'

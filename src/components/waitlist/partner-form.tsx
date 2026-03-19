@@ -16,7 +16,6 @@ import {
   headingVariants,
   textRevealVariants,
   staggerItemVariants,
-  buttonVariants,
   logoVariants,
 } from '@/lib/utils/waitlist-animations'
 import { partnerFormSchema, partnerTypeOptions, partnerQ1Options, type PartnerFormData } from '@/lib/utils/waitlist-validation'

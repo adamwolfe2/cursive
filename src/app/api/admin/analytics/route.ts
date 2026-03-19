@@ -53,8 +53,8 @@ export async function GET(request: NextRequest) {
       { count: totalPartners },
       // Leads data for charts
       { data: leadsByDayRaw },
-      { data: leadsByIndustryRaw },
-      { data: leadsByRegionRaw },
+      { data: _leadsByIndustryRaw },
+      { data: _leadsByRegionRaw },
       // Partners data
       { data: partners },
       // Conversion funnel

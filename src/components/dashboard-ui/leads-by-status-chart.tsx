@@ -16,7 +16,6 @@ import {
 import {
   Tag,
   MoreHorizontal,
-  ArrowUpDown,
   ArrowDownAZ,
   ArrowDown,
   ArrowUp,

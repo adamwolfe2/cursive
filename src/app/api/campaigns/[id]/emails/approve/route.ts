@@ -1,7 +1,6 @@
 // Campaign Emails Approve API Routes
 // POST /api/campaigns/[id]/emails/approve - Bulk approve emails
 
-
 import { NextResponse, type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'

@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import type { Table } from '@tanstack/react-table'
 import { debounce } from '@/lib/utils'
-import Link from 'next/link'
 import { useToast } from '@/lib/hooks/use-toast'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { BulkIntelligenceAction } from '@/components/intelligence'
@@ -152,6 +151,7 @@ export function LeadsTableToolbar({
   ]
 
   // Debounced search
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- debounce returns a stable function, setGlobalFilter is stable
   const debouncedSetGlobalFilter = useCallback(
     debounce((value: string) => {
       setGlobalFilter(value)

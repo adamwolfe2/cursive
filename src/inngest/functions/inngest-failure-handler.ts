@@ -13,7 +13,7 @@ import * as Sentry from '@sentry/nextjs'
 import { inngest } from '../client'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { recordFailedOperation } from '@/lib/monitoring/failed-operations'
-import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 // Functions that are CRITICAL — failures get escalated to email
 const CRITICAL_FUNCTIONS = new Set([

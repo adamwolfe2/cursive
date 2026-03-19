@@ -7,10 +7,11 @@
 
 import { Suspense, useState, useEffect } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { GradientCard, GradientBadge } from '@/components/ui/gradient-card'
-import { PageContainer, PageHeader, PageSection } from '@/components/layout/page-container'
+import { PageContainer, PageSection } from '@/components/layout/page-container'
 import { PageLoading } from '@/components/ui/loading-states'
 import { EmptyState } from '@/components/ui/empty-states'
 import {
@@ -90,6 +91,7 @@ function CreativesPageInner() {
       return
     }
     fetchData()
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- router is stable, fetchData depends on workspaceId which is already a dep
   }, [workspaceId])
 
   async function fetchData() {
@@ -386,9 +388,12 @@ function CreativesPageInner() {
                 className="overflow-hidden hover:shadow-md transition-all duration-200 cursor-pointer"
               >
                 <div className="relative aspect-square bg-muted">
-                  <img
+                  <Image
                     src={creative.image_url}
                     alt={creative.prompt}
+                    width={200}
+                    height={200}
+                    unoptimized
                     className="w-full h-full object-cover"
                   />
                 </div>

@@ -5,12 +5,11 @@
  * Respects workspace tier limits and tracks usage.
  */
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { createClient } from '@/lib/supabase/server'
-import { getLeadProviderService, type LeadSearchFilters } from '@/lib/services/lead-provider.service'
+import { getLeadProviderService } from '@/lib/services/lead-provider.service'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 

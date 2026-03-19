@@ -1,7 +1,6 @@
 // Query Detail API Route - Get, Update, Delete
 
-
-import { NextResponse, type NextRequest } from 'next/server'
+import { type NextRequest } from 'next/server'
 import { QueryRepository } from '@/lib/repositories/query.repository'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized, notFound, success } from '@/lib/utils/api-error-handler'

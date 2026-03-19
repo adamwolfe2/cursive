@@ -5,7 +5,6 @@
  * POST /api/clients - Create a new client profile
  */
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { fastAuth } from '@/lib/auth/fast-auth'

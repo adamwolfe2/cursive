@@ -1,7 +1,6 @@
 // Leads API
 // GET /api/leads - List leads with filters
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { fastAuth } from '@/lib/auth/fast-auth'
 import { LeadRepository } from '@/lib/repositories/lead.repository'

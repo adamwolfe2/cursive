@@ -4,7 +4,6 @@
  * Submit a campaign request for EmailBison team to review
  */
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'

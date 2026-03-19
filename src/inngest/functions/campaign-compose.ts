@@ -4,7 +4,7 @@
 import { inngest } from '../client'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { emailComposerService } from '@/lib/services/composition/email-composer.service'
-import { assignVariant, getAssignedVariant, type Variant } from '@/lib/services/campaign/ab-testing.service'
+import { assignVariant, getAssignedVariant } from '@/lib/services/campaign/ab-testing.service'
 
 export const composeCampaignEmail = inngest.createFunction(
   {
@@ -140,7 +140,7 @@ export const composeCampaignEmail = inngest.createFunction(
       }
 
       // Otherwise use normal template selection
-      const enrichedLead = { ...lead, lead: campaignLead }
+      const _enrichedLead = { ...lead, lead: campaignLead }
       return emailComposerService.selectTemplate(
         availableTemplates,
         lead,

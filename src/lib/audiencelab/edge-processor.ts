@@ -161,7 +161,7 @@ export async function processEventInline(
     // Step 3: Upsert identity
     let identityId: string | null = null
     let existingLeadId: string | null = null
-    let isNewIdentity = false
+    let _isNewIdentity = false
 
     // Find existing identity by priority: profile_id > uid > hem_sha256 > primary_email
     let existingIdentity: { id: string; visit_count: number; lead_id: string | null } | null = null
@@ -286,7 +286,7 @@ export async function processEventInline(
       }
 
       identityId = inserted!.id
-      isNewIdentity = true
+      _isNewIdentity = true
     }
 
     // Step 4: Create or update lead

@@ -5,7 +5,6 @@ import { inngest } from '../client'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { parse } from 'csv-parse'
-import { Readable } from 'stream'
 import {
   calculateHashKey,
   batchCheckDuplicates,
@@ -146,7 +145,7 @@ export const processPartnerUpload = inngest.createFunction(
     })
 
     // Step 2: Parse CSV header
-    const header = await step.run('parse-header', async () => {
+    const _header = await step.run('parse-header', async () => {
       const lines = fileData.content.split('\n')
       const headerLine = lines[0]
 

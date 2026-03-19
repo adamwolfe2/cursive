@@ -16,7 +16,6 @@ import {
   headingVariants,
   textRevealVariants,
   staggerItemVariants,
-  buttonVariants,
   logoVariants,
 } from '@/lib/utils/waitlist-animations'
 import { businessFormSchema, industryOptions, businessQ1Options, type BusinessFormData } from '@/lib/utils/waitlist-validation'

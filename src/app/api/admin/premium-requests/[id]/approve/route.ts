@@ -8,7 +8,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { requireAdmin } from '@/lib/auth/admin'
-import { handleApiError, unauthorized, forbidden, badRequest } from '@/lib/utils/api-error-handler'
+import { handleApiError, badRequest } from '@/lib/utils/api-error-handler'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface RouteParams {
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     const adminSupabase = createAdminClient()
 
     // Start transaction-like updates
-    const updates: any[] = []
+    const _updates: any[] = []
 
     // 1. Update the request status
     const { error: requestUpdateError } = await adminSupabase

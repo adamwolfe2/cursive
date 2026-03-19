@@ -1,8 +1,7 @@
 // Trends API
 // GET /api/trends - Get trending topics (gainers and losers)
 
-
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { TopicSearchService } from '@/lib/services/topic-search.service'
 import { handleApiError, unauthorized, success } from '@/lib/utils/api-error-handler'

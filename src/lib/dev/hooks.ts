@@ -164,7 +164,7 @@ export function useRenderPerformance(componentName: string): { duration: number 
 
     setDuration(renderDuration)
     startTime.current = performance.now()
-  })
+  }, [componentName])
 
   return { duration }
 }

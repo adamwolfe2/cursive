@@ -120,7 +120,7 @@ class Logger {
         // Sentry not available, just log
         safeError('MONITORING:', JSON.stringify(entry))
       })
-    } catch (error) {
+    } catch (_error) {
       // Fallback to console
       safeError('MONITORING:', JSON.stringify(entry))
     }

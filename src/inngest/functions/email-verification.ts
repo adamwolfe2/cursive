@@ -146,7 +146,7 @@ export const queueNewLeadsForVerification = inngest.createFunction(
       return { skipped: true, reason: 'Verification disabled' }
     }
 
-    const { batchId, partnerId, leadCount } = event.data
+    const { batchId, partnerId: _partnerId, leadCount } = event.data
 
     logger.info(`Queueing ${leadCount} leads for verification from batch ${batchId}`)
 

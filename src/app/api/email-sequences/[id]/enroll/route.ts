@@ -10,7 +10,6 @@ import { getCurrentUser } from '@/lib/auth/helpers'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 
-
 const enrollLeadsSchema = z.object({
   lead_ids: z.array(z.string().uuid()).min(1).max(1000),
 })

@@ -31,7 +31,7 @@ import { SuccessScreen } from './success-screen'
 export function WaitlistFlow() {
   const {
     currentScreen,
-    userType,
+    userType: _userType,
     direction,
     vslAnswers,
     selectUserType,

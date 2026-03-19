@@ -8,7 +8,7 @@ import { passwordSchema } from '@/lib/validation/schemas'
 
 function ResetPasswordForm() {
   const router = useRouter()
-  const searchParams = useSearchParams()
+  const _searchParams = useSearchParams()
 
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')

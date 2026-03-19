@@ -1,11 +1,10 @@
 // Billing Portal API Route
 // POST /api/billing/portal - Create Stripe Customer Portal session
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { createPortalSession } from '@/lib/stripe/client'
-import { handleApiError, unauthorized, badRequest, forbidden } from '@/lib/utils/api-error-handler'
+import { handleApiError, unauthorized, badRequest } from '@/lib/utils/api-error-handler'
 import { createClient } from '@/lib/supabase/server'
 
 export async function POST(request: NextRequest) {

@@ -157,7 +157,7 @@ export default function AdminEmailStatsPage() {
       setAuthChecked(true)
     }
     checkAdmin()
-  }, [])
+  }, [supabase])
 
   async function fetchStats(isRefresh = false) {
     if (isRefresh) setRefreshing(true)

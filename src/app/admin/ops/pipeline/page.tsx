@@ -11,8 +11,8 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import {
-  Globe, Mail, Copy, Check, ExternalLink, RefreshCw, AlertTriangle,
-  Circle, CheckCircle2, Users, ChevronLeft, ArrowRight, Search,
+  Globe, Mail, Copy, Check, ExternalLink, RefreshCw,
+  CheckCircle2, ChevronLeft, ArrowRight, Search,
 } from 'lucide-react'
 import { useToast } from '@/lib/hooks/use-toast'
 import { formatDistanceToNow } from 'date-fns'
@@ -289,7 +289,7 @@ export default function PipelinePage() {
       setAuthChecked(true)
     }
     checkAdmin()
-  }, [])
+  }, [supabase])
 
   const { data, isLoading, refetch } = useQuery<PipelineData>({
     queryKey: ['admin', 'ops', 'pipeline'],

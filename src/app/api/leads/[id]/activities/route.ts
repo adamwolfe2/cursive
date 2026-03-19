@@ -1,7 +1,6 @@
 // Lead Activities API
 // GET /api/leads/[id]/activities - Get activity timeline for a lead
 
-
 import { NextRequest } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { LeadActivityRepository } from '@/lib/repositories/lead-activity.repository'

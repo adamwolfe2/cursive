@@ -18,7 +18,7 @@ import {
   mapCursiveLeadToGhlContact,
 } from '@/lib/integrations/ghl-admin'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
+import { safeLog } from '@/lib/utils/log-sanitizer'
 
 const BATCH_SIZE = 50 // GHL rate limit safe batch size
 

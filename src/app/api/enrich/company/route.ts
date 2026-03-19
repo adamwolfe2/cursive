@@ -4,7 +4,6 @@
  * GET /api/enrich/company?domain=example.com - Quick logo/basic info lookup
  */
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { getCompanyEnrichmentService } from '@/lib/services/company-enrichment.service'

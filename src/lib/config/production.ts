@@ -189,7 +189,7 @@ export function isFeatureEnabled(feature: FeatureFlag): boolean {
 export function getFeatureFlags(): Record<string, boolean> {
   const flags: Record<string, boolean> = {}
 
-  for (const [key, defaultValue] of Object.entries(defaultFeatures)) {
+  for (const [key, _defaultValue] of Object.entries(defaultFeatures)) {
     flags[key] = isFeatureEnabled(key)
   }
 
@@ -268,7 +268,7 @@ export async function gracefulShutdown(): Promise<void> {
 if (typeof process !== 'undefined' && process.on) {
   let isShuttingDown = false
 
-  const handleSignal = async (signal: string) => {
+  const handleSignal = async (_signal: string) => {
     if (isShuttingDown) return
     isShuttingDown = true
 

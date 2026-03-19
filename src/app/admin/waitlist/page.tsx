@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { WaitlistRepository, type WaitlistSignup } from '@/lib/repositories/waitlist.repository'
+import { type WaitlistSignup } from '@/lib/repositories/waitlist.repository'
 import { useToast } from '@/lib/hooks/use-toast'
-import { Download, Mail, Calendar, Building, Linkedin, MapPin } from 'lucide-react'
+import { Download, Mail, Calendar, Building, Linkedin } from 'lucide-react'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 export default function AdminWaitlistPage() {
@@ -42,10 +42,11 @@ export default function AdminWaitlistPage() {
       setAuthChecked(true)
     }
     checkAdmin()
-  }, [])
+  }, [supabase])
 
   useEffect(() => {
     if (authChecked && isAdmin) fetchSignups()
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- runs when auth is confirmed
   }, [authChecked, isAdmin])
 
   const fetchSignups = async () => {

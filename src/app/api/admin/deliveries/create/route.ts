@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
     if (sendEmail) {
       try {
         const user = Array.isArray(subscription.users) ? subscription.users[0] : subscription.users
-        const tier = subscription.service_tiers as any
+        const _tier = subscription.service_tiers as any
 
         // Generate download URL (signed URL valid for 7 days)
         const { data: urlData } = await supabase.storage

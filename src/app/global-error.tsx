@@ -9,7 +9,7 @@ import { logError } from '@/lib/logging/logger'
 
 export default function GlobalError({
   error,
-  reset,
+  reset: _reset,
 }: {
   error: Error & { digest?: string }
   reset: () => void

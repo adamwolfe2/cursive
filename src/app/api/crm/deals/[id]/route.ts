@@ -5,7 +5,6 @@
  * DELETE /api/crm/deals/[id] - Delete a deal
  */
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { DealRepository } from '@/lib/repositories/deal.repository'

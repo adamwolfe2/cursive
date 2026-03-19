@@ -46,7 +46,7 @@ export function ServiceLimitBanner({
 
   // Determine severity
   const percentageUsed = limit ? (used / limit) * 100 : 0
-  const isWarning = percentageUsed >= threshold && percentageUsed < 90
+  const _isWarning = percentageUsed >= threshold && percentageUsed < 90
   const isCritical = percentageUsed >= 90
 
   const resourceLabel = {

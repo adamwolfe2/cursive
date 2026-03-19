@@ -4,8 +4,8 @@
  * /affiliate/settings — Account settings for affiliates
  */
 
-import { useState, useEffect } from 'react'
-import { useQuery, useMutation } from '@tanstack/react-query'
+import { useEffect } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import Link from 'next/link'
 import { CheckCircle2, ExternalLink, AlertCircle } from 'lucide-react'
 import { useToast } from '@/lib/hooks/use-toast'
@@ -32,7 +32,7 @@ function SettingsContent() {
       toast({ type: 'success', message: 'Stripe account connected successfully' })
       refetch()
     }
-  }, [stripeConnected])
+  }, [stripeConnected, toast, refetch])
 
   if (isLoading) {
     return <div className="p-12 text-center text-zinc-400">Loading...</div>

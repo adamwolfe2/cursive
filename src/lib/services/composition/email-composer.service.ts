@@ -196,7 +196,7 @@ export class EmailComposerService {
     senderTitle?: string
     senderCompany?: string
   }): Record<string, string> {
-    const { lead, campaign, senderName, senderTitle, senderCompany } = params
+    const { lead, campaign: _campaign, senderName, senderTitle, senderCompany } = params
 
     return {
       // Lead variables

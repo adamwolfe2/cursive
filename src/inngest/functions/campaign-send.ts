@@ -44,7 +44,7 @@ export const sendApprovedEmail = inngest.createFunction(
       const supabase = createAdminClient()
 
       // Atomically transition from 'approved' → 'sending' to prevent double-sends
-      const { data: claimed, error: claimError } = await supabase
+      const { data: claimed, error: _claimError } = await supabase
         .from('email_sends')
         .update({ status: 'sending', updated_at: new Date().toISOString() })
         .eq('id', email_send_id)
@@ -404,7 +404,7 @@ export const onEmailApproved = inngest.createFunction(
     const { email_send_id, campaign_lead_id, workspace_id } = event.data
 
     // Fetch email to check campaign settings
-    const { campaign, emailSend } = await step.run('fetch-context', async () => {
+    const { campaign, emailSend: _emailSend } = await step.run('fetch-context', async () => {
       const supabase = createAdminClient()
 
       const { data: email, error: emailError } = await supabase

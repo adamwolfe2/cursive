@@ -12,7 +12,7 @@ import {
   CREDIT_PACKAGES,
   FREE_TRIAL_CREDITS,
   validateCreditPurchase,
-  type CreditPackage,
+  type _CreditPackage,
 } from '@/lib/constants/credit-packages'
 
 // ---------------------------------------------------------------------------

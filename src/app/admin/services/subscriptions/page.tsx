@@ -9,9 +9,8 @@ import {
   Clock,
   AlertCircle,
   XCircle,
-  TrendingUp,
   Users,
-  DollarSign
+  DollarSign,
 } from 'lucide-react'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
@@ -77,10 +76,11 @@ export default function AdminServiceSubscriptionsPage() {
       setAuthChecked(true)
     }
     checkAdmin()
-  }, [])
+  }, [supabase])
 
   useEffect(() => {
     fetchSubscriptions()
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- fetchSubscriptions uses filterStatus which is already a dep
   }, [filterStatus])
 
   async function fetchSubscriptions() {

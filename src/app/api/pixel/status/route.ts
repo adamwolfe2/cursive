@@ -4,7 +4,6 @@ import { safeError } from '@/lib/utils/log-sanitizer'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { unauthorized } from '@/lib/utils/api-error-handler'
 
-
 export async function GET() {
   try {
     const user = await getCurrentUser()

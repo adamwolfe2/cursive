@@ -367,7 +367,7 @@ export function checkPasswordStrength(password: string): PasswordStrengthResult 
 export async function generateSignature(
   payload: string,
   secret: string,
-  algorithm = 'sha256'
+  _algorithm = 'sha256'
 ): Promise<string> {
   // Edge runtime only supports SHA-256 via crypto.subtle
   return hmacSha256Hex(secret, payload)

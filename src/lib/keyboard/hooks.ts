@@ -11,7 +11,6 @@ import * as React from 'react'
 import {
   shortcutManager,
   matchesKeyCombo,
-  parseKeyCombo,
   formatKeyCombo,
   type ShortcutAction,
   type ShortcutCategory,
@@ -123,10 +122,14 @@ export function useAllShortcuts(): ShortcutAction[] {
 export function useShortcutGroups(): ShortcutGroup[] {
   const shortcuts = useAllShortcuts()
 
-  return React.useMemo(() => {
-    if (!shortcutManager) return []
-    return shortcutManager.getGrouped()
-  }, [shortcuts])
+  return React.useMemo(
+    () => {
+      if (!shortcutManager) return []
+      return shortcutManager.getGrouped()
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- shortcuts is used as a change signal to recompute grouped shortcuts
+    [shortcuts],
+  )
 }
 
 // ============================================

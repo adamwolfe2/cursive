@@ -3,7 +3,6 @@
  * POST /api/ai/qualify-lead - Qualify a lead using Claude AI
  */
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { getCurrentUser } from '@/lib/auth/helpers'

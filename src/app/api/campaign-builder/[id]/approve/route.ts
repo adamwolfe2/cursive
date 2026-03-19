@@ -3,7 +3,6 @@
  * Mark campaign as approved and ready for export
  */
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { CampaignBuilderRepository } from '@/lib/repositories/campaign-builder.repository'
 import { getCurrentUser } from '@/lib/auth/helpers'

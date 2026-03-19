@@ -3,7 +3,6 @@
  * Admin endpoint to mark a failed operation as resolved
  */
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { resolveFailedOperation } from '@/lib/monitoring/failed-operations'
 import { safeError } from '@/lib/utils/log-sanitizer'

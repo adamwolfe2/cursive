@@ -3,7 +3,6 @@
 
 import { createOpenAIClient } from './openai'
 import { safeError } from '@/lib/utils/log-sanitizer'
-import type { IntentClassification } from './intent'
 
 export interface ReplyContext {
   agentName: string
@@ -133,7 +132,7 @@ function cleanReply(reply: string): string {
 async function calculateConfidence(
   reply: string,
   context: ReplyContext,
-  apiKey: string
+  _apiKey: string
 ): Promise<{
   confidence: number
   instructionsUsed: string[]

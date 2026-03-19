@@ -1,7 +1,7 @@
 // Intent Classification Service
 // Classifies email replies by buyer intent
 
-import { createOpenAIClient, type OpenAIClient } from './openai'
+import { createOpenAIClient } from './openai'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 export type IntentCategory =

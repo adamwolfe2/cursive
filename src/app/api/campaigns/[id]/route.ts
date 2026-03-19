@@ -1,7 +1,6 @@
 // Campaign Detail API Routes
 // Get, update, and delete a specific campaign
 
-
 import { type NextRequest } from 'next/server'
 import { CampaignRepository } from '@/lib/repositories/campaign.repository'
 import { getCurrentUser } from '@/lib/auth/helpers'

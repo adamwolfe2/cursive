@@ -9,7 +9,7 @@ import { Suspense, useState, useEffect } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { GradientCard, GradientBadge } from '@/components/ui/gradient-card'
-import { PageContainer, PageHeader, PageSection } from '@/components/layout/page-container'
+import { PageContainer, PageSection } from '@/components/layout/page-container'
 import { PageLoading } from '@/components/ui/loading-states'
 import { EmptyState } from '@/components/ui/empty-states'
 import { ArrowLeft, ArrowRight, User, MapPin, DollarSign, GraduationCap, Target, TrendingUp, Radio, Users } from 'lucide-react'
@@ -46,6 +46,7 @@ function ProfilesPageInner() {
       return
     }
     fetchProfiles()
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- router is stable, fetchProfiles depends on workspaceId which is already a dep
   }, [workspaceId])
 
   async function fetchProfiles() {

@@ -4,8 +4,6 @@
  */
 export const runtime = 'edge'
 
-
-
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
@@ -16,9 +14,9 @@ import { safeError } from '@/lib/utils/log-sanitizer'
  * GET /api/admin/operations-health
  * Get operations health metrics
  */
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
-    const supabase = await createClient()
+    const _supabase = await createClient()
 
     // SECURITY: Verify platform admin access
     const { requireAdmin } = await import('@/lib/auth/admin')

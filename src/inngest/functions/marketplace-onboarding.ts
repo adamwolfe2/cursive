@@ -16,7 +16,7 @@ export const marketplaceOnboardingSequence = inngest.createFunction(
   { id: 'marketplace-onboarding-sequence', retries: 2, timeouts: { finish: '15m' } },
   { event: 'marketplace/first-purchase' },
   async ({ event, step }) => {
-    const { workspace_id, user_id, user_email, user_name, credits } = event.data
+    const { workspace_id, user_id: _user_id, user_email, user_name, credits } = event.data
 
     // Day 0: Welcome email
     await step.run('send-welcome-email', async () => {

@@ -5,7 +5,6 @@
  * Initiates the OAuth flow for connecting GoHighLevel accounts.
  */
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { getCurrentUser } from '@/lib/auth/helpers'

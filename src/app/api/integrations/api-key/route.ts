@@ -1,7 +1,6 @@
 // API Key Generation Route
 // POST /api/integrations/api-key - Generate or regenerate an API key
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { createClient } from '@/lib/supabase/server'
@@ -15,7 +14,7 @@ function generateApiKey(): string {
   return `csk_${randomBytes}`
 }
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
     // 1. Auth check
     const user = await getCurrentUser()

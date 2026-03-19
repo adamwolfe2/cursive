@@ -58,7 +58,7 @@ export default function AdminAnalyticsPage() {
       setAuthChecked(true)
     }
     checkAdmin()
-  }, [])
+  }, [supabase])
 
   const fetchAnalytics = useCallback(async () => {
     try {

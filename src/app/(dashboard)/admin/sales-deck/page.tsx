@@ -10,7 +10,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
 // ────────────────────────────────────────────────────────────────────────────

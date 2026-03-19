@@ -11,7 +11,6 @@
 import React from 'react'
 import { useTier } from '@/lib/hooks/use-tier'
 import type { ProductTierFeatures } from '@/types'
-import Link from 'next/link'
 import { getSubscriptionLink, getCreditLink } from '@/lib/stripe/payment-links'
 
 // ============================================================================
@@ -69,7 +68,7 @@ export function LimitGate({
   fallback,
   showUpgradePrompt = true,
 }: LimitGateProps) {
-  const { isWithinLimit, getRemainingLimit, limits, tierName, canUpgrade, isLoading } = useTier()
+  const { isWithinLimit, getRemainingLimit: _getRemainingLimit, limits, tierName, canUpgrade, isLoading } = useTier()
 
   if (isLoading) {
     return null
@@ -154,7 +153,7 @@ const FEATURE_TIERS: Record<keyof ProductTierFeatures, string> = {
 
 function FeatureLockedPrompt({
   feature,
-  currentTier,
+  currentTier: _currentTier,
   canUpgrade,
 }: {
   feature: keyof ProductTierFeatures
@@ -284,7 +283,7 @@ export function UpgradeBanner({
   description = 'Get access to more features and higher limits',
   targetTier = 'Growth',
 }: UpgradeBannerProps) {
-  const { canUpgrade, tierName } = useTier()
+  const { canUpgrade, tierName: _tierName } = useTier()
 
   if (!canUpgrade) return null
 

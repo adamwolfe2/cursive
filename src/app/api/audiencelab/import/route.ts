@@ -9,12 +9,11 @@
  * Requires authenticated user with workspace membership.
  */
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
-import { ImportRequestSchema, ExportRowSchema } from '@/lib/audiencelab/schemas'
+import { ImportRequestSchema } from '@/lib/audiencelab/schemas'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 import { retryFetch } from '@/lib/utils/retry'
 import { processEventInline } from '@/lib/audiencelab/edge-processor'
@@ -85,7 +84,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create import job for progress tracking
-    const { data: importJob, error: jobError } = await supabase
+    const { data: importJob, error: _jobError } = await supabase
       .from('audiencelab_import_jobs')
       .upsert({
         id: existingJob?.id || undefined,
@@ -172,7 +171,7 @@ export async function POST(request: NextRequest) {
     for (let i = 0; i < fileData.length; i += batchSize) {
       const batch = fileData.slice(i, i + batchSize)
 
-      const rowsToInsert = batch.map((row, idx) => ({
+      const rowsToInsert = batch.map((row, _idx) => ({
         source: 'export' as const,
         event_type: 'export_row',
         profile_id: row.profile_id || null,

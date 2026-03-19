@@ -8,7 +8,7 @@
  * calculation tests must be async and await each call.
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import {
   calculateHashKey,
   normalizeEmail,

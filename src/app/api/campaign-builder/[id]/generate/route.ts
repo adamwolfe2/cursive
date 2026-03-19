@@ -3,7 +3,6 @@
  * Generate email sequence using Anthropic Claude
  */
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { CampaignBuilderRepository } from '@/lib/repositories/campaign-builder.repository'

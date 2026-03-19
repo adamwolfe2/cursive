@@ -6,7 +6,6 @@
  * Requires authenticated user + workspace membership.
  */
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getCurrentUser } from '@/lib/auth/helpers'

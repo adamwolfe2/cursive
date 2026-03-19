@@ -5,7 +5,6 @@
  * Handles OAuth callback from GoHighLevel and stores credentials.
  */
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { cookies } from 'next/headers'
@@ -30,7 +29,6 @@ interface OAuthContext {
   workspace_id: string
   user_id: string
 }
-
 
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams

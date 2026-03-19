@@ -23,7 +23,7 @@ function TestComponent() {
           toast.success('With action', {
             action: {
               label: 'Undo',
-              onClick: () => console.log('Undo clicked'),
+              onClick: () => { /* no-op for test */ },
             },
           })
         }

@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { FormField } from '@/components/ui/form-field'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useToast } from '@/lib/hooks/use-toast'
+import Image from 'next/image'
 import { WhitelabelFeatureBanner } from '@/components/premium/PremiumFeatureBanner'
 
 const DEFAULT_PRIMARY = '#3b82f6'
@@ -267,13 +268,13 @@ export default function BrandingSettingsPage() {
               <div className="flex items-center gap-4 p-4 rounded-lg bg-muted">
                 <div className="relative h-12 w-12 overflow-hidden rounded-lg border border-border bg-white">
                   {safeLogoPreviewUrl ? (
-                    <img
+                    <Image
                       src={safeLogoPreviewUrl}
                       alt="Logo preview"
+                      width={48}
+                      height={48}
+                      unoptimized
                       className="h-full w-full object-contain"
-                      onError={(e) => {
-                        ;(e.target as HTMLImageElement).style.display = 'none'
-                      }}
                     />
                   ) : (
                     <div className="h-full w-full flex items-center justify-center">

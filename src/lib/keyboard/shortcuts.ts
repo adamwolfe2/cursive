@@ -168,7 +168,7 @@ export function formatKeyComboHTML(combo: KeyCombo): string {
 // SHORTCUT MANAGER
 // ============================================
 
-type ShortcutCallback = () => void | Promise<void>
+type _ShortcutCallback = () => void | Promise<void>
 type UnsubscribeFn = () => void
 
 class ShortcutManager {

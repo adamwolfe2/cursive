@@ -308,7 +308,7 @@ export async function exportCampaignAnalytics(
   const stats = aggregateEmailStats(sends || [])
 
   // Get daily breakdown
-  const dailyStats = getDailyBreakdown(sends || [])
+  const _dailyStats = getDailyBreakdown(sends || [])
 
   const analyticsData = [
     {

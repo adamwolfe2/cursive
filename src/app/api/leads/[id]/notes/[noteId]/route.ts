@@ -2,12 +2,11 @@
 // PATCH /api/leads/[id]/notes/[noteId] - Update a note
 // DELETE /api/leads/[id]/notes/[noteId] - Delete a note
 
-
 import { NextRequest } from 'next/server'
 import { z } from 'zod'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { LeadActivityRepository } from '@/lib/repositories/lead-activity.repository'
-import { handleApiError, unauthorized, notFound, success, badRequest } from '@/lib/utils/api-error-handler'
+import { handleApiError, unauthorized, success, badRequest } from '@/lib/utils/api-error-handler'
 
 interface RouteContext {
   params: Promise<{ id: string; noteId: string }>
@@ -23,7 +22,7 @@ export async function PATCH(
   context: RouteContext
 ) {
   try {
-    const { id, noteId } = await context.params
+    const { id: _id, noteId } = await context.params
 
     // 1. Check authentication
     const user = await getCurrentUser()
@@ -54,7 +53,7 @@ export async function DELETE(
   context: RouteContext
 ) {
   try {
-    const { id, noteId } = await context.params
+    const { id: _id, noteId } = await context.params
 
     // 1. Check authentication
     const user = await getCurrentUser()

@@ -9,8 +9,6 @@ import {
   DataPoint,
   TimeInterval,
   TrendData,
-  AggregatedMetric,
-  aggregateMetrics,
   calculateTrend,
   aggregateTimeSeries,
   fillMissingDataPoints,

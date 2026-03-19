@@ -4,7 +4,6 @@ import { ReactNode } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import { X } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 import { animationVariants } from '@/lib/animations/variants'
 import { useAnimationProps } from '@/hooks/use-reduced-motion'
 

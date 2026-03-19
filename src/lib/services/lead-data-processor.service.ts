@@ -8,8 +8,8 @@
  */
 
 import { fieldMapper, type FieldMapping, type MappingResult } from './field-mapper.service'
-import { addressStandardization, type StandardizedAddress } from './address-standardization.service'
-import { geocodingService, type GeocodingResult } from './geocoding.service'
+import { addressStandardization } from './address-standardization.service'
+import { geocodingService } from './geocoding.service'
 
 // ============================================
 // TYPES
@@ -412,7 +412,7 @@ export class LeadDataProcessorService {
             }
           }
         }
-      } catch (error) {
+      } catch (_error) {
         warnings.push(`geocoding: Failed to geocode address for row ${rowNumber}`)
       }
     }

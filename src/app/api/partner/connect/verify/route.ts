@@ -1,7 +1,6 @@
 // Verify Stripe Connect Onboarding
 // GET /api/partner/connect/verify?partner_id=xxx
 
-
 import { NextRequest, NextResponse } from "next/server"
 import { createAdminClient } from "@/lib/supabase/admin"
 import { getStripeClient } from "@/lib/stripe/client"

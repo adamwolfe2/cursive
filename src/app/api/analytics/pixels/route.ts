@@ -3,7 +3,6 @@
  * Tracking metrics and identity resolution rates
  */
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { createClient } from '@/lib/supabase/server'
@@ -14,7 +13,7 @@ import { getErrorMessage } from '@/lib/utils/error-messages'
  * GET /api/analytics/pixels
  * Get performance metrics for all pixels
  */
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const user = await getCurrentUser()
     if (!user) {

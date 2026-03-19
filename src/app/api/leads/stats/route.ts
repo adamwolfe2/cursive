@@ -1,8 +1,7 @@
 // Leads Stats API
 // GET /api/leads/stats - Get lead statistics
 
-
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { fastAuth } from '@/lib/auth/fast-auth'
 import { LeadRepository } from '@/lib/repositories/lead.repository'
 import { handleApiError, unauthorized, success } from '@/lib/utils/api-error-handler'

@@ -9,7 +9,6 @@ import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
-
 const updateStepSchema = z.object({
   name: z.string().min(1).max(100).optional(),
   template_id: z.string().uuid().nullable().optional(),

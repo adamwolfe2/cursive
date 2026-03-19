@@ -1,7 +1,6 @@
 // Email Send API
 // Send transactional emails via Resend
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { getCurrentUser } from '@/lib/auth/helpers'

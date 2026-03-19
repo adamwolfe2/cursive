@@ -137,7 +137,7 @@ export function LeadsDataTable({
             </Button>
           </div>
         ) : (
-          data.map((lead, index) => (
+          data.map((lead, _index) => (
             <LeadMobileCard
               key={lead.id}
               lead={lead}

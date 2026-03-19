@@ -40,7 +40,7 @@ export const distributeDailyLeads = inngest.createFunction(
     timeouts: { finish: '10m' },
   },
   { cron: '0 13 * * *' }, // 8am Central = 1pm UTC
-  async ({ event, step }) => {
+  async ({ event: _event, step }) => {
     // Use admin client — this runs server-side with no cookies
     const supabase = createAdminClient()
 

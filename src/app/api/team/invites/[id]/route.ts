@@ -1,7 +1,6 @@
 // Team Invite Detail API
 // DELETE /api/team/invites/[id] - Cancel an invite
 
-
 import { NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
@@ -32,7 +31,7 @@ export async function DELETE(
 
     // 3. Cancel the invite
     const supabase = await createClient()
-    const { data, error } = await supabase
+    const { data: _data, error } = await supabase
       .from('team_invites')
       .update({ status: 'cancelled' })
       .eq('id', id)

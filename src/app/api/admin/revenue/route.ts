@@ -29,7 +29,7 @@ export async function GET() {
       // Credit redemptions this month (marketplace purchases paid by credits)
       creditsRedeemedThisMonth,
       // Active workspaces this month (had any credit purchase or marketplace purchase)
-      activeWorkspacesThisMonth,
+      _activeWorkspacesThisMonth,
       // Partner payouts pending
       pendingPayouts,
       // Partner earnings this month (all partners combined)
@@ -124,7 +124,7 @@ export async function GET() {
 
     // ── Top 10 spenders all-time ─────────────────────────────────────────────
     const spenderMap: Record<string, { workspace_id: string; name: string; total_spend: number; this_month_spend: number }> = {}
-    const thisMonthWorkspaceSet = new Set(thisMonthPurchases.map((r) => r.workspace_id))
+    const _thisMonthWorkspaceSet = new Set(thisMonthPurchases.map((r) => r.workspace_id))
 
     const allSpenders = topSpendersAllTime.data || []
     allSpenders.forEach((row: any) => {

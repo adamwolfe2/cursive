@@ -7,9 +7,8 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { RefreshCw, RotateCcw, CheckCircle, ChevronDown, ChevronUp, AlertTriangle } from 'lucide-react'
+import { RefreshCw, RotateCcw, CheckCircle, ChevronDown, ChevronUp } from 'lucide-react'
 import { useToast } from '@/lib/hooks/use-toast'
 import { safeError } from '@/lib/utils/log-sanitizer'
 

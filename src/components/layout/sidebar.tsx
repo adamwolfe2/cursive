@@ -94,11 +94,13 @@ export function Sidebar({ items, workspace, className }: SidebarProps) {
               </div>
             ) : faviconFallback && !logoError ? (
               <div className="h-10 w-10 overflow-hidden rounded-lg border border-border bg-white flex items-center justify-center">
-                <img
+                <Image
                   src={faviconFallback}
                   alt={workspace.name}
+                  width={24}
+                  height={24}
+                  unoptimized
                   className="h-6 w-6 object-contain"
-                  loading="lazy"
                   onError={() => setLogoError(true)}
                 />
               </div>
@@ -286,6 +288,7 @@ export function SidebarMobile({
     if (isOpen) {
       onClose()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally only close sidebar on pathname change, not on isOpen change
   }, [pathname, onClose])
 
   // Prevent body scroll when sidebar is open

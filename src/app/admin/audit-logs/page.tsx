@@ -271,7 +271,7 @@ export default function AdminAuditLogsPage() {
   const events = data?.data?.events ?? []
   const pagination = data?.data?.pagination
 
-  const todayLogs = summaryData?.data?.logs ?? []
+  const todayLogs = useMemo(() => summaryData?.data?.logs ?? [], [summaryData])
   const todayTotal = summaryData?.data?.pagination?.total ?? 0
   const todayWarnings = useMemo(
     () => todayLogs.filter(l => l.severity === 'warning').length,
@@ -476,7 +476,7 @@ function AuditTable({ logs }: { logs: AuditLog[] }) {
           </tr>
         </thead>
         <tbody>
-          {logs.map((log, i) => (
+          {logs.map((log, _i) => (
             <tr
               key={log.id}
               className={`border-b border-zinc-100 last:border-0 hover:bg-zinc-50 transition-colors ${

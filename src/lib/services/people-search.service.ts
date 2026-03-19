@@ -34,7 +34,7 @@ export class PeopleSearchService {
    */
   async searchPeople(
     filters: PeopleSearchFilters,
-    limit: number = 50
+    _limit: number = 50
   ): Promise<PersonResult[]> {
     try {
       // If domain is provided, use Clay's company enrichment
@@ -162,7 +162,7 @@ export class PeopleSearchService {
   /**
    * Calculate search cost in credits
    */
-  calculateSearchCost(resultsCount: number): number {
+  calculateSearchCost(_resultsCount: number): number {
     // Each email reveal costs 1 credit
     // The search itself is free, only revealing emails costs credits
     return 0

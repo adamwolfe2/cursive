@@ -21,7 +21,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Badge } from '@/components/ui/badge'
-import { StatusBadge } from '@/app/(dashboard)/crm/components/StatusBadge'
 import { LeadAvatar } from '@/app/(dashboard)/crm/components/LeadAvatar'
 import { URLPill } from '@/app/(dashboard)/crm/components/URLPill'
 import { CompanyFavicon } from '@/app/(dashboard)/crm/components/CompanyFavicon'
@@ -30,7 +29,6 @@ import { InlineStatusEdit } from './InlineStatusEdit'
 import { InlineAssignUserEdit } from './InlineAssignUserEdit'
 import { InlineTagsEdit } from './InlineTagsEdit'
 import type { LeadTableRow } from '@/types/crm.types'
-import { cn } from '@/lib/utils'
 
 // Types for workspace data
 interface WorkspaceUser {
@@ -75,7 +73,6 @@ function formatPhone(phone: string | null): string {
   }
   return phone
 }
-
 
 // Separate component so it can hold Dialog state (hooks cannot be called inside column defs)
 function LeadActionsCell({ lead, onRefresh }: { lead: LeadTableRow; onRefresh?: () => void }) {

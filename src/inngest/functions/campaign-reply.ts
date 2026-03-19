@@ -56,7 +56,7 @@ export const processReply = inngest.createFunction(
   },
   { event: 'emailbison/reply-received' },
   async ({ event, step, logger }) => {
-    const { reply_id, lead_email, from_email, subject, body, received_at } = event.data
+    const { reply_id, lead_email: _lead_email, from_email, subject, body, received_at: _received_at } = event.data
 
     logger.info(`Processing reply ${reply_id} from ${from_email}`)
 
@@ -385,7 +385,7 @@ function shouldAutoSend(classification: ReplyClassification): boolean {
 // Helper: Generate mock classification for development
 function generateMockClassification(body: string, subject: string): ReplyClassification {
   const lowerBody = body.toLowerCase()
-  const lowerSubject = subject.toLowerCase()
+  const _lowerSubject = subject.toLowerCase()
 
   // Simple rule-based mock classification
   if (lowerBody.includes('interested') || lowerBody.includes('tell me more') || lowerBody.includes('sounds good')) {
@@ -628,7 +628,7 @@ async function generateResponseWithClaude(
 
   const leadName = reply.lead?.first_name || 'there'
   const companyName = reply.lead?.company_name || 'your company'
-  const campaignName = reply.campaign?.name || ''
+  const _campaignName = reply.campaign?.name || ''
 
   // Get original email context
   const originalEmail = reply.email_send?.body_text || ''

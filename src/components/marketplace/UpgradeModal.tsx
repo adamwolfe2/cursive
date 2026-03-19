@@ -148,7 +148,7 @@ export function UpgradeModal({
       })
   }, [isOpen])
 
-  const checkoutMutation = useMutation({
+  const { mutate: checkoutMutate, isPending: isCheckoutPending } = useMutation({
     mutationFn: async (packageId: string) => {
       const response = await fetch('/api/credits/checkout', {
         method: 'POST',
@@ -176,8 +176,8 @@ export function UpgradeModal({
 
   const handlePurchase = useCallback(() => {
     if (!selectedPackageId) return
-    checkoutMutation.mutate(selectedPackageId)
-  }, [selectedPackageId, checkoutMutation.mutate])
+    checkoutMutate(selectedPackageId)
+  }, [selectedPackageId, checkoutMutate])
 
   const formatPrice = (cents: number) => `$${(cents / 100).toFixed(0)}`
 
@@ -327,12 +327,12 @@ export function UpgradeModal({
               onClick={handlePurchase}
               disabled={
                 !selectedPackageId ||
-                checkoutMutation.isPending ||
+                isCheckoutPending ||
                 loadingPackages
               }
               className="flex-1 sm:flex-initial min-w-[140px]"
             >
-              {checkoutMutation.isPending ? (
+              {isCheckoutPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Redirecting...

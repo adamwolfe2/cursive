@@ -1,10 +1,9 @@
 // Topic Search API Route
 
-
-import { NextResponse, type NextRequest } from 'next/server'
+import { type NextRequest } from 'next/server'
 import { TopicSearchService } from '@/lib/services/topic-search.service'
 import { getCurrentUser } from '@/lib/auth/helpers'
-import { handleApiError, unauthorized, badRequest, success } from '@/lib/utils/api-error-handler'
+import { handleApiError, unauthorized, success } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'
 
 const searchQuerySchema = z.object({

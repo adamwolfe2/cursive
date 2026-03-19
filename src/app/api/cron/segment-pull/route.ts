@@ -107,7 +107,7 @@ interface TargetingCombo {
 /**
  * Parse comma-separated values from AL records.
  */
-function parseCSV(val: unknown): string[] {
+function _parseCSV(val: unknown): string[] {
   if (!val || typeof val !== 'string') return []
   return val.split(',').map(s => s.trim()).filter(Boolean)
 }

@@ -1,15 +1,13 @@
 // Marketplace Purchase API
 // Purchase leads using credits or Stripe
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized, notFound, badRequest, forbidden } from '@/lib/utils/api-error-handler'
 import { MarketplaceRepository } from '@/lib/repositories/marketplace.repository'
-import { COMMISSION_CONFIG, calculateCommission } from '@/lib/services/commission.service'
-import { sendPurchaseConfirmationEmail } from '@/lib/email/service'
+import { calculateCommission } from '@/lib/services/commission.service'
 import { withRateLimit } from '@/lib/middleware/rate-limiter'
 import { getStripeClient } from '@/lib/stripe/client'
 import { TIMEOUTS, getDaysFromNow } from '@/lib/constants/timeouts'

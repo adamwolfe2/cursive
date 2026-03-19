@@ -6,7 +6,6 @@
  * during onboarding when user enters their website.
  */
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { getCompanyEnrichmentService } from '@/lib/services/company-enrichment.service'
 import { safeError } from '@/lib/utils/log-sanitizer'

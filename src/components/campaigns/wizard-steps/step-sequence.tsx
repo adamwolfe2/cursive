@@ -1,7 +1,6 @@
 'use client'
 
 import { FormField, FormLabel, FormInput, FormSelect } from '@/components/ui/form'
-import { Button } from '@/components/ui/button'
 import type { CampaignFormData } from '../campaign-wizard'
 
 interface StepSequenceProps {

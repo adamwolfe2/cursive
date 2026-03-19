@@ -9,7 +9,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
-import { Calendar, CheckCircle2, XCircle, Clock, AlertTriangle, TrendingUp, Copy, Check, ChevronLeft, Search } from 'lucide-react'
+import { Calendar, CheckCircle2, XCircle, Clock, AlertTriangle, Copy, Check, ChevronLeft, Search } from 'lucide-react'
 import { useToast } from '@/lib/hooks/use-toast'
 import { format } from 'date-fns'
 
@@ -95,7 +95,7 @@ export default function CallsPage() {
       setAuthChecked(true)
     }
     checkAdmin()
-  }, [])
+  }, [supabase])
 
   const { data, isLoading } = useQuery<CallsData>({
     queryKey: ['admin', 'ops', 'calls', statusFilter, page],

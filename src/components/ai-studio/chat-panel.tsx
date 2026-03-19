@@ -18,7 +18,7 @@ interface ChatPanelProps {
   context?: string // What page/context the chat is on
 }
 
-export function ChatPanel({ workspaceId, context = 'general' }: ChatPanelProps) {
+export function ChatPanel({ workspaceId: _workspaceId, context: _context = 'general' }: ChatPanelProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',

@@ -90,6 +90,7 @@ export function EmailLayout({ children, preview }: EmailLayoutProps) {
                           borderBottom: '1px solid #e5e7eb',
                         }}
                       >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={`${process.env.NEXT_PUBLIC_APP_URL}/cursive-logo.png`}
                           alt="Cursive"

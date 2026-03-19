@@ -13,7 +13,6 @@ import {
   headingVariants,
   textRevealVariants,
   staggerItemVariants,
-  buttonVariants,
 } from '@/lib/utils/waitlist-animations'
 import type { UserType } from '@/types/waitlist.types'
 

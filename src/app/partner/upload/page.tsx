@@ -4,7 +4,6 @@ import { useState, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   Upload,
-  FileSpreadsheet,
   CheckCircle,
   XCircle,
   AlertTriangle,
@@ -94,6 +93,7 @@ export default function PartnerUploadPage() {
     if (newFiles.length > 0) {
       handleFileSelect(newFiles[0])
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- handleFileSelect only uses stable state setters
   }, [])
 
   // Handle file selection and parsing
@@ -133,7 +133,7 @@ export default function PartnerUploadPage() {
 
       setFieldMappings(autoMappings)
       setStep('mapping')
-    } catch (err) {
+    } catch (_err) {
       setError('Failed to parse CSV file')
     } finally {
       setUploading(false)

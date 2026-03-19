@@ -232,7 +232,7 @@ export async function storeRejectionLog(
   const fileName = `rejections/${uploadBatchId}.csv`
 
   // Store in Supabase storage
-  const { data, error } = await supabase
+  const { data: _data, error } = await supabase
     .storage
     .from('uploads')
     .upload(fileName, csvContent, {

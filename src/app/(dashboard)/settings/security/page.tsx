@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input'
 import { FormField } from '@/components/ui/form-field'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton, SkeletonCard } from '@/components/ui/skeleton'
+import Image from 'next/image'
 import { useToast } from '@/lib/hooks/use-toast'
 import { createClient } from '@/lib/supabase/client'
 
@@ -26,7 +27,7 @@ interface EnrollData {
 export default function SecuritySettingsPage() {
   const router = useRouter()
   const toast = useToast()
-  const queryClient = useQueryClient()
+  const _queryClient = useQueryClient()
 
   // MFA state
   const [mfaEnabled, setMfaEnabled] = useState(false)
@@ -366,9 +367,12 @@ export default function SecuritySettingsPage() {
                       Step 1: Scan this QR code with your authenticator app
                     </p>
                     <div className="inline-block border border-border rounded-lg p-3 bg-white">
-                      <img
+                      <Image
                         src={enrollData.qr_code}
                         alt="QR code for authenticator app"
+                        width={192}
+                        height={192}
+                        unoptimized
                         className="w-48 h-48"
                       />
                     </div>

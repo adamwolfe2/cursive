@@ -14,7 +14,7 @@ interface MarketplaceStatsResponse {
 }
 
 export function MarketplaceStatsCards() {
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error: _error } = useQuery({
     queryKey: ['marketplace-stats'],
     queryFn: async () => {
       const response = await fetch('/api/marketplace/stats')

@@ -98,7 +98,7 @@ export default function AdminEnrichmentCostsPage() {
       setAuthChecked(true)
     }
     checkAdmin()
-  }, [])
+  }, [supabase])
 
   async function fetchData(isRefresh = false) {
     if (isRefresh) setRefreshing(true)

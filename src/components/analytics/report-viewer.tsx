@@ -9,33 +9,22 @@
 
 import * as React from 'react'
 import { cn } from '@/lib/design-system'
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Select } from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
 import { formatPercentage } from '@/lib/design-system'
 import { formatNumber, formatCurrency } from '@/lib/utils'
-import {
-  BarChart,
-  DonutChart,
-  AreaChart,
-  MetricTrend,
-  ChartCard,
-  type ChartDataPoint,
-} from './charts'
+import { MetricTrend } from './charts'
 import {
   type TrendData,
   type FunnelStep,
 } from '@/lib/analytics/metrics'
 import {
   type TableData,
-  type LineChartData,
-  type PieChartData,
-  type BarChartData,
   exportToCSV,
   exportToJSON,
-  generateReportFilename,
 } from '@/lib/analytics/reports'
 import {
   type DateRange,

@@ -3,7 +3,6 @@
  * Generate and download CSV/JSON exports
  */
 
-
 import { NextResponse, type NextRequest } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized, badRequest } from '@/lib/utils/api-error-handler'
@@ -135,7 +134,7 @@ export async function POST(request: NextRequest) {
  * GET /api/exports
  * List available export types
  */
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const user = await getCurrentUser()
     if (!user) return unauthorized()

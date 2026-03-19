@@ -3,7 +3,6 @@
  * POST /api/crm/export/google-sheets - Export CRM leads to Google Sheets
  */
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized, badRequest } from '@/lib/utils/api-error-handler'
@@ -21,7 +20,7 @@ const googleSheetsExportSchema = z.object({
   spreadsheetId: z.string().optional(),
 })
 
-const SHEET_COLUMNS = [
+const _SHEET_COLUMNS = [
   'Email',
   'First Name',
   'Last Name',
@@ -42,7 +41,7 @@ const SHEET_COLUMNS = [
   'Notes',
 ] as const
 
-const LEAD_FIELD_MAP: Record<string, string> = {
+const _LEAD_FIELD_MAP: Record<string, string> = {
   Email: 'email',
   'First Name': 'first_name',
   'Last Name': 'last_name',

@@ -7,7 +7,7 @@
 
 'use client'
 
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { safeWarn } from '@/lib/utils/log-sanitizer'
 
 // Re-export existing hooks

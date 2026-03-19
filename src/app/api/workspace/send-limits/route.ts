@@ -3,8 +3,7 @@
  * Manage global daily sending limits for workspace
  */
 
-
-import { NextResponse, type NextRequest } from 'next/server'
+import { type NextRequest } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized, success, DatabaseError } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'
@@ -18,7 +17,7 @@ const updateLimitSchema = z.object({
  * GET /api/workspace/send-limits
  * Get workspace send stats including all campaign limits
  */
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const user = await getCurrentUser()
     if (!user) return unauthorized()

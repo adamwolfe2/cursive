@@ -64,7 +64,7 @@ export default function AffiliateCommissionsPage() {
 
   const { commissions = [], milestones = [], affiliate } = data || {}
   const totalActivations = affiliate?.total_activations || 0
-  const currentTier = affiliate?.current_tier || 0
+  const _currentTier = affiliate?.current_tier || 0
   const commissionsUnlocked = totalActivations >= 50
 
   return (

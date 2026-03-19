@@ -10,7 +10,6 @@ import { getCurrentUser } from '@/lib/auth/helpers'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { handleApiError, unauthorized, badRequest } from '@/lib/utils/api-error-handler'
 
-
 const createSequenceSchema = z.object({
   name: z.string().min(1).max(100),
   description: z.string().optional(),

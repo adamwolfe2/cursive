@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import Link from 'next/link'
 import { UpgradeModal } from './upgrade-modal'
 import { ServiceRequestBanner } from '@/components/ui/service-request-banner'
 

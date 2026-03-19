@@ -63,7 +63,7 @@ const statusConfig = {
 export function UploadHistoryClient({
   initialBatches,
   totalCount,
-  partnerId,
+  partnerId: _partnerId,
 }: UploadHistoryClientProps) {
   const [batches] = useState(initialBatches)
   const shouldAnimate = useSafeAnimation()
@@ -93,7 +93,7 @@ export function UploadHistoryClient({
     },
   }
 
-  const itemVariants = {
+  const _itemVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,

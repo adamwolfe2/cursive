@@ -219,7 +219,7 @@ async function handleLeadPurchaseCompleted(session: Stripe.Checkout.Session): Pr
     return
   }
 
-  const { purchase_id, workspace_id, user_id, lead_count } = metadataValidation.data
+  const { purchase_id, workspace_id: _workspace_id, user_id, lead_count } = metadataValidation.data
 
   safeLog(`[Stripe Webhook] Processing lead purchase: ${purchase_id}`)
 

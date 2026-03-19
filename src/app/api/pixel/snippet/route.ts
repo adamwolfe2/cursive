@@ -5,7 +5,6 @@ import { safeError } from '@/lib/utils/log-sanitizer'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 
-
 const snippetSchema = z.object({
   snippet: z.string().min(1, 'Snippet is required').max(5000, 'Snippet too long'),
 })

@@ -8,13 +8,11 @@
 import { NextResponse } from 'next/server'
 import { ZodError } from 'zod'
 import {
-  badRequest,
   unauthorized,
   forbidden,
   notFound,
   conflict,
   validationError,
-  rateLimited,
   serverError,
   ErrorDetails,
   ApiErrorResponse,

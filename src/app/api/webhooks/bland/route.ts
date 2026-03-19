@@ -5,7 +5,6 @@
  * Receives voice call status updates and transcripts from Bland.ai.
  */
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { createAdminClient } from '@/lib/supabase/admin'
@@ -63,7 +62,6 @@ async function verifySignature(
     return false
   }
 }
-
 
 /**
  * Map Bland status to our internal status

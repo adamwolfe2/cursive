@@ -8,7 +8,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import NextImage from 'next/image'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { GradientCard, GradientButton } from '@/components/ui/gradient-card'
 import { PageContainer, PageHeader } from '@/components/layout/page-container'

@@ -56,7 +56,7 @@ export function CreateDealDialog({ open, onOpenChange }: CreateDealDialogProps) 
     formState: { errors },
     reset,
     setValue,
-    watch,
+    watch: _watch,
   } = useForm<CreateDealFormData>({
     resolver: zodResolver(createDealSchema),
     defaultValues: {

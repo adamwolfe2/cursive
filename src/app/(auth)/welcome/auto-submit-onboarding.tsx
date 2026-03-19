@@ -287,7 +287,7 @@ export function AutoSubmitOnboarding({ isMarketplace, isReturning }: AutoSubmitO
     }
 
     submit()
-  }, [router, isMarketplace])
+  }, [router, isMarketplace, isReturning])
 
   if (status === 'error') {
     return (

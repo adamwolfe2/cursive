@@ -7,12 +7,9 @@ import {
   ArrowLeft,
   Mail,
   Phone,
-  Building2,
   MapPin,
   Calendar,
   User,
-  Tag,
-  DollarSign,
   MoreVertical,
   Edit2,
   Trash2,
@@ -49,7 +46,7 @@ import { CompanyFavicon } from '@/app/(dashboard)/crm/components/CompanyFavicon'
 import { ScoreProgress } from '@/app/(dashboard)/crm/components/ScoreProgress'
 import { useToast } from '@/lib/hooks/use-toast'
 import { formatPhone, sourceLabel } from '@/components/leads/lead-card'
-import { formatDistanceToNow, format } from 'date-fns'
+import { formatDistanceToNow } from 'date-fns'
 import type { LeadTableRow } from '@/types/crm.types'
 
 interface LeadDetailClientProps {

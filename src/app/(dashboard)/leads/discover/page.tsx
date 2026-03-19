@@ -3,7 +3,6 @@
 import { useState, useCallback } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useTier } from '@/lib/hooks/use-tier'
-import { TierGate, UsageIndicator } from '@/components/tier'
 import Link from 'next/link'
 import { AskYourDataSlideOver } from '@/components/intelligence'
 
@@ -139,7 +138,7 @@ function exportLeadsCSV(leads: LeadResult[]) {
 }
 
 export default function LeadDiscoveryPage() {
-  const { limits, usage, isLoading: tierLoading, tierName, canUpgrade } = useTier()
+  const { limits, usage, isLoading: _tierLoading, tierName, canUpgrade } = useTier()
   const [filters, setFilters] = useState<SearchFilters>(initialFilters)
   const [keywordInput, setKeywordInput] = useState('')
   const [searchResults, setSearchResults] = useState<LeadResult[]>([])
@@ -237,7 +236,7 @@ export default function LeadDiscoveryPage() {
       ? Math.max(0, limits.dailyLeads - (usage.dailyLeadsUsed || 0))
       : null
 
-  const monthlyRemaining = limitsData?.monthlyLimit != null
+  const _monthlyRemaining = limitsData?.monthlyLimit != null
     ? Math.max(0, limitsData.monthlyLimit - (limitsData.monthlyUsed || 0))
     : limits.monthlyLeads != null
       ? Math.max(0, limits.monthlyLeads - (usage.monthlyLeadsUsed || 0))

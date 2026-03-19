@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import {
@@ -71,13 +71,9 @@ export default function AdminServiceDeliveriesPage() {
       setAuthChecked(true)
     }
     checkAdmin()
-  }, [])
+  }, [supabase])
 
-  useEffect(() => {
-    fetchDeliveries()
-  }, [filterStatus, filterType])
-
-  async function fetchDeliveries() {
+  const fetchDeliveries = useCallback(async () => {
     setLoading(true)
     try {
       let query = supabase
@@ -112,7 +108,11 @@ export default function AdminServiceDeliveriesPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [supabase, filterStatus, filterType])
+
+  useEffect(() => {
+    fetchDeliveries()
+  }, [fetchDeliveries])
 
   async function updateDeliveryStatus(deliveryId: string, newStatus: string) {
     try {

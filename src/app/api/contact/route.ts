@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
 
     // Insert message using admin client (bypasses RLS for public submission)
     const supabase = createAdminClient()
-    const { data, error } = await supabase
+    const { data: _data, error } = await supabase
       .from('support_messages')
       .insert({
         name: validated.name,

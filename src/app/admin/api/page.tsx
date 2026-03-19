@@ -56,7 +56,7 @@ async function fetchDashboardData() {
   const since30d = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
   const since14d = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString()
 
-  const [summaryRes, serviceRes, dailyRes, workspaceRes, recentRes] = await Promise.all([
+  const [summaryRes, _serviceRes, dailyRes, workspaceRes, recentRes] = await Promise.all([
     // 30-day totals
     db.from('api_logs')
       .select('estimated_cost, status_code, service')

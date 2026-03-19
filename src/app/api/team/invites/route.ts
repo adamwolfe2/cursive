@@ -2,7 +2,6 @@
 // GET /api/team/invites - Get pending invites
 // POST /api/team/invites - Create a new invite
 
-
 import { NextRequest } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { z } from 'zod'
@@ -28,7 +27,7 @@ const createInviteSchema = z.object({
   role: z.enum(['admin', 'member']).default('member'),
 })
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     // 1. Check authentication
     const user = await getCurrentUser()

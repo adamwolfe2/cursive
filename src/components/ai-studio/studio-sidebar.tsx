@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { cn } from '@/lib/design-system'
 import {
@@ -70,7 +71,7 @@ export function StudioSidebar() {
       {/* Header */}
       <div className="flex h-16 items-center border-b border-border px-6">
         <div className="flex items-center gap-2">
-          <img src="/cursive-logo.png" alt="AI Studio" className="h-6 w-6 object-contain" />
+          <Image src="/cursive-logo.png" alt="AI Studio" width={24} height={24} className="h-6 w-6 object-contain" />
           <span className="text-lg font-semibold text-foreground">AI Studio</span>
         </div>
       </div>

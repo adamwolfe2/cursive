@@ -24,7 +24,6 @@ import {
   previewAudience,
 } from '@/lib/audiencelab/api-client'
 
-
 export async function GET(request: NextRequest) {
   // Auth check — admin only (Edge-compatible cookie read)
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL

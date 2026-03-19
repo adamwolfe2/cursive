@@ -20,7 +20,7 @@ interface ServiceTier {
   updated_at: string
 }
 
-type ServiceTierInsert = Omit<ServiceTier, 'id' | 'created_at' | 'updated_at'> & {
+type _ServiceTierInsert = Omit<ServiceTier, 'id' | 'created_at' | 'updated_at'> & {
   id?: string
   created_at?: string
   updated_at?: string

@@ -102,8 +102,8 @@ export class UploadHandlerService {
    */
   async createPreview(
     data: Record<string, string>[],
-    fileName: string,
-    fileType: 'csv' | 'xlsx' | 'json'
+    _fileName: string,
+    _fileType: 'csv' | 'xlsx' | 'json'
   ): Promise<UploadPreview> {
     if (!data || data.length === 0) {
       throw new ValidationError('File is empty or could not be parsed')
@@ -212,7 +212,7 @@ export class UploadHandlerService {
     config: UploadConfig,
     onProgress?: (progress: UploadProgress) => void
   ): Promise<UploadProgress> {
-    const supabase = await createClient()
+    const _supabase = await createClient()
 
     // Update job status
     await this.updateJobStatus(jobId, 'processing', { total_rows: data.length, started_at: new Date().toISOString() })
@@ -522,7 +522,7 @@ export class UploadHandlerService {
   /**
    * Create a lead from mapped data
    */
-  private async createLead(row: Record<string, string | null>, config: UploadConfig): Promise<string> {
+  private async createLead(row: Record<string, string | null>, _config: UploadConfig): Promise<string> {
     const supabase = await createClient()
 
     const leadData = {

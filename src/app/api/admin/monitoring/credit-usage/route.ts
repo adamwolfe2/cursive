@@ -12,7 +12,7 @@ import { requireAdmin } from '@/lib/auth/admin'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   try {
     const user = await getCurrentUser()
     if (!user) {

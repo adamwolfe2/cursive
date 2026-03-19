@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Users2, Copy, Check, ExternalLink, TrendingUp, Award, DollarSign, UserCheck } from 'lucide-react'
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://leads.meetcursive.com'
+const _APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://leads.meetcursive.com'
 const MARKETING_URL = 'https://meetcursive.com'
 
 const TIER_THRESHOLDS = [

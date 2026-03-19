@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Button } from '@/components/ui/button'
 import { Filter, ArrowUpDown, Settings2, ChevronDown, ExternalLink, Plus } from 'lucide-react'
@@ -288,9 +289,12 @@ export function TwentyStyleTable({ data, onRowClick }: TwentyStyleTableProps) {
                       {lead.company_name ? (
                         <div className="flex items-center gap-2">
                           {faviconUrl ? (
-                            <img
+                            <Image
                               src={faviconUrl}
                               alt={`${lead.company_name} logo`}
+                              width={16}
+                              height={16}
+                              unoptimized
                               className="h-4 w-4 rounded"
                               onError={(e) => {
                                 e.currentTarget.style.display = 'none'

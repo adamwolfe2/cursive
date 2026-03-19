@@ -10,7 +10,6 @@ import { getCurrentUser } from '@/lib/auth/helpers'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 
-
 const createStepSchema = z.object({
   name: z.string().min(1).max(100),
   template_id: z.string().uuid().optional(),

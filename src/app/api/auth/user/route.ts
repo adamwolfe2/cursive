@@ -1,7 +1,6 @@
 // Get Current User API
 // Returns the authenticated user's data
 
-
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { safeError } from '@/lib/utils/log-sanitizer'

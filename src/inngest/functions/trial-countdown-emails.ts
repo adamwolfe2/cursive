@@ -17,7 +17,7 @@ import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://leads.meetcursive.com'
 const UPGRADE_URL = `${APP_URL}/settings/billing`
-const DASHBOARD_URL = `${APP_URL}/leads`
+const _DASHBOARD_URL = `${APP_URL}/leads`
 
 function daysFromNow(n: number): { start: string; end: string } {
   const base = new Date()
@@ -112,7 +112,7 @@ ${sampleLeads.length > 0 ? `<p style="margin:0 0 8px;font-size:14px;font-weight:
   return { subject, html, text }
 }
 
-function trialEmailDayOf({ userName, trialEndsAt }: { userName: string; trialEndsAt: string }) {
+function trialEmailDayOf({ userName, trialEndsAt: _trialEndsAt }: { userName: string; trialEndsAt: string }) {
   const subject = `Your Cursive trial expires today`
   const html = `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${subject}</title></head>
 <body style="margin:0;padding:0;background:#f4f4f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">

@@ -4,7 +4,7 @@
  * /affiliate/referrals — All referrals with filter tabs
  */
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { format } from 'date-fns'
 import { Users } from 'lucide-react'

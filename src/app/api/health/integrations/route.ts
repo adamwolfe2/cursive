@@ -6,7 +6,6 @@
  * required environment variables configured (not their values).
  */
 
-
 import { NextResponse } from 'next/server'
 import { requireAdmin } from '@/lib/auth/admin'
 

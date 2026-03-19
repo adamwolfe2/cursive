@@ -169,7 +169,7 @@ export const leadEnrichment = inngest.createFunction(
     await step.run('trigger-delivery', async () => {
       // Determine delivery channels based on workspace settings
       const supabase = createAdminClient()
-      const { data: workspace } = await supabase
+      const { data: _workspace } = await supabase
         .from('workspaces')
         .select('id')
         .eq('id', workspace_id)

@@ -67,7 +67,7 @@ const statusConfig = {
 export function EarningsClient({
   initialEarnings,
   totalCount,
-  partnerId,
+  partnerId: _partnerId,
   stats,
 }: EarningsClientProps) {
   const [earnings] = useState(initialEarnings)

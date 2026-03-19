@@ -1,4 +1,3 @@
-import { safeError } from '@/lib/utils/log-sanitizer'
 import { createAdminClient } from '@/lib/supabase/admin'
 import Anthropic from '@anthropic-ai/sdk'
 

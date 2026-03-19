@@ -24,7 +24,7 @@ const EXAMPLE_QUERIES = [
   "Show me leads with tech stacks including Salesforce",
 ]
 
-export function AskYourDataPanel({ className, hideHeader }: AskYourDataPanelProps) {
+export function AskYourDataPanel({ className, hideHeader: _hideHeader }: AskYourDataPanelProps) {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)

@@ -1,7 +1,6 @@
 // Industry Categories API
 // Returns list of industry categories for partner upload wizard
 
-
 import { NextResponse } from 'next/server'
 import { INDUSTRY_CATEGORIES } from '@/lib/constants/industries'
 import { safeError } from '@/lib/utils/log-sanitizer'

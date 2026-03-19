@@ -48,7 +48,7 @@ export const processAiAudit = inngest.createFunction(
       using_ai,
       audit_reason,
       ideal_outcome,
-      website_url,
+      _website_url,
     } = event.data
 
     safeLog(`[AI Audit] Processing audit submission for ${email}`)

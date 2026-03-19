@@ -3,7 +3,6 @@
  * POST /api/sequences/[id]/enroll - Enroll leads in sequence
  */
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { getCurrentUser } from '@/lib/auth/helpers'

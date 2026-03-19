@@ -18,7 +18,7 @@ export const emailSchema = z
       if (email.startsWith('.') || email.endsWith('.')) return false
 
       // Validate domain has at least one dot (e.g., example.com)
-      const [local, domain] = email.split('@')
+      const [_local, domain] = email.split('@')
       if (!domain || !domain.includes('.')) return false
 
       // Domain shouldn't start or end with dot

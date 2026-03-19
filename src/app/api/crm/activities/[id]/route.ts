@@ -5,7 +5,6 @@
  * DELETE /api/crm/activities/[id] - Delete an activity
  */
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { fastAuth } from '@/lib/auth/fast-auth'
 import { ActivityRepository } from '@/lib/repositories/activity.repository'

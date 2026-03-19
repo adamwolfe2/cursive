@@ -8,10 +8,7 @@
 
 import { inngest } from '../client'
 import { createAdminClient } from '@/lib/supabase/admin'
-import {
-  getLeadsReadyForSend,
-  updateCampaignLeadOptimalTimes,
-} from '@/lib/services/campaign/timezone-scheduling.service'
+import { getLeadsReadyForSend } from '@/lib/services/campaign/timezone-scheduling.service'
 
 /**
  * Process campaign sequences
@@ -200,7 +197,7 @@ export const handleAutoSendEmail = inngest.createFunction(
   },
   { event: 'campaign/email-composed' },
   async ({ event, step, logger }) => {
-    const { email_send_id, campaign_id, workspace_id, sequence_step, auto_send } = event.data
+    const { email_send_id, campaign_id: _campaign_id, workspace_id, sequence_step, auto_send } = event.data
 
     // Only auto-send follow-up emails (step 2+), not the first email
     if (!auto_send || sequence_step <= 1) {

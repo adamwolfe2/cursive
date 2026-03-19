@@ -3,8 +3,7 @@
  * Track and manage onboarding progress
  */
 
-
-import { NextResponse, type NextRequest } from 'next/server'
+import { type NextRequest } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized, success, badRequest, DatabaseError } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'
@@ -36,7 +35,7 @@ const actionSchema = z.union([completeStepSchema, skipStepSchema, initSchema])
  * GET /api/workspace/onboarding
  * Get onboarding progress
  */
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const user = await getCurrentUser()
     if (!user) return unauthorized()

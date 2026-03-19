@@ -20,7 +20,7 @@ interface TrendChartProps {
   topicName: string
 }
 
-export function TrendChart({ data, topicName }: TrendChartProps) {
+export function TrendChart({ data, topicName: _topicName }: TrendChartProps) {
   // Format data for chart
   const chartData = data.map((trend) => ({
     week: new Date(trend.week_start).toLocaleDateString('en-US', {

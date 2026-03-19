@@ -220,7 +220,7 @@ function getGoogleFaviconUrl(domain: string): string {
 /**
  * Fetch logo using DuckDuckGo icons (free fallback)
  */
-function getDuckDuckGoIconUrl(domain: string): string {
+function _getDuckDuckGoIconUrl(domain: string): string {
   return `https://icons.duckduckgo.com/ip3/${domain}.ico`
 }
 

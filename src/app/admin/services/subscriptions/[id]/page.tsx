@@ -1,21 +1,19 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import {
   ArrowLeft,
   Package,
-  Calendar,
-  DollarSign,
   Mail,
   User,
   CheckCircle,
   XCircle,
   Clock,
   AlertCircle,
-  ExternalLink
+  ExternalLink,
 } from 'lucide-react'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
@@ -69,7 +67,7 @@ interface Delivery {
 
 export default function AdminSubscriptionDetailPage() {
   const params = useParams()
-  const router = useRouter()
+  const _router = useRouter()
   const subscriptionId = params.id as string
   const [subscription, setSubscription] = useState<ServiceSubscription | null>(null)
   const [deliveries, setDeliveries] = useState<Delivery[]>([])
@@ -101,14 +99,9 @@ export default function AdminSubscriptionDetailPage() {
       setAuthChecked(true)
     }
     checkAdmin()
-  }, [])
+  }, [supabase])
 
-  useEffect(() => {
-    fetchSubscriptionDetails()
-    fetchDeliveries()
-  }, [subscriptionId])
-
-  async function fetchSubscriptionDetails() {
+  const fetchSubscriptionDetails = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('service_subscriptions')
@@ -128,9 +121,9 @@ export default function AdminSubscriptionDetailPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [supabase, subscriptionId])
 
-  async function fetchDeliveries() {
+  const fetchDeliveries = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('service_deliveries')
@@ -144,7 +137,12 @@ export default function AdminSubscriptionDetailPage() {
     } catch (error) {
       safeError('[AdminSubscriptionDetail]', 'Failed to fetch deliveries:', error)
     }
-  }
+  }, [supabase, subscriptionId])
+
+  useEffect(() => {
+    fetchSubscriptionDetails()
+    fetchDeliveries()
+  }, [fetchSubscriptionDetails, fetchDeliveries])
 
   async function updateStatus(newStatus: string) {
     setUpdating(true)

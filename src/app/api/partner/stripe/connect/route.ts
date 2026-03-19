@@ -1,7 +1,6 @@
 // Partner Stripe Connect API
 // Creates Stripe Connect account link for partner onboarding
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { PartnerRepository } from '@/lib/repositories/partner.repository'
@@ -9,7 +8,7 @@ import { getStripeClient } from '@/lib/stripe/client'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { isStripeError } from '@/lib/utils/error-helpers'
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
     const stripe = getStripeClient()
     // Get current user
@@ -89,7 +88,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const stripe = getStripeClient()
     // Get current user

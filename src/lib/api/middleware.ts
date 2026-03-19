@@ -339,7 +339,7 @@ export function withLogging<T extends NextResponse>(
 
     try {
       const response = await handler(request, context)
-      const duration = Date.now() - start
+      const _duration = Date.now() - start
 
       return response
     } catch (error) {

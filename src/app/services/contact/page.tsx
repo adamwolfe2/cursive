@@ -36,7 +36,7 @@ export default function ContactSalesPage() {
         throw new Error((errorData as any).error || 'Failed to submit inquiry')
       }
 
-      const data = await response.json()
+      const _data = await response.json()
 
       setSubmitted(true)
       toast.success('Inquiry submitted successfully!')

@@ -1,10 +1,9 @@
 'use client'
 
 import * as React from 'react'
-import { Slot } from '@radix-ui/react-slot'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/design-system'
-import { motion, type HTMLMotionProps } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { useSafeAnimation } from '@/hooks/use-reduced-motion'
 
 const buttonVariants = cva(

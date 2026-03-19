@@ -6,7 +6,7 @@
  * All DB/fetch interactions are mocked — no real network calls.
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect } from 'vitest'
 
 // ─── HMAC Signature Tests ────────────────────────────────────────────────────
 

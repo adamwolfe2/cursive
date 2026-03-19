@@ -1,7 +1,6 @@
 // Bulk Lead Actions API
 // POST /api/leads/bulk - Perform bulk actions on leads
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { z } from 'zod'

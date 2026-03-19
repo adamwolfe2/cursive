@@ -4,7 +4,6 @@ import { ReactNode } from 'react'
 import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import { LayoutGrid, LayoutList, Calendar } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 
 export type ViewType = 'table' | 'board' | 'calendar'
 

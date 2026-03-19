@@ -30,7 +30,7 @@ import {
 import { useTheme } from 'next-themes'
 
 type ChartType = 'line' | 'area' | 'bar'
-type Period = '7d' | '30d' | '90d' | '12m'
+type _Period = '7d' | '30d' | '90d' | '12m'
 
 interface ChartDataPoint {
   label: string

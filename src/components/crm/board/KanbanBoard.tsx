@@ -4,9 +4,8 @@ import { ReactNode } from 'react'
 import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import { Plus } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 
-interface KanbanColumn<T> {
+interface KanbanColumn<_T> {
   id: string
   title: string
   color?: string

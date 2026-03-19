@@ -111,7 +111,7 @@ export function DealsPageClient({ initialData }: DealsPageClientProps) {
     setDrawerOpen(true)
   }
 
-  const handleAddCard = (columnId: string) => {
+  const handleAddCard = (_columnId: string) => {
     setCreateDialogOpen(true)
   }
 

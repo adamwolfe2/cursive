@@ -1,11 +1,10 @@
 // Campaigns API Routes
 // List all campaigns and create new campaigns
 
-
 import { type NextRequest, NextResponse } from 'next/server'
 import { CampaignRepository } from '@/lib/repositories/campaign.repository'
 import { fastAuth } from '@/lib/auth/fast-auth'
-import { handleApiError, unauthorized, success, created } from '@/lib/utils/api-error-handler'
+import { handleApiError, unauthorized, created } from '@/lib/utils/api-error-handler'
 import {
   requireFeature,
   requireWithinLimit,

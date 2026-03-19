@@ -39,7 +39,7 @@ const partnerRegisterSchema = z.object({
 type PartnerRegisterForm = z.infer<typeof partnerRegisterSchema>
 
 export default function PartnerRegisterPage() {
-  const router = useRouter()
+  const _router = useRouter()
   const [error, setError] = useState<string | null>(null)
 
   const {

@@ -4,7 +4,6 @@
  * Sends email with link to full onboarding form
  */
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'

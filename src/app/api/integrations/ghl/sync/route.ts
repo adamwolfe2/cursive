@@ -3,14 +3,12 @@
  * POST /api/integrations/ghl/sync - Sync leads to GHL
  */
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { createClient } from '@/lib/supabase/server'
 import {
-  syncContactToGhl,
   bulkSyncToGhl,
   getGhlConnection,
   getGhlPipelines,
@@ -85,7 +83,7 @@ export async function POST(req: NextRequest) {
 }
 
 // GET pipelines
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   try {
     const user = await getCurrentUser()
     if (!user) return unauthorized()

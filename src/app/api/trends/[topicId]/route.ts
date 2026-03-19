@@ -1,7 +1,6 @@
 // Trend History API
 // GET /api/trends/[topicId] - Get trend history for a topic
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { createClient } from '@/lib/supabase/server'

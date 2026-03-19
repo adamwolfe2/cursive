@@ -2,8 +2,7 @@
 // GET /api/leads/[id]/notes - Get notes for a lead
 // POST /api/leads/[id]/notes - Create a note for a lead
 
-
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { z } from 'zod'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { LeadActivityRepository } from '@/lib/repositories/lead-activity.repository'

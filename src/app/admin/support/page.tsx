@@ -52,10 +52,11 @@ export default function AdminSupportPage() {
       setAuthChecked(true)
     }
     checkAdmin()
-  }, [])
+  }, [supabase])
 
   useEffect(() => {
     fetchMessages()
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- runs once on mount
   }, [])
 
   const fetchMessages = async () => {

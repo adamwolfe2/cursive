@@ -207,7 +207,7 @@ export function LeadDetailPanel({
   }
 
   // Generate initials for avatar
-  const initials = personName
+  const _initials = personName
     .split(' ')
     .map((n) => n[0])
     .join('')

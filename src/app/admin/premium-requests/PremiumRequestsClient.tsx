@@ -9,7 +9,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { toast } from 'sonner'
-import type { PremiumFeatureRequest, FeatureType } from '@/types/premium'
+import type { FeatureType } from '@/types/premium'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { PREMIUM_FEATURES } from '@/types/premium'
 

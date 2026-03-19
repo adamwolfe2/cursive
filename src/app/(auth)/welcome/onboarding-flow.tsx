@@ -62,7 +62,7 @@ interface OnboardingFlowProps {
   prefilledEmail?: string
 }
 
-export function OnboardingFlow({ isMarketplace, isCallProspect = false, prefilledEmail = '' }: OnboardingFlowProps) {
+export function OnboardingFlow({ isMarketplace, isCallProspect = false, prefilledEmail: _prefilledEmail = '' }: OnboardingFlowProps) {
   const router = useRouter()
   const {
     currentScreen,

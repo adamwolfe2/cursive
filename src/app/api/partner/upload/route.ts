@@ -517,7 +517,7 @@ export async function POST(request: NextRequest) {
 /**
  * Calculate data completeness percentage
  */
-function calculateDataCompleteness(row: z.infer<typeof leadSchema>): number {
+function _calculateDataCompleteness(row: z.infer<typeof leadSchema>): number {
   const fields = [
     'first_name',
     'last_name',

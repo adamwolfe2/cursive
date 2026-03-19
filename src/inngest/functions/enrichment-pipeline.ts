@@ -9,11 +9,7 @@
 import { inngest } from '../client'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { validateEmail, findBestEmail } from '@/lib/services/enrichment/email-validation.service'
-import {
-  qualifyLead,
-  researchCompany,
-  analyzeIntentSignals,
-} from '@/lib/services/ai/claude.service'
+import { qualifyLead, researchCompany } from '@/lib/services/ai/claude.service'
 import { getCachedCompanyAnalysis } from '@/lib/ai/company-analysis'
 import { enrichLeadWithClay, enrichCompanyWithClay } from '@/lib/services/clay.service'
 import {
@@ -77,7 +73,7 @@ export const processEnrichmentJob = inngest.createFunction(
     const { job_id, lead_id, workspace_id, provider } = event.data as EnrichmentJobData
 
     // Step 1: Mark job as in progress and fetch lead (includes dedup check)
-    const { job, lead, alreadyEnriched } = await step.run('fetch-job-and-lead', async () => {
+    const { job: _job, lead, alreadyEnriched } = await step.run('fetch-job-and-lead', async () => {
       const supabase = createAdminClient()
 
       // Update job status

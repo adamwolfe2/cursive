@@ -28,8 +28,8 @@ export interface LinkedInProfile {
 export async function getLinkedInProfile(
   linkedinUrl?: string,
   email?: string,
-  name?: string,
-  company?: string,
+  _name?: string,
+  _company?: string,
 ): Promise<LinkedInProfile | null> {
   const apiKey = process.env.PROXYCURL_API_KEY
   if (!apiKey) return null

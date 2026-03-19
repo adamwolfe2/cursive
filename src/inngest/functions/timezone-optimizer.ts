@@ -187,7 +187,7 @@ export const onCampaignScheduleChanged = inngest.createFunction(
   },
   { event: 'campaign/schedule-changed' },
   async ({ event, step, logger }) => {
-    const { campaign_id, workspace_id } = event.data
+    const { campaign_id, workspace_id: _workspace_id } = event.data
 
     logger.info(`Campaign ${campaign_id} schedule changed, recalculating optimal times`)
 

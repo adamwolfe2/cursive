@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
+import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 
 interface ProductTier {
@@ -96,7 +97,7 @@ export default function AdminWorkspaceDetailPage() {
       setAuthChecked(true)
     }
     checkAdmin()
-  }, [])
+  }, [supabase])
 
   // Fetch workspace details
   const { data: workspace, isLoading } = useQuery({
@@ -327,9 +328,12 @@ export default function AdminWorkspaceDetailPage() {
           </Link>
           <div className="flex items-center gap-3">
             {workspace.logo_url ? (
-              <img
+              <Image
                 src={workspace.logo_url}
                 alt={workspace.name}
+                width={48}
+                height={48}
+                unoptimized
                 className="h-12 w-12 rounded-lg object-contain border border-zinc-200"
               />
             ) : (

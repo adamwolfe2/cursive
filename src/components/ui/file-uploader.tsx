@@ -77,7 +77,7 @@ interface FileUploaderProps {
 
 export function FileUploader(props: FileUploaderProps) {
   const {
-    value: valueProp,
+    value: _valueProp,
     onValueChange,
     onUpload,
     accept = {

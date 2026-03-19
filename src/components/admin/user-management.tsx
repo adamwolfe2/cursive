@@ -8,13 +8,12 @@
  */
 
 import * as React from 'react'
-import { cn } from '@/lib/design-system'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
-import { DataTable, TableToolbar, Pagination } from '@/components/ui/data-table'
+import { DataTable, TableToolbar } from '@/components/ui/data-table'
 import { Avatar } from '@/components/ui/avatar'
 import { Modal, ModalHeader, ModalTitle, ModalDescription, ModalContent, ModalFooter } from '@/components/ui/modal'
 import { formatDistanceToNow } from 'date-fns'

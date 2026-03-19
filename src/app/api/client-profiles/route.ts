@@ -1,7 +1,6 @@
 // Client Profiles API Routes
 // List all client profiles and create new profiles
 
-
 import { type NextRequest } from 'next/server'
 import { ClientProfileRepository } from '@/lib/repositories/client-profile.repository'
 import { getCurrentUser } from '@/lib/auth/helpers'

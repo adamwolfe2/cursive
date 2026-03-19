@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
@@ -93,13 +93,9 @@ export default function AdminPayoutsPage() {
       setAuthChecked(true)
     }
     checkAdmin()
-  }, [])
+  }, [supabase])
 
-  useEffect(() => {
-    if (authChecked && isAdmin) fetchPayouts()
-  }, [statusFilter, authChecked, isAdmin])
-
-  const fetchPayouts = async () => {
+  const fetchPayouts = useCallback(async () => {
     setLoading(true)
     try {
       const res = await fetch(`/api/admin/payouts?status=${statusFilter}`)
@@ -114,7 +110,11 @@ export default function AdminPayoutsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [statusFilter])
+
+  useEffect(() => {
+    if (authChecked && isAdmin) fetchPayouts()
+  }, [fetchPayouts, authChecked, isAdmin])
 
   const handleApprove = async (payoutId: string) => {
     setConfirmApproveId(null)

@@ -5,7 +5,6 @@
  * DELETE /api/crm/companies/[id] - Delete a company
  */
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { CompanyRepository } from '@/lib/repositories/company.repository'

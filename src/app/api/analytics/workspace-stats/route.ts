@@ -3,7 +3,6 @@
  * Comprehensive workspace metrics for dashboard
  */
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { fastAuth } from '@/lib/auth/fast-auth'
 import { createClient } from '@/lib/supabase/server'

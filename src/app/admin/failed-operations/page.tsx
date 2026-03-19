@@ -5,12 +5,12 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
   Table,
   TableBody,
@@ -85,13 +85,9 @@ export default function FailedOperationsPage() {
       setAuthChecked(true)
     }
     checkAdmin()
-  }, [])
+  }, [supabase])
 
-  useEffect(() => {
-    loadOperations()
-  }, [filter, showResolved])
-
-  async function loadOperations() {
+  const loadOperations = useCallback(async () => {
     setLoading(true)
     try {
       const params = new URLSearchParams({
@@ -112,7 +108,11 @@ export default function FailedOperationsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [filter, showResolved])
+
+  useEffect(() => {
+    loadOperations()
+  }, [loadOperations])
 
   async function retryOperation(id: string) {
     setRetrying(id)

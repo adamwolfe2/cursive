@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Button } from '@/components/ui/button'
 import { Filter, ArrowUpDown, Settings2, ChevronDown, ExternalLink, Plus } from 'lucide-react'
@@ -253,9 +254,12 @@ export function CompaniesTable({ data, onRowClick, onCreateClick }: CompaniesTab
                     <td className="px-3 py-2.5">
                       <div className="flex items-center gap-2">
                         {faviconUrl ? (
-                          <img
+                          <Image
                             src={faviconUrl}
                             alt={`${company.name} logo`}
+                            width={24}
+                            height={24}
+                            unoptimized
                             className="h-6 w-6 rounded"
                             onError={(e) => {
                               e.currentTarget.style.display = 'none'

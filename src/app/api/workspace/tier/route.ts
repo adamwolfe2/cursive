@@ -4,8 +4,6 @@
  */
 export const runtime = 'edge'
 
-
-
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { createClient } from '@/lib/supabase/server'
@@ -43,7 +41,7 @@ const DEFAULT_FEATURES: ProductTierFeatures = {
   max_email_accounts: 1,
 }
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const user = await getCurrentUser()
     if (!user) {

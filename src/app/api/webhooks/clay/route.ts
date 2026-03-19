@@ -5,7 +5,6 @@
  * Receives enriched contact/company data from Clay.
  */
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { createAdminClient } from '@/lib/supabase/admin'
@@ -59,7 +58,6 @@ async function verifySignature(
     return false
   }
 }
-
 
 export async function POST(req: NextRequest) {
   let clay_record_id: string | undefined

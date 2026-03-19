@@ -7,7 +7,6 @@ import { createClient } from '@/lib/supabase/server'
 import type {
   PartnerAnalytics,
   PartnerCredit,
-  PartnerCreditTransaction,
   LeadPurchase,
 } from '@/types/database.types'
 import { safeError } from '@/lib/utils/log-sanitizer'

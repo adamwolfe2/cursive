@@ -17,7 +17,6 @@ import { safeError } from '@/lib/utils/log-sanitizer'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 
-
 const serviceRequestSchema = z.object({
   request_type: z.string().min(1).max(100),
   details: z.string().min(1).max(2000),

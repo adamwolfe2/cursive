@@ -34,7 +34,7 @@ export const ghlOnboardCustomer = inngest.createFunction(
   { event: 'ghl-admin/onboard-customer' },
   async ({ event, step }) => {
     const {
-      user_id,
+      _user_id,
       user_email,
       user_name,
       company_name,

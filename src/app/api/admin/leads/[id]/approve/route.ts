@@ -1,7 +1,6 @@
 // Admin Lead Approve API
 // Approve a lead for inclusion in marketplace
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { requireAdmin } from '@/lib/auth/admin'

@@ -45,7 +45,7 @@ export function SearchForm({ onSearch, loading }: SearchFormProps) {
     handleSubmit,
     formState: { errors, isValid },
     reset,
-    watch,
+    watch: _watch,
   } = useForm<PeopleSearchFormData>({
     resolver: zodResolver(peopleSearchSchema),
     mode: 'onBlur',

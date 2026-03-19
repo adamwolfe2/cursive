@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
-import { ArrowLeft, ExternalLink, Mail, CheckCircle2, XCircle, Clock, Package } from 'lucide-react'
+import { ArrowLeft, Mail, CheckCircle2, XCircle, Clock, Package } from 'lucide-react'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { useToast } from '@/lib/hooks/use-toast'
 

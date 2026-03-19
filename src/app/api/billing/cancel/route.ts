@@ -5,7 +5,6 @@
  * Cancels the user's subscription at end of billing period.
  */
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { cancelSubscription, resumeSubscription } from '@/lib/stripe/client'

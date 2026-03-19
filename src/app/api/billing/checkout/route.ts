@@ -1,7 +1,6 @@
 // Billing Checkout API Route
 // POST /api/billing/checkout - Create Stripe Checkout session
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { createCheckoutSession } from '@/lib/stripe/client'

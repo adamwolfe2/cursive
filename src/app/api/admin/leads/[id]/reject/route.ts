@@ -1,7 +1,6 @@
 // Admin Lead Reject API
 // Reject a lead with reason code and notify partner
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'

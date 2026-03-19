@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
     const creditsNeeded = eligibleLeads.length * INTEL_CREDIT_COST
 
     // Atomically check + deduct credits (prevents race condition)
-    const { data: newBalance, error: deductError } = await supabase
+    const { data: _newBalance, error: deductError } = await supabase
       .rpc('deduct_workspace_credits', {
         p_workspace_id: user.workspaceId,
         p_amount: creditsNeeded,

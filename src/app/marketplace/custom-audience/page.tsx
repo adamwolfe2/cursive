@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { PageContainer, PageHeader } from '@/components/layout/page-container'
 import { GradientCard } from '@/components/ui/gradient-card'
-import { Check, ArrowRight, Loader2 } from 'lucide-react'
+import { Check, ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 const INDUSTRIES = [

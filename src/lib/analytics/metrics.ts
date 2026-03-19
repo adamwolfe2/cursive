@@ -171,7 +171,7 @@ export function generateDateRange(
 }
 
 export function formatDateByInterval(date: Date, interval: TimeInterval): string {
-  const options: Intl.DateTimeFormatOptions = {}
+  const _options: Intl.DateTimeFormatOptions = {}
 
   switch (interval) {
     case 'hour':

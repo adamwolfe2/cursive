@@ -4,7 +4,6 @@
  * GET /api/enrichment/queue - Get enrichment queue status
  */
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { safeLog } from '@/lib/utils/log-sanitizer'
 import { inngest } from '@/inngest/client'
@@ -13,12 +12,7 @@ import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { createClient } from '@/lib/supabase/server'
 import { withRateLimit, getRequestIdentifier } from '@/lib/middleware/rate-limiter'
-import {
-  queueEnrichment,
-  getEnrichmentStats,
-  type EnrichmentProvider,
-  type EnrichmentPriority,
-} from '@/lib/services/enrichment/enrichment-queue.service'
+import { getEnrichmentStats } from '@/lib/services/enrichment/enrichment-queue.service'
 
 // Validation schema
 const queueEnrichmentSchema = z.object({

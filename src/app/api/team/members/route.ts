@@ -1,7 +1,6 @@
 // Team Members API
 // GET /api/team/members - Get all team members in workspace
 
-
 import { NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { fastAuth } from '@/lib/auth/fast-auth'

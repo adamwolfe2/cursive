@@ -55,7 +55,7 @@ export function CampaignsList() {
   const menuRef = useRef<HTMLDivElement>(null)
 
   const hasCampaignsFeature = hasFeature('campaigns')
-  const campaignLimit = limits.campaigns
+  const _campaignLimit = limits.campaigns
 
   // Close dropdown when clicking outside
   useEffect(() => {

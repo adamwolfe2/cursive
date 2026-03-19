@@ -3,10 +3,9 @@
  * CSV upload with validation and deduplication
  */
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
-import { unauthorized, handleApiError } from '@/lib/utils/api-error-handler'
+import { unauthorized } from '@/lib/utils/api-error-handler'
 import { createClient } from '@/lib/supabase/server'
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
 import { getErrorMessage } from '@/lib/utils/error-messages'
@@ -98,7 +97,7 @@ export async function POST(request: NextRequest) {
 
     // Check for duplicates using dedup_hash
     const emails = validLeads.map(l => l.email).filter(Boolean)
-    const phones = validLeads.map(l => l.phone).filter(Boolean)
+    const _phones = validLeads.map(l => l.phone).filter(Boolean)
 
     const { data: existingLeads } = await supabase.rpc('check_duplicate_emails', {
       p_workspace_id: user.workspace_id,

@@ -1,7 +1,7 @@
 // Clay API Client
 // Used for enriching company data with contact information
 
-import { retryFetch, DEFAULT_TIMEOUT } from '@/lib/utils/retry'
+import { retryFetch } from '@/lib/utils/retry'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { getErrorMessage } from '@/lib/utils/error-helpers'
 

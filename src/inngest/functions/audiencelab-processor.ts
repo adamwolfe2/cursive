@@ -14,16 +14,10 @@ import { inngest } from '@/inngest/client'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { normalizeALPayload, extractEventType, isLeadWorthy, isVerifiedEmail } from '@/lib/audiencelab/field-map'
 import { meetsQualityBar } from '@/lib/services/lead-quality.service'
-import {
-  normalizeEmail,
-  calculateHashKey,
-  checkDuplicate,
-} from '@/lib/services/deduplication.service'
+import { checkDuplicate } from '@/lib/services/deduplication.service'
 import { LeadRoutingService } from '@/lib/services/lead-routing.service'
 import { notifyNewLead } from '@/lib/services/lead-notifications.service'
-import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
-import crypto from 'crypto'
 
 const LOG_PREFIX = '[AL Processor]'
 

@@ -161,7 +161,7 @@ export class HubSpotService {
    * Create or update a contact
    */
   async upsertContact(contact: HubSpotContact): Promise<{ id: string; created: boolean }> {
-    const supabase = await createClient()
+    const _supabase = await createClient()
 
     try {
       // Try to find existing contact by email

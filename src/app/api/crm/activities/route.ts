@@ -4,7 +4,6 @@
  * POST /api/crm/activities - Create a new activity
  */
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { fastAuth } from '@/lib/auth/fast-auth'
 import { ActivityRepository } from '@/lib/repositories/activity.repository'

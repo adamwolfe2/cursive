@@ -63,7 +63,7 @@ async function getServiceTierById(tierId: string) {
 
 // Lazy-load Stripe to avoid build-time initialization
 let stripeClient: Stripe | null = null
-function getStripe(): Stripe {
+function _getStripe(): Stripe {
   if (!stripeClient) {
     if (!process.env.STRIPE_SECRET_KEY) {
       throw new Error('STRIPE_SECRET_KEY is not configured')

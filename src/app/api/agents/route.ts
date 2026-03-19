@@ -1,8 +1,7 @@
 // Agents API Routes
 // List all agents and create new agents
 
-
-import { NextResponse, type NextRequest } from 'next/server'
+import { type NextRequest } from 'next/server'
 import { AgentRepository } from '@/lib/repositories/agent.repository'
 import { fastAuth } from '@/lib/auth/fast-auth'
 import { handleApiError, unauthorized, success, created } from '@/lib/utils/api-error-handler'

@@ -1,7 +1,6 @@
 // Campaign Email Reject API Route
 // POST /api/campaigns/[id]/emails/[emailId]/reject - Reject an email
 
-
 import { NextResponse, type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'

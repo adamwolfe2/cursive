@@ -4,7 +4,6 @@ import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
-import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function GET() {
   try {

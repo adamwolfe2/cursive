@@ -8,7 +8,7 @@ import { handleApiError } from '@/lib/utils/api-error-handler'
  * GET /api/services/tiers
  * List all available service tiers (public only for non-admin users)
  */
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const user = await getCurrentUser()
 

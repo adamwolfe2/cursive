@@ -18,11 +18,10 @@ import {
   useSortable,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import { Plus, GripVertical } from 'lucide-react'
 
-interface KanbanColumn<T> {
+interface KanbanColumn<_T> {
   id: string
   title: string
   color?: string

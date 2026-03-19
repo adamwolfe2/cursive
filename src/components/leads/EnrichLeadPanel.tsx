@@ -15,7 +15,6 @@ import {
   MapPin, Linkedin, CreditCard, ArrowRight, Sparkles,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/design-system'
 
 interface LeadFields {
@@ -293,7 +292,7 @@ export function EnrichLeadPanel({
               <div className="space-y-2">
                 {Object.keys(FIELD_META).map((key) => {
                   const meta = FIELD_META[key]
-                  const wasEmpty = !result.before[key as keyof LeadFields]
+                  const _wasEmpty = !result.before[key as keyof LeadFields]
                   const newValue = result.after[key as keyof LeadFields]
                   const justAdded = result.fields_added.includes(key)
                   const isRevealed = revealedFields.includes(key)

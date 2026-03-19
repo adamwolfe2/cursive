@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Button } from '@/components/ui/button'
-import { Filter, ArrowUpDown, Settings2, ChevronDown, Mail, Phone, Plus } from 'lucide-react'
+import { Filter, ArrowUpDown, Settings2, ChevronDown, Plus } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
-import type { Contact, ContactWithCompany } from '@/types/crm.types'
+import type { ContactWithCompany } from '@/types/crm.types'
 import { formatDistanceToNow } from 'date-fns'
 
 interface ContactsTableProps {

@@ -1,11 +1,10 @@
 // Email Reveal API
 // POST /api/people-search/reveal - Reveal email (costs 1 credit)
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { protectRoute, consumeCredits, applyProtectionHeaders, PROTECTION_PRESETS } from '@/lib/middleware/api-protection'
 import { PeopleSearchRepository } from '@/lib/repositories/people-search.repository'
-import { handleApiError, success } from '@/lib/utils/api-error-handler'
+import { handleApiError } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'
 
 const revealRequestSchema = z.object({

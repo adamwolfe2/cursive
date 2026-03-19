@@ -6,7 +6,6 @@
  * Stores credentials in crm_connections table for use by GoogleSheetsService.
  */
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { getCurrentUser } from '@/lib/auth/helpers'

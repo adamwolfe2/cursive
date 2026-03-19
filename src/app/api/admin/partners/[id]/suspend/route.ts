@@ -1,7 +1,6 @@
 // Admin Partner Suspend API
 // Suspend a partner account
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'

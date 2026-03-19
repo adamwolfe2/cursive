@@ -23,8 +23,8 @@ interface TargetingPreferencesFormProps {
 }
 
 export function TargetingPreferencesForm({
-  userId,
-  workspaceId,
+  userId: _userId,
+  workspaceId: _workspaceId,
   initialData,
   industryOptions,
   stateOptions,
@@ -66,7 +66,7 @@ export function TargetingPreferencesForm({
 
   // Live segment lookup — debounced check for all industry+state combinations
   const [segmentStatus, setSegmentStatus] = useState<'idle' | 'checking' | 'found' | 'not_found'>('idle')
-  const [liveSegmentName, setLiveSegmentName] = useState<string | null>(null)
+  const [_liveSegmentName, setLiveSegmentName] = useState<string | null>(null)
   const [coverageResults, setCoverageResults] = useState<Array<{
     industry: string
     state: string

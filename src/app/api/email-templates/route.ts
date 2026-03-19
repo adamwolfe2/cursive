@@ -10,7 +10,6 @@ import { fastAuth } from '@/lib/auth/fast-auth'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 
-
 const createTemplateSchema = z.object({
   name: z.string().min(1).max(100),
   description: z.string().optional(),

@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
-import { createAdminClient } from "@/lib/supabase/admin"
 import { safeError } from "@/lib/utils/log-sanitizer"
 import { getCurrentUser } from "@/lib/auth/helpers"
 import { handleApiError } from "@/lib/utils/api-error-handler"

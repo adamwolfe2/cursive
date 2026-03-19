@@ -3,7 +3,7 @@
 
 import { inngest } from '../client'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { calculateVolumeBonus, COMMISSION_CONFIG } from '@/lib/services/commission.service'
+import { calculateVolumeBonus } from '@/lib/services/commission.service'
 import { calculateFreshnessScore, calculateMarketplacePrice } from '@/lib/services/lead-scoring.service'
 
 // Partner score weights per spec

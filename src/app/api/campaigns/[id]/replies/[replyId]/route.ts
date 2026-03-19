@@ -2,7 +2,6 @@
 // GET /api/campaigns/[id]/replies/[replyId] - Get a single reply
 // PATCH /api/campaigns/[id]/replies/[replyId] - Update reply status
 
-
 import { NextResponse, type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'

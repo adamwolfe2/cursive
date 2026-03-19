@@ -18,7 +18,6 @@
  */
 
 import { createClient } from '@/lib/supabase/server'
-import type { Lead } from '@/types'
 import { DatabaseError } from '@/types'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
@@ -126,7 +125,7 @@ export class MatchingEngineService {
    * Main entry point: Route a lead to matching clients
    */
   async routeLead(leadId: string): Promise<RoutingDecision> {
-    const supabase = await createClient()
+    const _supabase = await createClient()
 
     // 1. Get lead data with company associations
     const leadData = await this.getLeadWithCompanies(leadId)
@@ -409,7 +408,7 @@ export class MatchingEngineService {
     lead: LeadData,
     client: ClientProfile
   ): Promise<{ matched: boolean; matchType: string | null; matchValue: string | null; reasons: string[] }> {
-    const reasons: string[] = []
+    const _reasons: string[] = []
 
     // If client has no geo targeting, consider it a match (industry-only targeting)
     if (

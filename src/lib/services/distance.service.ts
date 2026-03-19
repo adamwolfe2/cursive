@@ -61,7 +61,7 @@ export interface ProximitySearchResult {
 
 const EARTH_RADIUS_MILES = 3959
 const EARTH_RADIUS_KM = 6371
-const MILES_PER_KM = 0.621371
+const _MILES_PER_KM = 0.621371
 
 // ============================================
 // DISTANCE SERVICE CLASS

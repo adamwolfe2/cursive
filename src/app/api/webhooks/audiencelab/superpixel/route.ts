@@ -16,7 +16,6 @@ import { processEventInline } from '@/lib/audiencelab/edge-processor'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 
-
 const LOG_PREFIX = '[AL SuperPixel]'
 const MAX_BODY_SIZE = 3 * 1024 * 1024 // 3MB
 

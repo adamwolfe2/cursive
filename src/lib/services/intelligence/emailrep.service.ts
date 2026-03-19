@@ -1,4 +1,4 @@
-import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import { fetchWithBackoff } from './rate-limiter'
 import { getCachedResult, setCachedResult, buildCacheKey, CACHE_TTL_DAYS } from './cache'
 

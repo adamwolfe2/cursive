@@ -59,13 +59,14 @@ export default function OperationsHealthPage() {
       setAuthChecked(true)
     }
     checkAdmin()
-  }, [])
+  }, [supabase])
 
   useEffect(() => {
     loadMetrics()
     // Refresh every 30 seconds
     const interval = setInterval(loadMetrics, METRICS_REFRESH_MS)
     return () => clearInterval(interval)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- runs once on mount, sets up polling interval
   }, [])
 
   async function loadMetrics() {

@@ -11,7 +11,7 @@ import {
   sendPartnerApplicationNotification,
 } from '@/lib/email/affiliate-emails'
 import { safeError } from '@/lib/utils/log-sanitizer'
-import { checkRateLimit, rateLimitResponse } from '@/lib/middleware/rate-limiter'
+import { checkRateLimit } from '@/lib/middleware/rate-limiter'
 
 const applySchema = z.object({
   firstName: z.string().min(1).max(100),

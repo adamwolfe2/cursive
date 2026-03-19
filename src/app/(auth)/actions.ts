@@ -57,7 +57,7 @@ export async function loginAction(formData: FormData) {
   // Use server client which properly sets cookies
   const supabase = await createClient()
 
-  const { data: sessionData, error: signInError } = await supabase.auth.signInWithPassword({
+  const { data: _sessionData, error: signInError } = await supabase.auth.signInWithPassword({
     email: result.data.email,
     password: result.data.password,
   })

@@ -107,7 +107,7 @@ function FunnelBar({
   )
 }
 
-function StepCard({ step, maxSent }: { step: FunnelStep; maxSent: number }) {
+function StepCard({ step, maxSent: _maxSent }: { step: FunnelStep; maxSent: number }) {
   return (
     <div className="rounded-xl border border-border bg-card p-4 space-y-3">
       {/* Step header */}

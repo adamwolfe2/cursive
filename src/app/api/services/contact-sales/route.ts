@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
 
     // Create support message with high priority
     const adminSupabase = createAdminClient()
-    const { data, error } = await adminSupabase
+    const { data: _data, error } = await adminSupabase
       .from('support_messages')
       .insert({
         name: validated.name,

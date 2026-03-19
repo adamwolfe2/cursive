@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { useToast } from '@/lib/hooks/use-toast'
 
@@ -198,9 +199,12 @@ export function IntelligenceTab({ leadId, workspaceId: _workspaceId, initialTier
           <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
             <div className="flex items-start gap-3">
               {intel?.linkedin_data?.photoUrl && (
-                <img
+                <Image
                   src={intel.linkedin_data.photoUrl}
                   alt=""
+                  width={40}
+                  height={40}
+                  unoptimized
                   className="w-10 h-10 rounded-full object-cover"
                 />
               )}

@@ -3,7 +3,6 @@
  * Manage send windows and timezone scheduling
  */
 
-
 import { NextResponse, type NextRequest } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { createClient } from '@/lib/supabase/server'
@@ -30,7 +29,7 @@ const sendWindowSchema = z.object({
   respect_recipient_timezone: z.boolean().optional(),
 })
 
-const recalculateSchema = z.object({
+const _recalculateSchema = z.object({
   recalculate_optimal_times: z.literal(true),
 })
 

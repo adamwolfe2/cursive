@@ -67,7 +67,7 @@ export async function POST(
     }
 
     // Atomically check + deduct credits (prevents race condition)
-    const { data: newBalance, error: deductError } = await supabase
+    const { data: _newBalance, error: deductError } = await supabase
       .rpc('deduct_workspace_credits', {
         p_workspace_id: user.workspace_id,
         p_amount: creditsNeeded,

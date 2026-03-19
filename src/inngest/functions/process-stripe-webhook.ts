@@ -66,9 +66,9 @@ export const processStripeWebhook = inngest.createFunction(
  * Process credit purchase completion
  */
 async function processCreditPurchase({
-  event,
+  event: _event,
   step,
-  attempt,
+  attempt: _attempt,
   metadata,
   amountTotal,
 }: {
@@ -232,11 +232,11 @@ async function processCreditPurchase({
  * Process lead purchase completion
  */
 async function processLeadPurchase({
-  event,
+  event: _event,
   step,
-  attempt,
+  attempt: _attempt,
   metadata,
-  sessionId,
+  sessionId: _sessionId,
 }: {
   event: any
   step: any

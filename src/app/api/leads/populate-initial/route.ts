@@ -20,7 +20,7 @@ import { inngest } from '@/inngest/client'
 // Cap at 30s — AL fetch has a 20s internal timeout, plus DB work
 export const maxDuration = 30
 
-export async function POST(req: NextRequest) {
+export async function POST(_req: NextRequest) {
   try {
     const currentUser = await getCurrentUser()
     if (!currentUser) {

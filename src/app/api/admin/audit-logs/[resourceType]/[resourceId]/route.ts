@@ -3,11 +3,10 @@
  * View activity history for a specific resource
  */
 
-
 import { NextResponse, type NextRequest } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { requireAdmin } from '@/lib/auth/admin'
-import { handleApiError, unauthorized, badRequest } from '@/lib/utils/api-error-handler'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'
 import { getResourceActivity, type ResourceType } from '@/lib/services/audit.service'
 

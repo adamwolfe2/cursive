@@ -3,7 +3,6 @@
  * Creates Stripe checkout session for credit purchases
  */
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { fastAuth } from '@/lib/auth/fast-auth'
 import { MarketplaceRepository } from '@/lib/repositories/marketplace.repository'
@@ -63,7 +62,7 @@ export async function POST(request: NextRequest) {
     const cancelUrl = `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?credit_purchase=cancelled`
 
     // Generate a temporary ID for metadata — will be replaced with real purchase ID
-    const tempId = crypto.randomUUID()
+    const _tempId = crypto.randomUUID()
 
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',

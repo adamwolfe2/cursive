@@ -3,7 +3,6 @@
 // Use this hook with react-hook-form for consistent submission handling
 
 import { useState, useCallback } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 
 interface UseFormSubmitOptions<TFormData> {
   /**

@@ -6,7 +6,7 @@
 
 import { inngest } from '../client'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
+import { safeLog } from '@/lib/utils/log-sanitizer'
 import {
   getLinkedInProfile,
   getSocialIntel,

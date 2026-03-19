@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -17,14 +17,12 @@ import {
   User,
   Building2,
   ExternalLink,
-  Check,
   X,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Select } from '@/components/ui/select'
 import { useToast } from '@/lib/hooks/use-toast'
-import { safeError } from '@/lib/utils/log-sanitizer'
 import DOMPurify from 'isomorphic-dompurify'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -81,7 +79,7 @@ interface ConversationResponse {
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const STATUS_COLORS: Record<ConversationStatus, string> = {
+const _STATUS_COLORS: Record<ConversationStatus, string> = {
   active: 'bg-blue-100 text-blue-800 border-blue-200',
   waiting_reply: 'bg-amber-100 text-amber-800 border-amber-200',
   replied: 'bg-green-100 text-green-800 border-green-200',
@@ -89,7 +87,7 @@ const STATUS_COLORS: Record<ConversationStatus, string> = {
   archived: 'bg-gray-100 text-gray-500 border-gray-200',
 }
 
-const PRIORITY_COLORS: Record<ConversationPriority, string> = {
+const _PRIORITY_COLORS: Record<ConversationPriority, string> = {
   urgent: 'bg-red-100 text-red-700',
   high: 'bg-orange-100 text-orange-700',
   normal: 'bg-blue-50 text-blue-600',

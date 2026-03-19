@@ -7,7 +7,6 @@
  * Create a new tag
  */
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { createClient } from '@/lib/supabase/server'
@@ -19,7 +18,7 @@ const createTagSchema = z.object({
   name: z.string().min(1).max(50),
 })
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const user = await getCurrentUser()
     if (!user || !user.workspace_id) {

@@ -44,7 +44,7 @@ export const ghlCreateSubaccount = inngest.createFunction(
   { event: 'ghl-admin/create-subaccount' },
   async ({ event, step }) => {
     const {
-      user_id,
+      _user_id,
       user_email,
       user_name,
       company_name,

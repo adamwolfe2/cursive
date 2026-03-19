@@ -22,7 +22,7 @@ export default function ProfileSettingsPage() {
   const router = useRouter()
   const toast = useToast()
   const [successMessage, setSuccessMessage] = useState('')
-  const [errorMessage, setErrorMessage] = useState('')
+  const [errorMessage, _setErrorMessage] = useState('')
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [deleteConfirmText, setDeleteConfirmText] = useState('')
   const deleteInputRef = useRef<HTMLInputElement>(null)

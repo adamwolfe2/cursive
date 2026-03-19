@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { X, CheckCircle, XCircle, AlertTriangle, Info } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { useSafeAnimation } from '@/hooks/use-reduced-motion'
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info'
@@ -54,7 +54,7 @@ export function Toast({
   action,
   onClose,
 }: ToastProps) {
-  const [isExiting, setIsExiting] = useState(false)
+  const [_isExiting, setIsExiting] = useState(false)
   const [isPaused, setIsPaused] = useState(false)
   const [progress, setProgress] = useState(100)
 

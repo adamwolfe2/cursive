@@ -4,7 +4,6 @@
  * POST /api/sequences - Create sequence
  */
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { getCurrentUser } from '@/lib/auth/helpers'
@@ -27,7 +26,7 @@ const createSequenceSchema = z.object({
   })).optional().default([]),
 })
 
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   try {
     const user = await getCurrentUser()
     if (!user) return unauthorized()

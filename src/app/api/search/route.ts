@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
     }
 
     const validated = searchSchema.parse(params)
-    const { q, limit } = validated
+    const { q, limit: _limit } = validated
     const workspaceId = user.workspace_id
 
     // Sanitize for PostgREST .or() filter syntax (escapes LIKE wildcards + removes PostgREST operators)

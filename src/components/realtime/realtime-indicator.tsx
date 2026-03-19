@@ -16,7 +16,7 @@ interface RealtimeIndicatorProps {
 
 export function RealtimeIndicator({ workspaceId }: RealtimeIndicatorProps) {
   const [isConnected, setIsConnected] = useState(false)
-  const [eventCount, setEventCount] = useState(0)
+  const [_eventCount, setEventCount] = useState(0)
 
   useEffect(() => {
     if (!workspaceId) return

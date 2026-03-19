@@ -138,7 +138,7 @@ export async function isCacheAvailable(): Promise<boolean> {
   try {
     await kv.ping()
     return true
-  } catch (error) {
+  } catch (_error) {
     logger.warn('Cache not available')
     return false
   }

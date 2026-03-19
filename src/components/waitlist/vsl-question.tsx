@@ -11,7 +11,6 @@ import Link from 'next/link'
 import {
   buttonVariants,
   staggerContainerVariants,
-  staggerItemVariants,
   fastStaggerContainerVariants,
   optionItemVariants,
   headingVariants,

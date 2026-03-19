@@ -4,17 +4,14 @@
  */
 export const runtime = 'edge'
 
-
-
 import { NextResponse, type NextRequest } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { requireAdmin } from '@/lib/auth/admin'
-import { handleApiError, unauthorized, forbidden } from '@/lib/utils/api-error-handler'
+import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'
 import {
   getAuditLogs,
   getSecurityEvents,
-  getResourceActivity,
   type AuditAction,
   type ResourceType,
   type AuditSeverity,

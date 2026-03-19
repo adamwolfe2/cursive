@@ -27,7 +27,6 @@ import { SUCCESS_MESSAGE_MS } from '@/lib/constants/timeouts'
 // Re-use Filters type from the hook
 type Filters = MarketplaceFilters
 
-
 function getIntentBadge(score: number): { label: string; color: string } {
   if (score >= 70) return { label: 'Hot', color: 'bg-emerald-100 text-emerald-700' }
   if (score >= 40) return { label: 'Warm', color: 'bg-amber-100 text-amber-700' }

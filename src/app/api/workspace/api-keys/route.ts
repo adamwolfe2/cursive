@@ -3,7 +3,6 @@
  * Manage API keys for programmatic access
  */
 
-
 import { NextResponse, type NextRequest } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized, success, badRequest, DatabaseError } from '@/lib/utils/api-error-handler'
@@ -22,7 +21,7 @@ const createSchema = z.object({
   expires_in_days: z.number().int().min(1).max(365).optional(),
 })
 
-const revokeSchema = z.object({
+const _revokeSchema = z.object({
   action: z.literal('revoke'),
   key_id: z.string().uuid(),
 })
@@ -31,7 +30,7 @@ const revokeSchema = z.object({
  * GET /api/workspace/api-keys
  * List API keys
  */
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const user = await getCurrentUser()
     if (!user) return unauthorized()

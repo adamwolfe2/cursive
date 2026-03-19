@@ -14,7 +14,7 @@
  * - internal scoring breakdowns
  */
 
-import { describe, it, expect, beforeAll, afterAll } from 'vitest'
+import { describe, it, expect } from 'vitest'
 
 // Fields that must NEVER appear in buyer-facing responses
 const FORBIDDEN_BUYER_FIELDS = [
@@ -300,9 +300,9 @@ describe('RLS Policy Tests', () => {
 
     // Document that these policies must exist
     expect(requiredPolicies.length).toBeGreaterThan(0)
-    console.log('Required RLS Policies:')
     requiredPolicies.forEach(p => {
-      console.log(`  ${p.table}: ${p.policy}`)
+      expect(p.table).toBeTruthy()
+      expect(p.policy).toBeTruthy()
     })
   })
 })

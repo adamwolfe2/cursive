@@ -14,7 +14,6 @@ import { sendEmail } from '@/lib/services/outreach/email-sender.service'
 import type {
   DemoSequenceTokens,
   DemoSequenceEmailType,
-  DemoSequenceEnrollmentData,
 } from '@/lib/types/demo-sequence.types'
 import type { LeadContactData, LeadCompanyData } from '@/types'
 
@@ -575,7 +574,7 @@ export const demoNurtureSequence = inngest.createFunction(
  */
 async function sendProspectEmail({
   to,
-  toName,
+  toName: _toName,
   ownerName,
   ownerEmail,
   calendarLink,
@@ -825,7 +824,7 @@ async function checkIfLeadStartedTrial(leadId: string): Promise<boolean> {
 /**
  * Check if sequence should exit
  */
-async function shouldExitSequence(leadId: string, enrollmentId: string): Promise<boolean> {
+async function shouldExitSequence(leadId: string, _enrollmentId: string): Promise<boolean> {
   const hasResponded = await checkIfLeadResponded(leadId)
   const hasStartedTrial = await checkIfLeadStartedTrial(leadId)
 

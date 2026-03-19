@@ -54,7 +54,7 @@ export default async function AdminPartnerDetailPage({
   })
 
   // Get referred partners count
-  const { data: referredPartners, count: referredCount } = await (supabase
+  const { data: _referredPartners, count: referredCount } = await (supabase
     .from('partners')
     .select('*', { count: 'exact' })
     .eq('referred_by_partner_id', id) as any) as { data: any[] | null; count: number | null }

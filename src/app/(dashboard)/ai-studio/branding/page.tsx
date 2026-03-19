@@ -9,9 +9,10 @@ import { Suspense, useState, useEffect, useRef, useCallback } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { GradientCard, GradientBadge } from '@/components/ui/gradient-card'
-import { PageContainer, PageHeader, PageSection } from '@/components/layout/page-container'
+import { PageContainer, PageSection } from '@/components/layout/page-container'
 import { PageLoading } from '@/components/ui/loading-states'
 import { EmptyState } from '@/components/ui/empty-states'
+import Image from 'next/image'
 import { ArrowLeft, ArrowRight, CheckCircle2, XCircle, Copy, Check } from 'lucide-react'
 
 interface BrandData {
@@ -188,9 +189,12 @@ function BrandingPageInner() {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             {workspace.logo_url && (
-              <img
+              <Image
                 src={workspace.logo_url}
                 alt={workspace.name}
+                width={64}
+                height={64}
+                unoptimized
                 className="h-16 w-16 rounded-lg object-contain bg-background border border-border p-2"
               />
             )}
@@ -310,9 +314,12 @@ function BrandingPageInner() {
         <PageSection title="Logo" description="Your brand's primary logo">
           <GradientCard variant="subtle">
             <div className="flex items-center justify-center bg-background rounded-lg p-12 border border-border">
-              <img
+              <Image
                 src={workspace.logo_url}
                 alt={workspace.name}
+                width={128}
+                height={128}
+                unoptimized
                 className="h-32 w-auto object-contain"
               />
             </div>
@@ -325,9 +332,12 @@ function BrandingPageInner() {
         <PageSection title="Website Preview" description="Homepage screenshot">
           <GradientCard variant="subtle" noPadding>
             <div className="rounded-lg overflow-hidden">
-              <img
+              <Image
                 src={brandData.screenshot}
                 alt="Website screenshot"
+                width={800}
+                height={600}
+                unoptimized
                 className="w-full"
               />
             </div>
@@ -346,9 +356,12 @@ function BrandingPageInner() {
                 noPadding
                 className="aspect-square overflow-hidden"
               >
-                <img
+                <Image
                   src={image}
                   alt={`Brand image ${index + 1}`}
+                  width={200}
+                  height={200}
+                  unoptimized
                   className="w-full h-full object-cover"
                 />
               </GradientCard>

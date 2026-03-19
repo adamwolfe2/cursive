@@ -1,7 +1,6 @@
 // Campaign Emails API Routes
 // GET /api/campaigns/[id]/emails - List emails for a campaign
 
-
 import { NextResponse, type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'

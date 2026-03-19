@@ -8,7 +8,6 @@ import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
-
 // POST /api/email-sequences/[id]/duplicate
 export async function POST(
   _request: NextRequest,

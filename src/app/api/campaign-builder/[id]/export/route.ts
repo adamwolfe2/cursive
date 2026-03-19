@@ -6,7 +6,6 @@
  * POST - Push directly to EmailBison via API (creates campaign, adds sequence steps)
  */
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { CampaignBuilderRepository } from '@/lib/repositories/campaign-builder.repository'
@@ -15,7 +14,7 @@ import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import type { CampaignDraft } from '@/types/campaign-builder'
 
-const exportSchema = z.object({
+const _exportSchema = z.object({
   format: z.enum(['csv', 'json', 'manual']),
   mark_as_exported: z.boolean().default(true),
 })

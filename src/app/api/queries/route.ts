@@ -1,7 +1,6 @@
 // Queries API Route - List and Create
 
-
-import { NextResponse, type NextRequest } from 'next/server'
+import { type NextRequest } from 'next/server'
 import { QueryRepository } from '@/lib/repositories/query.repository'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized, forbidden, success, created } from '@/lib/utils/api-error-handler'
@@ -50,7 +49,7 @@ const createQuerySchema = z.object({
 /**
  * GET /api/queries - List all queries for workspace
  */
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     // 1. Check authentication
     const user = await getCurrentUser()

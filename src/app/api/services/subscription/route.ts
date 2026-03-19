@@ -8,7 +8,7 @@ import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
  * GET /api/services/subscription
  * Get the workspace's active service subscription with tier details
  */
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const user = await getCurrentUser()
     if (!user) return unauthorized()

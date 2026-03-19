@@ -11,7 +11,6 @@
 import { inngest } from '../client'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { LeadRoutingService } from '@/lib/services/lead-routing.service'
-import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 
 /**
  * Process lead routing retry queue

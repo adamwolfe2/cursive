@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { sanitizeSearchTerm } from '@/lib/utils/sanitize-search'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import Image from 'next/image'
 import { useToast } from '@/lib/hooks/use-toast'
 
 interface Workspace {
@@ -69,7 +70,7 @@ export default function AdminAccountsPage() {
       setAuthChecked(true)
     }
     checkAdmin()
-  }, [])
+  }, [supabase])
 
   const { data: workspaces, isLoading, refetch } = useQuery({
     queryKey: ['admin', 'workspaces', search, industryFilter, statusFilter],
@@ -373,9 +374,12 @@ export default function AdminAccountsPage() {
                     <td className="px-5 py-3">
                       <div className="flex items-center gap-3">
                         {workspace.logo_url ? (
-                          <img
+                          <Image
                             src={workspace.logo_url}
                             alt={workspace.name}
+                            width={32}
+                            height={32}
+                            unoptimized
                             className="h-8 w-8 rounded-lg object-cover border border-zinc-200"
                           />
                         ) : (

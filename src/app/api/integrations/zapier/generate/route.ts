@@ -6,14 +6,13 @@
  * Zapier's "Webhooks by Zapier" trigger. Requires Pro plan.
  */
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized, forbidden } from '@/lib/utils/api-error-handler'
 import { createAdminClient } from '@/lib/supabase/admin'
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
     // 1. Auth check
     const user = await getCurrentUser()

@@ -1,7 +1,6 @@
 // Accept Team Invite API
 // POST /api/team/invites/accept - Accept an invite using token
 
-
 import { NextRequest } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'

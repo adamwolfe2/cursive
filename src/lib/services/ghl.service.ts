@@ -120,7 +120,7 @@ export async function createGHLSubAccount(userData: {
  * @param locationId - GHL location ID
  * @returns Access token for the location
  */
-export async function getLocationAccessToken(locationId: string): Promise<string> {
+export async function getLocationAccessToken(_locationId: string): Promise<string> {
   // For now, use the main location token
   // In production, you'd use OAuth flow to get location-specific tokens
   if (!GHL_LOCATION_TOKEN) {

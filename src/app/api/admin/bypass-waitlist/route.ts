@@ -17,8 +17,8 @@ const ADMIN_BYPASS_PASSWORD = process.env.ADMIN_BYPASS_PASSWORD
 
 // Note: In-memory rate limiting not available in edge runtime
 // For production, use Vercel KV or Upstash Redis for rate limiting
-const MAX_ATTEMPTS = 5
-const RATE_LIMIT_WINDOW = 15 * 60 * 1000 // 15 minutes
+const _MAX_ATTEMPTS = 5
+const _RATE_LIMIT_WINDOW = 15 * 60 * 1000 // 15 minutes
 
 const bypassSchema = z.object({
   password: z.string().min(1),

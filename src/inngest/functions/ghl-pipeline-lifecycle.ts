@@ -29,7 +29,7 @@ import {
 } from '@/lib/integrations/ghl-admin'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
-import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
+import { safeLog } from '@/lib/utils/log-sanitizer'
 
 /**
  * Track pipeline lifecycle events

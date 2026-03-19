@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Copy, Check, ExternalLink } from 'lucide-react'
+import { Copy, Check } from 'lucide-react'
 import { useState } from 'react'
 import { format } from 'date-fns'
 
@@ -54,7 +54,7 @@ export function AffiliateDashboardClient({ affiliate, recentReferrals, recentCom
   const referralUrl = `https://meetcursive.com?ref=${affiliate.partner_code}`
   const tierName = TIER_NAMES[affiliate.current_tier] || 'Starter'
   const nextMilestone = MILESTONES_CONFIG.find((m) => m.activations > affiliate.total_activations)
-  const currentMilestoneConfig = MILESTONES_CONFIG.find((m) => m.tier === affiliate.current_tier)
+  const _currentMilestoneConfig = MILESTONES_CONFIG.find((m) => m.tier === affiliate.current_tier)
 
   // Progress to next tier
   const progressPercent = nextMilestone

@@ -4,8 +4,6 @@
  */
 export const runtime = 'edge'
 
-
-
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getFailedOperations } from '@/lib/monitoring/failed-operations'
@@ -22,7 +20,7 @@ export async function GET(request: NextRequest) {
     const { requireAdmin } = await import('@/lib/auth/admin')
     await requireAdmin()
 
-    const supabase = await createClient()
+    const _supabase = await createClient()
 
     // Parse query parameters
     const searchParams = request.nextUrl.searchParams

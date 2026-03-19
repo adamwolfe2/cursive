@@ -48,7 +48,7 @@ export function useRealtimeSubscription<T extends Record<string, unknown>>(
   callback: RealtimeCallback<T>,
   options: RealtimeOptions = {}
 ) {
-  const { enabled = true, onError, onConnect, onDisconnect } = options
+  const { enabled = true, onError: _onError, onConnect, onDisconnect } = options
   const channelRef = useRef<RealtimeChannel | null>(null)
   const callbackRef = useRef(callback)
 

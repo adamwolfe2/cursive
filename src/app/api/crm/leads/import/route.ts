@@ -88,7 +88,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Generate upload batch ID for tracking
-    const uploadBatchId = crypto.randomUUID()
+    const _uploadBatchId = crypto.randomUUID()
 
     // Validate and import leads
     const leadRepo = new CRMLeadRepository()

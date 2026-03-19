@@ -3,7 +3,7 @@
 
 'use client'
 
-import { Settings2, Columns3, Rows3 } from 'lucide-react'
+import { Columns3, Rows3 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,

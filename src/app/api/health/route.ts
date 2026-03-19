@@ -8,7 +8,6 @@
 
 import { NextResponse } from 'next/server'
 
-
 const START_TIME = Date.now()
 
 async function checkDatabase(): Promise<{ status: string; responseTime: number; error?: string }> {

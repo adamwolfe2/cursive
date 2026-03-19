@@ -1,7 +1,6 @@
 // EmailBison Webhook Handler
 // Receives webhook events from EmailBison and processes them
 
-
 import { NextResponse, type NextRequest } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import {
@@ -11,7 +10,7 @@ import {
   isBounceReceivedEvent,
   type ReplyReceivedEvent,
 } from '@/lib/services/emailbison'
-import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import { inngest } from '@/inngest/client'
 import { verifyHmacSignature, sha256Hex } from '@/lib/utils/crypto'
 

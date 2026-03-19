@@ -2,8 +2,7 @@
 // GET /api/users/me - Get current user info including credits
 // PATCH /api/users/me - Update user profile
 
-
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
@@ -40,7 +39,7 @@ function generateReferralCode(): string {
   return Array.from(bytes).map(b => chars[b % chars.length]).join('')
 }
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     // 1. Check authentication
     const user = await getCurrentUser()

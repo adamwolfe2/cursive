@@ -288,6 +288,7 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
     return () => {
       supabase.removeChannel(channel)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- onLeadChange is a callback prop; adding it would cause realtime channel to re-subscribe on every parent render
   }, [userId, workspaceId])
 
   const updateStatus = useCallback(async (assignmentId: string, newStatus: string) => {

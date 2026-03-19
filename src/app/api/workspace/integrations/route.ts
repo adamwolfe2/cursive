@@ -3,8 +3,7 @@
  * Manage external service integrations
  */
 
-
-import { NextResponse, type NextRequest } from 'next/server'
+import { type NextRequest } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized, success, badRequest, notFound, DatabaseError } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'
@@ -33,7 +32,7 @@ const upsertSchema = z.object({
   credentials: z.record(z.any()).optional(),
 })
 
-const disconnectSchema = z.object({
+const _disconnectSchema = z.object({
   action: z.literal('disconnect'),
   provider: providerSchema,
 })

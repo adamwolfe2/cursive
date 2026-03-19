@@ -41,7 +41,7 @@ import {
   ChevronRight,
 } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
-import type { Contact, ContactWithCompany } from '@/types/crm.types'
+import type { ContactWithCompany } from '@/types/crm.types'
 import { cn } from '@/lib/utils'
 import { QuickFilterBar } from '@/components/crm/QuickFilterBar'
 

@@ -47,7 +47,7 @@ export function initSentry() {
     integrations: [],
 
     // Filter out noise before sending to Sentry
-    beforeSend(event, hint) {
+    beforeSend(event, _hint) {
       // Ignore browser-specific errors that we can't fix
       const ignoredErrors = [
         'ResizeObserver',

@@ -5,7 +5,7 @@
  * functions to prevent race conditions in balance updates.
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 
 describe('Atomic Balance Operations', () => {
   describe('Commission Service Integration', () => {
@@ -68,7 +68,7 @@ describe('Atomic Balance Operations', () => {
 
       // Verify NO direct update() call to partners table for balance
       const updateCalls = mockSupabase.update.mock.calls
-      const balanceUpdateCalls = updateCalls.filter((call) => {
+      const balanceUpdateCalls = updateCalls.filter((_call) => {
         // Check if any update call had pending_balance in payload
         return false // In this mock, we didn't call update for balance
       })

@@ -329,14 +329,14 @@ const FileUploadRoot = React.forwardRef<HTMLDivElement, FileUploadRootProps>(
       value,
       defaultValue,
       onValueChange,
-      onAccept,
-      onFileAccept,
-      onFileReject,
-      onFileValidate,
-      onUpload,
+      onAccept: _onAccept,
+      onFileAccept: _onFileAccept,
+      onFileReject: _onFileReject,
+      onFileValidate: _onFileValidate,
+      onUpload: _onUpload,
       accept,
-      maxFiles,
-      maxSize,
+      maxFiles: _maxFiles,
+      maxSize: _maxSize,
       dir: dirProp,
       label,
       name,
@@ -517,6 +517,7 @@ const FileUploadRoot = React.forwardRef<HTMLDivElement, FileUploadRootProps>(
           }
         }
       },
+      // eslint-disable-next-line react-hooks/exhaustive-deps -- onFilesUpload is defined below and uses stable refs
       [store, isControlled, propsRef],
     );
 
@@ -564,6 +565,7 @@ const FileUploadRoot = React.forwardRef<HTMLDivElement, FileUploadRootProps>(
           }
         }
       },
+      // eslint-disable-next-line react-hooks/exhaustive-deps -- propsRef is a stable ref
       [store, propsRef.current.onUpload],
     );
 
@@ -663,6 +665,7 @@ const FileUploadDropzone = React.forwardRef<
       event.preventDefault();
       store.dispatch({ variant: "SET_DRAG_OVER", dragOver: true });
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- propsRef is a stable ref
     [store, propsRef.current.onDragOver],
   );
 
@@ -675,6 +678,7 @@ const FileUploadDropzone = React.forwardRef<
       event.preventDefault();
       store.dispatch({ variant: "SET_DRAG_OVER", dragOver: true });
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- propsRef is a stable ref
     [store, propsRef.current.onDragEnter],
   );
 
@@ -687,6 +691,7 @@ const FileUploadDropzone = React.forwardRef<
       event.preventDefault();
       store.dispatch({ variant: "SET_DRAG_OVER", dragOver: false });
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- propsRef is a stable ref
     [store, propsRef.current.onDragLeave],
   );
 
@@ -711,6 +716,7 @@ const FileUploadDropzone = React.forwardRef<
       inputElement.files = dataTransfer.files;
       inputElement.dispatchEvent(new Event("change", { bubbles: true }));
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- propsRef is a stable ref
     [store, context.inputRef, propsRef.current.onDrop],
   );
 
@@ -726,6 +732,7 @@ const FileUploadDropzone = React.forwardRef<
         context.inputRef.current?.click();
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- propsRef is a stable ref
     [context.inputRef, propsRef.current.onKeyDown],
   );
 
@@ -782,6 +789,7 @@ const FileUploadTrigger = React.forwardRef<
 
       context.inputRef.current?.click();
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- propsRef is a stable ref
     [context.inputRef, propsRef.current],
   );
 
@@ -1031,6 +1039,7 @@ const FileUploadItemPreview = React.forwardRef<
 
       if (isImage) {
         return (
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={URL.createObjectURL(file)}
             alt={file.name}
@@ -1251,6 +1260,7 @@ const FileUploadItemDelete = React.forwardRef<
         file: itemContext.fileState.file,
       });
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- propsRef is a stable ref
     [store, itemContext.fileState, propsRef.current?.onClick],
   );
 

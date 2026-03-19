@@ -11,7 +11,6 @@
  * Automatically enriches and routes leads to matching clients.
  */
 
-
 import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { inngest } from '@/inngest/client'
@@ -169,7 +168,7 @@ export async function POST(req: NextRequest) {
           } else {
             results.push({ leadId, matched: false, deduplicated: wasDuplicate })
           }
-        } catch (err) {
+        } catch (_err) {
           results.push({
             leadId: '',
             matched: false,
@@ -200,7 +199,7 @@ export async function POST(req: NextRequest) {
         } else {
           results.push({ leadId, matched: false, deduplicated: wasDuplicate })
         }
-      } catch (err) {
+      } catch (_err) {
         results.push({
           leadId: '',
           matched: false,

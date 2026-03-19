@@ -13,7 +13,6 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
-
 const requestSchema = z.object({
   feature_type: z.enum([
     'pixel',
@@ -165,7 +164,7 @@ ${JSON.stringify(validated.request_data || {}, null, 2)}
  * GET /api/features/request
  * List user's feature requests
  */
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const user = await getCurrentUser()
     if (!user) return unauthorized()
