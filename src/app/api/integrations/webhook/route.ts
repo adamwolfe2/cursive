@@ -11,6 +11,7 @@ import { fastAuth } from '@/lib/auth/fast-auth'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { hmacSha256Hex } from '@/lib/utils/crypto'
+import { isValidWebhookUrl } from '@/lib/utils/ssrf-guard'
 import { z } from 'zod'
 
 // Request validation schemas
@@ -86,6 +87,13 @@ export async function POST(req: NextRequest) {
     }
 
     if (webhook_url !== undefined) {
+      // SECURITY: Validate webhook URL is not pointing to internal networks
+      if (webhook_url && !isValidWebhookUrl(webhook_url)) {
+        return NextResponse.json(
+          { error: 'Invalid webhook URL. Must be HTTPS and not point to internal networks.' },
+          { status: 400 }
+        )
+      }
       updateData.webhook_url = webhook_url
     }
 
@@ -173,6 +181,14 @@ export async function PUT(req: NextRequest) {
     }
 
     const { url } = validation.data
+
+    // SECURITY: Block SSRF — reject URLs pointing to internal/private networks
+    if (!isValidWebhookUrl(url)) {
+      return NextResponse.json(
+        { error: 'Invalid webhook URL. Must be HTTPS and not point to internal networks.' },
+        { status: 400 }
+      )
+    }
 
     // Get workspace webhook secret
     const { data: workspace } = await supabase
