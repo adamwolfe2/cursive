@@ -302,6 +302,17 @@ The following security controls are properly implemented:
 - Used `getSession()` (trusts client cookie) instead of `getUser()` (JWT verification)
 - Custom `checkAdminAccess()` replaced with standard `requireAdmin()`
 
+**AUTH-02: Partner Layout Missing Server-Side Auth** (MEDIUM) — FIXED
+- `src/app/partner/layout.tsx` had no server-side auth or role check
+- Relied on client-side shell component + middleware (which only checks auth, not role)
+- Added server-side `getUser()` + partner role verification
+
+**PAY-01: Credit Purchase Uses Client-Sent Amount** (LOW) — FIXED
+- `src/app/api/marketplace/credits/purchase/route.ts:105`
+- Used `validated.amount` (client-sent) for Stripe `unit_amount`
+- `validateCreditPurchase()` already validates amount matches package price
+- Changed to use `validPackage.price` (canonical) for defense-in-depth
+
 ---
 
 ## Verification
