@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { createHmac } from 'crypto'
+import { isValidWebhookUrl } from '@/lib/utils/ssrf-guard'
 
 export async function POST(
   req: NextRequest,
@@ -32,6 +33,14 @@ export async function POST(
 
   if (!webhook) {
     return NextResponse.json({ error: 'Webhook not found' }, { status: 404 })
+  }
+
+  // SECURITY: Block SSRF — reject URLs pointing to internal/private networks
+  if (!isValidWebhookUrl(webhook.url)) {
+    return NextResponse.json(
+      { error: 'Webhook URL is invalid or points to a blocked network. Update the URL first.' },
+      { status: 400 }
+    )
   }
 
   // Build test payload

@@ -1,4 +1,6 @@
 import type { Metadata } from 'next'
+import { redirect } from 'next/navigation'
+import { createClient } from '@/lib/supabase/server'
 import { PartnerLayoutShell } from './partner-layout-shell'
 
 export const metadata: Metadata = {
@@ -18,10 +20,29 @@ export const metadata: Metadata = {
   },
 }
 
-export default function PartnerLayout({
+export default async function PartnerLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  // SECURITY: Server-side auth check for partner routes.
+  // Middleware handles basic auth, but this verifies the user has partner role.
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login?redirect=/partner')
+  }
+
+  const { data: userRecord } = await supabase
+    .from('users')
+    .select('role')
+    .eq('auth_user_id', user.id)
+    .maybeSingle()
+
+  if (!userRecord || userRecord.role !== 'partner') {
+    redirect('/dashboard')
+  }
+
   return <PartnerLayoutShell>{children}</PartnerLayoutShell>
 }

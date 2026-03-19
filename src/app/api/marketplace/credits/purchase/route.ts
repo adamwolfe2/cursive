@@ -102,7 +102,9 @@ export async function POST(request: NextRequest) {
               name: `${validated.credits} Marketplace Credits`,
               description: `Purchase ${validated.credits} credits for lead marketplace`,
             },
-            unit_amount: Math.round(validated.amount * 100),
+            // SECURITY: Use canonical package price, not client-sent amount
+            // (validateCreditPurchase already ensures they match, but defense-in-depth)
+            unit_amount: Math.round(validPackage.price * 100),
           },
           quantity: 1,
         },

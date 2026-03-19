@@ -9,6 +9,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import Stripe from 'stripe'
 import { sendPartnerPayoutSummary } from '@/lib/email/affiliate-emails'
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
+import { timingSafeEqual } from '@/lib/utils/crypto'
 
 const MIN_PAYOUT_CENTS = 5000 // $50
 
@@ -24,7 +25,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   // Auth check
   const authHeader = request.headers.get('authorization')
   const cronSecret = process.env.CRON_SECRET
-  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
+  if (!cronSecret || !authHeader || !timingSafeEqual(authHeader, `Bearer ${cronSecret}`)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 

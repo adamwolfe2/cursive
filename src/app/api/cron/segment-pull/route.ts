@@ -35,6 +35,7 @@ import {
 } from '@/lib/audiencelab/field-map'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
+import { timingSafeEqual } from '@/lib/utils/crypto'
 
 // Allow up to 5 minutes — AL audience creation + record fetching can be slow
 export const maxDuration = 300
@@ -118,7 +119,7 @@ export async function GET(request: NextRequest) {
   const cronSecret = process.env.CRON_SECRET
 
   // Fix: reject if CRON_SECRET is missing (was previously open when unset)
-  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
+  if (!cronSecret || !authHeader || !timingSafeEqual(authHeader, `Bearer ${cronSecret}`)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 

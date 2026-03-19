@@ -4,40 +4,17 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { requireAdmin } from '@/lib/auth/admin'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { z } from 'zod'
 
 const VALID_STATUSES = ['pending', 'approved', 'rejected', 'all'] as const
 const statusSchema = z.enum(VALID_STATUSES).default('all')
 
-async function checkAdminAccess(): Promise<boolean> {
-  try {
-    // getSession() reads local cookie — no network call, no hanging
-    const supabase = await createClient()
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session?.user?.id) return false
-
-    const admin = createAdminClient()
-    const { data: user } = await admin
-      .from('users')
-      .select('role')
-      .eq('auth_user_id', session.user.id)
-      .maybeSingle()
-
-    return user?.role === 'owner' || user?.role === 'admin'
-  } catch {
-    return false
-  }
-}
-
 export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
-    const isAdmin = await checkAdminAccess()
-    if (!isAdmin) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    await requireAdmin()
 
     const rawStatus = request.nextUrl.searchParams.get('status') ?? 'all'
     const statusResult = statusSchema.safeParse(rawStatus)
