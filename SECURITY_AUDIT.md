@@ -290,10 +290,34 @@ The following security controls are properly implemented:
 
 ---
 
+### Additional Findings from Deep Audit
+
+**XSS-01: Stored XSS in Conversation Reply** (HIGH) — FIXED
+- `src/app/(dashboard)/conversations/[id]/page.tsx:181`
+- User textarea input was interpolated into HTML without escaping
+- Fixed: HTML-encode `&`, `<`, `>`, `"` before inserting into template
+
+**AUTH-01: Insecure Admin Auth in Affiliate Routes** (MEDIUM) — FIXED
+- `src/app/api/admin/affiliates/route.ts` and `[id]/route.ts`
+- Used `getSession()` (trusts client cookie) instead of `getUser()` (JWT verification)
+- Custom `checkAdminAccess()` replaced with standard `requireAdmin()`
+
+---
+
 ## Verification
 
 - Build: PASSES (all routes compile)
 - Tests: 1233 passed, 49 skipped, 0 failed
-- Branch: `security-audit/2026-03-19` (5 commits)
+- Branch: `security-audit/2026-03-19` (8 commits)
 
-**Last Updated**: 2026-03-19T13:30:00Z
+### Commits
+1. `0d9f8662` — docs: security audit findings document
+2. `10ddce61` — fix: SQL injection via LLM prompt injection [CRIT-01]
+3. `1bb1d0ae` — fix: IDOR via fastAuth workspace cookie [CRIT-02]
+4. `89aa6cb8` — fix: SSRF protection on webhook test endpoints [HIGH-01]
+5. `b266c613` — fix: timing-safe CRON_SECRET comparison [MED-03]
+6. `381dbdf3` — docs: update audit with fix statuses
+7. `6e119afd` — fix: stored XSS in conversation reply [XSS-01]
+8. `ca1b4c97` — fix: insecure admin auth in affiliate routes [AUTH-01]
+
+**Last Updated**: 2026-03-19T14:00:00Z
