@@ -1,17 +1,16 @@
 /**
  * POST /api/affiliate/apply
- * Public application submission endpoint
+ * Public application submission endpoint.
+ *
+ * Heavy dependencies (Supabase admin, Resend emails) are dynamically imported
+ * to keep cold-start fast — the OPTIONS preflight must respond instantly.
  */
 
+export const runtime = 'nodejs'
+export const maxDuration = 15
+
 import { NextRequest, NextResponse } from 'next/server'
-import { createAdminClient } from '@/lib/supabase/admin'
 import { z } from 'zod'
-import {
-  sendPartnerApplicationReceived,
-  sendPartnerApplicationNotification,
-} from '@/lib/email/affiliate-emails'
-import { safeError } from '@/lib/utils/log-sanitizer'
-import { checkRateLimit } from '@/lib/middleware/rate-limiter'
 
 const applySchema = z.object({
   firstName: z.string().min(1).max(100),
@@ -27,6 +26,7 @@ const applySchema = z.object({
 const ALLOWED_ORIGINS = [
   'https://www.meetcursive.com',
   'https://meetcursive.com',
+  'https://leads.meetcursive.com',
 ]
 
 function cors(request: NextRequest) {
@@ -47,17 +47,37 @@ export async function OPTIONS(request: NextRequest): Promise<NextResponse> {
 export async function POST(request: NextRequest): Promise<NextResponse> {
   const headers = cors(request)
   try {
+    // Lazy-import heavy deps to keep cold start fast
+    const { createAdminClient } = await import('@/lib/supabase/admin')
+    const { safeError } = await import('@/lib/utils/log-sanitizer')
+
     const ip =
       request.headers.get('x-forwarded-for')?.split(',')[0].trim() ||
       request.headers.get('x-real-ip') ||
       'unknown'
 
-    // DB-backed rate limiting (persists across serverless instances)
-    const rateResult = await checkRateLimit(ip, 'public-form')
-    if (!rateResult.allowed) {
-      return new NextResponse(
-        JSON.stringify({ error: 'Too many applications from this IP. Try again later.' }),
-        { status: 429, headers: { ...headers, 'Retry-After': String(Math.ceil((rateResult.resetAt.getTime() - Date.now()) / 1000)) } }
+    // Lightweight in-function rate limiting with a DB check (with timeout)
+    const admin = createAdminClient()
+    const windowStart = new Date(Date.now() - 60_000) // 1-minute window
+    const rateLimitPromise = admin
+      .from('rate_limit_logs')
+      .select('id', { count: 'exact', head: true })
+      .eq('key', `public-form:${ip}`)
+      .gte('created_at', windowStart.toISOString())
+
+    // 3-second timeout on rate limit check — never let it block the form
+    const rateResult = await Promise.race([
+      rateLimitPromise,
+      new Promise<{ count: null; error: { message: string } }>((resolve) =>
+        setTimeout(() => resolve({ count: null, error: { message: 'Rate limit timeout' } }), 3000)
+      ),
+    ])
+
+    // Fail OPEN for rate limiting — a hung DB shouldn't block real applicants
+    if (rateResult.count !== null && !rateResult.error && (rateResult.count ?? 0) >= 5) {
+      return NextResponse.json(
+        { error: 'Too many applications from this IP. Try again later.' },
+        { status: 429, headers }
       )
     }
 
@@ -71,7 +91,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     }
 
     const data = validation.data
-    const admin = createAdminClient()
 
     // Dedup
     const { data: existing } = await admin
@@ -105,16 +124,26 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       throw new Error(insertError?.message || 'Failed to save application')
     }
 
-    sendPartnerApplicationReceived(data.email, data.firstName).catch((err) => safeError('[affiliate/apply] Confirmation email failed:', err))
-    sendPartnerApplicationNotification(
+    // Log for rate limiting (fire-and-forget)
+    void admin.from('rate_limit_logs').insert({
+      key: `public-form:${ip}`,
+      limit_type: 'public-form',
+      identifier: ip,
+    })
+
+    // Send emails in background (don't block response)
+    const emailMod = await import('@/lib/email/affiliate-emails')
+    emailMod.sendPartnerApplicationReceived(data.email, data.firstName).catch((err: unknown) => safeError('[affiliate/apply] Confirmation email failed:', err))
+    emailMod.sendPartnerApplicationNotification(
       application.id,
       `${data.firstName} ${data.lastName}`,
       data.audienceTypes,
       data.audienceSize
-    ).catch((err) => safeError('[affiliate/apply] Admin notification failed:', err))
+    ).catch((err: unknown) => safeError('[affiliate/apply] Admin notification failed:', err))
 
     return NextResponse.json({ success: true }, { headers })
-  } catch (error) {
+  } catch (error: unknown) {
+    const { safeError } = await import('@/lib/utils/log-sanitizer')
     safeError('[affiliate/apply] Error:', error)
     return NextResponse.json({ error: 'Failed to submit application' }, { status: 500, headers })
   }
