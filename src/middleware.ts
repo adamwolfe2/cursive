@@ -110,6 +110,7 @@ export async function middleware(req: NextRequest) {
       '/api/affiliate/track-click',
       '/api/lead-capture',
       '/api/pixel/provision-demo',
+      '/api/public/segment-search',
     ]
     if (FULLY_PUBLIC_API_ROUTES.some(r => pathname.startsWith(r))) {
       // For OPTIONS (CORS preflight) — pass through immediately, no rate limit needed
@@ -191,6 +192,8 @@ export async function middleware(req: NextRequest) {
       pathname.startsWith('/api/lead-capture') ||
       pathname.startsWith('/api/similarweb') ||
       pathname.startsWith('/api/pixel/provision-demo') ||
+      pathname.startsWith('/api/public/segment-search') ||
+      pathname.startsWith('/audience-intelligence') ||
       pathname === '/' ||
       pathname.startsWith('/_next') ||
       pathname.startsWith('/api/webhooks') ||
