@@ -17,10 +17,10 @@ export default async function AdminPremiumRequestsPage() {
 
   // Check auth
   const {
-    data: { session },
-  } = await supabase.auth.getSession()
+    data: { user },
+  } = await supabase.auth.getUser()
 
-  if (!session?.user) {
+  if (!user) {
     redirect('/login')
   }
 
@@ -28,7 +28,7 @@ export default async function AdminPremiumRequestsPage() {
   const { data: userProfile } = await supabase
     .from('users')
     .select('id, role')
-    .eq('auth_user_id', session.user.id)
+    .eq('auth_user_id', user.id)
     .maybeSingle()
 
   if (!userProfile || !['admin', 'owner'].includes(userProfile.role)) {

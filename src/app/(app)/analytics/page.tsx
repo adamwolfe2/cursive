@@ -40,13 +40,13 @@ function FunnelBar({ label, count, total, color }: { label: string; count: numbe
 
 export default async function AnalyticsPage() {
   const supabase = await createClient()
-  const { data: { session } } = await supabase.auth.getSession()
-  if (!session?.user) redirect('/login')
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
 
   const { data: userData } = await supabase
     .from('users')
     .select('id, workspace_id, plan')
-    .eq('auth_user_id', session.user.id)
+    .eq('auth_user_id', user.id)
     .maybeSingle()
 
   if (!userData?.workspace_id) redirect('/welcome')

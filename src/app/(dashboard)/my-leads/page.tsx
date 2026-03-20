@@ -25,10 +25,10 @@ export const metadata = {
 export default async function MyLeadsPage() {
   const supabase = await createClient()
 
-  // Layout already verified auth — get session for user ID (no network call)
-  const { data: { session } } = await supabase.auth.getSession()
+  // Server-verified auth — prevents expired JWT issues
+  const { data: { user } } = await supabase.auth.getUser()
 
-  if (!session?.user) {
+  if (!user) {
     redirect('/login')
   }
 
@@ -37,7 +37,7 @@ export default async function MyLeadsPage() {
   const { data: userData } = await supabase
     .from('users')
     .select('id, workspace_id, full_name, email')
-    .eq('auth_user_id', session.user.id)
+    .eq('auth_user_id', user.id)
     .maybeSingle()
 
   if (!userData) {

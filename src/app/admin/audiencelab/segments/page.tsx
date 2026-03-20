@@ -105,10 +105,10 @@ export default function SegmentCatalogPage() {
 
   useEffect(() => {
     const check = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session?.user) { window.location.href = '/login'; return }
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) { window.location.href = '/login'; return }
       const { data: u } = await supabase.from('users').select('role')
-        .eq('auth_user_id', session.user.id).maybeSingle() as { data: { role: string } | null }
+        .eq('auth_user_id', user.id).maybeSingle() as { data: { role: string } | null }
       if (!u || (u.role !== 'admin' && u.role !== 'owner')) {
         window.location.href = '/dashboard'; return
       }

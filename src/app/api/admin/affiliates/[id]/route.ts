@@ -9,12 +9,13 @@ import { createAdminClient } from '@/lib/supabase/admin'
 
 async function checkAdminAccess(): Promise<boolean> {
   try {
+    // SECURITY: Use getUser() for server-side JWT verification (not getSession which trusts local cache)
     const supabase = await createClient()
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session?.user?.id) return false
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user?.id) return false
     const admin = createAdminClient()
-    const { data: user } = await admin.from('users').select('role').eq('auth_user_id', session.user.id).maybeSingle()
-    return user?.role === 'owner' || user?.role === 'admin'
+    const { data: dbUser } = await admin.from('users').select('role').eq('auth_user_id', user.id).maybeSingle()
+    return dbUser?.role === 'owner' || dbUser?.role === 'admin'
   } catch { return false }
 }
 import {
