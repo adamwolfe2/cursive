@@ -1,10 +1,14 @@
 /**
  * GET /api/public/segment-search?q=...&type=...&category=...
- * Public (no auth) semantic search endpoint for the segment catalog.
+ * Public (no auth) search endpoint for the segment catalog.
  * Rate-limited by IP to prevent abuse.
+ *
+ * Strategy: keyword search first (fast, reliable), then try semantic
+ * search with a tight timeout. Returns whichever succeeds.
  */
 
 export const runtime = 'nodejs'
+export const maxDuration = 15
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
@@ -80,23 +84,42 @@ export async function GET(req: NextRequest) {
     )
   }
 
-  const admin = createAdminClient()
-
-  // Fetch categories (cached by CDN)
-  const categoriesPromise = admin
-    .from('al_segment_catalog')
-    .select('category')
-    .order('category')
-    .limit(500)
-
-  // Try semantic search first (with 5s timeout so we fall back to keyword quickly)
   try {
-    const semanticResult = await Promise.race([
-      (async () => {
-        const { embedText } = await import('@/lib/audiencelab/embeddings')
-        const queryEmbedding = await embedText(q)
+    const admin = createAdminClient()
 
-        const { data: results, error: rpcError } = await admin.rpc('match_segments', {
+    // ── Keyword search (fast, always works) ──────────────────────
+    const term = sanitizeSearchTerm(q)
+    let keywordQuery = admin
+      .from('al_segment_catalog')
+      .select('segment_id, name, category, sub_category, description, type', { count: 'exact' })
+      .or(`name.ilike.%${term}%,category.ilike.%${term}%,keywords.ilike.%${term}%`)
+
+    if (type) keywordQuery = keywordQuery.eq('type', type)
+    if (category) keywordQuery = keywordQuery.eq('category', category)
+    keywordQuery = keywordQuery.order('name').limit(limit)
+
+    const { data, error, count } = await keywordQuery
+
+    if (error) {
+      safeError('[Public Segment Search] DB error:', error)
+      return NextResponse.json({ error: 'Search failed' }, { status: 500, headers: CORS_HEADERS })
+    }
+
+    // ── Try semantic search with AbortController (non-blocking) ──
+    let segments = data ?? []
+    let searchType: 'semantic' | 'keyword' = 'keyword'
+
+    try {
+      const controller = new AbortController()
+      const timeout = setTimeout(() => controller.abort(), 4_000)
+
+      const { embedText } = await import('@/lib/audiencelab/embeddings')
+      const queryEmbedding = await embedText(q, controller.signal)
+
+      clearTimeout(timeout)
+
+      if (!controller.signal.aborted) {
+        const { data: semanticResults, error: rpcError } = await admin.rpc('match_segments', {
           query_embedding: queryEmbedding,
           match_threshold: 0.25,
           match_count: limit,
@@ -104,51 +127,23 @@ export async function GET(req: NextRequest) {
           filter_category: category || null,
         })
 
-        if (!rpcError && results && results.length > 0) return results
-        return null
-      })(),
-      new Promise<null>((resolve) => setTimeout(() => resolve(null), 5_000)),
-    ])
-
-    if (semanticResult) {
-      const { data: cats } = await categoriesPromise
-      const categories = [...new Set((cats ?? []).map((c: { category: string }) => c.category).filter(Boolean))].sort()
-
-      return NextResponse.json({
-        segments: semanticResult,
-        total: semanticResult.length,
-        search_type: 'semantic',
-        categories,
-      }, { headers: CORS_HEADERS })
+        if (!rpcError && semanticResults && semanticResults.length > 0) {
+          segments = semanticResults
+          searchType = 'semantic'
+        }
+      }
+    } catch {
+      // Semantic search failed — use keyword results (already fetched)
     }
+
+    return NextResponse.json({
+      segments,
+      total: searchType === 'keyword' ? (count ?? segments.length) : segments.length,
+      search_type: searchType,
+      categories: [],
+    }, { headers: CORS_HEADERS })
   } catch (err: unknown) {
-    safeError('[Public Segment Search] Semantic fallback:', err)
-  }
-
-  // Fallback to keyword search
-  const term = sanitizeSearchTerm(q)
-  let query = admin
-    .from('al_segment_catalog')
-    .select('segment_id, name, category, sub_category, description, type', { count: 'exact' })
-    .or(`name.ilike.%${term}%,category.ilike.%${term}%,keywords.ilike.%${term}%`)
-
-  if (type) query = query.eq('type', type)
-  if (category) query = query.eq('category', category)
-  query = query.order('name').limit(limit)
-
-  const { data, error, count } = await query
-  if (error) {
-    safeError('[Public Segment Search] DB error:', error)
+    safeError('[Public Segment Search] Fatal error:', err)
     return NextResponse.json({ error: 'Search failed' }, { status: 500, headers: CORS_HEADERS })
   }
-
-  const { data: cats } = await categoriesPromise
-  const categories = [...new Set((cats ?? []).map((c: { category: string }) => c.category).filter(Boolean))].sort()
-
-  return NextResponse.json({
-    segments: data ?? [],
-    total: count ?? 0,
-    search_type: 'keyword',
-    categories,
-  }, { headers: CORS_HEADERS })
 }

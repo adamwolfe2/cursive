@@ -38,9 +38,10 @@ export function buildSegmentText(segment: {
 
 /**
  * Embed a single text string. Used for search queries.
+ * Accepts optional AbortSignal for cancellation.
  */
-export async function embedText(text: string): Promise<number[]> {
-  const results = await embedTexts([text])
+export async function embedText(text: string, signal?: AbortSignal): Promise<number[]> {
+  const results = await embedTexts([text], signal)
   return results[0]
 }
 
@@ -48,7 +49,7 @@ export async function embedText(text: string): Promise<number[]> {
  * Embed multiple text strings in a single API call.
  * OpenAI supports up to 2048 inputs per call.
  */
-export async function embedTexts(texts: string[]): Promise<number[][]> {
+export async function embedTexts(texts: string[], signal?: AbortSignal): Promise<number[][]> {
   if (texts.length === 0) return []
 
   const response = await fetch(`${OPENAI_BASE_URL}/embeddings`, {
@@ -61,6 +62,7 @@ export async function embedTexts(texts: string[]): Promise<number[][]> {
       model: EMBEDDING_MODEL,
       input: texts,
     }),
+    signal,
   })
 
   if (!response.ok) {
