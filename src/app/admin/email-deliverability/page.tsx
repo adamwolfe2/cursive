@@ -130,8 +130,7 @@ export default function AdminEmailDeliverabilityPage() {
   // Admin check — matches pattern used across admin pages
   useEffect(() => {
     const checkAdmin = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      const user = session?.user
+      const { data: { user } } = await supabase.auth.getUser()
       if (!user) {
         window.location.href = '/login'
         return

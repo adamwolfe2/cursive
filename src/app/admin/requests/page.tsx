@@ -11,15 +11,15 @@ export default async function AdminRequestsPage() {
   const supabase = await createClient()
 
   // Verify admin access
-  const { data: { session } } = await supabase.auth.getSession()
-  if (!session?.user) {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
     redirect('/login?error=unauthorized')
   }
 
   const { data: userRecord } = await supabase
     .from('users')
     .select('role')
-    .eq('auth_user_id', session.user.id)
+    .eq('auth_user_id', user.id)
     .maybeSingle()
 
   if (!userRecord || (userRecord.role !== 'admin' && userRecord.role !== 'owner')) {

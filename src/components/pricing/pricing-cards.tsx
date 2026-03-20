@@ -99,38 +99,43 @@ export function PricingCards({ plans, currentPlan }: PricingCardsProps) {
     return percentage
   }
 
+  // Only show the toggle if at least one plan has a yearly Stripe price configured
+  const hasYearlyPrices = plans.some(p => p.stripe_price_id_yearly)
+
   return (
     <div>
-      {/* Billing Cycle Toggle */}
-      <div className="flex justify-center mb-12">
-        <div className="bg-zinc-100 p-1 rounded-lg inline-flex">
-          <button
-            onClick={() => setBillingCycle('monthly')}
-            className={`px-3 sm:px-6 py-2 rounded-md font-medium transition-all ${
-              billingCycle === 'monthly'
-                ? 'bg-white text-zinc-900 shadow-sm'
-                : 'text-zinc-600 hover:text-zinc-900'
-            }`}
-          >
-            Monthly
-          </button>
-          <button
-            onClick={() => setBillingCycle('yearly')}
-            className={`px-3 sm:px-6 py-2 rounded-md font-medium transition-all ${
-              billingCycle === 'yearly'
-                ? 'bg-white text-zinc-900 shadow-sm'
-                : 'text-zinc-600 hover:text-zinc-900'
-            }`}
-          >
-            Yearly
-            {plans.some(p => calculateSavings(p.price_monthly, p.price_yearly) > 0) && (
-              <span className="ml-2 text-emerald-600 text-sm">
-                Save up to 20%
-              </span>
-            )}
-          </button>
+      {/* Billing Cycle Toggle — hidden until yearly Stripe prices are configured */}
+      {hasYearlyPrices && (
+        <div className="flex justify-center mb-12">
+          <div className="bg-zinc-100 p-1 rounded-lg inline-flex">
+            <button
+              onClick={() => setBillingCycle('monthly')}
+              className={`px-3 sm:px-6 py-2 rounded-md font-medium transition-all ${
+                billingCycle === 'monthly'
+                  ? 'bg-white text-zinc-900 shadow-sm'
+                  : 'text-zinc-600 hover:text-zinc-900'
+              }`}
+            >
+              Monthly
+            </button>
+            <button
+              onClick={() => setBillingCycle('yearly')}
+              className={`px-3 sm:px-6 py-2 rounded-md font-medium transition-all ${
+                billingCycle === 'yearly'
+                  ? 'bg-white text-zinc-900 shadow-sm'
+                  : 'text-zinc-600 hover:text-zinc-900'
+              }`}
+            >
+              Yearly
+              {plans.some(p => calculateSavings(p.price_monthly, p.price_yearly) > 0) && (
+                <span className="ml-2 text-emerald-600 text-sm">
+                  Save up to 20%
+                </span>
+              )}
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Pricing Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8 max-w-7xl mx-auto px-4 sm:px-6">

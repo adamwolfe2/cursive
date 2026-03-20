@@ -19,15 +19,15 @@ export const metadata: Metadata = {
 export default async function WebsiteVisitorsPage() {
   const supabase = await createClient()
 
-  // Auth check (layout already verified, but use getSession for speed — no network call)
-  const { data: { session } } = await supabase.auth.getSession()
-  if (!session?.user) redirect('/login')
+  // Server-verified auth — prevents expired JWT issues
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
 
   // Get workspace ID from user profile
   const { data: userData } = await supabase
     .from('users')
     .select('workspace_id')
-    .eq('auth_user_id', session.user.id)
+    .eq('auth_user_id', user.id)
     .maybeSingle()
 
   const workspaceId = userData?.workspace_id

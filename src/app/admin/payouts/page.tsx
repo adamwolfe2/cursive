@@ -81,8 +81,7 @@ export default function AdminPayoutsPage() {
 
   useEffect(() => {
     const checkAdmin = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      const user = session?.user
+      const { data: { user } } = await supabase.auth.getUser()
       if (!user) { window.location.href = '/login'; return }
       const { data: userData } = await supabase
         .from('users').select('role').eq('auth_user_id', user.id).maybeSingle() as { data: { role: string } | null }

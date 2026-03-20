@@ -16,8 +16,7 @@ import { ArrowLeft, Trophy } from 'lucide-react'
 export default async function PartnerLeaderboardPage() {
   const supabase = await createClient()
 
-  const { data: { session } } = await supabase.auth.getSession()
-  const authUser = session?.user ?? null
+  const { data: { user: authUser } } = await supabase.auth.getUser()
   if (!authUser) redirect('/login')
 
   const { data: user } = await supabase

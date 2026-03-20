@@ -79,8 +79,7 @@ export default function AdminEnrichmentCostsPage() {
   // Admin auth check — same pattern as other admin pages
   useEffect(() => {
     const checkAdmin = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      const user = session?.user
+      const { data: { user } } = await supabase.auth.getUser()
       if (!user) {
         window.location.href = '/login'
         return

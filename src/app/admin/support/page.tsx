@@ -33,8 +33,7 @@ export default function AdminSupportPage() {
   // Admin role check - prevent non-admins from accessing
   useEffect(() => {
     const checkAdmin = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      const user = session?.user
+      const { data: { user } } = await supabase.auth.getUser()
       if (!user) {
         window.location.href = '/login'
         return

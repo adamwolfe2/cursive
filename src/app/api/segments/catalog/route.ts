@@ -6,8 +6,9 @@ import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function GET(req: NextRequest) {
   const supabase = await createClient()
-  const { data: { session } } = await supabase.auth.getSession()
-  if (!session?.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  // SECURITY: Use getUser() for server-side JWT verification (not getSession which trusts local cache)
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const { searchParams } = new URL(req.url)
   const q = searchParams.get('q')?.trim() ?? ''

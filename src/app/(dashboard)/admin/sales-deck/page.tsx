@@ -43,15 +43,15 @@ function useAdminGuard() {
   useEffect(() => {
     async function check() {
       const supabase = createClient()
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session?.user) {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
         window.location.href = '/login'
         return
       }
       const { data: admin } = await supabase
         .from('platform_admins')
         .select('id')
-        .eq('email', session.user.email as string)
+        .eq('email', user.email as string)
         .eq('is_active', true)
         .maybeSingle()
       if (!admin) {

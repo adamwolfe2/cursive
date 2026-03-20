@@ -15,18 +15,18 @@ import { Plus, Search } from 'lucide-react'
 export const metadata: Metadata = { title: 'Queries | Cursive' }
 
 export default async function QueriesPage() {
-  // Layout already verified auth — get session + profile for this page's needs
+  // Server-verified auth — prevents expired JWT issues
   const supabase = await createClient()
-  const { data: { session } } = await supabase.auth.getSession()
+  const { data: { user: authUser } } = await supabase.auth.getUser()
 
-  if (!session?.user) {
+  if (!authUser) {
     redirect('/login')
   }
 
   const { data: userData } = await supabase
     .from('users')
     .select('id, workspace_id, plan, role')
-    .eq('auth_user_id', session.user.id)
+    .eq('auth_user_id', authUser.id)
     .maybeSingle()
 
   if (!userData?.workspace_id) {

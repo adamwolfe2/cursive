@@ -14,11 +14,10 @@ export default async function AdminPartnerDetailPage({
   const { id } = await params
   const supabase = await createClient()
 
-  // Verify admin
+  // Server-verified auth — prevents expired JWT issues
   const {
-    data: { session },
-  } = await supabase.auth.getSession()
-  const user = session?.user ?? null
+    data: { user },
+  } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
   const { data: admin } = await supabase
