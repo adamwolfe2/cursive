@@ -330,12 +330,12 @@ async function DashboardMainGrid(props: MainGridProps) {
                     </div>
                     <div className="flex items-center gap-1.5 flex-wrap">
                       {isEnriched && lead.email && (
-                        <a href={`mailto:${lead.email}`} onClick={(e) => e.stopPropagation()} className="inline-flex items-center gap-1 text-[10px] bg-white border border-gray-200 text-gray-600 rounded-full px-2 py-0.5 hover:border-primary hover:text-primary transition-colors font-medium">
+                        <a href={`mailto:${lead.email}`} className="inline-flex items-center gap-1 text-[10px] bg-white border border-gray-200 text-gray-600 rounded-full px-2 py-0.5 hover:border-primary hover:text-primary transition-colors font-medium">
                           <Mail className="h-2.5 w-2.5" /> Email
                         </a>
                       )}
                       {isEnriched && lead.phone && (
-                        <a href={`tel:${lead.phone}`} onClick={(e) => e.stopPropagation()} className="inline-flex items-center gap-1 text-[10px] bg-white border border-gray-200 text-gray-600 rounded-full px-2 py-0.5 hover:border-primary hover:text-primary transition-colors font-medium">
+                        <a href={`tel:${lead.phone}`} className="inline-flex items-center gap-1 text-[10px] bg-white border border-gray-200 text-gray-600 rounded-full px-2 py-0.5 hover:border-primary hover:text-primary transition-colors font-medium">
                           <Phone className="h-2.5 w-2.5" /> Call
                         </a>
                       )}
