@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { Search, Sparkles, ArrowRight, Users, Building2, Target, Zap } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 
 interface SegmentResult {
   segment_id: string
@@ -105,8 +106,8 @@ export default function AudienceIntelligencePage() {
       {/* Header */}
       <header className="border-b border-gray-100">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center">
-            <div className="h-8 w-8 rounded-lg bg-[#007AFF]" />
+          <Link href="/">
+            <Image src="/cursive-logo.png" alt="Cursive" width={36} height={36} priority />
           </Link>
           <Link
             href="/signup"
