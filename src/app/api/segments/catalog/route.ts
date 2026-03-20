@@ -18,6 +18,51 @@ export async function GET(req: NextRequest) {
   const perPage = Math.min(50, Math.max(1, parseInt(searchParams.get('per_page') ?? '24', 10)))
 
   const admin = createAdminClient()
+
+  // Fetch categories for filter UI (lightweight, always needed)
+  const categoriesPromise = admin
+    .from('al_segment_catalog')
+    .select('category')
+    .order('category')
+    .limit(500)
+
+  // If there's a search query, try semantic search first
+  if (q) {
+    try {
+      const { embedText } = await import('@/lib/audiencelab/embeddings')
+      const queryEmbedding = await embedText(q)
+
+      const { data: semanticResults, error: rpcError } = await admin.rpc('match_segments', {
+        query_embedding: queryEmbedding,
+        match_threshold: 0.25,
+        match_count: perPage,
+        filter_type: type || null,
+        filter_category: category || null,
+      })
+
+      if (!rpcError && semanticResults && semanticResults.length > 0) {
+        const { data: cats } = await categoriesPromise
+        const categories = [...new Set((cats ?? []).map((c: { category: string }) => c.category).filter(Boolean))].sort()
+
+        return NextResponse.json({
+          segments: semanticResults,
+          total: semanticResults.length,
+          page: 1,
+          per_page: perPage,
+          total_pages: 1,
+          categories,
+          search_type: 'semantic',
+        })
+      }
+
+      // If semantic search returned nothing, fall through to ilike
+    } catch (err: unknown) {
+      // Semantic search failed (no embeddings yet, or OpenAI down) — fall back to ilike
+      safeError('[Segments Catalog] Semantic search fallback:', err)
+    }
+  }
+
+  // Fallback: ilike keyword search (also used for browsing without query)
   let query = admin
     .from('al_segment_catalog')
     .select('segment_id, name, category, sub_category, description, type', { count: 'exact' })
@@ -42,14 +87,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Failed to fetch segments' }, { status: 500 })
   }
 
-  // Also fetch distinct categories for filter UI (lightweight)
-  const { data: cats } = await admin
-    .from('al_segment_catalog')
-    .select('category')
-    .order('category')
-    .limit(500)
-
-  const categories = [...new Set((cats ?? []).map((c) => c.category).filter(Boolean))].sort()
+  const { data: cats } = await categoriesPromise
+  const categories = [...new Set((cats ?? []).map((c: { category: string }) => c.category).filter(Boolean))].sort()
 
   return NextResponse.json({
     segments: data ?? [],
@@ -58,5 +97,6 @@ export async function GET(req: NextRequest) {
     per_page: perPage,
     total_pages: Math.ceil((count ?? 0) / perPage),
     categories,
+    search_type: q ? 'keyword' : 'browse',
   })
 }

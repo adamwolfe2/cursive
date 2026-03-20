@@ -83,6 +83,35 @@ export async function POST(request: NextRequest) {
       totalCount += count ?? batch.length
     }
 
+    // Auto-embed new segments (fire-and-forget — don't block the response)
+    void (async () => {
+      try {
+        const { embedTexts, buildSegmentText } = await import('@/lib/audiencelab/embeddings')
+        const { data: unembedded } = await adminClient
+          .from('al_segment_catalog')
+          .select('segment_id, name, category, sub_category, description, keywords')
+          .is('embedding', null)
+          .limit(2000)
+
+        if (!unembedded?.length) return
+
+        const EMBED_BATCH = 500
+        for (let i = 0; i < unembedded.length; i += EMBED_BATCH) {
+          const batch = unembedded.slice(i, i + EMBED_BATCH)
+          const texts = batch.map(buildSegmentText)
+          const embeddings = await embedTexts(texts)
+          for (let j = 0; j < batch.length; j++) {
+            await adminClient
+              .from('al_segment_catalog')
+              .update({ embedding: JSON.stringify(embeddings[j]) })
+              .eq('segment_id', batch[j].segment_id)
+          }
+        }
+      } catch (embedErr: unknown) {
+        safeError('[Admin Segments Import] Auto-embed failed (non-blocking):', embedErr)
+      }
+    })()
+
     return NextResponse.json({ success: true, count: totalCount, total: rows.length })
   } catch (error) {
     safeError('[Admin Segments Import]', error)
