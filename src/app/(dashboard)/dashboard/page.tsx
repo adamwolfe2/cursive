@@ -366,12 +366,22 @@ async function DashboardMainGrid(props: MainGridProps) {
                 View all <ArrowRight className="h-3.5 w-3.5" />
               </Link>
             </div>
-            {(recentLeads as any[]).filter(l => {
+            {((recentLeads ?? []) as Array<{
+              id: string; full_name: string | null; first_name: string | null; last_name: string | null
+              email: string | null; phone: string | null; company_name: string | null
+              status: string | null; created_at: string; delivered_at: string | null
+              intent_score_calculated: number | null; enrichment_status: string | null; source: string | null
+            }>).filter(l => {
               const n = l.full_name || [l.first_name, l.last_name].filter(Boolean).join(' ')
               return n && n.trim().length > 1
             }).length > 0 ? (
               <div className="space-y-2">
-                {(recentLeads as any[]).filter(l => {
+                {((recentLeads ?? []) as Array<{
+                  id: string; full_name: string | null; first_name: string | null; last_name: string | null
+                  email: string | null; phone: string | null; company_name: string | null
+                  status: string | null; created_at: string; delivered_at: string | null
+                  intent_score_calculated: number | null; enrichment_status: string | null; source: string | null
+                }>).filter(l => {
                   const n = l.full_name || [l.first_name, l.last_name].filter(Boolean).join(' ')
                   return n && n.trim().length > 1
                 }).map((lead) => {
@@ -696,9 +706,11 @@ export default async function DashboardPage({
   const { onboarding, targeting_failed } = await searchParams
   const supabase = await createClient()
 
-  const { data: { session } } = await supabase.auth.getSession()
-  if (!session?.user) redirect('/login')
-  const user = session.user
+  // SECURITY: Use getUser() for server-side JWT verification.
+  // getSession() trusts client cookies and can fail to refresh expired tokens in SSR,
+  // causing spurious redirects to /login.
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
 
   const { data: userData, error: userError } = await supabase
     .from('users')
@@ -800,13 +812,6 @@ export default async function DashboardPage({
   const checklistProgress = checklistItems.filter(i => i.done).length
   const checklistTotal    = checklistItems.length
   const showChecklist     = checklistProgress < checklistTotal
-
-  // Helper to create redirect with cookies preserved
-  const redirectWithCookies = (url: URL) => {
-    // (used only via redirect() in this component — kept for type completeness)
-    return url
-  }
-  void redirectWithCookies // suppress unused warning
 
   return (
     <div className="space-y-6 p-6">
