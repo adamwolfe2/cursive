@@ -167,8 +167,8 @@ export function OnboardingForm({ subscriptionId, tierName: _tierName, initialDat
 
       // Redirect to dashboard with success message
       router.push('/dashboard?onboarding=complete')
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Unknown error')
       setLoading(false)
     }
   }

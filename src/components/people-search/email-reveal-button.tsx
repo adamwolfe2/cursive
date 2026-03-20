@@ -42,8 +42,8 @@ export function EmailRevealButton({
 
       setRevealedEmail(data.data.email)
       onReveal(resultId, data.data.email)
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Unknown error')
     } finally {
       setLoading(false)
     }

@@ -67,8 +67,8 @@ function CampaignSuccessPageInner() {
             setError('Payment confirmation is taking longer than expected. Your campaign will be activated once payment is confirmed.')
           }
         }
-      } catch (err: any) {
-        setError(err.message || 'Failed to load campaign')
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : 'Failed to load campaign')
         setIsLoading(false)
       }
     }

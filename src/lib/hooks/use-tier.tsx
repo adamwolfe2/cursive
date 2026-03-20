@@ -137,9 +137,9 @@ export function TierProvider({ children }: { children: React.ReactNode }) {
         })
         setUsage(data.usage || DEFAULT_USAGE)
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       safeError('[TierProvider] Failed to fetch tier info:', err)
-      setError(err.message)
+      setError(err instanceof Error ? err.message : 'Unknown error')
     } finally {
       setIsLoading(false)
     }

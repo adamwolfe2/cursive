@@ -261,7 +261,7 @@ export function AutoSubmitOnboarding({ isMarketplace, isReturning }: AutoSubmitO
           ? '/marketplace'
           : `/dashboard?onboarding=complete${targetingFailed ? '&targeting_failed=true' : ''}`
         router.push(dashboardUrl)
-      } catch (err: any) {
+      } catch (err: unknown) {
         // Increment the persistent failure counter so reloads don't cause
         // an infinite retry loop.
         const prevAttempts = parseInt(localStorage.getItem(RETRY_KEY) || '0', 10)
@@ -277,7 +277,7 @@ export function AutoSubmitOnboarding({ isMarketplace, isReturning }: AutoSubmitO
         // Provide specific error messages based on error type
         if (err instanceof TypeError && err.message === 'Failed to fetch') {
           setError('Network error. Please check your connection and try again.')
-        } else if (err.message) {
+        } else if (err instanceof Error && err.message) {
           setError(err.message)
         } else {
           setError('Something went wrong. Please try again.')

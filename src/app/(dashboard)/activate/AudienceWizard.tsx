@@ -84,8 +84,8 @@ export function AudienceWizard({
         throw new Error(data.error || 'Failed to submit')
       }
       onSuccess()
-    } catch (err: any) {
-      toast.error(err.message || 'Something went wrong')
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : 'Something went wrong')
     } finally {
       setSubmitting(false)
     }

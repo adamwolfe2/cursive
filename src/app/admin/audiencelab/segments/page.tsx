@@ -191,9 +191,9 @@ export default function SegmentCatalogPage() {
           )
         if (error) throw error
         total_inserted += batch.length
-      } catch (err: any) {
+      } catch (err: unknown) {
         errors++
-        safeError(`Batch ${Math.floor(i / BATCH) + 1} failed:`, err?.message ?? err)
+        safeError(`Batch ${Math.floor(i / BATCH) + 1} failed:`, err instanceof Error ? err.message : err)
       }
       done += batch.length
       setImportProgress({ done, total })

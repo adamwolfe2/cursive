@@ -116,9 +116,9 @@ export async function withApiLog<T>(
     const result = await fn()
     logApiCall({ ...entry, durationMs: Date.now() - start, statusCode: 200 })
     return result
-  } catch (err: any) {
+  } catch (err: unknown) {
     logApiCall({ ...entry, durationMs: Date.now() - start, statusCode: 500,
-      metadata: { ...entry.metadata, error: err?.message } })
+      metadata: { ...entry.metadata, error: err instanceof Error ? err.message : 'Unknown error' } })
     throw err
   }
 }

@@ -224,9 +224,9 @@ export const creditAutoRecharge = inngest.createFunction(
           paymentIntentId: paymentIntent.id,
           error: `Payment status: ${paymentIntent.status}`,
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         safeError('[Auto-Recharge] Stripe PaymentIntent failed', err)
-        return { success: false, paymentIntentId: null, error: err?.message || 'Payment failed' }
+        return { success: false, paymentIntentId: null, error: err instanceof Error ? err.message : 'Payment failed' }
       }
     })
 

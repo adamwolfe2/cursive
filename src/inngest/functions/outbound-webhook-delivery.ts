@@ -42,9 +42,9 @@ export const deliverOutboundWebhooks = inngest.createFunction(
           try {
             const result = await deliverWebhook(webhookId, event_type, payload)
             return result
-          } catch (err: any) {
+          } catch (err: unknown) {
             safeError(`[OutboundWebhooks] Delivery error webhookId=${webhookId}:`, err)
-            return { webhookId, deliveryId: '', success: false, error: err.message }
+            return { webhookId, deliveryId: '', success: false, error: err instanceof Error ? err.message : 'Unknown error' }
           }
         })
       )

@@ -199,8 +199,8 @@ export function OnboardingFlow({ isMarketplace, isCallProspect = false, prefille
       setSubmittedRequiresConfirmation(false)
       localStorage.removeItem('cursive_onboarding')
       goToScreen('business-success')
-    } catch (err: any) {
-      setError(err.message || 'Something went wrong')
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Something went wrong')
       setIsSubmitting(false)
     }
   }, [isMarketplace, goToScreen, router, startOauthTimeout])
@@ -294,8 +294,8 @@ export function OnboardingFlow({ isMarketplace, isCallProspect = false, prefille
       setSubmittedEmail(data.email)
       setSubmittedRequiresConfirmation(false)
       goToScreen('partner-success')
-    } catch (err: any) {
-      setError(err.message || 'Something went wrong')
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Something went wrong')
       setIsSubmitting(false)
     }
   }, [isMarketplace, goToScreen, router, startOauthTimeout])

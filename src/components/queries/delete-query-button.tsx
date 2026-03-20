@@ -31,8 +31,8 @@ export function DeleteQueryButton({ queryId }: DeleteQueryButtonProps) {
       // Redirect to queries list
       router.push('/queries')
       router.refresh()
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Unknown error')
       setLoading(false)
     }
   }

@@ -144,7 +144,7 @@ export async function GET(req: NextRequest) {
       },
       pixel: pixel ?? null,
     })
-  } catch (err: any) {
+  } catch (err: unknown) {
     safeError('[Visitors API]', err)
     return NextResponse.json({ error: 'Failed to fetch visitors' }, { status: 500 })
   }

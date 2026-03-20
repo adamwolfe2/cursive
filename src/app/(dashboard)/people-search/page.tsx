@@ -65,8 +65,8 @@ export default function PeopleSearchPage() {
 
       // Fetch user's current credits
       await fetchCredits()
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Unknown error')
       setResults([])
     } finally {
       setLoading(false)

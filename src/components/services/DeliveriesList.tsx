@@ -64,8 +64,8 @@ export function DeliveriesList({ deliveries }: DeliveriesListProps) {
 
       // Open signed URL in new tab to download
       window.open(data.download_url, '_blank', 'noopener,noreferrer')
-    } catch (err: any) {
-      toast({ type: 'error', title: 'Download failed', message: err.message || 'Failed to download file' })
+    } catch (err: unknown) {
+      toast({ type: 'error', title: 'Download failed', message: err instanceof Error ? err.message : 'Failed to download file' })
     } finally {
       setDownloading(null)
     }

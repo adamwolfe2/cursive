@@ -151,7 +151,7 @@ export async function POST(request: NextRequest) {
         skip_empty_lines: true,
         trim: true,
       })
-    } catch (e: any) {
+    } catch (e: unknown) {
       safeError('[Admin Bulk Upload] CSV parsing error:', e)
       return NextResponse.json({
         success: false,
@@ -324,7 +324,7 @@ export async function POST(request: NextRequest) {
         const categoryKey = `${industry} - ${state}`
         results.category_summary[categoryKey] = (results.category_summary[categoryKey] || 0) + 1
 
-      } catch (e: any) {
+      } catch (e: unknown) {
         safeError('[Bulk Upload] Row error:', e)
         results.errors.push(`Row ${rowNum}: Failed to process`)
         results.failed++

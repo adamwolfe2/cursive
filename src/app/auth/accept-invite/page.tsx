@@ -51,9 +51,9 @@ function AcceptInviteContent() {
         redirectTimer = setTimeout(() => {
           router.push('/dashboard')
         }, 2000)
-      } catch (err: any) {
+      } catch (err: unknown) {
         setStatus('error')
-        setError(err.message)
+        setError(err instanceof Error ? err.message : 'Unknown error')
       }
     }
 

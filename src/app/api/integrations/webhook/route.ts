@@ -224,10 +224,10 @@ export async function PUT(req: NextRequest) {
           ? 'Webhook test successful'
           : `Webhook returned status ${response.status}`,
       })
-    } catch (fetchError: any) {
+    } catch (fetchError: unknown) {
       clearTimeout(timeoutId)
 
-      if (fetchError.name === 'AbortError') {
+      if (fetchError instanceof Error && fetchError.name === 'AbortError') {
         return NextResponse.json({
           success: false,
           message: 'Webhook request timed out',

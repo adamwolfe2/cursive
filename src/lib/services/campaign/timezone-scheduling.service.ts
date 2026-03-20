@@ -285,8 +285,8 @@ async function updateOptimalTimesManually(
       } else {
         updated++
       }
-    } catch (e: any) {
-      errors.push(`Lead ${lead.id}: ${e.message}`)
+    } catch (e: unknown) {
+      errors.push(`Lead ${lead.id}: ${e instanceof Error ? e.message : 'Unknown error'}`)
     }
   }
 

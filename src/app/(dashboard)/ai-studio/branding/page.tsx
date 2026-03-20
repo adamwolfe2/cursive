@@ -71,8 +71,8 @@ function BrandingPageInner() {
       } else {
         setError('Workspace not found')
       }
-    } catch (err: any) {
-      setError(err.message || 'Failed to load workspace')
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to load workspace')
     } finally {
       setIsLoading(false)
     }

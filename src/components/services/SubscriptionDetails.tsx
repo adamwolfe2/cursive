@@ -42,8 +42,8 @@ export function SubscriptionDetails({ subscription, tier, workspaceId }: Subscri
 
       // Redirect to Stripe Customer Portal
       window.location.href = data.url
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Unknown error')
       setLoading(false)
     }
   }

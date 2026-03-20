@@ -69,11 +69,11 @@ async function attemptDelivery(
       responseBody: responseBody.substring(0, 1000),
       ...(!response.ok && { error: `HTTP ${response.status}: ${response.statusText}` }),
     }
-  } catch (err: any) {
+  } catch (err: unknown) {
     clearTimeout(timeoutId)
     return {
       success: false,
-      error: err.name === 'AbortError' ? 'Request timed out after 10s' : (err.message ?? 'Unknown error'),
+      error: err instanceof Error && err.name === 'AbortError' ? 'Request timed out after 10s' : (err instanceof Error ? err.message : 'Unknown error'),
     }
   }
 }
