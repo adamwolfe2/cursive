@@ -57,7 +57,13 @@ export default function AudienceIntelligencePage() {
       const params = new URLSearchParams({ q: searchQuery, limit: '12' })
       if (type || typeFilter) params.set('type', type || typeFilter)
 
-      const response = await fetch(`/api/public/segment-search?${params}`)
+      const controller = new AbortController()
+      const timeout = setTimeout(() => controller.abort(), 10_000)
+
+      const response = await fetch(`/api/public/segment-search?${params}`, {
+        signal: controller.signal,
+      })
+      clearTimeout(timeout)
       if (!response.ok) throw new Error('Search failed')
 
       const data: SearchResponse = await response.json()
@@ -99,11 +105,8 @@ export default function AudienceIntelligencePage() {
       {/* Header */}
       <header className="border-b border-gray-100">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-[#007AFF] flex items-center justify-center">
-              <span className="text-white font-bold text-sm">C</span>
-            </div>
-            <span className="font-semibold text-gray-900 text-lg">Cursive</span>
+          <Link href="/" className="flex items-center">
+            <div className="h-8 w-8 rounded-lg bg-[#007AFF]" />
           </Link>
           <Link
             href="/signup"
@@ -138,7 +141,7 @@ export default function AudienceIntelligencePage() {
           {/* Search Input */}
           <div className="relative max-w-2xl mx-auto">
             <div className={`relative rounded-2xl border transition-all duration-200 ${
-              loading ? 'border-[#007AFF]/40 shadow-[0_0_0_3px_rgba(0,122,255,0.08)]' : 'border-gray-200 hover:border-gray-300 focus-within:border-[#007AFF]/40 focus-within:shadow-[0_0_0_3px_rgba(0,122,255,0.08)]'
+              loading ? 'border-gray-300 shadow-sm' : 'border-gray-200 hover:border-gray-300 focus-within:border-gray-300 focus-within:shadow-sm'
             } bg-white`}>
               <div className="flex items-center">
                 <div className="pl-4 flex items-center">

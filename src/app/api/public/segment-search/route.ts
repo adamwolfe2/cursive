@@ -84,26 +84,34 @@ export async function GET(req: NextRequest) {
     .order('category')
     .limit(500)
 
-  // Try semantic search first
+  // Try semantic search first (with 5s timeout so we fall back to keyword quickly)
   try {
-    const { embedText } = await import('@/lib/audiencelab/embeddings')
-    const queryEmbedding = await embedText(q)
+    const semanticResult = await Promise.race([
+      (async () => {
+        const { embedText } = await import('@/lib/audiencelab/embeddings')
+        const queryEmbedding = await embedText(q)
 
-    const { data: results, error: rpcError } = await admin.rpc('match_segments', {
-      query_embedding: queryEmbedding,
-      match_threshold: 0.25,
-      match_count: limit,
-      filter_type: type || null,
-      filter_category: category || null,
-    })
+        const { data: results, error: rpcError } = await admin.rpc('match_segments', {
+          query_embedding: queryEmbedding,
+          match_threshold: 0.25,
+          match_count: limit,
+          filter_type: type || null,
+          filter_category: category || null,
+        })
 
-    if (!rpcError && results && results.length > 0) {
+        if (!rpcError && results && results.length > 0) return results
+        return null
+      })(),
+      new Promise<null>((resolve) => setTimeout(() => resolve(null), 5_000)),
+    ])
+
+    if (semanticResult) {
       const { data: cats } = await categoriesPromise
       const categories = [...new Set((cats ?? []).map((c: { category: string }) => c.category).filter(Boolean))].sort()
 
       return NextResponse.json({
-        segments: results,
-        total: results.length,
+        segments: semanticResult,
+        total: semanticResult.length,
         search_type: 'semantic',
         categories,
       }, { headers: CORS_HEADERS })
