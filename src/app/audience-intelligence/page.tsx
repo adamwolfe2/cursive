@@ -90,12 +90,14 @@ export default function AudienceIntelligencePage() {
   }, [query, performSearch])
 
   const handleSuggestionClick = (label: string) => {
+    if (debounceRef.current) clearTimeout(debounceRef.current)
     setQuery(label)
     performSearch(label)
     inputRef.current?.focus()
   }
 
   const handleTypeFilter = (type: string) => {
+    if (debounceRef.current) clearTimeout(debounceRef.current)
     const newType = typeFilter === type ? '' : type
     setTypeFilter(newType)
     if (query.trim()) performSearch(query, newType)

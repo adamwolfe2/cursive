@@ -121,8 +121,8 @@ export function EnrichLeadPanel({
       setPhase('done')
       onEnriched?.(data)
     },
-    onError: (err: any) => {
-      if (err.message === 'no_credits') {
+    onError: (err: unknown) => {
+      if (err instanceof Error && err.message === 'no_credits') {
         setPhase('no_credits')
       } else {
         setPhase('idle')

@@ -30,13 +30,16 @@ function checkRateLimit(ip: string): boolean {
   return true
 }
 
-// Periodic cleanup to prevent memory leak
-setInterval(() => {
+// Lazy cleanup to prevent memory leak (no setInterval in serverless)
+let lastCleanup = Date.now()
+function maybeCleanup() {
   const now = Date.now()
+  if (now - lastCleanup < 60_000) return
+  lastCleanup = now
   for (const [key, entry] of rateLimitMap.entries()) {
     if (now > entry.resetAt) rateLimitMap.delete(key)
   }
-}, 300_000) // every 5 minutes
+}
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -55,6 +58,8 @@ export async function GET(req: NextRequest) {
     req.headers.get('x-real-ip') ||
     'unknown'
 
+  maybeCleanup()
+
   if (!checkRateLimit(ip)) {
     return NextResponse.json(
       { error: 'Too many requests. Please wait a moment.' },
@@ -63,7 +68,7 @@ export async function GET(req: NextRequest) {
   }
 
   const { searchParams } = new URL(req.url)
-  const q = searchParams.get('q')?.trim() ?? ''
+  const q = (searchParams.get('q')?.trim() ?? '').slice(0, 500)
   const type = searchParams.get('type') ?? ''
   const category = searchParams.get('category') ?? ''
   const limit = Math.min(24, Math.max(1, parseInt(searchParams.get('limit') ?? '12', 10)))
