@@ -9,10 +9,10 @@ import { Button } from '@/components/ui/button'
 
 // Credit package options for the auto-recharge dropdown (matches CREDIT_PACKAGES)
 const AUTO_RECHARGE_PACKAGES = [
-  { id: 'starter', label: 'Starter — 100 credits ($99)' },
-  { id: 'growth', label: 'Growth — 500 credits ($399)' },
-  { id: 'scale', label: 'Scale — 1,000 credits ($699)' },
-  { id: 'enterprise', label: 'Enterprise — 5,000 credits ($2,999)' },
+  { id: 'starter', label: 'Starter — 100 credits' },
+  { id: 'growth', label: 'Growth — 500 credits' },
+  { id: 'scale', label: 'Scale — 1,000 credits' },
+  { id: 'enterprise', label: 'Enterprise — 5,000 credits' },
 ]
 
 interface AutoRechargeSettings {

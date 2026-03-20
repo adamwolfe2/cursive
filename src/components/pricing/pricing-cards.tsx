@@ -182,18 +182,10 @@ export function PricingCards({ plans, currentPlan }: PricingCardsProps) {
               </div>
 
               <div className="mb-6">
-                <div className="flex items-baseline gap-1">
-                  <span className="text-3xl sm:text-5xl font-bold text-zinc-900">
-                    ${Math.round(displayPrice)}
-                  </span>
-                  <span className="text-zinc-500">
-                    /mo
-                  </span>
-                </div>
-                {billingCycle === 'yearly' && price > 0 && (
-                  <p className="text-sm text-zinc-500 mt-1">
-                    ${price} billed annually {savings > 0 && `(save ${savings}%)`}
-                  </p>
+                {plan.name === 'free' ? (
+                  <span className="text-sm text-zinc-500">Free forever</span>
+                ) : (
+                  <span className="text-sm font-medium text-primary">Contact us for pricing</span>
                 )}
               </div>
 

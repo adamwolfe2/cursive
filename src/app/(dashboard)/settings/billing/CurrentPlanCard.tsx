@@ -3,7 +3,6 @@
 import Image from 'next/image'
 import { UpgradeButton } from '@/components/billing/upgrade-button'
 import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 
 // Integration logos for the Pro plan card
 const INTEGRATION_LOGOS = {
@@ -45,7 +44,7 @@ export function CurrentPlanCard({
           <div className="flex flex-col sm:flex-row sm:items-center gap-4">
             <div className="flex-1">
               <h2 className="text-base font-bold text-gray-900 mb-1">
-                One enriched lead can close a $10k deal.
+                Unlock the full power of Cursive.
               </h2>
               <p className="text-sm text-gray-600 max-w-xl">
                 You&apos;re getting free leads every day. Upgrading adds phone numbers, emails, LinkedIn profiles, and 100 leads/day — so your team can close, not just browse.
@@ -108,12 +107,7 @@ export function CurrentPlanCard({
               )}
             </div>
 
-            <div className="flex items-baseline gap-2 mb-4">
-              <span className="text-3xl font-bold text-foreground">
-                ${isPro ? '50' : '0'}
-              </span>
-              <span className="text-muted-foreground">/month</span>
-            </div>
+            <div className="mb-4" />
 
             {isPro && user?.subscription_period_end && (
               <p className="text-sm text-muted-foreground mb-4">
@@ -224,17 +218,12 @@ export function CurrentPlanCard({
           <CardContent className="pt-6">
             {/* Horizontal layout: Pricing | Features | CTA */}
             <div className="grid md:grid-cols-[1fr_2fr_auto] gap-6 items-center">
-              {/* Pricing */}
+              {/* Plan info */}
               <div className="text-center md:text-left">
                 <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
                   <h3 className="text-xl font-bold text-foreground">Pro Plan</h3>
-                  <Badge variant="default">Save 50%</Badge>
                 </div>
-                <div className="flex items-baseline justify-center md:justify-start gap-1">
-                  <span className="text-3xl font-bold text-foreground">$50</span>
-                  <span className="text-muted-foreground">/month</span>
-                </div>
-                <p className="text-sm text-muted-foreground mt-1 line-through">$99/month</p>
+                <p className="text-sm text-muted-foreground mt-1">Contact us for pricing details</p>
 
                 {/* Integration Logos */}
                 <div className="mt-4">

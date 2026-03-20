@@ -45,10 +45,7 @@ export function ServiceTiersCard() {
             <p className="text-sm text-muted-foreground mb-3">
               Custom lead lists delivered monthly
             </p>
-            <div className="flex items-baseline gap-1">
-              <span className="text-lg font-bold text-foreground">$1k-3k</span>
-              <span className="text-xs text-muted-foreground">/mo</span>
-            </div>
+            <span className="text-sm font-medium text-primary">Contact for pricing</span>
           </a>
 
           {/* Cursive Outbound */}
@@ -72,11 +69,7 @@ export function ServiceTiersCard() {
             <p className="text-sm text-muted-foreground mb-3">
               Done-for-you email campaigns
             </p>
-            <div className="flex items-baseline gap-1">
-              <span className="text-lg font-bold text-foreground">$3-5k</span>
-              <span className="text-xs text-muted-foreground">/mo</span>
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">+ $2.5k setup</p>
+            <span className="text-sm font-medium text-primary">Contact for pricing</span>
           </a>
 
           {/* Cursive Pipeline */}
@@ -100,18 +93,14 @@ export function ServiceTiersCard() {
             <p className="text-sm text-muted-foreground mb-3">
               Full pipeline with AI SDR
             </p>
-            <div className="flex items-baseline gap-1">
-              <span className="text-lg font-bold text-foreground">$5-10k</span>
-              <span className="text-xs text-muted-foreground">/mo</span>
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">+ $5k setup</p>
+            <span className="text-sm font-medium text-primary">Contact for pricing</span>
           </a>
         </div>
 
         <div className="mt-6 pt-4 border-t border-border">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-sm text-muted-foreground">
-              Get custom pricing and white-glove service with Cursive Studio
+              Get white-glove service with Cursive Studio
             </p>
             <Link
               href="/services/contact"

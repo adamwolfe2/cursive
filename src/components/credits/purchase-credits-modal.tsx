@@ -121,26 +121,12 @@ export function PurchaseCreditsModal({
                 <CardContent className="pt-6 pb-6">
                   <div className="text-center mb-4">
                     <h3 className="text-lg font-semibold">{pkg.name}</h3>
-                    <div className="mt-2">
-                      <span className="text-3xl font-bold">
-                        {formatPrice(pkg.price)}
-                      </span>
-                    </div>
                     <div className="text-sm text-muted-foreground mt-1">
                       {pkg.credits.toLocaleString()} credits
                     </div>
-                    {pkg.savings && (
-                      <Badge variant="secondary" className="mt-2">
-                        {pkg.savings}
-                      </Badge>
-                    )}
                   </div>
 
                   <div className="space-y-3 mb-6">
-                    <div className="flex items-start gap-2 text-sm">
-                      <Check className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                      <span>${pkg.pricePerCredit.toFixed(2)} per lead credit</span>
-                    </div>
                     <div className="flex items-start gap-2 text-sm">
                       <Check className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
                       <span>Access to 280M+ database</span>

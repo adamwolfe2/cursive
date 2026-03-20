@@ -105,7 +105,7 @@ export function UpgradeButton({
           </svg>
           Loading...
         </span>
-      ) : billingPeriod === 'yearly' ? 'Get Pro — Annual (Save 20%)' : 'Upgrade to Pro'
+      ) : 'Upgrade to Pro'
       }
     </button>
   )

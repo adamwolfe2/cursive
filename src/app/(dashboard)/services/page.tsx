@@ -8,8 +8,8 @@ const SERVICE_TIERS = [
     key: 'data' as const,
     name: 'Cursive Data',
     description: 'Custom lead lists delivered monthly, built around your ICP and market.',
-    priceRange: '$1k-3k',
-    priceUnit: '/mo',
+    priceRange: null,
+    priceUnit: null,
     setupFee: null,
     icon: (
       <svg className="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -29,9 +29,9 @@ const SERVICE_TIERS = [
     key: 'outbound' as const,
     name: 'Cursive Outbound',
     description: 'Done-for-you email campaigns that book meetings on your calendar.',
-    priceRange: '$3-5k',
-    priceUnit: '/mo',
-    setupFee: '+ $2.5k setup',
+    priceRange: null,
+    priceUnit: null,
+    setupFee: null,
     popular: true,
     icon: (
       <svg className="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -52,9 +52,9 @@ const SERVICE_TIERS = [
     key: 'pipeline' as const,
     name: 'Cursive Pipeline',
     description: 'Full pipeline management with AI SDR that qualifies and books meetings.',
-    priceRange: '$5-10k',
-    priceUnit: '/mo',
-    setupFee: '+ $5k setup',
+    priceRange: null,
+    priceUnit: null,
+    setupFee: null,
     icon: (
       <svg className="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -170,15 +170,9 @@ export default function ServicesPage() {
               </div>
             </div>
 
-            {/* Price */}
+            {/* Contact for pricing */}
             <div className="mb-6">
-              <div className="flex items-baseline gap-1">
-                <span className="text-3xl font-bold text-foreground">{tier.priceRange}</span>
-                <span className="text-sm text-muted-foreground">{tier.priceUnit}</span>
-              </div>
-              {tier.setupFee && (
-                <p className="text-sm text-muted-foreground mt-1">{tier.setupFee}</p>
-              )}
+              <span className="text-sm font-medium text-primary">Contact us for pricing</span>
             </div>
 
             {/* Features */}
@@ -229,18 +223,15 @@ export default function ServicesPage() {
                 <th className="text-left px-5 py-3.5 font-medium text-foreground w-1/2">Feature</th>
                 <th className="text-center px-4 py-3.5 font-medium text-foreground">
                   <div>Data</div>
-                  <div className="text-xs font-normal text-muted-foreground">$1k–3k/mo</div>
                 </th>
                 <th className="text-center px-4 py-3.5 font-medium text-foreground">
                   <div className="flex items-center justify-center gap-1.5">
                     Outbound
                     <span className="inline-flex items-center rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-primary-foreground leading-none">Popular</span>
                   </div>
-                  <div className="text-xs font-normal text-muted-foreground">$3–5k/mo</div>
                 </th>
                 <th className="text-center px-4 py-3.5 font-medium text-foreground">
                   <div>Pipeline</div>
-                  <div className="text-xs font-normal text-muted-foreground">$5–10k/mo</div>
                 </th>
               </tr>
             </thead>
@@ -293,7 +284,7 @@ export default function ServicesPage() {
           Need something custom?
         </h2>
         <p className="text-sm text-muted-foreground max-w-xl mx-auto mb-6">
-          Get custom pricing and white-glove service with Cursive Venture Studio.
+          Get white-glove service with Cursive Venture Studio.
           We will build a growth engine tailored to your business.
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
