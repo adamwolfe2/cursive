@@ -18,9 +18,9 @@ import { CreditService } from '@/lib/services/credit.service'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import {
-  Users, TrendingUp, Crown, ArrowRight, Sparkles,
-  Zap, Star, Target, CheckCircle2, Circle,
-  Calendar, Eye, Rocket, Activity, Flame, Phone, Mail,
+  Users, ArrowRight,
+  Star, Target, CheckCircle2, Circle,
+  Eye, Rocket, Activity,
 } from 'lucide-react'
 import { sanitizeName, sanitizeCompanyName, sanitizeText } from '@/lib/utils/sanitize-text'
 import { DashboardAnimationWrapper, AnimatedSection } from '@/components/dashboard/dashboard-animation-wrapper'
@@ -39,20 +39,6 @@ export const metadata: Metadata = {
 }
 
 // ─── Module-scope helpers ──────────────────────────────────────────────────────
-
-function intentLabel(score: number | null) {
-  if (!score) return null
-  if (score >= 70) return { label: 'Hot',  color: 'text-emerald-700 bg-emerald-50 border-emerald-200' }
-  if (score >= 40) return { label: 'Warm', color: 'text-amber-600 bg-amber-50 border-amber-200' }
-  return              { label: 'Cold', color: 'text-slate-600 bg-slate-100 border-slate-200' }
-}
-
-function trendBadge(current: number, previous: number) {
-  if (previous === 0) return null
-  const pct = Math.round(((current - previous) / previous) * 100)
-  if (Math.abs(pct) < 1) return null
-  return { pct: Math.abs(pct), up: pct > 0 }
-}
 
 // ─── Module-scope cache functions (stable references = proper Next.js caching) ─
 
@@ -274,13 +260,13 @@ async function DashboardMainGrid(props: MainGridProps) {
 
   // Next step
   const step = !hasPreferences
-    ? { label: 'Set targeting preferences', desc: 'Tell us your ideal customer so we can match leads.', href: '/my-leads/preferences', icon: <Target className="h-5 w-5 text-primary" />, color: 'border-primary/30 bg-primary/5' }
+    ? { label: 'Set targeting preferences', desc: 'Tell us your ideal customer so we can match leads.', href: '/my-leads/preferences' }
     : !hasEnriched
-    ? { label: 'Enrich your first lead', desc: 'Reveal verified email, phone & LinkedIn — it\'s free.', href: '/leads', icon: <Sparkles className="h-5 w-5 text-blue-600" />, color: 'border-blue-200 bg-blue-50' }
+    ? { label: 'Enrich your first lead', desc: 'Reveal verified email, phone & LinkedIn — it\'s free.', href: '/leads' }
     : !hasPixel
-    ? { label: 'Install tracking pixel', desc: 'Identify anonymous website visitors in real-time.', href: '/settings/pixel', icon: <Eye className="h-5 w-5 text-primary" />, color: 'border-primary/30 bg-primary/5' }
+    ? { label: 'Install tracking pixel', desc: 'Identify anonymous website visitors in real-time.', href: '/settings/pixel' }
     : !hasActivated
-    ? { label: 'Activate outreach', desc: 'Build a lookalike audience or launch managed outbound.', href: '/activate', icon: <Rocket className="h-5 w-5 text-primary" />, color: 'border-primary/30 bg-primary/5' }
+    ? { label: 'Activate outreach', desc: 'Build a lookalike audience or launch managed outbound.', href: '/activate' }
     : null
 
   return (
@@ -288,10 +274,9 @@ async function DashboardMainGrid(props: MainGridProps) {
       {/* Hot leads */}
       {typedHotLeads.length > 0 && (
         <AnimatedSection delay={0.08}>
-          <div className="bg-white rounded-xl border border-gray-200 p-5">
+          <div className="bg-white rounded-xl border border-gray-200 p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-semibold text-gray-900 flex items-center gap-2">
-                <Flame className="h-4 w-4 text-orange-500" />
+              <h2 className="font-semibold text-gray-900">
                 Top Leads to Act On
               </h2>
               <Link href="/leads?sort=intent" className="text-sm text-primary hover:underline flex items-center gap-1">
@@ -304,42 +289,30 @@ async function DashboardMainGrid(props: MainGridProps) {
                   || sanitizeName([lead.first_name, lead.last_name].filter(Boolean).join(' '))
                   || sanitizeCompanyName(lead.company_name) || 'Unknown'
                 const score = lead.intent_score_calculated
-                const isHot = score !== null && score >= 70
                 const isEnriched = lead.enrichment_status === 'enriched'
-                const currentStatus = lead.status || 'new'
-                const statusLabel = currentStatus === 'new' ? null : currentStatus.charAt(0).toUpperCase() + currentStatus.slice(1)
                 return (
-                  <div key={lead.id} className={`rounded-lg border p-3.5 flex flex-col gap-2.5 ${isHot ? 'border-orange-200 bg-orange-50/40' : 'border-blue-100 bg-blue-50/30'}`}>
+                  <div key={lead.id} className="rounded-lg border border-gray-200 bg-white p-4 flex flex-col gap-2.5">
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
-                        <p className="text-sm font-semibold text-gray-900 truncate">{name}</p>
+                        <p className="text-sm font-medium text-gray-900 truncate">{name}</p>
                         {lead.company_name && <p className="text-xs text-gray-500 truncate">{sanitizeCompanyName(lead.company_name)}</p>}
                       </div>
-                      <div className="shrink-0 flex flex-col items-end gap-1">
-                        {score !== null && (
-                          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full border ${isHot ? 'bg-orange-100 text-orange-700 border-orange-200' : 'bg-amber-50 text-amber-700 border-amber-200'}`}>
-                            {isHot ? 'HOT' : 'WARM'} {score}
-                          </span>
-                        )}
-                        {statusLabel && (
-                          <span className="text-[10px] font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-full px-1.5 py-0.5">
-                            {statusLabel}
-                          </span>
-                        )}
-                      </div>
+                      {score !== null && (
+                        <span className="text-xs text-gray-500 shrink-0">{score}</span>
+                      )}
                     </div>
-                    <div className="flex items-center gap-1.5 flex-wrap">
+                    <div className="flex items-center gap-3">
                       {isEnriched && lead.email && (
-                        <a href={`mailto:${lead.email}`} className="inline-flex items-center gap-1 text-[10px] bg-white border border-gray-200 text-gray-600 rounded-full px-2 py-0.5 hover:border-primary hover:text-primary transition-colors font-medium">
-                          <Mail className="h-2.5 w-2.5" /> Email
+                        <a href={`mailto:${lead.email}`} className="text-xs text-gray-500 hover:text-gray-700 transition-colors">
+                          Email
                         </a>
                       )}
                       {isEnriched && lead.phone && (
-                        <a href={`tel:${lead.phone}`} className="inline-flex items-center gap-1 text-[10px] bg-white border border-gray-200 text-gray-600 rounded-full px-2 py-0.5 hover:border-primary hover:text-primary transition-colors font-medium">
-                          <Phone className="h-2.5 w-2.5" /> Call
+                        <a href={`tel:${lead.phone}`} className="text-xs text-gray-500 hover:text-gray-700 transition-colors">
+                          Call
                         </a>
                       )}
-                      <Link href={`/crm/leads/${lead.id}`} className="inline-flex items-center gap-1 text-[10px] bg-white border border-gray-200 text-gray-600 rounded-full px-2 py-0.5 hover:border-primary hover:text-primary transition-colors font-medium ml-auto">
+                      <Link href={`/crm/leads/${lead.id}`} className="text-xs text-gray-500 hover:text-gray-700 transition-colors ml-auto flex items-center gap-1">
                         View <ArrowRight className="h-2.5 w-2.5" />
                       </Link>
                     </div>
@@ -356,10 +329,9 @@ async function DashboardMainGrid(props: MainGridProps) {
 
         {/* Recent Leads — 2/3 width */}
         <AnimatedSection delay={0.1} className="lg:col-span-2">
-          <div className="bg-white rounded-xl border border-gray-200 p-5">
+          <div className="bg-white rounded-xl border border-gray-200 p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-semibold text-gray-900 flex items-center gap-2">
-                <Star className="h-4 w-4 text-primary fill-primary" />
+              <h2 className="font-semibold text-gray-900">
                 Recent Leads
               </h2>
               <Link href="/leads" className="text-sm text-primary hover:underline flex items-center gap-1">
@@ -375,7 +347,7 @@ async function DashboardMainGrid(props: MainGridProps) {
               const n = l.full_name || [l.first_name, l.last_name].filter(Boolean).join(' ')
               return n && n.trim().length > 1
             }).length > 0 ? (
-              <div className="space-y-2">
+              <div className="divide-y divide-gray-100">
                 {((recentLeads ?? []) as Array<{
                   id: string; full_name: string | null; first_name: string | null; last_name: string | null
                   email: string | null; phone: string | null; company_name: string | null
@@ -390,20 +362,11 @@ async function DashboardMainGrid(props: MainGridProps) {
                     || sanitizeCompanyName(lead.company_name) || 'Unknown'
                   const validEmail = lead.email?.includes('@') ? sanitizeText(lead.email) : null
                   const displaySub = sanitizeCompanyName(lead.company_name) || validEmail || sanitizeText(lead.phone) || ''
-                  const intent = intentLabel(lead.intent_score_calculated)
-                  const isEnriched = lead.enrichment_status === 'enriched'
                   return (
-                    <Link key={lead.id} href={`/crm/leads/${lead.id}`} className="flex items-center gap-3 p-3 rounded-lg border border-transparent hover:border-gray-200 hover:bg-gray-50 transition-all group">
-                      <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-xs font-bold text-blue-700 shrink-0">
-                        {displayName.charAt(0).toUpperCase()}
-                      </div>
+                    <Link key={lead.id} href={`/crm/leads/${lead.id}`} className="flex items-center gap-3 py-3 hover:bg-gray-50 transition-colors group px-1">
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900 truncate group-hover:text-primary transition-colors">{displayName}</p>
-                        {displaySub && <p className="text-xs text-gray-500 truncate">{displaySub}</p>}
-                      </div>
-                      <div className="flex items-center gap-1.5 shrink-0">
-                        {isEnriched && <span className="text-[10px] bg-blue-50 text-blue-600 border border-blue-200 rounded-full px-1.5 py-0.5 font-medium">Enriched</span>}
-                        {intent && <span className={`text-[10px] border rounded-full px-1.5 py-0.5 font-medium ${intent.color}`}>{intent.label}</span>}
+                        <span className="text-sm font-medium text-gray-900 group-hover:text-primary transition-colors">{displayName}</span>
+                        {displaySub && <span className="text-sm text-gray-500 ml-2">{displaySub}</span>}
                       </div>
                     </Link>
                   )
@@ -411,7 +374,6 @@ async function DashboardMainGrid(props: MainGridProps) {
               </div>
             ) : (
               <div className="text-center py-10">
-                <Calendar className="h-10 w-10 text-gray-200 mx-auto mb-3" />
                 <p className="text-sm font-medium text-gray-600">No leads yet today</p>
                 <p className="text-xs text-gray-500 mt-1">Leads arrive every morning at 8am CT based on your targeting preferences.</p>
                 {!hasPreferences && (
@@ -429,10 +391,10 @@ async function DashboardMainGrid(props: MainGridProps) {
 
           {/* Pixel health */}
           <AnimatedSection delay={0.12}>
-            <div className={`rounded-xl border p-3 ${hasVerifiedPixel ? 'border-green-200 bg-green-50' : hasPixel ? 'border-amber-200 bg-amber-50' : 'border-gray-200 bg-gray-50'}`}>
+            <div className="rounded-xl border border-gray-200 bg-white p-3">
               <div className="flex items-center gap-2">
-                <div className={`h-2 w-2 rounded-full shrink-0 ${hasVerifiedPixel ? 'bg-green-500' : hasPixel ? 'bg-amber-400' : 'bg-gray-300'}`} />
-                <span className={`text-xs font-medium ${hasVerifiedPixel ? 'text-green-800' : hasPixel ? 'text-amber-800' : 'text-gray-600'}`}>
+                <div className={`h-2 w-2 rounded-full shrink-0 ${hasVerifiedPixel ? 'bg-gray-900' : hasPixel ? 'bg-gray-400' : 'bg-gray-300'}`} />
+                <span className="text-xs font-medium text-gray-600">
                   {hasVerifiedPixel ? 'Pixel Active' : hasPixel ? 'Pixel Installed — awaiting first event' : 'Pixel not installed'}
                 </span>
                 <Link href="/settings/pixel" className="ml-auto text-xs text-primary hover:underline shrink-0">
@@ -444,7 +406,7 @@ async function DashboardMainGrid(props: MainGridProps) {
                   {pixelEventCount > 0 && <span>{pixelEventCount.toLocaleString()} events</span>}
                   {visitorCountTotal ? <span>{visitorCountTotal.toLocaleString()} visitors identified</span> : null}
                   {isOnTrial && trialEndsAtStr && (
-                    <span className="text-amber-600 font-medium">
+                    <span className="text-gray-500 font-medium">
                       Trial: {Math.max(0, Math.ceil((new Date(trialEndsAtStr).getTime() - Date.now()) / 86400000))}d left
                     </span>
                   )}
@@ -456,24 +418,21 @@ async function DashboardMainGrid(props: MainGridProps) {
           {/* Next step */}
           <AnimatedSection delay={0.15}>
             {step ? (
-              <Link href={step.href} className={`block rounded-xl border p-5 transition-all hover:shadow-sm ${step.color}`}>
-                <div className="flex items-center gap-3 mb-2">
-                  {step.icon}
-                  <p className="text-sm font-semibold text-gray-900">Next Step</p>
-                </div>
-                <p className="text-sm font-medium text-gray-800">{step.label}</p>
+              <Link href={step.href} className="block rounded-xl border border-gray-200 bg-white p-5 transition-all hover:shadow-sm">
+                <p className="text-xs text-gray-400 mb-1">Next Step</p>
+                <p className="text-sm font-medium text-gray-900">{step.label}</p>
                 <p className="text-xs text-gray-500 mt-0.5">{step.desc}</p>
                 <span className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-primary">
                   Get started <ArrowRight className="h-3 w-3" />
                 </span>
               </Link>
             ) : (
-              <div className="rounded-xl border border-blue-200 bg-blue-50 p-5">
+              <div className="rounded-xl border border-gray-200 bg-white p-5">
                 <div className="flex items-center gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-blue-600 shrink-0" />
+                  <CheckCircle2 className="h-5 w-5 text-gray-400 shrink-0" />
                   <div>
-                    <p className="text-sm font-semibold text-blue-900">You&apos;re all set!</p>
-                    <p className="text-xs text-blue-700">Check your leads for fresh matches every morning at 8am CT.</p>
+                    <p className="text-sm font-semibold text-gray-900">You&apos;re all set!</p>
+                    <p className="text-xs text-gray-500">Check your leads for fresh matches every morning at 8am CT.</p>
                   </div>
                 </div>
               </div>
@@ -512,38 +471,32 @@ async function DashboardMainGrid(props: MainGridProps) {
           <AnimatedSection delay={0.22}>
             <div className="bg-white rounded-xl border border-gray-200 p-5">
               <h3 className="font-semibold text-gray-900 text-sm mb-3">Quick Actions</h3>
-              <div className="space-y-2">
+              <div className="space-y-1">
                 <Link href="/leads" className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-gray-50 transition-colors group">
-                  <div className="p-1.5 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                    <Star className="h-3.5 w-3.5 text-primary" />
-                  </div>
+                  <Star className="h-4 w-4 text-gray-400 shrink-0" />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-gray-800">Daily Leads</p>
                     <p className="text-xs text-gray-500">{todayCount} new today</p>
                   </div>
-                  <ArrowRight className="h-3.5 w-3.5 text-gray-400 group-hover:text-primary transition-colors" />
+                  <ArrowRight className="h-3.5 w-3.5 text-gray-400 group-hover:text-gray-600 transition-colors" />
                 </Link>
                 <Link href="/website-visitors" className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-gray-50 transition-colors group">
-                  <div className="p-1.5 rounded-lg bg-blue-50 group-hover:bg-blue-100 transition-colors">
-                    <Eye className="h-3.5 w-3.5 text-blue-500" />
-                  </div>
+                  <Eye className="h-4 w-4 text-gray-400 shrink-0" />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-gray-800">Website Visitors</p>
                     <p className="text-xs text-gray-500">
                       {visitorCountTotal ? `${visitorCountTotal} identified` : hasPixel ? 'Pixel active' : 'Setup pixel'}
                     </p>
                   </div>
-                  <ArrowRight className="h-3.5 w-3.5 text-gray-400 group-hover:text-primary transition-colors" />
+                  <ArrowRight className="h-3.5 w-3.5 text-gray-400 group-hover:text-gray-600 transition-colors" />
                 </Link>
-                <Link href="/activate" className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-blue-50 transition-colors group border border-blue-100">
-                  <div className="p-1.5 rounded-lg bg-blue-100 group-hover:bg-blue-200 transition-colors">
-                    <Rocket className="h-3.5 w-3.5 text-blue-600" />
-                  </div>
+                <Link href="/activate" className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-gray-50 transition-colors group">
+                  <Rocket className="h-4 w-4 text-gray-400 shrink-0" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-blue-700">Activate</p>
-                    <p className="text-xs text-blue-500">Audiences + campaigns</p>
+                    <p className="text-sm font-medium text-gray-800">Activate</p>
+                    <p className="text-xs text-gray-500">Audiences + campaigns</p>
                   </div>
-                  <ArrowRight className="h-3.5 w-3.5 text-blue-300 group-hover:text-blue-600 transition-colors" />
+                  <ArrowRight className="h-3.5 w-3.5 text-gray-400 group-hover:text-gray-600 transition-colors" />
                 </Link>
               </div>
             </div>
@@ -561,9 +514,7 @@ async function DashboardMainGrid(props: MainGridProps) {
                   {activityLog.slice(0, 6).map((event, i) => (
                     <div key={i} className="flex items-start gap-2.5">
                       <div className="mt-0.5 h-5 w-5 shrink-0 flex items-center justify-center">
-                        {event.type === 'delivery'
-                          ? <div className="h-2 w-2 rounded-full bg-primary" />
-                          : <div className="h-2 w-2 rounded-full bg-blue-400" />}
+                        <div className="h-1.5 w-1.5 rounded-full bg-gray-300" />
                       </div>
                       <div className="flex-1 min-w-0">
                         {event.type === 'delivery' ? (
@@ -572,7 +523,7 @@ async function DashboardMainGrid(props: MainGridProps) {
                           <p className="text-xs text-gray-700 truncate">
                             <span className="font-medium">{event.leadName}</span>
                             {event.company && <span className="text-gray-500"> · {event.company}</span>}
-                            <span className="text-blue-600 ml-1">enriched</span>
+                            <span className="text-gray-500 ml-1">enriched</span>
                           </p>
                         )}
                         <p className="text-[10px] text-gray-500 mt-0.5">
@@ -599,27 +550,27 @@ async function DashboardMainGrid(props: MainGridProps) {
                 </div>
                 <div className="space-y-2">
                   {([
-                    { key: 'contacted', label: 'Contacted', color: 'bg-blue-500',    textColor: 'text-blue-700'    },
-                    { key: 'qualified', label: 'Qualified', color: 'bg-indigo-500',  textColor: 'text-indigo-700'  },
-                    { key: 'proposal',  label: 'Proposal',  color: 'bg-amber-500',   textColor: 'text-amber-700'   },
-                    { key: 'won',       label: 'Won',       color: 'bg-emerald-500', textColor: 'text-emerald-700' },
-                  ] as const).map(({ key, label, color, textColor }) => {
+                    { key: 'contacted', label: 'Contacted' },
+                    { key: 'qualified', label: 'Qualified' },
+                    { key: 'proposal',  label: 'Proposal'  },
+                    { key: 'won',       label: 'Won'       },
+                  ] as const).map(({ key, label }) => {
                     const count = pipeline[key] ?? 0
                     const pct = Math.round((count / Math.max(pipeline.contacted, 1)) * 100)
                     return (
                       <div key={key} className="flex items-center gap-2">
                         <span className="text-xs text-gray-500 w-16 shrink-0">{label}</span>
                         <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                          <div className={`h-full ${color} rounded-full transition-all`} style={{ width: `${pct}%` }} />
+                          <div className="h-full bg-gray-300 rounded-full transition-all" style={{ width: `${pct}%` }} />
                         </div>
-                        <span className={`text-xs font-semibold ${count > 0 ? textColor : 'text-gray-400'} w-6 text-right`}>{count}</span>
+                        <span className={`text-xs font-semibold ${count > 0 ? 'text-gray-700' : 'text-gray-400'} w-6 text-right`}>{count}</span>
                       </div>
                     )
                   })}
                 </div>
                 {pipeline.won > 0 && (
-                  <p className="mt-3 text-[11px] text-emerald-700 bg-emerald-50 rounded-lg px-2.5 py-1.5 font-medium">
-                    {pipeline.won} lead{pipeline.won !== 1 ? 's' : ''} won — keep going!
+                  <p className="mt-3 text-[11px] text-gray-600 bg-gray-50 rounded-lg px-2.5 py-1.5 font-medium">
+                    {pipeline.won} lead{pipeline.won !== 1 ? 's' : ''} won
                   </p>
                 )}
               </div>
@@ -629,21 +580,14 @@ async function DashboardMainGrid(props: MainGridProps) {
           {/* Upgrade CTA */}
           {isFree && (
             <AnimatedSection delay={0.25}>
-              <div className="rounded-xl bg-gradient-to-br from-blue-50 to-primary/5 border border-primary/20 p-5">
-                <div className="flex items-center gap-2 mb-2">
-                  <Crown className="h-4 w-4 text-primary" />
-                  <span className="text-sm font-semibold text-gray-900">Free Plan</span>
-                </div>
-                <div className="text-xs text-gray-500 mb-3 space-y-1">
+              <div className="rounded-xl border border-gray-200 bg-white p-5">
+                <span className="text-sm font-semibold text-gray-900">Free Plan</span>
+                <div className="text-xs text-gray-500 mt-2 mb-3 space-y-1">
                   <p className="flex justify-between"><span>Daily leads</span><span className="font-medium text-gray-700">{dailyLimit}/day</span></p>
                   <p className="flex justify-between"><span>Enrichment credits</span><span className="font-medium text-gray-700">{creditLimit}/day</span></p>
                   <p className="flex justify-between"><span>Credits reset</span><span className="font-medium text-gray-700">8am CT</span></p>
-                  <div className="border-t border-gray-200 pt-1 mt-1">
-                    <p className="flex justify-between text-primary"><span>Pro plan</span><span className="font-semibold">100 leads + 1,000 credits</span></p>
-                  </div>
                 </div>
                 <Link href="/settings/billing" className="w-full inline-flex items-center justify-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-sm font-semibold text-white hover:bg-primary/90 transition-colors">
-                  <Sparkles className="h-3.5 w-3.5" />
                   Upgrade to Pro
                 </Link>
               </div>
@@ -769,8 +713,6 @@ export default async function DashboardPage({
   const todayCount      = statsData?.today_leads      ?? 0
   const weekCount       = statsData?.week_leads       ?? 0
   const totalCount      = statsData?.total_leads      ?? 0
-  const yesterdayCount  = statsData?.yesterday_leads  ?? 0
-  const prevWeekCount   = statsData?.prev_week_leads  ?? 0
   const enrichedCount   = statsData?.enriched_leads   ?? 0
   const pixelEventCount = statsData?.pixel_event_count ?? 0
   const intelligenceTierCount = statsData?.intelligence_leads ?? 0
@@ -814,7 +756,7 @@ export default async function DashboardPage({
   const showChecklist     = checklistProgress < checklistTotal
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-8 p-6">
       <DashboardAnimationWrapper>
 
         {/* Header */}
@@ -866,14 +808,14 @@ export default async function DashboardPage({
 
         {/* Onboarding complete banner */}
         {onboarding === 'complete' && (
-          <div className="rounded-xl bg-blue-50 border border-blue-200 p-4 flex items-start gap-3">
-            <CheckCircle2 className="h-5 w-5 text-blue-600 shrink-0 mt-0.5" />
+          <div className="rounded-xl bg-gray-50 border border-gray-200 p-4 flex items-start gap-3">
+            <CheckCircle2 className="h-5 w-5 text-gray-400 shrink-0 mt-0.5" />
             <div>
-              <p className="font-semibold text-blue-900">Setup complete!</p>
-              <p className="text-sm text-blue-700">
+              <p className="font-semibold text-gray-900">Setup complete!</p>
+              <p className="text-sm text-gray-600">
                 {totalCount > 0
-                  ? `Your first ${totalCount} leads are ready — check them out below!`
-                  : 'We\'re setting up your lead pipeline now. Your first leads will arrive shortly — check back in a few minutes or by 8am CT tomorrow.'}
+                  ? `Your first ${totalCount} leads are ready — check them out below.`
+                  : 'We\'re setting up your lead pipeline now. Your first leads will arrive shortly.'}
               </p>
             </div>
           </div>
@@ -913,26 +855,23 @@ export default async function DashboardPage({
           )
           if (creditsRemaining <= 3) return (
             <AnimatedSection delay={0.03}>
-              <div className="rounded-xl p-4 flex items-center justify-between gap-4 bg-blue-50 border border-blue-200">
-                <div className="flex items-center gap-3">
-                  {isFree ? <Rocket className="h-5 w-5 text-blue-600 shrink-0" /> : <Zap className="h-5 w-5 text-blue-600 shrink-0" />}
-                  <div>
-                    {isFree ? (
-                      <>
-                        <p className="font-semibold text-blue-900 text-sm">
-                          {creditsRemaining === 0 ? 'You\'ve used all your free credits today' : `Only ${creditsRemaining} free credit${creditsRemaining === 1 ? '' : 's'} left`}
-                        </p>
-                        <p className="text-xs text-blue-700">Upgrade to Pro for 1,000 daily credits, priority enrichment, and full CRM access.</p>
-                      </>
-                    ) : (
-                      <>
-                        <p className="font-semibold text-blue-900 text-sm">
-                          {creditsRemaining === 0 ? 'You\'re out of enrichment credits' : `Only ${creditsRemaining} credit${creditsRemaining === 1 ? '' : 's'} remaining`}
-                        </p>
-                        <p className="text-xs text-blue-700">Each lead enrichment costs 1 credit — credits reset daily.</p>
-                      </>
-                    )}
-                  </div>
+              <div className="rounded-xl p-4 flex items-center justify-between gap-4 bg-gray-50 border border-gray-200">
+                <div>
+                  {isFree ? (
+                    <>
+                      <p className="font-semibold text-gray-900 text-sm">
+                        {creditsRemaining === 0 ? 'No free credits remaining today' : `${creditsRemaining} free credit${creditsRemaining === 1 ? '' : 's'} left`}
+                      </p>
+                      <p className="text-xs text-gray-500">Upgrade to Pro for 1,000 daily credits and full CRM access.</p>
+                    </>
+                  ) : (
+                    <>
+                      <p className="font-semibold text-gray-900 text-sm">
+                        {creditsRemaining === 0 ? 'No enrichment credits remaining' : `${creditsRemaining} credit${creditsRemaining === 1 ? '' : 's'} remaining`}
+                      </p>
+                      <p className="text-xs text-gray-500">Each lead enrichment costs 1 credit. Credits reset daily.</p>
+                    </>
+                  )}
                 </div>
                 <Link href="/settings/billing" className="shrink-0 text-sm font-semibold text-white rounded-lg px-3 py-1.5 transition-colors bg-primary hover:bg-primary/90">
                   {isFree ? 'Upgrade to Pro' : 'Buy Credits'}
@@ -942,16 +881,13 @@ export default async function DashboardPage({
           )
           if (showOutboundUpsell) return (
             <AnimatedSection delay={0.03}>
-              <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="flex items-start gap-3">
-                  <div className="p-1.5 rounded-lg bg-blue-100 shrink-0 mt-0.5"><Rocket className="h-4 w-4 text-blue-700" /></div>
-                  <div>
-                    <p className="font-semibold text-blue-900 text-sm">Your pixel has identified {pixelEventCount.toLocaleString()} visitors</p>
-                    <p className="text-xs text-blue-700 mt-0.5">Let Cursive Outbound email and follow up with every identified visitor — fully done-for-you.</p>
-                  </div>
+              <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <p className="font-semibold text-gray-900 text-sm">Your pixel has identified {pixelEventCount.toLocaleString()} visitors</p>
+                  <p className="text-xs text-gray-500 mt-0.5">Cursive Outbound can email and follow up with every identified visitor.</p>
                 </div>
-                <a href="mailto:darren@meetcursive.com?subject=Cursive Outbound interest" className="inline-flex items-center gap-1.5 shrink-0 rounded-lg bg-blue-700 px-3 py-2 text-xs font-semibold text-white hover:bg-blue-800 transition-colors whitespace-nowrap">
-                  <ArrowRight className="h-3 w-3" />Talk to Darren
+                <a href="mailto:darren@meetcursive.com?subject=Cursive Outbound interest" className="inline-flex items-center gap-1.5 shrink-0 rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-white hover:bg-primary/90 transition-colors whitespace-nowrap">
+                  Talk to Darren
                 </a>
               </div>
             </AnimatedSection>
@@ -966,71 +902,40 @@ export default async function DashboardPage({
 
         {/* 4 stat cards — above the fold, rendered from fast-phase data */}
         <AnimatedSection delay={0.05}>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Today's leads */}
             <Link href="/leads" className="group">
-              <div className="bg-white rounded-xl border border-primary/30 bg-primary/5 p-5 hover:border-primary/50 transition-all h-full">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="p-1.5 rounded-lg bg-primary/15"><Calendar className="h-4 w-4 text-primary" /></div>
-                  <span className="text-sm text-gray-500">Today&apos;s Leads</span>
-                </div>
-                <div className="text-3xl font-bold text-primary">{todayCount}</div>
-                <div className="mt-1.5 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                  <div className="h-full bg-primary rounded-full" style={{ width: `${Math.min((todayCount / Math.max(dailyLimit, 1)) * 100, 100)}%` }} />
-                </div>
-                <p className="text-xs text-gray-500 mt-1">{todayCount} of {dailyLimit} delivered</p>
-                {(() => {
-                  const trend = trendBadge(todayCount, yesterdayCount)
-                  if (!trend) return <p className="text-xs text-gray-400 mt-1">vs. yesterday</p>
-                  return <p className={`text-xs mt-1 font-medium ${trend.up ? 'text-emerald-600' : 'text-red-500'}`}>{trend.up ? '↑' : '↓'} {trend.pct}% vs. yesterday</p>
-                })()}
+              <div className="bg-white rounded-xl border border-gray-200 p-6 hover:border-gray-300 transition-all h-full">
+                <span className="text-sm text-gray-500">Today&apos;s Leads</span>
+                <div className="text-3xl font-semibold text-gray-900 mt-2">{todayCount}</div>
+                <p className="text-sm text-gray-500 mt-1">{todayCount} of {dailyLimit} delivered</p>
               </div>
             </Link>
 
             {/* This week */}
             <Link href="/leads" className="group">
-              <div className="bg-white rounded-xl border border-gray-200 p-5 h-full hover:border-gray-300 transition-all">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="p-1.5 rounded-lg bg-gray-100"><TrendingUp className="h-4 w-4 text-gray-600" /></div>
-                  <span className="text-sm text-gray-500">This Week</span>
-                </div>
-                <div className="text-3xl font-bold text-gray-900">{weekCount}</div>
-                {(() => {
-                  const trend = trendBadge(weekCount, prevWeekCount)
-                  if (!trend) return <p className="text-xs text-gray-500 mt-1">{(weekCount / 7).toFixed(1)} avg/day</p>
-                  return <p className={`text-xs mt-1 font-medium ${trend.up ? 'text-emerald-600' : 'text-red-500'}`}>{trend.up ? '↑' : '↓'} {trend.pct}% vs. last week</p>
-                })()}
+              <div className="bg-white rounded-xl border border-gray-200 p-6 hover:border-gray-300 transition-all h-full">
+                <span className="text-sm text-gray-500">This Week</span>
+                <div className="text-3xl font-semibold text-gray-900 mt-2">{weekCount}</div>
+                <p className="text-sm text-gray-500 mt-1">{(weekCount / 7).toFixed(1)} avg/day</p>
               </div>
             </Link>
 
             {/* Credits */}
             <Link href="/settings/billing" className="group">
-              <div className={`bg-white rounded-xl border p-5 h-full transition-all ${creditsRemaining <= 3 ? 'border-blue-200 bg-blue-50/40' : 'border-gray-200 hover:border-gray-300'}`}>
-                <div className="flex items-center gap-2 mb-2">
-                  <div className={`p-1.5 rounded-lg ${creditsRemaining <= 3 ? 'bg-blue-100' : 'bg-gray-100'}`}>
-                    <Zap className={`h-4 w-4 ${creditsRemaining <= 3 ? 'text-blue-600' : 'text-gray-600'}`} />
-                  </div>
-                  <span className="text-sm text-gray-500" title="2 credits per Intel Pack · 10 credits per Deep Research">Enrichment Credits</span>
-                </div>
-                <div className={`text-3xl font-bold ${creditsRemaining <= 3 ? 'text-blue-600' : 'text-gray-900'}`}>{creditsRemaining}</div>
-                <p className="text-xs text-gray-500 mt-1">of {creditLimit}/day ({isFree ? 'Free' : 'Pro'}) · resets daily</p>
+              <div className="bg-white rounded-xl border border-gray-200 p-6 hover:border-gray-300 transition-all h-full">
+                <span className="text-sm text-gray-500" title="2 credits per Intel Pack · 10 credits per Deep Research">Enrichment Credits</span>
+                <div className="text-3xl font-semibold text-gray-900 mt-2">{creditsRemaining}</div>
+                <p className="text-sm text-gray-500 mt-1">of {creditLimit}/day · resets daily</p>
               </div>
             </Link>
 
             {/* Total leads */}
             <Link href="/crm/leads" className="group">
-              <div className="bg-white rounded-xl border border-gray-200 p-5 h-full hover:border-gray-300 transition-all">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="p-1.5 rounded-lg bg-gray-100"><Users className="h-4 w-4 text-gray-600" /></div>
-                  <span className="text-sm text-gray-500">Total Leads</span>
-                </div>
-                <div className="text-3xl font-bold text-gray-900">{totalCount}</div>
-                <p className="text-xs text-gray-500 mt-1">{enrichedCount} enriched</p>
-                {(() => {
-                  const trend = trendBadge(weekCount, prevWeekCount)
-                  if (!trend) return null
-                  return <p className={`text-xs mt-0.5 font-medium ${trend.up ? 'text-emerald-600' : 'text-red-500'}`}>{trend.up ? '↑' : '↓'} {trend.pct}% weekly growth</p>
-                })()}
+              <div className="bg-white rounded-xl border border-gray-200 p-6 hover:border-gray-300 transition-all h-full">
+                <span className="text-sm text-gray-500">Total Leads</span>
+                <div className="text-3xl font-semibold text-gray-900 mt-2">{totalCount}</div>
+                <p className="text-sm text-gray-500 mt-1">{enrichedCount} enriched</p>
               </div>
             </Link>
           </div>
