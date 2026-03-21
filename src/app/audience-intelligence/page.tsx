@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback, useEffect, useRef } from 'react'
-import { Search, Sparkles, ArrowRight, Users, Building2, Target, Zap } from 'lucide-react'
+import { Search, Sparkles, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -23,14 +23,14 @@ interface SearchResponse {
 }
 
 const SUGGESTED_SEARCHES = [
-  { label: 'HVAC Contractors', icon: Building2 },
-  { label: 'SaaS Decision Makers', icon: Target },
-  { label: 'Home Buyers', icon: Users },
-  { label: 'Auto Insurance Leads', icon: Zap },
-  { label: 'Solar Energy Homeowners', icon: Sparkles },
-  { label: 'Restaurant Owners', icon: Building2 },
-  { label: 'Real Estate Investors', icon: Target },
-  { label: 'E-commerce Brands', icon: Users },
+  'HVAC Contractors',
+  'SaaS Decision Makers',
+  'Home Buyers',
+  'Auto Insurance',
+  'Solar Homeowners',
+  'Restaurant Owners',
+  'Real Estate Investors',
+  'E-commerce Brands',
 ]
 
 export default function AudienceIntelligencePage() {
@@ -42,6 +42,7 @@ export default function AudienceIntelligencePage() {
   const [typeFilter, setTypeFilter] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const controllerRef = useRef<AbortController | null>(null)
 
   const performSearch = useCallback(async (searchQuery: string, type?: string) => {
     if (!searchQuery.trim()) {
@@ -51,6 +52,9 @@ export default function AudienceIntelligencePage() {
       return
     }
 
+    // Cancel any in-flight request
+    if (controllerRef.current) controllerRef.current.abort()
+
     setLoading(true)
     setHasSearched(true)
 
@@ -59,6 +63,7 @@ export default function AudienceIntelligencePage() {
       if (type || typeFilter) params.set('type', type || typeFilter)
 
       const controller = new AbortController()
+      controllerRef.current = controller
       const timeout = setTimeout(() => controller.abort(), 10_000)
 
       const response = await fetch(`/api/public/segment-search?${params}`, {
@@ -71,7 +76,8 @@ export default function AudienceIntelligencePage() {
       setResults(data.segments)
       setSearchType(data.search_type)
     } catch {
-      setResults([])
+      // Only clear results if not aborted (aborted means a newer search replaced this one)
+      setResults((prev) => prev)
     } finally {
       setLoading(false)
     }
@@ -85,7 +91,7 @@ export default function AudienceIntelligencePage() {
       setHasSearched(false)
       return
     }
-    debounceRef.current = setTimeout(() => performSearch(query), 400)
+    debounceRef.current = setTimeout(() => performSearch(query), 300)
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current) }
   }, [query, performSearch])
 
@@ -100,6 +106,12 @@ export default function AudienceIntelligencePage() {
     const newType = typeFilter === type ? '' : type
     setTypeFilter(newType)
     if (query.trim()) performSearch(query, newType)
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    if (query.trim()) performSearch(query)
   }
 
   return (
@@ -121,9 +133,9 @@ export default function AudienceIntelligencePage() {
       </header>
 
       {/* Hero + Search */}
-      <div className={`transition-all duration-500 ease-out ${hasSearched ? 'pt-6 sm:pt-8 pb-3 sm:pb-4' : 'pt-12 sm:pt-24 lg:pt-32 pb-8 sm:pb-12'}`}>
+      <div className={`transition-all duration-500 ease-out ${hasSearched ? 'pt-4 sm:pt-8 pb-2 sm:pb-4' : 'pt-10 sm:pt-24 lg:pt-32 pb-6 sm:pb-12'}`}>
         <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
-          <div className={`transition-all duration-500 ease-out ${hasSearched ? 'mb-3 sm:mb-4' : 'mb-6 sm:mb-8'}`}>
+          <div className={`transition-all duration-500 ease-out ${hasSearched ? 'mb-3 sm:mb-4' : 'mb-5 sm:mb-8'}`}>
             {!hasSearched && (
               <>
                 <div className="inline-flex items-center gap-1.5 rounded-full bg-[#007AFF]/5 border border-[#007AFF]/10 px-3 py-1 text-xs font-medium text-[#007AFF] mb-3 sm:mb-4">
@@ -134,14 +146,14 @@ export default function AudienceIntelligencePage() {
                   Find your perfect audience
                 </h1>
                 <p className="mt-2 sm:mt-3 text-sm sm:text-lg text-gray-500 max-w-xl mx-auto">
-                  Search 19,000+ pre-built audience segments with AI. Describe who you want to reach — we will find the right segments instantly.
+                  Search our identity graph of 280M+ enriched contacts across 19,000+ audience segments. Describe who you want to reach.
                 </p>
               </>
             )}
           </div>
 
           {/* Search Input */}
-          <div className="relative max-w-2xl mx-auto">
+          <form onSubmit={handleSubmit} className="relative max-w-2xl mx-auto">
             <div className={`relative rounded-xl sm:rounded-2xl border transition-all duration-200 ${
               loading ? 'border-gray-300 shadow-sm' : 'border-gray-200 hover:border-gray-300 focus-within:border-gray-300 focus-within:shadow-sm'
             } bg-white`}>
@@ -155,15 +167,18 @@ export default function AudienceIntelligencePage() {
                 </div>
                 <input
                   ref={inputRef}
-                  type="text"
+                  type="search"
+                  inputMode="search"
+                  enterKeyHint="search"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Describe your target audience..."
-                  className="flex-1 px-3 py-3.5 sm:py-4 text-base text-gray-900 placeholder:text-gray-400 bg-transparent outline-none"
+                  className="flex-1 px-3 py-3.5 sm:py-4 text-[16px] text-gray-900 placeholder:text-gray-400 bg-transparent outline-none appearance-none"
                 />
                 {query && (
                   <button
-                    onClick={() => { setQuery(''); setResults([]); setHasSearched(false) }}
+                    type="button"
+                    onClick={() => { setQuery(''); setResults([]); setHasSearched(false); setTypeFilter('') }}
                     className="pr-3 sm:pr-4 p-2 text-gray-400 hover:text-gray-600 transition-colors"
                     aria-label="Clear search"
                   >
@@ -182,11 +197,12 @@ export default function AudienceIntelligencePage() {
                 {['B2B', 'B2C'].map((t) => (
                   <button
                     key={t}
+                    type="button"
                     onClick={() => handleTypeFilter(t)}
-                    className={`rounded-full px-4 py-1.5 text-xs font-medium transition-colors min-h-[32px] ${
+                    className={`rounded-full px-4 py-1.5 text-xs font-medium transition-colors min-h-[36px] min-w-[48px] ${
                       typeFilter === t
                         ? 'bg-[#007AFF] text-white'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200 active:bg-gray-300'
                     }`}
                   >
                     {t}
@@ -194,24 +210,24 @@ export default function AudienceIntelligencePage() {
                 ))}
               </div>
             )}
-          </div>
+          </form>
         </div>
       </div>
 
       {/* Suggested Searches */}
       {!hasSearched && (
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 pb-10 sm:pb-16">
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 pb-10 sm:pb-16">
           <p className="text-xs font-medium text-gray-400 uppercase tracking-wider text-center mb-3 sm:mb-4">
-            Try a search
+            Popular audiences
           </p>
-          <div className="flex flex-wrap justify-center gap-2 sm:gap-2.5">
-            {SUGGESTED_SEARCHES.map(({ label, icon: Icon }) => (
+          <div className="grid grid-cols-2 sm:flex sm:flex-wrap sm:justify-center gap-2">
+            {SUGGESTED_SEARCHES.map((label) => (
               <button
                 key={label}
+                type="button"
                 onClick={() => handleSuggestionClick(label)}
-                className="group inline-flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3.5 py-2.5 sm:px-4 sm:py-2 text-sm text-gray-700 hover:border-[#007AFF]/30 hover:bg-[#007AFF]/5 hover:text-[#007AFF] transition-all active:scale-95"
+                className="rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-[13px] sm:text-sm text-gray-700 text-center hover:border-gray-300 hover:bg-gray-50 transition-all active:bg-gray-100 sm:rounded-full sm:px-4"
               >
-                <Icon className="h-3.5 w-3.5 text-gray-400 group-hover:text-[#007AFF] transition-colors" />
                 {label}
               </button>
             ))}
@@ -224,14 +240,13 @@ export default function AudienceIntelligencePage() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 pb-10 sm:pb-16">
           {loading ? (
             <div className="space-y-3 max-w-3xl mx-auto">
-              {/* AI thinking indicator */}
               <div className="flex items-center gap-2 py-2 px-1">
                 <div className="flex gap-1">
                   <div className="h-1.5 w-1.5 rounded-full bg-[#007AFF] animate-pulse" style={{ animationDelay: '0ms' }} />
                   <div className="h-1.5 w-1.5 rounded-full bg-[#007AFF] animate-pulse" style={{ animationDelay: '200ms' }} />
                   <div className="h-1.5 w-1.5 rounded-full bg-[#007AFF] animate-pulse" style={{ animationDelay: '400ms' }} />
                 </div>
-                <span className="text-sm text-gray-400">Finding matching audience segments...</span>
+                <span className="text-sm text-gray-400">Searching identity graph...</span>
               </div>
               {Array.from({ length: 3 }).map((_, i) => (
                 <div key={i} className="rounded-xl border border-gray-100 bg-gray-50/50 p-4 sm:p-5 animate-pulse" style={{ animationDelay: `${i * 100}ms` }}>
@@ -246,7 +261,7 @@ export default function AudienceIntelligencePage() {
               <div className="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
                 <Search className="h-5 w-5 text-gray-400" />
               </div>
-              <p className="font-medium text-gray-900">No matching segments found</p>
+              <p className="font-medium text-gray-900">No matching audiences found</p>
               <p className="text-sm text-gray-500 mt-1">
                 Try different keywords or a broader description
               </p>
@@ -256,7 +271,7 @@ export default function AudienceIntelligencePage() {
               <div className="flex items-center justify-between mb-3 sm:mb-4">
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-gray-500">
-                    {results.length} segment{results.length !== 1 ? 's' : ''} found
+                    {results.length} audience{results.length !== 1 ? 's' : ''} found
                   </span>
                   {searchType === 'semantic' && (
                     <span className="inline-flex items-center gap-1 rounded-full bg-[#007AFF]/5 px-2 py-0.5 text-[10px] font-medium text-[#007AFF]">
@@ -271,7 +286,7 @@ export default function AudienceIntelligencePage() {
                 {results.map((seg, index) => (
                   <div
                     key={seg.segment_id}
-                    className="group rounded-xl border border-gray-100 bg-white p-4 sm:p-5 hover:border-[#007AFF]/20 hover:shadow-sm transition-all"
+                    className="group rounded-xl border border-gray-100 bg-white p-4 sm:p-5 hover:border-gray-200 hover:shadow-sm transition-all"
                     style={{
                       animation: 'fadeSlideUp 0.3s ease-out forwards',
                       animationDelay: `${index * 50}ms`,
@@ -282,11 +297,7 @@ export default function AudienceIntelligencePage() {
                       <div className="flex-1 min-w-0">
                         <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-1">
                           <h3 className="font-medium text-gray-900 text-sm sm:text-base">{seg.name}</h3>
-                          <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium shrink-0 ${
-                            seg.type === 'B2B'
-                              ? 'bg-blue-50 text-blue-700'
-                              : 'bg-purple-50 text-purple-700'
-                          }`}>
+                          <span className="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium shrink-0 bg-gray-100 text-gray-600">
                             {seg.type}
                           </span>
                         </div>
@@ -299,7 +310,7 @@ export default function AudienceIntelligencePage() {
                       </div>
                       {seg.similarity != null && seg.similarity > 0 && (
                         <div className="text-right shrink-0">
-                          <div className="text-xs font-medium text-[#007AFF]">
+                          <div className="text-xs font-medium text-gray-900">
                             {Math.round(seg.similarity * 100)}%
                           </div>
                           <div className="text-[10px] text-gray-400">match</div>
@@ -311,12 +322,12 @@ export default function AudienceIntelligencePage() {
               </div>
 
               {/* CTA */}
-              <div className="mt-6 sm:mt-8 rounded-xl sm:rounded-2xl bg-gradient-to-br from-gray-50 to-[#007AFF]/5 border border-gray-200 p-5 sm:p-8 text-center">
+              <div className="mt-6 sm:mt-8 rounded-xl sm:rounded-2xl bg-gray-50 border border-gray-200 p-5 sm:p-8 text-center">
                 <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-1">
                   Ready to reach this audience?
                 </h3>
                 <p className="text-sm text-gray-500 mb-4 sm:mb-5 max-w-md mx-auto">
-                  Get verified contact data — emails, phone numbers, and LinkedIn profiles — for any audience segment.
+                  Access verified contact data from our identity graph — emails, phone numbers, and LinkedIn profiles.
                 </p>
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                   <Link
@@ -339,22 +350,22 @@ export default function AudienceIntelligencePage() {
         </div>
       )}
 
-      {/* Footer Stats — only shown when not searching */}
+      {/* Footer Stats */}
       {!hasSearched && (
         <div className="border-t border-gray-100 bg-gray-50/50">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-8 text-center">
               <div>
                 <div className="text-xl sm:text-2xl font-bold text-gray-900">19,000+</div>
-                <div className="text-[11px] sm:text-xs text-gray-500 mt-1">Pre-built Segments</div>
+                <div className="text-[11px] sm:text-xs text-gray-500 mt-1">Audience Segments</div>
               </div>
               <div>
                 <div className="text-xl sm:text-2xl font-bold text-gray-900">280M+</div>
-                <div className="text-[11px] sm:text-xs text-gray-500 mt-1">Contact Records</div>
+                <div className="text-[11px] sm:text-xs text-gray-500 mt-1">Enriched Contacts</div>
               </div>
               <div>
                 <div className="text-xl sm:text-2xl font-bold text-gray-900">B2B & B2C</div>
-                <div className="text-[11px] sm:text-xs text-gray-500 mt-1">Audience Coverage</div>
+                <div className="text-[11px] sm:text-xs text-gray-500 mt-1">Identity Coverage</div>
               </div>
               <div>
                 <div className="text-xl sm:text-2xl font-bold text-gray-900">AI-Powered</div>
@@ -365,7 +376,6 @@ export default function AudienceIntelligencePage() {
         </div>
       )}
 
-      {/* Keyframe animation */}
       <style jsx>{`
         @keyframes fadeSlideUp {
           from {
