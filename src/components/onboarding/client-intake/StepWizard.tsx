@@ -55,7 +55,7 @@ export function StepWizard({
   }
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-10">
       {/* Progress */}
       <ProgressBar steps={activeSteps} currentStepIndex={currentStep} />
 
@@ -77,7 +77,7 @@ export function StepWizard({
       </div>
 
       {/* Navigation */}
-      <div className="flex items-center justify-between border-t border-border pt-6">
+      <div className="flex items-center justify-between border-t border-blue-100 pt-6">
         <div>
           {!isFirst && (
             <Button
@@ -101,7 +101,7 @@ export function StepWizard({
               disabled={isSubmitting}
               loading={isSubmitting}
               size="lg"
-              className="bg-blue-600 hover:bg-blue-700"
+              className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600"
             >
               Submit Onboarding Form
             </Button>
@@ -110,7 +110,7 @@ export function StepWizard({
               type="button"
               onClick={handleNext}
               disabled={isSubmitting}
-              className="bg-blue-600 hover:bg-blue-700"
+              className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600"
             >
               Next
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="ml-2 h-4 w-4">

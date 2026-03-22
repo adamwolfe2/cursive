@@ -40,12 +40,12 @@ export function CompanyInfoStep() {
       </div>
 
       {/* Company Details */}
-      <div className="grid gap-6 sm:grid-cols-2">
+      <div className="grid gap-6 rounded-lg border border-slate-100 bg-slate-50/50 p-5 sm:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="company_name">Company Name <span className="text-destructive">*</span></Label>
           <Input
             id="company_name"
-            placeholder="Acme Corp"
+            placeholder="Your company name"
             error={errors.company_name?.message}
             {...register('company_name', { required: 'Company name is required' })}
           />
@@ -57,7 +57,7 @@ export function CompanyInfoStep() {
           <Input
             id="company_website"
             type="url"
-            placeholder="https://acmecorp.com"
+            placeholder="https://yourcompany.com"
             error={errors.company_website?.message}
             {...register('company_website', {
               required: 'Website is required',
@@ -81,13 +81,13 @@ export function CompanyInfoStep() {
 
       {/* Primary Contact */}
       <div>
-        <h3 className="mb-4 text-lg font-semibold text-[#0F172A]">Primary Contact</h3>
-        <div className="grid gap-6 sm:grid-cols-2">
+        <h3 className="mb-4 border-l-4 border-blue-500 pl-3 text-lg font-semibold text-[#0F172A]">Primary Contact</h3>
+        <div className="grid gap-6 rounded-lg border border-slate-100 bg-slate-50/50 p-5 sm:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="primary_contact_name">Full Name <span className="text-destructive">*</span></Label>
             <Input
               id="primary_contact_name"
-              placeholder="Jane Smith"
+              placeholder="Full name"
               error={errors.primary_contact_name?.message}
               {...register('primary_contact_name', { required: 'Contact name is required' })}
             />
@@ -99,7 +99,7 @@ export function CompanyInfoStep() {
             <Input
               id="primary_contact_email"
               type="email"
-              placeholder="jane@acmecorp.com"
+              placeholder="name@company.com"
               error={errors.primary_contact_email?.message}
               {...register('primary_contact_email', {
                 required: 'Email is required',
@@ -123,14 +123,14 @@ export function CompanyInfoStep() {
 
       {/* Billing Contact */}
       <div>
-        <h3 className="mb-1 text-lg font-semibold text-[#0F172A]">Billing Contact</h3>
-        <p className="mb-4 text-sm text-muted-foreground">Only if different from primary contact</p>
-        <div className="grid gap-6 sm:grid-cols-2">
+        <h3 className="mb-1 border-l-4 border-blue-500 pl-3 text-lg font-semibold text-[#0F172A]">Billing Contact</h3>
+        <p className="mb-4 pl-3 text-sm text-muted-foreground">Only if different from primary contact</p>
+        <div className="grid gap-6 rounded-lg border border-slate-100 bg-slate-50/50 p-5 sm:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="billing_contact_name">Billing Contact Name</Label>
             <Input
               id="billing_contact_name"
-              placeholder="John Doe"
+              placeholder="Full name"
               {...register('billing_contact_name')}
             />
           </div>
@@ -140,7 +140,7 @@ export function CompanyInfoStep() {
             <Input
               id="billing_contact_email"
               type="email"
-              placeholder="billing@acmecorp.com"
+              placeholder="billing@company.com"
               {...register('billing_contact_email')}
             />
           </div>
@@ -148,7 +148,10 @@ export function CompanyInfoStep() {
       </div>
 
       {/* Team & Communication */}
-      <div className="space-y-6">
+      <div>
+        <h3 className="mb-4 border-l-4 border-blue-500 pl-3 text-lg font-semibold text-[#0F172A]">Team &amp; Communication</h3>
+      </div>
+      <div className="space-y-6 rounded-lg border border-slate-100 bg-slate-50/50 p-5">
         <div className="space-y-2">
           <Label htmlFor="team_members">Team Members Who Need Access</Label>
           <Textarea

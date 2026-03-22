@@ -39,7 +39,7 @@ export function PackageSelectionStep() {
         </div>
       )}
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {PACKAGE_SLUGS.map((slug) => {
           const pkg = PACKAGES[slug]
           const isSelected = selected.includes(slug)
@@ -50,19 +50,19 @@ export function PackageSelectionStep() {
               type="button"
               onClick={() => togglePackage(slug)}
               className={cn(
-                'relative flex flex-col items-start rounded-xl border-2 p-5 text-left transition-all duration-200',
+                'relative flex flex-col items-start rounded-xl border-2 p-6 text-left transition-all duration-200',
                 isSelected
-                  ? 'border-blue-500 bg-blue-50/60 shadow-sm'
-                  : 'border-border bg-card hover:border-blue-200 hover:shadow-sm'
+                  ? 'border-blue-500 bg-blue-50/50 shadow-md ring-1 ring-blue-200'
+                  : 'border-slate-200 bg-white hover:border-blue-200 hover:bg-blue-50/20 hover:shadow-sm'
               )}
             >
               {/* Checkbox indicator */}
               <div
                 className={cn(
-                  'absolute right-4 top-4 flex h-5 w-5 items-center justify-center rounded border-2 transition-all',
+                  'absolute right-4 top-4 flex h-6 w-6 items-center justify-center rounded-full transition-all',
                   isSelected
-                    ? 'border-blue-600 bg-blue-600 text-white'
-                    : 'border-gray-300 bg-white'
+                    ? 'bg-blue-600 text-white shadow-sm'
+                    : 'border-2 border-slate-300 bg-white'
                 )}
               >
                 {isSelected && (
@@ -73,7 +73,7 @@ export function PackageSelectionStep() {
               </div>
 
               <h3 className="pr-8 text-base font-semibold text-[#0F172A]">{pkg.label}</h3>
-              <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{pkg.description}</p>
+              <p className="mt-2 text-sm leading-relaxed text-slate-500">{pkg.description}</p>
             </button>
           )
         })}

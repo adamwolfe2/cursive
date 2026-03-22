@@ -331,22 +331,25 @@ function OnboardingPageContent() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen overflow-x-hidden bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-50">
+      {/* Top accent bar */}
+      <div className="h-1 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-400" />
+
       {/* Header */}
-      <header className="border-b border-border/50 bg-white">
+      <header className="bg-[#0F172A] shadow-md">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-4 sm:px-6">
           <Image
             src="/cursive-logo.png"
             alt="Cursive"
             width={120}
             height={40}
-            className="h-8 w-auto"
+            className="h-8 w-auto brightness-0 invert"
             priority
           />
           <div className="text-right">
-            <p className="text-xs text-muted-foreground">Client Onboarding</p>
+            <p className="text-xs text-blue-300">Client Onboarding</p>
             {methods.watch('company_name') && (
-              <p className="text-sm font-medium text-[#0F172A]">{methods.watch('company_name')}</p>
+              <p className="text-sm font-medium text-white">{methods.watch('company_name')}</p>
             )}
           </div>
         </div>
@@ -354,35 +357,37 @@ function OnboardingPageContent() {
 
       {/* Main Form */}
       <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-12">
-        <FormProvider {...methods}>
-          <form onSubmit={(e) => e.preventDefault()}>
-            {/* Honeypot field — hidden from real users, catches bots */}
-            <input
-              type="text"
-              tabIndex={-1}
-              autoComplete="off"
-              aria-hidden="true"
-              style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, width: 0 }}
-              {...methods.register('website_url_confirm')}
-            />
-            <StepWizard
-              activeSteps={activeSteps}
-              currentStep={currentStep}
-              onNext={handleNext}
-              onBack={handleBack}
-              onSubmit={handleSubmit}
-              isSubmitting={isSubmitting}
-            >
-              {renderStep()}
-            </StepWizard>
-          </form>
-        </FormProvider>
+        <div className="rounded-2xl border border-slate-200/60 bg-white p-6 shadow-sm sm:p-10">
+          <FormProvider {...methods}>
+            <form onSubmit={(e) => e.preventDefault()}>
+              {/* Honeypot field — hidden from real users, catches bots */}
+              <input
+                type="text"
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+                style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, width: 0 }}
+                {...methods.register('website_url_confirm')}
+              />
+              <StepWizard
+                activeSteps={activeSteps}
+                currentStep={currentStep}
+                onNext={handleNext}
+                onBack={handleBack}
+                onSubmit={handleSubmit}
+                isSubmitting={isSubmitting}
+              >
+                {renderStep()}
+              </StepWizard>
+            </form>
+          </FormProvider>
+        </div>
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-border/50 bg-white">
+      <footer className="bg-[#0F172A]">
         <div className="mx-auto max-w-3xl px-4 py-6 sm:px-6">
-          <p className="text-center text-xs text-muted-foreground">
+          <p className="text-center text-xs text-slate-400">
             &copy; {new Date().getFullYear()} Cursive. All rights reserved. Your data is encrypted and stored securely.
           </p>
         </div>
@@ -394,7 +399,7 @@ function OnboardingPageContent() {
 export default function OnboardingPage() {
   return (
     <React.Suspense fallback={
-      <div className="flex min-h-screen items-center justify-center bg-white">
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-50">
         <div className="text-center">
           <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
           <p className="mt-4 text-sm text-muted-foreground">Loading onboarding form...</p>
