@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 
-export default function OnboardingSuccessPage() {
+function OnboardingSuccessContent() {
   const searchParams = useSearchParams()
   const companyName = searchParams.get('company') ?? 'there'
 
@@ -97,5 +97,17 @@ export default function OnboardingSuccessPage() {
         </motion.p>
       </div>
     </div>
+  )
+}
+
+export default function OnboardingSuccessPage() {
+  return (
+    <React.Suspense fallback={
+      <div className="flex min-h-screen items-center justify-center bg-white">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
+      </div>
+    }>
+      <OnboardingSuccessContent />
+    </React.Suspense>
   )
 }

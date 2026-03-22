@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import Link from 'next/link'
 import { createAdminClient } from '@/lib/supabase/server'
 import type { OnboardingClient, ClientStatus } from '@/types/onboarding'
@@ -61,13 +62,15 @@ export default async function OnboardingClientsPage({ searchParams }: PageProps)
 
       <h1 className="text-2xl font-bold text-foreground mb-6">All Onboarding Clients</h1>
 
-      <ClientsTable
-        clients={clients}
-        totalPages={totalPages}
-        currentPage={page}
-        search={search}
-        statusFilter={statusFilter as ClientStatus | ''}
-      />
+      <Suspense fallback={<div className="animate-pulse h-64 rounded-lg bg-muted" />}>
+        <ClientsTable
+          clients={clients}
+          totalPages={totalPages}
+          currentPage={page}
+          search={search}
+          statusFilter={statusFilter as ClientStatus | ''}
+        />
+      </Suspense>
     </div>
   )
 }
