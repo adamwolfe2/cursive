@@ -110,13 +110,15 @@ export function CompanyInfoStep() {
           </div>
 
           <div className="space-y-2 sm:col-span-2">
-            <Label htmlFor="primary_contact_phone">Phone</Label>
+            <Label htmlFor="primary_contact_phone">Phone <span className="text-destructive">*</span></Label>
             <Input
               id="primary_contact_phone"
               type="tel"
               placeholder="(555) 123-4567"
-              {...register('primary_contact_phone')}
+              error={errors.primary_contact_phone?.message}
+              {...register('primary_contact_phone', { required: 'Phone number is required' })}
             />
+            {errors.primary_contact_phone && <p className="text-sm text-destructive">{errors.primary_contact_phone.message}</p>}
           </div>
         </div>
       </div>

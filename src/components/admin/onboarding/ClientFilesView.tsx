@@ -1,7 +1,9 @@
 'use client'
 
+import * as React from 'react'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { getFileSignedUrl } from '@/app/admin/onboarding/actions'
 import type { ClientFile, ClientFileType } from '@/types/onboarding'
 import {
   FileText,
@@ -53,9 +55,32 @@ function formatFileSize(bytes: number | null): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
 }
 
-function getDownloadUrl(storagePath: string): string {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
-  return `${supabaseUrl}/storage/v1/object/public/onboarding-files/${storagePath}`
+function DownloadButton({ storagePath }: { storagePath: string }) {
+  const [loading, setLoading] = React.useState(false)
+
+  const handleDownload = async () => {
+    setLoading(true)
+    try {
+      const url = await getFileSignedUrl(storagePath)
+      window.open(url, '_blank', 'noopener,noreferrer')
+    } catch {
+      // Silently fail — button will reset
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={handleDownload}
+      disabled={loading}
+      className="inline-flex items-center gap-1.5 rounded-md border border-border bg-background px-2.5 py-1.5 text-xs font-medium hover:bg-accent transition-colors shrink-0 disabled:opacity-50"
+    >
+      <Download className="h-3 w-3" />
+      {loading ? 'Loading...' : 'Download'}
+    </button>
+  )
 }
 
 interface ClientFilesViewProps {
@@ -124,15 +149,7 @@ export default function ClientFilesView({ files }: ClientFilesViewProps) {
                       </p>
                     </div>
                   </div>
-                  <a
-                    href={getDownloadUrl(file.storage_path)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 rounded-md border border-border bg-background px-2.5 py-1.5 text-xs font-medium hover:bg-accent transition-colors shrink-0"
-                  >
-                    <Download className="h-3 w-3" />
-                    Download
-                  </a>
+                  <DownloadButton storagePath={file.storage_path} />
                 </div>
               ))}
             </div>

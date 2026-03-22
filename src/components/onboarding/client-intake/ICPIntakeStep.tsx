@@ -80,13 +80,13 @@ export function ICPIntakeStep() {
           error={errors.icp_description?.message}
           {...register('icp_description', {
             required: 'ICP description is required',
-            maxLength: { value: 500, message: 'Maximum 500 characters' },
+            maxLength: { value: 2000, message: 'Maximum 2000 characters' },
           })}
         />
         <div className="flex items-center justify-between">
           {errors.icp_description && <p className="text-sm text-destructive">{errors.icp_description.message}</p>}
-          <p className={cn('ml-auto text-xs', icpDescription.length > 450 ? 'text-warning' : 'text-muted-foreground')}>
-            {icpDescription.length}/500
+          <p className={cn('ml-auto text-xs', icpDescription.length > 1800 ? 'text-warning' : 'text-muted-foreground')}>
+            {icpDescription.length}/2000
           </p>
         </div>
       </div>

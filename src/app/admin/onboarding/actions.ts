@@ -149,13 +149,16 @@ export async function regenerateCopy(clientId: string, feedback?: string) {
   }
 
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.VERCEL_URL
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_URL
       ? `https://${process.env.VERCEL_URL}`
-      : 'http://localhost:3000'
+      : 'http://localhost:3000')
 
     await fetch(`${baseUrl}/api/automations/regenerate-copy`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-automation-secret': process.env.AUTOMATION_SECRET || '',
+      },
       body: JSON.stringify({ client_id: clientId, feedback }),
     })
   } catch {
@@ -173,7 +176,10 @@ export async function retryAutomationStep(clientId: string, step: string) {
   try {
     await fetch(`${baseUrl}/api/automations/retry`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-automation-secret': process.env.AUTOMATION_SECRET || '',
+      },
       body: JSON.stringify({ client_id: clientId, step }),
     })
   } catch {
@@ -181,4 +187,15 @@ export async function retryAutomationStep(clientId: string, step: string) {
   }
 
   revalidatePath(`/admin/onboarding/${clientId}`)
+}
+
+export async function getFileSignedUrl(storagePath: string): Promise<string> {
+  const supabase = createAdminClient()
+  const { data, error } = await supabase.storage
+    .from('client-uploads')
+    .createSignedUrl(storagePath, 3600) // 1 hour expiry
+  if (error || !data?.signedUrl) {
+    throw new Error('Failed to generate download URL')
+  }
+  return data.signedUrl
 }

@@ -268,6 +268,12 @@ export const onboardingIntakePipeline = inngest.createFunction(
       }
     })
 
+    // Step 8: Update status to 'setup' now that all pipeline steps are complete
+    await step.run('update-status', async () => {
+      const repo = new OnboardingClientRepository()
+      await repo.updateStatus(client_id, 'setup')
+    })
+
     return { success: true, client_id }
   }
 )

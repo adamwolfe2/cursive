@@ -80,7 +80,7 @@ export const icpIntakeSchema = z.object({
   icp_description: z
     .string()
     .min(1, 'ICP description is required')
-    .max(500, 'ICP description must be under 500 characters'),
+    .max(2000, 'ICP description must be under 2000 characters'),
   target_industries: z.array(z.string()).min(1, 'Select at least one industry'),
   sub_industries: z.array(z.string()).optional().default([]),
   target_company_sizes: z.array(z.string()).min(1, 'Select at least one company size'),
@@ -189,9 +189,7 @@ export const legalSchema = z.object({
   sow_signed: z.literal(true, {
     errorMap: () => ({ message: 'SOW must be signed' }),
   }),
-  payment_confirmed: z.literal(true, {
-    errorMap: () => ({ message: 'Payment must be confirmed' }),
-  }),
+  payment_confirmed: z.boolean().optional(),
   data_usage_ack: z.literal(true, {
     errorMap: () => ({ message: 'Data usage acknowledgement is required' }),
   }),
@@ -395,13 +393,6 @@ export const onboardingFormSchema = z
         path: ['sow_signed'],
       })
     }
-    if (!data.payment_confirmed) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: 'Payment must be confirmed',
-        path: ['payment_confirmed'],
-      })
-    }
     if (!data.data_usage_ack) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
@@ -455,7 +446,6 @@ export type OnboardingFormSchemaData = z.infer<typeof onboardingFormSchema>
 export const STEP_SCHEMAS = {
   'company-info': companyInfoSchema,
   packages: packagesSchema,
-  commercial: commercialSchema,
   icp: icpIntakeSchema,
   'email-setup': emailSetupSchema,
   'pixel-setup': pixelSetupSchema,

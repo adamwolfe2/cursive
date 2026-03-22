@@ -142,27 +142,26 @@ export class OnboardingClientRepository {
   async appendAutomationLog(id: string, entry: AutomationLogEntry): Promise<void> {
     const supabase = createAdminClient()
 
-    // Fetch current log, append, and update
-    const { data: current, error: fetchError } = await supabase
-      .from('onboarding_clients')
-      .select('automation_log')
-      .eq('id', id)
-      .maybeSingle()
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const { data } = await supabase
+        .from('onboarding_clients')
+        .select('automation_log, updated_at')
+        .eq('id', id)
+        .single()
 
-    if (fetchError) {
-      throw new DatabaseError(fetchError.message)
-    }
+      if (!data) return
 
-    const existingLog = (current?.automation_log as AutomationLogEntry[]) || []
-    const updatedLog = [...existingLog, entry]
+      const currentLog = (data.automation_log as AutomationLogEntry[]) || []
+      const newLog = [...currentLog, entry]
 
-    const { error: updateError } = await supabase
-      .from('onboarding_clients')
-      .update({ automation_log: updatedLog })
-      .eq('id', id)
+      const { error } = await supabase
+        .from('onboarding_clients')
+        .update({ automation_log: newLog })
+        .eq('id', id)
+        .eq('updated_at', data.updated_at) // Optimistic lock
 
-    if (updateError) {
-      throw new DatabaseError(updateError.message)
+      if (!error) return // Success
+      // If error (concurrent modification), retry
     }
   }
 

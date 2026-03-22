@@ -7,7 +7,6 @@ import Image from 'next/image'
 import { StepWizard } from '@/components/onboarding/client-intake/StepWizard'
 import { CompanyInfoStep } from '@/components/onboarding/client-intake/CompanyInfoStep'
 import { PackageSelectionStep } from '@/components/onboarding/client-intake/PackageSelectionStep'
-import { CommercialApprovalsStep } from '@/components/onboarding/client-intake/CommercialApprovalsStep'
 import { ICPIntakeStep } from '@/components/onboarding/client-intake/ICPIntakeStep'
 import { EmailSetupStep } from '@/components/onboarding/client-intake/EmailSetupStep'
 import { PixelSetupStep } from '@/components/onboarding/client-intake/PixelSetupStep'
@@ -24,10 +23,10 @@ import type { OnboardingFormData, PackageSlug, PendingFile } from '@/types/onboa
 const STEP_FIELDS: Record<string, (keyof OnboardingFormData)[]> = {
   'company-info': ['company_name', 'company_website', 'industry', 'primary_contact_name', 'primary_contact_email', 'communication_channel'],
   'packages': ['packages_selected'],
-  'icp': ['icp_description', 'target_industries', 'target_titles', 'pain_points'],
+  'icp': ['icp_description', 'target_industries', 'target_titles', 'target_company_sizes', 'target_geography', 'pain_points'],
   'email-setup': ['sender_names'],
   'pixel-setup': ['pixel_urls'],
-  'use-case': [],
+  'use-case': ['data_use_cases', 'primary_crm', 'data_format', 'audience_count', 'has_existing_list'],
   'content': [],
   'legal': ['sow_signed', 'data_usage_ack', 'privacy_ack', 'billing_terms_ack', 'signature_name'],
   'review': [],
@@ -172,6 +171,7 @@ function OnboardingPageContent() {
 
   const [currentStep, setCurrentStep] = React.useState(0)
   const [isSubmitting, setIsSubmitting] = React.useState(false)
+  const [submitError, setSubmitError] = React.useState<string | null>(null)
 
   // Warn before navigating away with unsaved changes
   React.useEffect(() => {
@@ -239,6 +239,8 @@ function OnboardingPageContent() {
   }
 
   const handleSubmit = async () => {
+    setSubmitError(null)
+
     // Validate all legal fields before submit
     const legalValid = await methods.trigger([
       'sow_signed', 'data_usage_ack', 'privacy_ack', 'billing_terms_ack', 'signature_name',
@@ -268,12 +270,11 @@ function OnboardingPageContent() {
         const companyParam = encodeURIComponent(formData.company_name || '')
         router.push(`/client-onboarding/success?company=${companyParam}`)
       } else {
-        // Show error — a toast would be better in production
-        alert(result.error ?? 'Submission failed. Please try again.')
+        setSubmitError(result.error ?? 'Submission failed. Please try again.')
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Submit error:', error)
-      alert('An unexpected error occurred. Please try again.')
+      setSubmitError(error.message || 'An unexpected error occurred. Please try again.')
     } finally {
       setIsSubmitting(false)
     }
@@ -366,6 +367,25 @@ function OnboardingPageContent() {
                 style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, width: 0 }}
                 {...methods.register('website_url_confirm')}
               />
+              {submitError && (
+                <div className="mb-6 flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-4">
+                  <svg className="mt-0.5 h-5 w-5 shrink-0 text-red-500" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                  </svg>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-red-800">{submitError}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setSubmitError(null)}
+                    className="shrink-0 rounded p-1 text-red-400 hover:text-red-600 transition-colors"
+                  >
+                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              )}
               <StepWizard
                 activeSteps={activeSteps}
                 currentStep={currentStep}
