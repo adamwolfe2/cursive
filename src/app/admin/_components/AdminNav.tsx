@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
@@ -75,57 +75,49 @@ interface AdminNavProps {
   upcomingBookingsCount?: number
 }
 
-// ─── Dropdown ────────────────────────────────────────────────────────────────
+// ─── Collapsible group ────────────────────────────────────────────────────────
 
-function NavDropdown({
+function SidebarGroup({
   label,
   items,
   pathname,
+  onNavigate,
 }: {
   label: string
   items: { href: string; label: string }[]
   pathname: string
+  onNavigate: () => void
 }) {
-  const [open, setOpen] = useState(false)
-  const ref = useRef<HTMLDivElement>(null)
   const isActive = items.some((i) => pathname.startsWith(i.href))
-
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
-    }
-    document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
-  }, [])
-
-  // Close on navigation
-  useEffect(() => { setOpen(false) }, [pathname])
+  const [open, setOpen] = useState(isActive)
 
   return (
-    <div ref={ref} className="relative">
+    <div className="mb-1">
       <button
         onClick={() => setOpen(!open)}
-        className={`flex items-center gap-1 px-3 py-1.5 text-sm rounded-md transition-colors whitespace-nowrap ${
+        className={`flex w-full items-center justify-between px-3 py-2 text-sm rounded-md transition-colors ${
           isActive
-            ? 'text-zinc-900 bg-zinc-100 font-medium'
-            : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'
+            ? 'text-zinc-900 font-medium'
+            : 'text-zinc-500 hover:text-zinc-900 hover:bg-zinc-50'
         }`}
       >
-        {label}
-        <ChevronDown size={13} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
+        <span className="text-[11px] font-semibold uppercase tracking-wider">{label}</span>
+        <ChevronDown
+          size={14}
+          className={`text-zinc-400 transition-transform ${open ? 'rotate-180' : ''}`}
+        />
       </button>
-
       {open && (
-        <div className="absolute left-0 top-full mt-1 bg-white border border-zinc-200 rounded-lg shadow-lg z-50 py-1 min-w-[160px]">
+        <div className="ml-1 mt-0.5">
           {items.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              onClick={() => setOpen(false)}
-              className={`block px-4 py-2 text-[13px] transition-colors ${
+              onClick={onNavigate}
+              className={`flex items-center px-3 py-1.5 text-[13px] rounded-md mb-0.5 transition-colors ${
                 pathname.startsWith(item.href)
-                  ? 'text-zinc-900 bg-zinc-50 font-medium'
-                  : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50'
+                  ? 'text-zinc-900 bg-zinc-100 font-medium'
+                  : 'text-zinc-500 hover:text-zinc-900 hover:bg-zinc-50'
               }`}
             >
               {item.label}
@@ -141,196 +133,172 @@ function NavDropdown({
 
 export default function AdminNav({ adminEmail, needsApprovalCount, upcomingBookingsCount = 0 }: AdminNavProps) {
   const pathname = usePathname()
-  const [drawerOpen, setDrawerOpen] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
-  // Close drawer on navigation
-  useEffect(() => { setDrawerOpen(false) }, [pathname])
+  // Close sidebar on navigation
+  useEffect(() => { setSidebarOpen(false) }, [pathname])
+
+  // Lock body scroll when sidebar is open
+  useEffect(() => {
+    if (sidebarOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => { document.body.style.overflow = '' }
+  }, [sidebarOpen])
+
+  const closeSidebar = () => setSidebarOpen(false)
+
+  // Find current page label for the header
+  const currentLabel = (() => {
+    for (const p of PRIMARY) {
+      if (pathname.startsWith(p.href)) return p.label
+    }
+    if (pathname.startsWith('/admin/sdr')) return 'AI SDR'
+    for (const g of GROUPS) {
+      for (const item of g.items) {
+        if (pathname.startsWith(item.href)) return item.label
+      }
+    }
+    return 'Admin'
+  })()
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-white border-b border-zinc-200 shadow-sm">
-        <div className="max-w-[1400px] mx-auto px-4 md:px-6">
-          <div className="flex items-center justify-between h-14">
-
-            {/* Logo */}
-            <Link href="/admin/ops" className="flex items-center gap-2 flex-shrink-0">
-              <div className="relative h-7 w-7 overflow-hidden rounded-lg flex-shrink-0">
+      {/* Slim top bar — logo, current page, hamburger */}
+      <header className="sticky top-0 z-40 bg-white border-b border-zinc-200">
+        <div className="flex items-center justify-between h-12 px-4">
+          {/* Left: hamburger + logo */}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="flex items-center justify-center w-8 h-8 rounded-md hover:bg-zinc-100 transition-colors"
+              aria-label="Open menu"
+            >
+              <Menu size={18} className="text-zinc-600" />
+            </button>
+            <Link href="/admin/ops" className="flex items-center gap-2">
+              <div className="relative h-6 w-6 overflow-hidden rounded-lg flex-shrink-0">
                 <Image src="/cursive-logo.png" alt="Cursive" fill className="object-contain" priority />
               </div>
-              <span className="text-sm font-semibold text-zinc-900 hidden sm:block">Cursive Admin</span>
+              <span className="text-sm font-semibold text-zinc-900">Cursive</span>
             </Link>
+          </div>
 
-            {/* Desktop nav */}
-            <nav className="hidden lg:flex items-center gap-0.5 ml-4">
-              {/* Primary links */}
-              {PRIMARY.map(({ href, label }) => (
-                <Link
-                  key={href}
-                  href={href}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md transition-colors whitespace-nowrap ${
-                    pathname.startsWith(href)
-                      ? 'text-zinc-900 bg-zinc-100 font-medium'
-                      : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'
-                  }`}
-                >
-                  {label}
-                  {href === '/admin/ops' && upcomingBookingsCount > 0 && (
-                    <span className="inline-flex h-4 min-w-[16px] items-center justify-center rounded-full bg-blue-500 px-1 text-[10px] font-bold text-white">
-                      {upcomingBookingsCount > 9 ? '9+' : upcomingBookingsCount}
-                    </span>
-                  )}
-                </Link>
-              ))}
+          {/* Center: current page */}
+          <span className="text-sm text-zinc-500 font-medium">{currentLabel}</span>
 
-              {/* AI SDR with badge */}
-              <Link
-                href="/admin/sdr"
-                className={`flex items-center gap-1 px-3 py-1.5 text-sm rounded-md transition-colors whitespace-nowrap ${
-                  pathname.startsWith('/admin/sdr')
-                    ? 'text-zinc-900 bg-zinc-100 font-medium'
-                    : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'
-                }`}
-              >
-                AI SDR
-                {needsApprovalCount > 0 && (
-                  <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
-                    {needsApprovalCount > 9 ? '9+' : needsApprovalCount}
-                  </span>
-                )}
-              </Link>
-
-              {/* Grouped dropdowns */}
-              {GROUPS.map((group) => (
-                <NavDropdown
-                  key={group.label}
-                  label={group.label}
-                  items={group.items}
-                  pathname={pathname}
-                />
-              ))}
-            </nav>
-
-            {/* Right side */}
-            <div className="flex items-center gap-2 ml-auto">
-              <span className="text-xs text-zinc-400 hidden xl:block truncate max-w-[160px]">{adminEmail}</span>
-              <Link
-                href="/dashboard"
-                className="hidden sm:block px-3 py-1.5 text-xs font-medium text-zinc-600 hover:text-zinc-900 border border-zinc-200 rounded-md hover:bg-zinc-50 transition-colors whitespace-nowrap"
-              >
-                Exit Admin
-              </Link>
-
-              {/* Hamburger — tablet + mobile */}
-              <button
-                onClick={() => setDrawerOpen(true)}
-                className="lg:hidden flex items-center justify-center w-9 h-9 rounded-md hover:bg-zinc-100 transition-colors"
-                aria-label="Open menu"
-              >
-                <Menu size={20} className="text-zinc-600" />
-              </button>
-            </div>
-
+          {/* Right: email + exit */}
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-zinc-400 hidden sm:block truncate max-w-[140px]">{adminEmail}</span>
+            <Link
+              href="/dashboard"
+              className="px-2.5 py-1 text-xs font-medium text-zinc-500 hover:text-zinc-900 border border-zinc-200 rounded-md hover:bg-zinc-50 transition-colors"
+            >
+              Exit
+            </Link>
           </div>
         </div>
       </header>
 
-      {/* Mobile / Tablet Drawer */}
-      {drawerOpen && (
-        <>
-          {/* Backdrop */}
-          <div
-            className="fixed inset-0 z-50 bg-black/40"
-            onClick={() => setDrawerOpen(false)}
-          />
-
-          {/* Drawer */}
-          <div className="fixed top-0 right-0 z-50 h-full w-72 bg-white shadow-xl flex flex-col">
-            {/* Drawer header */}
-            <div className="flex items-center justify-between px-5 h-14 border-b border-zinc-100 flex-shrink-0">
-              <span className="text-sm font-semibold text-zinc-900">Menu</span>
-              <button
-                onClick={() => setDrawerOpen(false)}
-                className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-zinc-100"
-              >
-                <X size={18} className="text-zinc-500" />
-              </button>
-            </div>
-
-            {/* Drawer content */}
-            <div className="flex-1 overflow-y-auto py-3">
-              {/* Primary links */}
-              <div className="px-3 mb-2">
-                {PRIMARY.map(({ href, label }) => (
-                  <Link
-                    key={href}
-                    href={href}
-                    className={`flex items-center justify-between px-3 py-2.5 text-sm rounded-md mb-0.5 transition-colors ${
-                      pathname.startsWith(href)
-                        ? 'text-zinc-900 bg-zinc-100 font-medium'
-                        : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50'
-                    }`}
-                  >
-                    {label}
-                    {href === '/admin/ops' && upcomingBookingsCount > 0 && (
-                      <span className="inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-blue-500 px-1 text-[10px] font-bold text-white">
-                        {upcomingBookingsCount > 9 ? '9+' : upcomingBookingsCount}
-                      </span>
-                    )}
-                  </Link>
-                ))}
-                <Link
-                  href="/admin/sdr"
-                  className={`flex items-center justify-between px-3 py-2.5 text-sm rounded-md mb-0.5 transition-colors ${
-                    pathname.startsWith('/admin/sdr')
-                      ? 'text-zinc-900 bg-zinc-100 font-medium'
-                      : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50'
-                  }`}
-                >
-                  AI SDR
-                  {needsApprovalCount > 0 && (
-                    <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
-                      {needsApprovalCount > 9 ? '9+' : needsApprovalCount}
-                    </span>
-                  )}
-                </Link>
-              </div>
-
-              {/* Grouped sections */}
-              {GROUPS.map((group) => (
-                <div key={group.label} className="px-3 mb-2">
-                  <div className="px-3 py-1.5 text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
-                    {group.label}
-                  </div>
-                  {group.items.map((item) => (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      className={`flex items-center px-3 py-2 text-sm rounded-md mb-0.5 transition-colors ${
-                        pathname.startsWith(item.href)
-                          ? 'text-zinc-900 bg-zinc-100 font-medium'
-                          : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50'
-                      }`}
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
-                </div>
-              ))}
-            </div>
-
-            {/* Drawer footer */}
-            <div className="border-t border-zinc-100 p-4 flex-shrink-0">
-              <div className="text-[12px] text-zinc-400 mb-3 truncate">{adminEmail}</div>
-              <Link
-                href="/dashboard"
-                className="block w-full text-center px-4 py-2 text-sm font-medium text-zinc-700 border border-zinc-200 rounded-lg hover:bg-zinc-50 transition-colors"
-              >
-                Exit Admin
-              </Link>
-            </div>
-          </div>
-        </>
+      {/* Sidebar overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm"
+          onClick={closeSidebar}
+        />
       )}
+
+      {/* Sidebar drawer */}
+      <div
+        className={`fixed top-0 left-0 z-50 h-full w-64 bg-white shadow-xl flex flex-col transform transition-transform duration-200 ease-in-out ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        {/* Sidebar header */}
+        <div className="flex items-center justify-between px-4 h-12 border-b border-zinc-100 flex-shrink-0">
+          <div className="flex items-center gap-2">
+            <div className="relative h-6 w-6 overflow-hidden rounded-lg flex-shrink-0">
+              <Image src="/cursive-logo.png" alt="Cursive" fill className="object-contain" />
+            </div>
+            <span className="text-sm font-semibold text-zinc-900">Admin</span>
+          </div>
+          <button
+            onClick={closeSidebar}
+            className="w-7 h-7 flex items-center justify-center rounded-md hover:bg-zinc-100"
+          >
+            <X size={16} className="text-zinc-400" />
+          </button>
+        </div>
+
+        {/* Sidebar content */}
+        <div className="flex-1 overflow-y-auto py-3 px-2">
+          {/* Primary links */}
+          <div className="mb-3">
+            {PRIMARY.map(({ href, label }) => (
+              <Link
+                key={href}
+                href={href}
+                onClick={closeSidebar}
+                className={`flex items-center justify-between px-3 py-2 text-sm rounded-md mb-0.5 transition-colors ${
+                  pathname.startsWith(href)
+                    ? 'text-zinc-900 bg-zinc-100 font-medium'
+                    : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50'
+                }`}
+              >
+                {label}
+                {href === '/admin/ops' && upcomingBookingsCount > 0 && (
+                  <span className="inline-flex h-4 min-w-[16px] items-center justify-center rounded-full bg-blue-500 px-1 text-[10px] font-bold text-white">
+                    {upcomingBookingsCount > 9 ? '9+' : upcomingBookingsCount}
+                  </span>
+                )}
+              </Link>
+            ))}
+            <Link
+              href="/admin/sdr"
+              onClick={closeSidebar}
+              className={`flex items-center justify-between px-3 py-2 text-sm rounded-md mb-0.5 transition-colors ${
+                pathname.startsWith('/admin/sdr')
+                  ? 'text-zinc-900 bg-zinc-100 font-medium'
+                  : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50'
+              }`}
+            >
+              AI SDR
+              {needsApprovalCount > 0 && (
+                <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+                  {needsApprovalCount > 9 ? '9+' : needsApprovalCount}
+                </span>
+              )}
+            </Link>
+          </div>
+
+          {/* Divider */}
+          <div className="border-t border-zinc-100 my-2" />
+
+          {/* Grouped sections with collapsible dropdowns */}
+          {GROUPS.map((group) => (
+            <SidebarGroup
+              key={group.label}
+              label={group.label}
+              items={group.items}
+              pathname={pathname}
+              onNavigate={closeSidebar}
+            />
+          ))}
+        </div>
+
+        {/* Sidebar footer */}
+        <div className="border-t border-zinc-100 p-3 flex-shrink-0">
+          <div className="text-[11px] text-zinc-400 mb-2 truncate">{adminEmail}</div>
+          <Link
+            href="/dashboard"
+            className="block w-full text-center px-3 py-1.5 text-xs font-medium text-zinc-600 border border-zinc-200 rounded-lg hover:bg-zinc-50 transition-colors"
+          >
+            Exit Admin
+          </Link>
+        </div>
+      </div>
     </>
   )
 }
