@@ -77,7 +77,7 @@ function parsePrefillParams(searchParams: URLSearchParams) {
   }
 }
 
-export default function OnboardingPage() {
+function OnboardingPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -388,5 +388,20 @@ export default function OnboardingPage() {
         </div>
       </footer>
     </div>
+  )
+}
+
+export default function OnboardingPage() {
+  return (
+    <React.Suspense fallback={
+      <div className="flex min-h-screen items-center justify-center bg-white">
+        <div className="text-center">
+          <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
+          <p className="mt-4 text-sm text-muted-foreground">Loading onboarding form...</p>
+        </div>
+      </div>
+    }>
+      <OnboardingPageContent />
+    </React.Suspense>
   )
 }
