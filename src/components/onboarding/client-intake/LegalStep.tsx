@@ -18,7 +18,7 @@ export function LegalStep() {
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight text-[#0F172A]">Legal & Sign-off</h2>
+        <h2 className="text-2xl font-bold tracking-tight text-[#0F172A]">Almost done! Just the legal bits</h2>
         <p className="mt-1 text-sm text-muted-foreground">
           Please review and acknowledge the following terms to complete your onboarding.
         </p>
@@ -33,15 +33,6 @@ export function LegalStep() {
             {...register('sow_signed', { required: 'SOW acknowledgment is required' })}
           />
           {errors.sow_signed && <p className="ml-7 text-sm text-destructive">{errors.sow_signed.message}</p>}
-        </div>
-
-        <div className="border-t border-border pt-4 space-y-1">
-          <Checkbox
-            label="Payment has been confirmed"
-            description="I confirm that the setup fee and/or first billing cycle payment has been processed."
-            {...register('payment_confirmed', { required: 'Payment confirmation is required' })}
-          />
-          {errors.payment_confirmed && <p className="ml-7 text-sm text-destructive">{errors.payment_confirmed.message}</p>}
         </div>
 
         <div className="border-t border-border pt-4 space-y-1">

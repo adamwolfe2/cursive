@@ -34,7 +34,7 @@ export function ContentApprovalsStep({
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight text-[#0F172A]">Content & Approvals</h2>
+        <h2 className="text-2xl font-bold tracking-tight text-[#0F172A]">Share your brand with us</h2>
         <p className="mt-1 text-sm text-muted-foreground">
           Upload brand assets and approve content settings. These help us create campaigns that match your voice.
         </p>

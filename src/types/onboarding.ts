@@ -498,7 +498,6 @@ export interface FormStep {
 export const FORM_STEPS: FormStep[] = [
   { id: 'company-info', label: 'Company Info', isConditional: false },
   { id: 'packages', label: 'Packages', isConditional: false },
-  { id: 'commercial', label: 'Commercial', isConditional: false },
   { id: 'icp', label: 'ICP Intake', isConditional: false },
   { id: 'email-setup', label: 'Email Setup', isConditional: true, condition: needsOutboundSetup },
   { id: 'pixel-setup', label: 'Pixel Setup', isConditional: true, condition: needsPixelSetup },

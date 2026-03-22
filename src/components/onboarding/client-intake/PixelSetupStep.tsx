@@ -62,7 +62,7 @@ export function PixelSetupStep() {
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight text-[#0F172A]">Pixel Setup</h2>
+        <h2 className="text-2xl font-bold tracking-tight text-[#0F172A]">Time to identify your website visitors</h2>
         <p className="mt-1 text-sm text-muted-foreground">
           Configure your Super Pixel to identify anonymous website visitors and build targetable audiences.
         </p>

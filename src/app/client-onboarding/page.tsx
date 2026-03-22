@@ -24,13 +24,12 @@ import type { OnboardingFormData, PackageSlug, PendingFile } from '@/types/onboa
 const STEP_FIELDS: Record<string, (keyof OnboardingFormData)[]> = {
   'company-info': ['company_name', 'company_website', 'industry', 'primary_contact_name', 'primary_contact_email', 'communication_channel'],
   'packages': ['packages_selected'],
-  'commercial': [],
   'icp': ['icp_description', 'target_industries', 'target_titles', 'pain_points'],
   'email-setup': ['sender_names'],
   'pixel-setup': ['pixel_urls'],
   'use-case': [],
   'content': [],
-  'legal': ['sow_signed', 'payment_confirmed', 'data_usage_ack', 'privacy_ack', 'billing_terms_ack', 'signature_name'],
+  'legal': ['sow_signed', 'data_usage_ack', 'privacy_ack', 'billing_terms_ack', 'signature_name'],
   'review': [],
 }
 
@@ -242,7 +241,7 @@ function OnboardingPageContent() {
   const handleSubmit = async () => {
     // Validate all legal fields before submit
     const legalValid = await methods.trigger([
-      'sow_signed', 'payment_confirmed', 'data_usage_ack', 'privacy_ack', 'billing_terms_ack', 'signature_name',
+      'sow_signed', 'data_usage_ack', 'privacy_ack', 'billing_terms_ack', 'signature_name',
     ] as any)
     if (!legalValid) {
       handleEditStep(activeSteps.findIndex((s: { id: string }) => s.id === 'legal'))
@@ -288,8 +287,6 @@ function OnboardingPageContent() {
         return <CompanyInfoStep />
       case 'packages':
         return <PackageSelectionStep />
-      case 'commercial':
-        return <CommercialApprovalsStep />
       case 'icp':
         return <ICPIntakeStep />
       case 'email-setup':

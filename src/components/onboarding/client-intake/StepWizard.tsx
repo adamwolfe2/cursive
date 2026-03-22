@@ -43,14 +43,17 @@ export function StepWizard({
     enter: (d: number) => ({
       x: d > 0 ? 80 : -80,
       opacity: 0,
+      scale: 0.98,
     }),
     center: {
       x: 0,
       opacity: 1,
+      scale: 1,
     },
     exit: (d: number) => ({
       x: d > 0 ? -80 : 80,
       opacity: 0,
+      scale: 0.98,
     }),
   }
 
@@ -60,7 +63,7 @@ export function StepWizard({
       <ProgressBar steps={activeSteps} currentStepIndex={currentStep} />
 
       {/* Step content */}
-      <div className="relative min-h-[400px]">
+      <div className="relative min-h-[300px]">
         <AnimatePresence mode="wait" custom={direction}>
           <motion.div
             key={activeSteps[currentStep]?.id ?? currentStep}
@@ -69,7 +72,8 @@ export function StepWizard({
             initial="enter"
             animate="center"
             exit="exit"
-            transition={{ duration: 0.3, ease: 'easeInOut' }}
+            transition={{ duration: 0.2, ease: 'easeInOut' }}
+            style={{ willChange: 'transform' }}
           >
             {children}
           </motion.div>

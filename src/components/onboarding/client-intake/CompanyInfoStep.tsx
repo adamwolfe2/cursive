@@ -40,7 +40,7 @@ export function CompanyInfoStep() {
       </div>
 
       {/* Company Details */}
-      <div className="grid gap-6 rounded-lg border border-slate-100 bg-slate-50/50 p-5 sm:grid-cols-2">
+      <div className="grid gap-6 rounded-lg border border-slate-100 bg-slate-50/50 p-5 transition-all focus-within:ring-2 focus-within:ring-blue-100 focus-within:border-blue-400 sm:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="company_name">Company Name <span className="text-destructive">*</span></Label>
           <Input
@@ -82,7 +82,7 @@ export function CompanyInfoStep() {
       {/* Primary Contact */}
       <div>
         <h3 className="mb-4 border-l-4 border-blue-500 pl-3 text-lg font-semibold text-[#0F172A]">Primary Contact</h3>
-        <div className="grid gap-6 rounded-lg border border-slate-100 bg-slate-50/50 p-5 sm:grid-cols-2">
+        <div className="grid gap-6 rounded-lg border border-slate-100 bg-slate-50/50 p-5 transition-all focus-within:ring-2 focus-within:ring-blue-100 focus-within:border-blue-400 sm:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="primary_contact_name">Full Name <span className="text-destructive">*</span></Label>
             <Input
@@ -125,7 +125,7 @@ export function CompanyInfoStep() {
       <div>
         <h3 className="mb-1 border-l-4 border-blue-500 pl-3 text-lg font-semibold text-[#0F172A]">Billing Contact</h3>
         <p className="mb-4 pl-3 text-sm text-muted-foreground">Only if different from primary contact</p>
-        <div className="grid gap-6 rounded-lg border border-slate-100 bg-slate-50/50 p-5 sm:grid-cols-2">
+        <div className="grid gap-6 rounded-lg border border-slate-100 bg-slate-50/50 p-5 transition-all focus-within:ring-2 focus-within:ring-blue-100 focus-within:border-blue-400 sm:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="billing_contact_name">Billing Contact Name</Label>
             <Input
@@ -151,7 +151,7 @@ export function CompanyInfoStep() {
       <div>
         <h3 className="mb-4 border-l-4 border-blue-500 pl-3 text-lg font-semibold text-[#0F172A]">Team &amp; Communication</h3>
       </div>
-      <div className="space-y-6 rounded-lg border border-slate-100 bg-slate-50/50 p-5">
+      <div className="space-y-6 rounded-lg border border-slate-100 bg-slate-50/50 p-5 transition-all focus-within:ring-2 focus-within:ring-blue-100 focus-within:border-blue-400">
         <div className="space-y-2">
           <Label htmlFor="team_members">Team Members Who Need Access</Label>
           <Textarea

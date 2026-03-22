@@ -75,7 +75,7 @@ export function EmailSetupStep({ examplesFile, onExamplesFileChange }: EmailSetu
   return (
     <div className="space-y-10">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight text-[#0F172A]">Email Campaign Setup</h2>
+        <h2 className="text-2xl font-bold tracking-tight text-[#0F172A]">Let&apos;s set up your outbound engine</h2>
         <p className="mt-1 text-sm text-muted-foreground">
           Configure your outbound email campaigns. We handle domain setup, warmup, and sending infrastructure.
         </p>

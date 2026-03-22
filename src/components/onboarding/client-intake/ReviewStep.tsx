@@ -125,26 +125,10 @@ export function ReviewStep({ onEditStep, files }: ReviewStepProps) {
         </CardContent>
       </Card>
 
-      {/* Commercial */}
-      <Card padding="default">
-        <CardHeader>
-          <SectionHeader title="Commercial Details" stepIndex={2} onEdit={onEditStep} />
-        </CardHeader>
-        <CardContent>
-          <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <Field label="Setup Fee" value={data.setup_fee != null ? `$${data.setup_fee}` : undefined} />
-            <Field label="Recurring Fee" value={data.recurring_fee != null ? `$${data.recurring_fee}` : undefined} />
-            <Field label="Billing Cadence" value={data.billing_cadence} />
-            <Field label="Payment Method" value={data.payment_method} />
-            {showOutbound && <Field label="Outbound Tier" value={data.outbound_tier} />}
-          </dl>
-        </CardContent>
-      </Card>
-
       {/* ICP */}
       <Card padding="default">
         <CardHeader>
-          <SectionHeader title="Ideal Customer Profile" stepIndex={3} onEdit={onEditStep} />
+          <SectionHeader title="Ideal Customer Profile" stepIndex={2} onEdit={onEditStep} />
         </CardHeader>
         <CardContent>
           <dl className="space-y-4">
@@ -182,7 +166,7 @@ export function ReviewStep({ onEditStep, files }: ReviewStepProps) {
       {showOutbound && (
         <Card padding="default">
           <CardHeader>
-            <SectionHeader title="Email Setup" stepIndex={4} onEdit={onEditStep} />
+            <SectionHeader title="Email Setup" stepIndex={3} onEdit={onEditStep} />
           </CardHeader>
           <CardContent>
             <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -206,7 +190,7 @@ export function ReviewStep({ onEditStep, files }: ReviewStepProps) {
       {showPixel && (
         <Card padding="default">
           <CardHeader>
-            <SectionHeader title="Pixel Setup" stepIndex={showOutbound ? 5 : 4} onEdit={onEditStep} />
+            <SectionHeader title="Pixel Setup" stepIndex={showOutbound ? 4 : 3} onEdit={onEditStep} />
           </CardHeader>
           <CardContent>
             <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -231,7 +215,7 @@ export function ReviewStep({ onEditStep, files }: ReviewStepProps) {
           <SectionHeader
             title="Use Case & Delivery"
             stepIndex={(() => {
-              let idx = 4
+              let idx = 3
               if (showOutbound) idx++
               if (showPixel) idx++
               return idx
@@ -262,7 +246,7 @@ export function ReviewStep({ onEditStep, files }: ReviewStepProps) {
           <SectionHeader
             title="Content & Approvals"
             stepIndex={(() => {
-              let idx = 5
+              let idx = 4
               if (showOutbound) idx++
               if (showPixel) idx++
               return idx
@@ -290,7 +274,7 @@ export function ReviewStep({ onEditStep, files }: ReviewStepProps) {
           <SectionHeader
             title="Legal & Sign-off"
             stepIndex={(() => {
-              let idx = 6
+              let idx = 5
               if (showOutbound) idx++
               if (showPixel) idx++
               return idx
@@ -301,7 +285,6 @@ export function ReviewStep({ onEditStep, files }: ReviewStepProps) {
         <CardContent>
           <div className="space-y-3">
             <BoolField label="SOW signed" value={data.sow_signed} />
-            <BoolField label="Payment confirmed" value={data.payment_confirmed} />
             <BoolField label="Data usage acknowledged" value={data.data_usage_ack} />
             <BoolField label="Privacy terms acknowledged" value={data.privacy_ack} />
             <BoolField label="Billing terms agreed" value={data.billing_terms_ack} />

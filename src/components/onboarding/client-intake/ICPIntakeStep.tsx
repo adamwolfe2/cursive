@@ -65,12 +65,13 @@ export function ICPIntakeStep() {
         <p className="mt-1 text-sm text-muted-foreground">
           This is the most important section. The more detail you provide, the better we can target your ideal buyers.
         </p>
+        <p className="mt-2 text-sm font-medium text-blue-600">Let&apos;s get specific about who you want to reach.</p>
       </div>
 
       {/* ICP Description */}
       <div className="space-y-2">
         <Label htmlFor="icp_description">
-          Describe Your Ideal Customer <span className="text-destructive">*</span>
+          Who&apos;s your dream customer? Paint us a picture in 2-3 sentences. <span className="text-destructive">*</span>
         </Label>
         <Textarea
           id="icp_description"
@@ -184,6 +185,8 @@ export function ICPIntakeStep() {
         </div>
       )}
 
+      <p className="text-sm font-medium text-blue-600">Great, just a few more details...</p>
+
       {/* Traits & Exclusions */}
       <div className="grid gap-6 sm:grid-cols-2">
         <div className="space-y-2">
@@ -209,7 +212,7 @@ export function ICPIntakeStep() {
 
       {/* Pain Points */}
       <div className="space-y-2">
-        <Label htmlFor="pain_points">Pain Points Your Product Solves <span className="text-destructive">*</span></Label>
+        <Label htmlFor="pain_points">What keeps your ideal customer up at night? <span className="text-destructive">*</span></Label>
         <Textarea
           id="pain_points"
           placeholder="What problems do your best customers have that led them to buy? What triggers a purchase?"
@@ -240,6 +243,8 @@ export function ICPIntakeStep() {
         />
         <p className="text-sm text-muted-foreground">We can target prospects researching your competitors.</p>
       </div>
+
+      <p className="text-sm font-medium text-blue-600">Almost there!</p>
 
       {/* Reference Data */}
       <div className="grid gap-6 sm:grid-cols-2">

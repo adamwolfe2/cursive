@@ -74,7 +74,7 @@ export function UseCaseStep({ existingListFile, onExistingListFileChange }: UseC
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight text-[#0F172A]">Use Case & Delivery</h2>
+        <h2 className="text-2xl font-bold tracking-tight text-[#0F172A]">How will you put this data to work?</h2>
         <p className="mt-1 text-sm text-muted-foreground">
           Help us understand how you plan to use the data so we can optimize delivery and format.
         </p>

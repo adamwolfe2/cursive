@@ -27,7 +27,7 @@ export function PackageSelectionStep() {
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight text-[#0F172A]">Select Your Packages</h2>
+        <h2 className="text-2xl font-bold tracking-tight text-[#0F172A]">What are we building for you?</h2>
         <p className="mt-1 text-sm text-muted-foreground">
           Choose the services you have purchased. This determines which setup sections you will complete.
         </p>
