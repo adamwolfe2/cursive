@@ -1,88 +1,40 @@
-/**
- * Health Check API Route
- * GET /api/health
- *
- * Tests actual service connectivity, not just env var presence.
- * Edge runtime for fast cold starts.
- */
-
 import { NextResponse } from 'next/server'
 
-const START_TIME = Date.now()
+export async function GET(request: Request) {
+  // Optionally protect with automation secret
+  const secret = request.headers.get('x-automation-secret')
+  const expectedSecret = process.env.AUTOMATION_SECRET
 
-async function checkDatabase(): Promise<{ status: string; responseTime: number; error?: string }> {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-  // Use anon key (public) for health checks — never expose service role key in a public endpoint
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  if (!url || !key) return { status: 'unconfigured', responseTime: 0 }
-
-  const start = Date.now()
-  try {
-    // Simple REST query: select 1 row from a known table
-    const res = await fetch(`${url}/rest/v1/workspaces?select=id&limit=1`, {
-      headers: {
-        apikey: key,
-        Authorization: `Bearer ${key}`,
-      },
-      signal: AbortSignal.timeout(5000),
-    })
-    const responseTime = Date.now() - start
-    return res.ok
-      ? { status: 'healthy', responseTime }
-      : { status: 'unhealthy', responseTime, error: `HTTP ${res.status}` }
-  } catch (e) {
-    return { status: 'unhealthy', responseTime: Date.now() - start, error: e instanceof Error ? e.message : 'Unknown' }
-  }
-}
-
-async function checkStripe(): Promise<{ status: string; error?: string }> {
-  const key = process.env.STRIPE_SECRET_KEY
-  if (!key) return { status: 'unconfigured' }
-  const valid = key.startsWith('sk_live_') || key.startsWith('sk_test_')
-  return valid ? { status: 'configured' } : { status: 'misconfigured', error: 'Invalid key format' }
-}
-
-export async function GET() {
-  const [db, stripe] = await Promise.all([checkDatabase(), checkStripe()])
-
-  const overall =
-    db.status === 'healthy' && stripe.status === 'configured' ? 'healthy'
-    : db.status === 'unhealthy' ? 'unhealthy'
-    : 'degraded'
-
-  // Mask detailed service status in production (security: information disclosure)
-  const isProduction = process.env.NODE_ENV === 'production'
-
-  if (isProduction) {
-    return NextResponse.json(
-      {
-        status: overall,
-        timestamp: new Date().toISOString(),
-      },
-      {
-        status: overall === 'unhealthy' ? 503 : 200,
-        headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' },
-      }
-    )
+  // Allow without secret in development, require in production
+  if (process.env.NODE_ENV === 'production' && expectedSecret && secret !== expectedSecret) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  // Detailed status only in development/staging
-  return NextResponse.json(
-    {
-      status: overall,
-      timestamp: new Date().toISOString(),
-      version: process.env.NEXT_PUBLIC_APP_VERSION || '1.0.0',
-      uptime: Math.floor((Date.now() - START_TIME) / 1000),
-      checks: { database: db, stripe },
-      runtime: 'edge',
-    },
-    {
-      status: overall === 'unhealthy' ? 503 : 200,
-      headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' },
-    }
-  )
-}
+  const checks: Record<string, boolean | string> = {
+    supabase_url: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+    supabase_anon: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    supabase_service: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+    anthropic: !!process.env.ANTHROPIC_API_KEY,
+    inngest_event: !!process.env.INNGEST_EVENT_KEY,
+    inngest_signing: !!process.env.INNGEST_SIGNING_KEY,
+    slack_webhook: !!process.env.SLACK_WEBHOOK_URL,
+    resend: !!process.env.RESEND_API_KEY,
+    resend_from: !!process.env.RESEND_FROM_EMAIL,
+    automation_secret: !!process.env.AUTOMATION_SECRET,
+    admin_alert_email: !!process.env.ADMIN_ALERT_EMAIL,
+    crm_webhook: process.env.CRM_WEBHOOK_URL ? true : 'optional - using fallback logging',
+    crm_api_url: process.env.CRM_API_URL ? true : 'optional',
+    crm_api_key: process.env.CRM_API_KEY ? true : 'optional',
+  }
 
-export async function HEAD() {
-  return new NextResponse(null, { status: 200 })
+  const optionalKeys = ['crm_webhook', 'crm_api_url', 'crm_api_key']
+  const allRequired = Object.entries(checks)
+    .filter(([key]) => !optionalKeys.includes(key))
+    .every(([, val]) => val === true)
+
+  return NextResponse.json({
+    status: allRequired ? 'ready' : 'missing_env_vars',
+    timestamp: new Date().toISOString(),
+    checks,
+  }, { status: allRequired ? 200 : 503 })
 }

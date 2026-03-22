@@ -269,3 +269,8 @@ export { cleanupAuditLogs } from './cleanup-audit-logs'
 
 // Failed operations cleanup (daily 4:30am UTC — deletes resolved entries older than 30 days)
 export { cleanupFailedOperations } from './cleanup-failed-operations'
+
+// Client Onboarding Pipeline
+export { onboardingIntakePipeline } from './onboarding-intake-pipeline'
+export { onboardingCopyRegeneration } from './onboarding-copy-regeneration'
+export { onboardingRetryEnrichment } from './onboarding-retry-enrichment'

@@ -9,10 +9,11 @@ import { ChevronDown, Menu, X } from 'lucide-react'
 // ─── Nav structure ────────────────────────────────────────────────────────────
 
 const PRIMARY = [
-  { href: '/admin/ops',       label: 'Ops Hub' },
-  { href: '/admin/dashboard', label: 'Dashboard' },
-  { href: '/admin/accounts',  label: 'Accounts' },
-  { href: '/admin/revenue',   label: 'Revenue' },
+  { href: '/admin/ops',        label: 'Ops Hub' },
+  { href: '/admin/dashboard',  label: 'Dashboard' },
+  { href: '/admin/accounts',   label: 'Accounts' },
+  { href: '/admin/revenue',    label: 'Revenue' },
+  { href: '/admin/onboarding', label: 'Onboarding' },
 ]
 
 const GROUPS = [

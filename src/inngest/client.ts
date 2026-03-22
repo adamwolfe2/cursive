@@ -580,6 +580,24 @@ export type Events = {
       metadata?: Record<string, any>
     }
   }
+
+  // Client Onboarding Pipeline Events
+  'onboarding/intake-complete': {
+    data: {
+      client_id: string
+    }
+  }
+  'onboarding/regenerate-copy': {
+    data: {
+      client_id: string
+      feedback?: string
+    }
+  }
+  'onboarding/retry-enrichment': {
+    data: {
+      client_id: string
+    }
+  }
 }
 
 // Lazy-load Inngest client to avoid build-time initialization

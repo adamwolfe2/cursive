@@ -230,5 +230,10 @@ export const { GET, POST, PUT } = serve({
     // Cleanup crons (prevent unbounded table growth)
     functions.cleanupRateLimitLogs,
     functions.cleanupWebhookEvents,
+
+    // Client Onboarding Pipeline
+    functions.onboardingIntakePipeline,
+    functions.onboardingCopyRegeneration,
+    functions.onboardingRetryEnrichment,
   ],
 })
