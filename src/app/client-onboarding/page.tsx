@@ -330,24 +330,21 @@ function OnboardingPageContent() {
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-50">
-      {/* Top accent bar */}
-      <div className="h-1 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-400" />
-
       {/* Header */}
-      <header className="bg-[#0F172A] shadow-md">
+      <header className="border-b border-slate-200/60 bg-white">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-4 sm:px-6">
           <Image
             src="/cursive-logo.png"
             alt="Cursive"
             width={120}
             height={40}
-            className="h-8 w-auto brightness-0 invert"
+            className="h-8 w-auto"
             priority
           />
           <div className="text-right">
-            <p className="text-xs text-blue-300">Client Onboarding</p>
+            <p className="text-xs text-muted-foreground">Client Onboarding</p>
             {methods.watch('company_name') && (
-              <p className="text-sm font-medium text-white">{methods.watch('company_name')}</p>
+              <p className="text-sm font-medium text-[#0F172A]">{methods.watch('company_name')}</p>
             )}
           </div>
         </div>
@@ -402,9 +399,9 @@ function OnboardingPageContent() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-[#0F172A]">
+      <footer className="border-t border-slate-200/60 bg-white">
         <div className="mx-auto max-w-3xl px-4 py-6 sm:px-6">
-          <p className="text-center text-xs text-slate-400">
+          <p className="text-center text-xs text-muted-foreground">
             &copy; {new Date().getFullYear()} Cursive. All rights reserved. Your data is encrypted and stored securely.
           </p>
         </div>
