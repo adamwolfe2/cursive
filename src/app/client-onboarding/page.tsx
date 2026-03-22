@@ -267,7 +267,7 @@ export default function OnboardingPage() {
       if (result.success) {
         // Store company name for success page
         const companyParam = encodeURIComponent(formData.company_name || '')
-        router.push(`/onboarding/success?company=${companyParam}`)
+        router.push(`/client-onboarding/success?company=${companyParam}`)
       } else {
         // Show error — a toast would be better in production
         alert(result.error ?? 'Submission failed. Please try again.')
@@ -359,9 +359,9 @@ export default function OnboardingPage() {
             {/* Honeypot field — hidden from real users, catches bots */}
             <input
               type="text"
-              name="website_url_confirm"
               tabIndex={-1}
               autoComplete="off"
+              aria-hidden="true"
               style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, width: 0 }}
               {...methods.register('website_url_confirm')}
             />

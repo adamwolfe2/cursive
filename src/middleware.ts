@@ -177,6 +177,7 @@ export async function middleware(req: NextRequest) {
       pathname.startsWith('/signup') ||
       pathname.startsWith('/welcome') ||
       pathname.startsWith('/onboarding') ||
+      pathname.startsWith('/client-onboarding') ||
       pathname.startsWith('/role-selection') ||
       pathname.startsWith('/forgot-password') ||
       pathname.startsWith('/reset-password') ||
@@ -271,7 +272,7 @@ export async function middleware(req: NextRequest) {
     // Workspace check: verify authenticated users have a workspace for dashboard routes.
     // Caches workspace_id in a cookie to avoid DB query on every request (~50-100ms savings).
     // Exclude /api/auth/* — needed during onboarding before workspace exists.
-    if (user && !isPublicRoute && !isAdminRoute && !isPartnerRoute && !isAffiliateRoute && !pathname.startsWith('/onboarding') && !pathname.startsWith('/welcome') && !pathname.startsWith('/api/onboarding') && !pathname.startsWith('/api/auth') && !pathname.startsWith('/api/affiliate')) {
+    if (user && !isPublicRoute && !isAdminRoute && !isPartnerRoute && !isAffiliateRoute && !pathname.startsWith('/onboarding') && !pathname.startsWith('/client-onboarding') && !pathname.startsWith('/welcome') && !pathname.startsWith('/api/onboarding') && !pathname.startsWith('/api/auth') && !pathname.startsWith('/api/affiliate')) {
       // Check cookie cache first to avoid DB roundtrip on every request
       const cachedWorkspaceId = req.cookies.get('x-workspace-id')?.value
 
@@ -323,6 +324,7 @@ export async function middleware(req: NextRequest) {
       pathname.startsWith('/signup') ||
       pathname.startsWith('/welcome') ||
       pathname.startsWith('/onboarding') ||
+      pathname.startsWith('/client-onboarding') ||
       pathname.startsWith('/role-selection') ||
       pathname.startsWith('/forgot-password') ||
       pathname.startsWith('/reset-password') ||

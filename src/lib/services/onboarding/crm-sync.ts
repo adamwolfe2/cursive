@@ -137,7 +137,7 @@ export async function syncClientToCRM(
   }
 
   // Mode 3: Fallback — no CRM configured
-  console.log(
+  console.warn(
     '[CRM Sync] No CRM_WEBHOOK_URL or CRM_API_URL configured. Payload logged for manual sync:',
     JSON.stringify({
       client_id: client.id,

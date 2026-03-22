@@ -69,7 +69,7 @@ export default function FulfillmentChecklist({ checklist }: FulfillmentChecklist
 
     startTransition(async () => {
       try {
-        await updateChecklistItem(checklist.id, itemId, newCompleted)
+        await updateChecklistItem(checklist!.id, itemId, newCompleted)
       } catch {
         // Revert on error
         setItems((prev) =>

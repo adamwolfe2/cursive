@@ -219,8 +219,9 @@ function TimelineEntry({
 }) {
   const [showFullError, setShowFullError] = useState(false)
   const humanLabel = STEP_LABELS[entry.step] ?? entry.step
-  const errorTruncated = entry.error && entry.error.length > 200 && !showFullError
-  const displayError = errorTruncated ? entry.error.slice(0, 200) + '...' : entry.error
+  const errorText = entry.error ?? ''
+  const errorTruncated = errorText.length > 200 && !showFullError
+  const displayError = errorTruncated ? errorText.slice(0, 200) + '...' : errorText
 
   return (
     <div className="relative pl-8">
