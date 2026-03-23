@@ -7,6 +7,7 @@ import { getInngest } from '../client'
 import { OnboardingClientRepository } from '@/lib/repositories/onboarding-client.repository'
 import { enrichClientICP } from '@/lib/services/onboarding/claude-enrichment'
 import { generateEmailSequences } from '@/lib/services/onboarding/copy-generation'
+import { checkCopyQuality } from '@/lib/services/onboarding/copy-quality-check'
 import { sendOnboardingConfirmation } from '@/lib/services/onboarding/onboarding-email'
 import {
   sendNewClientSlackAlert,
@@ -123,7 +124,7 @@ export const onboardingIntakePipeline = inngest.createFunction(
         const repo = new OnboardingClientRepository()
         await repo.update(client_id, { copy_generation_status: 'processing' })
         try {
-          const seqs = await generateEmailSequences(client, icpBrief)
+          const seqs = await generateEmailSequences(client, icpBrief, checkCopyQuality)
           await repo.update(client_id, {
             draft_sequences: seqs as any,
             copy_generation_status: 'complete',

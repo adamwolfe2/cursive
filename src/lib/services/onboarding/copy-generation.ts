@@ -1,156 +1,205 @@
-// Claude Email Copy Generation Service
-// Generates outbound email sequences from ICP brief and client preferences
+// Claude Email Copy Generation Service — V2
+// Two-call pattern: Angle Selection → Copy Writing with spintax
+// Generates high-converting outbound email sequences with deliverability optimization
 
 import type {
   OnboardingClient,
   EnrichedICPBrief,
   DraftSequences,
+  AngleSelection,
+  CopyResearch,
+  QualityIssue,
 } from '@/types/onboarding'
 
 const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages'
 const MODEL = 'claude-sonnet-4-20250514'
 
-const SYSTEM_PROMPT = `You are an expert cold email copywriter at Cursive, a demand generation agency. You write high-converting outbound email sequences for B2B companies.
+// ---------------------------------------------------------------------------
+// CALL 1: Angle Selection System Prompt
+// ---------------------------------------------------------------------------
 
-RULES (strictly enforced):
-1. Every email body MUST be under 120 words. No exceptions.
-2. Use {{firstName}} as the personalization variable for the recipient's first name.
-3. NEVER use RE: or FWD: tricks in subject lines.
-4. NEVER use cliche phrases like "I hope this email finds you well", "Just reaching out", "Touching base", "I'd love to pick your brain", "Synergy", or "Low-hanging fruit".
-5. Match the client's requested copy tone exactly.
-6. The CTA in each email must align with the client's primary CTA preference.
-7. Subject lines must be under 50 characters and curiosity-driven.
-8. Each email in a sequence must have a distinct purpose and angle — no repetition.
-9. Write 2-3 sequences with 3-4 emails each (step 1 = day 0, then delays of 2-4 days between steps).
+const ANGLE_SELECTION_PROMPT = `You are a cold email strategist. Your job is to analyze the research on a client and their target prospects, then select the 3 strongest messaging angles for cold outbound email sequences.
 
-Return ONLY valid JSON matching this schema. No markdown, no explanation.
+Each angle must be fundamentally different — not just a different tone, but a different REASON the prospect should care. Think about it from the prospect's perspective: what would make ME stop and read this?
 
+Consider these angle categories and select the 3 that are strongest for this specific ICP:
+
+- Pain agitation: Lead with the problem they're experiencing, make them feel it, then offer relief
+- Outcome/result: Lead with a specific result achieved for a similar company
+- Contrarian/pattern interrupt: Challenge something they believe, open a curiosity gap
+- Social proof/FOMO: Show them that peers/competitors are already doing this
+- Authority/expertise: Demonstrate deep understanding of their world before pitching
+- Question-led: Ask a question that's hard to ignore because it's so relevant
+- Compliment + pivot: Acknowledge something they're doing well, then show how to amplify it
+- Trigger event: Reference something happening in their market/company right now
+- Direct challenge: Be blunt about a gap in their strategy (works for sophisticated buyers)
+- Data/insight: Lead with a surprising stat or insight about their industry
+
+Do NOT always pick Pain, Social Proof, and Direct. Actually think about which 3 are BEST for this specific prospect profile.
+
+Output valid JSON only:
 {
-  "sequences": [
+  "selected_angles": [
     {
-      "sequence_name": "string — descriptive name for this sequence",
-      "strategy": "string — 1 sentence describing the overall approach",
-      "emails": [
-        {
-          "step": 1,
-          "delay_days": 0,
-          "subject_line": "string — under 50 chars",
-          "body": "string — under 120 words, uses {{firstName}}",
-          "purpose": "string — what this email is trying to accomplish"
-        }
-      ]
+      "angle_name": "short label",
+      "angle_category": "one of the categories above",
+      "core_insight": "the truth we are leveraging",
+      "emotional_driver": "fear/curiosity/ambition/frustration/FOMO/ego",
+      "proof_mechanism": "how we back it up — stat, case study, logic, social proof, authority",
+      "sequence_arc": {
+        "email_1_purpose": "what email 1 does in 1 sentence",
+        "email_2_purpose": "what email 2 does",
+        "email_3_purpose": "what email 3 does",
+        "email_4_purpose": "what the breakup email does"
+      },
+      "why_this_works": "specific reasoning for this ICP"
+    }
+  ],
+  "angles_considered_but_rejected": [
+    {
+      "angle": "name",
+      "reason_rejected": "why it will not work for this audience"
     }
   ]
 }`
 
-function buildCopyPrompt(client: OnboardingClient, icpBrief: EnrichedICPBrief): string {
-  const messagingAngles = icpBrief.messaging_angles
-    .map((a) => `- ${a.angle_name}: ${a.hook}`)
-    .join('\n')
+// ---------------------------------------------------------------------------
+// CALL 2: Copy Writing System Prompt
+// ---------------------------------------------------------------------------
 
-  const personas = icpBrief.buyer_personas
-    .map((p) => `- ${p.title} (${p.seniority}, ${p.department}): Pain points — ${p.pain_points.join('; ')}`)
-    .join('\n')
+const COPY_WRITING_PROMPT = `You are an elite B2B cold email copywriter. You have written tens of thousands of cold emails and you know exactly what gets replies and what gets deleted. You are not a template machine. You are a strategist who writes emails that feel like they came from a thoughtful human who did their research.
 
-  return [
-    `## Client`,
-    `Company: ${client.company_name}`,
-    `Website: ${client.company_website}`,
-    `Industry: ${client.industry}`,
-    '',
-    `## Copy Preferences`,
-    `Tone: ${client.copy_tone || 'Professional but conversational'}`,
-    `Primary CTA: ${client.primary_cta || 'Book a call'}`,
-    client.custom_cta ? `Custom CTA: ${client.custom_cta}` : '',
-    client.calendar_link ? `Calendar link: ${client.calendar_link}` : '',
-    '',
-    `## ICP Summary`,
-    icpBrief.ideal_buyer_profile,
-    '',
-    `## Target Personas`,
-    personas,
-    '',
-    `## Messaging Angles to Use`,
-    messagingAngles,
-    '',
-    `## Competitive Landscape`,
-    icpBrief.competitive_landscape.join(', '),
-    '',
-    `## Value Props`,
-    icpBrief.messaging_angles.map((a) => `- ${a.value_prop}`).join('\n'),
-    '',
-    `## Sender Names`,
-    client.sender_names || '(use generic sender)',
-    '',
-    `## Compliance Notes`,
-    client.compliance_disclaimers || 'Standard CAN-SPAM compliance',
-    '',
-    `Generate 2-3 email sequences with 3-4 emails each. Each sequence should use a different messaging angle.`,
-  ]
-    .filter(Boolean)
-    .join('\n')
+YOUR RULES — VIOLATE NONE OF THESE:
+
+FORMAT RULES:
+- Every email body is under 95 words. Not 100. Not 120. Under 95. Count them.
+- Subject lines are 1-6 words. Never longer. Never include the company name in subject. Never use clickbait.
+- Use {{firstName}} for personalization. Use {{companyName}} only when it reads naturally.
+- No greetings like "Hi {{firstName}}," as the first line. The first line IS the hook. Open cold. Put "{{firstName}}," on its own line only if the tone calls for it, or weave the name into the opening naturally.
+- No email signatures in the body. The sending platform handles that.
+- No "Best regards", "Cheers", "Thanks", or sign-off fluff. End on the CTA or a short closer.
+- One CTA per email. One. Not "book a call or reply or check out our site." Pick one.
+- Short paragraphs. 1-2 sentences max per paragraph. White space is your friend.
+- No bullet points in email 1. Ever. It looks like a template. Bullets are acceptable in email 2 or 3 for proof points only.
+
+DELIVERABILITY RULES:
+- No spam trigger words: free, guarantee, act now, limited time, click here, buy now, discount, offer, deal, congratulations, winner, urgent, expire
+- No ALL CAPS words (except acronyms like CEO, SaaS, ROI)
+- No exclamation marks in subject lines. Maximum one in the entire email body, and only if it reads naturally.
+- No more than one link per email (the CTA link). Prefer no links in email 1 — just ask for a reply.
+- No images, no HTML formatting. Plain text only.
+- Vary sentence length. Mix short punchy sentences with slightly longer ones.
+- No identical opening across emails in the same sequence. Each email must start differently.
+
+SPINTAX RULES:
+- Use spintax format: {option1|option2|option3}
+- Every email MUST include spintax in at least 3 places:
+  1. The subject line (provide 3-5 subject line variants in spintax)
+  2. The opening line/hook (provide 2-3 opening variants)
+  3. The CTA phrasing (provide 2-3 CTA variants)
+- Additional spintax in the body for key phrases where natural variation exists
+- Spintax options must all be roughly the same length and quality. Do not make one option clearly better — you are testing, not sandbagging.
+- Spintax must read naturally for ALL combinations. Read each variant out loud. If any combination sounds awkward, fix it.
+- DO NOT use spintax for {{firstName}} or {{companyName}} — those are merge tags, not spintax.
+- Keep spintax segments short (2-8 words each). Do not spintax entire sentences.
+
+COPY QUALITY RULES:
+- The opening line must pass the "delete test": if you read ONLY the first line in a notification preview, would you open this email? If not, rewrite it.
+- Never start with "I" as the first word. Start with the prospect, their world, or a provocative observation.
+- Never say "I wanted to reach out", "I came across your company", "I noticed that", "I'd love to", "I think you'd be interested". These are invisible words that every cold email uses. Find a different way in.
+- Never use "just", "actually", "honestly", "frankly", "to be honest" — filler words that weaken the copy.
+- Never mention your product name in email 1. Earn the right to pitch first.
+- Never ask "Is this something you'd be interested in?" — weak CTA. Be specific.
+- The tone must match what the PROSPECT expects, not just what the client prefers.
+- Reference specifics: industry names, common tools, known challenges, competitor dynamics.
+- Every follow-up must add new value, shift the angle, or reframe — never just "following up."
+
+SEQUENCE STRUCTURE:
+- Email 1 (Day 0): The hook. Open the conversation. No pitch. Earn curiosity. Get the reply.
+- Email 2 (Day 2-3): The proof. Back up the hook with evidence. A result, a case study, a data point. Still short.
+- Email 3 (Day 5-7): The shift. Change the angle entirely. Catch people who did not resonate with the first angle.
+- Email 4 (Day 10-14): The breakup. Short, human, low-pressure. This consistently gets the highest reply rates because it removes pressure.
+
+EXAMPLE — Pain Agitation Sequence for B2B SaaS Client Targeting VP Marketing:
+{
+  "step": 1,
+  "delay_days": 0,
+  "subject_line": "{quick q|{{companyName}} + outbound|thought on pipeline|worth 2 min?}",
+  "preview_text": "Most B2B marketing teams are overpaying for leads that never convert.",
+  "body": "{{firstName}},\\n\\n{Most B2B marketing teams|A lot of companies at your stage|Teams scaling past $5M ARR} are spending {40-60%|a huge chunk|the majority} of their pipeline budget on paid channels that keep getting more expensive.\\n\\nMeanwhile, {97% of their website visitors|almost all of their site traffic|the vast majority of people hitting their site} leave without ever being identified.\\n\\n{We help companies like {{companyName}} turn that invisible traffic into pipeline|There is a way to capture those visitors and turn them into outbound targets|What if you could identify and reach those visitors directly}.\\n\\n{Worth a quick conversation?|Open to hearing how it works?|Would it make sense to walk you through it?}",
+  "word_count": 82,
+  "purpose": "Agitate the paid channel cost problem and introduce identity resolution as the alternative",
+  "why_it_works": "VP Marketing lives in the world of rising CPAs and shrinking budgets. Leading with the cost pressure they feel daily, then pivoting to the 97% stat, creates a curiosity gap.",
+  "spintax_test_notes": "Testing whether leading with the overpaying angle or the invisible traffic angle gets more replies. Also testing CTA directness."
 }
 
-function buildRegenerationPrompt(
-  client: OnboardingClient,
-  icpBrief: EnrichedICPBrief,
-  previousSequences: DraftSequences,
-  feedback: string
-): string {
-  const basePrompt = buildCopyPrompt(client, icpBrief)
+OUTPUT FORMAT — THIS IS EXACT:
+{
+  "sequences": [
+    {
+      "sequence_name": "string — descriptive name based on the angle",
+      "angle": {
+        "category": "string — from angle selection",
+        "core_insight": "string",
+        "emotional_driver": "string"
+      },
+      "strategy": "1-2 sentences explaining why this sequence will work for this audience",
+      "emails": [
+        {
+          "step": 1,
+          "delay_days": 0,
+          "subject_line": "string — WITH SPINTAX. 3-5 variants.",
+          "preview_text": "string — first ~40 chars the prospect sees in inbox preview",
+          "body": "string — full email body WITH SPINTAX. Under 95 words per variant path.",
+          "word_count": "number — count of the longest variant path",
+          "purpose": "string — what this email is trying to achieve",
+          "why_it_works": "string — specific reasoning",
+          "spintax_test_notes": "string — what you are testing with the spintax variants"
+        }
+      ]
+    }
+  ],
+  "global_notes": {
+    "deliverability_considerations": "string",
+    "personalization_opportunities": "string",
+    "ab_test_recommendations": "string",
+    "scaling_notes": "string"
+  }
+}`
 
-  return [
-    basePrompt,
-    '',
-    `## REVISION REQUEST`,
-    `The previous sequences need revisions. Here is the feedback:`,
-    feedback,
-    '',
-    `## Previous Sequences (for reference)`,
-    JSON.stringify(previousSequences, null, 2),
-    '',
-    `Please regenerate the sequences incorporating all feedback. Keep what works, fix what doesn't.`,
-  ].join('\n')
-}
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
 
 function stripMarkdownFences(text: string): string {
   let cleaned = text.trim()
-  // Remove leading ```json or ``` (with optional language tag)
   cleaned = cleaned.replace(/^```(?:json)?\s*/i, '')
-  // Remove trailing ```
   cleaned = cleaned.replace(/\s*```\s*$/, '')
   return cleaned.trim()
 }
 
-/**
- * Attempt to extract JSON from a string that may contain surrounding text.
- * Tries direct parse first, then regex extraction.
- */
 function safeParseJSON<T>(raw: string, label: string): T {
   const cleaned = stripMarkdownFences(raw)
 
-  // Try direct parse first
   try {
     return JSON.parse(cleaned) as T
   } catch {
-    // Fall through to regex extraction
+    // Fall through
   }
 
-  // Try to extract the outermost JSON object
   const match = cleaned.match(/\{[\s\S]*\}/)
   if (match) {
     try {
       return JSON.parse(match[0]) as T
     } catch {
-      // Fall through to error
+      // Fall through
     }
   }
 
-  console.error(`[${label}] Failed to parse JSON. Raw response:\n`, raw.slice(0, 2000))
   throw new Error(`${label}: Response is not valid JSON`)
 }
 
-async function callClaude(userMessage: string): Promise<DraftSequences> {
+async function callClaudeRaw<T>(systemPrompt: string, userMessage: string, label: string, maxTokens = 8192): Promise<T> {
   const apiKey = process.env.ANTHROPIC_API_KEY
   if (!apiKey) {
     throw new Error('ANTHROPIC_API_KEY is not configured')
@@ -165,54 +214,326 @@ async function callClaude(userMessage: string): Promise<DraftSequences> {
     },
     body: JSON.stringify({
       model: MODEL,
-      max_tokens: 8192,
-      system: SYSTEM_PROMPT,
-      messages: [
-        {
-          role: 'user',
-          content: userMessage,
-        },
-      ],
+      max_tokens: maxTokens,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: userMessage }],
     }),
   })
 
   if (!response.ok) {
     const errorBody = await response.text().catch(() => 'unknown error')
-    console.error(`[Copy Generation] Claude API HTTP ${response.status}:`, errorBody.slice(0, 1000))
     throw new Error(`Claude API returned ${response.status}: ${errorBody.slice(0, 200)}`)
   }
 
   const result = await response.json()
 
-  // Validate response structure
   if (!result.content || !Array.isArray(result.content) || result.content.length === 0) {
-    console.error('[Copy Generation] Unexpected response structure:', JSON.stringify(result).slice(0, 1000))
-    throw new Error('Claude API returned unexpected response structure — no content array')
+    throw new Error(`${label}: Claude API returned unexpected response structure`)
   }
 
-  const textBlock = result.content.find((block: any) => block.type === 'text')
-  const content = textBlock?.text
+  const textBlock = result.content.find((block: Record<string, unknown>) => block.type === 'text')
+  const content = textBlock?.text as string | undefined
   if (!content) {
-    console.error('[Copy Generation] No text block in response:', JSON.stringify(result.content).slice(0, 1000))
-    throw new Error('Claude API returned empty content — no text block found')
+    throw new Error(`${label}: Claude API returned empty content`)
   }
 
-  const sequences = safeParseJSON<DraftSequences>(content, 'Copy Generation')
+  return safeParseJSON<T>(content, label)
+}
 
-  if (!sequences.sequences || !Array.isArray(sequences.sequences) || sequences.sequences.length === 0) {
-    console.error('[Copy Generation] No sequences in parsed result:', JSON.stringify(sequences).slice(0, 500))
+// ---------------------------------------------------------------------------
+// Build copy research context from enrichment data
+// ---------------------------------------------------------------------------
+
+function buildCopyResearchContext(icpBrief: EnrichedICPBrief): string {
+  const cr = icpBrief.copy_research
+  if (!cr) {
+    // Fallback: no copy_research available (older enrichment)
+    return `No detailed copy research available. Use the ICP brief messaging angles and buyer personas to inform copy decisions.`
+  }
+
+  return [
+    '<prospect_psychology>',
+    `Daily reality: ${cr.prospect_world.daily_reality}`,
+    `Current approach: ${cr.prospect_world.current_approach}`,
+    `Current tools they use: ${cr.prospect_world.current_tools.join(', ')}`,
+    `Trigger events: ${cr.prospect_world.trigger_events.join(', ')}`,
+    `Cost of doing nothing: ${cr.prospect_world.status_quo_cost}`,
+    `Likely objections: ${cr.prospect_world.objections.join(', ')}`,
+    `What winning looks like: ${cr.prospect_world.aspirations}`,
+    '</prospect_psychology>',
+    '',
+    '<messaging_ammunition>',
+    `Proof points: ${cr.messaging_ammunition.specific_proof_points.join(' | ')}`,
+    `Social proof: ${cr.messaging_ammunition.social_proof_angles.join(' | ')}`,
+    `Contrarian hooks: ${cr.messaging_ammunition.contrarian_hooks.join(' | ')}`,
+    `Curiosity gaps: ${cr.messaging_ammunition.curiosity_gaps.join(' | ')}`,
+    `Pattern interrupts: ${cr.messaging_ammunition.pattern_interrupts.join(' | ')}`,
+    `FOMO angles: ${cr.messaging_ammunition.fear_of_missing_out.join(' | ')}`,
+    '</messaging_ammunition>',
+  ].join('\n')
+}
+
+// ---------------------------------------------------------------------------
+// CALL 1: Angle Selection
+// ---------------------------------------------------------------------------
+
+function buildAngleSelectionMessage(client: OnboardingClient, icpBrief: EnrichedICPBrief): string {
+  const personas = icpBrief.buyer_personas
+    .map((p) => `- ${p.title} (${p.seniority}, ${p.department}): Pain points — ${p.pain_points.join('; ')}`)
+    .join('\n')
+
+  const angles = icpBrief.messaging_angles
+    .map((a) => `- ${a.angle_name}: ${a.hook} | Value prop: ${a.value_prop} | Proof: ${a.proof_point}`)
+    .join('\n')
+
+  return [
+    'Analyze this client and their target prospects, then select the 3 strongest messaging angles.',
+    '',
+    '<client_company>',
+    `Company: ${client.company_name}`,
+    `Website: ${client.company_website}`,
+    `Industry: ${client.industry}`,
+    `What they sell: ${icpBrief.company_summary}`,
+    '</client_company>',
+    '',
+    '<target_prospects>',
+    `Ideal buyer: ${icpBrief.ideal_buyer_profile}`,
+    `Target industries: ${(client.target_industries || []).join(', ')}`,
+    `Target titles: ${(client.target_titles || []).join(', ')}`,
+    `Company sizes: ${(client.target_company_sizes || []).join(', ')}`,
+    `Geography: ${(client.target_geography || []).join(', ')}`,
+    '</target_prospects>',
+    '',
+    '<buyer_personas>',
+    personas,
+    '</buyer_personas>',
+    '',
+    '<existing_messaging_angles>',
+    angles,
+    '</existing_messaging_angles>',
+    '',
+    buildCopyResearchContext(icpBrief),
+    '',
+    '<competitive_landscape>',
+    icpBrief.competitive_landscape.join(', '),
+    '</competitive_landscape>',
+    '',
+    `Copy tone preference: ${client.copy_tone || 'Conversational'}`,
+    `Primary CTA: ${client.primary_cta || 'Book a call'}`,
+  ].join('\n')
+}
+
+async function selectAngles(client: OnboardingClient, icpBrief: EnrichedICPBrief): Promise<AngleSelection> {
+  const userMessage = buildAngleSelectionMessage(client, icpBrief)
+  return callClaudeRaw<AngleSelection>(ANGLE_SELECTION_PROMPT, userMessage, 'Angle Selection', 4096)
+}
+
+// ---------------------------------------------------------------------------
+// CALL 2: Copy Writing
+// ---------------------------------------------------------------------------
+
+function buildCopyWritingMessage(
+  client: OnboardingClient,
+  icpBrief: EnrichedICPBrief,
+  angleSelection: AngleSelection
+): string {
+  const cr = icpBrief.copy_research
+  const toneCalibration = cr?.email_specific?.tone_calibration || client.copy_tone || 'Conversational'
+  const wordsToAvoid = cr?.email_specific?.words_to_avoid?.join(', ') || 'standard spam trigger words'
+
+  return [
+    'Write 3 cold email sequences for this Cursive AI client\'s outbound campaign.',
+    '',
+    '<client_company>',
+    `Company: ${client.company_name}`,
+    `Website: ${client.company_website}`,
+    `What they sell: ${icpBrief.company_summary}`,
+    `Brand voice: ${client.copy_tone || 'Conversational'}`,
+    '</client_company>',
+    '',
+    '<target_prospects>',
+    `Ideal buyer: ${icpBrief.ideal_buyer_profile}`,
+    `Target industries: ${(client.target_industries || []).join(', ')}`,
+    `Target titles: ${(client.target_titles || []).join(', ')}`,
+    `Company sizes: ${(client.target_company_sizes || []).join(', ')}`,
+    `Geography: ${(client.target_geography || []).join(', ')}`,
+    '</target_prospects>',
+    '',
+    buildCopyResearchContext(icpBrief),
+    '',
+    '<selected_angles>',
+    JSON.stringify(angleSelection.selected_angles, null, 2),
+    '</selected_angles>',
+    '',
+    '<campaign_config>',
+    `Sender name(s): ${client.sender_names || '(use generic sender)'}`,
+    `Copy tone (client preference): ${client.copy_tone || 'Conversational'}`,
+    `Tone calibration (for prospect): ${toneCalibration}`,
+    `Primary CTA: ${client.primary_cta || 'Book a call'}`,
+    client.calendar_link ? `Calendar link: ${client.calendar_link}` : '',
+    `Words to avoid: ${wordsToAvoid}`,
+    'Available personalization variables: {{firstName}}, {{companyName}}, {{title}}',
+    '</campaign_config>',
+    '',
+    `Compliance notes: ${client.compliance_disclaimers || 'Standard CAN-SPAM compliance'}`,
+    '',
+    'Write one sequence per selected angle. Follow every rule in your system prompt. Include spintax in every email. Count your words — stay under 95.',
+  ]
+    .filter(Boolean)
+    .join('\n')
+}
+
+async function writeCopy(
+  client: OnboardingClient,
+  icpBrief: EnrichedICPBrief,
+  angleSelection: AngleSelection
+): Promise<DraftSequences> {
+  const userMessage = buildCopyWritingMessage(client, icpBrief, angleSelection)
+  const result = await callClaudeRaw<DraftSequences>(COPY_WRITING_PROMPT, userMessage, 'Copy Writing', 12000)
+
+  // Validate structure
+  if (!result.sequences || !Array.isArray(result.sequences) || result.sequences.length === 0) {
     throw new Error('Claude returned no email sequences')
   }
 
-  // Validate each sequence has required structure
-  for (const seq of sequences.sequences) {
+  for (const seq of result.sequences) {
     if (!seq.sequence_name || !Array.isArray(seq.emails) || seq.emails.length === 0) {
       throw new Error(`Invalid sequence structure: ${seq.sequence_name || 'unnamed'}`)
     }
-    // Validate each email has required fields
     for (const email of seq.emails) {
       if (typeof email.step !== 'number' || !email.subject_line || !email.body) {
         throw new Error(`Invalid email in sequence "${seq.sequence_name}": missing step, subject_line, or body`)
+      }
+    }
+  }
+
+  // Attach angle selection metadata
+  return {
+    ...result,
+    angle_selection: angleSelection,
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Auto-fix: Re-call Claude to fix quality issues
+// ---------------------------------------------------------------------------
+
+const FIX_PROMPT = `You are a cold email copy editor. The following cold email sequences have quality issues that must be fixed. Fix ONLY the specific issues listed. Do not rewrite emails that passed. Maintain all spintax. Stay under 95 words per email. Return the complete corrected sequences in the same JSON format.`
+
+async function autoFixSequences(
+  sequences: DraftSequences,
+  issues: Array<{ sequence_index: number; email_index: number; check: string; detail: string }>
+): Promise<DraftSequences> {
+  const issueList = issues
+    .map((i) => `Sequence ${i.sequence_index + 1}, Email ${i.email_index + 1}: ${i.check} — ${i.detail}`)
+    .join('\n')
+
+  const userMessage = [
+    'Fix these quality issues in the email sequences:',
+    '',
+    'Issues:',
+    issueList,
+    '',
+    'Original sequences:',
+    JSON.stringify(sequences, null, 2),
+  ].join('\n')
+
+  const fixed = await callClaudeRaw<DraftSequences>(FIX_PROMPT, userMessage, 'Copy Fix', 12000)
+
+  // Preserve metadata from original
+  return {
+    ...fixed,
+    angle_selection: sequences.angle_selection,
+    global_notes: fixed.global_notes || sequences.global_notes,
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Regeneration prompt (with learning from previous issues)
+// ---------------------------------------------------------------------------
+
+function buildRegenerationMessage(
+  client: OnboardingClient,
+  icpBrief: EnrichedICPBrief,
+  previousSequences: DraftSequences,
+  feedback: string
+): string {
+  const qualityIssues = previousSequences.quality_check?.issues || []
+  const qualitySection = qualityIssues.length > 0
+    ? [
+        '<quality_issues_from_previous_version>',
+        qualityIssues.map((i) => `${i.check}: ${i.detail}`).join('\n'),
+        '</quality_issues_from_previous_version>',
+      ].join('\n')
+    : ''
+
+  return [
+    'The previous email sequences were rejected. Generate completely new sequences that:',
+    '1. Address the rejection feedback',
+    '2. Fix all quality issues from the previous version',
+    '3. Keep all spintax and deliverability rules',
+    '4. Write FRESH copy with new hooks, new proof points, new angles.',
+    '',
+    '<rejection_feedback>',
+    feedback,
+    '</rejection_feedback>',
+    '',
+    qualitySection,
+    '',
+    '<previous_sequences>',
+    JSON.stringify(previousSequences.sequences, null, 2),
+    '</previous_sequences>',
+    '',
+    buildCopyWritingMessage(client, icpBrief, previousSequences.angle_selection || { selected_angles: [] }),
+  ]
+    .filter(Boolean)
+    .join('\n')
+}
+
+// ---------------------------------------------------------------------------
+// Public API
+// ---------------------------------------------------------------------------
+
+/**
+ * Generate initial email sequences with the two-call pattern:
+ * 1. Select angles based on research
+ * 2. Write copy using selected angles
+ *
+ * Optionally runs quality checks and auto-fix (pass qualityChecker).
+ */
+export async function generateEmailSequences(
+  client: OnboardingClient,
+  icpBrief: EnrichedICPBrief,
+  qualityChecker?: (sequences: DraftSequences) => { passed: boolean; issues: Array<{ sequence_index: number; email_index: number; severity: string; check: string; detail: string }> }
+): Promise<DraftSequences> {
+  // Call 1: Angle Selection
+  const angleSelection = await selectAngles(client, icpBrief)
+
+  // Call 2: Copy Writing
+  let sequences = await writeCopy(client, icpBrief, angleSelection)
+
+  // Quality check + auto-fix (if checker provided)
+  if (qualityChecker) {
+    const firstCheck = qualityChecker(sequences)
+    sequences = {
+      ...sequences,
+      quality_check: { passed: firstCheck.passed, issues: firstCheck.issues as QualityIssue[] },
+    }
+
+    if (!firstCheck.passed) {
+      const errorIssues = firstCheck.issues.filter((i) => i.severity === 'error')
+      if (errorIssues.length > 0) {
+        // Attempt auto-fix
+        try {
+          const fixed = await autoFixSequences(sequences, errorIssues)
+          const recheck = qualityChecker(fixed)
+          sequences = {
+            ...fixed,
+            quality_check: { passed: recheck.passed, issues: recheck.issues as QualityIssue[] },
+          }
+        } catch {
+          // Auto-fix failed — keep original with quality issues noted
+        }
       }
     }
   }
@@ -221,27 +542,48 @@ async function callClaude(userMessage: string): Promise<DraftSequences> {
 }
 
 /**
- * Generate initial email sequences from client data and ICP brief.
- * Throws on API failure or invalid response.
- */
-export async function generateEmailSequences(
-  client: OnboardingClient,
-  icpBrief: EnrichedICPBrief
-): Promise<DraftSequences> {
-  const prompt = buildCopyPrompt(client, icpBrief)
-  return callClaude(prompt)
-}
-
-/**
  * Regenerate email sequences incorporating feedback on previous versions.
- * Throws on API failure or invalid response.
  */
 export async function regenerateEmailSequences(
   client: OnboardingClient,
   icpBrief: EnrichedICPBrief,
   previousSequences: DraftSequences,
-  feedback: string
+  feedback: string,
+  qualityChecker?: (sequences: DraftSequences) => { passed: boolean; issues: Array<{ sequence_index: number; email_index: number; severity: string; check: string; detail: string }> }
 ): Promise<DraftSequences> {
-  const prompt = buildRegenerationPrompt(client, icpBrief, previousSequences, feedback)
-  return callClaude(prompt)
+  const userMessage = buildRegenerationMessage(client, icpBrief, previousSequences, feedback)
+  const rawSequences = await callClaudeRaw<DraftSequences>(COPY_WRITING_PROMPT, userMessage, 'Copy Regeneration', 12000)
+
+  // Preserve angle selection from original (immutable)
+  let sequences: DraftSequences = {
+    ...rawSequences,
+    angle_selection: previousSequences.angle_selection,
+  }
+
+  // Quality check + auto-fix
+  if (qualityChecker) {
+    const check = qualityChecker(sequences)
+    sequences = {
+      ...sequences,
+      quality_check: { passed: check.passed, issues: check.issues as QualityIssue[] },
+    }
+
+    if (!check.passed) {
+      const errorIssues = check.issues.filter((i) => i.severity === 'error')
+      if (errorIssues.length > 0) {
+        try {
+          const fixed = await autoFixSequences(sequences, errorIssues)
+          const recheck = qualityChecker(fixed)
+          sequences = {
+            ...fixed,
+            quality_check: { passed: recheck.passed, issues: recheck.issues as QualityIssue[] },
+          }
+        } catch {
+          // Keep original with issues
+        }
+      }
+    }
+  }
+
+  return sequences
 }

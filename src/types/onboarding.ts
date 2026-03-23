@@ -211,6 +211,14 @@ export interface OnboardingClient {
   signature_name: string | null
   signature_date: string | null
 
+  // Intake metadata
+  intake_source: 'client_form' | 'internal_intake' | 'template_clone' | 'duplicate'
+
+  // Campaign tracking
+  campaign_deployed: boolean
+  emailbison_campaign_ids: string[]
+  campaign_stats: Record<string, unknown> | null
+
   // Automation outputs
   enriched_icp_brief: EnrichedICPBrief | null
   enrichment_status: 'pending' | 'processing' | 'complete' | 'failed'
@@ -246,6 +254,9 @@ export type OnboardingClientInsert = Omit<
   | 'crm_sync_status'
   | 'automation_log'
   | 'admin_notes'
+  | 'campaign_deployed'
+  | 'emailbison_campaign_ids'
+  | 'campaign_stats'
 >
 
 // ---------------------------------------------------------------------------
@@ -398,6 +409,40 @@ export interface EnrichedICPBrief {
   competitive_landscape: string[]
   messaging_angles: MessagingAngle[]
   audience_labs_search_strategy: AudienceLabsStrategy
+  copy_research?: CopyResearch
+}
+
+// ---------------------------------------------------------------------------
+// Copy Research (generated during enrichment for copy engine)
+// ---------------------------------------------------------------------------
+
+export interface CopyResearch {
+  prospect_world: {
+    daily_reality: string
+    current_tools: string[]
+    current_approach: string
+    trigger_events: string[]
+    status_quo_cost: string
+    objections: string[]
+    aspirations: string
+  }
+  messaging_ammunition: {
+    specific_proof_points: string[]
+    social_proof_angles: string[]
+    contrarian_hooks: string[]
+    curiosity_gaps: string[]
+    pattern_interrupts: string[]
+    fear_of_missing_out: string[]
+    ego_hooks: string[]
+  }
+  email_specific: {
+    recommended_subject_line_styles: string[]
+    recommended_opening_styles: string[]
+    cta_variations: string[]
+    personalization_variables_available: string[]
+    words_to_avoid: string[]
+    tone_calibration: string
+  }
 }
 
 export interface BuyerPersona {
@@ -437,11 +482,19 @@ export interface AudienceLabsStrategy {
 
 export interface DraftSequences {
   sequences: EmailSequence[]
+  global_notes?: GlobalCopyNotes
+  quality_check?: QualityCheckResult
+  angle_selection?: AngleSelection
 }
 
 export interface EmailSequence {
   sequence_name: string
   strategy: string
+  angle?: {
+    category: string
+    core_insight: string
+    emotional_driver: string
+  }
   emails: SequenceEmail[]
 }
 
@@ -451,6 +504,63 @@ export interface SequenceEmail {
   subject_line: string
   body: string
   purpose: string
+  preview_text?: string
+  word_count?: number
+  why_it_works?: string
+  spintax_test_notes?: string
+}
+
+export interface GlobalCopyNotes {
+  deliverability_considerations?: string
+  personalization_opportunities?: string
+  ab_test_recommendations?: string
+  scaling_notes?: string
+}
+
+// ---------------------------------------------------------------------------
+// Angle Selection (output from angle selection call)
+// ---------------------------------------------------------------------------
+
+export interface AngleSelection {
+  selected_angles: SelectedAngle[]
+  angles_considered_but_rejected?: RejectedAngle[]
+}
+
+export interface SelectedAngle {
+  angle_name: string
+  angle_category: string
+  core_insight: string
+  emotional_driver: string
+  proof_mechanism: string
+  sequence_arc: {
+    email_1_purpose: string
+    email_2_purpose: string
+    email_3_purpose: string
+    email_4_purpose?: string
+  }
+  why_this_works: string
+}
+
+export interface RejectedAngle {
+  angle: string
+  reason_rejected: string
+}
+
+// ---------------------------------------------------------------------------
+// Copy Quality Check
+// ---------------------------------------------------------------------------
+
+export interface QualityCheckResult {
+  passed: boolean
+  issues: QualityIssue[]
+}
+
+export interface QualityIssue {
+  sequence_index: number
+  email_index: number
+  severity: 'error' | 'warning'
+  check: string
+  detail: string
 }
 
 // ---------------------------------------------------------------------------

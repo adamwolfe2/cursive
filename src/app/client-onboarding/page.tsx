@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useForm, FormProvider } from 'react-hook-form'
 import Image from 'next/image'
 import { StepWizard } from '@/components/onboarding/client-intake/StepWizard'
@@ -77,19 +77,15 @@ function parsePrefillParams(searchParams: URLSearchParams) {
 
 function OnboardingPageContent() {
   const router = useRouter()
-  const searchParams = useSearchParams()
-
-  // Parse URL params for pre-fill (sanitized)
-  const prefill = parsePrefillParams(searchParams)
 
   const methods = useForm<OnboardingFormData>({
     mode: 'onTouched',
     defaultValues: {
-      company_name: prefill.company,
+      company_name: '',
       company_website: '',
       industry: '',
-      primary_contact_name: prefill.name,
-      primary_contact_email: prefill.email,
+      primary_contact_name: '',
+      primary_contact_email: '',
       primary_contact_phone: '',
       billing_contact_name: '',
       billing_contact_email: '',
@@ -98,11 +94,11 @@ function OnboardingPageContent() {
       slack_url: '',
       referral_source: '',
       referral_detail: '',
-      packages_selected: prefill.packages,
-      setup_fee: prefill.setup_fee,
+      packages_selected: [],
+      setup_fee: null,
       recurring_fee: null,
       billing_cadence: '',
-      outbound_tier: prefill.tier,
+      outbound_tier: '',
       custom_tier_details: '',
       payment_method: '',
       invoice_email: '',
@@ -168,6 +164,23 @@ function OnboardingPageContent() {
       website_url_confirm: '',
     },
   })
+
+  // Apply URL params AFTER mount to avoid Suspense blocking on mobile
+  React.useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search)
+      const prefill = parsePrefillParams(params)
+      if (prefill.company) methods.setValue('company_name', prefill.company)
+      if (prefill.name) methods.setValue('primary_contact_name', prefill.name)
+      if (prefill.email) methods.setValue('primary_contact_email', prefill.email)
+      if (prefill.packages.length > 0) methods.setValue('packages_selected', prefill.packages)
+      if (prefill.setup_fee !== null) methods.setValue('setup_fee', prefill.setup_fee)
+      if (prefill.tier) methods.setValue('outbound_tier', prefill.tier)
+    } catch {
+      // Silently ignore malformed params
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const [currentStep, setCurrentStep] = React.useState(0)
   const [isSubmitting, setIsSubmitting] = React.useState(false)
@@ -272,9 +285,9 @@ function OnboardingPageContent() {
       } else {
         setSubmitError(result.error ?? 'Submission failed. Please try again.')
       }
-    } catch (error: any) {
-      console.error('Submit error:', error)
-      setSubmitError(error.message || 'An unexpected error occurred. Please try again.')
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'An unexpected error occurred. Please try again.'
+      setSubmitError(message)
     } finally {
       setIsSubmitting(false)
     }
@@ -411,16 +424,5 @@ function OnboardingPageContent() {
 }
 
 export default function OnboardingPage() {
-  return (
-    <React.Suspense fallback={
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-50">
-        <div className="text-center">
-          <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
-          <p className="mt-4 text-sm text-muted-foreground">Loading onboarding form...</p>
-        </div>
-      </div>
-    }>
-      <OnboardingPageContent />
-    </React.Suspense>
-  )
+  return <OnboardingPageContent />
 }

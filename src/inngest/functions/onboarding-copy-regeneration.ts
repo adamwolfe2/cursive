@@ -6,6 +6,7 @@
 import { getInngest } from '../client'
 import { OnboardingClientRepository } from '@/lib/repositories/onboarding-client.repository'
 import { regenerateEmailSequences } from '@/lib/services/onboarding/copy-generation'
+import { checkCopyQuality } from '@/lib/services/onboarding/copy-quality-check'
 import { sendCopyReviewSlackAlert } from '@/lib/services/onboarding/onboarding-slack'
 import type { EnrichedICPBrief, DraftSequences } from '@/types/onboarding'
 
@@ -109,7 +110,8 @@ export const onboardingCopyRegeneration = inngest.createFunction(
           client,
           icpBrief,
           previousSequences,
-          feedback || ''
+          feedback || '',
+          checkCopyQuality
         )
         await repo.update(client_id, {
           draft_sequences: seqs as any,

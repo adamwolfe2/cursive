@@ -8,10 +8,13 @@
 import { safeError, safeLog, safeWarn } from '@/lib/utils/log-sanitizer'
 
 const AUDIENCELAB_API_BASE = 'https://api.audiencelab.io'
-const API_KEY = process.env.AUDIENCELAB_ACCOUNT_API_KEY
 
-if (!API_KEY) {
-  throw new Error('AUDIENCELAB_ACCOUNT_API_KEY not configured')
+function getApiKey(): string {
+  const key = process.env.AUDIENCELAB_ACCOUNT_API_KEY
+  if (!key) {
+    throw new Error('AUDIENCELAB_ACCOUNT_API_KEY not configured')
+  }
+  return key
 }
 
 /**
@@ -81,7 +84,7 @@ export async function listAllAudiences(): Promise<AudienceLabAudience[]> {
     const response = await fetch(`${AUDIENCELAB_API_BASE}/audiences`, {
       method: 'GET',
       headers: {
-        'X-API-Key': API_KEY!,
+        'X-API-Key': getApiKey(),
         'Content-Type': 'application/json',
       },
     })
@@ -208,7 +211,7 @@ export async function fetchLeadsFromSegment(
     const response = await fetch(url.toString(), {
       method: 'GET',
       headers: {
-        'X-API-Key': API_KEY!,
+        'X-API-Key': getApiKey(),
         'Content-Type': 'application/json',
       },
       signal: abortController.signal,

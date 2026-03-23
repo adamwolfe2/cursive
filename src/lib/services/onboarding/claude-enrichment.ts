@@ -6,7 +6,7 @@ import type { OnboardingClient, EnrichedICPBrief } from '@/types/onboarding'
 const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages'
 const MODEL = 'claude-sonnet-4-20250514'
 
-const SYSTEM_PROMPT = `You are an expert B2B sales strategist and audience intelligence analyst at Cursive, a demand generation agency. Your job is to take a client's raw ICP (Ideal Customer Profile) intake form and produce a comprehensive, enriched ICP brief that the fulfillment team can use to build precise audience segments and email copy.
+const SYSTEM_PROMPT = `You are an expert B2B sales strategist and audience intelligence analyst at Cursive, a demand generation agency. Your job is to take a client's raw ICP (Ideal Customer Profile) intake form and produce a comprehensive, enriched ICP brief that the fulfillment team can use to build precise audience segments AND that the cold email copy engine can use to write high-converting outbound sequences.
 
 You must return ONLY valid JSON matching the schema below. No markdown, no explanation, no preamble — just the JSON object.
 
@@ -46,6 +46,34 @@ Schema:
     "filters_to_apply": ["string — specific filters to layer on"],
     "estimated_audience_size": "string — rough estimate of total addressable audience",
     "notes_for_builder": "string — any special instructions for the audience builder"
+  },
+  "copy_research": {
+    "prospect_world": {
+      "daily_reality": "string — What does the prospect's day-to-day look like? What are they dealing with right now?",
+      "current_tools": ["string — Tools and vendors they're likely using for this problem"],
+      "current_approach": "string — How are they solving (or failing to solve) this problem today?",
+      "trigger_events": ["string — Events that would make them suddenly care: new funding, hiring SDRs, competitor launch, board pressure on growth, etc."],
+      "status_quo_cost": "string — What is the cost of doing nothing? Quantify if possible.",
+      "objections": ["string — What would make them NOT reply? Price? Skepticism? Bad past experience? Too busy?"],
+      "aspirations": "string — What does winning look like for them in this area?"
+    },
+    "messaging_ammunition": {
+      "specific_proof_points": ["string — Concrete results, stats, or case studies that would resonate with this persona"],
+      "social_proof_angles": ["string — Types of companies/people similar to the prospect that use the product"],
+      "contrarian_hooks": ["string — Conventional wisdom in their space that's wrong — something that would make them stop scrolling"],
+      "curiosity_gaps": ["string — Questions or partial reveals that would create enough curiosity to reply"],
+      "pattern_interrupts": ["string — Unexpected openings that break the another cold email pattern"],
+      "fear_of_missing_out": ["string — What competitors or peers are doing that the prospect might not be doing yet"],
+      "ego_hooks": ["string — Ways to compliment or acknowledge the prospect's work without being sycophantic"]
+    },
+    "email_specific": {
+      "recommended_subject_line_styles": ["string — e.g. question, stat, name_drop, curiosity, direct"],
+      "recommended_opening_styles": ["string — e.g. observation about their company, industry trend, provocative question"],
+      "cta_variations": ["string — Different ways to phrase the ask based on prospect sophistication level"],
+      "personalization_variables_available": ["{{firstName}}", "{{companyName}}", "{{title}}"],
+      "words_to_avoid": ["string — Spam trigger words specific to this industry or email providers"],
+      "tone_calibration": "string — Specific guidance on how formal/casual to be for THIS audience (what the PROSPECT would respond to, not just the client's preference)"
+    }
   }
 }`
 
@@ -142,7 +170,6 @@ function safeParseJSON<T>(raw: string, label: string): T {
     }
   }
 
-  console.error(`[${label}] Failed to parse JSON. Raw response:\n`, raw.slice(0, 2000))
   throw new Error(`${label}: Response is not valid JSON`)
 }
 
@@ -165,7 +192,7 @@ export async function enrichClientICP(client: OnboardingClient): Promise<Enriche
     },
     body: JSON.stringify({
       model: MODEL,
-      max_tokens: 4096,
+      max_tokens: 8192,
       system: SYSTEM_PROMPT,
       messages: [
         {
@@ -178,7 +205,6 @@ export async function enrichClientICP(client: OnboardingClient): Promise<Enriche
 
   if (!response.ok) {
     const errorBody = await response.text().catch(() => 'unknown error')
-    console.error(`[ICP Enrichment] Claude API HTTP ${response.status}:`, errorBody.slice(0, 1000))
     throw new Error(
       `Claude API returned ${response.status}: ${errorBody.slice(0, 200)}`
     )
@@ -188,14 +214,12 @@ export async function enrichClientICP(client: OnboardingClient): Promise<Enriche
 
   // Validate response structure
   if (!result.content || !Array.isArray(result.content) || result.content.length === 0) {
-    console.error('[ICP Enrichment] Unexpected response structure:', JSON.stringify(result).slice(0, 1000))
     throw new Error('Claude API returned unexpected response structure — no content array')
   }
 
-  const textBlock = result.content.find((block: any) => block.type === 'text')
-  const content = textBlock?.text
+  const textBlock = result.content.find((block: Record<string, unknown>) => block.type === 'text')
+  const content = textBlock?.text as string | undefined
   if (!content) {
-    console.error('[ICP Enrichment] No text block in response:', JSON.stringify(result.content).slice(0, 1000))
     throw new Error('Claude API returned empty content — no text block found')
   }
 
@@ -211,7 +235,6 @@ export async function enrichClientICP(client: OnboardingClient): Promise<Enriche
   if (!brief.audience_labs_search_strategy) missingFields.push('audience_labs_search_strategy')
 
   if (missingFields.length > 0) {
-    console.error('[ICP Enrichment] Missing required fields:', missingFields.join(', '))
     throw new Error(`Claude returned an incomplete ICP brief — missing: ${missingFields.join(', ')}`)
   }
 

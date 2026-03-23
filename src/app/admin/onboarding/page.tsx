@@ -3,7 +3,7 @@ import { createAdminClient } from '@/lib/supabase/server'
 import { Card } from '@/components/ui/card'
 import OnboardingKanban from '@/components/admin/onboarding/OnboardingKanban'
 import type { OnboardingClient } from '@/types/onboarding'
-import { Users, Rocket, Settings, CheckCircle } from 'lucide-react'
+import { Users, Rocket, Settings, CheckCircle, Plus } from 'lucide-react'
 
 export default async function OnboardingPipelinePage() {
   const supabase = createAdminClient()
@@ -35,12 +35,27 @@ export default async function OnboardingPipelinePage() {
     <div className="p-6 max-w-[1600px] mx-auto">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-foreground">Client Onboarding Pipeline</h1>
-        <Link
-          href="/admin/onboarding/clients"
-          className="inline-flex items-center rounded-lg border border-border bg-background px-4 py-2 text-sm font-medium hover:bg-accent transition-colors"
-        >
-          View All Clients
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/admin/onboarding/new"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
+          >
+            <Plus className="h-4 w-4" />
+            New Client
+          </Link>
+          <Link
+            href="/admin/onboarding/templates"
+            className="inline-flex items-center rounded-lg border border-border bg-background px-4 py-2 text-sm font-medium hover:bg-accent transition-colors"
+          >
+            Templates
+          </Link>
+          <Link
+            href="/admin/onboarding/clients"
+            className="inline-flex items-center rounded-lg border border-border bg-background px-4 py-2 text-sm font-medium hover:bg-accent transition-colors"
+          >
+            View All Clients
+          </Link>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
