@@ -69,7 +69,7 @@ export default function AdminAffiliatesPage() {
   const [expanded, setExpanded] = useState<string | null>(null)
   const qc = useQueryClient()
 
-  const { data, isLoading } = useQuery<AffiliatesData>({
+  const { data, isLoading, error: queryError } = useQuery<AffiliatesData>({
     queryKey: ['admin', 'affiliates', statusFilter],
     queryFn: async () => {
       const params = new URLSearchParams()
@@ -78,6 +78,7 @@ export default function AdminAffiliatesPage() {
       if (!res.ok) throw new Error('Failed')
       return res.json()
     },
+    retry: 1,
   })
 
   const reviewMutation = useMutation({

@@ -54,9 +54,9 @@ export default function AdminSupportPage() {
   }, [supabase])
 
   useEffect(() => {
-    fetchMessages()
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- runs once on mount
-  }, [])
+    if (authChecked && isAdmin) fetchMessages()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authChecked, isAdmin])
 
   const fetchMessages = async () => {
     setLoading(true)

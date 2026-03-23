@@ -95,9 +95,9 @@ export default function DedupEnrichmentMonitoringPage() {
 
   useEffect(() => {
     fetchData()
-    const interval = setInterval(fetchData, 60000) // Refresh every 60s
+    const interval = setInterval(fetchData, 60000)
     return () => clearInterval(interval)
-  }, [])
+  }, []) // Auth handled by admin layout (server component)
 
   async function fetchData() {
     try {
