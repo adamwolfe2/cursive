@@ -258,7 +258,7 @@ By automating visitor identification, data enrichment, audience segmentation, an
 
 The playing field isn't perfectly level, but it's closer than ever.
 
-**Ready to give your small team enterprise capabilities?** [Book a demo](https://cal.com/cursive/30min) to see how Cursive identifies 70% of visitors, automates campaign workflows, and delivers enterprise-grade marketing intelligence without enterprise complexity or cost.
+**Ready to give your small team enterprise capabilities?** [Book a demo](https://cal.com/cursiveteam/30min) to see how Cursive identifies 70% of visitors, automates campaign workflows, and delivers enterprise-grade marketing intelligence without enterprise complexity or cost.
 
 ---
 

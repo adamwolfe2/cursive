@@ -42,7 +42,7 @@ const faqs = [
   },
   {
     question: "Does Cursive have a free trial or a lower-commitment option?",
-    answer: "Cursive does not offer a traditional free trial for the managed plan, but the self-serve marketplace at leads.meetcursive.com lets you purchase leads at $0.60 each with no monthly commitment. This is a good way to evaluate data quality and fit before committing to the full platform. You can also book a demo at cal.com/gotdarrenhill/30min to see visitor identification and intent data against your actual website traffic before making any commitment."
+    answer: "Cursive does not offer a traditional free trial for the managed plan, but the self-serve marketplace at leads.meetcursive.com lets you purchase leads at $0.60 each with no monthly commitment. This is a good way to evaluate data quality and fit before committing to the full platform. You can also book a demo at cal.com/cursiveteam/30min to see visitor identification and intent data against your actual website traffic before making any commitment."
   }
 ]
 
@@ -643,7 +643,7 @@ export default function BlogPost() {
               </p>
 
               <p>
-                To see how many warm leads you are currently missing, <Link href="https://cal.com/gotdarrenhill/30min">book a
+                To see how many warm leads you are currently missing, <Link href="https://cal.com/cursiveteam/30min">book a
                 demo</Link> or explore the <Link href="https://leads.meetcursive.com">Cursive self-serve marketplace</Link> at
                 $0.60/lead with no monthly commitment.
               </p>
@@ -715,7 +715,7 @@ export default function BlogPost() {
                   <Link href="/free-audit">Get Your Free AI Audit</Link>
                 </Button>
                 <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10" asChild>
-                  <a href="https://cal.com/gotdarrenhill/30min" target="_blank" rel="noopener noreferrer">Book a Demo</a>
+                  <a href="https://cal.com/cursiveteam/30min" target="_blank" rel="noopener noreferrer">Book a Demo</a>
                 </Button>
               </div>
             </div>
@@ -840,7 +840,7 @@ export default function BlogPost() {
 
           <MachineSection title="Get Started with Cursive">
             <MachineList items={[
-              { label: "Book a Demo", href: "https://cal.com/gotdarrenhill/30min", description: "See Cursive visitor ID and intent data against your actual traffic" },
+              { label: "Book a Demo", href: "https://cal.com/cursiveteam/30min", description: "See Cursive visitor ID and intent data against your actual traffic" },
               { label: "Marketplace (Self-Serve)", href: "https://leads.meetcursive.com", description: "Buy leads at $0.60 each, no monthly commitment" },
               { label: "Free AI Audit", href: "/free-audit", description: "See which visitors you are missing and the pipeline you could generate" },
               { label: "Pricing", href: "/pricing", description: "$1,000/mo managed or $0.60/lead self-serve" }

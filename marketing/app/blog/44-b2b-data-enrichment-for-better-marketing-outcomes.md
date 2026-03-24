@@ -394,7 +394,7 @@ When every lead comes with complete firmographic context, your entire revenue te
 
 The difference between companies that scale predictably and those that struggle often comes down to data completeness.
 
-**Ready to enrich your B2B database and accelerate growth?** [Book a demo](https://cal.com/cursive/30min) to see how Cursive automatically enriches leads with verified data from 140M+ business profiles the moment they visit your website.
+**Ready to enrich your B2B database and accelerate growth?** [Book a demo](https://cal.com/cursiveteam/30min) to see how Cursive automatically enriches leads with verified data from 140M+ business profiles the moment they visit your website.
 
 ---
 

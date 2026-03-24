@@ -36,7 +36,7 @@ const faqPageFAQs = [
   },
   {
     question: 'How do I get started with Cursive?',
-    answer: 'You can start with a free trial at leads.meetcursive.com/signup — no credit card required. The free tier includes 100 lead credits and 7 days of visitor identification data. For managed services, book a 30-minute strategy call at cal.com/gotdarrenhill/30min. Most accounts are fully set up and running within one week.',
+    answer: 'You can start with a free trial at leads.meetcursive.com/signup — no credit card required. The free tier includes 100 lead credits and 7 days of visitor identification data. For managed services, book a 30-minute strategy call at cal.com/cursiveteam/30min. Most accounts are fully set up and running within one week.',
   },
   {
     question: 'What kind of companies use Cursive?',

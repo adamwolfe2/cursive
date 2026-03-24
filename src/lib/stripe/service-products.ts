@@ -46,4 +46,4 @@ export function supportsDirectCheckout(tierSlug: string): boolean {
 /**
  * Calendar booking URL for high-touch tiers
  */
-export const VENTURE_STUDIO_CALENDAR_URL = 'https://cal.com/gotdarrenhill/30min'
+export const VENTURE_STUDIO_CALENDAR_URL = 'https://cal.com/cursiveteam/30min'

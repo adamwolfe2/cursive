@@ -221,7 +221,7 @@ export function Header() {
               <Button size="sm" variant="outline" href="/free-audit">
                 Get Free Audit
               </Button>
-              <Button size="sm" href="https://cal.com/gotdarrenhill/30min" target="_blank">
+              <Button size="sm" href="https://cal.com/cursiveteam/30min" target="_blank">
                 Book a Call
               </Button>
             </div>
@@ -326,7 +326,7 @@ export function Header() {
                 </Button>
                 <Button
                   className="w-full"
-                  href="https://cal.com/gotdarrenhill/30min"
+                  href="https://cal.com/cursiveteam/30min"
                   target="_blank"
                   onClick={() => setMobileMenuOpen(false)}
                 >

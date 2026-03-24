@@ -104,7 +104,7 @@ You don't need chaotic change to see clearer results. Stay open to support. Stay
 
 Consistency and small wins add up, giving teams more time for high-impact work and reducing unnecessary stress.
 
-Ready to cut through data clutter and keep every tool working in sync? **[Book a demo](https://cal.com/cursive/30min)** to see how Cursive provides verified business data, real-time targeting, and seamless integrations.
+Ready to cut through data clutter and keep every tool working in sync? **[Book a demo](https://cal.com/cursiveteam/30min)** to see how Cursive provides verified business data, real-time targeting, and seamless integrations.
 
 ---
 

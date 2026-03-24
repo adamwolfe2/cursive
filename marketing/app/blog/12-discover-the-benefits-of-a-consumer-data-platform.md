@@ -223,7 +223,7 @@ But the real value compounds over time. As your unified data grows richer, your 
 
 The question isn't whether to invest in a CDP. It's how much revenue you're leaving on the table without one.
 
-**Ready to stop losing anonymous traffic and start converting high-intent prospects?** [Book a demo](https://cal.com/cursive/30min) to see how Cursive identifies 70% of website visitors, tracks 450 billion+ intent signals, and unifies customer data across 200+ platforms.
+**Ready to stop losing anonymous traffic and start converting high-intent prospects?** [Book a demo](https://cal.com/cursiveteam/30min) to see how Cursive identifies 70% of website visitors, tracks 450 billion+ intent signals, and unifies customer data across 200+ platforms.
 
 ---
 

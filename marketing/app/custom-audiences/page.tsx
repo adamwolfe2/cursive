@@ -648,7 +648,7 @@ export default function CustomAudiencesPage() {
               },
               {
                 label: "Book a Call",
-                href: "https://cal.com/gotdarrenhill/30min",
+                href: "https://cal.com/cursiveteam/30min",
                 description: "Discuss custom requirements with our team"
               }
             ]} />

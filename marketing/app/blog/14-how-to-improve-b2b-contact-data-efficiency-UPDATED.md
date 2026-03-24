@@ -104,7 +104,7 @@ With it, you can plan smarter, move faster, and keep outreach running smoothly.
 
 When B2B contact data is clean, current, and easy to find, everything becomes easier to manage. It takes effort to keep it that way, but the payoff is clear.
 
-Ready to stop wasting time on bad data? **[Book a demo](https://cal.com/cursive/30min)** to see how Cursive enriches contact records, removes duplicates, and keeps your database conversion-ready.
+Ready to stop wasting time on bad data? **[Book a demo](https://cal.com/cursiveteam/30min)** to see how Cursive enriches contact records, removes duplicates, and keeps your database conversion-ready.
 
 ---
 

@@ -195,7 +195,7 @@ When these three elements work together, you stop losing revenue to anonymous tr
 
 **Cursive combines visitor identification (70% ID rate), intent tracking (450B+ monthly signals), and native integrations (200+ platforms)** into a unified platform built specifically for retail growth.
 
-Ready to see which shoppers are browsing your site right now? [Book a demo](https://cal.com/cursive/30min) to discover how Cursive helps retailers turn anonymous traffic into identified customers.
+Ready to see which shoppers are browsing your site right now? [Book a demo](https://cal.com/cursiveteam/30min) to discover how Cursive helps retailers turn anonymous traffic into identified customers.
 
 ---
 

@@ -50,7 +50,7 @@ export const demoNurtureSequence = inngest.createFunction(
       : 'there'
     const ownerName: string = rawData.owner_name || rawData.demoOwner || 'Darren'
     const ownerEmail: string = rawData.owner_email || rawData.demoOwnerEmail || 'darren@meetcursive.com'
-    const calendarLink: string = rawData.calendar_link || 'https://cal.com/gotdarrenhill/30min'
+    const calendarLink: string = rawData.calendar_link || 'https://cal.com/cursiveteam/30min'
 
     // Parse demo date from start_time (Cal) or demoDate (legacy)
     const startDate = rawData.start_time
@@ -392,7 +392,7 @@ export const demoNurtureSequence = inngest.createFunction(
         similarCompany: 'TechFlow',
         caseStudyResult: '3x demo bookings in 90 days',
         trialLink: 'https://app.meetcursive.com/signup',
-        implementationCallLink: 'https://cal.com/gotdarrenhill/30min',
+        implementationCallLink: 'https://cal.com/cursiveteam/30min',
         personalNote: "I loved your idea about targeting visitors by industry—let's make it happen!",
       })
 
@@ -687,8 +687,8 @@ async function buildEmailTokens(
     demoOwnerTitle: 'Solutions Engineer',
     demoOwnerEmail: additional.demoOwnerEmail || 'demos@meetcursive.com',
     demoOwnerPhone: additional.demoOwnerPhone,
-    calendarLink: additional.calendarLink || 'https://cal.com/gotdarrenhill/30min',
-    rescheduleLink: additional.rescheduleLink || 'https://cal.com/gotdarrenhill/30min',
+    calendarLink: additional.calendarLink || 'https://cal.com/cursiveteam/30min',
+    rescheduleLink: additional.rescheduleLink || 'https://cal.com/cursiveteam/30min',
     meetingLink: additional.meetingLink || 'https://meet.google.com/demo',
     ...additional,
   }

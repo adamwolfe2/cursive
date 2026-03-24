@@ -120,14 +120,14 @@ export function ComparisonPage({ competitorName, competitorLogo, benefits, featu
 
           <div className="flex gap-4">
             <Link
-              href="https://cal.com/gotdarrenhill/30min"
+              href="https://cal.com/cursiveteam/30min"
               className="inline-flex items-center px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors"
             >
               Start for free
               <ArrowRight className="w-4 h-4 ml-2" />
             </Link>
             <Link
-              href="https://cal.com/gotdarrenhill/30min"
+              href="https://cal.com/cursiveteam/30min"
               className="inline-flex items-center px-6 py-3 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
             >
               Book a Demo
@@ -242,7 +242,7 @@ export function ComparisonPage({ competitorName, competitorLogo, benefits, featu
             See how Cursive can help you identify more visitors, build better lists, and close more deals.
           </p>
           <Link
-            href="https://cal.com/gotdarrenhill/30min"
+            href="https://cal.com/cursiveteam/30min"
             className="inline-flex items-center px-8 py-4 bg-primary text-white text-lg rounded-lg hover:bg-primary-dark transition-colors"
           >
             Book Your Free Audit

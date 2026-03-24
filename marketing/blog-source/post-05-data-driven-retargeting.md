@@ -348,4 +348,4 @@ Set frequency caps (5-7 impressions per week maximum), vary your creative regula
 
 ---
 
-**Ready to transform anonymous visitors into revenue?** [Book a demo](https://cal.com/cursive/30min) to see how Cursive identifies website visitors, builds intent-based audiences, and activates retargeting campaigns across every channel.
+**Ready to transform anonymous visitors into revenue?** [Book a demo](https://cal.com/cursiveteam/30min) to see how Cursive identifies website visitors, builds intent-based audiences, and activates retargeting campaigns across every channel.

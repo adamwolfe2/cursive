@@ -103,7 +103,7 @@ With the right systems in place and a rhythm of steady updates, you work in a sm
 
 Record-keeping becomes something you can trust, not a task that slows you down or distracts from growth.
 
-Ready to turn your outreach into a smooth, efficient process? **[Book a demo](https://cal.com/cursive/30min)** to see how Cursive enriches contact records automatically, fills gaps with verified B2B data, and keeps your database conversion-ready.
+Ready to turn your outreach into a smooth, efficient process? **[Book a demo](https://cal.com/cursiveteam/30min)** to see how Cursive enriches contact records automatically, fills gaps with verified B2B data, and keeps your database conversion-ready.
 
 ---
 

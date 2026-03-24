@@ -115,7 +115,7 @@ Getting this right doesn't require a big team or complicated plan. It just takes
 
 **When all of that lines up, what you send actually matters—and matters more to the ones receiving it.**
 
-Ready to reach decision-makers who are actually in-market? **[Book a demo](https://cal.com/cursive/30min)** to see how Cursive identifies B2B buyers, enriches profiles with verified data, and automates targeted outreach.
+Ready to reach decision-makers who are actually in-market? **[Book a demo](https://cal.com/cursiveteam/30min)** to see how Cursive identifies B2B buyers, enriches profiles with verified data, and automates targeted outreach.
 
 ---
 

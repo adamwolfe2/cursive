@@ -30,7 +30,7 @@ async function generateFollowUpWithClaude(
 
 Lead: ${firstName}
 Campaign objective: ${objective}
-Booking link: ${calUrl || 'https://cal.com/gotdarrenhill/30min'}
+Booking link: ${calUrl || 'https://cal.com/cursiveteam/30min'}
 
 The email should:
 - Reference that we connected previously

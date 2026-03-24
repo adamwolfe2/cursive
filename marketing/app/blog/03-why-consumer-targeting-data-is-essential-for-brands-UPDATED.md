@@ -104,7 +104,7 @@ With clean targeting data, you:
 
 **This kind of insight keeps you focused and makes campaigns smoother from start to finish.** For more on finding the right targeting solutions, read our guide on [data targeting solutions that work](/blog/13-tips-for-finding-data-targeting-solutions-that-work-UPDATED).
 
-Ready to make smarter decisions about audience engagement? **[Book a demo](https://cal.com/cursive/30min)** to see how Cursive turns anonymous website traffic into qualified leads using real-time intent signals and verified B2B data.
+Ready to make smarter decisions about audience engagement? **[Book a demo](https://cal.com/cursiveteam/30min)** to see how Cursive turns anonymous website traffic into qualified leads using real-time intent signals and verified B2B data.
 
 ---
 

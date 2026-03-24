@@ -668,7 +668,7 @@ export default function WarmlyVsCursiveComparison() {
             </ol>
             <p>
               Full implementation takes about 2 weeks. Cursive provides dedicated onboarding, campaign
-              strategy sessions, and ongoing optimization. Book a <a href="https://cal.com/gotdarrenhill/30min">strategy call</a> to
+              strategy sessions, and ongoing optimization. Book a <a href="https://cal.com/cursiveteam/30min">strategy call</a> to
               discuss your setup.
             </p>
 

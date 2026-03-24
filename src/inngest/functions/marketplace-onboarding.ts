@@ -10,7 +10,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { safeLog } from '@/lib/utils/log-sanitizer'
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://leads.meetcursive.com'
-const BOOKING_URL = 'https://cal.com/gotdarrenhill/30min'
+const BOOKING_URL = 'https://cal.com/cursiveteam/30min'
 
 export const marketplaceOnboardingSequence = inngest.createFunction(
   { id: 'marketplace-onboarding-sequence', retries: 2, timeouts: { finish: '15m' } },

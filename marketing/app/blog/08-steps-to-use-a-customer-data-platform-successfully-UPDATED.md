@@ -95,7 +95,7 @@ The result:
 
 Making the most of what you already know about your audience changes how you work. It's not about doing more—it's about doing the right things to meet people where they are.
 
-**Ready to transform how you connect with buyers?** [Book a demo](https://cal.com/cursive/30min) to see how Cursive's unified platform tracks real-time activity, automates personalized outreach, and drives measurable growth.
+**Ready to transform how you connect with buyers?** [Book a demo](https://cal.com/cursiveteam/30min) to see how Cursive's unified platform tracks real-time activity, automates personalized outreach, and drives measurable growth.
 
 ---
 

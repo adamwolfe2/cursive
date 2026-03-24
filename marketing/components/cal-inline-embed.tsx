@@ -2,7 +2,7 @@
 import { useEffect } from 'react'
 
 // Darren Hill's Cal.com inline embed
-// calLink: gotdarrenhill/30min
+// calLink: cursiveteam/30min
 // Config: month_view, light theme, slots view on small screens
 
 export function CalInlineEmbed() {
@@ -47,7 +47,7 @@ export function CalInlineEmbed() {
           useSlotsViewOnSmallScreen: "true",
           theme: "light",
         },
-        calLink: "gotdarrenhill/30min",
+        calLink: "cursiveteam/30min",
       });
 
       Cal.ns["30min"]("ui", {

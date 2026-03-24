@@ -115,7 +115,7 @@ It leads to fewer lost leads, better campaigns, and a much smoother experience f
 
 You get to move faster, work smarter, and build better connections without wondering if your data is standing in the way.
 
-Ready to build better campaigns with confidence? **[Book a demo](https://cal.com/cursive/30min)** to see how Cursive ensures your data remains clear, current, and conversion-ready.
+Ready to build better campaigns with confidence? **[Book a demo](https://cal.com/cursiveteam/30min)** to see how Cursive ensures your data remains clear, current, and conversion-ready.
 
 ---
 

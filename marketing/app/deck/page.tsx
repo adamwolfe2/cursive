@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { RevenueCalculator } from '@/components/revenue-calculator/RevenueCalculator'
 
 // ─── CONSTANTS ────────────────────────────────────────────────────────────────
-const CAL_LINK = 'https://cal.com/gotdarrenhill/30min'
+const CAL_LINK = 'https://cal.com/cursiveteam/30min'
 const SLIDE_COUNT = 9
 
 const VISITORS = [
@@ -1110,7 +1110,7 @@ function DeckGate({ onUnlock }: { onUnlock: () => void }) {
     Cal.ns['deck-gate']('inline', {
       elementOrSelector: '#cal-deck-embed',
       config: { layout: 'month_view', theme: 'light' },
-      calLink: 'gotdarrenhill/30min',
+      calLink: 'cursiveteam/30min',
     })
     Cal.ns['deck-gate']('ui', {
       hideEventTypeDetails: true,

@@ -339,7 +339,7 @@ Every week of delay costs potential revenue. The earlier you implement visitor i
 
 Don't let manual processes and disconnected tools cost you your best quarter. Marketing data platforms turn holiday complexity into competitive advantage.
 
-**Ready to make Q4 2026 your best quarter ever?** [Book a demo](https://cal.com/cursive/30min) to see how Cursive identifies 70% of holiday visitors, automates behavioral campaigns, and delivers measurable revenue lift within days of implementation.
+**Ready to make Q4 2026 your best quarter ever?** [Book a demo](https://cal.com/cursiveteam/30min) to see how Cursive identifies 70% of holiday visitors, automates behavioral campaigns, and delivers measurable revenue lift within days of implementation.
 
 ---
 

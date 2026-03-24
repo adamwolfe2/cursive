@@ -328,7 +328,7 @@ export default function ContactPage() {
 
               <div className="space-y-6 mb-8">
                 <a
-                  href="https://cal.com/gotdarrenhill/30min"
+                  href="https://cal.com/cursiveteam/30min"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-start gap-4 p-6 bg-[#F7F9FB] rounded-xl border border-gray-200 hover:shadow-lg transition-all duration-300"
@@ -581,7 +581,7 @@ export default function ContactPage() {
             <div className="bg-white rounded-xl p-6 border border-gray-200 text-center">
               <Calendar className="w-10 h-10 text-primary mx-auto mb-4" />
               <h3 className="text-gray-900 mb-2">Book a Demo</h3>
-              <a href="https://cal.com/gotdarrenhill/30min" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline text-sm">Schedule on Cal.com</a>
+              <a href="https://cal.com/cursiveteam/30min" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline text-sm">Schedule on Cal.com</a>
               <p className="text-gray-600 text-sm mt-2">15-minute intro call with a live platform walkthrough.</p>
             </div>
             <div className="bg-white rounded-xl p-6 border border-gray-200 text-center">
@@ -619,7 +619,7 @@ export default function ContactPage() {
         <MachineList items={[
           {
             label: "Book a Call",
-            href: "https://cal.com/gotdarrenhill/30min",
+            href: "https://cal.com/cursiveteam/30min",
             description: "Schedule a 15-minute intro call. We'll answer questions and show you a demo."
           },
           {
@@ -782,7 +782,7 @@ export default function ContactPage() {
           },
           {
             label: "Book a Demo",
-            href: "https://cal.com/gotdarrenhill/30min",
+            href: "https://cal.com/cursiveteam/30min",
             description: "15-minute intro call with a live platform walkthrough"
           },
           {

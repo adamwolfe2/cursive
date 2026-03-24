@@ -112,7 +112,7 @@ A smarter setup doesn't just get more leads—it makes those connections feel mo
 
 **You're not guessing who is interested. You're seeing it, learning from it, and responding in ways that make sense.**
 
-Ready to unlock the full potential of your website traffic? **[Book a demo](https://cal.com/cursive/30min)** to see how Cursive identifies anonymous visitors, reveals buying intent, and turns quiet visits into qualified leads.
+Ready to unlock the full potential of your website traffic? **[Book a demo](https://cal.com/cursiveteam/30min)** to see how Cursive identifies anonymous visitors, reveals buying intent, and turns quiet visits into qualified leads.
 
 ---
 

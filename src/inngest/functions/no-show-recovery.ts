@@ -113,7 +113,7 @@ export const calNoShowRecovery = inngest.createFunction(
 // EMAIL TEMPLATES
 // ============================================================
 
-const RESCHEDULE_URL = 'https://cal.com/gotdarrenhill/30min'
+const RESCHEDULE_URL = 'https://cal.com/cursiveteam/30min'
 const FROM = 'Darren at Cursive <darren@meetcursive.com>'
 
 async function sendNoShowEmail1(to: string, firstName: string) {

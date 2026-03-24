@@ -130,7 +130,7 @@ Instead of guessing which leads are worth your time, let actions show you who's 
 
 **That's not just a smarter way to handle traffic. It's a better way to build trust, grow leads, and turn quiet visits into real outcomes.**
 
-Ready to stop losing leads to anonymity? **[Book a demo](https://cal.com/cursive/30min)** to see how Cursive identifies anonymous visitors, tracks intent signals, and converts traffic into qualified sales opportunities.
+Ready to stop losing leads to anonymity? **[Book a demo](https://cal.com/cursiveteam/30min)** to see how Cursive identifies anonymous visitors, tracks intent signals, and converts traffic into qualified sales opportunities.
 
 ---
 

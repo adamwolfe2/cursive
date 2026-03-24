@@ -147,7 +147,7 @@ Simple workflows, cleaner lists, and the right technology create campaigns that 
 
 Ready to build behavioral segments that automatically update based on real-time actions? [Cursive's Audience Builder](/audience-builder) gives you access to 220M+ consumer and 140M+ business profiles, with behavioral and [intent filters](/intent-audiences) that keep segments accurate as interests change. See [understanding the impact of buyer intent on campaigns](/blog/29-understanding-the-impact-of-buyer-intent-on-campaigns).
 
-[Book a demo](https://cal.com/cursive/30min) and we'll show you which behaviors your best customers have in common—so you can find more like them.
+[Book a demo](https://cal.com/cursiveteam/30min) and we'll show you which behaviors your best customers have in common—so you can find more like them.
 
 ## Frequently Asked Questions
 

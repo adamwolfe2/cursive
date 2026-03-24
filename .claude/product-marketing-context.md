@@ -293,7 +293,7 @@ Cursive solves the problem that 98% of website visitors leave without filling ou
 
 - **Platform:** leads.meetcursive.com (marketplace)
 - **Marketing Site:** meetcursive.com
-- **Booking:** cal.com/cursive/30min
+- **Booking:** cal.com/cursiveteam/30min
 - **Contact:** hello@meetcursive.com
 
 ---

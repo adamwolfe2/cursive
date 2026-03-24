@@ -484,4 +484,4 @@ For ongoing nurture campaigns, limit to 1 piece per month. For high-intent prosp
 
 ---
 
-**Ready to add direct mail automation to your agency's service offering?** [Book a demo](https://cal.com/cursive/30min) to see how Cursive identifies website visitors, builds targeted audiences, and triggers automated direct mail campaigns—all from one platform.
+**Ready to add direct mail automation to your agency's service offering?** [Book a demo](https://cal.com/cursiveteam/30min) to see how Cursive identifies website visitors, builds targeted audiences, and triggers automated direct mail campaigns—all from one platform.

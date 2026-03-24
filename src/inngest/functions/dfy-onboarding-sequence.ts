@@ -19,7 +19,7 @@ import { safeLog } from '@/lib/utils/log-sanitizer'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 
 const _APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://leads.meetcursive.com'
-const BOOKING_URL = 'https://cal.com/gotdarrenhill/30min'
+const BOOKING_URL = 'https://cal.com/cursiveteam/30min'
 
 export const dfyOnboardingSequence = inngest.createFunction(
   {

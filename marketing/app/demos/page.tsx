@@ -46,7 +46,7 @@ export default function DemosPage() {
 
               <div className="flex items-center justify-center gap-4">
                 <Link
-                  href="https://cal.com/gotdarrenhill/30min"
+                  href="https://cal.com/cursiveteam/30min"
                   target="_blank"
                   className="px-6 py-3 bg-primary text-white rounded-lg font-medium hover:bg-primary-dark transition-colors"
                 >
@@ -188,7 +188,7 @@ export default function DemosPage() {
               Want to see these features with your actual data? Book a personalized 30-minute walkthrough with the Cursive team. We&apos;ll show you real visitors on your website and demonstrate the full platform workflow.
             </p>
             <MachineList items={[
-              { label: "Book a Live Demo", href: "https://cal.com/gotdarrenhill/30min", description: "30-minute personalized walkthrough with your data" },
+              { label: "Book a Live Demo", href: "https://cal.com/cursiveteam/30min", description: "30-minute personalized walkthrough with your data" },
               { label: "Platform Overview", href: "/platform", description: "Full platform capabilities and features" },
               { label: "Pricing", href: "/pricing", description: "Self-serve and done-for-you plans" },
               { label: "Case Studies", href: "/case-studies", description: "See results from real customers" },

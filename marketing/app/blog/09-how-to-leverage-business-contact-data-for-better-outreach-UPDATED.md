@@ -103,7 +103,7 @@ Instead of guessing what might work, you're moving based on verified information
 
 **High-quality contact data makes every part of outreach more reliable.** Consistency across touchpoints builds trust with prospects and shows respect for their time.
 
-Ready to connect with decision-makers who are actually in-market? **[Book a demo](https://cal.com/cursive/30min)** to see how Cursive identifies qualified leads, enriches contact records, and automates personalized outreach.
+Ready to connect with decision-makers who are actually in-market? **[Book a demo](https://cal.com/cursiveteam/30min)** to see how Cursive identifies qualified leads, enriches contact records, and automates personalized outreach.
 
 ---
 

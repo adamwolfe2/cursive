@@ -447,7 +447,7 @@ When you handle data responsibly, you differentiate your business from competito
 
 Ready to turn privacy compliance into a competitive advantage?
 
-[**Book a demo**](https://cal.com/cursive/30min) to see how Cursive's privacy-first approach accelerates growth while safeguarding customer data.
+[**Book a demo**](https://cal.com/cursiveteam/30min) to see how Cursive's privacy-first approach accelerates growth while safeguarding customer data.
 
 ---
 

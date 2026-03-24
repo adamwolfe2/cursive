@@ -607,4 +607,4 @@ Minimum viable campaign: 500 pieces to see meaningful results. Ideal for testing
 
 ---
 
-**Ready to launch data-driven direct mail campaigns?** [Book a demo](https://cal.com/cursive/30min) to see how Cursive identifies website visitors, builds targeted audiences, and triggers automated direct mail campaigns.
+**Ready to launch data-driven direct mail campaigns?** [Book a demo](https://cal.com/cursiveteam/30min) to see how Cursive identifies website visitors, builds targeted audiences, and triggers automated direct mail campaigns.

@@ -208,7 +208,7 @@ export default function BlogPost() {
             </p>
 
             <p>
-              If you want to see how Cursive handles the agentic buyer journey end-to-end, explore <a href="/platform">the platform</a> or <a href="https://cal.com/gotdarrenhill/30min" target="_blank" rel="noopener noreferrer">book a 30-minute walkthrough</a>. We&apos;ll show you who&apos;s visiting your site right now &mdash; human or agent &mdash; and how to turn those visits into pipeline before your competitors even know they happened.
+              If you want to see how Cursive handles the agentic buyer journey end-to-end, explore <a href="/platform">the platform</a> or <a href="https://cal.com/cursiveteam/30min" target="_blank" rel="noopener noreferrer">book a 30-minute walkthrough</a>. We&apos;ll show you who&apos;s visiting your site right now &mdash; human or agent &mdash; and how to turn those visits into pipeline before your competitors even know they happened.
             </p>
 
             <p>
@@ -424,7 +424,7 @@ export default function BlogPost() {
               { label: "Visitor Identification", href: "/visitor-identification", description: "70% identification rate for anonymous B2B traffic" },
               { label: "Services", href: "/services", description: "AI-powered outreach sequences" },
               { label: "Direct Mail", href: "/blog/direct-mail", description: "Automated direct mail as part of multi-channel sequences" },
-              { label: "Book a 30-Minute Walkthrough", href: "https://cal.com/gotdarrenhill/30min", description: "See Cursive in real-time, understand who's visiting your site now" }
+              { label: "Book a 30-Minute Walkthrough", href: "https://cal.com/cursiveteam/30min", description: "See Cursive in real-time, understand who's visiting your site now" }
             ]} />
           </MachineSection>
         </MachineContent>

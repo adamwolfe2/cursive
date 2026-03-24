@@ -284,7 +284,7 @@ When you can identify anonymous visitors, segment audiences by real behavior and
 
 The difference between companies that grow predictably and those that struggle often comes down to data visibility and activation speed.
 
-**Ready to transform your marketing data into revenue?** [Book a demo](https://cal.com/cursive/30min) to see how Cursive identifies 70% of website visitors, tracks 450B+ intent signals, and syncs unified customer intelligence across 200+ platforms.
+**Ready to transform your marketing data into revenue?** [Book a demo](https://cal.com/cursiveteam/30min) to see how Cursive identifies 70% of website visitors, tracks 450B+ intent signals, and syncs unified customer intelligence across 200+ platforms.
 
 ---
 

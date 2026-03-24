@@ -556,4 +556,4 @@ Basic implementation: 2-4 weeks to set up tracking and initial reports. Full imp
 
 ---
 
-**Ready to see which marketing touchpoints actually drive revenue?** [Book a demo](https://cal.com/cursive/30min) to see how Cursive tracks the full customer journey and provides multi-touch attribution across all channels.
+**Ready to see which marketing touchpoints actually drive revenue?** [Book a demo](https://cal.com/cursiveteam/30min) to see how Cursive tracks the full customer journey and provides multi-touch attribution across all channels.

@@ -99,7 +99,7 @@ export default function IntegrationsPage() {
               <p className="text-lg text-gray-600 mb-8 max-w-3xl mx-auto">
                 Connect Cursive to 50+ tools or use our API and webhooks for custom integrations.
               </p>
-              <Button size="lg" href="https://cal.com/gotdarrenhill/30min">View Integrations</Button>
+              <Button size="lg" href="https://cal.com/cursiveteam/30min">View Integrations</Button>
             </motion.div>
           </Container>
         </section>
@@ -310,7 +310,7 @@ export default function IntegrationsPage() {
               { label: "Marketing Data Platforms", href: "/blog/data-platforms", description: "Leverage integrated data platforms to boost campaign ROI" },
               { label: "Platform Overview", href: "/platform", description: "Full visitor identification and lead generation platform" },
               { label: "Pricing", href: "/pricing", description: "Self-serve marketplace + done-for-you services" },
-              { label: "Book a Demo", href: "https://cal.com/gotdarrenhill/30min", description: "See how Cursive integrates with your stack" },
+              { label: "Book a Demo", href: "https://cal.com/cursiveteam/30min", description: "See how Cursive integrates with your stack" },
             ]} />
           </MachineSection>
         </MachineContent>

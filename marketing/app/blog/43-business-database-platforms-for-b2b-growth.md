@@ -283,7 +283,7 @@ When contact data is unified, enriched, and accessible across your entire revenu
 
 The difference between companies that scale predictably and those that struggle often comes down to data infrastructure.
 
-**Ready to unify your business database and accelerate growth?** [Book a demo](https://cal.com/cursive/30min) to see how Cursive centralizes contact data, enriches records with verified information from 140M+ profiles, and syncs everything across 200+ platforms.
+**Ready to unify your business database and accelerate growth?** [Book a demo](https://cal.com/cursiveteam/30min) to see how Cursive centralizes contact data, enriches records with verified information from 140M+ profiles, and syncs everything across 200+ platforms.
 
 ---
 

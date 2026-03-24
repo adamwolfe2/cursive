@@ -198,7 +198,7 @@ export function ExitIntentPopup() {
                       Book a 30-min call and we&apos;ll generate your pixel and show you identified visitors <strong>live</strong>.
                     </p>
                     <a
-                      href="https://cal.com/gotdarrenhill/30min"
+                      href="https://cal.com/cursiveteam/30min"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="block w-full text-center py-2.5 bg-primary hover:bg-primary-dark text-white text-sm font-semibold rounded-lg transition-colors"

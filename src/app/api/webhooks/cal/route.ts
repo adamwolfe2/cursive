@@ -5,7 +5,7 @@ export const runtime = 'nodejs'
  * Cal.com Webhook Handler
  *
  * Receives BOOKING_CREATED, BOOKING_RESCHEDULED, and BOOKING_CANCELLED
- * events from cal.com/gotdarrenhill/30min and fires Inngest events to
+ * events from cal.com/cursiveteam/30min and fires Inngest events to
  * trigger the no-show recovery sequence.
  *
  * Verify the webhook in Cal.com settings → Webhooks → add secret → set
@@ -129,7 +129,7 @@ export async function POST(req: NextRequest) {
         end_time: endTime,
         owner_name: 'Darren',
         owner_email: 'darren@meetcursive.com',
-        calendar_link: 'https://cal.com/gotdarrenhill/30min',
+        calendar_link: 'https://cal.com/cursiveteam/30min',
       },
     })
 

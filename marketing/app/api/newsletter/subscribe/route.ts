@@ -78,7 +78,7 @@ async function sendNewsletterEmails(email: string, source: string, ip: string): 
       <ul style="margin: 12px 0; padding-left: 20px; color: #666;">
         <li><a href="https://www.meetcursive.com/blog" style="color: #007aff; text-decoration: none;">Our Blog</a> — Deep dives on B2B marketing</li>
         <li><a href="https://www.meetcursive.com/platform" style="color: #007aff; text-decoration: none;">Platform Overview</a> — See what Cursive can do</li>
-        <li><a href="https://cal.com/gotdarrenhill/30min" style="color: #007aff; text-decoration: none;">Book a Demo</a> — Get a personalized walkthrough</li>
+        <li><a href="https://cal.com/cursiveteam/30min" style="color: #007aff; text-decoration: none;">Book a Demo</a> — Get a personalized walkthrough</li>
       </ul>
 
       <p style="color: #666; line-height: 1.6;">

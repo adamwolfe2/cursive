@@ -277,7 +277,7 @@ export default function CallsPage() {
                         </>
                       )}
                       <a
-                        href={`https://cal.com/gotdarrenhill/30min`}
+                        href={`https://cal.com/cursiveteam/30min`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-[11px] text-zinc-400 hover:text-zinc-600"

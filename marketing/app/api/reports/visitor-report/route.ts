@@ -79,7 +79,7 @@ async function sendVisitorReportEmails(data: {
         <ul style="margin: 0; padding-left: 20px; color: #666;">
           <li style="margin-bottom: 8px;">Learn how Cursive identifies anonymous website visitors on our <a href="https://www.meetcursive.com/platform" style="color: #007aff; text-decoration: none;">platform page</a></li>
           <li style="margin-bottom: 8px;">See pricing and get started at <a href="https://www.meetcursive.com/pricing" style="color: #007aff; text-decoration: none;">meetcursive.com/pricing</a></li>
-          <li>Book a 30-minute demo with our team at <a href="https://cal.com/gotdarrenhill/30min" style="color: #007aff; text-decoration: none;">our calendar</a></li>
+          <li>Book a 30-minute demo with our team at <a href="https://cal.com/cursiveteam/30min" style="color: #007aff; text-decoration: none;">our calendar</a></li>
         </ul>
       </div>
 

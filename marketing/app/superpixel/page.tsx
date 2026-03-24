@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 }
 
 const BOOK_ANCHOR = '#book-demo'
-const CAL_LINK = 'https://cal.com/gotdarrenhill/30min'
+const CAL_LINK = 'https://cal.com/cursiveteam/30min'
 
 const SAMPLE_LEAD = {
   name: 'James Sullivan',

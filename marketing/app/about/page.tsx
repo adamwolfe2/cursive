@@ -733,7 +733,7 @@ export default function AboutPage() {
         <MachineList items={[
           {
             label: "Schedule a Call",
-            href: "https://cal.com/gotdarrenhill/30min",
+            href: "https://cal.com/cursiveteam/30min",
             description: "Book a personalized demo to see how Cursive can transform your lead generation"
           },
           {

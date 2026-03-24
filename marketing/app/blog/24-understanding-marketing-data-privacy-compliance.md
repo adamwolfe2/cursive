@@ -328,7 +328,7 @@ Our **200+ native integrations** automatically sync consent preferences, honor o
 
 Ready to see how privacy-first lead generation accelerates conversions without compliance risk?
 
-[**Book a demo**](https://cal.com/cursive/30min) to discover how Cursive transforms data privacy from a legal burden into a trust-building advantage.
+[**Book a demo**](https://cal.com/cursiveteam/30min) to discover how Cursive transforms data privacy from a legal burden into a trust-building advantage.
 
 ---
 

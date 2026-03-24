@@ -143,7 +143,7 @@ export function HumanHomePage() {
               <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-3 mb-1">
                 <Button
                   size="lg"
-                  href="https://cal.com/gotdarrenhill/30min"
+                  href="https://cal.com/cursiveteam/30min"
                   target="_blank"
                   className="bg-primary text-white hover:bg-primary-dark px-6 py-3"
                 >

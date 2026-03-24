@@ -47,7 +47,7 @@ export default function VisitorIdentificationPage() {
                 See who visited your pricing page, automatically enrich their profiles, trigger personalized outreach, and build lookalike audiences from our database of hundreds of millions of verified B2B and B2C leads.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <Button size="lg" href="https://cal.com/gotdarrenhill/30min">
+                <Button size="lg" href="https://cal.com/cursiveteam/30min">
                   See Who's Visiting Your Site
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
@@ -574,7 +574,7 @@ export default function VisitorIdentificationPage() {
 
               <Button
                 size="lg"
-                href="https://cal.com/gotdarrenhill/30min"
+                href="https://cal.com/cursiveteam/30min"
                 target="_blank"
                 className="bg-primary text-white hover:bg-primary-dark text-lg px-10 py-5 mb-4"
               >
@@ -750,7 +750,7 @@ export default function VisitorIdentificationPage() {
           <MachineList items={[
             {
               label: "Book a Demo",
-              href: "https://cal.com/gotdarrenhill/30min",
+              href: "https://cal.com/cursiveteam/30min",
               description: "See visitor identification in action with a personalized walkthrough"
             },
             {

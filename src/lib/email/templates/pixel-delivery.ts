@@ -94,7 +94,7 @@ export async function sendPixelDeliveryEmail(data: PixelDeliveryEmailData) {
       <span style="color:#6b7280;font-size:13px;">Cursive · <a href="https://meetcursive.com" style="color:#007AFF;">meetcursive.com</a></span></p>
       <p style="margin:12px 0 0;font-size:12px;color:#9ca3af;">
         Need anything? Reply here or grab time at
-        <a href="https://cal.com/gotdarrenhill/30min" style="color:#007AFF;">cal.com/gotdarrenhill/30min</a>
+        <a href="https://cal.com/cursiveteam/30min" style="color:#007AFF;">cal.com/cursiveteam/30min</a>
       </p>
     </div>
   `
@@ -153,7 +153,7 @@ export interface PostCallRecapEmailData {
 export async function sendPostCallRecapEmail(data: PostCallRecapEmailData) {
   const { to, domain, snippet, pixelId } = data
   const loginUrl = 'https://leads.meetcursive.com/welcome?ref=call'
-  const calendarLink = 'https://cal.com/gotdarrenhill/30min'
+  const calendarLink = 'https://cal.com/cursiveteam/30min'
   const displayDomain = domain.replace(/^www\./, '')
 
   const content = `
@@ -223,7 +223,7 @@ export async function sendPostCallRecapEmail(data: PostCallRecapEmailData) {
       <span style="color:#6b7280;font-size:13px;">Cursive · <a href="https://meetcursive.com" style="color:#007AFF;">meetcursive.com</a></span></p>
       <p style="margin:12px 0 0;font-size:12px;color:#9ca3af;">
         Questions? Reply here or grab time at
-        <a href="${calendarLink}" style="color:#007AFF;">cal.com/gotdarrenhill/30min</a>
+        <a href="${calendarLink}" style="color:#007AFF;">cal.com/cursiveteam/30min</a>
       </p>
     </div>
   `

@@ -9,7 +9,7 @@ import { sendEmail } from '@/lib/services/outreach/email-sender.service'
 import { SdrConfigRepository } from '@/lib/repositories/sdr-config.repository'
 import { DncRepository } from '@/lib/repositories/dnc.repository'
 
-const CAL_BOOKING_URL = process.env.CAL_BOOKING_URL || 'https://cal.com/gotdarrenhill/30min'
+const CAL_BOOKING_URL = process.env.CAL_BOOKING_URL || 'https://cal.com/cursiveteam/30min'
 const OUTREACH_FROM_EMAIL = process.env.OUTREACH_FROM_EMAIL || 'team@meetcursive.com'
 const OUTREACH_FROM_NAME = process.env.OUTREACH_FROM_NAME || 'The Cursive Team'
 

@@ -393,7 +393,7 @@ When [Cursive's visitor identification](/visitor-identification), [audience buil
 
 Ready to see how unified operations accelerate revenue?
 
-[**Book a demo**](https://cal.com/cursive/30min) to discover how Cursive turns fragmented tools into a seamless revenue engine.
+[**Book a demo**](https://cal.com/cursiveteam/30min) to discover how Cursive turns fragmented tools into a seamless revenue engine.
 
 ---
 
