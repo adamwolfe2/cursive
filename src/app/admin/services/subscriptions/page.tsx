@@ -74,7 +74,7 @@ export default function AdminServiceSubscriptionsPage() {
       setIsAdmin(true)
       setAuthChecked(true)
     }
-    checkAdmin()
+    checkAdmin().catch(() => setAuthChecked(true))
   }, [supabase])
 
   useEffect(() => {

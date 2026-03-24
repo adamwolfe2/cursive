@@ -1,3 +1,5 @@
+export const maxDuration = 60
+
 /**
  * POST /api/leads/[id]/intelligence
  * Body: { tier: 'intel' | 'deep_research' }

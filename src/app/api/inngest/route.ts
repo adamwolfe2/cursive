@@ -1,3 +1,5 @@
+export const maxDuration = 300
+
 // Inngest API Route
 // Serves Inngest functions for background job processing
 // Requires Node.js runtime — Inngest functions transitively import nodemailer

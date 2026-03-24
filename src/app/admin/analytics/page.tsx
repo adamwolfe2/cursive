@@ -56,7 +56,7 @@ export default function AdminAnalyticsPage() {
       setIsAdmin(true)
       setAuthChecked(true)
     }
-    checkAdmin()
+    checkAdmin().catch(() => setAuthChecked(true))
   }, [supabase])
 
   const fetchAnalytics = useCallback(async () => {

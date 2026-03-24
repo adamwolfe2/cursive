@@ -83,7 +83,7 @@ export default function FailedOperationsPage() {
       setIsAdmin(true)
       setAuthChecked(true)
     }
-    checkAdmin()
+    checkAdmin().catch(() => setAuthChecked(true))
   }, [supabase])
 
   const loadOperations = useCallback(async () => {

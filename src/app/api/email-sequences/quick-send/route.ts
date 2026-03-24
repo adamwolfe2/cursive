@@ -1,3 +1,5 @@
+export const maxDuration = 30
+
 /**
  * Quick Send Email API
  * Sends a one-off email directly to a lead without creating a full sequence.

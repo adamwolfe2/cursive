@@ -666,7 +666,7 @@ export default function DealCalculator() {
                 {copied ? 'Copied to Clipboard' : 'Copy Deal Summary'}
               </button>
               <p className="text-[10px] text-gray-400 text-center">
-                Future: Generate SOW, send Mercury invoice, create Rabbit Sign contract
+                Future: Generate SOW, send Stripe invoice, create RabbitSign contract
               </p>
             </div>
           </Card>

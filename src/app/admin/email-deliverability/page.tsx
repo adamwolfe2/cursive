@@ -147,7 +147,7 @@ export default function AdminEmailDeliverabilityPage() {
       setIsAdmin(true)
       setAuthChecked(true)
     }
-    checkAdmin()
+    checkAdmin().catch(() => setAuthChecked(true))
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 

@@ -1,3 +1,5 @@
+export const maxDuration = 60
+
 /**
  * POST /api/leads/bulk-intelligence
  * Body: { lead_ids: string[], tier: 'intel' }

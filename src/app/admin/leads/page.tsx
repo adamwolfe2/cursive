@@ -70,7 +70,7 @@ export default function AdminLeadsPage() {
       setIsAdmin(true)
       setAuthChecked(true)
     }
-    checkAdmin()
+    checkAdmin().catch(() => setAuthChecked(true))
   }, [supabase])
 
   // Fetch leads

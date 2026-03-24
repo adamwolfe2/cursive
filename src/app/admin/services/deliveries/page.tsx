@@ -69,7 +69,7 @@ export default function AdminServiceDeliveriesPage() {
       setIsAdmin(true)
       setAuthChecked(true)
     }
-    checkAdmin()
+    checkAdmin().catch(() => setAuthChecked(true))
   }, [supabase])
 
   const fetchDeliveries = useCallback(async () => {

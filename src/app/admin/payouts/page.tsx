@@ -91,7 +91,7 @@ export default function AdminPayoutsPage() {
       setIsAdmin(true)
       setAuthChecked(true)
     }
-    checkAdmin()
+    checkAdmin().catch(() => setAuthChecked(true))
   }, [supabase])
 
   const fetchPayouts = useCallback(async () => {

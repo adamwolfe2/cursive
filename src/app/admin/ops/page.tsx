@@ -113,7 +113,7 @@ export default function OpsHubPage() {
       setIsAdmin(true)
       setAuthChecked(true)
     }
-    checkAdmin()
+    checkAdmin().catch(() => setAuthChecked(true))
   }, [supabase])
 
   const { data, isLoading } = useQuery<SummaryData>({

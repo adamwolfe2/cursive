@@ -1,3 +1,5 @@
+export const maxDuration = 60
+
 /**
  * Lead Import Process API
  * Cursive Platform

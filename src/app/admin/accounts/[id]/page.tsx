@@ -95,7 +95,7 @@ export default function AdminWorkspaceDetailPage() {
       setIsAdmin(true)
       setAuthChecked(true)
     }
-    checkAdmin()
+    checkAdmin().catch(() => setAuthChecked(true))
   }, [supabase])
 
   // Fetch workspace details

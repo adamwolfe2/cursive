@@ -1,3 +1,5 @@
+export const maxDuration = 30
+
 // Email Send API
 // Send transactional emails via Resend
 

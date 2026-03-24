@@ -50,7 +50,7 @@ export default function AdminSupportPage() {
       setIsAdmin(true)
       setAuthChecked(true)
     }
-    checkAdmin()
+    checkAdmin().catch(() => setAuthChecked(true))
   }, [supabase])
 
   useEffect(() => {

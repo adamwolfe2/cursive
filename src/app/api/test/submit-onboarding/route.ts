@@ -1,3 +1,5 @@
+export const maxDuration = 30
+
 import { NextResponse } from 'next/server'
 import { getInngest } from '@/inngest/client'
 
@@ -99,7 +101,7 @@ export async function POST(request: Request) {
     .single()
 
   if (error) {
-    return NextResponse.json({ error: 'Insert failed', details: error.message }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to create test client' }, { status: 500 })
   }
 
   const clientId = data.id

@@ -215,7 +215,7 @@ export default function AdminAuditLogsPage() {
       setIsAdmin(true)
       setAuthChecked(true)
     }
-    checkAdmin()
+    checkAdmin().catch(() => setAuthChecked(true))
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Build query URL from filters

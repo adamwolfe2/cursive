@@ -288,7 +288,7 @@ export default function PipelinePage() {
       setIsAdmin(true)
       setAuthChecked(true)
     }
-    checkAdmin()
+    checkAdmin().catch(() => setAuthChecked(true))
   }, [supabase])
 
   const { data, isLoading, refetch } = useQuery<PipelineData>({

@@ -165,7 +165,7 @@ export default function VisitorsPage() {
       setIsAdmin(true)
       setAuthChecked(true)
     }
-    checkAdmin()
+    checkAdmin().catch(() => setAuthChecked(true))
   }, [supabase])
 
   const { data, isLoading } = useQuery<VisitorsData>({

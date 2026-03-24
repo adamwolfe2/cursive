@@ -219,6 +219,14 @@ export interface OnboardingClient {
   emailbison_campaign_ids: string[]
   campaign_stats: Record<string, unknown> | null
 
+  // Invoice & contract tracking
+  stripe_invoice_id: string | null
+  stripe_invoice_url: string | null
+  stripe_invoice_status: string | null
+  rabbitsign_folder_id: string | null
+  rabbitsign_status: string | null
+  contract_signed_at: string | null
+
   // Automation outputs
   enriched_icp_brief: EnrichedICPBrief | null
   enrichment_status: 'pending' | 'processing' | 'complete' | 'failed'
@@ -257,6 +265,12 @@ export type OnboardingClientInsert = Omit<
   | 'campaign_deployed'
   | 'emailbison_campaign_ids'
   | 'campaign_stats'
+  | 'stripe_invoice_id'
+  | 'stripe_invoice_url'
+  | 'stripe_invoice_status'
+  | 'rabbitsign_folder_id'
+  | 'rabbitsign_status'
+  | 'contract_signed_at'
 >
 
 // ---------------------------------------------------------------------------

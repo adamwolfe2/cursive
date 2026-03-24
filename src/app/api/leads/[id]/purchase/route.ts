@@ -1,3 +1,5 @@
+export const maxDuration = 30
+
 /**
  * Lead Purchase API - Create Payment Intent
  * POST /api/leads/[id]/purchase

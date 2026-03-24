@@ -83,7 +83,7 @@ export default function AdminCreditUsagePage() {
       setIsAdmin(true)
       setAuthChecked(true)
     }
-    checkAdmin()
+    checkAdmin().catch(() => setAuthChecked(true))
   }, [supabase])
 
   async function fetchData(isRefresh = false) {

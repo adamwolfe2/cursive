@@ -68,7 +68,7 @@ export default function AdminAccountsPage() {
       setIsAdmin(true)
       setAuthChecked(true)
     }
-    checkAdmin()
+    checkAdmin().catch(() => setAuthChecked(true))
   }, [supabase])
 
   const { data: workspaces, isLoading, refetch } = useQuery({

@@ -1,3 +1,5 @@
+export const maxDuration = 30
+
 // Marketplace Purchase API
 // Purchase leads using credits or Stripe
 

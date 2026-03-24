@@ -97,7 +97,7 @@ export default function AdminSubscriptionDetailPage() {
       setIsAdmin(true)
       setAuthChecked(true)
     }
-    checkAdmin()
+    checkAdmin().catch(() => setAuthChecked(true))
   }, [supabase])
 
   const fetchSubscriptionDetails = useCallback(async () => {

@@ -40,7 +40,7 @@ export default function AdminWaitlistPage() {
       setIsAdmin(true)
       setAuthChecked(true)
     }
-    checkAdmin()
+    checkAdmin().catch(() => setAuthChecked(true))
   }, [supabase])
 
   useEffect(() => {

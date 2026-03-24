@@ -1,3 +1,5 @@
+export const maxDuration = 30
+
 /**
  * CRM Leads API - List and Create endpoints
  */

@@ -94,7 +94,7 @@ export default function CallsPage() {
       setIsAdmin(true)
       setAuthChecked(true)
     }
-    checkAdmin()
+    checkAdmin().catch(() => setAuthChecked(true))
   }, [supabase])
 
   const { data, isLoading } = useQuery<CallsData>({
