@@ -1,6 +1,8 @@
 // API Route: Parse unstructured context into structured onboarding data
 // POST /api/onboarding/parse-context
 
+export const maxDuration = 60 // Claude parsing can take 15-30s
+
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
