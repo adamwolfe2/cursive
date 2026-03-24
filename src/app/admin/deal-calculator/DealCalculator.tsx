@@ -303,7 +303,7 @@ export default function DealCalculator() {
         <Card padding="sm">
           <div className="px-5 py-4">
             <div className="flex items-center gap-2 mb-3">
-              <Package className="h-4 w-4 text-purple-600" />
+              <Package className="h-4 w-4 text-blue-600" />
               <h2 className="text-sm font-semibold text-gray-900">Service Packages</h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -312,7 +312,7 @@ export default function DealCalculator() {
                   key={pkg.id}
                   className={`flex items-start gap-3 rounded-lg border p-3 cursor-pointer transition-all ${
                     deal.selectedPackages.includes(pkg.id)
-                      ? 'border-purple-500 bg-purple-50'
+                      ? 'border-blue-500 bg-blue-50'
                       : 'border-gray-200 hover:bg-gray-50'
                   }`}
                 >
@@ -320,7 +320,7 @@ export default function DealCalculator() {
                     type="checkbox"
                     checked={deal.selectedPackages.includes(pkg.id)}
                     onChange={() => togglePackage(pkg.id)}
-                    className="mt-0.5 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                    className="mt-0.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                   />
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
@@ -348,7 +348,7 @@ export default function DealCalculator() {
               onClick={() => setShowInfraDetails(!showInfraDetails)}
               className="flex items-center gap-2 w-full text-left"
             >
-              <Globe className="h-4 w-4 text-green-600" />
+              <Globe className="h-4 w-4 text-blue-600" />
               <h2 className="text-sm font-semibold text-gray-900 flex-1">Infrastructure Costs (At-Cost)</h2>
               {showInfraDetails ? (
                 <ChevronDown className="h-4 w-4 text-gray-400" />
@@ -408,7 +408,7 @@ export default function DealCalculator() {
                       step={0.5}
                       value={deal.domainCostPer}
                       onChange={(e) => update('domainCostPer', Number(e.target.value))}
-                      className="w-full accent-green-600"
+                      className="w-full accent-blue-600"
                     />
                     <div className="flex justify-between text-[10px] text-gray-400 mt-0.5">
                       <span>{fmtDecimal(INFRA_COSTS.domain.min)}</span>
@@ -426,7 +426,7 @@ export default function DealCalculator() {
                       step={0.25}
                       value={deal.inboxCostPer}
                       onChange={(e) => update('inboxCostPer', Number(e.target.value))}
-                      className="w-full accent-green-600"
+                      className="w-full accent-blue-600"
                     />
                     <div className="flex justify-between text-[10px] text-gray-400 mt-0.5">
                       <span>{fmtDecimal(INFRA_COSTS.inbox.min)}</span>
@@ -436,7 +436,7 @@ export default function DealCalculator() {
                 </div>
 
                 {/* Infra summary */}
-                <div className="rounded-md bg-green-50 border border-green-200 px-4 py-3 text-sm">
+                <div className="rounded-md bg-blue-50 border border-blue-200 px-4 py-3 text-sm">
                   <div className="flex justify-between text-gray-700">
                     <span>{pricing.domains} domains x {fmtDecimal(deal.domainCostPer)}/yr</span>
                     <span>{fmtDecimal(infraCalc.domainCostMonthly)}/mo</span>
@@ -445,11 +445,11 @@ export default function DealCalculator() {
                     <span>{pricing.inboxes} inboxes x {fmtDecimal(deal.inboxCostPer)}/mo</span>
                     <span>{fmtDecimal(infraCalc.inboxCostMonthly)}/mo</span>
                   </div>
-                  <div className="flex justify-between font-semibold text-green-800 border-t border-green-200 mt-2 pt-2">
+                  <div className="flex justify-between font-semibold text-blue-800 border-t border-blue-200 mt-2 pt-2">
                     <span>Total Infrastructure</span>
                     <span>{fmtDecimal(infraCalc.totalMonthly)}/mo</span>
                   </div>
-                  <p className="text-[11px] text-green-600 mt-1">
+                  <p className="text-[11px] text-blue-600 mt-1">
                     Domain upfront: {fmtDecimal(pricing.domainUpfront)}/yr (billed annually at-cost)
                   </p>
                 </div>
@@ -462,7 +462,7 @@ export default function DealCalculator() {
         <Card padding="sm">
           <div className="px-5 py-4">
             <div className="flex items-center gap-2 mb-3">
-              <Calculator className="h-4 w-4 text-orange-600" />
+              <Calculator className="h-4 w-4 text-blue-600" />
               <h2 className="text-sm font-semibold text-gray-900">Billing & Overrides</h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -543,7 +543,7 @@ export default function DealCalculator() {
                   onClick={handleCopy}
                   className="inline-flex items-center gap-1 rounded-md bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-700 hover:bg-gray-200 transition-colors"
                 >
-                  {copied ? <Check className="h-3 w-3 text-green-600" /> : <Copy className="h-3 w-3" />}
+                  {copied ? <Check className="h-3 w-3 text-blue-600" /> : <Copy className="h-3 w-3" />}
                   {copied ? 'Copied' : 'Copy'}
                 </button>
               </div>
@@ -575,7 +575,7 @@ export default function DealCalculator() {
 
               {/* Discount */}
               {pricing.discountAmount > 0 && (
-                <div className="flex justify-between text-sm text-green-700 mb-2">
+                <div className="flex justify-between text-sm text-blue-700 mb-2">
                   <span>Bundle Discount ({Math.round(pricing.discountRate * 100)}%)</span>
                   <span>-{fmt(pricing.discountAmount)}/mo</span>
                 </div>
@@ -599,7 +599,7 @@ export default function DealCalculator() {
               {/* Infrastructure */}
               <div className="flex justify-between text-sm mb-1">
                 <span className="text-gray-600">Infrastructure (at-cost)</span>
-                <span className="font-medium text-green-700">{fmtDecimal(infraCalc.totalMonthly)}/mo</span>
+                <span className="font-medium text-blue-700">{fmtDecimal(infraCalc.totalMonthly)}/mo</span>
               </div>
 
               {/* Divider */}
