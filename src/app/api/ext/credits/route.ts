@@ -9,16 +9,23 @@ export async function GET(req: NextRequest) {
     const auth = await authenticateExtension(req)
     const supabase = createAdminClient()
 
-    // Get workspace owner's credit balance
+    // Get workspace credit balance
+    const { data: credits } = await supabase
+      .from('workspace_credits')
+      .select('balance')
+      .eq('workspace_id', auth.workspaceId)
+      .maybeSingle()
+
+    // Get user plan
     const { data: user } = await supabase
       .from('users')
-      .select('credits, plan')
+      .select('plan')
       .eq('id', auth.userId)
       .maybeSingle()
 
     return NextResponse.json({
       data: {
-        remaining: user?.credits ?? 0,
+        remaining: credits?.balance ?? 0,
         plan: user?.plan ?? 'free',
         workspace_id: auth.workspaceId,
       },

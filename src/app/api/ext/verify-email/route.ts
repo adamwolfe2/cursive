@@ -51,12 +51,12 @@ export async function POST(req: NextRequest) {
     const supabase = createAdminClient()
 
     // Deduct 1 credit
-    const { data: creditResult } = await supabase.rpc('atomic_deduct_credits', {
-      p_user_id: auth.userId,
+    const { error: creditError } = await supabase.rpc('deduct_workspace_credits', {
+      p_workspace_id: auth.workspaceId,
       p_amount: 1,
     })
 
-    if (!creditResult) {
+    if (creditError) {
       return NextResponse.json({ error: 'Insufficient credits' }, { status: 402 })
     }
 
