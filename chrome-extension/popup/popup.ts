@@ -253,10 +253,10 @@ function displayResult(contact: EnrichedContact) {
 
   // Company
   if (contact.company_name) {
-    resultCompany.textContent = [contact.company_name, contact.company_industry].filter(Boolean).join(' — ')
-    ($('result-company-row')).style.display = 'flex'
+    resultCompany.textContent = [contact.company_name, contact.company_industry].filter(Boolean).join(' — ');
+    (document.getElementById('result-company-row') as HTMLElement).style.display = 'flex'
   } else {
-    ($('result-company-row')).style.display = 'none'
+    (document.getElementById('result-company-row') as HTMLElement).style.display = 'none'
   }
 
   // Show "not found" state
