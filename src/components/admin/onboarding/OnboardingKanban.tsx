@@ -20,6 +20,7 @@ import {
 import { CSS } from '@dnd-kit/utilities'
 import { cn } from '@/lib/design-system'
 import { Badge } from '@/components/ui/badge'
+import { CheckSquare, Square, Download, ArrowRight, X } from 'lucide-react'
 import ClientCard from './ClientCard'
 import { updateClientStatus } from '@/app/admin/onboarding/actions'
 import type { OnboardingClient, ClientStatus } from '@/types/onboarding'
@@ -83,6 +84,64 @@ interface OnboardingKanbanProps {
 export default function OnboardingKanban({ clients: initialClients }: OnboardingKanbanProps) {
   const [clients, setClients] = useState(initialClients)
   const [activeClient, setActiveClient] = useState<OnboardingClient | null>(null)
+  const [selectMode, setSelectMode] = useState(false)
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [bulkMoving, setBulkMoving] = useState(false)
+
+  const toggleSelect = useCallback((id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }, [])
+
+  const handleBulkMove = useCallback(async (targetStatus: ClientStatus) => {
+    if (selectedIds.size === 0) return
+    setBulkMoving(true)
+
+    const idsToMove = Array.from(selectedIds)
+    // Optimistic update
+    setClients((prev) =>
+      prev.map((c) => idsToMove.includes(c.id) ? { ...c, status: targetStatus } : c)
+    )
+
+    try {
+      await Promise.all(idsToMove.map((id) => updateClientStatus(id, targetStatus)))
+      setSelectedIds(new Set())
+      setSelectMode(false)
+    } catch {
+      setClients(initialClients) // Revert all on failure
+    } finally {
+      setBulkMoving(false)
+    }
+  }, [selectedIds, initialClients])
+
+  const handleExportCSV = useCallback(() => {
+    const toExport = selectedIds.size > 0
+      ? clients.filter((c) => selectedIds.has(c.id))
+      : clients
+
+    const headers = ['Company', 'Contact', 'Email', 'Packages', 'Status', 'Created']
+    const rows = toExport.map((c) => [
+      c.company_name,
+      c.primary_contact_name,
+      c.primary_contact_email,
+      (c.packages_selected || []).join('; '),
+      c.status,
+      new Date(c.created_at).toLocaleDateString(),
+    ])
+
+    const csv = [headers, ...rows].map((r) => r.map((v) => `"${(v || '').replace(/"/g, '""')}"`).join(',')).join('\n')
+    const blob = new Blob([csv], { type: 'text/csv' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `cursive-clients-${new Date().toISOString().split('T')[0]}.csv`
+    a.click()
+    URL.revokeObjectURL(url)
+  }, [clients, selectedIds])
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -150,6 +209,53 @@ export default function OnboardingKanban({ clients: initialClients }: Onboarding
   }, [clients])
 
   return (
+    <div>
+      {/* Bulk toolbar */}
+      <div className="flex items-center gap-3 mb-3 flex-wrap">
+        <button
+          type="button"
+          onClick={() => { setSelectMode(!selectMode); setSelectedIds(new Set()) }}
+          className={`inline-flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-xs font-medium transition-colors ${
+            selectMode ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
+          }`}
+        >
+          {selectMode ? <CheckSquare className="h-3.5 w-3.5" /> : <Square className="h-3.5 w-3.5" />}
+          {selectMode ? `${selectedIds.size} selected` : 'Select'}
+        </button>
+
+        {selectMode && selectedIds.size > 0 && (
+          <>
+            <select
+              onChange={(e) => { if (e.target.value) handleBulkMove(e.target.value as ClientStatus) }}
+              disabled={bulkMoving}
+              className="rounded-md border border-gray-200 bg-white px-2 py-1.5 text-xs"
+              defaultValue=""
+            >
+              <option value="" disabled>Move to...</option>
+              {CLIENT_STATUSES.map((s) => (
+                <option key={s} value={s}>{STATUS_LABELS[s]}</option>
+              ))}
+            </select>
+            <button
+              type="button"
+              onClick={() => { setSelectedIds(new Set()); setSelectMode(false) }}
+              className="text-xs text-gray-400 hover:text-gray-600"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          </>
+        )}
+
+        <button
+          type="button"
+          onClick={handleExportCSV}
+          className="inline-flex items-center gap-1.5 rounded-md border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50 ml-auto"
+        >
+          <Download className="h-3.5 w-3.5" />
+          Export CSV {selectedIds.size > 0 ? `(${selectedIds.size})` : `(${clients.length})`}
+        </button>
+      </div>
+
     <DndContext
       sensors={sensors}
       collisionDetection={closestCorners}
@@ -173,7 +279,22 @@ export default function OnboardingKanban({ clients: initialClients }: Onboarding
                 count={columnClients.length}
               >
                 {columnClients.map((client) => (
-                  <SortableCard key={client.id} client={client} />
+                  <div key={client.id} className="relative">
+                    {selectMode && (
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); toggleSelect(client.id) }}
+                        className="absolute top-2 left-2 z-10"
+                      >
+                        {selectedIds.has(client.id) ? (
+                          <CheckSquare className="h-4 w-4 text-blue-600" />
+                        ) : (
+                          <Square className="h-4 w-4 text-gray-300" />
+                        )}
+                      </button>
+                    )}
+                    <SortableCard client={client} />
+                  </div>
                 ))}
               </KanbanColumn>
             </SortableContext>
@@ -189,6 +310,7 @@ export default function OnboardingKanban({ clients: initialClients }: Onboarding
         ) : null}
       </DragOverlay>
     </DndContext>
+    </div>
   )
 }
 

@@ -173,7 +173,10 @@ function OnboardingPageContent() {
       if (prefill.company) methods.setValue('company_name', prefill.company)
       if (prefill.name) methods.setValue('primary_contact_name', prefill.name)
       if (prefill.email) methods.setValue('primary_contact_email', prefill.email)
-      if (prefill.packages.length > 0) methods.setValue('packages_selected', prefill.packages)
+      if (prefill.packages.length > 0) {
+        methods.setValue('packages_selected', prefill.packages)
+        setPrefilledFromUrl(true)
+      }
       if (prefill.setup_fee !== null) methods.setValue('setup_fee', prefill.setup_fee)
       if (prefill.tier) methods.setValue('outbound_tier', prefill.tier)
     } catch {
@@ -185,6 +188,7 @@ function OnboardingPageContent() {
   const [currentStep, setCurrentStep] = React.useState(0)
   const [isSubmitting, setIsSubmitting] = React.useState(false)
   const [submitError, setSubmitError] = React.useState<string | null>(null)
+  const [prefilledFromUrl, setPrefilledFromUrl] = React.useState(false)
 
   // Warn before navigating away with unsaved changes
   React.useEffect(() => {
@@ -300,7 +304,7 @@ function OnboardingPageContent() {
       case 'company-info':
         return <CompanyInfoStep />
       case 'packages':
-        return <PackageSelectionStep />
+        return <PackageSelectionStep prefilledFromUrl={prefilledFromUrl} />
       case 'icp':
         return <ICPIntakeStep />
       case 'email-setup':

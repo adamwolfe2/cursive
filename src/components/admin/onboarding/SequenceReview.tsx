@@ -1,6 +1,9 @@
 'use client'
 
 import { useState } from 'react'
+import dynamic from 'next/dynamic'
+
+const EmailBisonDeployModal = dynamic(() => import('./EmailBisonDeployModal'), { ssr: false })
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -35,6 +38,7 @@ export default function SequenceReview({ client }: SequenceReviewProps) {
   const [approving, setApproving] = useState(false)
   const [requesting, setRequesting] = useState(false)
   const [regenerating, setRegenerating] = useState(false)
+  const [showDeploy, setShowDeploy] = useState(false)
 
   if (client.copy_generation_status === 'not_applicable') {
     return (
@@ -181,6 +185,16 @@ export default function SequenceReview({ client }: SequenceReviewProps) {
             >
               Needs Edits
             </Button>
+            {client.copy_approval_status === 'approved' && client.draft_sequences && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowDeploy(true)}
+                leftIcon={<Mail className="h-3.5 w-3.5" />}
+              >
+                Deploy to EmailBison
+              </Button>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -256,6 +270,22 @@ export default function SequenceReview({ client }: SequenceReviewProps) {
           </Button>
         </CardContent>
       </Card>
+
+      {/* EmailBison Deploy Modal */}
+      {showDeploy && client.draft_sequences && (
+        <EmailBisonDeployModal
+          isOpen={showDeploy}
+          onClose={() => setShowDeploy(false)}
+          client={{
+            id: client.id,
+            company_name: client.company_name,
+            primary_contact_email: client.primary_contact_email,
+            reply_routing_email: client.reply_routing_email,
+            sender_names: client.sender_names,
+          }}
+          sequences={client.draft_sequences}
+        />
+      )}
     </div>
   )
 }

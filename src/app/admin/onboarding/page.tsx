@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { createAdminClient } from '@/lib/supabase/server'
 import { Card } from '@/components/ui/card'
 import OnboardingKanban from '@/components/admin/onboarding/OnboardingKanban'
+import OnboardingAnalytics from '@/components/admin/onboarding/OnboardingAnalytics'
 import type { OnboardingClient } from '@/types/onboarding'
 import { Users, Rocket, Settings, CheckCircle, Plus } from 'lucide-react'
 
@@ -10,7 +11,7 @@ export default async function OnboardingPipelinePage() {
 
   const { data: clients, error } = await supabase
     .from('onboarding_clients')
-    .select('id, company_name, primary_contact_name, primary_contact_email, packages_selected, status, created_at, updated_at')
+    .select('id, company_name, primary_contact_name, primary_contact_email, packages_selected, status, created_at, updated_at, setup_fee, recurring_fee, enriched_icp_brief, target_industries, target_titles, pain_points')
     .order('created_at', { ascending: true })
 
   if (error) {
@@ -76,6 +77,8 @@ export default async function OnboardingPipelinePage() {
           )
         })}
       </div>
+
+      <OnboardingAnalytics clients={allClients as any} />
 
       <OnboardingKanban clients={allClients} />
     </div>

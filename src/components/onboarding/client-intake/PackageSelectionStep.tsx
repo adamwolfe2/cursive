@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils'
 import { PACKAGES, PACKAGE_SLUGS } from '@/types/onboarding'
 import type { OnboardingFormData, PackageSlug } from '@/types/onboarding'
 
-export function PackageSelectionStep() {
+export function PackageSelectionStep({ prefilledFromUrl = false }: { prefilledFromUrl?: boolean }) {
   const { control, formState: { errors } } = useFormContext<OnboardingFormData>()
   const { field } = useController({
     name: 'packages_selected',
@@ -32,6 +32,12 @@ export function PackageSelectionStep() {
           Choose the services you have purchased. This determines which setup sections you will complete.
         </p>
       </div>
+
+      {prefilledFromUrl && selected.length > 0 && (
+        <div className="rounded-md bg-blue-50 border border-blue-200 px-3 py-2 text-xs text-blue-700">
+          Packages confirmed from your call — feel free to adjust if needed.
+        </div>
+      )}
 
       {errors.packages_selected && (
         <div className="rounded-lg border border-destructive/50 bg-destructive/5 px-4 py-3 text-sm text-destructive">
