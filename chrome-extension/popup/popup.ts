@@ -90,7 +90,7 @@ connectBtn.addEventListener('click', async () => {
       creditCount.textContent = String((response.data as { remaining: number }).remaining)
     } else {
       chrome.storage.sync.remove(STORAGE_KEY_API)
-      authError.textContent = response.error
+      authError.textContent = response.error || 'Connection failed'
       authError.classList.remove('hidden')
     }
     connectBtn.removeAttribute('disabled')
@@ -161,7 +161,7 @@ searchBtn.addEventListener('click', async () => {
     displayResult(currentResult)
     loadCredits() // Refresh credit count
   } else {
-    searchError.textContent = response.error
+    searchError.textContent = response.error || 'Search failed'
     searchError.classList.remove('hidden')
   }
 })

@@ -1,3 +1,4 @@
+export {} // Module boundary
 /**
  * Cursive AI — LinkedIn Profile Enrichment Content Script
  *

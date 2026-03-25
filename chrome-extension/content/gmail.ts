@@ -1,3 +1,4 @@
+export {} // Module boundary — prevents duplicate function errors in TS compilation
 /**
  * Cursive AI — Gmail Email Enrichment Content Script
  *
@@ -168,7 +169,7 @@ function getBadgeTitle(status: string): string {
   return map[status] || 'Unknown status'
 }
 
-function updateBadge(email: string, status: 'valid' | 'catch-all' | 'invalid'): void {
+function updateBadge(email: string, status: string): void {
   const badges = document.querySelectorAll(`[data-cursive-email="${CSS.escape(email)}"]`)
   badges.forEach((badge) => {
     badge.className = `cursive-email-badge cursive-email-badge--${status}`
@@ -289,15 +290,15 @@ async function verifyAndBadge(email: string, anchorEl: Element): Promise<void> {
   // Check cache first
   const cached = await getGmailCache(email)
   if (cached?.verify) {
-    const badge = createBadge(email, cached.verify.status)
-    anchorEl.style.position = 'relative'
+    const badge = createBadge(email, cached.verify.status as 'valid' | 'catch-all' | 'invalid' | 'checking')
+    ;(anchorEl as HTMLElement).style.position = 'relative'
     anchorEl.appendChild(badge)
     return
   }
 
   // Show "checking" badge
   const badge = createBadge(email, 'checking')
-  anchorEl.style.position = 'relative'
+  ;(anchorEl as HTMLElement).style.position = 'relative'
   anchorEl.appendChild(badge)
 
   chrome.runtime.sendMessage(
