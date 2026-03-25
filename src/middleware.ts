@@ -108,6 +108,7 @@ export async function middleware(req: NextRequest) {
     const FULLY_PUBLIC_API_ROUTES = [
       '/api/affiliate/apply',
       '/api/affiliate/track-click',
+      '/api/ext/',
       '/api/lead-capture',
       '/api/pixel/provision-demo',
       '/api/public/segment-search',
