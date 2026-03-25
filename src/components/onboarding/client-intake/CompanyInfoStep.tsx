@@ -1,5 +1,6 @@
 'use client'
 
+import * as React from 'react'
 import { useFormContext } from 'react-hook-form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -26,7 +27,38 @@ const HOW_HEARD_OPTIONS = [
 ]
 
 export function CompanyInfoStep() {
-  const { register, watch, formState: { errors } } = useFormContext<OnboardingFormData>()
+  const { register, watch, setValue, getValues, formState: { errors } } = useFormContext<OnboardingFormData>()
+  const [enriching, setEnriching] = React.useState(false)
+  const [enriched, setEnriched] = React.useState(false)
+
+  const handleWebsiteBlur = React.useCallback(async () => {
+    const url = getValues('company_website')
+    if (!url || !url.match(/^https?:\/\/.+\..+/)) return
+    if (enriched) return // Only enrich once
+
+    setEnriching(true)
+    try {
+      const res = await fetch('/api/enrich/website', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url }),
+      })
+      const { data } = await res.json()
+      if (data) {
+        if (data.company_name && !getValues('company_name')) {
+          setValue('company_name', data.company_name)
+        }
+        if (data.industry && !getValues('industry')) {
+          setValue('industry', data.industry)
+        }
+        setEnriched(true)
+      }
+    } catch {
+      // Silently fail
+    } finally {
+      setEnriching(false)
+    }
+  }, [getValues, setValue, enriched])
   const commChannel = watch('communication_channel')
   const howHeard = watch('referral_source')
 
@@ -62,8 +94,15 @@ export function CompanyInfoStep() {
             {...register('company_website', {
               required: 'Website is required',
               pattern: { value: /^https?:\/\/.+\..+/, message: 'Please enter a valid URL' },
+              onBlur: handleWebsiteBlur,
             })}
           />
+          {enriching && (
+            <p className="text-[11px] text-blue-500 animate-pulse">Auto-detecting company info...</p>
+          )}
+          {enriched && (
+            <p className="text-[11px] text-blue-500">Auto-detected from your website</p>
+          )}
           {errors.company_website && <p className="text-sm text-destructive">{errors.company_website.message}</p>}
         </div>
 

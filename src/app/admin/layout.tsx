@@ -18,6 +18,7 @@ import { createClient } from '@/lib/supabase/server'
 import { getUserWithRole } from '@/lib/auth/roles'
 import { createAdminClient } from '@/lib/supabase/admin'
 import AdminNav from './_components/AdminNav'
+import KeyboardShortcuts from '@/components/admin/KeyboardShortcuts'
 
 export default async function AdminLayout({
   children,
@@ -62,6 +63,7 @@ export default async function AdminLayout({
     <div className="min-h-screen bg-zinc-50">
       <AdminNav adminEmail={adminEmail} needsApprovalCount={needsApprovalCount} upcomingBookingsCount={upcomingBookingsCount} />
       <main>{children}</main>
+      <KeyboardShortcuts />
     </div>
   )
 }

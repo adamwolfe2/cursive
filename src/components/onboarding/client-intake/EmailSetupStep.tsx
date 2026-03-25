@@ -68,9 +68,33 @@ interface EmailSetupStepProps {
   onExamplesFileChange: (file: PendingFile | null) => void
 }
 
+const TONE_PREVIEWS: Record<string, { from: string; preview: string }> = {
+  professional: {
+    from: 'Professional & Formal',
+    preview: 'Dear {{firstName}},\n\nI\'m reaching out regarding your company\'s lead generation strategy. Based on our analysis of similar organizations in your space, there may be an opportunity to significantly improve your pipeline efficiency.\n\nWould you be available for a brief conversation this week?',
+  },
+  conversational: {
+    from: 'Conversational & Friendly',
+    preview: 'Hey {{firstName}},\n\nI was looking at what you\'re doing at {{companyName}} and had a quick thought. A lot of teams in your space are leaving money on the table with their current outbound approach.\n\nWorth a quick chat?',
+  },
+  direct: {
+    from: 'Direct & To the Point',
+    preview: '{{firstName}} — you\'re spending $X on ads and converting at Y%. Here\'s how companies like yours are cutting that in half while doubling pipeline.\n\n2 min to show you?',
+  },
+  witty: {
+    from: 'Witty & Creative',
+    preview: '{{firstName}},\n\nYour website visitors are like party guests who leave before saying hi — 97% of them vanish without a trace. What if you could finally see who they are and actually talk to them?\n\nCurious?',
+  },
+  consultative: {
+    from: 'Consultative / Advisory',
+    preview: '{{firstName}},\n\nAfter reviewing {{companyName}}\'s current positioning in the market, I noticed a pattern we\'ve seen with similar companies: the gap between website traffic and qualified pipeline is wider than it needs to be.\n\nI have some specific ideas — open to exploring them?',
+  },
+}
+
 export function EmailSetupStep({ examplesFile, onExamplesFileChange }: EmailSetupStepProps) {
   const { register, watch, formState: { errors } } = useFormContext<OnboardingFormData>()
   const primaryCta = watch('primary_cta')
+  const copyTone = watch('copy_tone')
 
   return (
     <div className="space-y-10">
@@ -208,6 +232,21 @@ export function EmailSetupStep({ examplesFile, onExamplesFileChange }: EmailSetu
               />
             </div>
           </div>
+
+          {/* Tone Preview */}
+          {copyTone && TONE_PREVIEWS[copyTone] && (
+            <div className="rounded-lg border border-blue-100 bg-blue-50/50 p-4">
+              <p className="text-[11px] font-medium text-blue-600 mb-2">
+                Preview: {TONE_PREVIEWS[copyTone].from}
+              </p>
+              <div className="text-sm text-gray-700 whitespace-pre-line leading-relaxed font-mono bg-white rounded-md p-3 border border-blue-100">
+                {TONE_PREVIEWS[copyTone].preview}
+              </div>
+              <p className="text-[10px] text-gray-400 mt-2">
+                This is a sample. Your actual copy will be personalized to your ICP and value proposition.
+              </p>
+            </div>
+          )}
 
           {primaryCta === 'custom' && (
             <div className="space-y-2">

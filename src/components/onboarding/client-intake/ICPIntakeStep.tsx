@@ -1,5 +1,6 @@
 'use client'
 
+import * as React from 'react'
 import { useFormContext, useController } from 'react-hook-form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -8,6 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { cn } from '@/lib/utils'
 import { TagInput } from './TagInput'
 import type { OnboardingFormData } from '@/types/onboarding'
+import { Sparkles } from 'lucide-react'
 
 const COMPANY_SIZES = [
   '1-10',
@@ -30,8 +32,34 @@ const GEOGRAPHY_OPTIONS = [
   'Global',
 ]
 
+interface ICPSuggestions {
+  titles: string[]
+  pain_points: string[]
+  keywords: string[]
+}
+
 export function ICPIntakeStep() {
   const { register, watch, control, formState: { errors } } = useFormContext<OnboardingFormData>()
+  const [suggestions, setSuggestions] = React.useState<ICPSuggestions | null>(null)
+  const [loadingSuggestions, setLoadingSuggestions] = React.useState(false)
+  const [showSuggestions, setShowSuggestions] = React.useState(true)
+
+  const industry = watch('industry')
+
+  // Fetch suggestions when step loads and industry is available
+  React.useEffect(() => {
+    if (!industry || industry.length < 2) return
+    setLoadingSuggestions(true)
+    fetch('/api/onboarding/icp-suggestions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ industry }),
+    })
+      .then((res) => res.json())
+      .then((json) => setSuggestions(json.data))
+      .catch(() => {})
+      .finally(() => setLoadingSuggestions(false))
+  }, [industry])
 
   const icpDescription = watch('icp_description') ?? ''
   const geography = watch('target_geography') ?? []
@@ -67,6 +95,103 @@ export function ICPIntakeStep() {
         </p>
         <p className="mt-2 text-sm font-medium text-blue-600">Let&apos;s get specific about who you want to reach.</p>
       </div>
+
+      {/* AI Suggestions Panel */}
+      {suggestions && showSuggestions && (
+        <div className="rounded-lg border border-blue-100 bg-blue-50/50 p-4">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2 text-sm font-medium text-blue-700">
+              <Sparkles className="h-4 w-4" />
+              AI Suggestions for {industry}
+            </div>
+            <button type="button" onClick={() => setShowSuggestions(false)} className="text-xs text-gray-400 hover:text-gray-600">
+              Dismiss
+            </button>
+          </div>
+
+          <div className="space-y-3">
+            {suggestions.titles.length > 0 && (
+              <div>
+                <p className="text-[11px] font-medium text-gray-500 mb-1.5">Suggested titles — click to add:</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {suggestions.titles.map((title) => (
+                    <button
+                      key={title}
+                      type="button"
+                      onClick={() => {
+                        const current = titlesField.value ?? []
+                        if (!current.includes(title)) titlesField.onChange([...current, title])
+                      }}
+                      disabled={(titlesField.value ?? []).includes(title)}
+                      className={`rounded-full px-3 py-1 text-xs transition-colors ${
+                        (titlesField.value ?? []).includes(title)
+                          ? 'bg-blue-200 text-blue-800 cursor-default'
+                          : 'bg-white text-blue-700 border border-blue-200 hover:bg-blue-100'
+                      }`}
+                    >
+                      {(titlesField.value ?? []).includes(title) ? '+ ' : ''}{title}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {suggestions.pain_points.length > 0 && (
+              <div>
+                <p className="text-[11px] font-medium text-gray-500 mb-1.5">Common pain points — click to append:</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {suggestions.pain_points.map((pain) => (
+                    <button
+                      key={pain}
+                      type="button"
+                      onClick={() => {
+                        const current = watch('pain_points') ?? ''
+                        const separator = current.trim() ? '. ' : ''
+                        register('pain_points').onChange({ target: { value: current + separator + pain, name: 'pain_points' } })
+                      }}
+                      className="rounded-full px-3 py-1 text-xs bg-white text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors"
+                    >
+                      {pain}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {suggestions.keywords.length > 0 && (
+              <div>
+                <p className="text-[11px] font-medium text-gray-500 mb-1.5">Suggested keywords — click to add:</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {suggestions.keywords.map((kw) => (
+                    <button
+                      key={kw}
+                      type="button"
+                      onClick={() => {
+                        const current = intentField.value ?? []
+                        if (!current.includes(kw)) intentField.onChange([...current, kw])
+                      }}
+                      disabled={(intentField.value ?? []).includes(kw)}
+                      className={`rounded-full px-3 py-1 text-xs transition-colors ${
+                        (intentField.value ?? []).includes(kw)
+                          ? 'bg-blue-200 text-blue-800 cursor-default'
+                          : 'bg-white text-blue-700 border border-blue-200 hover:bg-blue-100'
+                      }`}
+                    >
+                      {kw}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {loadingSuggestions && (
+        <div className="text-center py-2">
+          <p className="text-xs text-blue-500 animate-pulse">Loading AI suggestions...</p>
+        </div>
+      )}
 
       {/* ICP Description */}
       <div className="space-y-2">

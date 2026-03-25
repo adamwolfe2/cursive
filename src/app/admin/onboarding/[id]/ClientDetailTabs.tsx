@@ -31,11 +31,14 @@ import type {
   FulfillmentChecklist as FulfillmentChecklistType,
   ClientStatus,
 } from '@/types/onboarding'
+import { useRouter } from 'next/navigation'
 import {
   ChevronDown,
   MessageSquare,
   RefreshCw,
+  Copy,
 } from 'lucide-react'
+import { DEAL_CALCULATOR_HANDOFF_KEY } from '@/types/onboarding-wizard'
 
 const STATUS_BADGE_VARIANT: Record<ClientStatus, 'muted' | 'info' | 'default' | 'warning' | 'success' | 'destructive'> = {
   lead: 'muted',
@@ -56,6 +59,7 @@ interface ClientDetailTabsProps {
 }
 
 export default function ClientDetailTabs({ client, files, checklist }: ClientDetailTabsProps) {
+  const router = useRouter()
   const [currentStatus, setCurrentStatus] = useState<ClientStatus>(client.status)
   const [updatingStatus, setUpdatingStatus] = useState(false)
   const [regeneratingCopy, setRegeneratingCopy] = useState(false)
@@ -134,6 +138,33 @@ export default function ClientDetailTabs({ client, files, checklist }: ClientDet
           leftIcon={<RefreshCw className="h-3.5 w-3.5" />}
         >
           Regenerate Copy
+        </Button>
+
+        <Button
+          variant="outline"
+          size="sm"
+          leftIcon={<Copy className="h-3.5 w-3.5" />}
+          onClick={() => {
+            // Build a deal state from this client's data for the wizard
+            const dealHandoff = {
+              clientName: '',
+              outboundTierId: client.outbound_tier?.toLowerCase() || null,
+              selectedPackages: (client.packages_selected || []).filter((p: string) => p !== 'outbound' && p !== 'bundle'),
+              customDomains: 0,
+              customInboxes: 0,
+              useCustomInfra: false,
+              domainCostPer: 12,
+              inboxCostPer: 7,
+              setupFeeOverride: client.setup_fee,
+              recurringOverride: client.recurring_fee,
+              billingCadence: (client.billing_cadence as 'monthly' | 'quarterly' | 'annual') || 'monthly',
+              notes: `Duplicated from ${client.company_name}`,
+            }
+            localStorage.setItem(DEAL_CALCULATOR_HANDOFF_KEY, JSON.stringify(dealHandoff))
+            router.push('/admin/onboarding/new')
+          }}
+        >
+          Duplicate as New
         </Button>
       </div>
 

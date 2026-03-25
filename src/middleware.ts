@@ -177,6 +177,7 @@ export async function middleware(req: NextRequest) {
       pathname.startsWith('/signup') ||
       pathname.startsWith('/welcome') ||
       pathname.startsWith('/onboarding') ||
+      pathname.startsWith('/status/') ||
       pathname.startsWith('/client-onboarding') ||
       pathname.startsWith('/role-selection') ||
       pathname.startsWith('/forgot-password') ||
