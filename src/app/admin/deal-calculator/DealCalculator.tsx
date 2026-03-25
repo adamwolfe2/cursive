@@ -1,8 +1,10 @@
 'use client'
 
 import { useState, useMemo, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import { Card } from '@/components/ui/card'
-import { Copy, Check, ChevronDown, ChevronRight, DollarSign, Mail, Globe, Inbox, Package, Calculator } from 'lucide-react'
+import { Copy, Check, ChevronDown, ChevronRight, DollarSign, Mail, Globe, Inbox, Package, Calculator, ArrowRight, RotateCcw } from 'lucide-react'
+import { DEAL_CALCULATOR_HANDOFF_KEY } from '@/types/onboarding-wizard'
 import {
   OUTBOUND_TIERS,
   SERVICE_PACKAGES,
@@ -63,6 +65,7 @@ function fmtDecimal(n: number): string {
 // ---------------------------------------------------------------------------
 
 export default function DealCalculator() {
+  const router = useRouter()
   const [deal, setDeal] = useState<DealState>(INITIAL_STATE)
   const [copied, setCopied] = useState(false)
   const [showInfraDetails, setShowInfraDetails] = useState(false)
@@ -659,15 +662,31 @@ export default function DealCalculator() {
             <div className="px-5 py-3 space-y-2">
               <button
                 type="button"
-                onClick={handleCopy}
+                onClick={() => {
+                  localStorage.setItem(DEAL_CALCULATOR_HANDOFF_KEY, JSON.stringify(deal))
+                  router.push('/admin/onboarding/new')
+                }}
                 className="w-full rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
               >
-                {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                {copied ? 'Copied to Clipboard' : 'Copy Deal Summary'}
+                <ArrowRight className="h-4 w-4" />
+                Continue to Onboarding
               </button>
-              <p className="text-[10px] text-gray-400 text-center">
-                Future: Generate SOW, send Stripe invoice, create RabbitSign contract
-              </p>
+              <button
+                type="button"
+                onClick={handleCopy}
+                className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
+              >
+                {copied ? <Check className="h-4 w-4 text-blue-600" /> : <Copy className="h-4 w-4" />}
+                {copied ? 'Copied' : 'Copy Breakdown'}
+              </button>
+              <button
+                type="button"
+                onClick={() => setDeal(INITIAL_STATE)}
+                className="w-full rounded-lg border border-gray-200 bg-white px-4 py-1.5 text-xs font-medium text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-colors flex items-center justify-center gap-1.5"
+              >
+                <RotateCcw className="h-3 w-3" />
+                Discard
+              </button>
             </div>
           </Card>
         </div>

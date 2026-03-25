@@ -1,6 +1,6 @@
 import { createAdminClient } from '@/lib/supabase/server'
 import type { OnboardingTemplate } from '@/types/onboarding-templates'
-import InternalIntakeForm from './InternalIntakeForm'
+import OnboardingWizard from '@/components/admin/onboarding/wizard/OnboardingWizard'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 
@@ -14,7 +14,7 @@ export default async function NewClientIntakePage() {
     .order('name', { ascending: true })
 
   return (
-    <div className="p-6 max-w-[1200px] mx-auto">
+    <div className="p-6 max-w-[1400px] mx-auto">
       <div className="mb-6">
         <Link
           href="/admin/onboarding"
@@ -23,13 +23,13 @@ export default async function NewClientIntakePage() {
           <ArrowLeft className="h-4 w-4" />
           Back to Pipeline
         </Link>
-        <h1 className="text-2xl font-bold text-gray-900">New Client Intake</h1>
+        <h1 className="text-2xl font-bold text-gray-900">New Client Onboarding</h1>
         <p className="text-sm text-gray-500 mt-1">
-          Paste raw context from calls, transcripts, or briefs. AI will parse it into a structured client profile.
+          Configure the deal, paste call notes, review fields, send invoice and contract, then create the client.
         </p>
       </div>
 
-      <InternalIntakeForm templates={(templates ?? []) as OnboardingTemplate[]} />
+      <OnboardingWizard templates={(templates ?? []) as OnboardingTemplate[]} />
     </div>
   )
 }
