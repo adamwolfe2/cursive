@@ -16,6 +16,7 @@ interface CallNotesStepProps {
   onTemplateSelect: (data: TemplateData | null, id: string | null) => void
   onParse: (rawContext: string, format: ContextFormat) => void
   onParsed: (data: ParsedIntakeData) => void
+  onParseError: (error: string) => void
   onSkip: () => void
 }
 
@@ -56,6 +57,7 @@ export default function CallNotesStep({
   onTemplateSelect,
   onParse,
   onParsed,
+  onParseError,
   onSkip,
 }: CallNotesStepProps) {
   const handleTemplateSelect = useCallback(
@@ -92,10 +94,10 @@ export default function CallNotesStep({
         const merged = mergeDealIntoParsed(deal, result.data)
         onParsed(merged)
       } catch (error) {
-        throw error // Let parent handle
+        onParseError(error instanceof Error ? error.message : 'Failed to parse context')
       }
     },
-    [deal, onParse, onParsed]
+    [deal, onParse, onParsed, onParseError]
   )
 
   return (

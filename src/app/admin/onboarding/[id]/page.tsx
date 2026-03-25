@@ -7,6 +7,7 @@ import type {
   FulfillmentChecklist,
 } from '@/types/onboarding'
 import ClientDetailTabs from './ClientDetailTabs'
+import { generateStatusToken } from '@/lib/utils/status-token'
 import { ArrowLeft, ExternalLink } from 'lucide-react'
 
 interface PageProps {
@@ -42,6 +43,9 @@ export default async function OnboardingClientDetailPage({ params }: PageProps) 
   const client = clientRes.data as OnboardingClient
   const files = (filesRes.data ?? []) as ClientFile[]
   const checklist = (checklistRes.data ?? null) as FulfillmentChecklist | null
+  const statusToken = generateStatusToken(id)
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://leads.meetcursive.com'
+  const statusUrl = `${baseUrl}/status/${statusToken}`
 
   return (
     <div className="p-6 max-w-[1400px] mx-auto">
@@ -70,6 +74,15 @@ export default async function OnboardingClientDetailPage({ params }: PageProps) 
               </a>
             )}
           </div>
+          <a
+            href={statusUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 rounded-md border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50"
+          >
+            <ExternalLink className="h-3 w-3" />
+            Client Status Page
+          </a>
         </div>
       </div>
 

@@ -6,7 +6,7 @@ import { CreditCard, FileSignature, Loader2, Check, ExternalLink, AlertTriangle 
 import type { ParsedIntakeData } from '@/types/onboarding-templates'
 import type { DealState, InvoiceState, ContractState } from '@/types/onboarding-wizard'
 import { calculateDealPricing, fmtCurrency, fmtCurrencyDecimal } from '@/lib/utils/deal-pricing'
-import { buildInvoiceLineItems } from '@/lib/integrations/mercury'
+import { buildInvoiceLineItems } from '@/lib/integrations/stripe-invoice'
 
 interface InvoiceContractStepProps {
   deal: DealState

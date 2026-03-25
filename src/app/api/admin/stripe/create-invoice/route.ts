@@ -3,7 +3,7 @@ export const maxDuration = 30
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { requireAdmin } from '@/lib/auth/admin'
-import { createDealInvoice } from '@/lib/integrations/mercury'
+import { createDealInvoice } from '@/lib/integrations/stripe-invoice'
 
 const requestSchema = z.object({
   customerEmail: z.string().email(),

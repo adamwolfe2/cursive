@@ -51,6 +51,15 @@ export default function OnboardingWizard({ templates }: OnboardingWizardProps) {
     [actions]
   )
 
+  const handleParseError = useCallback(
+    (error: string) => {
+      actions.setIsParsing(false)
+      // Surface error — could use toast, for now we'll use alert
+      alert(`Parse failed: ${error}`)
+    },
+    [actions]
+  )
+
   const handleSkipNotes = useCallback(() => {
     actions.markStepComplete(1)
     actions.goToStep(2)
@@ -110,6 +119,7 @@ export default function OnboardingWizard({ templates }: OnboardingWizardProps) {
             onTemplateSelect={handleTemplateSelect}
             onParse={handleParse}
             onParsed={handleParsed}
+            onParseError={handleParseError}
             onSkip={handleSkipNotes}
           />
         )

@@ -1,40 +1,7 @@
 import { createAdminClient } from '@/lib/supabase/server'
-import { createHmac } from 'crypto'
+import { verifyStatusToken } from '@/lib/utils/status-token'
 import Image from 'next/image'
 import { CheckCircle, Clock, Loader2 } from 'lucide-react'
-
-/**
- * Client-facing status page.
- * Token is HMAC(client_id, secret). No auth required — the token IS the auth.
- * Shows onboarding progress milestones. No internal details exposed.
- */
-
-function verifyToken(token: string): string | null {
-  // Token format: base64(clientId:hmac)
-  try {
-    const decoded = Buffer.from(token, 'base64url').toString('utf-8')
-    const [clientId, signature] = decoded.split(':')
-    if (!clientId || !signature) return null
-
-    const secret = process.env.STATUS_PAGE_SECRET || process.env.AUTOMATION_SECRET || 'cursive-status-default'
-    const expected = createHmac('sha256', secret).update(clientId).digest('hex').slice(0, 16)
-
-    if (signature !== expected) return null
-    return clientId
-  } catch {
-    return null
-  }
-}
-
-/**
- * Generate a status token for a client ID.
- * Call this when creating the client to generate the URL.
- */
-export function generateStatusToken(clientId: string): string {
-  const secret = process.env.STATUS_PAGE_SECRET || process.env.AUTOMATION_SECRET || 'cursive-status-default'
-  const signature = createHmac('sha256', secret).update(clientId).digest('hex').slice(0, 16)
-  return Buffer.from(`${clientId}:${signature}`).toString('base64url')
-}
 
 interface MilestoneItem {
   label: string
@@ -43,7 +10,7 @@ interface MilestoneItem {
 
 export default async function ClientStatusPage(props: { params: Promise<{ token: string }> }) {
   const { token } = await props.params
-  const clientId = verifyToken(token)
+  const clientId = verifyStatusToken(token)
 
   if (!clientId) {
     return (
