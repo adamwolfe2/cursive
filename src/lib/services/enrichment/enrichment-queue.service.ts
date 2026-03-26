@@ -412,7 +412,7 @@ export async function getEnrichmentStats(
       completed: 0,
       failed: 0,
       pending: 0,
-      byProvider: {} as any,
+      byProvider: {} as Record<string, { total: number; success: number; failed: number }>,
       avgDuration: 0,
       successRate: 0,
     }

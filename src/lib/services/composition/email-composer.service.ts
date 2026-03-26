@@ -178,7 +178,7 @@ export class EmailComposerService {
     if (template.reply_rate && template.reply_rate > 0.05) {
       score += 10
     }
-    if ((template as any).open_rate && (template as any).open_rate > 0.3) {
+    if ((template as unknown as { open_rate?: number }).open_rate && (template as unknown as { open_rate?: number }).open_rate! > 0.3) {
       score += 5
     }
 
@@ -214,8 +214,8 @@ export class EmailComposerService {
       sender_company: senderCompany || '',
 
       // Research intelligence variables
-      research_brief: (lead as any).research_brief ?? '',
-      research_outreach_angle: (lead as any).research_outreach_angle ?? '',
+      research_brief: (lead as unknown as Record<string, string>).research_brief ?? '',
+      research_outreach_angle: (lead as unknown as Record<string, string>).research_outreach_angle ?? '',
 
       // Common placeholders
       pain_point: 'operational efficiency',

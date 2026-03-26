@@ -262,7 +262,7 @@ async function updateOptimalTimesManually(
 
   // Update each lead
   for (const lead of leads) {
-    const timezone = lead.recipient_timezone || (lead.leads as any)?.timezone || null
+    const timezone = lead.recipient_timezone || (lead.leads as unknown as { timezone?: string } | null)?.timezone || null
 
     try {
       const optimalTime = await calculateOptimalSendTime(timezone, campaignId)
@@ -337,7 +337,7 @@ export async function getLeadsReadyForSend(
   return (fallbackData || []).map((row) => ({
     campaignLeadId: row.id,
     leadId: row.lead_id,
-    recipientTimezone: row.recipient_timezone || (row.leads as any)?.timezone || 'America/New_York',
+    recipientTimezone: row.recipient_timezone || (row.leads as unknown as { timezone?: string } | null)?.timezone || 'America/New_York',
     optimalSendTime: row.optimal_send_time ? new Date(row.optimal_send_time) : null,
   }))
 }

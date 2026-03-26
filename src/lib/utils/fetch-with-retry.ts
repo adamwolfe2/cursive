@@ -43,7 +43,7 @@ function defaultShouldRetry(error: Error): boolean {
 
   // Check if error has status code (from API responses)
   if ('status' in error) {
-    const status = (error as any).status as number
+    const status = (error as unknown as { status: number }).status
 
     // Retry on 5xx server errors
     if (status >= 500 && status < 600) {

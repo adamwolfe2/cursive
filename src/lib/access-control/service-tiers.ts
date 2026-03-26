@@ -142,7 +142,7 @@ export class ServiceTierAccessControl {
 
     // Find cheapest tier that includes this feature
     for (const tier of tiers) {
-      const tierFeatures = ((tier as any).platform_features as PlatformFeatures) || {}
+      const tierFeatures = ((tier as unknown as { platform_features?: PlatformFeatures }).platform_features) || {}
       const featureValue = tierFeatures[feature]
 
       if (typeof featureValue === 'boolean' && featureValue === true) {

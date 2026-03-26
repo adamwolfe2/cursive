@@ -271,7 +271,7 @@ export async function handleIncomingSms(
       .from('leads')
       .update({
         contact_data: {
-          ...(lead.contact_data as any),
+          ...(lead.contact_data as unknown as Record<string, unknown>),
           sms_opted_out: true,
           sms_opted_out_at: new Date().toISOString(),
         },

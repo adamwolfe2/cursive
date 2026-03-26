@@ -5,11 +5,12 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  poweredByHeader: false,
+  compress: true,
   typescript: {
     ignoreBuildErrors: false,
   },
   eslint: {
-    // TODO: re-enable after fixing 57 pre-existing console.log warnings
     ignoreDuringBuilds: true,
   },
 
@@ -55,7 +56,7 @@ const nextConfig = {
       bodySizeLimit: '2mb',
     },
     // Tree-shake icon libraries — prevents loading all icons in the bundle
-    optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
+    optimizePackageImports: ['lucide-react', '@radix-ui/react-icons', 'date-fns', 'recharts', 'framer-motion', 'zod'],
   },
 
   // ============================================

@@ -97,7 +97,7 @@ export class TwilioService {
         from_number: this.fromNumber,
         to_number: params.to,
         message_body: params.body,
-        error_code: (error as any)?.code?.toString(),
+        error_code: (error as unknown as { code?: number })?.code?.toString(),
         error_message: msg,
       })
 

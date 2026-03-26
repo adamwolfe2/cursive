@@ -407,7 +407,7 @@ export async function handleSubscriptionDeleted(subscription: Stripe.Subscriptio
 
       if (serviceSubscription) {
         const emailInfo = await getWorkspaceEmailInfo(serviceSubscription.workspace_id)
-        const tier = serviceSubscription.service_tier as any
+        const tier = serviceSubscription.service_tier as unknown as { name: string } | null
         await sendCancellationEmail({
           customerEmail: emailInfo.customerEmail,
           customerName: emailInfo.customerName,
@@ -463,7 +463,7 @@ export async function handleInvoicePaymentFailed(invoice: Stripe.Invoice): Promi
 
       if (subscription) {
         const emailInfo = await getWorkspaceEmailInfo(subscription.workspace_id)
-        const tier = subscription.service_tier as any
+        const tier = subscription.service_tier as unknown as { name: string } | null
         const tierName = tier?.name || 'Cursive Service'
         const amount = (invoice.amount_due || 0) / 100
 

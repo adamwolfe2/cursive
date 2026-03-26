@@ -100,8 +100,8 @@ export async function createServiceCheckout(
       user_id: userId,
       service_tier_id: tier.id,
       service_tier_slug: tier.slug,
-      monthly_price: (negotiatedMonthlyPrice ?? (tier as any).monthly_price ?? 0).toString(),
-      setup_fee: ((tier as any).setup_fee ?? 0).toString(),
+      monthly_price: (negotiatedMonthlyPrice ?? (tier as unknown as { monthly_price?: number }).monthly_price ?? 0).toString(),
+      setup_fee: ((tier as unknown as { setup_fee?: number }).setup_fee ?? 0).toString(),
       affiliate_ref_code: affiliateRefCode ?? '',
     },
     subscription_data: {
@@ -349,12 +349,12 @@ export async function createServicePortalSession(
 ): Promise<string> {
   const subscription = await serviceTierRepository.getWorkspaceActiveSubscription(workspaceId)
 
-  if (!subscription || !(subscription as any).stripe_customer_id) {
+  if (!subscription || !(subscription as unknown as { stripe_customer_id?: string }).stripe_customer_id) {
     throw new Error('No active subscription found')
   }
 
   const session = await getStripe().billingPortal.sessions.create({
-    customer: (subscription as any).stripe_customer_id,
+    customer: (subscription as unknown as { stripe_customer_id?: string }).stripe_customer_id!,
     return_url: returnUrl || `${baseUrl}/services/manage`
   })
 
