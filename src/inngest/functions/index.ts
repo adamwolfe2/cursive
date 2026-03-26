@@ -11,6 +11,7 @@ export { weeklyTrends } from './weekly-trends'
 // Marketplace functions
 export { processPartnerUpload, retryStalledUploads } from './partner-upload-processor'
 export { processEmailVerification } from './email-verification-processor'
+export { marketplaceLeadRefresh } from './marketplace-lead-refresh'
 
 // Marketplace jobs (scoring, freshness, bonuses)
 export {
