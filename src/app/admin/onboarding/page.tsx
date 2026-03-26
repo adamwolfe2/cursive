@@ -78,7 +78,7 @@ export default async function OnboardingPipelinePage() {
         })}
       </div>
 
-      <OnboardingAnalytics clients={allClients as any} />
+      <OnboardingAnalytics clients={allClients as unknown as Parameters<typeof OnboardingAnalytics>[0]['clients']} />
 
       <OnboardingKanban clients={allClients} />
     </div>
