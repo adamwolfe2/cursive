@@ -33,6 +33,18 @@ export function ImportLeadsDialog({ open, onOpenChange, onSuccess }: ImportLeads
   const handleUpload = async (uploadFiles: File[]) => {
     if (uploadFiles.length === 0) return
 
+    // File size validation — max 10MB
+    const file = uploadFiles[0]
+    if (file.size > 10 * 1024 * 1024) {
+      setResult({
+        success: false,
+        imported: 0,
+        failed: 0,
+        errors: [`File is too large (${(file.size / 1024 / 1024).toFixed(1)}MB). Maximum file size is 10MB.`],
+      })
+      return
+    }
+
     setIsProcessing(true)
     setResult(null)
 
