@@ -258,7 +258,7 @@ export default function MarketplacePage() {
 
           {/* Header */}
           <div className="mb-6">
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
               <div>
                 <h1 className="text-xl font-bold text-zinc-900">Lead Marketplace</h1>
                 <p className="text-sm text-zinc-500 mt-0.5">{totalLeads.toLocaleString()} leads available</p>
@@ -278,7 +278,7 @@ export default function MarketplacePage() {
             </div>
 
             {/* Navigation tabs */}
-            <div className="flex items-center gap-1 overflow-x-auto pb-1">
+            <div className="flex items-center gap-1 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-none">
               <Link href="/marketplace/custom-audience" className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-zinc-600 bg-white border border-zinc-200 rounded-md hover:bg-zinc-50 whitespace-nowrap">
                 Request Custom Audience
               </Link>
