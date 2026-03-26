@@ -3,6 +3,7 @@
 import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { inngest } from '@/inngest/client'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import type { OnboardingFormData } from '@/types/onboarding'
 
 // --------------------------------------------------------------------------
@@ -289,7 +290,7 @@ export async function submitOnboardingForm(
       .single()
 
     if (insertError) {
-      console.error('Failed to insert client record:', insertError.message)
+      safeError('[Onboarding]','Failed to insert client record:', insertError.message)
       return { success: false, error: 'Failed to save onboarding data. Please try again.' }
     }
 
@@ -319,7 +320,7 @@ export async function submitOnboardingForm(
         })
 
       if (uploadError) {
-        console.error(`Failed to upload file ${file.name}:`, uploadError.message)
+        safeError('[Onboarding]',`Failed to upload file ${file.name}:`, uploadError.message)
         continue
       }
 
@@ -348,7 +349,7 @@ export async function submitOnboardingForm(
         .insert(fileRecords)
 
       if (fileInsertError) {
-        console.error('Failed to insert file records:', fileInsertError.message)
+        safeError('[Onboarding]','Failed to insert file records:', fileInsertError.message)
         // Non-fatal: files uploaded but records failed
       }
     }
@@ -367,7 +368,7 @@ export async function submitOnboardingForm(
         },
       })
     } catch (inngestError) {
-      console.error('Inngest event delivery failed, falling back to direct API call:', inngestError)
+      safeError('[Onboarding]','Inngest event delivery failed, falling back to direct API call:', inngestError)
       // Fallback: call the intake API endpoint directly
       try {
         const baseUrl = process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_URL
@@ -382,14 +383,14 @@ export async function submitOnboardingForm(
           body: JSON.stringify({ client_id: clientId }),
         })
       } catch (fallbackError) {
-        console.error('Fallback intake API call also failed:', fallbackError)
+        safeError('[Onboarding]','Fallback intake API call also failed:', fallbackError)
         // Non-fatal: client record is saved, automation can be retried manually
       }
     }
 
     return { success: true, clientId }
   } catch (error) {
-    console.error('Onboarding submission error:', error)
+    safeError('[Onboarding] submission error:', error)
     return { success: false, error: 'An unexpected error occurred. Please try again.' }
   }
 }

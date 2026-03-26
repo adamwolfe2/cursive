@@ -3,6 +3,7 @@
 // Designed as a pluggable adapter — currently supports webhook and REST API modes
 
 import type { OnboardingClient, EnrichedICPBrief, PackageSlug } from '@/types/onboarding'
+import { safeWarn } from '@/lib/utils/log-sanitizer'
 import { PACKAGES } from '@/types/onboarding'
 
 interface CRMPayload {
@@ -137,7 +138,7 @@ export async function syncClientToCRM(
   }
 
   // Mode 3: Fallback — no CRM configured
-  console.warn(
+  safeWarn(
     '[CRM Sync] No CRM_WEBHOOK_URL or CRM_API_URL configured. Payload logged for manual sync:',
     JSON.stringify({
       client_id: client.id,
