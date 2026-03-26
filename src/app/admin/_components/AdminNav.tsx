@@ -9,11 +9,13 @@ import { ChevronDown, Menu, X } from 'lucide-react'
 // ─── Nav structure ────────────────────────────────────────────────────────────
 
 const PRIMARY = [
-  { href: '/admin/ops',        label: 'Ops Hub' },
-  { href: '/admin/dashboard',  label: 'Dashboard' },
-  { href: '/admin/accounts',   label: 'Accounts' },
-  { href: '/admin/revenue',    label: 'Revenue' },
-  { href: '/admin/onboarding', label: 'Onboarding' },
+  { href: '/admin/ops',             label: 'Ops Hub' },
+  { href: '/admin/dashboard',       label: 'Dashboard' },
+  { href: '/admin/accounts',        label: 'Accounts' },
+  { href: '/admin/revenue',         label: 'Revenue' },
+  { href: '/admin/onboarding',      label: 'Onboarding' },
+  { href: '/admin/deal-calculator', label: 'Deal Calculator' },
+  { href: '/admin/onboarding/new',  label: 'New Client' },
 ]
 
 const GROUPS = [
@@ -286,6 +288,20 @@ export default function AdminNav({ adminEmail, needsApprovalCount, upcomingBooki
               onNavigate={closeSidebar}
             />
           ))}
+        </div>
+
+        {/* Quick links to other sections */}
+        <div className="border-t border-zinc-100 p-2 flex-shrink-0">
+          <div className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 px-3 py-1">Quick Links</div>
+          <Link href="/marketplace" onClick={closeSidebar} className="flex items-center px-3 py-1.5 text-[13px] text-zinc-500 hover:text-zinc-900 hover:bg-zinc-50 rounded-md">
+            Marketplace
+          </Link>
+          <Link href="/developers" onClick={closeSidebar} className="flex items-center px-3 py-1.5 text-[13px] text-zinc-500 hover:text-zinc-900 hover:bg-zinc-50 rounded-md">
+            API Docs
+          </Link>
+          <Link href="/admin/api-costs" onClick={closeSidebar} className="flex items-center px-3 py-1.5 text-[13px] text-zinc-500 hover:text-zinc-900 hover:bg-zinc-50 rounded-md">
+            API Costs
+          </Link>
         </div>
 
         {/* Sidebar footer */}

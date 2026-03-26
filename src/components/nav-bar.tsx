@@ -29,13 +29,13 @@ export function NavBar() {
       roles: ['owner', 'admin', 'member'],
     },
     {
-      name: 'Marketplace',
-      href: '/marketplace',
+      name: 'Leads',
+      href: '/crm/leads',
       roles: ['owner', 'admin', 'member'],
     },
     {
-      name: 'Lead Search',
-      href: '/queries',
+      name: 'Marketplace',
+      href: '/marketplace',
       roles: ['owner', 'admin', 'member'],
     },
     {
@@ -44,33 +44,18 @@ export function NavBar() {
       roles: ['owner', 'admin', 'member'],
     },
     {
-      name: 'Partner Dashboard',
+      name: 'Settings',
+      href: '/settings',
+      roles: ['owner', 'admin', 'member'],
+    },
+    {
+      name: 'Partner',
       href: '/partner',
       roles: ['partner'],
     },
     {
-      name: 'Partner Upload',
-      href: '/partner/upload',
-      roles: ['partner'],
-    },
-    {
-      name: 'Payouts',
-      href: '/partner/payouts',
-      roles: ['partner'],
-    },
-    {
-      name: 'Admin Dashboard',
-      href: '/admin/dashboard',
-      roles: ['owner', 'admin'],
-    },
-    {
-      name: 'Admin Accounts',
-      href: '/admin/accounts',
-      roles: ['owner', 'admin'],
-    },
-    {
-      name: 'API Tests',
-      href: '/admin/monitoring',
+      name: 'Admin',
+      href: '/admin/onboarding',
       roles: ['owner', 'admin'],
     },
   ]
