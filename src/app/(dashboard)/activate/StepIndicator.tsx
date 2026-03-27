@@ -5,7 +5,7 @@ import { cn } from '@/lib/design-system'
 
 export function StepIndicator({ current, total, labels }: { current: number; total: number; labels: string[] }) {
   return (
-    <div className="flex items-center gap-0">
+    <div className="flex items-center justify-center gap-0">
       {Array.from({ length: total }).map((_, i) => (
         <div key={i} className="flex items-center">
           <div className={cn(

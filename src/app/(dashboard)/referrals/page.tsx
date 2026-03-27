@@ -79,7 +79,7 @@ export default function ReferralsPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-8 py-8">
+    <div className="max-w-4xl px-4 sm:px-6 py-6">
       <div className="mb-8">
         <h1 className="text-xl font-semibold text-zinc-900">Referral Program</h1>
         <p className="text-[13px] text-zinc-500 mt-1">Invite friends and earn credits</p>
@@ -128,14 +128,18 @@ export default function ReferralsPage() {
       {/* Referral Code */}
       <div className="bg-white border border-zinc-200 rounded-lg p-6 mb-8">
         <h3 className="text-[15px] font-semibold text-zinc-900 mb-4">Your Referral Link</h3>
-        {isLoading ? (
+        {isLoading || !origin ? (
           <div className="h-12 bg-zinc-100 rounded animate-pulse" />
+        ) : !stats?.referralCode ? (
+          <div className="bg-zinc-50 border border-zinc-200 rounded-lg px-4 py-3">
+            <p className="text-[13px] text-zinc-500">Unable to load your referral code. Please refresh the page to try again.</p>
+          </div>
         ) : (
           <div className="flex gap-3">
             <div className="flex-1 bg-zinc-50 border border-zinc-200 rounded-lg px-4 py-3">
               <p className="text-[13px] text-zinc-500 mb-1">Referral Link</p>
               <p className="text-[14px] font-mono text-zinc-900 truncate">
-                {origin}/signup?ref={stats?.referralCode}
+                {origin}/signup?ref={stats.referralCode}
               </p>
             </div>
             <button
@@ -172,11 +176,13 @@ export default function ReferralsPage() {
           </div>
         )}
 
-        <div className="mt-4 pt-4 border-t border-zinc-100">
-          <p className="text-[12px] text-zinc-500">
-            Your referral code: <span className="font-mono font-medium">{stats?.referralCode}</span>
-          </p>
-        </div>
+        {stats?.referralCode && (
+          <div className="mt-4 pt-4 border-t border-zinc-100">
+            <p className="text-[12px] text-zinc-500">
+              Your referral code: <span className="font-mono font-medium">{stats.referralCode}</span>
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Stats */}

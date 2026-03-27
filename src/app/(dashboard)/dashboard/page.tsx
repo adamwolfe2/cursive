@@ -405,11 +405,14 @@ async function DashboardMainGrid(props: MainGridProps) {
                 <div className="flex items-center gap-3 mt-1.5 pl-4 text-[11px] text-gray-500">
                   {pixelEventCount > 0 && <span>{pixelEventCount.toLocaleString()} events</span>}
                   {visitorCountTotal ? <span>{visitorCountTotal.toLocaleString()} visitors identified</span> : null}
-                  {isOnTrial && trialEndsAtStr && (
-                    <span className="text-gray-500 font-medium">
-                      Trial: {Math.max(0, Math.ceil((new Date(trialEndsAtStr).getTime() - Date.now()) / 86400000))}d left
-                    </span>
-                  )}
+                  {isOnTrial && trialEndsAtStr && (() => {
+                    const trialDays = Math.ceil((new Date(trialEndsAtStr).getTime() - Date.now()) / 86400000)
+                    return (
+                      <span className="text-gray-500 font-medium">
+                        {trialDays < 0 ? 'Trial expired' : `Trial: ${trialDays}d left`}
+                      </span>
+                    )
+                  })()}
                 </div>
               )}
             </div>

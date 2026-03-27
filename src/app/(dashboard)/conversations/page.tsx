@@ -276,7 +276,7 @@ function EmptyState({
         <p className="max-w-sm text-sm text-muted-foreground">
           {hasFilters
             ? 'Try adjusting your filters or search query to find what you\'re looking for.'
-            : 'Conversations with your leads will appear here once campaigns are active.'}
+            : 'Conversations will appear here when your campaigns start receiving replies. Launch a campaign from the Activate page to get started.'}
         </p>
       </div>
       {hasFilters && (

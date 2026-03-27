@@ -35,15 +35,15 @@ function SequencesListSkeleton() {
 
 export default function EmailSequencesPage() {
   return (
-    <div className="container mx-auto py-8">
+    <div className="px-4 sm:px-6 py-6 max-w-7xl">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold">Email Sequences</h1>
-          <p className="text-muted-foreground mt-2">
+          <h1 className="text-2xl font-bold">Email Sequences</h1>
+          <p className="text-muted-foreground mt-1">
             Create automated email sequences to nurture leads
           </p>
         </div>
-        <Button asChild>
+        <Button asChild size="sm">
           <Link href="/email-sequences/new">
             <Plus className="mr-2 h-4 w-4" />
             New Sequence

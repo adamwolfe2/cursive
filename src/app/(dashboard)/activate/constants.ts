@@ -15,9 +15,12 @@ export const JOB_TITLES = [
 ]
 
 export const GEOGRAPHIES = [
-  'United States', 'Canada', 'United Kingdom', 'Australia',
-  'Western Europe', 'DACH (Germany/Austria/Switzerland)',
-  'Nordics', 'APAC', 'Latin America', 'Global',
+  'United States — All',
+  'Northeast', 'Southeast', 'Midwest', 'Southwest', 'West Coast',
+  'California', 'Texas', 'Florida', 'New York', 'Illinois',
+  'Pennsylvania', 'Ohio', 'Georgia', 'North Carolina', 'Michigan',
+  'New Jersey', 'Virginia', 'Washington', 'Arizona', 'Massachusetts',
+  'Colorado', 'Tennessee', 'Indiana', 'Missouri', 'Maryland',
 ]
 
 export const COMPANY_SIZES = [

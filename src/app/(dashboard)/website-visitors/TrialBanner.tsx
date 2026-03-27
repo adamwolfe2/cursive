@@ -12,10 +12,11 @@ interface TrialBannerProps {
 }
 
 export function TrialBanner({ pixel }: TrialBannerProps) {
-  const isExpired = pixel.trial_status === 'expired'
-  const isActive = pixel.trial_status === 'trial'
   const trialEndsAt = pixel.trial_ends_at ? new Date(pixel.trial_ends_at) : null
-  const daysLeft = trialEndsAt ? Math.max(0, Math.ceil((trialEndsAt.getTime() - Date.now()) / 86_400_000)) : null
+  const rawDaysLeft = trialEndsAt ? Math.ceil((trialEndsAt.getTime() - Date.now()) / 86_400_000) : null
+  const isExpired = pixel.trial_status === 'expired' || (rawDaysLeft !== null && rawDaysLeft < 0)
+  const isActive = pixel.trial_status === 'trial' && !isExpired
+  const daysLeft = rawDaysLeft !== null ? Math.max(0, rawDaysLeft) : null
 
   if (pixel.trial_status === 'active') return null
 
