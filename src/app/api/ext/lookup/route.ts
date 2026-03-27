@@ -6,12 +6,18 @@ import { authenticateExtension, extAuthErrorResponse } from '@/lib/middleware/ex
 import { createAdminClient } from '@/lib/supabase/admin'
 
 const requestSchema = z.object({
-  first_name: z.string().min(1).max(100),
-  last_name: z.string().min(1).max(100),
+  first_name: z.string().max(100).optional().default(''),
+  last_name: z.string().max(100).optional().default(''),
   company: z.string().max(200).optional(),
   domain: z.string().max(200).optional(),
   email: z.string().email().max(320).optional(),
-})
+  // Alternate field names the extension might send
+  firstName: z.string().max(100).optional(),
+  lastName: z.string().max(100).optional(),
+  name: z.string().max(200).optional(),
+  url: z.string().max(500).optional(),
+  linkedinUrl: z.string().max(500).optional(),
+}).passthrough()
 
 export async function POST(req: NextRequest) {
   try {
@@ -20,10 +26,28 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     const parsed = requestSchema.safeParse(body)
     if (!parsed.success) {
-      return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
+      return NextResponse.json(
+        { error: 'Invalid request', details: parsed.error.issues.map(i => `${i.path.join('.')}: ${i.message}`) },
+        { status: 400 }
+      )
     }
 
-    const { first_name, last_name, company, domain, email } = parsed.data
+    // Normalize field names — extension may send camelCase or snake_case
+    const normalized = {
+      ...parsed.data,
+      first_name: parsed.data.first_name || parsed.data.firstName || parsed.data.name?.split(' ')[0] || '',
+      last_name: parsed.data.last_name || parsed.data.lastName || parsed.data.name?.split(' ').slice(1).join(' ') || '',
+      domain: parsed.data.domain || parsed.data.url?.replace(/^https?:\/\//, '').split('/')[0] || undefined,
+    }
+
+    if (!normalized.first_name && !normalized.last_name && !normalized.email && !normalized.company) {
+      return NextResponse.json(
+        { error: 'At least one of: name, email, or company is required' },
+        { status: 400 }
+      )
+    }
+
+    const { first_name, last_name, company, domain, email } = normalized
     const supabase = createAdminClient()
 
     // Check credits first
