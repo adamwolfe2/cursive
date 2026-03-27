@@ -270,7 +270,7 @@ async function DashboardMainGrid(props: MainGridProps) {
     : null
 
   return (
-    <>
+    <div className="space-y-8">
       {/* Hot leads */}
       {typedHotLeads.length > 0 && (
         <AnimatedSection delay={0.08}>
@@ -387,7 +387,7 @@ async function DashboardMainGrid(props: MainGridProps) {
         </AnimatedSection>
 
         {/* Right column */}
-        <div className="space-y-4">
+        <div className="space-y-6">
 
           {/* Pixel health */}
           <AnimatedSection delay={0.12}>
@@ -598,7 +598,7 @@ async function DashboardMainGrid(props: MainGridProps) {
 
       <WhatsNewModal />
       {firstEnrichmentResult && <FirstEnrichmentModal lead={firstEnrichmentResult} workspaceId={workspaceId} />}
-    </>
+    </div>
   )
 }
 
