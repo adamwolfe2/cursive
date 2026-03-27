@@ -29,6 +29,7 @@ export function ExitIntentPopup({ enabled = true, onSubmit }: ExitIntentPopupPro
   const [isOpen, setIsOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
   const [email, setEmail] = useState('')
   const [company, setCompany] = useState('')
   const emailInputRef = useRef<HTMLInputElement>(null)
@@ -92,6 +93,7 @@ export function ExitIntentPopup({ enabled = true, onSubmit }: ExitIntentPopupPro
     if (!email) return
 
     setIsSubmitting(true)
+    setErrorMessage('')
 
     try {
       // Track submission
@@ -109,9 +111,8 @@ export function ExitIntentPopup({ enabled = true, onSubmit }: ExitIntentPopupPro
       setTimeout(() => {
         setIsOpen(false)
       }, 2000)
-    } catch (error) {
-      console.error('Error submitting popup form:', error)
-      alert('Something went wrong. Please try again.')
+    } catch {
+      setErrorMessage('Something went wrong. Please try again.')
     } finally {
       setIsSubmitting(false)
     }
@@ -218,6 +219,10 @@ export function ExitIntentPopup({ enabled = true, onSubmit }: ExitIntentPopupPro
                       </div>
 
                       {/* Submit Button */}
+                      {errorMessage && (
+                        <p className="text-sm text-red-600 text-center">{errorMessage}</p>
+                      )}
+
                       <Button
                         type="submit"
                         disabled={isSubmitting || !email}

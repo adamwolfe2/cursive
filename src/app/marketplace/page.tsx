@@ -313,8 +313,8 @@ export default function MarketplacePage() {
             {/* Main Content */}
             <div className="flex-1">
               {/* Toolbar */}
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+                <div className="flex items-center gap-2 sm:gap-3">
                   {/* Desktop: Toggle Filters Sidebar */}
                   <Button
                     onClick={() => setShowFilters(!showFilters)}
@@ -361,7 +361,7 @@ export default function MarketplacePage() {
                       }
                       setPage(0)
                     }}
-                    className="h-11 px-3 text-[13px] border border-zinc-200 bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-500"
+                    className="h-9 sm:h-11 px-2 sm:px-3 text-xs sm:text-[13px] border border-zinc-200 bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-500"
                     aria-label="Sort leads"
                   >
                     <option value="relevant">Most Relevant</option>
@@ -372,8 +372,8 @@ export default function MarketplacePage() {
                 </div>
 
                 {selectedLeads.size > 0 && (
-                  <div className="flex items-center gap-3">
-                    <span className="text-[13px] text-zinc-600">
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <span className="text-xs sm:text-[13px] text-zinc-600">
                       {selectedLeads.size} selected (${selectedTotal.toFixed(2)})
                     </span>
                     {selectedTotal > credits ? (
@@ -387,7 +387,7 @@ export default function MarketplacePage() {
                         variant="outline"
                         size="sm"
                       >
-                        Top Up to Purchase
+                        Top Up
                       </Button>
                     ) : (
                       <Button
@@ -396,7 +396,7 @@ export default function MarketplacePage() {
                         loading={isPurchasing}
                         size="sm"
                       >
-                        Purchase Selected
+                        Purchase
                       </Button>
                     )}
                   </div>

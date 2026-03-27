@@ -35,6 +35,7 @@ export function BlogScrollPopup({
   const [isOpen, setIsOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
   const [email, setEmail] = useState('')
   const [isMinimized, setIsMinimized] = useState(false)
   const emailInputRef = useRef<HTMLInputElement>(null)
@@ -108,6 +109,7 @@ export function BlogScrollPopup({
     if (!email) return
 
     setIsSubmitting(true)
+    setErrorMessage('')
 
     try {
       // Track submission
@@ -128,9 +130,8 @@ export function BlogScrollPopup({
       setTimeout(() => {
         setIsOpen(false)
       }, 2500)
-    } catch (error) {
-      console.error('Error submitting newsletter form:', error)
-      alert('Something went wrong. Please try again.')
+    } catch {
+      setErrorMessage('Something went wrong. Please try again.')
     } finally {
       setIsSubmitting(false)
     }
@@ -238,6 +239,10 @@ export function BlogScrollPopup({
                       </div>
 
                       {/* Submit Button */}
+                      {errorMessage && (
+                        <p className="text-sm text-red-600 text-center">{errorMessage}</p>
+                      )}
+
                       <Button
                         type="submit"
                         disabled={isSubmitting || !email}

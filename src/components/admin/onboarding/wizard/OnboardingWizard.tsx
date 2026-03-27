@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback } from 'react'
+import { toast } from 'sonner'
 import { ArrowLeft, ArrowRight, SkipForward } from 'lucide-react'
 import type { OnboardingTemplate } from '@/types/onboarding-templates'
 import type { ParsedIntakeData, ContextFormat, TemplateData } from '@/types/onboarding-templates'
@@ -54,8 +55,7 @@ export default function OnboardingWizard({ templates }: OnboardingWizardProps) {
   const handleParseError = useCallback(
     (error: string) => {
       actions.setIsParsing(false)
-      // Surface error — could use toast, for now we'll use alert
-      alert(`Parse failed: ${error}`)
+      toast.error(`Parse failed: ${error}`)
     },
     [actions]
   )

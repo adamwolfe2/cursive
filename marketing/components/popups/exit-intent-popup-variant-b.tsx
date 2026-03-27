@@ -37,6 +37,7 @@ export function ExitIntentPopupVariantB({
   const [isOpen, setIsOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
   const [email, setEmail] = useState('')
   const [company, setCompany] = useState('')
   const emailInputRef = useRef<HTMLInputElement>(null)
@@ -95,6 +96,8 @@ export function ExitIntentPopupVariantB({
 
     setIsSubmitting(true)
 
+    setErrorMessage('')
+
     try {
       analytics.trackSubmission({ email, company })
 
@@ -104,9 +107,8 @@ export function ExitIntentPopupVariantB({
 
       setIsSuccess(true)
       setTimeout(() => setIsOpen(false), 2000)
-    } catch (error) {
-      console.error('Error submitting popup form:', error)
-      alert('Something went wrong. Please try again.')
+    } catch {
+      setErrorMessage('Something went wrong. Please try again.')
     } finally {
       setIsSubmitting(false)
     }
@@ -210,6 +212,10 @@ export function ExitIntentPopupVariantB({
                           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-base"
                         />
                       </div>
+
+                      {errorMessage && (
+                        <p className="text-sm text-red-600 text-center">{errorMessage}</p>
+                      )}
 
                       {/* CTA Button - VARIANT B DIFFERENCE */}
                       <Button
