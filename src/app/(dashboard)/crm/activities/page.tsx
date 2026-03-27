@@ -254,9 +254,9 @@ function EmptyState({ onNew }: { onNew: () => void }) {
       <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-gray-100">
         <FileText className="h-7 w-7 text-gray-400" />
       </div>
-      <h3 className="text-lg font-semibold text-gray-900">No activities found</h3>
+      <h3 className="text-lg font-semibold text-gray-900">No activities yet</h3>
       <p className="mt-2 max-w-sm text-sm text-gray-500">
-        Log a call, send an email, schedule a meeting, or create a task to stay on top of your CRM.
+        Activities track your interactions — calls, emails, meetings, and tasks tied to contacts, companies, or deals. Activities will be created automatically when leads are enriched and campaigns are launched.
       </p>
       <div className="mt-6">
         <Button size="sm" onClick={onNew}>

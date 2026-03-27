@@ -53,7 +53,7 @@ export function ContactsPageClient({ initialData }: ContactsPageClientProps) {
           </div>
           <h3 className="text-lg font-semibold text-gray-900">No contacts yet</h3>
           <p className="mt-2 max-w-sm text-sm text-gray-500">
-            Add your first contact to start tracking relationships and interactions with people in your network.
+            Contacts are the people you do business with — prospects, clients, and decision-makers. Contacts will be created automatically when leads are enriched and campaigns are launched.
           </p>
           <div className="mt-6">
             <Button size="sm" onClick={handleCreateClick}>

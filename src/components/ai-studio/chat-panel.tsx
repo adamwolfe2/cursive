@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Send, Sparkles, Loader2 } from 'lucide-react'
+import { Send, Sparkles, AlertCircle } from 'lucide-react'
 
 interface Message {
   id: string
@@ -28,7 +28,6 @@ export function ChatPanel({ workspaceId: _workspaceId, context: _context = 'gene
     },
   ])
   const [input, setInput] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const scrollToBottom = () => {
@@ -40,7 +39,7 @@ export function ChatPanel({ workspaceId: _workspaceId, context: _context = 'gene
   }, [messages])
 
   async function handleSend() {
-    if (!input.trim() || isLoading) return
+    if (!input.trim()) return
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -51,20 +50,15 @@ export function ChatPanel({ workspaceId: _workspaceId, context: _context = 'gene
 
     setMessages((prev) => [...prev, userMessage])
     setInput('')
-    setIsLoading(true)
 
-    // FUTURE: Integrate with OpenAI API for actual responses
-    // Current implementation uses simulated responses for demo purposes
-    setTimeout(() => {
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: `I understand you want to "${input}". Let me help you with that. You can use the tools on the left to generate creatives, select offers, or build a campaign.`,
-        timestamp: new Date(),
-      }
-      setMessages((prev) => [...prev, assistantMessage])
-      setIsLoading(false)
-    }, 1000)
+    // AI search is not yet configured — show a helpful message instead of spinning
+    const assistantMessage: Message = {
+      id: (Date.now() + 1).toString(),
+      role: 'assistant',
+      content: 'AI search requires configuration. Contact support to enable this feature.',
+      timestamp: new Date(),
+    }
+    setMessages((prev) => [...prev, assistantMessage])
   }
 
   return (
@@ -80,6 +74,12 @@ export function ChatPanel({ workspaceId: _workspaceId, context: _context = 'gene
             <p className="text-xs text-gray-500">Ask me anything about your brand or ads</p>
           </div>
         </div>
+      </div>
+
+      {/* Configuration notice */}
+      <div className="mx-4 mt-3 flex items-start gap-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700">
+        <AlertCircle className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+        <span>AI search requires configuration. Contact support to enable.</span>
       </div>
 
       {/* Messages */}
@@ -105,13 +105,6 @@ export function ChatPanel({ workspaceId: _workspaceId, context: _context = 'gene
             </div>
           </div>
         ))}
-        {isLoading && (
-          <div className="flex justify-start">
-            <div className="bg-gray-100 rounded-lg px-4 py-2">
-              <Loader2 className="h-4 w-4 animate-spin text-gray-600" />
-            </div>
-          </div>
-        )}
         <div ref={messagesEndRef} />
       </div>
 
@@ -129,11 +122,10 @@ export function ChatPanel({ workspaceId: _workspaceId, context: _context = 'gene
             }}
             placeholder="Ask me anything..."
             className="flex-1"
-            disabled={isLoading}
           />
           <Button
             onClick={handleSend}
-            disabled={isLoading || !input.trim()}
+            disabled={!input.trim()}
             className="bg-primary hover:bg-primary/90"
             size="icon"
           >

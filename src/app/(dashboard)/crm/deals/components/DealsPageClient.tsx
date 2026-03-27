@@ -153,7 +153,7 @@ export function DealsPageClient({ initialData }: DealsPageClientProps) {
           </div>
           <h3 className="text-lg font-semibold text-gray-900">No deals yet</h3>
           <p className="mt-2 max-w-sm text-sm text-gray-500">
-            Create your first deal to start tracking opportunities through your pipeline and closing revenue.
+            Deals track revenue opportunities through your sales pipeline — from qualified to closed. Deals will be created automatically when leads are enriched and campaigns are launched.
           </p>
           <div className="mt-6">
             <Button size="sm" onClick={() => setCreateDialogOpen(true)}>
