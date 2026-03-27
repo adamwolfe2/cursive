@@ -105,15 +105,27 @@ export function EmailSequencesList() {
     }
   }
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, error: queryError, refetch } = useQuery({
     queryKey: ['email-sequences', statusFilter],
-    queryFn: async () => {
-      const response = await fetch(
-        `/api/email-sequences?status=${statusFilter}&include_steps=true`
-      )
-      if (!response.ok) throw new Error('Failed to fetch sequences')
-      return response.json()
+    queryFn: async ({ signal }) => {
+      const controller = new AbortController()
+      const timeout = setTimeout(() => controller.abort(), 15000)
+
+      // Merge React Query signal with timeout signal
+      signal?.addEventListener('abort', () => controller.abort())
+
+      try {
+        const response = await fetch(
+          `/api/email-sequences?status=${statusFilter}&include_steps=true`,
+          { signal: controller.signal }
+        )
+        if (!response.ok) throw new Error('Failed to fetch sequences')
+        return response.json()
+      } finally {
+        clearTimeout(timeout)
+      }
     },
+    retry: 2,
   })
 
   const updateStatusMutation = useMutation({
@@ -204,6 +216,28 @@ export function EmailSequencesList() {
             </div>
           </div>
         ))}
+      </div>
+    )
+  }
+
+  if (isError) {
+    return (
+      <div className="flex flex-col items-center justify-center rounded-lg border border-red-200 bg-red-50 py-12 px-4 text-center">
+        <div className="rounded-full bg-red-100 p-4 mb-4">
+          <Mail className="h-8 w-8 text-red-600" />
+        </div>
+        <h3 className="text-lg font-semibold text-red-900 mb-2">
+          Failed to load sequences
+        </h3>
+        <p className="text-sm text-red-700 mb-6 max-w-md">
+          {queryError instanceof Error ? queryError.message : 'An unexpected error occurred. Please try again.'}
+        </p>
+        <Button
+          variant="outline"
+          onClick={() => { void refetch() }}
+        >
+          Try Again
+        </Button>
       </div>
     )
   }

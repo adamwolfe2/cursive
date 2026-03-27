@@ -15,7 +15,15 @@ import Link from 'next/link'
 import type { Database } from '@/types/database.types'
 
 type User = Database['public']['Tables']['users']['Row']
-type UserTargeting = Database['public']['Tables']['user_targeting']['Row']
+
+interface TargetingPreferences {
+  id: string
+  target_industries: string[] | null
+  target_sic_codes: string[] | null
+  target_states: string[] | null
+  target_cities: string[] | null
+  is_active: boolean
+}
 
 export const metadata = {
   title: 'My Leads | Cursive',
@@ -34,11 +42,15 @@ export default async function MyLeadsPage() {
 
   // Get user profile + targeting preferences in parallel
   // (user profile query is still needed for DB user id)
-  const { data: userData } = await supabase
+  const { data: userData, error: userError } = await supabase
     .from('users')
     .select('id, workspace_id, full_name, email')
     .eq('auth_user_id', user.id)
     .maybeSingle()
+
+  if (userError) {
+    safeError('[MyLeadsPage]', 'Failed to fetch user profile:', userError)
+  }
 
   if (!userData) {
     redirect('/welcome')
@@ -47,14 +59,24 @@ export default async function MyLeadsPage() {
   const userProfile = userData as Pick<User, 'id' | 'workspace_id' | 'full_name' | 'email'>
 
   // Now fetch targeting (depends on userProfile.id)
-  const { data: targetingData } = await supabase
-    .from('user_targeting')
-    .select('id, target_industries, target_sic_codes, target_states, target_cities, is_active')
-    .eq('user_id', userProfile.id)
-    .eq('workspace_id', userProfile.workspace_id)
-    .maybeSingle()
+  // Wrapped in try-catch to prevent page crash if user_targeting schema has drifted
+  let targeting: TargetingPreferences | null = null
+  try {
+    const { data: targetingData, error: targetingError } = await supabase
+      .from('user_targeting')
+      .select('id, target_industries, target_sic_codes, target_states, target_cities, is_active')
+      .eq('user_id', userProfile.id)
+      .eq('workspace_id', userProfile.workspace_id)
+      .maybeSingle()
 
-  const targeting = targetingData as UserTargeting | null
+    if (targetingError) {
+      safeError('[MyLeadsPage]', 'Failed to fetch targeting:', targetingError)
+    }
+
+    targeting = targetingData as TargetingPreferences | null
+  } catch (err) {
+    safeError('[MyLeadsPage]', 'Exception fetching targeting:', err)
+  }
 
   const hasTargeting =
     targeting &&
@@ -106,7 +128,7 @@ export default async function MyLeadsPage() {
       )}
 
       {/* Targeting configured - reassurance message */}
-      {hasTargeting && (
+      {hasTargeting && targeting && (
         <div className="rounded-lg border border-green-200 bg-green-50 p-4">
           <div className="flex gap-3">
             <div className="flex-shrink-0">
