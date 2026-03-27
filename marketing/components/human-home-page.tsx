@@ -8,7 +8,6 @@ import { IntegrationsShowcase } from "@/components/integrations-showcase"
 import { HowItWorksSection } from "@/components/homepage/how-it-works-section"
 import { CompetitiveAdvantagesSection } from "@/components/homepage/competitive-advantages-section"
 import { FAQSection } from "@/components/homepage/faq-section"
-import { CustomerLogos } from "@/components/homepage/customer-logos"
 import Link from "next/link"
 import { useState } from "react"
 import {
@@ -242,8 +241,15 @@ export function HumanHomePage() {
         </Container>
       </section>
 
-      {/* Social Proof */}
-      <CustomerLogos />
+      {/* Integrations Showcase */}
+      <section id="integrations" className="py-20 bg-[#F7F9FB]">
+        <Container>
+          <IntegrationsShowcase
+            title="Works With Your Existing Stack"
+            subtitle="200+ native integrations—sync leads to your CRM, trigger campaigns, and automate workflows"
+          />
+        </Container>
+      </section>
 
       {/* Two Ways to Get Started */}
       <section id="pricing" className="py-20 bg-[#F7F9FB]">
@@ -418,16 +424,6 @@ export function HumanHomePage() {
 
       {/* How It Works */}
       <HowItWorksSection />
-
-      {/* Integrations Showcase */}
-      <section id="integrations" className="py-20 bg-[#F7F9FB]">
-        <Container>
-          <IntegrationsShowcase
-            title="Works With Your Existing Stack"
-            subtitle="200+ native integrations—sync leads to your CRM, trigger campaigns, and automate workflows"
-          />
-        </Container>
-      </section>
 
       {/* Proven Results */}
       <section id="case-studies" className="py-20 bg-white">

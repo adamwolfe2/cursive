@@ -1,66 +1,20 @@
 // Email Verification Processor
-// Process email verification queue with MillionVerifier/ZeroBounce
+// Process email verification queue with AudienceLab enrichment
 
 import { inngest } from '../client'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { safeError } from '@/lib/utils/log-sanitizer'
+import { verifyEmail as verifyEmailService } from '@/lib/services/email-verification.service'
 
-// Support multiple verification providers
+// Wrapper to match the processor's expected interface
 const verifyEmail = async (email: string): Promise<{
   status: 'valid' | 'invalid' | 'catch_all' | 'risky' | 'unknown'
-  response: any
+  response: Record<string, unknown>
 }> => {
-  // MillionVerifier API
-  if (process.env.MILLIONVERIFIER_API_KEY) {
-    const res = await fetch(
-      `https://api.millionverifier.com/api/v3/?api=${process.env.MILLIONVERIFIER_API_KEY}&email=${encodeURIComponent(email)}`,
-      { method: 'GET' }
-    )
-    const data = await res.json()
-
-    // Map MillionVerifier result to our status
-    const statusMap: Record<string, string> = {
-      ok: 'valid',
-      catch_all: 'catch_all',
-      unknown: 'unknown',
-      invalid: 'invalid',
-      disposable: 'invalid',
-      role: 'risky',
-    }
-
-    return {
-      status: (statusMap[data.result] || 'unknown') as any,
-      response: data,
-    }
+  const result = await verifyEmailService(email)
+  return {
+    status: result.status as 'valid' | 'invalid' | 'catch_all' | 'risky' | 'unknown',
+    response: result.rawResult,
   }
-
-  // ZeroBounce API (alternative)
-  if (process.env.ZEROBOUNCE_API_KEY) {
-    const res = await fetch(
-      `https://api.zerobounce.net/v2/validate?api_key=${process.env.ZEROBOUNCE_API_KEY}&email=${encodeURIComponent(email)}`,
-      { method: 'GET' }
-    )
-    const data = await res.json()
-
-    const statusMap: Record<string, string> = {
-      valid: 'valid',
-      'catch-all': 'catch_all',
-      unknown: 'unknown',
-      invalid: 'invalid',
-      spamtrap: 'invalid',
-      abuse: 'risky',
-      do_not_mail: 'invalid',
-    }
-
-    return {
-      status: (statusMap[data.status] || 'unknown') as any,
-      response: data,
-    }
-  }
-
-  // No verification service configured - mark as unknown
-  safeError('No email verification service configured')
-  return { status: 'unknown', response: { error: 'No service configured' } }
 }
 
 export const processEmailVerification = inngest.createFunction(

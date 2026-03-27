@@ -18,7 +18,7 @@ const FLAT_COSTS: Record<string, number> = {
   'slack/message':          0,
   'audiencelab/audience':   0,
   'audiencelab/records':    0,
-  'millionverifier/verify': 0.002,
+  'audiencelab/verify':     0,
 }
 
 const OPENAI_PRICING: Record<string, { in: number; out: number }> = {
