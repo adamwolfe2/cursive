@@ -78,23 +78,18 @@ export async function POST(request: NextRequest) {
     const rawBody = await request.text()
     const signature = request.headers.get('x-emailbison-signature') || ''
 
-    // SECURITY: Always require webhook secret for signature verification
-    if (!WEBHOOK_SECRET) {
-      safeError('[Campaign Webhook] Missing EMAILBISON_WEBHOOK_SECRET')
-      return NextResponse.json(
-        { error: 'Webhook not configured' },
-        { status: 500 }
-      )
-    }
-
-    // Verify signature - REQUIRED for security (Edge-compatible)
-    const isValid = await verifyHmacSignature(rawBody, signature, WEBHOOK_SECRET)
-    if (!isValid) {
-      safeError('[Campaign Webhook] Signature verification failed')
-      return NextResponse.json(
-        { error: 'Invalid signature' },
-        { status: 401 }
-      )
+    // SECURITY: Verify webhook signature if secret is configured.
+    // EmailBison's hosted (dedi) instances may not provide HMAC signing,
+    // so signature verification is optional when no secret is set.
+    if (WEBHOOK_SECRET) {
+      const isValid = await verifyHmacSignature(rawBody, signature, WEBHOOK_SECRET)
+      if (!isValid) {
+        safeError('[Campaign Webhook] Signature verification failed')
+        return NextResponse.json(
+          { error: 'Invalid signature' },
+          { status: 401 }
+        )
+      }
     }
 
     // Parse the webhook payload
