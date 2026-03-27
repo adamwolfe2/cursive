@@ -74,6 +74,12 @@ export function SdrLandingClient({
           Open Inbox
         </Link>
         <Link
+          href="/admin/sdr/knowledge"
+          className="px-4 py-2 text-sm border rounded-md hover:bg-zinc-50 text-zinc-700 transition-colors"
+        >
+          Knowledge Base
+        </Link>
+        <Link
           href="/admin/sdr/dnc"
           className="px-4 py-2 text-sm border rounded-md hover:bg-zinc-50 text-zinc-700 transition-colors"
         >

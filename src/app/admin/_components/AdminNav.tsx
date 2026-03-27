@@ -14,6 +14,8 @@ const PRIMARY = [
   { href: '/admin/accounts',        label: 'Accounts' },
   { href: '/admin/revenue',         label: 'Revenue' },
   { href: '/admin/onboarding',      label: 'Onboarding' },
+  { href: '/admin/autoresearch',    label: 'Autoresearch' },
+  { href: '/admin/sdr',             label: 'AI SDR' },
   { href: '/admin/deal-calculator', label: 'Deal Calculator' },
   { href: '/admin/onboarding/new',  label: 'New Client' },
 ]

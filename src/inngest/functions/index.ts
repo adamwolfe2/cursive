@@ -275,3 +275,14 @@ export { cleanupFailedOperations } from './cleanup-failed-operations'
 export { onboardingIntakePipeline } from './onboarding-intake-pipeline'
 export { onboardingCopyRegeneration } from './onboarding-copy-regeneration'
 export { onboardingRetryEnrichment } from './onboarding-retry-enrichment'
+
+// Autoresearch (Karpathy loop: generate -> wait -> evaluate -> repeat)
+export {
+  startAutoresearchProgram,
+  generateAutoresearchExperiment,
+  evaluateAutoresearchExperiment,
+} from './autoresearch-orchestrator'
+export { autoresearchReplySync } from './autoresearch-reply-sync'
+
+// AI SDR Inbox Sync (every 15 min — processes new replies through AI reply engine)
+export { sdrInboxSync } from './sdr-inbox-sync'

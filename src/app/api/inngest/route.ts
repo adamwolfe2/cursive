@@ -237,5 +237,14 @@ export const { GET, POST, PUT } = serve({
     functions.onboardingIntakePipeline,
     functions.onboardingCopyRegeneration,
     functions.onboardingRetryEnrichment,
+
+    // Autoresearch (Karpathy loop: generate -> wait -> evaluate -> repeat)
+    functions.startAutoresearchProgram,
+    functions.generateAutoresearchExperiment,
+    functions.evaluateAutoresearchExperiment,
+    functions.autoresearchReplySync,
+
+    // AI SDR Inbox Sync (processes replies through AI reply engine)
+    functions.sdrInboxSync,
   ],
 })

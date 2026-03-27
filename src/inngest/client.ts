@@ -598,6 +598,26 @@ export type Events = {
       client_id: string
     }
   }
+
+  // Autoresearch Events (Karpathy loop)
+  'autoresearch/program.start': {
+    data: {
+      program_id: string
+      workspace_id: string
+    }
+  }
+  'autoresearch/experiment.generate': {
+    data: {
+      program_id: string
+      workspace_id: string
+    }
+  }
+  'autoresearch/experiment.evaluate': {
+    data: {
+      experiment_id: string
+      workspace_id: string
+    }
+  }
 }
 
 // Lazy-load Inngest client to avoid build-time initialization
