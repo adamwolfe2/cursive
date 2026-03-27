@@ -9,7 +9,7 @@
 import { inngest } from '../client'
 import { createAdminClient } from '@/lib/supabase/admin'
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://leads.meetcursive.com'
+import { APP_URL } from '@/lib/config/urls'
 import { sendEmail } from '@/lib/services/outreach/email-sender.service'
 import type {
   DemoSequenceTokens,

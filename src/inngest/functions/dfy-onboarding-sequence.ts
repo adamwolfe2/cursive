@@ -18,8 +18,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { safeLog } from '@/lib/utils/log-sanitizer'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 
-const _APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://leads.meetcursive.com'
-const BOOKING_URL = 'https://cal.com/cursiveteam/30min'
+import { APP_URL as _APP_URL, CAL_BOOKING_URL as BOOKING_URL } from '@/lib/config/urls'
 
 export const dfyOnboardingSequence = inngest.createFunction(
   {

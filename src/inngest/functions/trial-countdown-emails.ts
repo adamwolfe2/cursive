@@ -15,7 +15,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { sendEmail } from '@/lib/email/service'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://leads.meetcursive.com'
+import { APP_URL } from '@/lib/config/urls'
 const UPGRADE_URL = `${APP_URL}/settings/billing`
 const _DASHBOARD_URL = `${APP_URL}/leads`
 

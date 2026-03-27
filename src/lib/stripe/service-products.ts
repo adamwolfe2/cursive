@@ -4,6 +4,8 @@
  * Maps service tier slugs to Stripe product and price IDs
  */
 
+import { CAL_BOOKING_URL } from '@/lib/config/urls'
+
 export interface ServiceStripeConfig {
   productId: string
   priceId: string
@@ -46,4 +48,4 @@ export function supportsDirectCheckout(tierSlug: string): boolean {
 /**
  * Calendar booking URL for high-touch tiers
  */
-export const VENTURE_STUDIO_CALENDAR_URL = 'https://cal.com/cursiveteam/30min'
+export const VENTURE_STUDIO_CALENDAR_URL = CAL_BOOKING_URL

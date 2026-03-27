@@ -4,6 +4,7 @@
  */
 
 import { sendEmail } from './resend-client'
+import { APP_URL as _CONFIG_APP_URL } from '@/lib/config/urls'
 import {
   createWelcomeEmail,
   createPaymentSuccessEmail,
@@ -179,7 +180,7 @@ interface DunningEmailData {
  * Links directly to /settings/billing so the customer can update their card.
  */
 export async function sendDunningEmail(data: DunningEmailData) {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_BASE_URL || 'https://leads.meetcursive.com'
+  const appUrl = _CONFIG_APP_URL
   const billingUrl = `${appUrl}/settings/billing`
 
   const { html, text } = createDunningEmail({

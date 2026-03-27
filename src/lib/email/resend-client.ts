@@ -5,6 +5,7 @@
 
 import { Resend } from 'resend'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { APP_URL } from '@/lib/config/urls'
 
 let resendInstance: Resend | null = null
 
@@ -33,10 +34,10 @@ export const EMAIL_CONFIG = {
   },
 
   // Base URL — used for email links and logo references
-  baseUrl: process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_BASE_URL || 'https://leads.meetcursive.com',
+  baseUrl: APP_URL,
 
   // Logo (derived from baseUrl at runtime — set after this object)
-  logoUrl: `${process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_BASE_URL || 'https://leads.meetcursive.com'}/cursive-logo.png`,
+  logoUrl: `${APP_URL}/cursive-logo.png`,
 }
 
 /**

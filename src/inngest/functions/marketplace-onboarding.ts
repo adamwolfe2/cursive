@@ -9,8 +9,7 @@ import { sendEmail } from '@/lib/email/service'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { safeLog } from '@/lib/utils/log-sanitizer'
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://leads.meetcursive.com'
-const BOOKING_URL = 'https://cal.com/cursiveteam/30min'
+import { APP_URL, CAL_BOOKING_URL as BOOKING_URL } from '@/lib/config/urls'
 
 export const marketplaceOnboardingSequence = inngest.createFunction(
   { id: 'marketplace-onboarding-sequence', retries: 2, timeouts: { finish: '15m' } },

@@ -12,7 +12,7 @@
 // CONSTANTS
 // ============================================
 
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://leads.meetcursive.com'
+import { APP_URL as BASE_URL, CAL_BOOKING_URL } from '@/lib/config/urls'
 const LOGO_URL = `${BASE_URL}/cursive-logo.png`
 const CURRENT_YEAR = new Date().getFullYear()
 
@@ -48,7 +48,7 @@ export const URLS = {
   preferences: `${BASE_URL}/preferences`,
   dashboard: `${BASE_URL}/dashboard`,
   services: `${BASE_URL}/services`,
-  bookCall: 'https://cal.com/cursiveteam/30min',
+  bookCall: CAL_BOOKING_URL,
   emailPreferences: `${BASE_URL}/settings/notifications`,
 } as const
 

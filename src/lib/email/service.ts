@@ -8,6 +8,7 @@
 import { Resend } from 'resend'
 import { renderEmail } from './render'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
+import { APP_URL as _CONFIG_APP_URL, SUPPORT_EMAIL as _CONFIG_SUPPORT_EMAIL } from '@/lib/config/urls'
 import {
   WelcomeEmail,
   QueryCompletedEmail,
@@ -76,7 +77,7 @@ const FROM_EMAIL = process.env.EMAIL_FROM || 'Cursive <notifications@meetcursive
 export async function sendEmail(options: SendEmailOptions): Promise<EmailResult> {
   try {
     const resend = getResendClient()
-    const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://leads.meetcursive.com'
+    const APP_URL = _CONFIG_APP_URL
 
     const { data, error } = await resend.emails.send({
       from: FROM_EMAIL,
@@ -426,7 +427,7 @@ export async function sendPartnerRejectedEmail(
   companyName: string,
   reason: string
 ): Promise<EmailResult> {
-  const supportEmail = process.env.SUPPORT_EMAIL || 'hello@meetcursive.com'
+  const supportEmail = process.env.SUPPORT_EMAIL || _CONFIG_SUPPORT_EMAIL
 
   const html = await renderEmail(
     PartnerRejectedEmail({
@@ -617,7 +618,7 @@ export async function sendCustomAudienceConfirmationEmail(
   industry: string,
   volume: number
 ): Promise<EmailResult> {
-  const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://leads.meetcursive.com'
+  const APP_URL = _CONFIG_APP_URL
   const marketplaceUrl = `${APP_URL}/marketplace`
   const unsubscribeUrl = `${APP_URL}/settings/notifications`
 

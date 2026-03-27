@@ -12,7 +12,7 @@ import { sendEmail } from '@/lib/email/service'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 import { MarketplaceRepository } from '@/lib/repositories/marketplace.repository'
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://leads.meetcursive.com'
+import { APP_URL } from '@/lib/config/urls'
 
 // Maps package IDs to credit amounts and prices (must match CREDIT_PACKAGES)
 const PACKAGE_MAP: Record<string, { credits: number; price: number; label: string }> = {

@@ -25,7 +25,7 @@ import { sendEmail } from '@/lib/email/service'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 import Stripe from 'stripe'
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://leads.meetcursive.com'
+import { APP_URL } from '@/lib/config/urls'
 const LOG_PREFIX = '[AbandonedCart]'
 const MAX_EMAILS_PER_RUN = 10
 const NOTIFICATION_TITLE = 'Abandoned Cart Recovery Email Sent'

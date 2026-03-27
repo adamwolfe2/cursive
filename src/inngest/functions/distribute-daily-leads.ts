@@ -15,7 +15,7 @@ import { meetsQualityBar } from '@/lib/services/lead-quality.service'
 import { checkWorkspaceDuplicates, logDedupRejections } from '@/lib/services/deduplication.service'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://leads.meetcursive.com'
+import { APP_URL } from '@/lib/config/urls'
 
 /**
  * Score a lead based on data completeness.
