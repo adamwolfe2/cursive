@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { cn } from '@/lib/design-system'
 import { Sidebar, SidebarMobile } from './sidebar'
 import { Header } from './header'
+import { useDismissible } from '@/lib/hooks/use-dismissible'
 
 // Navigation item configuration
 interface NavItemConfig {
@@ -343,6 +344,7 @@ interface AppShellProps {
 
 export function AppShell({ children, user, workspace, todayLeadCount, hotLeadCount }: AppShellProps) {
   const [sidebarOpen, setSidebarOpen] = React.useState(false)
+  const { dismissed: creditsBannerDismissed, dismiss: dismissCreditsBanner } = useDismissible('cursive_credits_banner_dismissed', 24)
 
   // Filter navigation items based on user role
   // Admin and owner can see all items, regular members can't see admin-only items
@@ -388,15 +390,15 @@ export function AppShell({ children, user, workspace, todayLeadCount, hotLeadCou
           onMenuClick={() => setSidebarOpen(!sidebarOpen)}
         />
         {/* Credits low persistent banner */}
-        {user && typeof user.creditsRemaining === 'number' && user.creditsRemaining <= 3 && (
+        {user && typeof user.creditsRemaining === 'number' && user.creditsRemaining <= 3 && !creditsBannerDismissed && (
           <div className={cn(
-            'flex items-center justify-between gap-4 px-4 py-2.5 sm:px-6 lg:px-8 text-sm',
+            'flex items-center justify-between gap-4 px-4 py-1.5 sm:px-6 lg:px-8 text-xs',
             user.creditsRemaining === 0
               ? 'bg-red-600 text-white'
               : 'bg-amber-500 text-white'
           )}>
             <div className="flex items-center gap-2">
-              <svg className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
               <span>
@@ -405,12 +407,23 @@ export function AppShell({ children, user, workspace, todayLeadCount, hotLeadCou
                   : `Only ${user.creditsRemaining} enrichment credit${user.creditsRemaining === 1 ? '' : 's'} remaining.`}
               </span>
             </div>
-            <Link
-              href="/settings/billing"
-              className="shrink-0 rounded-md border border-white/40 px-3 py-1 text-xs font-semibold hover:bg-white/10 transition-colors"
-            >
-              Buy Credits
-            </Link>
+            <div className="flex items-center gap-2">
+              <Link
+                href="/settings/billing"
+                className="shrink-0 rounded-md border border-white/40 px-3 py-1 text-xs font-semibold hover:bg-white/10 transition-colors"
+              >
+                Buy Credits
+              </Link>
+              <button
+                onClick={dismissCreditsBanner}
+                className="shrink-0 text-current opacity-50 hover:opacity-100 transition-opacity"
+                aria-label="Dismiss credits banner"
+              >
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
           </div>
         )}
         <main id="main-content" className="flex-1 px-4 py-6 sm:px-6 lg:px-8" tabIndex={-1}>

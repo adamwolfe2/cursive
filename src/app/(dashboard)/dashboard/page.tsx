@@ -33,6 +33,7 @@ import { TargetingMissingBanner } from '@/components/dashboard/TargetingMissingB
 import { TrialCountdown } from '@/components/dashboard/TrialCountdown'
 import { FirstEnrichmentModal } from '@/components/onboarding/FirstEnrichmentModal'
 import { ProvisioningWidget } from '@/components/dashboard/ProvisioningWidget'
+import { FreePlanBanner } from '@/components/dashboard/FreePlanBanner'
 
 export const metadata: Metadata = {
   title: 'Dashboard | Cursive',
@@ -274,9 +275,9 @@ async function DashboardMainGrid(props: MainGridProps) {
       {/* Hot leads */}
       {typedHotLeads.length > 0 && (
         <AnimatedSection delay={0.08}>
-          <div className="bg-white rounded-xl border border-gray-200 p-6">
+          <div className="bg-card rounded-xl border border-border p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-semibold text-gray-900">
+              <h2 className="font-semibold text-foreground">
                 Top Leads to Act On
               </h2>
               <Link href="/leads?sort=intent" className="text-sm text-primary hover:underline flex items-center gap-1">
@@ -291,28 +292,28 @@ async function DashboardMainGrid(props: MainGridProps) {
                 const score = lead.intent_score_calculated
                 const isEnriched = lead.enrichment_status === 'enriched'
                 return (
-                  <div key={lead.id} className="rounded-lg border border-gray-200 bg-white p-4 flex flex-col gap-2.5">
+                  <div key={lead.id} className="rounded-lg border border-border bg-card p-4 flex flex-col gap-2.5">
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
-                        <p className="text-sm font-medium text-gray-900 truncate">{name}</p>
-                        {lead.company_name && <p className="text-xs text-gray-500 truncate">{sanitizeCompanyName(lead.company_name)}</p>}
+                        <p className="text-sm font-medium text-foreground truncate">{name}</p>
+                        {lead.company_name && <p className="text-xs text-muted-foreground truncate">{sanitizeCompanyName(lead.company_name)}</p>}
                       </div>
                       {score !== null && (
-                        <span className="text-xs text-gray-500 shrink-0">{score}</span>
+                        <span className="text-xs text-muted-foreground shrink-0">{score}</span>
                       )}
                     </div>
                     <div className="flex items-center gap-3">
                       {isEnriched && lead.email && (
-                        <a href={`mailto:${lead.email}`} className="text-xs text-gray-500 hover:text-gray-700 transition-colors">
+                        <a href={`mailto:${lead.email}`} className="text-xs text-muted-foreground hover:text-foreground transition-colors">
                           Email
                         </a>
                       )}
                       {isEnriched && lead.phone && (
-                        <a href={`tel:${lead.phone}`} className="text-xs text-gray-500 hover:text-gray-700 transition-colors">
+                        <a href={`tel:${lead.phone}`} className="text-xs text-muted-foreground hover:text-foreground transition-colors">
                           Call
                         </a>
                       )}
-                      <Link href={`/crm/leads/${lead.id}`} className="text-xs text-gray-500 hover:text-gray-700 transition-colors ml-auto flex items-center gap-1">
+                      <Link href={`/crm/leads/${lead.id}`} className="text-xs text-muted-foreground hover:text-foreground transition-colors ml-auto flex items-center gap-1">
                         View <ArrowRight className="h-2.5 w-2.5" />
                       </Link>
                     </div>
@@ -329,9 +330,9 @@ async function DashboardMainGrid(props: MainGridProps) {
 
         {/* Recent Leads — 2/3 width */}
         <AnimatedSection delay={0.1} className="lg:col-span-2">
-          <div className="bg-white rounded-xl border border-gray-200 p-6">
+          <div className="bg-card rounded-xl border border-border p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-semibold text-gray-900">
+              <h2 className="font-semibold text-foreground">
                 Recent Leads
               </h2>
               <Link href="/leads" className="text-sm text-primary hover:underline flex items-center gap-1">
@@ -347,7 +348,7 @@ async function DashboardMainGrid(props: MainGridProps) {
               const n = l.full_name || [l.first_name, l.last_name].filter(Boolean).join(' ')
               return n && n.trim().length > 1
             }).length > 0 ? (
-              <div className="divide-y divide-gray-100">
+              <div className="divide-y divide-border">
                 {((recentLeads ?? []) as Array<{
                   id: string; full_name: string | null; first_name: string | null; last_name: string | null
                   email: string | null; phone: string | null; company_name: string | null
@@ -363,10 +364,10 @@ async function DashboardMainGrid(props: MainGridProps) {
                   const validEmail = lead.email?.includes('@') ? sanitizeText(lead.email) : null
                   const displaySub = sanitizeCompanyName(lead.company_name) || validEmail || sanitizeText(lead.phone) || ''
                   return (
-                    <Link key={lead.id} href={`/crm/leads/${lead.id}`} className="flex items-center gap-3 py-3 hover:bg-gray-50 transition-colors group px-1">
+                    <Link key={lead.id} href={`/crm/leads/${lead.id}`} className="flex items-center gap-3 py-3 hover:bg-muted transition-colors group px-1">
                       <div className="flex-1 min-w-0">
-                        <span className="text-sm font-medium text-gray-900 group-hover:text-primary transition-colors">{displayName}</span>
-                        {displaySub && <span className="text-sm text-gray-500 ml-2">{displaySub}</span>}
+                        <span className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">{displayName}</span>
+                        {displaySub && <span className="text-sm text-muted-foreground ml-2">{displaySub}</span>}
                       </div>
                     </Link>
                   )
@@ -374,8 +375,8 @@ async function DashboardMainGrid(props: MainGridProps) {
               </div>
             ) : (
               <div className="text-center py-10">
-                <p className="text-sm font-medium text-gray-600">No leads yet today</p>
-                <p className="text-xs text-gray-500 mt-1">Leads arrive every morning at 8am CT based on your targeting preferences.</p>
+                <p className="text-sm font-medium text-muted-foreground">No leads yet today</p>
+                <p className="text-xs text-muted-foreground mt-1">Leads arrive every morning at 8am CT based on your targeting preferences.</p>
                 {!hasPreferences && (
                   <Link href="/my-leads/preferences" className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
                     Set preferences <ArrowRight className="h-3.5 w-3.5" />
@@ -391,10 +392,10 @@ async function DashboardMainGrid(props: MainGridProps) {
 
           {/* Pixel health */}
           <AnimatedSection delay={0.12}>
-            <div className="rounded-xl border border-gray-200 bg-white p-3">
+            <div className="rounded-xl border border-border bg-card p-3">
               <div className="flex items-center gap-2">
-                <div className={`h-2 w-2 rounded-full shrink-0 ${hasVerifiedPixel ? 'bg-gray-900' : hasPixel ? 'bg-gray-400' : 'bg-gray-300'}`} />
-                <span className="text-xs font-medium text-gray-600">
+                <div className={`h-2 w-2 rounded-full shrink-0 ${hasVerifiedPixel ? 'bg-foreground' : hasPixel ? 'bg-muted-foreground' : 'bg-border'}`} />
+                <span className="text-xs font-medium text-muted-foreground">
                   {hasVerifiedPixel ? 'Pixel Active' : hasPixel ? 'Pixel Installed — awaiting first event' : 'Pixel not installed'}
                 </span>
                 <Link href="/settings/pixel" className="ml-auto text-xs text-primary hover:underline shrink-0">
@@ -402,13 +403,13 @@ async function DashboardMainGrid(props: MainGridProps) {
                 </Link>
               </div>
               {hasPixel && (
-                <div className="flex items-center gap-3 mt-1.5 pl-4 text-[11px] text-gray-500">
+                <div className="flex items-center gap-3 mt-1.5 pl-4 text-[11px] text-muted-foreground">
                   {pixelEventCount > 0 && <span>{pixelEventCount.toLocaleString()} events</span>}
                   {visitorCountTotal ? <span>{visitorCountTotal.toLocaleString()} visitors identified</span> : null}
                   {isOnTrial && trialEndsAtStr && (() => {
                     const trialDays = Math.ceil((new Date(trialEndsAtStr).getTime() - Date.now()) / 86400000)
                     return (
-                      <span className="text-gray-500 font-medium">
+                      <span className="text-muted-foreground font-medium">
                         {trialDays < 0 ? 'Trial expired' : `Trial: ${trialDays}d left`}
                       </span>
                     )
@@ -421,21 +422,21 @@ async function DashboardMainGrid(props: MainGridProps) {
           {/* Next step */}
           <AnimatedSection delay={0.15}>
             {step ? (
-              <Link href={step.href} className="block rounded-xl border border-gray-200 bg-white p-5 transition-all hover:shadow-sm">
-                <p className="text-xs text-gray-400 mb-1">Next Step</p>
-                <p className="text-sm font-medium text-gray-900">{step.label}</p>
-                <p className="text-xs text-gray-500 mt-0.5">{step.desc}</p>
+              <Link href={step.href} className="block rounded-xl border border-border bg-card p-5 transition-all hover:shadow-sm">
+                <p className="text-xs text-muted-foreground mb-1">Next Step</p>
+                <p className="text-sm font-medium text-foreground">{step.label}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">{step.desc}</p>
                 <span className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-primary">
                   Get started <ArrowRight className="h-3 w-3" />
                 </span>
               </Link>
             ) : (
-              <div className="rounded-xl border border-gray-200 bg-white p-5">
+              <div className="rounded-xl border border-border bg-card p-5">
                 <div className="flex items-center gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-gray-400 shrink-0" />
+                  <CheckCircle2 className="h-5 w-5 text-muted-foreground shrink-0" />
                   <div>
-                    <p className="text-sm font-semibold text-gray-900">You&apos;re all set!</p>
-                    <p className="text-xs text-gray-500">Check your leads for fresh matches every morning at 8am CT.</p>
+                    <p className="text-sm font-semibold text-foreground">You&apos;re all set!</p>
+                    <p className="text-xs text-muted-foreground">Check your leads for fresh matches every morning at 8am CT.</p>
                   </div>
                 </div>
               </div>
@@ -445,12 +446,12 @@ async function DashboardMainGrid(props: MainGridProps) {
           {/* Setup checklist */}
           {showChecklist && (
             <AnimatedSection delay={0.2}>
-              <div className="bg-white rounded-xl border border-gray-200 p-5">
+              <div className="bg-card rounded-xl border border-border p-5">
                 <div className="flex items-center justify-between mb-1">
-                  <h3 className="font-semibold text-gray-900 text-sm">Setup Checklist</h3>
-                  <span className="text-xs text-gray-500">{checklistProgress}/{checklistTotal}</span>
+                  <h3 className="font-semibold text-foreground text-sm">Setup Checklist</h3>
+                  <span className="text-xs text-muted-foreground">{checklistProgress}/{checklistTotal}</span>
                 </div>
-                <div className="mt-1 h-1.5 bg-gray-100 rounded-full overflow-hidden mb-4">
+                <div className="mt-1 h-1.5 bg-muted rounded-full overflow-hidden mb-4">
                   <div className="h-full bg-gradient-to-r from-blue-500 to-primary rounded-full transition-all" style={{ width: `${(checklistProgress / checklistTotal) * 100}%` }} />
                 </div>
                 <div className="space-y-3">
@@ -458,11 +459,11 @@ async function DashboardMainGrid(props: MainGridProps) {
                     <div key={item.id} className="flex items-center gap-2.5">
                       {item.done
                         ? <CheckCircle2 className="h-4 w-4 text-green-500 shrink-0" />
-                        : <Circle className="h-4 w-4 text-gray-400 shrink-0" />}
+                        : <Circle className="h-4 w-4 text-muted-foreground shrink-0" />}
                       {item.href && !item.done
-                        ? <Link href={item.href} className="text-sm text-gray-700 hover:text-primary transition-colors">{item.label}</Link>
-                        : <span className={`text-sm ${item.done ? 'text-gray-500 line-through' : 'text-gray-700'}`}>{item.label}</span>}
-                      {!item.done && item.href && <ArrowRight className="h-3 w-3 text-gray-400 ml-auto" />}
+                        ? <Link href={item.href} className="text-sm text-foreground hover:text-primary transition-colors">{item.label}</Link>
+                        : <span className={`text-sm ${item.done ? 'text-muted-foreground line-through' : 'text-foreground'}`}>{item.label}</span>}
+                      {!item.done && item.href && <ArrowRight className="h-3 w-3 text-muted-foreground ml-auto" />}
                     </div>
                   ))}
                 </div>
@@ -472,34 +473,34 @@ async function DashboardMainGrid(props: MainGridProps) {
 
           {/* Quick actions */}
           <AnimatedSection delay={0.22}>
-            <div className="bg-white rounded-xl border border-gray-200 p-5">
-              <h3 className="font-semibold text-gray-900 text-sm mb-3">Quick Actions</h3>
+            <div className="bg-card rounded-xl border border-border p-5">
+              <h3 className="font-semibold text-foreground text-sm mb-3">Quick Actions</h3>
               <div className="space-y-1">
-                <Link href="/leads" className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-gray-50 transition-colors group">
-                  <Star className="h-4 w-4 text-gray-400 shrink-0" />
+                <Link href="/leads" className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-muted transition-colors group">
+                  <Star className="h-4 w-4 text-muted-foreground shrink-0" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-800">Daily Leads</p>
-                    <p className="text-xs text-gray-500">{todayCount} new today</p>
+                    <p className="text-sm font-medium text-foreground">Daily Leads</p>
+                    <p className="text-xs text-muted-foreground">{todayCount} new today</p>
                   </div>
-                  <ArrowRight className="h-3.5 w-3.5 text-gray-400 group-hover:text-gray-600 transition-colors" />
+                  <ArrowRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-muted-foreground transition-colors" />
                 </Link>
-                <Link href="/website-visitors" className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-gray-50 transition-colors group">
-                  <Eye className="h-4 w-4 text-gray-400 shrink-0" />
+                <Link href="/website-visitors" className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-muted transition-colors group">
+                  <Eye className="h-4 w-4 text-muted-foreground shrink-0" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-800">Website Visitors</p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-sm font-medium text-foreground">Website Visitors</p>
+                    <p className="text-xs text-muted-foreground">
                       {visitorCountTotal ? `${visitorCountTotal} identified` : hasPixel ? 'Pixel active' : 'Setup pixel'}
                     </p>
                   </div>
-                  <ArrowRight className="h-3.5 w-3.5 text-gray-400 group-hover:text-gray-600 transition-colors" />
+                  <ArrowRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-muted-foreground transition-colors" />
                 </Link>
-                <Link href="/activate" className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-gray-50 transition-colors group">
-                  <Rocket className="h-4 w-4 text-gray-400 shrink-0" />
+                <Link href="/activate" className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-muted transition-colors group">
+                  <Rocket className="h-4 w-4 text-muted-foreground shrink-0" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-800">Activate</p>
-                    <p className="text-xs text-gray-500">Audiences + campaigns</p>
+                    <p className="text-sm font-medium text-foreground">Activate</p>
+                    <p className="text-xs text-muted-foreground">Audiences + campaigns</p>
                   </div>
-                  <ArrowRight className="h-3.5 w-3.5 text-gray-400 group-hover:text-gray-600 transition-colors" />
+                  <ArrowRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-muted-foreground transition-colors" />
                 </Link>
               </div>
             </div>
@@ -508,28 +509,28 @@ async function DashboardMainGrid(props: MainGridProps) {
           {/* Recent activity */}
           {activityLog.length > 0 && (
             <AnimatedSection delay={0.24}>
-              <div className="bg-white rounded-xl border border-gray-200 p-5">
-                <h3 className="font-semibold text-gray-900 text-sm mb-3 flex items-center gap-2">
-                  <Activity className="h-3.5 w-3.5 text-gray-500" />
+              <div className="bg-card rounded-xl border border-border p-5">
+                <h3 className="font-semibold text-foreground text-sm mb-3 flex items-center gap-2">
+                  <Activity className="h-3.5 w-3.5 text-muted-foreground" />
                   Recent Activity
                 </h3>
                 <div className="space-y-3">
                   {activityLog.slice(0, 6).map((event, i) => (
                     <div key={i} className="flex items-start gap-2.5">
                       <div className="mt-0.5 h-5 w-5 shrink-0 flex items-center justify-center">
-                        <div className="h-1.5 w-1.5 rounded-full bg-gray-300" />
+                        <div className="h-1.5 w-1.5 rounded-full bg-border" />
                       </div>
                       <div className="flex-1 min-w-0">
                         {event.type === 'delivery' ? (
-                          <p className="text-xs text-gray-700"><span className="font-medium">{event.count} leads</span> delivered today</p>
+                          <p className="text-xs text-foreground"><span className="font-medium">{event.count} leads</span> delivered today</p>
                         ) : (
-                          <p className="text-xs text-gray-700 truncate">
+                          <p className="text-xs text-foreground truncate">
                             <span className="font-medium">{event.leadName}</span>
-                            {event.company && <span className="text-gray-500"> · {event.company}</span>}
-                            <span className="text-gray-500 ml-1">enriched</span>
+                            {event.company && <span className="text-muted-foreground"> · {event.company}</span>}
+                            <span className="text-muted-foreground ml-1">enriched</span>
                           </p>
                         )}
-                        <p className="text-[10px] text-gray-500 mt-0.5">
+                        <p className="text-[10px] text-muted-foreground mt-0.5">
                           {formatDistanceToNow(new Date(event.time), { addSuffix: true })}
                         </p>
                       </div>
@@ -543,10 +544,10 @@ async function DashboardMainGrid(props: MainGridProps) {
           {/* Pipeline funnel */}
           {showPipeline && (
             <AnimatedSection delay={0.26}>
-              <div className="bg-white rounded-xl border border-gray-200 p-5">
+              <div className="bg-card rounded-xl border border-border p-5">
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="font-semibold text-gray-900 text-sm flex items-center gap-2">
-                    <Target className="h-3.5 w-3.5 text-gray-500" />
+                  <h3 className="font-semibold text-foreground text-sm flex items-center gap-2">
+                    <Target className="h-3.5 w-3.5 text-muted-foreground" />
                     Pipeline
                   </h3>
                   <Link href="/crm/leads" className="text-xs text-primary hover:underline">View CRM</Link>
@@ -562,17 +563,17 @@ async function DashboardMainGrid(props: MainGridProps) {
                     const pct = Math.round((count / Math.max(pipeline.contacted, 1)) * 100)
                     return (
                       <div key={key} className="flex items-center gap-2">
-                        <span className="text-xs text-gray-500 w-16 shrink-0">{label}</span>
-                        <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                          <div className="h-full bg-gray-300 rounded-full transition-all" style={{ width: `${pct}%` }} />
+                        <span className="text-xs text-muted-foreground w-16 shrink-0">{label}</span>
+                        <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
+                          <div className="h-full bg-border rounded-full transition-all" style={{ width: `${pct}%` }} />
                         </div>
-                        <span className={`text-xs font-semibold ${count > 0 ? 'text-gray-700' : 'text-gray-400'} w-6 text-right`}>{count}</span>
+                        <span className={`text-xs font-semibold ${count > 0 ? 'text-foreground' : 'text-muted-foreground'} w-6 text-right`}>{count}</span>
                       </div>
                     )
                   })}
                 </div>
                 {pipeline.won > 0 && (
-                  <p className="mt-3 text-[11px] text-gray-600 bg-gray-50 rounded-lg px-2.5 py-1.5 font-medium">
+                  <p className="mt-3 text-[11px] text-muted-foreground bg-muted rounded-lg px-2.5 py-1.5 font-medium">
                     {pipeline.won} lead{pipeline.won !== 1 ? 's' : ''} won
                   </p>
                 )}
@@ -582,19 +583,7 @@ async function DashboardMainGrid(props: MainGridProps) {
 
           {/* Upgrade CTA */}
           {isFree && (
-            <AnimatedSection delay={0.25}>
-              <div className="rounded-xl border border-gray-200 bg-white p-5">
-                <span className="text-sm font-semibold text-gray-900">Free Plan</span>
-                <div className="text-xs text-gray-500 mt-2 mb-3 space-y-1">
-                  <p className="flex justify-between"><span>Daily leads</span><span className="font-medium text-gray-700">{dailyLimit}/day</span></p>
-                  <p className="flex justify-between"><span>Enrichment credits</span><span className="font-medium text-gray-700">{creditLimit}/day</span></p>
-                  <p className="flex justify-between"><span>Credits reset</span><span className="font-medium text-gray-700">8am CT</span></p>
-                </div>
-                <Link href="/settings/billing" className="w-full inline-flex items-center justify-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-sm font-semibold text-white hover:bg-primary/90 transition-colors">
-                  Upgrade to Pro
-                </Link>
-              </div>
-            </AnimatedSection>
+            <FreePlanBanner dailyLimit={dailyLimit} creditLimit={creditLimit} />
           )}
         </div>
       </div>
@@ -611,23 +600,23 @@ function DashboardMainGridSkeleton() {
   return (
     <div className="space-y-6 animate-pulse">
       {/* Hot leads skeleton */}
-      <div className="bg-white rounded-xl border border-gray-200 p-5">
-        <div className="h-5 w-44 bg-gray-200 rounded mb-4" />
+      <div className="bg-card rounded-xl border border-border p-5">
+        <div className="h-5 w-44 bg-muted rounded mb-4" />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {[1, 2, 3].map(i => <div key={i} className="rounded-lg border border-gray-100 bg-gray-50 h-24" />)}
+          {[1, 2, 3].map(i => <div key={i} className="rounded-lg border border-border bg-muted h-24" />)}
         </div>
       </div>
       {/* Main grid skeleton */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-white rounded-xl border border-gray-200 p-5">
-          <div className="h-5 w-32 bg-gray-200 rounded mb-4" />
+        <div className="lg:col-span-2 bg-card rounded-xl border border-border p-5">
+          <div className="h-5 w-32 bg-muted rounded mb-4" />
           <div className="space-y-3">
             {[1, 2, 3, 4, 5].map(i => (
-              <div key={i} className="flex items-center gap-3 p-3 rounded-lg bg-gray-50">
-                <div className="h-8 w-8 rounded-full bg-gray-200 shrink-0" />
+              <div key={i} className="flex items-center gap-3 p-3 rounded-lg bg-muted">
+                <div className="h-8 w-8 rounded-full bg-muted shrink-0" />
                 <div className="flex-1 space-y-1.5">
-                  <div className="h-3.5 w-36 bg-gray-200 rounded" />
-                  <div className="h-3 w-24 bg-gray-100 rounded" />
+                  <div className="h-3.5 w-36 bg-muted rounded" />
+                  <div className="h-3 w-24 bg-muted rounded" />
                 </div>
               </div>
             ))}
@@ -635,7 +624,7 @@ function DashboardMainGridSkeleton() {
         </div>
         <div className="space-y-4">
           {[64, 80, 96].map(h => (
-            <div key={h} className="rounded-xl border border-gray-200 bg-gray-50" style={{ height: h }} />
+            <div key={h} className="rounded-xl border border-border bg-muted" style={{ height: h }} />
           ))}
         </div>
       </div>
@@ -766,12 +755,12 @@ export default async function DashboardPage({
         <AnimatedSection delay={0}>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">
+              <h1 className="text-2xl font-bold text-foreground">
                 Welcome back, {userProfile.full_name?.split(' ')[0] || 'there'}!
               </h1>
-              <p className="text-sm text-gray-500 mt-0.5">
+              <p className="text-sm text-muted-foreground mt-0.5">
                 {userProfile.workspaces?.name && (
-                  <span className="font-medium text-gray-700">{userProfile.workspaces.name} · </span>
+                  <span className="font-medium text-foreground">{userProfile.workspaces.name} · </span>
                 )}
                 Here&apos;s your lead pipeline. New leads arrive every morning at 8am CT.
               </p>
@@ -811,11 +800,11 @@ export default async function DashboardPage({
 
         {/* Onboarding complete banner */}
         {onboarding === 'complete' && (
-          <div className="rounded-xl bg-gray-50 border border-gray-200 p-4 flex items-start gap-3">
-            <CheckCircle2 className="h-5 w-5 text-gray-400 shrink-0 mt-0.5" />
+          <div className="rounded-xl bg-muted border border-border p-4 flex items-start gap-3">
+            <CheckCircle2 className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
             <div>
-              <p className="font-semibold text-gray-900">Setup complete!</p>
-              <p className="text-sm text-gray-600">
+              <p className="font-semibold text-foreground">Setup complete!</p>
+              <p className="text-sm text-muted-foreground">
                 {totalCount > 0
                   ? `Your first ${totalCount} leads are ready — check them out below.`
                   : 'We\'re setting up your lead pipeline now. Your first leads will arrive shortly.'}
@@ -858,21 +847,21 @@ export default async function DashboardPage({
           )
           if (creditsRemaining <= 3) return (
             <AnimatedSection delay={0.03}>
-              <div className="rounded-xl p-4 flex items-center justify-between gap-4 bg-gray-50 border border-gray-200">
+              <div className="rounded-xl p-4 flex items-center justify-between gap-4 bg-muted border border-border">
                 <div>
                   {isFree ? (
                     <>
-                      <p className="font-semibold text-gray-900 text-sm">
+                      <p className="font-semibold text-foreground text-sm">
                         {creditsRemaining === 0 ? 'No free credits remaining today' : `${creditsRemaining} free credit${creditsRemaining === 1 ? '' : 's'} left`}
                       </p>
-                      <p className="text-xs text-gray-500">Upgrade to Pro for 1,000 daily credits and full CRM access.</p>
+                      <p className="text-xs text-muted-foreground">Upgrade to Pro for 1,000 daily credits and full CRM access.</p>
                     </>
                   ) : (
                     <>
-                      <p className="font-semibold text-gray-900 text-sm">
+                      <p className="font-semibold text-foreground text-sm">
                         {creditsRemaining === 0 ? 'No enrichment credits remaining' : `${creditsRemaining} credit${creditsRemaining === 1 ? '' : 's'} remaining`}
                       </p>
-                      <p className="text-xs text-gray-500">Each lead enrichment costs 1 credit. Credits reset daily.</p>
+                      <p className="text-xs text-muted-foreground">Each lead enrichment costs 1 credit. Credits reset daily.</p>
                     </>
                   )}
                 </div>
@@ -884,10 +873,10 @@ export default async function DashboardPage({
           )
           if (showOutboundUpsell) return (
             <AnimatedSection delay={0.03}>
-              <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="rounded-xl border border-border bg-muted p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <p className="font-semibold text-gray-900 text-sm">Your pixel has identified {pixelEventCount.toLocaleString()} visitors</p>
-                  <p className="text-xs text-gray-500 mt-0.5">Cursive Outbound can email and follow up with every identified visitor.</p>
+                  <p className="font-semibold text-foreground text-sm">Your pixel has identified {pixelEventCount.toLocaleString()} visitors</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Cursive Outbound can email and follow up with every identified visitor.</p>
                 </div>
                 <a href="mailto:darren@meetcursive.com?subject=Cursive Outbound interest" className="inline-flex items-center gap-1.5 shrink-0 rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-white hover:bg-primary/90 transition-colors whitespace-nowrap">
                   Talk to Darren
@@ -908,37 +897,37 @@ export default async function DashboardPage({
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Today's leads */}
             <Link href="/leads" className="group">
-              <div className="bg-white rounded-xl border border-gray-200 p-6 hover:border-gray-300 transition-all h-full">
-                <span className="text-sm text-gray-500">Today&apos;s Leads</span>
-                <div className="text-3xl font-semibold text-gray-900 mt-2">{todayCount}</div>
-                <p className="text-sm text-gray-500 mt-1">{todayCount} of {dailyLimit} delivered</p>
+              <div className="rounded-xl border border-border bg-card p-5 hover:border-primary/30 transition-all h-full">
+                <span className="text-sm text-muted-foreground">Today&apos;s Leads</span>
+                <div className="text-3xl font-semibold text-foreground mt-2">{todayCount}</div>
+                <p className="text-sm text-muted-foreground mt-1">{todayCount} of {dailyLimit} delivered</p>
               </div>
             </Link>
 
             {/* This week */}
             <Link href="/leads" className="group">
-              <div className="bg-white rounded-xl border border-gray-200 p-6 hover:border-gray-300 transition-all h-full">
-                <span className="text-sm text-gray-500">This Week</span>
-                <div className="text-3xl font-semibold text-gray-900 mt-2">{weekCount}</div>
-                <p className="text-sm text-gray-500 mt-1">{(weekCount / 7).toFixed(1)} avg/day</p>
+              <div className="rounded-xl border border-border bg-card p-5 hover:border-primary/30 transition-all h-full">
+                <span className="text-sm text-muted-foreground">This Week</span>
+                <div className="text-3xl font-semibold text-foreground mt-2">{weekCount}</div>
+                <p className="text-sm text-muted-foreground mt-1">{(weekCount / 7).toFixed(1)} avg/day</p>
               </div>
             </Link>
 
             {/* Credits */}
             <Link href="/settings/billing" className="group">
-              <div className="bg-white rounded-xl border border-gray-200 p-6 hover:border-gray-300 transition-all h-full">
-                <span className="text-sm text-gray-500" title="2 credits per Intel Pack · 10 credits per Deep Research">Enrichment Credits</span>
-                <div className="text-3xl font-semibold text-gray-900 mt-2">{creditsRemaining}</div>
-                <p className="text-sm text-gray-500 mt-1">of {creditLimit}/day · resets daily</p>
+              <div className="rounded-xl border border-border bg-card p-5 hover:border-primary/30 transition-all h-full">
+                <span className="text-sm text-muted-foreground" title="2 credits per Intel Pack · 10 credits per Deep Research">Enrichment Credits</span>
+                <div className="text-3xl font-semibold text-foreground mt-2">{creditsRemaining}</div>
+                <p className="text-sm text-muted-foreground mt-1">of {creditLimit}/day · resets daily</p>
               </div>
             </Link>
 
             {/* Total leads */}
             <Link href="/crm/leads" className="group">
-              <div className="bg-white rounded-xl border border-gray-200 p-6 hover:border-gray-300 transition-all h-full">
-                <span className="text-sm text-gray-500">Total Leads</span>
-                <div className="text-3xl font-semibold text-gray-900 mt-2">{totalCount}</div>
-                <p className="text-sm text-gray-500 mt-1">{enrichedCount} enriched</p>
+              <div className="rounded-xl border border-border bg-card p-5 hover:border-primary/30 transition-all h-full">
+                <span className="text-sm text-muted-foreground">Total Leads</span>
+                <div className="text-3xl font-semibold text-foreground mt-2">{totalCount}</div>
+                <p className="text-sm text-muted-foreground mt-1">{enrichedCount} enriched</p>
               </div>
             </Link>
           </div>
