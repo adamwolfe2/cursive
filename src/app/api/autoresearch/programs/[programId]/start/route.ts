@@ -8,6 +8,7 @@ import { getCurrentUser } from '@/lib/auth/helpers'
 import { createClient } from '@/lib/supabase/server'
 import { handleApiError, unauthorized, notFound, success, badRequest } from '@/lib/utils/api-error-handler'
 import { inngest } from '@/inngest/client'
+import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface RouteContext {
@@ -77,6 +78,20 @@ export async function POST(request: NextRequest, context: RouteContext) {
         workspace_id: user.workspace_id,
       },
     })
+
+    try {
+      await sendSlackAlert({
+        type: 'system_event',
+        severity: 'info',
+        message: `Autoresearch started for program ${programId}`,
+        metadata: {
+          program_id: programId,
+          workspace_id: user.workspace_id,
+        },
+      })
+    } catch {
+      // Non-critical: do not fail if Slack is down
+    }
 
     return success({
       message: 'Autoresearch program started',

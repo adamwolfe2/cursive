@@ -7,6 +7,7 @@ import { type NextRequest } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { createClient } from '@/lib/supabase/server'
 import { handleApiError, unauthorized, notFound, success, badRequest } from '@/lib/utils/api-error-handler'
+import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 interface RouteContext {
@@ -68,6 +69,20 @@ export async function POST(request: NextRequest, context: RouteContext) {
     if (updateError) {
       safeError('[Autoresearch Pause] Failed to update status:', updateError)
       return badRequest('Failed to pause program')
+    }
+
+    try {
+      await sendSlackAlert({
+        type: 'system_event',
+        severity: 'info',
+        message: `Autoresearch paused for program ${programId}`,
+        metadata: {
+          program_id: programId,
+          workspace_id: user.workspace_id,
+        },
+      })
+    } catch {
+      // Non-critical: do not fail if Slack is down
     }
 
     return success({

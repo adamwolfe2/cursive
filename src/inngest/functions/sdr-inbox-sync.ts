@@ -7,6 +7,7 @@ import { SdrConfigRepository } from '@/lib/repositories/sdr-config.repository'
 import { generateReply } from '@/lib/services/sdr/reply-engine'
 import { detectStageTransition } from '@/lib/services/sdr/conversation-manager'
 import { classifySentiment } from '@/lib/services/autoresearch/sentiment-classifier'
+import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import type { ConversationStage } from '@/types/sdr'
 
 export const sdrInboxSync = inngest.createFunction(
@@ -172,6 +173,41 @@ export const sdrInboxSync = inngest.createFunction(
                       updated_at: new Date().toISOString(),
                     })
                     .eq('id', conversation.id)
+                }
+
+                // Slack: notify on auto-send or needs-approval
+                const leadName = [lead?.first_name, lead?.last_name]
+                  .filter(Boolean)
+                  .join(' ') || reply.from_email
+                const companyName = lead?.company_name ?? 'Unknown'
+
+                try {
+                  if (decision.action === 'auto_send') {
+                    await sendSlackAlert({
+                      type: 'system_event',
+                      severity: 'info',
+                      message: `AI SDR auto-replied to ${leadName} (${companyName})`,
+                      metadata: {
+                        workspace_id: config.workspace_id,
+                        sentiment,
+                        confidence: `${decision.reply.confidence ?? '?'}%`,
+                      },
+                    })
+                  } else if (decision.action === 'queue_approval') {
+                    const inboxUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://app.meetcursive.com'}/inbox`
+                    await sendSlackAlert({
+                      type: 'system_event',
+                      severity: 'warning',
+                      message: `Reply needs review: ${leadName} (${companyName})`,
+                      metadata: {
+                        workspace_id: config.workspace_id,
+                        sentiment,
+                        review_url: inboxUrl,
+                      },
+                    })
+                  }
+                } catch {
+                  // Non-critical: do not break the pipeline if Slack is down
                 }
               }
 

@@ -3,6 +3,7 @@ import type {
   QualityCheckResult,
   QualityIssue,
 } from '@/types/onboarding'
+import { scoreCopy, CORPORATE_KILL_SIGNALS, LLM_ISM_RED_FLAGS } from '../autoresearch/cold-email-knowledge'
 
 // ---------------------------------------------------------------------------
 // Spam trigger words
@@ -439,6 +440,141 @@ function checkAllCaps(
 }
 
 // ---------------------------------------------------------------------------
+// Masterclass checks (cold-email-knowledge.ts integration)
+// ---------------------------------------------------------------------------
+
+function checkCorporateKillSignals(
+  body: string,
+  seqIdx: number,
+  emailIdx: number,
+): QualityIssue[] {
+  const lower = body.toLowerCase()
+  const issues: QualityIssue[] = []
+
+  for (const signal of CORPORATE_KILL_SIGNALS) {
+    if (lower.includes(signal.toLowerCase())) {
+      issues.push({
+        sequence_index: seqIdx,
+        email_index: emailIdx,
+        severity: 'error',
+        check: 'corporate_kill_signal',
+        detail: `Body contains corporate kill signal: "${signal}".`,
+      })
+    }
+  }
+
+  return issues
+}
+
+function checkLlmIsms(
+  body: string,
+  subjectLine: string,
+  seqIdx: number,
+  emailIdx: number,
+): QualityIssue[] {
+  const fullText = `${subjectLine} ${body}`.toLowerCase()
+  const issues: QualityIssue[] = []
+
+  for (const flag of LLM_ISM_RED_FLAGS) {
+    if (fullText.includes(flag.toLowerCase())) {
+      issues.push({
+        sequence_index: seqIdx,
+        email_index: emailIdx,
+        severity: 'error',
+        check: 'llm_ism',
+        detail: `Copy contains LLM-ism red flag: "${flag}".`,
+      })
+    }
+  }
+
+  return issues
+}
+
+function checkPsychologicalPrinciples(
+  body: string,
+  subjectLine: string,
+  seqIdx: number,
+  emailIdx: number,
+): QualityIssue[] {
+  const result = scoreCopy({
+    subject: subjectLine,
+    body,
+    hasSocialProof: /\d+\s*(clients?|companies|businesses)/i.test(body),
+    hasSpecificNumbers: /\$[\d,]+|\d+%|\d+x/i.test(body),
+    hasOffer: /free|no cost|no charge|guarantee|at no/i.test(body),
+    hasCta: /\?|reply|call|chat|ring|send/i.test(body),
+    hasPersonalization: /\{\{firstName\}\}|\{\{companyName\}\}/i.test(body),
+  })
+
+  if (!result.passesMinimum) {
+    return [
+      {
+        sequence_index: seqIdx,
+        email_index: emailIdx,
+        severity: 'warning',
+        check: 'psychological_principles',
+        detail: `Email scores ${result.score}/7 on psychological principles (minimum 4). Present: ${result.principlesPresent.join(', ') || 'none'}.`,
+      },
+    ]
+  }
+
+  return []
+}
+
+function checkSubjectLowercase(
+  subjectLine: string,
+  seqIdx: number,
+  emailIdx: number,
+): QualityIssue[] {
+  // Expand spintax to check each variant
+  const variants = expandSpintax(subjectLine)
+  const issues: QualityIssue[] = []
+
+  for (const variant of variants) {
+    // Strip merge tags before checking case
+    const stripped = stripMergeTags(variant)
+    // Allow uppercase acronyms but flag other uppercase letters
+    const withoutAcronyms = stripped.replace(/\b[A-Z]{2,}\b/g, '')
+    if (withoutAcronyms !== withoutAcronyms.toLowerCase()) {
+      issues.push({
+        sequence_index: seqIdx,
+        email_index: emailIdx,
+        severity: 'warning',
+        check: 'subject_not_lowercase',
+        detail: `Subject line variant "${variant}" is not lowercase — lowercase signals casual and personal.`,
+      })
+      break
+    }
+  }
+
+  return issues
+}
+
+function checkBodyStartsWithI(
+  body: string,
+  seqIdx: number,
+  emailIdx: number,
+): QualityIssue[] {
+  // Strip merge tags, then check if the very first word is "I"
+  const stripped = stripMergeTags(body).trimStart()
+  const firstWord = stripped.split(/[\s,]/)[0] ?? ''
+
+  if (firstWord === 'I' || firstWord === "I'm" || firstWord === "I've" || firstWord === "I'd" || firstWord === "I'll") {
+    return [
+      {
+        sequence_index: seqIdx,
+        email_index: emailIdx,
+        severity: 'error',
+        check: 'body_starts_with_i',
+        detail: `Email starts with "${firstWord}" as the first word — never start with "I". Lead with the prospect.`,
+      },
+    ]
+  }
+
+  return []
+}
+
+// ---------------------------------------------------------------------------
 // Per-sequence checks
 // ---------------------------------------------------------------------------
 
@@ -513,6 +649,12 @@ export function checkCopyQuality(sequences: DraftSequences): QualityCheckResult 
         ...checkSubjectExclamation(subject_line, seqIdx, emailIdx),
         ...checkExcessiveExclamations(body, seqIdx, emailIdx),
         ...checkAllCaps(body, seqIdx, emailIdx),
+        // Masterclass checks
+        ...checkCorporateKillSignals(body, seqIdx, emailIdx),
+        ...checkLlmIsms(body, subject_line, seqIdx, emailIdx),
+        ...checkPsychologicalPrinciples(body, subject_line, seqIdx, emailIdx),
+        ...checkSubjectLowercase(subject_line, seqIdx, emailIdx),
+        ...checkBodyStartsWithI(body, seqIdx, emailIdx),
       )
     }
 

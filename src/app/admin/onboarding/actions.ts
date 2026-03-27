@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { createAdminClient } from '@/lib/supabase/server'
+import { getInngest } from '@/inngest/client'
 import type { ClientStatus } from '@/types/onboarding'
 
 export async function updateClientStatus(clientId: string, status: ClientStatus, expectedUpdatedAt?: string) {
@@ -38,6 +39,17 @@ export async function updateClientStatus(clientId: string, status: ClientStatus,
 export async function approveSequences(clientId: string) {
   const supabase = createAdminClient()
 
+  // Load the client to get workspace context for the push event
+  const { data: client, error: fetchError } = await supabase
+    .from('onboarding_clients')
+    .select('id, packages_selected')
+    .eq('id', clientId)
+    .single()
+
+  if (fetchError || !client) {
+    throw new Error(`Failed to load client for approval: ${fetchError?.message || 'not found'}`)
+  }
+
   const { error } = await supabase
     .from('onboarding_clients')
     .update({
@@ -48,6 +60,20 @@ export async function approveSequences(clientId: string) {
 
   if (error) {
     throw new Error(`Failed to approve sequences: ${error.message}`)
+  }
+
+  // Trigger EmailBison push when copy is approved
+  try {
+    const inngest = getInngest()
+    await inngest.send({
+      name: 'onboarding/copy-approved',
+      data: {
+        client_id: clientId,
+        workspace_id: clientId, // Onboarding clients use their own ID as workspace scope
+      },
+    })
+  } catch {
+    // Non-fatal — the push can be retried manually from admin
   }
 
   revalidatePath(`/admin/onboarding/${clientId}`)

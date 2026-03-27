@@ -19,6 +19,7 @@ import {
   createExperiment,
   applyWinner,
 } from '@/lib/services/campaign/ab-testing.service'
+import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import type { AutoresearchSentiment } from '@/types/autoresearch'
 
 // ---------------------------------------------------------------------------
@@ -93,6 +94,22 @@ export const generateAutoresearchExperiment = inngest.createFunction(
     name: 'Generate Autoresearch Experiment',
     retries: 2,
     timeouts: { finish: '5m' },
+    onFailure: async ({ error, event }) => {
+      const programId = (event?.data?.event?.data as { program_id?: string })?.program_id
+      try {
+        await sendSlackAlert({
+          type: 'system_event',
+          severity: 'critical',
+          message: 'Autoresearch: Experiment generation failed',
+          metadata: {
+            program_id: programId ?? 'unknown',
+            error: error?.message ?? 'Unknown error',
+          },
+        })
+      } catch {
+        // Swallow - failure handler must not throw
+      }
+    },
   },
   { event: 'autoresearch/experiment.generate' },
   async ({ event, step, logger }) => {
@@ -288,6 +305,25 @@ export const generateAutoresearchExperiment = inngest.createFunction(
       })
     })
 
+    // Slack: notify that a new experiment has started
+    try {
+      await sendSlackAlert({
+        type: 'system_event',
+        severity: 'info',
+        message: `Autoresearch: New experiment started for ${program.name}`,
+        metadata: {
+          hypothesis: plan.hypothesis,
+          element_tested: elementToTest,
+          variants: `${abExperiment.challengerVariantIds.length} challengers vs control`,
+          evaluation_in: `${program.config.testDurationHours || 72}h`,
+          experiment_number: experimentNumber,
+          program_id,
+        },
+      })
+    } catch {
+      // Non-critical: do not break the pipeline if Slack is down
+    }
+
     // Step 7: Wait for test to accumulate results
     const testDurationHours = program.config.testDurationHours || 72
     await step.sleep('wait-for-test-results', `${testDurationHours}h`)
@@ -334,6 +370,22 @@ export const evaluateAutoresearchExperiment = inngest.createFunction(
     name: 'Evaluate Autoresearch Experiment',
     retries: 2,
     timeouts: { finish: '10m' },
+    onFailure: async ({ error, event }) => {
+      const experimentId = (event?.data?.event?.data as { experiment_id?: string })?.experiment_id
+      try {
+        await sendSlackAlert({
+          type: 'system_event',
+          severity: 'critical',
+          message: 'Autoresearch: Experiment evaluation failed',
+          metadata: {
+            experiment_id: experimentId ?? 'unknown',
+            error: error?.message ?? 'Unknown error',
+          },
+        })
+      } catch {
+        // Swallow - failure handler must not throw
+      }
+    },
   },
   { event: 'autoresearch/experiment.evaluate' },
   async ({ event, step, logger }) => {
@@ -622,6 +674,42 @@ export const evaluateAutoresearchExperiment = inngest.createFunction(
         won
       )
     })
+
+    // Slack: notify evaluation result
+    try {
+      if (
+        evaluation.resultStatus === 'winner_found' &&
+        evaluation.winnerVariantId !== experiment.control_variant_id
+      ) {
+        const winnerResult = savedResults.find(
+          (r) => r.variant_id === evaluation.winnerVariantId
+        )
+        await sendSlackAlert({
+          type: 'system_event',
+          severity: 'info',
+          message: `Autoresearch: Winner found for ${program.name}`,
+          metadata: {
+            lift: `${evaluation.liftPercent?.toFixed(1) ?? '?'}%`,
+            positive_reply_rate: `${((winnerResult?.positive_reply_rate ?? 0) * 100).toFixed(1)}%`,
+            experiment_number: experiment.experiment_number,
+            program_id: experiment.program_id,
+          },
+        })
+      } else if (evaluation.resultStatus !== 'insufficient_data') {
+        await sendSlackAlert({
+          type: 'system_event',
+          severity: 'warning',
+          message: `Autoresearch: No winner for ${program.name}`,
+          metadata: {
+            result: 'Baseline kept. Moving to next experiment.',
+            experiment_number: experiment.experiment_number,
+            program_id: experiment.program_id,
+          },
+        })
+      }
+    } catch {
+      // Non-critical: do not break the pipeline if Slack is down
+    }
 
     // Step 7: Handle extended experiments (re-evaluate after 24h)
     if (evaluation.resultStatus === 'insufficient_data') {

@@ -275,6 +275,7 @@ export { cleanupFailedOperations } from './cleanup-failed-operations'
 export { onboardingIntakePipeline } from './onboarding-intake-pipeline'
 export { onboardingCopyRegeneration } from './onboarding-copy-regeneration'
 export { onboardingRetryEnrichment } from './onboarding-retry-enrichment'
+export { onboardingEmailBisonPush } from './onboarding-emailbison-push'
 
 // Autoresearch (Karpathy loop: generate -> wait -> evaluate -> repeat)
 export {

@@ -120,6 +120,35 @@ SEQUENCE STRUCTURE:
 - Email 3 (Day 5-7): The shift. Change the angle entirely. Catch people who did not resonate with the first angle.
 - Email 4 (Day 10-14): The breakup. Short, human, low-pressure. This consistently gets the highest reply rates because it removes pressure.
 
+OFFER ARCHITECTURE (use one of these patterns for the offer in each sequence):
+- Revenue guarantee: "I will guarantee you {number} {outcome} in {days} days or you don't pay"
+- Free work first: "I'll build you a {deliverable} at no cost. Only pay if you love it."
+- Free asset: "Just send me {input}. I'll give you a free {deliverable}."
+- Audit/assessment: "I'll run a full {type} audit on your {asset}. Completely free."
+- Performance system: "I guarantee {number} {outcome} in {days} days. You don't pay unless we hit it."
+- Rewrite/improvement: "Send me your last {number} {assets}. I'll rewrite them for free."
+
+Match the offer type to the client's service and the prospect's decision-making level.
+
+FOLLOW-UP RULES:
+- Start with ONLY 2 emails in the initial test
+- Follow-ups must be SHORT — simple pings, not newsletter-style
+- Each follow-up needs a DIFFERENT subject line
+- Reformulate the offer briefly, never repeat verbatim
+- Human follow-up examples: "Hey {name}, checking in on this. TLDR: {offer}. Let me know."
+
+PERSONALIZATION — COLD READING TECHNIQUE:
+- Make statements that SEEM specific but apply to 80%+ of the target audience
+- Combine one researched data point with a cold-read observation
+- The prospect must think "wait, do I know this person?"
+- NEVER use AI-sounding compliments like "love how passionate you are about X at Y"
+- Casualize all company names: strip LLC/Inc/Corp, use common abbreviations
+
+TEXT MESSAGE TEST:
+- Before finalizing any email, read it as if it were a text message from a stranger
+- If it feels like marketing or a mass email, rewrite it
+- If it feels like something a real person would actually send to one person, it passes
+
 EXAMPLE — Pain Agitation Sequence for B2B SaaS Client Targeting VP Marketing:
 {
   "step": 1,

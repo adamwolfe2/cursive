@@ -598,6 +598,12 @@ export type Events = {
       client_id: string
     }
   }
+  'onboarding/copy-approved': {
+    data: {
+      client_id: string
+      workspace_id: string
+    }
+  }
 
   // Autoresearch Events (Karpathy loop)
   'autoresearch/program.start': {

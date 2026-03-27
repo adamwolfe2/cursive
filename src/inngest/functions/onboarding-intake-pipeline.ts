@@ -15,6 +15,7 @@ import {
 } from '@/lib/services/onboarding/onboarding-slack'
 import { syncClientToCRM } from '@/lib/services/onboarding/crm-sync'
 import { generateChecklist } from '@/lib/services/onboarding/checklist-generator'
+import { checkAndAdvanceStatus } from '@/lib/services/onboarding/pipeline-status'
 import { needsOutboundSetup } from '@/types/onboarding'
 import type { PackageSlug, DraftSequences } from '@/types/onboarding'
 
@@ -275,6 +276,11 @@ export const onboardingIntakePipeline = inngest.createFunction(
       await repo.updateStatus(client_id, 'setup')
     })
 
-    return { success: true, client_id }
+    // Step 9: Attempt auto-advance to 'active' if all conditions are met
+    const finalStatus = await step.run('check-auto-advance', async () => {
+      return checkAndAdvanceStatus(client_id)
+    })
+
+    return { success: true, client_id, status: finalStatus }
   }
 )

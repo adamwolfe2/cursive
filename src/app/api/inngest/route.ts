@@ -237,6 +237,7 @@ export const { GET, POST, PUT } = serve({
     functions.onboardingIntakePipeline,
     functions.onboardingCopyRegeneration,
     functions.onboardingRetryEnrichment,
+    functions.onboardingEmailBisonPush,
 
     // Autoresearch (Karpathy loop: generate -> wait -> evaluate -> repeat)
     functions.startAutoresearchProgram,
