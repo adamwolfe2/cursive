@@ -664,11 +664,17 @@ export async function addMessageToConversation(
       throw new Error('Failed to add message: no data returned')
     }
 
-    // Update conversation stats manually
+    // Update conversation stats manually — read current count then increment
+    const { data: current } = await supabase
+      .from('email_conversations')
+      .select('message_count')
+      .eq('id', conversationId)
+      .maybeSingle()
+
     await supabase
       .from('email_conversations')
       .update({
-        message_count: supabase.rpc('increment', { x: 1 }) as any, // Placeholder
+        message_count: ((current as any)?.message_count ?? 0) + 1,
         last_message_at: message.sentAt || message.receivedAt || new Date().toISOString(),
         last_message_direction: message.direction,
         updated_at: new Date().toISOString(),

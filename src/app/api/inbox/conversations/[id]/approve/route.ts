@@ -13,6 +13,8 @@ import {
   badRequest,
 } from '@/lib/utils/api-error-handler'
 import { createClient } from '@/lib/supabase/server'
+import { sendEmail } from '@/lib/services/outreach/email-sender.service'
+import { SdrConfigRepository } from '@/lib/repositories/sdr-config.repository'
 import { z } from 'zod'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
@@ -40,7 +42,11 @@ export async function POST(request: NextRequest, context: RouteContext) {
     // Verify the reply belongs to this conversation and workspace
     const { data: reply, error: fetchError } = await supabase
       .from('email_replies')
-      .select('id, draft_status, workspace_id, conversation_id, suggested_response')
+      .select(`
+        id, draft_status, workspace_id, conversation_id, suggested_response,
+        from_email, subject,
+        email_send:email_sends!email_send_id(provider_message_id)
+      `)
       .eq('id', validated.reply_id)
       .eq('conversation_id', conversationId)
       .maybeSingle()
@@ -73,10 +79,39 @@ export async function POST(request: NextRequest, context: RouteContext) {
     // Approve flow
     const finalBody = validated.edited_body || reply.suggested_response
 
+    // Fetch workspace SDR config for sender identity
+    const sdrConfig = await new SdrConfigRepository().findByWorkspace(user.workspace_id)
+    const fromEmail =
+      sdrConfig?.notification_email || process.env.OUTREACH_FROM_EMAIL || 'team@meetcursive.com'
+    const fromName =
+      [sdrConfig?.agent_first_name, sdrConfig?.agent_last_name].filter(Boolean).join(' ') ||
+      process.env.OUTREACH_FROM_NAME ||
+      'The Cursive Team'
+
+    // Build In-Reply-To / References headers for email threading
+    const originalMessageId = (reply.email_send as any)?.provider_message_id
+    const threadingHeaders = originalMessageId
+      ? { 'In-Reply-To': originalMessageId, References: originalMessageId }
+      : undefined
+
+    // Send the approved draft
+    const sendResult = await sendEmail({
+      to: reply.from_email,
+      from: fromEmail,
+      fromName,
+      subject: `Re: ${reply.subject || 'Following up'}`,
+      bodyText: finalBody || '',
+      replyTo: fromEmail,
+      ...(sdrConfig?.auto_bcc_address ? { bcc: sdrConfig.auto_bcc_address } : {}),
+      ...(threadingHeaders ? { headers: threadingHeaders } : {}),
+    })
+
+    const newDraftStatus = sendResult.success ? 'sent' : 'approved'
+
     await supabase
       .from('email_replies')
       .update({
-        draft_status: 'approved',
+        draft_status: newDraftStatus,
         suggested_response: finalBody,
         approved_by: user.id,
         approved_at: new Date().toISOString(),
@@ -95,9 +130,19 @@ export async function POST(request: NextRequest, context: RouteContext) {
       .eq('id', conversationId)
       .eq('workspace_id', user.workspace_id)
 
+    if (!sendResult.success) {
+      safeError('[Approve Draft] Email send failed:', sendResult.error)
+      return success({
+        message: 'Draft approved but send failed — will retry',
+        replyId: validated.reply_id,
+        sendError: sendResult.error,
+      })
+    }
+
     return success({
-      message: 'Draft approved and queued for sending',
+      message: 'Draft approved and sent',
       replyId: validated.reply_id,
+      messageId: sendResult.messageId,
     })
   } catch (error) {
     safeError('[Approve Draft POST]', error)

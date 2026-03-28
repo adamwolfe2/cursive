@@ -101,7 +101,8 @@ export const processReply = inngest.createFunction(
           email_send:email_sends!email_send_id(
             id,
             subject,
-            body_text
+            body_text,
+            provider_message_id
           )
         `)
 
@@ -250,6 +251,12 @@ export const processReply = inngest.createFunction(
         // Append booking link to the Claude-generated body
         const bodyWithCTA = `${suggestedResponse!.body}\n\n---\nBook a time that works for you: ${calUrl}`
 
+        // Build In-Reply-To / References headers for proper email threading
+        const originalMessageId = (reply.email_send as any)?.provider_message_id
+        const threadingHeaders = originalMessageId
+          ? { 'In-Reply-To': originalMessageId, References: originalMessageId }
+          : undefined
+
         try {
           const result = await sendEmail({
             to: reply.from_email,
@@ -259,6 +266,7 @@ export const processReply = inngest.createFunction(
             bodyText: bodyWithCTA,
             replyTo: fromEmail,
             ...(wsConfig?.auto_bcc_address ? { bcc: wsConfig.auto_bcc_address } : {}),
+            ...(threadingHeaders ? { headers: threadingHeaders } : {}),
           })
 
           // Record the auto-send result on the reply

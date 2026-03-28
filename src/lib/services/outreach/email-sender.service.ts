@@ -31,6 +31,7 @@ export interface EmailSendRequest {
   trackOpens?: boolean
   trackClicks?: boolean
   tags?: string[]
+  headers?: Record<string, string>
 }
 
 export interface EmailSendResult {
@@ -113,6 +114,7 @@ async function sendWithResend(request: EmailSendRequest): Promise<EmailSendResul
       text: request.bodyText,
       replyTo: request.replyTo,
       tags: request.tags?.map((tag) => ({ name: tag, value: 'true' })),
+      ...(request.headers ? { headers: request.headers } : {}),
     } as any)
 
     if (error) {
@@ -516,6 +518,12 @@ function buildMimeMessage(request: EmailSendRequest): string {
 
   if (request.replyTo) {
     headers.push(`Reply-To: ${request.replyTo}`)
+  }
+
+  if (request.headers) {
+    for (const [key, value] of Object.entries(request.headers)) {
+      headers.push(`${key}: ${value}`)
+    }
   }
 
   const parts = []
