@@ -1,12 +1,13 @@
 'use client'
 
-import { useCallback } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { Card } from '@/components/ui/card'
 import { Mail, Package, Globe, Calculator, ChevronDown, ChevronRight, Inbox } from 'lucide-react'
 import type { DealState } from '@/types/onboarding-wizard'
 import { calculateDealPricing, fmtCurrency, fmtCurrencyDecimal } from '@/lib/utils/deal-pricing'
 import { OUTBOUND_TIERS, SERVICE_PACKAGES, INFRA_COSTS } from '@/app/admin/deal-calculator/pricing-config'
-import { useState, useMemo } from 'react'
+import PricingConfigurator from '@/components/admin/onboarding/PricingConfigurator'
+import type { PricingConfig, AddOnId } from '@/components/admin/onboarding/PricingConfigurator'
 
 interface DealConfigStepProps {
   deal: DealState
@@ -178,40 +179,57 @@ export default function DealConfigStep({ deal, onUpdate }: DealConfigStepProps) 
         </div>
       </Card>
 
-      {/* Billing overrides */}
+      {/* Pricing configurator */}
       <Card padding="sm">
         <div className="px-5 py-4">
-          <div className="flex items-center gap-2 mb-3">
+          <div className="flex items-center gap-2 mb-4">
             <Calculator className="h-4 w-4 text-blue-600" />
-            <h2 className="text-sm font-semibold text-gray-900">Billing & Overrides</h2>
+            <h2 className="text-sm font-semibold text-gray-900">Pricing Package</h2>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <PricingConfigurator
+            value={{
+              setupFee: deal.setupFeeOverride,
+              monthlyFee: deal.recurringOverride,
+              packageName: deal.outboundTierId ?? '',
+              addOns: (deal.selectedPackages.filter((p) =>
+                ['additional_inboxes', 'reply_management', 'autoresearch', 'priority_support'].includes(p)
+              ) as AddOnId[]),
+            }}
+            onChange={(config: PricingConfig) => {
+              onUpdate('setupFeeOverride', config.setupFee)
+              onUpdate('recurringOverride', config.monthlyFee)
+              // Store the selected tier in outboundTierId for downstream mapping
+              onUpdate('outboundTierId', config.packageName || null)
+              // Merge add-ons into selectedPackages (preserve non-addon packages)
+              const nonAddonPackages = deal.selectedPackages.filter(
+                (p) => !['additional_inboxes', 'reply_management', 'autoresearch', 'priority_support'].includes(p)
+              )
+              onUpdate('selectedPackages', [...nonAddonPackages, ...config.addOns])
+            }}
+          />
+          <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-medium text-gray-600 mb-1">Billing Cadence</label>
-              <select value={deal.billingCadence} onChange={(e) => onUpdate('billingCadence', e.target.value as DealState['billingCadence'])} className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+              <select
+                value={deal.billingCadence}
+                onChange={(e) => onUpdate('billingCadence', e.target.value as DealState['billingCadence'])}
+                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+              >
                 <option value="monthly">Monthly</option>
                 <option value="quarterly">Quarterly</option>
                 <option value="annual">Annual</option>
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Setup Fee Override</label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">$</span>
-                <input type="number" value={deal.setupFeeOverride ?? ''} onChange={(e) => onUpdate('setupFeeOverride', e.target.value ? Number(e.target.value) : null)} placeholder="Auto" className="w-full rounded-md border border-gray-300 pl-7 pr-3 py-2 text-sm" />
-              </div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Deal Notes</label>
+              <textarea
+                value={deal.notes}
+                onChange={(e) => onUpdate('notes', e.target.value)}
+                rows={1}
+                placeholder="Special terms, discounts..."
+                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm resize-y"
+              />
             </div>
-            <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Monthly Override</label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">$</span>
-                <input type="number" value={deal.recurringOverride ?? ''} onChange={(e) => onUpdate('recurringOverride', e.target.value ? Number(e.target.value) : null)} placeholder="Auto" className="w-full rounded-md border border-gray-300 pl-7 pr-3 py-2 text-sm" />
-              </div>
-            </div>
-          </div>
-          <div className="mt-4">
-            <label className="block text-xs font-medium text-gray-600 mb-1">Deal Notes</label>
-            <textarea value={deal.notes} onChange={(e) => onUpdate('notes', e.target.value)} rows={2} placeholder="Special terms, discounts..." className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm resize-y" />
           </div>
         </div>
       </Card>
