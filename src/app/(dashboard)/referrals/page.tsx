@@ -81,8 +81,8 @@ export default function ReferralsPage() {
   return (
     <div className="max-w-4xl px-4 sm:px-6 py-6">
       <div className="mb-8">
-        <h1 className="text-xl font-semibold text-zinc-900">Referral Program</h1>
-        <p className="text-[13px] text-zinc-500 mt-1">Invite friends and earn credits</p>
+        <h1 className="text-xl font-semibold text-foreground">Referral Program</h1>
+        <p className="text-[13px] text-muted-foreground mt-1">Invite friends and earn credits</p>
       </div>
 
       {error && (
@@ -92,60 +92,54 @@ export default function ReferralsPage() {
       )}
 
       {/* How it works */}
-      <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg p-6 mb-8 text-white">
-        <h2 className="text-lg font-semibold mb-4">How it works</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="border border-border rounded-lg p-5 mb-8 bg-card">
+        <h2 className="text-sm font-semibold text-foreground mb-4">How it works</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="flex gap-3">
-            <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
-              <span className="text-[14px] font-semibold">1</span>
-            </div>
+            <div className="w-7 h-7 bg-primary/10 text-primary rounded-lg flex items-center justify-center flex-shrink-0 text-xs font-semibold">1</div>
             <div>
-              <p className="text-[14px] font-medium">Share your link</p>
-              <p className="text-[13px] text-white/80 mt-1">Send your unique referral link to friends</p>
+              <p className="text-sm font-medium text-foreground">Share your link</p>
+              <p className="text-xs text-muted-foreground mt-0.5">Send your unique referral link to friends</p>
             </div>
           </div>
           <div className="flex gap-3">
-            <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
-              <span className="text-[14px] font-semibold">2</span>
-            </div>
+            <div className="w-7 h-7 bg-primary/10 text-primary rounded-lg flex items-center justify-center flex-shrink-0 text-xs font-semibold">2</div>
             <div>
-              <p className="text-[14px] font-medium">They sign up</p>
-              <p className="text-[13px] text-white/80 mt-1">Your friend creates an account and gets $10 credits</p>
+              <p className="text-sm font-medium text-foreground">They sign up</p>
+              <p className="text-xs text-muted-foreground mt-0.5">Your friend creates an account and gets $10 credits</p>
             </div>
           </div>
           <div className="flex gap-3">
-            <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
-              <span className="text-[14px] font-semibold">3</span>
-            </div>
+            <div className="w-7 h-7 bg-primary/10 text-primary rounded-lg flex items-center justify-center flex-shrink-0 text-xs font-semibold">3</div>
             <div>
-              <p className="text-[14px] font-medium">You earn $25</p>
-              <p className="text-[13px] text-white/80 mt-1">When they make their first purchase, you get $25 credits</p>
+              <p className="text-sm font-medium text-foreground">You earn $25</p>
+              <p className="text-xs text-muted-foreground mt-0.5">When they make their first purchase, you get $25 credits</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Referral Code */}
-      <div className="bg-white border border-zinc-200 rounded-lg p-6 mb-8">
-        <h3 className="text-[15px] font-semibold text-zinc-900 mb-4">Your Referral Link</h3>
+      <div className="bg-card border border-border rounded-lg p-6 mb-8">
+        <h3 className="text-[15px] font-semibold text-foreground mb-4">Your Referral Link</h3>
         {isLoading || !origin ? (
-          <div className="h-12 bg-zinc-100 rounded animate-pulse" />
+          <div className="h-12 bg-muted rounded animate-pulse" />
         ) : !stats?.referralCode ? (
-          <div className="bg-zinc-50 border border-zinc-200 rounded-lg px-4 py-3">
-            <p className="text-[13px] text-zinc-500">Unable to load your referral code. Please refresh the page to try again.</p>
+          <div className="bg-muted border border-border rounded-lg px-4 py-3">
+            <p className="text-[13px] text-muted-foreground">Unable to load your referral code. Please refresh the page to try again.</p>
           </div>
         ) : (
           <div className="flex gap-3">
-            <div className="flex-1 bg-zinc-50 border border-zinc-200 rounded-lg px-4 py-3">
-              <p className="text-[13px] text-zinc-500 mb-1">Referral Link</p>
-              <p className="text-[14px] font-mono text-zinc-900 truncate">
+            <div className="flex-1 bg-muted border border-border rounded-lg px-4 py-3">
+              <p className="text-[13px] text-muted-foreground mb-1">Referral Link</p>
+              <p className="text-[14px] font-mono text-foreground truncate">
                 {origin}/signup?ref={stats.referralCode}
               </p>
             </div>
             <button
               onClick={copyReferralLink}
               disabled={!stats?.referralCode}
-              className="h-auto px-4 text-[13px] font-medium border border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50 rounded-lg inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="h-auto px-4 text-[13px] font-medium border border-border bg-card text-foreground hover:bg-muted rounded-lg inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {copied ? (
                 <>
@@ -177,8 +171,8 @@ export default function ReferralsPage() {
         )}
 
         {stats?.referralCode && (
-          <div className="mt-4 pt-4 border-t border-zinc-100">
-            <p className="text-[12px] text-zinc-500">
+          <div className="mt-4 pt-4 border-t border-border">
+            <p className="text-[12px] text-muted-foreground">
               Your referral code: <span className="font-mono font-medium">{stats.referralCode}</span>
             </p>
           </div>
@@ -187,34 +181,34 @@ export default function ReferralsPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <div className="bg-white border border-zinc-200 rounded-lg p-4">
-          <p className="text-[12px] text-zinc-500 mb-1">Total Referrals</p>
+        <div className="bg-card border border-border rounded-lg p-4">
+          <p className="text-[12px] text-muted-foreground mb-1">Total Referrals</p>
           {isLoading ? (
-            <div className="h-7 w-12 bg-zinc-100 rounded animate-pulse" />
+            <div className="h-7 w-12 bg-muted rounded animate-pulse" />
           ) : (
-            <p className="text-xl font-semibold text-zinc-900">{stats?.totalReferrals || 0}</p>
+            <p className="text-xl font-semibold text-foreground">{stats?.totalReferrals || 0}</p>
           )}
         </div>
-        <div className="bg-white border border-zinc-200 rounded-lg p-4">
-          <p className="text-[12px] text-zinc-500 mb-1">Successful</p>
+        <div className="bg-card border border-border rounded-lg p-4">
+          <p className="text-[12px] text-muted-foreground mb-1">Successful</p>
           {isLoading ? (
-            <div className="h-7 w-12 bg-zinc-100 rounded animate-pulse" />
+            <div className="h-7 w-12 bg-muted rounded animate-pulse" />
           ) : (
-            <p className="text-xl font-semibold text-zinc-900">{stats?.successfulReferrals || 0}</p>
+            <p className="text-xl font-semibold text-foreground">{stats?.successfulReferrals || 0}</p>
           )}
         </div>
-        <div className="bg-white border border-zinc-200 rounded-lg p-4">
-          <p className="text-[12px] text-zinc-500 mb-1">Pending</p>
+        <div className="bg-card border border-border rounded-lg p-4">
+          <p className="text-[12px] text-muted-foreground mb-1">Pending</p>
           {isLoading ? (
-            <div className="h-7 w-12 bg-zinc-100 rounded animate-pulse" />
+            <div className="h-7 w-12 bg-muted rounded animate-pulse" />
           ) : (
-            <p className="text-xl font-semibold text-zinc-900">{stats?.pendingReferrals || 0}</p>
+            <p className="text-xl font-semibold text-foreground">{stats?.pendingReferrals || 0}</p>
           )}
         </div>
-        <div className="bg-white border border-zinc-200 rounded-lg p-4">
-          <p className="text-[12px] text-zinc-500 mb-1">Credits Earned</p>
+        <div className="bg-card border border-border rounded-lg p-4">
+          <p className="text-[12px] text-muted-foreground mb-1">Credits Earned</p>
           {isLoading ? (
-            <div className="h-7 w-12 bg-zinc-100 rounded animate-pulse" />
+            <div className="h-7 w-12 bg-muted rounded animate-pulse" />
           ) : (
             <p className="text-xl font-semibold text-blue-600">${stats?.totalCreditsEarned || 0}</p>
           )}
@@ -222,31 +216,31 @@ export default function ReferralsPage() {
       </div>
 
       {/* FAQ */}
-      <div className="bg-white border border-zinc-200 rounded-lg p-6">
-        <h3 className="text-[15px] font-semibold text-zinc-900 mb-4">Frequently Asked Questions</h3>
+      <div className="bg-card border border-border rounded-lg p-6">
+        <h3 className="text-[15px] font-semibold text-foreground mb-4">Frequently Asked Questions</h3>
         <div className="space-y-4">
           <div>
-            <h4 className="text-[13px] font-medium text-zinc-900 mb-1">How much do I earn per referral?</h4>
-            <p className="text-[13px] text-zinc-600">
+            <h4 className="text-[13px] font-medium text-foreground mb-1">How much do I earn per referral?</h4>
+            <p className="text-[13px] text-muted-foreground">
               You earn $25 in credits when someone signs up with your link and makes their first purchase.
               Your friend gets $10 in credits just for signing up!
             </p>
           </div>
           <div>
-            <h4 className="text-[13px] font-medium text-zinc-900 mb-1">Is there a limit to how many people I can refer?</h4>
-            <p className="text-[13px] text-zinc-600">
+            <h4 className="text-[13px] font-medium text-foreground mb-1">Is there a limit to how many people I can refer?</h4>
+            <p className="text-[13px] text-muted-foreground">
               No! There&apos;s no limit. Refer as many friends as you&apos;d like and earn credits for each successful referral.
             </p>
           </div>
           <div>
-            <h4 className="text-[13px] font-medium text-zinc-900 mb-1">When do I receive my credits?</h4>
-            <p className="text-[13px] text-zinc-600">
+            <h4 className="text-[13px] font-medium text-foreground mb-1">When do I receive my credits?</h4>
+            <p className="text-[13px] text-muted-foreground">
               Credits are added to your account as soon as your referred friend completes their first purchase.
             </p>
           </div>
           <div>
-            <h4 className="text-[13px] font-medium text-zinc-900 mb-1">Do credits expire?</h4>
-            <p className="text-[13px] text-zinc-600">
+            <h4 className="text-[13px] font-medium text-foreground mb-1">Do credits expire?</h4>
+            <p className="text-[13px] text-muted-foreground">
               No, credits never expire. Use them whenever you&apos;re ready to purchase leads.
             </p>
           </div>

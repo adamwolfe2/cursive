@@ -5,7 +5,6 @@
 
 import { Suspense } from 'react'
 import { EmailSequencesList } from '@/components/email-sequences/email-sequences-list'
-import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Plus } from 'lucide-react'
 import Link from 'next/link'
@@ -36,19 +35,20 @@ function SequencesListSkeleton() {
 export default function EmailSequencesPage() {
   return (
     <div className="px-4 sm:px-6 py-6 max-w-7xl">
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-start justify-between mb-8 gap-4">
         <div>
-          <h1 className="text-2xl font-bold">Email Sequences</h1>
-          <p className="text-muted-foreground mt-1">
+          <h1 className="text-2xl font-bold text-foreground">Email Sequences</h1>
+          <p className="text-sm text-muted-foreground mt-1">
             Create automated email sequences to nurture leads
           </p>
         </div>
-        <Button asChild size="sm">
-          <Link href="/email-sequences/new">
-            <Plus className="mr-2 h-4 w-4" />
-            New Sequence
-          </Link>
-        </Button>
+        <Link
+          href="/email-sequences/new"
+          className="inline-flex items-center gap-1.5 shrink-0 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 transition-colors"
+        >
+          <Plus className="h-4 w-4" />
+          New Sequence
+        </Link>
       </div>
 
       <Suspense fallback={<SequencesListSkeleton />}>
