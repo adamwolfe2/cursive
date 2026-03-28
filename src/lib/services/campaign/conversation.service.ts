@@ -81,6 +81,7 @@ export interface ConversationFilters {
   priority?: Conversation['priority']
   hasUnread?: boolean
   sentiment?: string
+  conversationStage?: string | string[]
   intent?: string
   search?: string
 }
@@ -147,6 +148,14 @@ export async function getConversations(
 
   if (filters.sentiment) {
     query = query.eq('sentiment', filters.sentiment)
+  }
+
+  if (filters.conversationStage) {
+    if (Array.isArray(filters.conversationStage)) {
+      query = query.in('conversation_stage', filters.conversationStage)
+    } else {
+      query = query.eq('conversation_stage', filters.conversationStage)
+    }
   }
 
   if (filters.intent) {

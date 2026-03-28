@@ -40,6 +40,13 @@ export async function GET(request: NextRequest) {
     const sentiment = searchParams.get('sentiment')
     if (sentiment) filters.sentiment = sentiment
 
+    const stageValues = searchParams.getAll('stage')
+    if (stageValues.length === 1) {
+      filters.conversationStage = stageValues[0]
+    } else if (stageValues.length > 1) {
+      filters.conversationStage = stageValues
+    }
+
     const pagination: PaginationParams = {
       page: Math.max(1, Number(searchParams.get('page')) || 1),
       limit: Math.min(100, Math.max(1, Number(searchParams.get('limit')) || 30)),

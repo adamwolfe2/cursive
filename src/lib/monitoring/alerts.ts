@@ -10,6 +10,7 @@ export type AlertType =
   | 'webhook_failure'
   | 'dlq_threshold'
   | 'system_health'
+  | 'system_event'
   | 'inngest_failure'
   | 'pipeline_update'
   | 'customer_stuck'
