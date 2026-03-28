@@ -31,6 +31,7 @@ import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 import { meetsQualityBar } from '@/lib/services/lead-quality.service'
 import { checkQuota, incrementQuota } from '@/lib/services/al-quota.service'
+import { createOnFailureHandler } from '@/inngest/utils/on-failure-handler'
 
 // ─── Lead Quality Scoring ─────────────────────────────────────────────────────
 // Minimum completeness score — leads below this are not worth storing.
@@ -101,6 +102,7 @@ export const audienceLabSegmentPuller = inngest.createFunction(
     retries: 2,
     timeouts: { finish: '10m' },
     concurrency: [{ limit: 1 }], // Only one puller at a time
+    onFailure: createOnFailureHandler('audiencelab-segment-puller'),
   },
   [
     { cron: '0 */6 * * *' }, // Every 6 hours

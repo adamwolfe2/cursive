@@ -8,15 +8,17 @@ import { generateReply } from '@/lib/services/sdr/reply-engine'
 import { detectStageTransition } from '@/lib/services/sdr/conversation-manager'
 import { classifySentiment } from '@/lib/services/autoresearch/sentiment-classifier'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
+import { createOnFailureHandler } from '@/inngest/utils/on-failure-handler'
 import type { ConversationStage } from '@/types/sdr'
 
 export const sdrInboxSync = inngest.createFunction(
   {
     id: 'sdr-inbox-sync',
     name: 'SDR Inbox Sync',
-    retries: 1,
+    retries: 3,
     timeouts: { finish: '10m' },
     concurrency: { limit: 1 },
+    onFailure: createOnFailureHandler('sdr-inbox-sync'),
   },
   { cron: '*/15 * * * *' },
   async ({ step, logger }) => {

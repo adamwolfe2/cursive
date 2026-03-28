@@ -14,6 +14,7 @@ import { sendEmail } from '@/lib/email/service'
 import { meetsQualityBar } from '@/lib/services/lead-quality.service'
 import { checkWorkspaceDuplicates, logDedupRejections } from '@/lib/services/deduplication.service'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { createOnFailureHandler } from '@/inngest/utils/on-failure-handler'
 
 import { APP_URL } from '@/lib/config/urls'
 
@@ -38,6 +39,7 @@ export const distributeDailyLeads = inngest.createFunction(
     name: 'Distribute Daily Leads',
     retries: 3,
     timeouts: { finish: '10m' },
+    onFailure: createOnFailureHandler('distribute-daily-leads'),
   },
   { cron: '0 13 * * *' }, // 8am Central = 1pm UTC
   async ({ event: _event, step }) => {

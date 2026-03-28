@@ -14,6 +14,7 @@ import { inngest } from '../client'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { sendEmail } from '@/lib/email/service'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
+import { createOnFailureHandler } from '@/inngest/utils/on-failure-handler'
 
 import { APP_URL } from '@/lib/config/urls'
 const UPGRADE_URL = `${APP_URL}/settings/billing`
@@ -145,6 +146,7 @@ export const trialCountdownEmails = inngest.createFunction(
     name: 'Trial Countdown Emails',
     retries: 2,
     timeouts: { finish: '10m' },
+    onFailure: createOnFailureHandler('trial-countdown-emails'),
   },
   { cron: '0 9 * * *' }, // 9am UTC daily
   async ({ step }) => {

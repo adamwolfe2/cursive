@@ -5,55 +5,20 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/middleware'
 // import { logger } from '@/lib/monitoring/logger'  // TEMP: Disabled for Edge Runtime debugging
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { checkRateLimit } from '@/lib/middleware/rate-limiter'
 
-// ─── Rate Limiting (in-memory, Edge-compatible) ───────────────────────────
-// Shared across requests within the same Edge instance.
-// Not durable across cold starts, but provides burst protection.
-// KNOWN LIMITATION: In-memory store is per-instance — multiple Vercel replicas each have
-// independent counters. A distributed attacker could bypass limits by hitting different replicas.
-// This is adequate for current scale. Future enhancement: Upstash Redis for durable,
-// cross-instance rate limiting (see https://upstash.com/docs/redis/quickstarts/vercel-edge).
-const rateLimitStore = new Map<string, { count: number; resetAt: number }>()
-
-const RATE_LIMIT_TIERS = {
-  auth:  { windowMs: 60_000, max: 10 },   // /api/auth/*: 10 req/min
-  write: { windowMs: 60_000, max: 30 },   // POST/PUT/DELETE: 30 req/min
-  read:  { windowMs: 60_000, max: 60 },   // GET: 60 req/min
-} as const
+// ─── Rate Limiting (distributed via Upstash Redis) ────────────────────────
+// checkRateLimit() uses Upstash Redis REST API when UPSTASH_REDIS_REST_URL
+// and UPSTASH_REDIS_REST_TOKEN are set, giving durable cross-replica limits.
+// Falls back to per-instance in-memory when those env vars are absent.
+//
+// Tiers: auth=10/min, write=30/min, read=60/min
+// See src/lib/middleware/rate-limiter.ts for full documentation.
 
 function getClientIp(req: NextRequest): string {
   return req.headers.get('x-forwarded-for')?.split(',')[0].trim()
     || req.headers.get('x-real-ip')?.trim()
     || 'unknown'
-}
-
-function checkRateLimit(key: string, tier: keyof typeof RATE_LIMIT_TIERS): {
-  allowed: boolean; remaining: number; retryAfter: number
-} {
-  const { windowMs, max } = RATE_LIMIT_TIERS[tier]
-  const now = Date.now()
-  let entry = rateLimitStore.get(key)
-
-  if (!entry || now > entry.resetAt) {
-    entry = { count: 0, resetAt: now + windowMs }
-  }
-  entry.count++
-  rateLimitStore.set(key, entry)
-
-  const remaining = Math.max(0, max - entry.count)
-  const retryAfter = Math.ceil((entry.resetAt - now) / 1000)
-  return { allowed: entry.count <= max, remaining, retryAfter }
-}
-
-// Cleanup expired entries every 60 seconds
-let lastCleanup = Date.now()
-function maybeCleanup() {
-  const now = Date.now()
-  if (now - lastCleanup < 60_000) return
-  lastCleanup = now
-  for (const [key, entry] of rateLimitStore) {
-    if (now > entry.resetAt) rateLimitStore.delete(key)
-  }
 }
 
 /**
@@ -121,13 +86,13 @@ export async function middleware(req: NextRequest) {
         return NextResponse.next({ request: req })
       }
       // Rate limit POST/GET on these routes (lightweight, no Supabase client)
-      maybeCleanup()
       const ip = getClientIp(req)
-      const rl = checkRateLimit(`write:${ip}`, 'write')
-      if (!rl.allowed) {
+      const rl = await checkRateLimit(ip, 'write')
+      if (!rl.success) {
+        const retryAfter = Math.ceil((rl.reset - Date.now()) / 1000)
         return NextResponse.json(
-          { error: 'Too many requests', retryAfter: rl.retryAfter },
-          { status: 429, headers: { 'Retry-After': String(rl.retryAfter) } }
+          { error: 'Too many requests', retryAfter },
+          { status: 429, headers: { 'Retry-After': String(retryAfter) } }
         )
       }
       return NextResponse.next({ request: req })
@@ -135,20 +100,20 @@ export async function middleware(req: NextRequest) {
 
     // ─── Rate Limiting for API routes ───────────────────────────────
     if (pathname.startsWith('/api')) {
-      maybeCleanup()
       const ip = getClientIp(req)
-      const tier: keyof typeof RATE_LIMIT_TIERS =
-        pathname.startsWith('/api/auth') ? 'auth'
-        : req.method !== 'GET' ? 'write'
-        : 'read'
-      const rl = checkRateLimit(`${tier}:${ip}`, tier)
-      if (!rl.allowed) {
+      const tier =
+        pathname.startsWith('/api/auth') ? 'auth' as const
+        : req.method !== 'GET' ? 'write' as const
+        : 'read' as const
+      const rl = await checkRateLimit(ip, tier)
+      if (!rl.success) {
+        const retryAfter = Math.ceil((rl.reset - Date.now()) / 1000)
         return NextResponse.json(
-          { error: 'Too many requests', retryAfter: rl.retryAfter },
+          { error: 'Too many requests', retryAfter },
           {
             status: 429,
             headers: {
-              'Retry-After': String(rl.retryAfter),
+              'Retry-After': String(retryAfter),
               'X-RateLimit-Remaining': '0',
             },
           }
@@ -168,8 +133,8 @@ export async function middleware(req: NextRequest) {
     // Admin-only routes
     const isAdminRoute = pathname.startsWith('/admin')
 
-    // Partner-only routes
-    const isPartnerRoute = pathname.startsWith('/partner')
+    // Partner-only routes (page routes and API routes)
+    const isPartnerRoute = pathname.startsWith('/partner') || pathname.startsWith('/api/partner')
 
     // Affiliate portal routes (public marketing + portal)
     const isAffiliateRoute = pathname.startsWith('/affiliate')
@@ -281,6 +246,22 @@ export async function middleware(req: NextRequest) {
         }
         const dashboardUrl = new URL('/dashboard', req.url)
         return redirectWithCookies(dashboardUrl)
+      }
+    }
+
+    // Partner routes require partner/admin/owner role
+    if (isPartnerRoute && user) {
+      const { data: userData } = await supabase
+        .from('users')
+        .select('role')
+        .eq('auth_user_id', user.id)
+        .single()
+
+      if (!userData || !['partner', 'admin', 'owner'].includes(userData.role)) {
+        if (isApiRoute) {
+          return NextResponse.json({ error: 'Partner access required' }, { status: 403 })
+        }
+        return NextResponse.redirect(new URL('/dashboard', req.url))
       }
     }
 

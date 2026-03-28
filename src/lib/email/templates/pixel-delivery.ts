@@ -18,7 +18,7 @@ export interface PixelDeliveryEmailData {
 
 export async function sendPixelDeliveryEmail(data: PixelDeliveryEmailData) {
   const { to, domain, snippet, pixelId } = data
-  const signupUrl = 'https://leads.meetcursive.com/signup'
+  const signupUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://leads.meetcursive.com'}/signup`
   const displayDomain = domain.replace(/^www\./, '')
 
   const content = `
@@ -152,7 +152,7 @@ export interface PostCallRecapEmailData {
 
 export async function sendPostCallRecapEmail(data: PostCallRecapEmailData) {
   const { to, domain, snippet, pixelId } = data
-  const loginUrl = 'https://leads.meetcursive.com/welcome?ref=call'
+  const loginUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://leads.meetcursive.com'}/welcome?ref=call`
   const calendarLink = 'https://cal.com/cursiveteam/30min'
   const displayDomain = domain.replace(/^www\./, '')
 

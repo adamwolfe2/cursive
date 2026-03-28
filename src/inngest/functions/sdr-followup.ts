@@ -3,6 +3,9 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { DncRepository } from '@/lib/repositories/dnc.repository'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { sendEmail } from '@/lib/services/outreach/email-sender.service'
+import { createOnFailureHandler } from '@/inngest/utils/on-failure-handler'
+import { checkCopyQuality } from '@/lib/services/onboarding/copy-quality-check'
+import type { DraftSequences } from '@/types/onboarding'
 import Anthropic from '@anthropic-ai/sdk'
 
 // Lazy-initialized Anthropic client (same pattern as campaign-reply.ts)
@@ -54,7 +57,7 @@ Respond with just the email body text, no subject line.`
 }
 
 export const sdrFollowupCron = inngest.createFunction(
-  { id: 'sdr-followup-cron', retries: 1, timeouts: { finish: '10m' }, concurrency: { limit: 1 } },
+  { id: 'sdr-followup-cron', retries: 3, timeouts: { finish: '10m' }, concurrency: { limit: 1 }, onFailure: createOnFailureHandler('sdr-followup-cron') },
   { cron: 'TZ=America/Chicago 0 9 * * 1-5' }, // 9am CT weekdays
   async ({ step, logger }) => {
     // Step 1: Load all workspaces with follow-up enabled
@@ -81,6 +84,7 @@ export const sdrFollowupCron = inngest.createFunction(
           .from('campaign_leads')
           .select('id, lead_id, campaign_id, leads!inner(email, first_name), email_campaigns!inner(name)')
           .eq('status', 'replied')
+          .eq('workspace_id', config.workspace_id)
           .lt('replied_at', cutoff.toISOString())
           .limit(20)
 
@@ -109,6 +113,7 @@ export const sdrFollowupCron = inngest.createFunction(
             )
 
             // Generate follow-up body via Claude Haiku
+            const followUpSubject = `Re: ${campaignName || 'Following up'}`
             let generatedBody: string
             try {
               generatedBody = await generateFollowUpWithClaude(
@@ -119,6 +124,43 @@ export const sdrFollowupCron = inngest.createFunction(
             } catch (claudeErr) {
               safeError('[SDR Follow-up] Claude generation failed:', claudeErr)
               continue
+            }
+
+            // Quality check — wrap body in a minimal DraftSequences structure
+            const asDraftSequences: DraftSequences = {
+              sequences: [{
+                sequence_name: 'sdr-followup',
+                strategy: 'follow-up',
+                emails: [{ step: 1, delay_days: 0, subject_line: followUpSubject, body: generatedBody }],
+              }],
+            }
+            const qualityResult = checkCopyQuality(asDraftSequences)
+
+            if (qualityResult.issues.some((i) => i.severity === 'error')) {
+              // Regenerate once with error feedback
+              const errorSummary = qualityResult.issues
+                .filter((i) => i.severity === 'error')
+                .map((i) => i.detail)
+                .join('; ')
+              logger.info(
+                `[SDR Follow-up] Quality errors for lead ${lead.lead_id}, regenerating — ${errorSummary}`
+              )
+              try {
+                generatedBody = await generateFollowUpWithClaude(
+                  firstName,
+                  `${config.objective}\n\nAvoid these issues in the email: ${errorSummary}`,
+                  config.cal_booking_url,
+                )
+              } catch (retryErr) {
+                safeError('[SDR Follow-up] Claude regeneration failed:', retryErr)
+                // Proceed with original body rather than dropping the follow-up
+              }
+            } else if (qualityResult.issues.some((i) => i.severity === 'warning')) {
+              const warnSummary = qualityResult.issues
+                .filter((i) => i.severity === 'warning')
+                .map((i) => i.detail)
+                .join('; ')
+              logger.info(`[SDR Follow-up] Quality warnings for lead ${lead.lead_id} (proceeding) — ${warnSummary}`)
             }
 
             const agentName = [config.agent_first_name, config.agent_last_name]
@@ -137,7 +179,7 @@ export const sdrFollowupCron = inngest.createFunction(
                 lead_id: lead.lead_id,
                 from_email: fromEmail,
                 from_name: agentName || 'Cursive SDR',
-                subject: `Re: ${campaignName || 'Following up'}`,
+                subject: followUpSubject,
                 body_text: generatedBody,
                 received_at: new Date().toISOString(),
                 suggested_response: generatedBody,
@@ -164,7 +206,7 @@ export const sdrFollowupCron = inngest.createFunction(
                 to: leadData.email,
                 from: fromEmail,
                 fromName: agentName || undefined,
-                subject: `Re: ${campaignName || 'Following up'}`,
+                subject: followUpSubject,
                 bodyText: generatedBody,
                 replyTo: fromEmail,
                 ...(config.auto_bcc_address ? { bcc: config.auto_bcc_address } : {}),
@@ -177,7 +219,7 @@ export const sdrFollowupCron = inngest.createFunction(
                 lead_id: lead.lead_id,
                 from_email: fromEmail,
                 from_name: agentName || 'Cursive SDR',
-                subject: `Re: ${campaignName || 'Following up'}`,
+                subject: followUpSubject,
                 body_text: generatedBody,
                 received_at: new Date().toISOString(),
                 suggested_response: generatedBody,

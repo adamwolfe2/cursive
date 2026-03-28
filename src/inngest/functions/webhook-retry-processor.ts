@@ -6,12 +6,15 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import Stripe from 'stripe'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { getErrorMessage } from '@/lib/utils/error-helpers'
+import { createOnFailureHandler } from '@/inngest/utils/on-failure-handler'
 
 export const webhookRetryProcessor = inngest.createFunction(
   {
     id: 'webhook-retry-processor',
     name: 'Webhook Retry Processor',
+    retries: 3,
     timeouts: { finish: "5m" },
+    onFailure: createOnFailureHandler('webhook-retry-processor'),
   },
   { cron: '*/5 * * * *' }, // Every 5 minutes
   async ({ step, logger }) => {

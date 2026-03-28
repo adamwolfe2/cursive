@@ -18,6 +18,7 @@ import { checkDuplicate } from '@/lib/services/deduplication.service'
 import { LeadRoutingService } from '@/lib/services/lead-routing.service'
 import { notifyNewLead } from '@/lib/services/lead-notifications.service'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
+import { createOnFailureHandler } from '@/inngest/utils/on-failure-handler'
 
 const LOG_PREFIX = '[AL Processor]'
 
@@ -31,6 +32,7 @@ export const processAudienceLabEvent = inngest.createFunction(
       limit: 50,
       period: '1m',
     },
+    onFailure: createOnFailureHandler('audiencelab-process-event'),
   },
   { event: 'audiencelab/event-received' },
   async ({ event, step, logger }) => {

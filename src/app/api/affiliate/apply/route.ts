@@ -26,7 +26,7 @@ const applySchema = z.object({
 const ALLOWED_ORIGINS = [
   'https://www.meetcursive.com',
   'https://meetcursive.com',
-  'https://leads.meetcursive.com',
+  process.env.NEXT_PUBLIC_SITE_URL || 'https://leads.meetcursive.com',
 ]
 
 function cors(request: NextRequest) {
