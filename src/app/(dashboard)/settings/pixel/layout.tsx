@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Pixel Setup | Cursive',
+  title: 'Website Pixel | Cursive',
 }
 
 export default function PixelLayout({ children }: { children: React.ReactNode }) {

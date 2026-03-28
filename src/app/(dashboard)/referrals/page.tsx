@@ -4,12 +4,20 @@ import { useEffect, useState, useCallback } from 'react'
 import { useUser } from '@/hooks/use-user'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
+interface ReferralEntry {
+  id: string
+  status: string
+  milestonesAchieved: string[]
+  createdAt: string
+}
+
 interface ReferralStats {
   referralCode: string
   totalReferrals: number
   successfulReferrals: number
   totalCreditsEarned: number
   pendingReferrals: number
+  referrals: ReferralEntry[]
 }
 
 export default function ReferralsPage() {
@@ -49,6 +57,10 @@ export default function ReferralsPage() {
   }, [fetchStats, user])
 
   const getReferralLink = () => {
+    return `${origin}/api/referrals/track-click?ref=${stats?.referralCode || ''}`
+  }
+
+  const getDisplayLink = () => {
     return `${origin}/signup?ref=${stats?.referralCode || ''}`
   }
 
@@ -64,7 +76,7 @@ export default function ReferralsPage() {
   const shareReferralLink = () => {
     if (stats?.referralCode) {
       const link = getReferralLink()
-      const text = `Join me on the Lead Marketplace! Sign up with my referral link and get $10 in free credits: ${link}`
+      const text = `Join me on the Lead Marketplace! Sign up with my referral link and get 50 free credits: ${link}`
 
       if (navigator.share) {
         navigator.share({
@@ -106,14 +118,14 @@ export default function ReferralsPage() {
             <div className="w-7 h-7 bg-primary/10 text-primary rounded-lg flex items-center justify-center flex-shrink-0 text-xs font-semibold">2</div>
             <div>
               <p className="text-sm font-medium text-foreground">They sign up</p>
-              <p className="text-xs text-muted-foreground mt-0.5">Your friend creates an account and gets $10 credits</p>
+              <p className="text-xs text-muted-foreground mt-0.5">Your friend creates an account — you earn 50 credits</p>
             </div>
           </div>
           <div className="flex gap-3">
             <div className="w-7 h-7 bg-primary/10 text-primary rounded-lg flex items-center justify-center flex-shrink-0 text-xs font-semibold">3</div>
             <div>
-              <p className="text-sm font-medium text-foreground">You earn $25</p>
-              <p className="text-xs text-muted-foreground mt-0.5">When they make their first purchase, you get $25 credits</p>
+              <p className="text-sm font-medium text-foreground">You earn 200 credits</p>
+              <p className="text-xs text-muted-foreground mt-0.5">When they make their first purchase — they also get 100 credits</p>
             </div>
           </div>
         </div>
@@ -133,7 +145,7 @@ export default function ReferralsPage() {
             <div className="flex-1 bg-muted border border-border rounded-lg px-4 py-3">
               <p className="text-[13px] text-muted-foreground mb-1">Referral Link</p>
               <p className="text-[14px] font-mono text-foreground truncate">
-                {origin}/signup?ref={stats.referralCode}
+                {getDisplayLink()}
               </p>
             </div>
             <button
@@ -215,6 +227,59 @@ export default function ReferralsPage() {
         </div>
       </div>
 
+      {/* Referral Milestone Progress */}
+      {!isLoading && stats && stats.referrals && stats.referrals.length > 0 && (
+        <div className="bg-card border border-border rounded-lg p-6 mb-8">
+          <h3 className="text-[15px] font-semibold text-foreground mb-4">Your Referrals</h3>
+          <div className="space-y-3">
+            {stats.referrals.map((referral, idx) => {
+              const m1 = referral.milestonesAchieved.includes('signup')
+              const m2 = referral.milestonesAchieved.includes('first_purchase')
+              const m3 = referral.milestonesAchieved.includes('spend_500')
+              return (
+                <div key={referral.id} className="flex items-center justify-between border border-border rounded-lg px-4 py-3">
+                  <span className="text-[13px] text-muted-foreground">
+                    Referral #{idx + 1}
+                    <span className="ml-2 text-[11px]">
+                      {new Date(referral.createdAt).toLocaleDateString()}
+                    </span>
+                  </span>
+                  <div className="flex items-center gap-3">
+                    <span className={`inline-flex items-center gap-1 text-[12px] font-medium ${m1 ? 'text-green-600' : 'text-muted-foreground'}`}>
+                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        {m1
+                          ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                          : <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        }
+                      </svg>
+                      Signed up
+                    </span>
+                    <span className={`inline-flex items-center gap-1 text-[12px] font-medium ${m2 ? 'text-green-600' : 'text-muted-foreground'}`}>
+                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        {m2
+                          ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                          : <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        }
+                      </svg>
+                      First purchase
+                    </span>
+                    <span className={`inline-flex items-center gap-1 text-[12px] font-medium ${m3 ? 'text-green-600' : 'text-muted-foreground'}`}>
+                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        {m3
+                          ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                          : <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        }
+                      </svg>
+                      $500 spend
+                    </span>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
       {/* FAQ */}
       <div className="bg-card border border-border rounded-lg p-6">
         <h3 className="text-[15px] font-semibold text-foreground mb-4">Frequently Asked Questions</h3>
@@ -222,8 +287,8 @@ export default function ReferralsPage() {
           <div>
             <h4 className="text-[13px] font-medium text-foreground mb-1">How much do I earn per referral?</h4>
             <p className="text-[13px] text-muted-foreground">
-              You earn $25 in credits when someone signs up with your link and makes their first purchase.
-              Your friend gets $10 in credits just for signing up!
+              You earn 50 credits when your friend signs up, and 200 more credits when they make their first purchase.
+              Your friend also gets 100 bonus credits on their first purchase.
             </p>
           </div>
           <div>

@@ -1,6 +1,11 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
+
+export const metadata: Metadata = {
+  title: '404 Not Found | Cursive',
+}
 
 export default function NotFound() {
   return (

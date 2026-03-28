@@ -8,6 +8,7 @@ import {
   getWorkspaceReferralStats,
   assignWorkspaceReferralCode,
 } from '@/lib/services/referral.service'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 export async function GET(request: NextRequest) {
   try {
@@ -21,7 +22,25 @@ export async function GET(request: NextRequest) {
       stats.referralCode = await assignWorkspaceReferralCode(user.workspaceId)
     }
 
-    return NextResponse.json(stats)
+    // Fetch per-referral milestone data
+    const supabase = createAdminClient()
+    const { data: referrals } = await supabase
+      .from('referrals')
+      .select('id, status, milestones_achieved, created_at, referee_id')
+      .eq('referrer_id', user.workspaceId)
+      .eq('referrer_type', 'buyer')
+      .order('created_at', { ascending: false })
+      .limit(50)
+
+    return NextResponse.json({
+      ...stats,
+      referrals: (referrals || []).map((r) => ({
+        id: r.id,
+        status: r.status,
+        milestonesAchieved: (r.milestones_achieved as string[]) || [],
+        createdAt: r.created_at,
+      })),
+    })
   } catch (error) {
     return handleApiError(error)
   }

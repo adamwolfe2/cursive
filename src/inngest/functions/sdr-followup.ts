@@ -131,7 +131,7 @@ export const sdrFollowupCron = inngest.createFunction(
               sequences: [{
                 sequence_name: 'sdr-followup',
                 strategy: 'follow-up',
-                emails: [{ step: 1, delay_days: 0, subject_line: followUpSubject, body: generatedBody }],
+                emails: [{ step: 1, delay_days: 0, subject_line: followUpSubject, body: generatedBody, purpose: 'follow-up' }],
               }],
             }
             const qualityResult = checkCopyQuality(asDraftSequences)
