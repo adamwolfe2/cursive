@@ -154,6 +154,7 @@ export async function middleware(req: NextRequest) {
       pathname.startsWith('/verify-email') ||
       pathname.startsWith('/auth/callback') ||
       pathname.startsWith('/auth/accept-invite') ||
+      pathname.startsWith('/auth/signout') ||
       pathname.startsWith('/mfa-challenge') ||
       pathname.startsWith('/superpixel') ||
       pathname.startsWith('/privacy') ||
