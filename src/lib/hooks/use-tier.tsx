@@ -4,6 +4,8 @@
  *
  * Provides tier-based feature access control throughout the app.
  * Use useTier() to check if features are available for the current workspace.
+ *
+ * Admin/owner users bypass all tier gates and see the highest tier features.
  */
 
 'use client'
@@ -82,6 +84,32 @@ const DEFAULT_LIMITS: TierLimits = {
   emailAccounts: 1,
 }
 
+// Admin/owner users bypass all tier gates with maximum features and limits
+const ADMIN_FEATURES: ProductTierFeatures = {
+  campaigns: true,
+  templates: true,
+  ai_agents: true,
+  people_search: true,
+  integrations: true,
+  api_access: true,
+  white_label: true,
+  dedicated_support: true,
+  custom_domains: true,
+  team_members: -1,
+  max_campaigns: -1,
+  max_templates: -1,
+  max_email_accounts: -1,
+}
+
+const ADMIN_LIMITS: TierLimits = {
+  dailyLeads: -1,
+  monthlyLeads: -1,
+  teamMembers: -1,
+  campaigns: -1,
+  templates: -1,
+  emailAccounts: -1,
+}
+
 const DEFAULT_USAGE: TierUsage = {
   dailyLeadsUsed: 0,
   monthlyLeadsUsed: 0,
@@ -124,18 +152,29 @@ export function TierProvider({ children }: { children: React.ReactNode }) {
       const data = await response.json()
 
       if (data.success) {
-        setTierSlug(data.tier.slug)
-        setTierName(data.tier.name)
-        setFeatures(data.tier.features)
-        setLimits({
-          dailyLeads: data.limits.daily,
-          monthlyLeads: data.limits.monthly,
-          teamMembers: data.tier.features.team_members,
-          campaigns: data.tier.features.max_campaigns,
-          templates: data.tier.features.max_templates,
-          emailAccounts: data.tier.features.max_email_accounts,
-        })
-        setUsage(data.usage || DEFAULT_USAGE)
+        // Admin/owner users bypass all tier gates
+        const isAdminUser = data.userRole === 'admin' || data.userRole === 'owner'
+
+        if (isAdminUser) {
+          setTierSlug(data.tier.slug)
+          setTierName(data.tier.name)
+          setFeatures(ADMIN_FEATURES)
+          setLimits(ADMIN_LIMITS)
+          setUsage(data.usage || DEFAULT_USAGE)
+        } else {
+          setTierSlug(data.tier.slug)
+          setTierName(data.tier.name)
+          setFeatures(data.tier.features)
+          setLimits({
+            dailyLeads: data.limits.daily,
+            monthlyLeads: data.limits.monthly,
+            teamMembers: data.tier.features.team_members,
+            campaigns: data.tier.features.max_campaigns,
+            templates: data.tier.features.max_templates,
+            emailAccounts: data.tier.features.max_email_accounts,
+          })
+          setUsage(data.usage || DEFAULT_USAGE)
+        }
       }
     } catch (err: unknown) {
       safeError('[TierProvider] Failed to fetch tier info:', err)

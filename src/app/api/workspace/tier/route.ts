@@ -168,6 +168,7 @@ export async function GET(_request: NextRequest) {
 
     return NextResponse.json({
       success: true,
+      userRole: user.role,
       tier: {
         id: displayTier?.id || 'free',
         name: tierName,

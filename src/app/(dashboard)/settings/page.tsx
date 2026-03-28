@@ -15,7 +15,6 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { FormField, FormActions } from '@/components/ui/form-field'
 import { Skeleton } from '@/components/ui/loading-states'
 import { useToast } from '@/lib/hooks/use-toast'
-import { PageContainer, PageHeader } from '@/components/layout/page-container'
 
 export default function ProfileSettingsPage() {
   const queryClient = useQueryClient()
@@ -137,39 +136,33 @@ export default function ProfileSettingsPage() {
 
   if (isLoading) {
     return (
-      <PageContainer>
-        <div className="space-y-6">
-          <Skeleton className="h-10 w-48" />
-          <GradientCard variant="subtle">
-            <Skeleton className="h-32" />
-          </GradientCard>
-          <GradientCard variant="subtle">
-            <Skeleton className="h-32" />
-          </GradientCard>
-        </div>
-      </PageContainer>
+      <div className="space-y-6">
+        <Skeleton className="h-10 w-48" />
+        <GradientCard variant="subtle">
+          <Skeleton className="h-32" />
+        </GradientCard>
+        <GradientCard variant="subtle">
+          <Skeleton className="h-32" />
+        </GradientCard>
+      </div>
     )
   }
 
   if (isError) {
     return (
-      <PageContainer>
+      <div>
         <Alert variant="destructive">
           <AlertDescription>
             {error?.message || 'Failed to load user settings. Please refresh the page.'}
           </AlertDescription>
         </Alert>
         <Button onClick={() => router.refresh()} className="mt-4">Retry</Button>
-      </PageContainer>
+      </div>
     )
   }
 
   return (
-    <PageContainer>
-      <PageHeader
-        title="Settings"
-        description="Manage your account and workspace preferences"
-      />
+    <div>
 
       {/* Success Message */}
       {successMessage && (
@@ -423,6 +416,6 @@ export default function ProfileSettingsPage() {
           )}
         </div>
       </div>
-    </PageContainer>
+    </div>
   )
 }
