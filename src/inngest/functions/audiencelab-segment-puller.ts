@@ -30,6 +30,7 @@ import {
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 import { meetsQualityBar } from '@/lib/services/lead-quality.service'
+import { checkQuota, incrementQuota } from '@/lib/services/al-quota.service'
 
 // ─── Lead Quality Scoring ─────────────────────────────────────────────────────
 // Minimum completeness score — leads below this are not worth storing.
@@ -170,6 +171,26 @@ export const audienceLabSegmentPuller = inngest.createFunction(
 
       const result = await step.run(`pull-combo-${i}`, async () => {
         try {
+          // Quota gate: check all workspaces in this combo before hitting AL API.
+          // Any workspace that is over quota is removed from the combo's recipient list.
+          const quotaResults = await Promise.all(
+            combo.workspaceIds.map(async (wsId) => ({
+              wsId,
+              allowed: await checkQuota(wsId),
+            }))
+          )
+          const allowedWorkspaceIds = quotaResults
+            .filter(r => r.allowed)
+            .map(r => r.wsId)
+
+          if (allowedWorkspaceIds.length === 0) {
+            safeLog(`${LOG_PREFIX} All workspaces in combo ${i} have exhausted their daily quota, skipping AL API call`)
+            return { inserted: 0, skipped: 0, error: null as string | null }
+          }
+
+          // Use only quota-compliant workspaces for this pull
+          const activeCombo = { ...combo, workspaceIds: allowedWorkspaceIds }
+
           // Build AL audience segment filters (nested structure)
           const segmentFilters = buildWorkspaceAudienceFilters({
             industries: combo.industries.length > 0 ? combo.industries : undefined,
@@ -256,8 +277,8 @@ export const audienceLabSegmentPuller = inngest.createFunction(
               const result = await insertLeadFromALRecord(
                 supabase,
                 record,
-                combo.workspaceIds[0], // Use first workspace as owner
-                combo
+                activeCombo.workspaceIds[0], // Use first quota-compliant workspace as owner
+                activeCombo
               )
 
               if (result === 'inserted') inserted++
@@ -266,6 +287,11 @@ export const audienceLabSegmentPuller = inngest.createFunction(
 
             // Use page-based pagination (no has_more field)
             if (page >= (recordsResponse.total_pages || 1)) break
+          }
+
+          // Increment quota for the owning workspace based on actual inserts
+          if (inserted > 0) {
+            await incrementQuota(activeCombo.workspaceIds[0], inserted)
           }
 
           return { inserted, skipped, error: null as string | null }
@@ -478,16 +504,27 @@ async function insertLeadFromALRecord(
   // Skip records without email — can't dedupe
   if (!email) return 'skipped'
 
-  // Dedupe check: look for existing lead with same email in this workspace
-  const { data: existing } = await supabase
+  const normalizedEmail = email.toLowerCase()
+
+  // Global dedup check: look for any lead with this email across ALL workspaces.
+  // The admin client bypasses RLS so we can query globally without exposing data.
+  // This prevents the same person from being inserted into multiple workspaces.
+  const { data: globalExisting, error: globalErr } = await supabase
     .from('leads')
-    .select('id')
-    .eq('workspace_id', workspaceId)
-    .eq('email', email.toLowerCase())
+    .select('id, workspace_id')
+    .eq('email', normalizedEmail)
     .limit(1)
     .maybeSingle()
 
-  if (existing) return 'skipped'
+  if (globalErr && globalErr.code !== 'PGRST116') {
+    safeError(`${LOG_PREFIX} Global dedup check error for email`, globalErr)
+    // Fail safe: if we can't check, fall through to workspace-scoped check
+  } else if (globalExisting) {
+    if (globalExisting.workspace_id !== workspaceId) {
+      safeLog(`${LOG_PREFIX} Global duplicate skipped: email exists in workspace ${globalExisting.workspace_id}`)
+    }
+    return 'skipped'
+  }
 
   const firstName = record.FIRST_NAME || ''
   const lastName = record.LAST_NAME || ''
