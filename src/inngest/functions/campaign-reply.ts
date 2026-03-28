@@ -8,6 +8,7 @@ import { quickClassify, type IntentCategory, type SuggestedAction } from '@/lib/
 import { sendEmail } from '@/lib/services/outreach/email-sender.service'
 import { SdrConfigRepository } from '@/lib/repositories/sdr-config.repository'
 import { DncRepository } from '@/lib/repositories/dnc.repository'
+import { sendSlackAlert } from '@/lib/monitoring/alerts'
 
 const CAL_BOOKING_URL = process.env.CAL_BOOKING_URL || 'https://cal.com/cursiveteam/30min'
 const OUTREACH_FROM_EMAIL = process.env.OUTREACH_FROM_EMAIL || 'team@meetcursive.com'
@@ -53,6 +54,22 @@ export const processReply = inngest.createFunction(
     retries: 3,
     timeouts: { finish: "5m" },
     concurrency: { limit: 3 },
+    onFailure: async ({ error, event }) => {
+      const replyId = (event?.data?.event?.data as { reply_id?: string })?.reply_id
+      try {
+        await sendSlackAlert({
+          type: 'inngest_failure',
+          severity: 'critical',
+          message: `Campaign reply processing failed for reply ${replyId ?? 'unknown'}`,
+          metadata: {
+            reply_id: replyId ?? 'unknown',
+            error: error?.message ?? 'Unknown error',
+          },
+        })
+      } catch {
+        // Failure handler must not throw
+      }
+    },
   },
   { event: 'emailbison/reply-received' },
   async ({ event, step, logger }) => {
@@ -313,9 +330,21 @@ export const batchProcessReplies = inngest.createFunction(
   {
     id: 'campaign-batch-process-replies',
     name: 'Batch Process Unclassified Replies',
-    retries: 2,
+    retries: 3,
     timeouts: { finish: "5m" },
     concurrency: { limit: 3 },
+    onFailure: async ({ error }) => {
+      try {
+        await sendSlackAlert({
+          type: 'inngest_failure',
+          severity: 'critical',
+          message: 'Batch reply processing failed',
+          metadata: { error: error?.message ?? 'Unknown error' },
+        })
+      } catch {
+        // Failure handler must not throw
+      }
+    },
   },
   { cron: '*/15 * * * *' }, // Every 15 minutes
   async ({ step, logger }) => {

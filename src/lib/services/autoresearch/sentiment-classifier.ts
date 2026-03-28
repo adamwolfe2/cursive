@@ -3,6 +3,7 @@
 // Tier 2: Claude Haiku classification (for ambiguous cases)
 
 import Anthropic from '@anthropic-ai/sdk'
+import { createAdminClient } from '@/lib/supabase/admin'
 import type { AutoresearchSentiment } from '@/types/autoresearch'
 
 // ---------------------------------------------------------------------------
@@ -188,31 +189,78 @@ ${replyBody.substring(0, 1500)}`
 }
 
 // ---------------------------------------------------------------------------
+// Classification Logging
+// ---------------------------------------------------------------------------
+
+async function logClassification(
+  result: SentimentClassification,
+  replyBody: string,
+  options: { replyId?: string; emailbisonReplyId?: string }
+): Promise<void> {
+  try {
+    const supabase = createAdminClient()
+    await supabase.from('reply_classification_logs').insert({
+      reply_id: options.replyId ?? null,
+      emailbison_reply_id: options.emailbisonReplyId ?? null,
+      method: result.classifiedBy,
+      confidence: result.confidence,
+      classification: result.sentiment,
+      keywords_matched: result.keywordsMatched,
+      reply_snippet: replyBody.slice(0, 280),
+      classified_at: new Date().toISOString(),
+    })
+  } catch {
+    // Logging is non-critical — never block classification
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Public API
 // ---------------------------------------------------------------------------
 
+export interface ClassifySentimentOptions {
+  /** Internal email_replies.id — used for idempotency + logging */
+  replyId?: string
+  /** External EmailBison reply ID — used for idempotency + logging */
+  emailbisonReplyId?: string
+  /** When true, skip logging (e.g. for batch dry-runs) */
+  skipLog?: boolean
+}
+
 export async function classifySentiment(
   replyBody: string,
-  replySubject: string
+  replySubject: string,
+  options: ClassifySentimentOptions = {}
 ): Promise<SentimentClassification> {
   const combinedText = `${replySubject} ${replyBody}`
 
   // Tier 1: Keyword matching (fast, no cost)
   const keywordResult = classifyByKeyword(combinedText)
   if (keywordResult) {
+    if (!options.skipLog) {
+      await logClassification(keywordResult, replyBody, options)
+    }
     return keywordResult
   }
 
   // Tier 2: Claude Haiku (for ambiguous cases)
   try {
-    return await classifyWithClaude(replyBody, replySubject)
+    const claudeResult = await classifyWithClaude(replyBody, replySubject)
+    if (!options.skipLog) {
+      await logClassification(claudeResult, replyBody, options)
+    }
+    return claudeResult
   } catch {
     // Fallback: neutral with low confidence
-    return {
+    const fallback: SentimentClassification = {
       sentiment: 'neutral',
       confidence: 0.3,
       classifiedBy: 'keyword',
       keywordsMatched: [],
     }
+    if (!options.skipLog) {
+      await logClassification(fallback, replyBody, options)
+    }
+    return fallback
   }
 }

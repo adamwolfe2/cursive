@@ -5,6 +5,7 @@
 import { inngest } from '../client'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { classifySentiment } from '@/lib/services/autoresearch/sentiment-classifier'
+import { sendSlackAlert } from '@/lib/monitoring/alerts'
 
 // ---------------------------------------------------------------------------
 // Cron: Sync + Classify Replies for Active Experiments
@@ -14,8 +15,20 @@ export const autoresearchReplySync = inngest.createFunction(
   {
     id: 'autoresearch-reply-sync',
     name: 'Autoresearch Reply Sentiment Sync',
-    retries: 1,
+    retries: 3,
     timeouts: { finish: '5m' },
+    onFailure: async ({ error }) => {
+      try {
+        await sendSlackAlert({
+          type: 'inngest_failure',
+          severity: 'critical',
+          message: 'Autoresearch reply sync failed',
+          metadata: { error: error?.message ?? 'Unknown error' },
+        })
+      } catch {
+        // Failure handler must not throw
+      }
+    },
   },
   { cron: '*/30 * * * *' },
   async ({ step, logger }) => {
@@ -100,9 +113,23 @@ export const autoresearchReplySync = inngest.createFunction(
 
           for (const reply of unclassifiedReplies) {
             try {
+              // Idempotency: skip if already logged (e.g. from a previous partial run)
+              const { data: existingLog } = await supabase
+                .from('reply_classification_logs')
+                .select('id')
+                .eq('reply_id', reply.id)
+                .maybeSingle()
+
+              if (existingLog) {
+                // Classification already recorded — just make sure the reply row is updated
+                logger.info(`Reply ${reply.id} already classified, skipping`)
+                continue
+              }
+
               const classification = await classifySentiment(
                 reply.body_text ?? '',
-                reply.subject ?? ''
+                reply.subject ?? '',
+                { replyId: reply.id }
               )
 
               const { error: updateError } = await supabase

@@ -30,8 +30,24 @@ export const startAutoresearchProgram = inngest.createFunction(
   {
     id: 'autoresearch-program-start',
     name: 'Start Autoresearch Program',
-    retries: 2,
+    retries: 3,
     timeouts: { finish: '2m' },
+    onFailure: async ({ error, event }) => {
+      const programId = (event?.data?.event?.data as { program_id?: string })?.program_id
+      try {
+        await sendSlackAlert({
+          type: 'inngest_failure',
+          severity: 'critical',
+          message: `Autoresearch: Program start failed for ${programId ?? 'unknown'}`,
+          metadata: {
+            program_id: programId ?? 'unknown',
+            error: error?.message ?? 'Unknown error',
+          },
+        })
+      } catch {
+        // Failure handler must not throw
+      }
+    },
   },
   { event: 'autoresearch/program.start' },
   async ({ event, step, logger }) => {
@@ -92,7 +108,7 @@ export const generateAutoresearchExperiment = inngest.createFunction(
   {
     id: 'autoresearch-experiment-generate',
     name: 'Generate Autoresearch Experiment',
-    retries: 2,
+    retries: 3,
     timeouts: { finish: '5m' },
     onFailure: async ({ error, event }) => {
       const programId = (event?.data?.event?.data as { program_id?: string })?.program_id
@@ -368,7 +384,7 @@ export const evaluateAutoresearchExperiment = inngest.createFunction(
   {
     id: 'autoresearch-experiment-evaluate',
     name: 'Evaluate Autoresearch Experiment',
-    retries: 2,
+    retries: 3,
     timeouts: { finish: '10m' },
     onFailure: async ({ error, event }) => {
       const experimentId = (event?.data?.event?.data as { experiment_id?: string })?.experiment_id

@@ -75,6 +75,19 @@ export const sdrInboxSync = inngest.createFunction(
 
           for (const reply of replies) {
             try {
+              // Idempotency: skip replies that already have a classification log entry
+              // (guards against double-processing on retry or duplicate events)
+              const { data: existingClassLog } = await supabase
+                .from('reply_classification_logs')
+                .select('id')
+                .eq('reply_id', reply.id)
+                .maybeSingle()
+
+              if (existingClassLog && reply.suggested_response) {
+                // Already fully processed — skip
+                continue
+              }
+
               // Get conversation history
               const { data: conversation } = await supabase
                 .from('email_conversations')
@@ -107,7 +120,7 @@ export const sdrInboxSync = inngest.createFunction(
 
               // Classify sentiment if not already done
               const sentiment = reply.sentiment ?? (
-                await classifySentiment(reply.body_text ?? '', reply.subject ?? '')
+                await classifySentiment(reply.body_text ?? '', reply.subject ?? '', { replyId: reply.id })
               ).sentiment
 
               // Run through reply engine

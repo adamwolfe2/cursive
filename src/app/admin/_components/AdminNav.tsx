@@ -32,6 +32,14 @@ const GROUPS = [
     ],
   },
   {
+    label: 'Campaigns',
+    items: [
+      { href: '/admin/campaigns', label: 'Campaigns' },
+      { href: '/admin/templates', label: 'Templates' },
+      { href: '/admin/agents',    label: 'AI Agents' },
+    ],
+  },
+  {
     label: 'Data',
     items: [
       { href: '/admin/leads',              label: 'Leads' },
@@ -67,6 +75,7 @@ const GROUPS = [
       { href: '/admin/email-stats',                label: 'Email Stats' },
       { href: '/admin/dedup-stats',                label: 'Dedup Stats' },
       { href: '/admin/audit-logs',                 label: 'Audit Logs' },
+      { href: '/admin/classifications',            label: 'Classifications' },
     ],
   },
 ]
