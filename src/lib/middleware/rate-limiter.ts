@@ -1,9 +1,140 @@
-// Rate Limiter Middleware
-// Implements token bucket algorithm for API rate limiting
+// Rate Limiter — Middleware (Upstash) + Per-Route (Supabase)
+//
+// Two rate limiting strategies live here:
+//
+// 1. checkRateLimit(identifier, tier) — DISTRIBUTED, uses Upstash Redis REST API.
+//    Used by src/middleware.ts for coarse-grained IP throttling across all Vercel
+//    replicas. Falls back to per-instance in-memory when UPSTASH env vars are absent.
+//
+// 2. withRateLimit(req, limitType, identifier?) — PER-ENDPOINT, uses Supabase
+//    rate_limit_logs table. Used by individual API route handlers for fine-grained
+//    per-user / per-workspace limits (e.g. 'ai-generate-email', 'lead-export').
+//
+// checkWorkspaceRateLimit(workspaceId) — DISTRIBUTED, enforces shared per-workspace
+//    quota for extension/external API routes (not just per-IP).
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { safeError } from '@/lib/utils/log-sanitizer'
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Section 1: Distributed rate limiting via Upstash Redis
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface RateLimitResult {
+  success: boolean
+  limit: number
+  remaining: number
+  reset: number // Unix timestamp in ms
+}
+
+// In-memory fallback store (per-instance only)
+const memoryStore = new Map<string, { count: number; resetAt: number }>()
+
+async function checkMemoryRateLimit(
+  key: string,
+  limit: number,
+  windowMs: number
+): Promise<RateLimitResult> {
+  const now = Date.now()
+  const entry = memoryStore.get(key)
+
+  if (!entry || entry.resetAt < now) {
+    memoryStore.set(key, { count: 1, resetAt: now + windowMs })
+    return { success: true, limit, remaining: limit - 1, reset: now + windowMs }
+  }
+
+  entry.count++
+  const remaining = Math.max(0, limit - entry.count)
+  return {
+    success: entry.count <= limit,
+    limit,
+    remaining,
+    reset: entry.resetAt,
+  }
+}
+
+// Periodically evict stale in-memory entries
+let lastCleanup = Date.now()
+function maybeCleanupMemory() {
+  const now = Date.now()
+  if (now - lastCleanup < 60_000) return
+  lastCleanup = now
+  for (const [key, entry] of memoryStore) {
+    if (entry.resetAt < now) memoryStore.delete(key)
+  }
+}
+
+/**
+ * Distributed rate limit check using Upstash Redis REST API.
+ *
+ * Uses fixed-window counting: each window key is `rl:<tier>:<identifier>:<window>`.
+ * Falls back to per-instance in-memory when UPSTASH env vars are absent.
+ *
+ * Tiers and default limits (requests per windowSeconds):
+ *   auth  — 10   /api/auth/* (login, signup, password reset)
+ *   write — 30   POST/PUT/DELETE
+ *   read  — 60   GET
+ *   ext   — 20   browser extension / external API
+ */
+export async function checkRateLimit(
+  identifier: string,
+  tier: 'auth' | 'write' | 'read' | 'ext',
+  windowSeconds = 60
+): Promise<RateLimitResult> {
+  const limits: Record<string, number> = { auth: 10, write: 30, read: 60, ext: 20 }
+  const limit = limits[tier]
+  const key = `rl:${tier}:${identifier}`
+
+  maybeCleanupMemory()
+
+  if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
+    try {
+      const now = Math.floor(Date.now() / 1000)
+      const window = Math.floor(now / windowSeconds)
+      const windowKey = `${key}:${window}`
+
+      const response = await fetch(`${process.env.UPSTASH_REDIS_REST_URL}/pipeline`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify([
+          ['INCR', windowKey],
+          ['EXPIRE', windowKey, windowSeconds * 2],
+        ]),
+      })
+
+      if (response.ok) {
+        const results = await response.json() as Array<{ result: unknown }>
+        const count = results[0].result as number
+        const remaining = Math.max(0, limit - count)
+        const reset = (window + 1) * windowSeconds * 1000
+        return { success: count <= limit, limit, remaining, reset }
+      }
+    } catch {
+      // Upstash unavailable — fall through to in-memory
+    }
+  }
+
+  return checkMemoryRateLimit(key, limit, windowSeconds * 1000)
+}
+
+/**
+ * Per-workspace rate limit for extension/external API routes.
+ * Enforces a shared quota across all users in a workspace, not just per-IP.
+ */
+export async function checkWorkspaceRateLimit(
+  workspaceId: string,
+  limitPerMinute = 60
+): Promise<RateLimitResult> {
+  return checkRateLimit(`workspace:${workspaceId}`, 'ext', 60)
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Section 2: Per-route rate limiting via Supabase (rate_limit_logs table)
+// ─────────────────────────────────────────────────────────────────────────────
 
 // Rate limit configurations by endpoint type
 export const RATE_LIMITS = {
@@ -157,7 +288,7 @@ export const RATE_LIMITS = {
 
 export type RateLimitType = keyof typeof RATE_LIMITS
 
-interface RateLimitResult {
+interface RouteRateLimitResult {
   allowed: boolean
   remaining: number
   resetAt: Date
@@ -165,19 +296,19 @@ interface RateLimitResult {
 }
 
 /**
- * Check rate limit for a given identifier and endpoint type
+ * Check per-route rate limit backed by Supabase rate_limit_logs table.
+ * Used internally by withRateLimit().
  */
-export async function checkRateLimit(
-  identifier: string, // IP address, user ID, or API key
+async function checkRouteRateLimit(
+  identifier: string,
   limitType: RateLimitType = 'default'
-): Promise<RateLimitResult> {
+): Promise<RouteRateLimitResult> {
   const config = RATE_LIMITS[limitType]
   const supabase = createAdminClient()
 
   const windowStart = new Date(Date.now() - config.windowMs)
   const key = `${limitType}:${identifier}`
 
-  // Get recent requests count
   const { count, error } = await supabase
     .from('rate_limit_logs')
     .select('id', { count: 'exact', head: true })
@@ -185,10 +316,8 @@ export async function checkRateLimit(
     .gte('created_at', windowStart.toISOString())
 
   if (error) {
-    safeError('Rate limit check failed:', error)
-    // SECURITY: Fail closed - reject requests when rate limit DB is unavailable
-    // This prevents abuse during outages but may cause false positives
-    // Monitor error rates and consider circuit breaker pattern if needed
+    safeError('Route rate limit check failed:', error)
+    // Fail closed — reject on DB error to prevent abuse during outages
     return {
       allowed: false,
       remaining: 0,
@@ -201,7 +330,6 @@ export async function checkRateLimit(
   const allowed = currentCount < config.maxRequests
 
   if (allowed) {
-    // Log this request
     await supabase.from('rate_limit_logs').insert({
       key,
       limit_type: limitType,
@@ -218,66 +346,61 @@ export async function checkRateLimit(
 }
 
 /**
- * Rate limit response helper
+ * Build a 429 response for a per-route rate limit violation.
  */
 export function rateLimitResponse(
   limitType: RateLimitType,
-  result: RateLimitResult
+  result: RouteRateLimitResult
 ): NextResponse {
   const config = RATE_LIMITS[limitType]
+  const retryAfter = Math.ceil((result.resetAt.getTime() - Date.now()) / 1000)
 
   return NextResponse.json(
-    {
-      error: config.message,
-      retryAfter: Math.ceil((result.resetAt.getTime() - Date.now()) / 1000),
-    },
+    { error: config.message, retryAfter },
     {
       status: 429,
       headers: {
         'X-RateLimit-Limit': String(result.limit),
         'X-RateLimit-Remaining': String(result.remaining),
         'X-RateLimit-Reset': result.resetAt.toISOString(),
-        'Retry-After': String(Math.ceil((result.resetAt.getTime() - Date.now()) / 1000)),
+        'Retry-After': String(retryAfter),
       },
     }
   )
 }
 
 /**
- * Get identifier from request (IP or user ID)
+ * Get a stable request identifier (user ID preferred, falls back to IP).
  */
 export function getRequestIdentifier(request: NextRequest, userId?: string): string {
-  if (userId) {
-    return `user:${userId}`
-  }
-
-  // Get IP address
+  if (userId) return `user:${userId}`
   const forwarded = request.headers.get('x-forwarded-for')
   const ip = forwarded ? forwarded.split(',')[0].trim() : 'unknown'
   return `ip:${ip}`
 }
 
 /**
- * Rate limit middleware wrapper
+ * Per-route rate limit middleware wrapper (Supabase-backed).
+ * Returns a 429 NextResponse when the limit is exceeded, null otherwise.
+ *
+ * Usage:
+ *   const limited = await withRateLimit(req, 'ai-generate-email', getRequestIdentifier(req, user.id))
+ *   if (limited) return limited
  */
 export async function withRateLimit(
   request: NextRequest,
   limitType: RateLimitType,
   identifier?: string
 ): Promise<NextResponse | null> {
-  const id = identifier || getRequestIdentifier(request)
-  const result = await checkRateLimit(id, limitType)
-
-  if (!result.allowed) {
-    return rateLimitResponse(limitType, result)
-  }
-
-  return null // Allow request to proceed
+  const id = identifier ?? getRequestIdentifier(request)
+  const result = await checkRouteRateLimit(id, limitType)
+  if (!result.allowed) return rateLimitResponse(limitType, result)
+  return null
 }
 
-// =============================================================================
-// REFERRAL ANTI-FRAUD CHECKS
-// =============================================================================
+// ─────────────────────────────────────────────────────────────────────────────
+// Section 3: Referral anti-fraud checks
+// ─────────────────────────────────────────────────────────────────────────────
 
 interface ReferralFraudCheck {
   passed: boolean
@@ -305,18 +428,16 @@ export function checkSelfReferral(
 }
 
 /**
- * Check for suspicious IP patterns
+ * Check for suspicious IP patterns (same IP or too many referrals from one IP)
  */
 export async function checkSuspiciousReferralIP(
   referrerIp: string,
   refereeIp: string
 ): Promise<ReferralFraudCheck> {
-  // Same IP is suspicious
   if (referrerIp === refereeIp) {
     return { passed: false, reason: 'Same IP address detected' }
   }
 
-  // Check for too many referrals from same IP
   const supabase = createAdminClient()
   const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000)
 
@@ -334,7 +455,7 @@ export async function checkSuspiciousReferralIP(
 }
 
 /**
- * Check for suspicious email patterns
+ * Check for suspicious email patterns (same domain, similar local parts)
  */
 export function checkSuspiciousEmail(
   referrerEmail: string,
@@ -343,22 +464,19 @@ export function checkSuspiciousEmail(
   const referrerDomain = referrerEmail.split('@')[1]?.toLowerCase()
   const refereeDomain = refereeEmail.split('@')[1]?.toLowerCase()
 
-  // Same domain (and not common provider) is suspicious
   const commonProviders = [
     'gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com',
-    'icloud.com', 'protonmail.com', 'mail.com', 'aol.com'
+    'icloud.com', 'protonmail.com', 'mail.com', 'aol.com',
   ]
 
   if (referrerDomain === refereeDomain && !commonProviders.includes(referrerDomain || '')) {
     return { passed: false, reason: 'Same company email domain detected' }
   }
 
-  // Check for similar email patterns (e.g., john1@, john2@)
   const referrerLocal = referrerEmail.split('@')[0]?.toLowerCase()
   const refereeLocal = refereeEmail.split('@')[0]?.toLowerCase()
 
   if (referrerLocal && refereeLocal) {
-    // Remove trailing numbers
     const normalizedReferrer = referrerLocal.replace(/\d+$/, '')
     const normalizedReferee = refereeLocal.replace(/\d+$/, '')
 
@@ -383,7 +501,6 @@ export async function validateReferral(params: {
   referrerIp: string
   refereeIp: string
 }): Promise<ReferralFraudCheck> {
-  // Self-referral check
   const selfCheck = checkSelfReferral(
     params.referrerUserId,
     params.refereeUserId,
@@ -392,11 +509,9 @@ export async function validateReferral(params: {
   )
   if (!selfCheck.passed) return selfCheck
 
-  // IP check
   const ipCheck = await checkSuspiciousReferralIP(params.referrerIp, params.refereeIp)
   if (!ipCheck.passed) return ipCheck
 
-  // Email check
   const emailCheck = checkSuspiciousEmail(params.referrerEmail, params.refereeEmail)
   if (!emailCheck.passed) return emailCheck
 

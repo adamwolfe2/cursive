@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { authenticateExtension, extAuthErrorResponse } from '@/lib/middleware/ext-auth'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { checkWorkspaceRateLimit } from '@/lib/middleware/rate-limiter'
 
 const requestSchema = z.object({
   first_name: z.string().max(100).optional().default(''),
@@ -22,6 +23,16 @@ const requestSchema = z.object({
 export async function POST(req: NextRequest) {
   try {
     const auth = await authenticateExtension(req, 'ext:lookup')
+
+    // Enforce per-workspace rate limit (shared across all users in the workspace)
+    const wsRl = await checkWorkspaceRateLimit(auth.workspaceId)
+    if (!wsRl.success) {
+      const retryAfter = Math.ceil((wsRl.reset - Date.now()) / 1000)
+      return NextResponse.json(
+        { error: 'Workspace rate limit exceeded. Try again shortly.', retryAfter },
+        { status: 429, headers: { 'Retry-After': String(retryAfter) } }
+      )
+    }
 
     const body = await req.json()
     const parsed = requestSchema.safeParse(body)
