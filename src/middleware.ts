@@ -189,6 +189,7 @@ export async function middleware(req: NextRequest) {
       pathname.startsWith('/verify-email') ||
       pathname.startsWith('/auth/callback') ||
       pathname.startsWith('/auth/accept-invite') ||
+      pathname.startsWith('/mfa-challenge') ||
       pathname.startsWith('/superpixel') ||
       pathname.startsWith('/privacy') ||
       pathname.startsWith('/terms') ||
@@ -229,6 +230,15 @@ export async function middleware(req: NextRequest) {
     }
 
     const user = authenticatedUser
+
+    // Enforce MFA for enrolled users on page routes only (not API routes)
+    if (user && !isPublicRoute && !isApiRoute) {
+      const { data: aalData } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel()
+      if (aalData?.nextLevel === 'aal2' && aalData?.currentLevel !== 'aal2') {
+        const mfaChallengePath = '/mfa-challenge'
+        return NextResponse.redirect(new URL(`${mfaChallengePath}?redirect=${pathname}`, req.url))
+      }
+    }
 
     // Helper to create redirect with cookies preserved
     const redirectWithCookies = (url: URL) => {

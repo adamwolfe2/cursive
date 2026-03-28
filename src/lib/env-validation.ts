@@ -17,19 +17,21 @@ const REQUIRED_ENV_VARS = [
   'ANTHROPIC_API_KEY',
   // Google OAuth callback URL is built from this — OAuth fails without it
   'NEXT_PUBLIC_SITE_URL',
+  // Webhook secrets are required — missing these allows forged webhook events
+  'STRIPE_WEBHOOK_SECRET',
+  'EMAILBISON_WEBHOOK_SECRET',
+  // Inngest signing key is required to verify job delivery authenticity
+  'INNGEST_SIGNING_KEY',
 ] as const
 
 const OPTIONAL_WITH_WARNING = [
   'STRIPE_SECRET_KEY',
-  'STRIPE_WEBHOOK_SECRET',
   'SLACK_WEBHOOK_URL',
   'EMAILBISON_API_KEY',
   'EMAILBISON_API_URL',
-  'EMAILBISON_WEBHOOK_SECRET',
   'GHL_CURSIVE_LOCATION_TOKEN',
   'RESEND_API_KEY',
   'INNGEST_EVENT_KEY',
-  'INNGEST_SIGNING_KEY',
   'FAL_KEY',
   'FIRECRAWL_API_KEY',
   'AUDIENCELAB_ACCOUNT_API_KEY',
