@@ -396,7 +396,7 @@ export const processAudienceLabEvent = inngest.createFunction(
           await LeadRoutingService.routeLead({
             leadId: leadResult.lead_id!,
             sourceWorkspaceId: targetWorkspaceId,
-            userId: targetWorkspaceId, // platform-owned
+            userId: 'system', // platform-owned background job
           })
         } catch (err) {
           // Routing failure is non-fatal — lead is queued for retry

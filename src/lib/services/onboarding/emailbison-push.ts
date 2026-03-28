@@ -11,6 +11,7 @@ import {
   createCampaignSchedule,
 } from '@/lib/integrations/emailbison'
 import { expandSpintax } from '@/lib/services/onboarding/copy-quality-check'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { getErrorMessage } from '@/lib/utils/error-helpers'
 import type { DraftSequences, EmailSequence } from '@/types/onboarding'
@@ -52,7 +53,7 @@ export async function pushCopyToEmailBison(params: {
   sequences: DraftSequences
   workspaceId: string
 }): Promise<PushResult> {
-  const { clientName, sequences } = params
+  const { clientName, sequences, workspaceId } = params
   const dateStr = formatDate(new Date())
   const campaigns: CampaignResult[] = []
 
@@ -61,6 +62,7 @@ export async function pushCopyToEmailBison(params: {
       clientName,
       sequence,
       dateStr,
+      workspaceId,
     })
     campaigns.push(result)
 
@@ -79,9 +81,12 @@ async function pushSingleSequence(params: {
   clientName: string
   sequence: EmailSequence
   dateStr: string
+  workspaceId: string
 }): Promise<CampaignResult> {
-  const { clientName, sequence, dateStr } = params
-  const campaignName = `${clientName} - ${sequence.sequence_name} - ${dateStr}`
+  const { clientName, sequence, dateStr, workspaceId } = params
+  // Prefix with workspace ID so all campaigns can be attributed back to their
+  // workspace even though EmailBison has no native multi-tenant scoping.
+  const campaignName = `[ws:${workspaceId}] ${clientName} - ${sequence.sequence_name} - ${dateStr}`
 
   // 1. Create campaign
   const { campaign_id } = await createCampaign(campaignName)
@@ -108,8 +113,8 @@ async function pushSingleSequence(params: {
     reputation_building: true,
   })
 
-  // 4. Attach connected sender emails (non-fatal)
-  await attachSenderEmails(campaign_id)
+  // 4. Attach connected sender emails for this workspace only (non-fatal)
+  await attachSenderEmails(campaign_id, workspaceId)
 
   // 5. Apply weekday business-hours schedule
   await createCampaignSchedule(campaign_id, {
@@ -182,14 +187,47 @@ async function addEmailWithVariants(
 // Helpers
 // ---------------------------------------------------------------------------
 
-async function attachSenderEmails(campaignId: string): Promise<void> {
+/**
+ * Attaches only the sender emails that belong to the given workspace.
+ *
+ * EmailBison has no native workspace scoping, so we resolve which sender
+ * emails belong to this workspace by:
+ * 1. Querying the local email_accounts table filtered by workspace_id to
+ *    get the set of email addresses owned by this workspace.
+ * 2. Fetching the full EB sender email list (status: connected).
+ * 3. Intersecting the two sets so we only attach workspace-scoped senders.
+ */
+async function attachSenderEmails(campaignId: string, workspaceId: string): Promise<void> {
   try {
+    // 1. Resolve workspace-owned email addresses from local DB
+    const supabase = createAdminClient()
+    const { data: localAccounts, error: dbError } = await supabase
+      .from('email_accounts')
+      .select('email_address')
+      .eq('workspace_id', workspaceId)
+      .eq('is_verified', true)
+
+    if (dbError) {
+      safeError(`[EmailBison Push] Could not fetch local email accounts: ${dbError.message}`)
+      return
+    }
+
+    if (!localAccounts || localAccounts.length === 0) {
+      return
+    }
+
+    const workspaceAddresses = new Set(localAccounts.map((a) => a.email_address.toLowerCase()))
+
+    // 2. Fetch all connected EB sender emails
     const { sender_emails } = await listSenderEmails({ status: 'connected' })
-    if (sender_emails.length > 0) {
-      await addSenderEmailsToCampaign(
-        campaignId,
-        sender_emails.map((s) => s.id)
-      )
+
+    // 3. Filter to only sender emails that match this workspace's accounts
+    const workspaceSenderIds = sender_emails
+      .filter((s) => workspaceAddresses.has(s.email.toLowerCase()))
+      .map((s) => s.id)
+
+    if (workspaceSenderIds.length > 0) {
+      await addSenderEmailsToCampaign(campaignId, workspaceSenderIds)
     }
   } catch (error: unknown) {
     safeError(`[EmailBison Push] Could not attach sender emails: ${getErrorMessage(error)}`)
