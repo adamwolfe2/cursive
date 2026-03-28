@@ -30,6 +30,10 @@ export const CAL_BOOKING_URL =
 /** Stripe dashboard base URL */
 export const STRIPE_DASHBOARD_URL = 'https://dashboard.stripe.com'
 
+/** EmailBison campaign dashboard */
+export const EMAILBISON_URL =
+  process.env.NEXT_PUBLIC_EMAILBISON_URL || 'https://send.meetcursive.com'
+
 // ---------------------------------------------------------------------------
 // Contact
 // ---------------------------------------------------------------------------
