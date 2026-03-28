@@ -537,8 +537,9 @@ export async function createApiKey(
   const supabase = await createClient()
 
   // Generate a random API key (Edge-compatible)
+  // Prefix is csk_ (Cursive SDK Key) — matches the documented Authorization: Bearer csk_... format
   const keyHex = generateRandomHex(32)
-  const fullKey = `lm_${keyHex}`
+  const fullKey = `csk_${keyHex}`
   const keyPrefix = fullKey.slice(0, 10)
   const keyHash = await sha256Hex(fullKey)
 
