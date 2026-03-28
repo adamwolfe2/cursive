@@ -11,6 +11,7 @@ export default function InboxPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [filters, setFilters] = useState<InboxFiltersType>({})
   const [page, setPage] = useState(1)
+  const [mobileShowThread, setMobileShowThread] = useState(false)
 
   const { data, isLoading } = useQuery({
     queryKey: ['inbox-conversations', filters, page],
@@ -48,25 +49,45 @@ export default function InboxPage() {
   const total = data?.total ?? 0
   const selected = conversations.find((c) => c.id === selectedId) ?? null
 
+  const handleSelect = (id: string) => {
+    setSelectedId(id)
+    setMobileShowThread(true)
+  }
+
+  const handleBack = () => {
+    setMobileShowThread(false)
+  }
+
   return (
     <div className="flex h-[calc(100vh-64px)] bg-white">
-      <div className="w-[400px] flex-shrink-0 border-r flex flex-col">
+      {/* Left panel: conversation list */}
+      <div
+        className={`w-full md:w-[360px] md:flex-shrink-0 border-r flex flex-col ${
+          mobileShowThread ? 'hidden md:flex' : 'flex'
+        }`}
+      >
         <InboxFilters filters={filters} onChange={setFilters} />
         <ConversationList
           conversations={conversations}
           isLoading={isLoading}
           selectedId={selectedId}
-          onSelect={setSelectedId}
+          onSelect={handleSelect}
           total={total}
           page={page}
           onPageChange={setPage}
         />
       </div>
 
-      <div className="flex-1 min-w-0">
+      {/* Right panel: conversation thread */}
+      <div
+        className={`flex-1 min-w-0 ${
+          mobileShowThread ? 'flex flex-col' : 'hidden md:flex md:flex-col'
+        }`}
+      >
         <ConversationThread
           conversationId={selectedId}
           conversation={selected}
+          onBack={handleBack}
         />
       </div>
     </div>

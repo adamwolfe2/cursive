@@ -4,12 +4,15 @@ import { useEffect } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Skeleton } from '@/components/ui'
 import { AIDraftCard } from './AIDraftCard'
+import { QuickActions } from './QuickActions'
+import { ReplyComposer } from './ReplyComposer'
 import type { InboxConversation } from '@/types/sdr'
 import type { ConversationMessage } from '@/lib/services/campaign/conversation.service'
 
 interface ConversationThreadProps {
   readonly conversationId: string | null
   readonly conversation: InboxConversation | null
+  readonly onBack?: () => void
 }
 
 function formatTime(date: string | null): string {
@@ -22,7 +25,7 @@ function formatTime(date: string | null): string {
   })
 }
 
-export function ConversationThread({ conversationId, conversation }: ConversationThreadProps) {
+export function ConversationThread({ conversationId, conversation, onBack }: ConversationThreadProps) {
   const queryClient = useQueryClient()
 
   const { data, isLoading } = useQuery({
@@ -86,32 +89,54 @@ export function ConversationThread({ conversationId, conversation }: Conversatio
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="px-6 py-4 border-b bg-white">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-base font-semibold text-zinc-900">{leadName}</h2>
-            <div className="flex items-center gap-2 text-xs text-zinc-500 mt-0.5">
-              {detail?.lead?.companyName && <span>{detail.lead.companyName}</span>}
-              {detail?.lead?.jobTitle && (
-                <>
-                  <span className="text-zinc-300">-</span>
-                  <span>{detail.lead.jobTitle}</span>
-                </>
-              )}
-              {detail?.lead?.email && (
-                <>
-                  <span className="text-zinc-300">-</span>
-                  <span>{detail.lead.email}</span>
-                </>
-              )}
+      <div className="px-4 py-3 border-b bg-white space-y-2">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 min-w-0">
+            {onBack && (
+              <button
+                onClick={onBack}
+                className="md:hidden flex-shrink-0 text-zinc-500 hover:text-zinc-700 text-sm font-medium transition-colors"
+                aria-label="Back to conversations"
+              >
+                ← Back
+              </button>
+            )}
+            <div className="min-w-0">
+              <h2 className="text-base font-semibold text-zinc-900 truncate">{leadName}</h2>
+              <div className="flex items-center gap-2 text-xs text-zinc-500 mt-0.5 flex-wrap">
+                {detail?.lead?.companyName && <span>{detail.lead.companyName}</span>}
+                {detail?.lead?.jobTitle && (
+                  <>
+                    <span className="text-zinc-300">-</span>
+                    <span>{detail.lead.jobTitle}</span>
+                  </>
+                )}
+                {detail?.lead?.email && (
+                  <>
+                    <span className="text-zinc-300">-</span>
+                    <span className="truncate">{detail.lead.email}</span>
+                  </>
+                )}
+              </div>
             </div>
           </div>
           {detail?.campaignName && (
-            <span className="px-2 py-1 bg-zinc-100 text-zinc-600 text-xs rounded">
+            <span className="flex-shrink-0 px-2 py-1 bg-zinc-100 text-zinc-600 text-xs rounded">
               {detail.campaignName}
             </span>
           )}
         </div>
+
+        {conversationId && (
+          <QuickActions
+            conversationId={conversationId}
+            hasDraft={!!pendingDraft}
+            onAction={() => {
+              queryClient.invalidateQueries({ queryKey: ['conversation-detail', conversationId] })
+              queryClient.invalidateQueries({ queryKey: ['inbox-conversations'] })
+            }}
+          />
+        )}
       </div>
 
       {/* Messages */}
@@ -162,6 +187,16 @@ export function ConversationThread({ conversationId, conversation }: Conversatio
           />
         )}
       </div>
+
+      {conversationId && (
+        <ReplyComposer
+          conversationId={conversationId}
+          onSent={() => {
+            queryClient.invalidateQueries({ queryKey: ['conversation-detail', conversationId] })
+            queryClient.invalidateQueries({ queryKey: ['inbox-conversations'] })
+          }}
+        />
+      )}
     </div>
   )
 }
