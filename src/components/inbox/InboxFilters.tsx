@@ -38,6 +38,7 @@ export function InboxFilters({ filters, onChange }: InboxFiltersProps) {
       }
     }, 300)
     return () => clearTimeout(timer)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchInput])
 
   const handleStatusChange = (value: string) => {

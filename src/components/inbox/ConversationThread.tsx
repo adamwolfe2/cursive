@@ -50,6 +50,7 @@ export function ConversationThread({ conversationId, conversation }: Conversatio
     if (conversationId && data) {
       queryClient.invalidateQueries({ queryKey: ['inbox-conversations'] })
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [conversationId, data?.messages?.length])
 
   if (!conversationId) {
@@ -90,15 +91,19 @@ export function ConversationThread({ conversationId, conversation }: Conversatio
           <div>
             <h2 className="text-base font-semibold text-zinc-900">{leadName}</h2>
             <div className="flex items-center gap-2 text-xs text-zinc-500 mt-0.5">
-              {detail?.lead.companyName && <span>{detail.lead.companyName}</span>}
-              {detail?.lead.jobTitle && (
+              {detail?.lead?.companyName && <span>{detail.lead.companyName}</span>}
+              {detail?.lead?.jobTitle && (
                 <>
                   <span className="text-zinc-300">-</span>
                   <span>{detail.lead.jobTitle}</span>
                 </>
               )}
-              <span className="text-zinc-300">-</span>
-              <span>{detail?.lead.email}</span>
+              {detail?.lead?.email && (
+                <>
+                  <span className="text-zinc-300">-</span>
+                  <span>{detail.lead.email}</span>
+                </>
+              )}
             </div>
           </div>
           {detail?.campaignName && (

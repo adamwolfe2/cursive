@@ -78,10 +78,12 @@ export function ConversationList({
     <div className="flex-1 flex flex-col min-h-0">
       <div className="overflow-y-auto flex-1">
         {conversations.map((conv) => {
-          const leadName =
-            conv.lead.firstName || conv.lead.lastName
-              ? `${conv.lead.firstName || ''} ${conv.lead.lastName || ''}`.trim()
-              : conv.lead.email
+          const lead = conv.lead as typeof conv.lead | null
+          const leadName = lead
+            ? lead.firstName || lead.lastName
+              ? `${lead.firstName || ''} ${lead.lastName || ''}`.trim()
+              : lead.email
+            : conv.leadId.slice(0, 8)
           const isSelected = selectedId === conv.id
 
           return (
@@ -108,9 +110,9 @@ export function ConversationList({
                 </span>
               </div>
 
-              {conv.lead.companyName && (
+              {lead?.companyName && (
                 <div className="text-xs text-zinc-500 truncate mb-1">
-                  {conv.lead.companyName}
+                  {lead.companyName}
                 </div>
               )}
 
