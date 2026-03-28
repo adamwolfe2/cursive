@@ -153,7 +153,11 @@ export function DealsPageClient({ initialData }: DealsPageClientProps) {
           </div>
           <h3 className="text-lg font-semibold text-gray-900">No deals yet</h3>
           <p className="mt-2 max-w-sm text-sm text-gray-500">
-            Deals track revenue opportunities through your sales pipeline — from qualified to closed. Deals will be created automatically when leads are enriched and campaigns are launched.
+            Deals track revenue opportunities through your pipeline. Connect your AudienceLab account in{' '}
+            <a href="/settings/integrations" className="text-blue-600 hover:underline">
+              Settings &rarr; Integrations
+            </a>{' '}
+            to sync contacts and create deals automatically.
           </p>
           <div className="mt-6">
             <Button size="sm" onClick={() => setCreateDialogOpen(true)}>

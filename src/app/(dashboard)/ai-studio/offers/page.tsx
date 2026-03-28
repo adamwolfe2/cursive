@@ -37,7 +37,6 @@ function OffersPageInner() {
 
   useEffect(() => {
     if (!workspaceId) {
-      router.push('/ai-studio')
       return
     }
     fetchOffers()
@@ -55,6 +54,22 @@ function OffersPageInner() {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  if (!workspaceId) {
+    return (
+      <PageContainer>
+        <EmptyState
+          icon={Package}
+          title="Select a Brand Workspace"
+          description="Open a brand workspace from AI Studio home to view offers."
+          action={{
+            label: 'Go to AI Studio',
+            onClick: () => router.push('/ai-studio')
+          }}
+        />
+      </PageContainer>
+    )
   }
 
   if (isLoading) {

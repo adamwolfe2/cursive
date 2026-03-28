@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback, useRef, useEffect } from 'react'
-import { Filter, Library } from 'lucide-react'
+import { Filter, Library, Zap } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
   AlertDialog,
@@ -24,6 +24,76 @@ import { SegmentRuleEditor } from './SegmentRuleEditor'
 import { SegmentPreview } from './SegmentPreview'
 import { SegmentCatalog } from './SegmentCatalog'
 import { SavedSegments } from './SavedSegments'
+
+// ---------------------------------------------------------------------------
+// Preset segments
+// ---------------------------------------------------------------------------
+
+interface PresetSegment {
+  name: string
+  description: string
+  filters: FilterRule[]
+}
+
+function makeId() {
+  return Math.random().toString(36).substr(2, 9)
+}
+
+const PRESET_SEGMENTS: PresetSegment[] = [
+  {
+    name: 'Decision Makers at SMBs',
+    description: 'VP/Director/Head/CEO titles at companies with 10–200 employees',
+    filters: [
+      { id: makeId(), field: 'job_title', operator: 'equals', value: 'VP' },
+      { id: makeId(), field: 'job_title', operator: 'equals', value: 'Director' },
+      { id: makeId(), field: 'job_title', operator: 'equals', value: 'Head' },
+      { id: makeId(), field: 'job_title', operator: 'equals', value: 'CEO' },
+      { id: makeId(), field: 'company_size', operator: 'equals', value: '11-50' },
+      { id: makeId(), field: 'company_size', operator: 'equals', value: '51-200' },
+    ],
+  },
+  {
+    name: 'SaaS VP+ Leaders',
+    description: 'VP/Chief/CTO/CMO in the Software industry',
+    filters: [
+      { id: makeId(), field: 'job_title', operator: 'equals', value: 'VP' },
+      { id: makeId(), field: 'job_title', operator: 'equals', value: 'CTO' },
+      { id: makeId(), field: 'job_title', operator: 'equals', value: 'CMO' },
+      { id: makeId(), field: 'seniority', operator: 'equals', value: 'C-Level' },
+      { id: makeId(), field: 'industry', operator: 'equals', value: 'Technology' },
+    ],
+  },
+  {
+    name: 'Local Service Businesses',
+    description: 'Construction, healthcare, and local service industries',
+    filters: [
+      { id: makeId(), field: 'industry', operator: 'equals', value: 'Construction' },
+      { id: makeId(), field: 'industry', operator: 'equals', value: 'Healthcare' },
+    ],
+  },
+  {
+    name: 'E-commerce Brands',
+    description: 'Retail and e-commerce industry',
+    filters: [
+      { id: makeId(), field: 'industry', operator: 'equals', value: 'Retail' },
+    ],
+  },
+  {
+    name: 'Professional Services',
+    description: 'Legal, accounting, and consulting firms',
+    filters: [
+      { id: makeId(), field: 'industry', operator: 'equals', value: 'Professional Services' },
+      { id: makeId(), field: 'industry', operator: 'equals', value: 'Finance' },
+    ],
+  },
+  {
+    name: 'Manufacturing & Industrial',
+    description: 'Manufacturing industry',
+    filters: [
+      { id: makeId(), field: 'industry', operator: 'equals', value: 'Manufacturing' },
+    ],
+  },
+]
 
 function filtersToApiFormat(filters: FilterRule[]): Record<string, any> {
   const apiFilters: Record<string, any> = {}
@@ -406,6 +476,19 @@ export default function SegmentBuilderPage() {
     }
   }
 
+  const applyPreset = (preset: PresetSegment) => {
+    // Re-generate IDs so each application is unique
+    const freshFilters: FilterRule[] = preset.filters.map((f) => ({
+      ...f,
+      id: Math.random().toString(36).substr(2, 9),
+    }))
+    setFilters(freshFilters)
+    setSegmentName(preset.name)
+    setSegmentDescription(preset.description)
+    setActiveTab('builder')
+    toast.success(`Loaded "${preset.name}" into builder`)
+  }
+
   return (
     <div className="container mx-auto py-8 space-y-8">
       {/* Upgrade modal — triggered on 402 credit errors */}
@@ -425,6 +508,27 @@ export default function SegmentBuilderPage() {
         <p className="text-muted-foreground">
           Create custom audience segments from 280M+ verified contacts
         </p>
+      </div>
+
+      {/* Preset Segments */}
+      <div>
+        <div className="flex items-center gap-2 mb-3">
+          <Zap className="h-4 w-4 text-primary" />
+          <p className="text-sm font-medium text-foreground">Quick Presets</p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {PRESET_SEGMENTS.map((preset) => (
+            <button
+              key={preset.name}
+              type="button"
+              onClick={() => applyPreset(preset)}
+              title={preset.description}
+              className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground hover:bg-primary/5 hover:border-primary/40 transition-colors"
+            >
+              {preset.name}
+            </button>
+          ))}
+        </div>
       </div>
 
       <Tabs value={activeTab} defaultValue="builder" onValueChange={setActiveTab} className="space-y-6">

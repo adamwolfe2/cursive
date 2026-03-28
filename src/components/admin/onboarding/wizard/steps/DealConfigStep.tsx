@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useState } from 'react'
 import { Card } from '@/components/ui/card'
-import { Mail, Package, Globe, Calculator, ChevronDown, ChevronRight, Inbox } from 'lucide-react'
+import { Mail, Package, Globe, Calculator, ChevronDown, ChevronRight, Inbox, Users } from 'lucide-react'
 import type { DealState } from '@/types/onboarding-wizard'
 import { calculateDealPricing, fmtCurrency, fmtCurrencyDecimal } from '@/lib/utils/deal-pricing'
 import { OUTBOUND_TIERS, SERVICE_PACKAGES, INFRA_COSTS } from '@/app/admin/deal-calculator/pricing-config'
@@ -26,6 +26,23 @@ export default function DealConfigStep({ deal, onUpdate }: DealConfigStepProps) 
       : [...current, pkgId]
     onUpdate('selectedPackages', updated)
   }, [deal.selectedPackages, onUpdate])
+
+  const toggleIcpSegment = useCallback((segment: string) => {
+    const current = deal.selectedIcpSegments ?? []
+    const updated = current.includes(segment)
+      ? current.filter((s) => s !== segment)
+      : [...current, segment]
+    onUpdate('selectedIcpSegments', updated)
+  }, [deal.selectedIcpSegments, onUpdate])
+
+  const ICP_SEGMENTS = [
+    'Decision Makers at SMBs',
+    'SaaS VP+ Leaders',
+    'Local Service Businesses',
+    'E-commerce Brands',
+    'Professional Services',
+    'Manufacturing & Industrial',
+  ]
 
   return (
     <div className="space-y-5">
@@ -116,6 +133,42 @@ export default function DealConfigStep({ deal, onUpdate }: DealConfigStepProps) 
               </label>
             ))}
           </div>
+        </div>
+      </Card>
+
+      {/* ICP Audience Segments (multi-select) */}
+      <Card padding="sm">
+        <div className="px-5 py-4">
+          <div className="flex items-center gap-2 mb-3">
+            <Users className="h-4 w-4 text-blue-600" />
+            <h2 className="text-sm font-semibold text-gray-900">ICP Audience Segments</h2>
+            <span className="text-xs text-gray-400 ml-1">(select all that apply)</span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {ICP_SEGMENTS.map((segment) => {
+              const selected = (deal.selectedIcpSegments ?? []).includes(segment)
+              return (
+                <button
+                  key={segment}
+                  type="button"
+                  onClick={() => toggleIcpSegment(segment)}
+                  className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-all ${
+                    selected
+                      ? 'border-blue-500 bg-blue-50 text-blue-700'
+                      : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:bg-gray-50'
+                  }`}
+                >
+                  {selected && <span className="mr-1">&#10003;</span>}
+                  {segment}
+                </button>
+              )
+            })}
+          </div>
+          {(deal.selectedIcpSegments ?? []).length > 0 && (
+            <p className="mt-2 text-xs text-gray-500">
+              {(deal.selectedIcpSegments ?? []).length} segment{(deal.selectedIcpSegments ?? []).length !== 1 ? 's' : ''} selected
+            </p>
+          )}
         </div>
       </Card>
 

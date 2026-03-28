@@ -49,7 +49,11 @@ export function CompaniesPageClient({ initialData }: CompaniesPageClientProps) {
           </div>
           <h3 className="text-lg font-semibold text-gray-900">No companies yet</h3>
           <p className="mt-2 max-w-sm text-sm text-gray-500">
-            Companies represent the businesses your contacts belong to. Companies will be created automatically when leads are enriched and campaigns are launched.
+            Companies are synced automatically from AudienceLab. Connect your AudienceLab account in{' '}
+            <a href="/settings/integrations" className="text-blue-600 hover:underline">
+              Settings &rarr; Integrations
+            </a>{' '}
+            to sync companies automatically.
           </p>
           <div className="mt-6">
             <Button size="sm" onClick={handleCreateClick}>

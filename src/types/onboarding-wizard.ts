@@ -12,6 +12,7 @@ export interface DealState {
   clientName: string
   outboundTierId: string | null
   selectedPackages: string[]
+  selectedIcpSegments: string[]  // Multi-select ICP audience segments
   customDomains: number
   customInboxes: number
   useCustomInfra: boolean
@@ -130,6 +131,7 @@ export function createInitialWizardState(): WizardState {
       clientName: '',
       outboundTierId: null,
       selectedPackages: [],
+      selectedIcpSegments: [],
       customDomains: 0,
       customInboxes: 0,
       useCustomInfra: false,
