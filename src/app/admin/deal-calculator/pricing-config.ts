@@ -6,8 +6,8 @@
 // ---------------------------------------------------------------------------
 
 export const INFRA_COSTS = {
-  domain: { min: 10, max: 15, default: 12, unit: 'year' as const, label: 'Sending Domain' },
-  inbox: { min: 6, max: 8, default: 7, unit: 'month' as const, label: 'Email Inbox' },
+  domain: { min: 0.10, max: 10, default: 1, unit: 'year' as const, label: 'Sending Domain' },
+  inbox: { min: 0.10, max: 10, default: 1, unit: 'month' as const, label: 'Email Inbox' },
 } as const
 
 // ---------------------------------------------------------------------------

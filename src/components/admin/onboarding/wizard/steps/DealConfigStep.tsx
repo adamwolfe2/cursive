@@ -250,11 +250,11 @@ export default function DealConfigStep({ deal, onUpdate }: DealConfigStepProps) 
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-medium text-gray-600 mb-1">Domain: {fmtCurrencyDecimal(deal.domainCostPer)}/yr</label>
-                  <input type="range" min={INFRA_COSTS.domain.min} max={INFRA_COSTS.domain.max} step={0.5} value={deal.domainCostPer} onChange={(e) => onUpdate('domainCostPer', Number(e.target.value))} className="w-full accent-blue-600" />
+                  <input type="range" min={INFRA_COSTS.domain.min} max={INFRA_COSTS.domain.max} step={0.10} value={deal.domainCostPer} onChange={(e) => onUpdate('domainCostPer', Number(e.target.value))} className="w-full accent-blue-600" />
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-gray-600 mb-1">Inbox: {fmtCurrencyDecimal(deal.inboxCostPer)}/mo</label>
-                  <input type="range" min={INFRA_COSTS.inbox.min} max={INFRA_COSTS.inbox.max} step={0.25} value={deal.inboxCostPer} onChange={(e) => onUpdate('inboxCostPer', Number(e.target.value))} className="w-full accent-blue-600" />
+                  <input type="range" min={INFRA_COSTS.inbox.min} max={INFRA_COSTS.inbox.max} step={0.10} value={deal.inboxCostPer} onChange={(e) => onUpdate('inboxCostPer', Number(e.target.value))} className="w-full accent-blue-600" />
                 </div>
               </div>
               <div className="rounded-md bg-blue-50 border border-blue-200 px-4 py-3 text-sm">
