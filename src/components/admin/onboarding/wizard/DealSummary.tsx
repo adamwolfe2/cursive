@@ -18,9 +18,16 @@ export default function DealSummary({ deal, compact = false }: DealSummaryProps)
 
   const pricing = useMemo(() => calculateDealPricing(deal), [deal])
   const selectedTier = OUTBOUND_TIERS.find((t) => t.id === deal.outboundTierId)
+  const isCustomTier = deal.outboundTierId === 'custom'
   const selectedPkgs = SERVICE_PACKAGES.filter((p) => deal.selectedPackages.includes(p.id))
 
-  const hasServices = !!selectedTier || selectedPkgs.length > 0
+  // hasServices: true when any tier/package/override is configured
+  const hasServices =
+    !!selectedTier ||
+    isCustomTier ||
+    selectedPkgs.length > 0 ||
+    !!deal.setupFeeOverride ||
+    !!deal.recurringOverride
 
   const summaryText = useMemo(() => {
     const lines: string[] = ['CURSIVE AI — Deal Summary']
@@ -65,7 +72,11 @@ export default function DealSummary({ deal, compact = false }: DealSummaryProps)
           <div className="flex items-center gap-2">
             <DollarSign className="h-4 w-4 text-blue-600" />
             <span className="text-sm font-bold text-gray-900">
-              {fmtCurrency(pricing.totalMonthlyClientPays)}/mo
+              {pricing.totalMonthlyClientPays > 0
+                ? `${fmtCurrency(pricing.totalMonthlyClientPays)}/mo`
+                : deal.recurringOverride
+                ? `${fmtCurrency(deal.recurringOverride)}/mo`
+                : 'Custom deal'}
             </span>
           </div>
           <div className="flex items-center gap-2">
@@ -94,12 +105,36 @@ export default function DealSummary({ deal, compact = false }: DealSummaryProps)
                   <span className="font-medium">{fmtCurrency(selectedTier.monthlyPrice)}/mo</span>
                 </div>
               )}
-              {selectedPkgs.map((pkg) => (
-                <div key={pkg.id} className="flex justify-between text-xs">
-                  <span className="text-gray-600">{pkg.name}</span>
-                  <span className="font-medium">{pkg.monthlyPrice > 0 ? `${fmtCurrency(pkg.monthlyPrice)}/mo` : 'Incl.'}</span>
+              {isCustomTier && (
+                <div className="flex justify-between text-xs">
+                  <span className="text-gray-600">Custom Package</span>
+                  <span className="font-medium">
+                    {deal.recurringOverride ? `${fmtCurrency(deal.recurringOverride)}/mo` : '—'}
+                  </span>
                 </div>
-              ))}
+              )}
+              {isCustomTier && (deal.customTierDomains || deal.customTierInboxes) && (
+                <div className="text-[10px] text-gray-400 ml-1">
+                  {[
+                    deal.customTierDomains && `${deal.customTierDomains} domains`,
+                    deal.customTierInboxes && `${deal.customTierInboxes} inboxes`,
+                    deal.customTierEmailsPerMonth && `${deal.customTierEmailsPerMonth.toLocaleString()} emails/mo`,
+                  ].filter(Boolean).join(' · ')}
+                </div>
+              )}
+              {selectedPkgs.map((pkg) => {
+                const overridePrice = deal.packagePriceOverrides?.[pkg.id]
+                const displayPrice = overridePrice !== undefined ? overridePrice : pkg.monthlyPrice
+                return (
+                  <div key={pkg.id} className="flex justify-between text-xs">
+                    <span className="text-gray-600">
+                      {pkg.name}
+                      {overridePrice !== undefined && <span className="ml-1 text-blue-500 text-[10px]">custom</span>}
+                    </span>
+                    <span className="font-medium">{displayPrice > 0 ? `${fmtCurrency(displayPrice)}/mo` : 'Incl.'}</span>
+                  </div>
+                )
+              })}
             </div>
 
             {pricing.discountAmount > 0 && (
