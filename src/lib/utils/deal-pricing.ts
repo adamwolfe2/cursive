@@ -26,13 +26,16 @@ export function calculateDealPricing(deal: DealState): DealPricing {
     ? (deal.customTierInboxes ?? 0)
     : (selectedTier?.inboxes ?? 0)
   const infraCalc = calculateInfraCost(domains, inboxes, deal.domainCostPer, deal.inboxCostPer)
-  // When an exact cost is entered directly, use it instead of the calculated rate
-  if (deal.infraMonthlyOverride !== null && deal.infraMonthlyOverride !== undefined) {
-    infraCalc.totalMonthly = deal.infraMonthlyOverride
-    infraCalc.totalAnnual = Math.round(deal.infraMonthlyOverride * 12 * 100) / 100
-    // Distribute the override evenly for display (doesn't affect total)
-    infraCalc.domainCostMonthly = 0
-    infraCalc.inboxCostMonthly = deal.infraMonthlyOverride
+  // When actual vendor costs are entered, use them instead of per-unit estimates
+  const hasDomainCost = deal.domainAnnualCost !== null && deal.domainAnnualCost !== undefined
+  const hasInboxCost = deal.inboxMonthlyCost !== null && deal.inboxMonthlyCost !== undefined
+  if (hasDomainCost || hasInboxCost) {
+    const domainMonthly = hasDomainCost ? Math.round((deal.domainAnnualCost! / 12) * 100) / 100 : infraCalc.domainCostMonthly
+    const inboxMonthly = hasInboxCost ? deal.inboxMonthlyCost! : infraCalc.inboxCostMonthly
+    infraCalc.domainCostMonthly = domainMonthly
+    infraCalc.inboxCostMonthly = inboxMonthly
+    infraCalc.totalMonthly = Math.round((domainMonthly + inboxMonthly) * 100) / 100
+    infraCalc.totalAnnual = Math.round(infraCalc.totalMonthly * 12 * 100) / 100
   }
 
   // Setup fees
@@ -100,6 +103,7 @@ export function calculateDealPricing(deal: DealState): DealPricing {
     domains,
     inboxes,
     domainCostMonthly: infraCalc.domainCostMonthly,
+    domainCostAnnual: deal.domainAnnualCost ?? Math.round(infraCalc.domainCostMonthly * 12 * 100) / 100,
     inboxCostMonthly: infraCalc.inboxCostMonthly,
   }
 }

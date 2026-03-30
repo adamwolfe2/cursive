@@ -118,14 +118,19 @@ export async function getInvoiceStatus(invoiceId: string): Promise<StripeInvoice
 }
 
 /**
- * Build Stripe invoice line items from deal configuration
+ * Build Stripe invoice line items from deal configuration.
+ * Domains are billed annually (one-time on first invoice); inboxes are monthly.
  */
-export function buildInvoiceLineItems(
-  setupFee: number,
-  monthlyService: number,
-  monthlyInfra: number,
+export function buildInvoiceLineItems(params: {
+  setupFee: number
+  monthlyService: number
   clientName: string
-): InvoiceLineItem[] {
+  domains: number
+  inboxes: number
+  domainAnnualCost: number   // total annual cost for all domains (e.g. $401.81/yr)
+  inboxMonthlyCost: number   // total monthly cost for all inboxes (e.g. $288/mo)
+}): InvoiceLineItem[] {
+  const { setupFee, monthlyService, clientName, domains, inboxes, domainAnnualCost, inboxMonthlyCost } = params
   const items: InvoiceLineItem[] = []
 
   if (setupFee > 0) {
@@ -144,11 +149,19 @@ export function buildInvoiceLineItems(
     })
   }
 
-  if (monthlyInfra > 0) {
+  if (domainAnnualCost > 0) {
     items.push({
-      name: `Infrastructure — Domains + Email Inboxes (at-cost)`,
+      name: `Sending Domains — ${domains} domains (annual, at-cost)`,
       quantity: 1,
-      unitPrice: Math.round(monthlyInfra * 100) / 100,
+      unitPrice: Math.round(domainAnnualCost * 100) / 100,
+    })
+  }
+
+  if (inboxMonthlyCost > 0) {
+    items.push({
+      name: `Email Inboxes — ${inboxes} inboxes (monthly, at-cost)`,
+      quantity: 1,
+      unitPrice: Math.round(inboxMonthlyCost * 100) / 100,
     })
   }
 

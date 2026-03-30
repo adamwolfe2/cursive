@@ -194,12 +194,16 @@ export function buildContractFields(params: {
   setupFee: number
   monthlyFee: number
   infraMonthly: number
+  domainAnnualCost?: number   // total annual domain cost (billed upfront)
+  inboxMonthlyCost?: number   // total monthly inbox cost
   packages: string[]
   billingCadence: string
   outboundTier: string | null
   startDate: string
   notes?: string
 }): Record<string, string> {
+  const domainAnnual = params.domainAnnualCost ?? params.infraMonthly * 12
+  const inboxMonthly = params.inboxMonthlyCost ?? params.infraMonthly
   return {
     client_company: params.companyName,
     client_name: params.contactName,
@@ -207,6 +211,8 @@ export function buildContractFields(params: {
     setup_fee: `$${params.setupFee.toLocaleString()}`,
     monthly_fee: `$${params.monthlyFee.toLocaleString()}`,
     infra_monthly: `$${params.infraMonthly.toFixed(2)}`,
+    domain_annual: `$${domainAnnual.toFixed(2)}`,
+    inbox_monthly: `$${inboxMonthly.toFixed(2)}`,
     total_monthly: `$${(params.monthlyFee + params.infraMonthly).toLocaleString()}`,
     packages: params.packages.join(', '),
     billing_cadence: params.billingCadence,

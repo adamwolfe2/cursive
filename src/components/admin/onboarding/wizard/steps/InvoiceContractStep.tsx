@@ -48,7 +48,15 @@ export default function InvoiceContractStep({
   const contactName = parsedData?.primary_contact_name || ''
 
   const lineItems = useMemo(
-    () => buildInvoiceLineItems(pricing.totalSetup, pricing.totalRecurring, pricing.infraMonthly, clientName),
+    () => buildInvoiceLineItems({
+      setupFee: pricing.totalSetup,
+      monthlyService: pricing.totalRecurring,
+      clientName,
+      domains: pricing.domains,
+      inboxes: pricing.inboxes,
+      domainAnnualCost: pricing.domainCostAnnual,
+      inboxMonthlyCost: pricing.inboxCostMonthly,
+    }),
     [pricing, clientName]
   )
   const totalAmount = lineItems.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0)
@@ -61,6 +69,8 @@ export default function InvoiceContractStep({
     setup_fee: `$${pricing.totalSetup.toLocaleString()}`,
     monthly_fee: `$${pricing.totalRecurring.toLocaleString()}`,
     infra_monthly: `$${pricing.infraMonthly.toFixed(2)}`,
+    domain_annual: `$${pricing.domainCostAnnual.toFixed(2)}`,
+    inbox_monthly: `$${pricing.inboxCostMonthly.toFixed(2)}`,
     total_monthly: `$${(pricing.totalRecurring + pricing.infraMonthly).toLocaleString()}`,
     packages: (parsedData?.packages_selected || []).join(', ') || 'None',
     billing_cadence: deal.billingCadence,
@@ -142,6 +152,8 @@ export default function InvoiceContractStep({
           setupFee: pricing.totalSetup,
           monthlyFee: pricing.totalRecurring,
           infraMonthly: pricing.infraMonthly,
+          domainAnnualCost: pricing.domainCostAnnual,
+          inboxMonthlyCost: pricing.inboxCostMonthly,
           packages: parsedData?.packages_selected || [],
           billingCadence: deal.billingCadence,
           outboundTier: deal.outboundTierId,

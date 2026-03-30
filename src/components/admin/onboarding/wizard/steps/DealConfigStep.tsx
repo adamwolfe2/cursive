@@ -17,20 +17,25 @@ interface DealConfigStepProps {
 export default function DealConfigStep({ deal, onUpdate }: DealConfigStepProps) {
   const [showInfra, setShowInfra] = useState(false)
 
-  // Local string state for infra inputs so the user can freely clear/type
-  // without the controlled number snapping back to 0
+  // Local string state so fields can be freely cleared/typed without snapping back
   const [domainsText, setDomainsText] = useState(String(deal.customDomains))
   const [inboxesText, setInboxesText] = useState(String(deal.customInboxes))
-  const [infraCostText, setInfraCostText] = useState(
-    deal.infraMonthlyOverride !== null ? String(deal.infraMonthlyOverride) : ''
+  const [domainAnnualText, setDomainAnnualText] = useState(
+    deal.domainAnnualCost !== null ? String(deal.domainAnnualCost) : ''
+  )
+  const [inboxMonthlyText, setInboxMonthlyText] = useState(
+    deal.inboxMonthlyCost !== null ? String(deal.inboxMonthlyCost) : ''
   )
 
   // Sync if deal state changes externally (draft resume, tier selection, etc.)
   useEffect(() => { setDomainsText(String(deal.customDomains)) }, [deal.customDomains])
   useEffect(() => { setInboxesText(String(deal.customInboxes)) }, [deal.customInboxes])
   useEffect(() => {
-    setInfraCostText(deal.infraMonthlyOverride !== null ? String(deal.infraMonthlyOverride) : '')
-  }, [deal.infraMonthlyOverride])
+    setDomainAnnualText(deal.domainAnnualCost !== null ? String(deal.domainAnnualCost) : '')
+  }, [deal.domainAnnualCost])
+  useEffect(() => {
+    setInboxMonthlyText(deal.inboxMonthlyCost !== null ? String(deal.inboxMonthlyCost) : '')
+  }, [deal.inboxMonthlyCost])
 
   const pricing = useMemo(() => calculateDealPricing(deal), [deal])
 
@@ -239,114 +244,132 @@ export default function DealConfigStep({ deal, onUpdate }: DealConfigStepProps) 
             <h2 className="text-sm font-semibold text-gray-900 flex-1">Infrastructure (At-Cost)</h2>
             {showInfra ? <ChevronDown className="h-4 w-4 text-gray-400" /> : <ChevronRight className="h-4 w-4 text-gray-400" />}
           </button>
-          {!showInfra && (deal.customDomains > 0 || deal.customInboxes > 0 || deal.infraMonthlyOverride !== null) && (
+          {!showInfra && (deal.customDomains > 0 || deal.customInboxes > 0) && (
             <p className="text-xs text-gray-500 mt-2">
-              {deal.customDomains} domains + {deal.customInboxes} inboxes
-              {deal.infraMonthlyOverride !== null ? ` = ${fmtCurrencyDecimal(deal.infraMonthlyOverride)}/mo` : ' — cost TBD'}
+              {deal.customDomains} domains ({deal.domainAnnualCost !== null ? `${fmtCurrencyDecimal(deal.domainAnnualCost)}/yr` : 'cost TBD'})
+              {' + '}
+              {deal.customInboxes} inboxes ({deal.inboxMonthlyCost !== null ? `${fmtCurrencyDecimal(deal.inboxMonthlyCost)}/mo` : 'cost TBD'})
             </p>
           )}
           {showInfra && (
             <div className="mt-4 space-y-4">
-              {/* Domain + inbox counts — used as contract variables */}
+              {/* Row 1: counts */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">Domains</label>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Domains (count)</label>
                   <input
-                    type="text"
-                    inputMode="numeric"
-                    placeholder="0"
+                    type="text" inputMode="numeric" placeholder="0"
                     value={domainsText}
                     onChange={(e) => {
                       const v = e.target.value.replace(/[^0-9]/g, '')
                       setDomainsText(v)
-                      if (v !== '') {
-                        onUpdate('customDomains', Number(v))
-                        onUpdate('useCustomInfra', true)
-                      }
+                      if (v !== '') { onUpdate('customDomains', Number(v)); onUpdate('useCustomInfra', true) }
                     }}
                     onBlur={() => {
                       const n = domainsText === '' ? 0 : Number(domainsText)
-                      setDomainsText(String(n))
-                      onUpdate('customDomains', n)
+                      setDomainsText(String(n)); onUpdate('customDomains', n)
                     }}
                     className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">Inboxes</label>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Inboxes (count)</label>
                   <input
-                    type="text"
-                    inputMode="numeric"
-                    placeholder="0"
+                    type="text" inputMode="numeric" placeholder="0"
                     value={inboxesText}
                     onChange={(e) => {
                       const v = e.target.value.replace(/[^0-9]/g, '')
                       setInboxesText(v)
-                      if (v !== '') {
-                        onUpdate('customInboxes', Number(v))
-                        onUpdate('useCustomInfra', true)
-                      }
+                      if (v !== '') { onUpdate('customInboxes', Number(v)); onUpdate('useCustomInfra', true) }
                     }}
                     onBlur={() => {
                       const n = inboxesText === '' ? 0 : Number(inboxesText)
-                      setInboxesText(String(n))
-                      onUpdate('customInboxes', n)
+                      setInboxesText(String(n)); onUpdate('customInboxes', n)
                     }}
                     className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
                   />
                 </div>
               </div>
 
-              {/* Actual monthly cost — enter the real number from your vendor cart */}
-              <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">
-                  Total infra cost ($/mo)
-                  <span className="ml-1 font-normal text-gray-400">— domains annual ÷ 12, plus inboxes monthly</span>
-                </label>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">$</span>
-                  <input
-                    type="text"
-                    inputMode="decimal"
-                    placeholder="e.g. 369.48"
-                    value={infraCostText}
-                    onChange={(e) => {
-                      const v = e.target.value.replace(/[^0-9.]/g, '')
-                      setInfraCostText(v)
-                      const n = parseFloat(v)
-                      onUpdate('infraMonthlyOverride', v === '' ? null : (isNaN(n) ? null : n))
-                    }}
-                    onBlur={() => {
-                      const n = parseFloat(infraCostText)
-                      if (infraCostText === '' || isNaN(n)) {
-                        setInfraCostText('')
-                        onUpdate('infraMonthlyOverride', null)
-                      } else {
-                        setInfraCostText(n.toFixed(2))
-                        onUpdate('infraMonthlyOverride', n)
-                      }
-                    }}
-                    className="w-full rounded-md border border-gray-300 pl-7 pr-3 py-2 text-sm"
-                  />
+              {/* Row 2: actual costs from vendor */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">
+                    Domain cost ($/yr)
+                    <span className="ml-1 font-normal text-gray-400">total annual</span>
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">$</span>
+                    <input
+                      type="text" inputMode="decimal" placeholder="e.g. 401.81"
+                      value={domainAnnualText}
+                      onChange={(e) => {
+                        const v = e.target.value.replace(/[^0-9.]/g, '')
+                        setDomainAnnualText(v)
+                        const n = parseFloat(v)
+                        onUpdate('domainAnnualCost', v === '' || isNaN(n) ? null : n)
+                      }}
+                      onBlur={() => {
+                        const n = parseFloat(domainAnnualText)
+                        if (domainAnnualText === '' || isNaN(n)) { setDomainAnnualText(''); onUpdate('domainAnnualCost', null) }
+                        else { setDomainAnnualText(n.toFixed(2)); onUpdate('domainAnnualCost', n) }
+                      }}
+                      className="w-full rounded-md border border-gray-300 pl-6 pr-3 py-2 text-sm"
+                    />
+                  </div>
                 </div>
-                {deal.infraMonthlyOverride === null && (
-                  <p className="text-[10px] text-amber-600 mt-1">
-                    Not set — enter your vendor total. E.g. for Olander: ($401.81/yr ÷ 12) + $336/mo = $369.48/mo
-                  </p>
-                )}
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">
+                    Inbox cost ($/mo)
+                    <span className="ml-1 font-normal text-gray-400">total monthly</span>
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">$</span>
+                    <input
+                      type="text" inputMode="decimal" placeholder="e.g. 288.00"
+                      value={inboxMonthlyText}
+                      onChange={(e) => {
+                        const v = e.target.value.replace(/[^0-9.]/g, '')
+                        setInboxMonthlyText(v)
+                        const n = parseFloat(v)
+                        onUpdate('inboxMonthlyCost', v === '' || isNaN(n) ? null : n)
+                      }}
+                      onBlur={() => {
+                        const n = parseFloat(inboxMonthlyText)
+                        if (inboxMonthlyText === '' || isNaN(n)) { setInboxMonthlyText(''); onUpdate('inboxMonthlyCost', null) }
+                        else { setInboxMonthlyText(n.toFixed(2)); onUpdate('inboxMonthlyCost', n) }
+                      }}
+                      className="w-full rounded-md border border-gray-300 pl-6 pr-3 py-2 text-sm"
+                    />
+                  </div>
+                </div>
               </div>
 
               {/* Summary */}
-              {(deal.customDomains > 0 || deal.customInboxes > 0 || deal.infraMonthlyOverride !== null) && (
-                <div className="rounded-md bg-blue-50 border border-blue-200 px-4 py-3 text-sm">
-                  <div className="flex justify-between text-gray-700">
-                    <span>{deal.customDomains} domains + {deal.customInboxes} inboxes</span>
-                    <span className="text-gray-500 text-xs">contract variables</span>
+              {(deal.customDomains > 0 || deal.customInboxes > 0 || deal.domainAnnualCost !== null || deal.inboxMonthlyCost !== null) && (
+                <div className="rounded-md bg-blue-50 border border-blue-200 px-4 py-3 text-sm space-y-1">
+                  {deal.domainAnnualCost !== null && (
+                    <div className="flex justify-between text-gray-700 text-xs">
+                      <span>{deal.customDomains} domains</span>
+                      <span>{fmtCurrencyDecimal(deal.domainAnnualCost)}/yr → {fmtCurrencyDecimal(deal.domainAnnualCost / 12)}/mo</span>
+                    </div>
+                  )}
+                  {deal.inboxMonthlyCost !== null && (
+                    <div className="flex justify-between text-gray-700 text-xs">
+                      <span>{deal.customInboxes} inboxes</span>
+                      <span>{fmtCurrencyDecimal(deal.inboxMonthlyCost)}/mo</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between font-semibold text-blue-800 border-t border-blue-200 mt-1 pt-2">
+                    <span>Monthly infra</span>
+                    <span>{fmtCurrencyDecimal(pricing.infraMonthly)}/mo</span>
                   </div>
-                  <div className="flex justify-between font-semibold text-blue-800 border-t border-blue-200 mt-2 pt-2">
-                    <span>Total</span>
-                    <span>{deal.infraMonthlyOverride !== null ? fmtCurrencyDecimal(deal.infraMonthlyOverride) : '—'}/mo</span>
-                  </div>
+                  {deal.domainAnnualCost !== null && (
+                    <div className="flex justify-between text-xs text-blue-600">
+                      <span>First invoice (domains upfront)</span>
+                      <span>+{fmtCurrencyDecimal(deal.domainAnnualCost)} today</span>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

@@ -153,21 +153,27 @@ export default function DealSummary({ deal, compact = false }: DealSummaryProps)
                 <span className="text-gray-500">Service</span>
                 <span className="font-medium">{fmtCurrency(pricing.totalRecurring)}/mo</span>
               </div>
-              <div className="flex justify-between text-xs">
-                <span className="text-gray-500">Infra</span>
-                <span className="font-medium text-blue-700">{fmtCurrencyDecimal(pricing.infraMonthly)}/mo</span>
-              </div>
-            </div>
-
-            {/* Infrastructure counts */}
-            <div className="flex gap-3 pt-1">
-              <div className="flex items-center gap-1 text-[10px] text-gray-400">
-                <Globe className="h-3 w-3" />
-                {pricing.domains} domains
-              </div>
-              <div className="flex items-center gap-1 text-[10px] text-gray-400">
-                <Inbox className="h-3 w-3" />
-                {pricing.inboxes} inboxes
+              <div className="space-y-0.5">
+                {pricing.domainCostAnnual > 0 && (
+                  <div className="flex justify-between text-xs">
+                    <span className="text-gray-400 flex items-center gap-1">
+                      <Globe className="h-3 w-3" /> {pricing.domains} domains
+                    </span>
+                    <span className="text-blue-700">{fmtCurrencyDecimal(pricing.domainCostAnnual)}/yr</span>
+                  </div>
+                )}
+                {pricing.inboxCostMonthly > 0 && (
+                  <div className="flex justify-between text-xs">
+                    <span className="text-gray-400 flex items-center gap-1">
+                      <Inbox className="h-3 w-3" /> {pricing.inboxes} inboxes
+                    </span>
+                    <span className="text-blue-700">{fmtCurrencyDecimal(pricing.inboxCostMonthly)}/mo</span>
+                  </div>
+                )}
+                <div className="flex justify-between text-xs font-medium">
+                  <span className="text-gray-500">Infra total</span>
+                  <span className="text-blue-700">{fmtCurrencyDecimal(pricing.infraMonthly)}/mo</span>
+                </div>
               </div>
             </div>
 

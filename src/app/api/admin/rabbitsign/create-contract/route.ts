@@ -13,6 +13,8 @@ const requestSchema = z.object({
   setupFee: z.number().min(0),
   monthlyFee: z.number().min(0),
   infraMonthly: z.number().min(0),
+  domainAnnualCost: z.number().min(0).optional(),
+  inboxMonthlyCost: z.number().min(0).optional(),
   packages: z.array(z.string()),
   billingCadence: z.string(),
   outboundTier: z.string().nullable(),

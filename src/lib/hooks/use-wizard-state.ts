@@ -24,9 +24,6 @@ function loadDraft(): WizardState | null {
     const parsed = JSON.parse(raw) as WizardState
     if (parsed.version !== WIZARD_VERSION) return null // stale schema
     // Backfill fields added after initial schema — keeps old drafts usable
-    if (parsed.deal.infraMonthlyOverride === undefined) {
-      parsed.deal.infraMonthlyOverride = null
-    }
     if (!parsed.deal.packagePriceOverrides) {
       parsed.deal.packagePriceOverrides = {}
     }
@@ -34,6 +31,12 @@ function loadDraft(): WizardState | null {
       parsed.deal.customTierDomains = null
       parsed.deal.customTierInboxes = null
       parsed.deal.customTierEmailsPerMonth = null
+    }
+    if (parsed.deal.domainAnnualCost === undefined) {
+      parsed.deal.domainAnnualCost = null
+    }
+    if (parsed.deal.inboxMonthlyCost === undefined) {
+      parsed.deal.inboxMonthlyCost = null
     }
     return parsed
   } catch {

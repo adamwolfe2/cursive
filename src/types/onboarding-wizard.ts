@@ -22,9 +22,10 @@ export interface DealState {
   recurringOverride: number | null
   billingCadence: 'monthly' | 'quarterly' | 'annual'
   notes: string
-  // Direct infra cost override — enter the actual monthly cost from your vendor
-  // (bypasses the per-unit rate calculation; domains/inboxes still tracked for contract variables)
-  infraMonthlyOverride: number | null
+  // Actual infra costs from vendor — entered after purchasing domains/inboxes
+  // Domains billed annually (e.g. $401.81/yr), inboxes billed monthly (e.g. $336/mo)
+  domainAnnualCost: number | null   // total annual cost for all domains
+  inboxMonthlyCost: number | null   // total monthly cost for all inboxes
   // Per-service-package price overrides (key = package id, value = monthly price)
   packagePriceOverrides: Record<string, number>
   // Custom tier infrastructure spec (used when PricingConfigurator tier = 'custom')
@@ -121,7 +122,8 @@ export interface DealPricing {
   domainUpfront: number
   domains: number
   inboxes: number
-  domainCostMonthly: number
+  domainCostMonthly: number   // domain annual ÷ 12
+  domainCostAnnual: number    // actual annual domain cost (for invoice line item)
   inboxCostMonthly: number
 }
 
@@ -150,7 +152,8 @@ export function createInitialWizardState(): WizardState {
       recurringOverride: null,
       billingCadence: 'monthly',
       notes: '',
-      infraMonthlyOverride: null,
+      domainAnnualCost: null,
+      inboxMonthlyCost: null,
       packagePriceOverrides: {},
       customTierDomains: null,
       customTierInboxes: null,
