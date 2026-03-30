@@ -22,6 +22,12 @@ export interface DealState {
   recurringOverride: number | null
   billingCadence: 'monthly' | 'quarterly' | 'annual'
   notes: string
+  // Per-service-package price overrides (key = package id, value = monthly price)
+  packagePriceOverrides: Record<string, number>
+  // Custom tier infrastructure spec (used when PricingConfigurator tier = 'custom')
+  customTierDomains: number | null
+  customTierInboxes: number | null
+  customTierEmailsPerMonth: number | null
 }
 
 // ---------------------------------------------------------------------------
@@ -141,6 +147,10 @@ export function createInitialWizardState(): WizardState {
       recurringOverride: null,
       billingCadence: 'monthly',
       notes: '',
+      packagePriceOverrides: {},
+      customTierDomains: null,
+      customTierInboxes: null,
+      customTierEmailsPerMonth: null,
     },
 
     rawContext: '',

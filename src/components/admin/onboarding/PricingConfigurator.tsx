@@ -17,6 +17,10 @@ export interface PricingConfig {
   monthlyFee: number | null
   packageName: string
   addOns: AddOnId[]
+  // Custom tier infrastructure spec
+  customDomains?: number | null
+  customInboxes?: number | null
+  customEmailsPerMonth?: number | null
 }
 
 interface PricingConfiguratorProps {
@@ -148,6 +152,9 @@ export default function PricingConfigurator({ value, onChange, className }: Pric
   // Custom override inputs (only used when tier === 'custom')
   const [customSetup, setCustomSetup] = useState<string>(value.setupFee?.toString() ?? '')
   const [customMonthly, setCustomMonthly] = useState<string>(value.monthlyFee?.toString() ?? '')
+  const [customDomains, setCustomDomains] = useState<string>(value.customDomains?.toString() ?? '')
+  const [customInboxes, setCustomInboxes] = useState<string>(value.customInboxes?.toString() ?? '')
+  const [customEmailsPerMonth, setCustomEmailsPerMonth] = useState<string>(value.customEmailsPerMonth?.toString() ?? '')
 
   const selectedTier = BASE_TIERS.find((t) => t.id === selectedTierId)!
   const addOnMonthly = computeAddOnTotal(value.addOns)
@@ -157,7 +164,7 @@ export default function PricingConfigurator({ value, onChange, className }: Pric
 
   // Emit change upward whenever computed values change
   const emit = useCallback(
-    (tierId: PricingTierId, addOns: AddOnId[], setupOverride?: string, monthlyOverride?: string) => {
+    (tierId: PricingTierId, addOns: AddOnId[], setupOverride?: string, monthlyOverride?: string, domainsOverride?: string, inboxesOverride?: string, emailsOverride?: string) => {
       const tier = BASE_TIERS.find((t) => t.id === tierId)!
       const setupFee = tierId === 'custom'
         ? (setupOverride !== undefined ? (Number(setupOverride) || null) : (Number(customSetup) || null))
@@ -172,9 +179,12 @@ export default function PricingConfigurator({ value, onChange, className }: Pric
         monthlyFee: monthlyFee !== null ? monthlyFee + addOnTotal : addOnTotal || null,
         packageName: tierId,
         addOns,
+        customDomains: tierId === 'custom' ? (Number(domainsOverride ?? customDomains) || null) : null,
+        customInboxes: tierId === 'custom' ? (Number(inboxesOverride ?? customInboxes) || null) : null,
+        customEmailsPerMonth: tierId === 'custom' ? (Number(emailsOverride ?? customEmailsPerMonth) || null) : null,
       })
     },
-    [onChange, customSetup, customMonthly]
+    [onChange, customSetup, customMonthly, customDomains, customInboxes, customEmailsPerMonth]
   )
 
   const handleTierSelect = useCallback(
@@ -191,22 +201,6 @@ export default function PricingConfigurator({ value, onChange, className }: Pric
         ? value.addOns.filter((id) => id !== addonId)
         : [...value.addOns, addonId]
       emit(selectedTierId, updated)
-    },
-    [emit, selectedTierId, value.addOns]
-  )
-
-  const handleCustomSetup = useCallback(
-    (raw: string) => {
-      setCustomSetup(raw)
-      emit(selectedTierId, value.addOns, raw, undefined)
-    },
-    [emit, selectedTierId, value.addOns]
-  )
-
-  const handleCustomMonthly = useCallback(
-    (raw: string) => {
-      setCustomMonthly(raw)
-      emit(selectedTierId, value.addOns, undefined, raw)
     },
     [emit, selectedTierId, value.addOns]
   )
@@ -275,34 +269,80 @@ export default function PricingConfigurator({ value, onChange, className }: Pric
 
         {/* Custom override inputs */}
         {selectedTierId === 'custom' && (
-          <div className="grid grid-cols-2 gap-3 mt-3 rounded-lg border border-dashed border-gray-300 bg-gray-50/60 p-4">
+          <div className="mt-3 rounded-lg border border-dashed border-gray-300 bg-gray-50/60 p-4 space-y-4">
+            {/* Fees */}
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Setup Fee</label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">$</span>
-                <input
-                  type="number"
-                  min={0}
-                  value={customSetup}
-                  onChange={(e) => handleCustomSetup(e.target.value)}
-                  placeholder="e.g. 3000"
-                  className="w-full rounded-md border border-gray-300 pl-7 pr-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20"
-                />
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-400 mb-2">Pricing</p>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Setup Fee</label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">$</span>
+                    <input
+                      type="number"
+                      min={0}
+                      value={customSetup}
+                      onChange={(e) => { setCustomSetup(e.target.value); emit(selectedTierId, value.addOns, e.target.value, undefined) }}
+                      placeholder="e.g. 3000"
+                      className="w-full rounded-md border border-gray-300 pl-7 pr-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Monthly Fee</label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">$</span>
+                    <input
+                      type="number"
+                      min={0}
+                      value={customMonthly}
+                      onChange={(e) => { setCustomMonthly(e.target.value); emit(selectedTierId, value.addOns, undefined, e.target.value) }}
+                      placeholder="e.g. 1500"
+                      className="w-full rounded-md border border-gray-300 pl-7 pr-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
+            {/* Infrastructure spec */}
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Monthly Fee</label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">$</span>
-                <input
-                  type="number"
-                  min={0}
-                  value={customMonthly}
-                  onChange={(e) => handleCustomMonthly(e.target.value)}
-                  placeholder="e.g. 1500"
-                  className="w-full rounded-md border border-gray-300 pl-7 pr-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20"
-                />
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-400 mb-2">Infrastructure Spec</p>
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Domains</label>
+                  <input
+                    type="number"
+                    min={0}
+                    value={customDomains}
+                    onChange={(e) => { setCustomDomains(e.target.value); emit(selectedTierId, value.addOns, undefined, undefined, e.target.value) }}
+                    placeholder="e.g. 32"
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Inboxes</label>
+                  <input
+                    type="number"
+                    min={0}
+                    value={customInboxes}
+                    onChange={(e) => { setCustomInboxes(e.target.value); emit(selectedTierId, value.addOns, undefined, undefined, undefined, e.target.value) }}
+                    placeholder="e.g. 96"
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Emails/mo</label>
+                  <input
+                    type="number"
+                    min={0}
+                    value={customEmailsPerMonth}
+                    onChange={(e) => { setCustomEmailsPerMonth(e.target.value); emit(selectedTierId, value.addOns, undefined, undefined, undefined, undefined, e.target.value) }}
+                    placeholder="e.g. 80000"
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20"
+                  />
+                </div>
               </div>
+              <p className="text-[10px] text-gray-400 mt-1.5">These appear on the client portal and invoice summary.</p>
             </div>
           </div>
         )}

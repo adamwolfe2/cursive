@@ -106,32 +106,76 @@ export default function DealConfigStep({ deal, onUpdate }: DealConfigStepProps) 
             <h2 className="text-sm font-semibold text-gray-900">Service Packages</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {SERVICE_PACKAGES.map((pkg) => (
-              <label
-                key={pkg.id}
-                className={`flex items-start gap-3 rounded-lg border p-3 cursor-pointer transition-all ${
-                  deal.selectedPackages.includes(pkg.id)
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-200 hover:bg-gray-50'
-                }`}
-              >
-                <input
-                  type="checkbox"
-                  checked={deal.selectedPackages.includes(pkg.id)}
-                  onChange={() => togglePackage(pkg.id)}
-                  className="mt-0.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                />
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-900">{pkg.name}</span>
-                    <span className="text-xs font-semibold text-gray-700">
-                      {pkg.monthlyPrice > 0 ? `${fmtCurrency(pkg.monthlyPrice)}/mo` : 'Included'}
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-gray-500 mt-0.5">{pkg.description}</p>
+            {SERVICE_PACKAGES.map((pkg) => {
+              const isChecked = deal.selectedPackages.includes(pkg.id)
+              const overridePrice = deal.packagePriceOverrides?.[pkg.id]
+              const displayPrice = overridePrice !== undefined ? overridePrice : pkg.monthlyPrice
+              return (
+                <div
+                  key={pkg.id}
+                  className={`rounded-lg border p-3 transition-all ${
+                    isChecked ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:bg-gray-50'
+                  }`}
+                >
+                  <label className="flex items-start gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={isChecked}
+                      onChange={() => togglePackage(pkg.id)}
+                      className="mt-0.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-gray-900">{pkg.name}</span>
+                        <span className="text-xs font-semibold text-gray-700">
+                          {displayPrice > 0 ? `${fmtCurrency(displayPrice)}/mo` : 'Included'}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-gray-500 mt-0.5">{pkg.description}</p>
+                    </div>
+                  </label>
+                  {isChecked && (
+                    <div className="mt-2 ml-7 flex items-center gap-2">
+                      <label className="text-[11px] text-gray-500 whitespace-nowrap">Override price:</label>
+                      <div className="relative w-28">
+                        <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-gray-400">$</span>
+                        <input
+                          type="number"
+                          min={0}
+                          placeholder={pkg.monthlyPrice.toString()}
+                          value={overridePrice !== undefined ? overridePrice : ''}
+                          onChange={(e) => {
+                            const val = e.target.value === '' ? undefined : Number(e.target.value)
+                            const updated = { ...(deal.packagePriceOverrides ?? {}) }
+                            if (val === undefined) {
+                              delete updated[pkg.id]
+                            } else {
+                              updated[pkg.id] = val
+                            }
+                            onUpdate('packagePriceOverrides', updated)
+                          }}
+                          className="w-full rounded border border-gray-300 pl-5 pr-2 py-1 text-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20"
+                        />
+                      </div>
+                      <span className="text-[11px] text-gray-400">/mo</span>
+                      {overridePrice !== undefined && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const updated = { ...(deal.packagePriceOverrides ?? {}) }
+                            delete updated[pkg.id]
+                            onUpdate('packagePriceOverrides', updated)
+                          }}
+                          className="text-[11px] text-gray-400 hover:text-red-500 underline"
+                        >
+                          reset
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </div>
-              </label>
-            ))}
+              )
+            })}
           </div>
         </div>
       </Card>
@@ -247,12 +291,18 @@ export default function DealConfigStep({ deal, onUpdate }: DealConfigStepProps) 
               addOns: (deal.selectedPackages.filter((p) =>
                 ['additional_inboxes', 'reply_management', 'autoresearch', 'priority_support'].includes(p)
               ) as AddOnId[]),
+              customDomains: deal.customTierDomains,
+              customInboxes: deal.customTierInboxes,
+              customEmailsPerMonth: deal.customTierEmailsPerMonth,
             }}
             onChange={(config: PricingConfig) => {
               onUpdate('setupFeeOverride', config.setupFee)
               onUpdate('recurringOverride', config.monthlyFee)
-              // Store the selected tier in outboundTierId for downstream mapping
               onUpdate('outboundTierId', config.packageName || null)
+              // Persist custom tier infra spec
+              onUpdate('customTierDomains', config.customDomains ?? null)
+              onUpdate('customTierInboxes', config.customInboxes ?? null)
+              onUpdate('customTierEmailsPerMonth', config.customEmailsPerMonth ?? null)
               // Merge add-ons into selectedPackages (preserve non-addon packages)
               const nonAddonPackages = deal.selectedPackages.filter(
                 (p) => !['additional_inboxes', 'reply_management', 'autoresearch', 'priority_support'].includes(p)
