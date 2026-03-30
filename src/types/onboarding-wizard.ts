@@ -22,6 +22,9 @@ export interface DealState {
   recurringOverride: number | null
   billingCadence: 'monthly' | 'quarterly' | 'annual'
   notes: string
+  // Direct infra cost override — enter the actual monthly cost from your vendor
+  // (bypasses the per-unit rate calculation; domains/inboxes still tracked for contract variables)
+  infraMonthlyOverride: number | null
   // Per-service-package price overrides (key = package id, value = monthly price)
   packagePriceOverrides: Record<string, number>
   // Custom tier infrastructure spec (used when PricingConfigurator tier = 'custom')
@@ -147,6 +150,7 @@ export function createInitialWizardState(): WizardState {
       recurringOverride: null,
       billingCadence: 'monthly',
       notes: '',
+      infraMonthlyOverride: null,
       packagePriceOverrides: {},
       customTierDomains: null,
       customTierInboxes: null,

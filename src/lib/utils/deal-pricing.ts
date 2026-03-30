@@ -26,6 +26,14 @@ export function calculateDealPricing(deal: DealState): DealPricing {
     ? (deal.customTierInboxes ?? 0)
     : (selectedTier?.inboxes ?? 0)
   const infraCalc = calculateInfraCost(domains, inboxes, deal.domainCostPer, deal.inboxCostPer)
+  // When an exact cost is entered directly, use it instead of the calculated rate
+  if (deal.infraMonthlyOverride !== null && deal.infraMonthlyOverride !== undefined) {
+    infraCalc.totalMonthly = deal.infraMonthlyOverride
+    infraCalc.totalAnnual = Math.round(deal.infraMonthlyOverride * 12 * 100) / 100
+    // Distribute the override evenly for display (doesn't affect total)
+    infraCalc.domainCostMonthly = 0
+    infraCalc.inboxCostMonthly = deal.infraMonthlyOverride
+  }
 
   // Setup fees
   const outboundSetup = selectedTier?.setupFee ?? 0

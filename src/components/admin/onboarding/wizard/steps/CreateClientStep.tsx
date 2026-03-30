@@ -8,6 +8,7 @@ import type { ParsedIntakeData } from '@/types/onboarding-templates'
 import type { DealState, InvoiceState, ContractState } from '@/types/onboarding-wizard'
 import { calculateDealPricing, fmtCurrency } from '@/lib/utils/deal-pricing'
 import { createClientFromIntake } from '@/app/admin/onboarding/new/actions'
+import type { CreateClientOptions } from '@/app/admin/onboarding/new/actions'
 
 interface CreateClientStepProps {
   deal: DealState
@@ -79,21 +80,34 @@ export default function CreateClientStep({
     }
   }, [portalUrl])
 
-  const canCreate = parsedData?.company_name && parsedData?.primary_contact_email && parsedData?.packages_selected?.length
+  const canCreate = parsedData?.company_name && parsedData?.primary_contact_name && parsedData?.primary_contact_email && parsedData?.packages_selected?.length
 
   const handleCreate = useCallback(async () => {
     if (!parsedData) return
     onStatusChange('creating')
 
     try {
-      const result = await createClientFromIntake(parsedData)
+      const options: CreateClientOptions = {
+        deal,
+        sowSigned: contract.status === 'signed',
+        paymentConfirmed: invoice.status === 'paid',
+        infraMonthlyFee: pricing.infraMonthly || null,
+      }
+
+      const result = await createClientFromIntake(parsedData, options)
       if (!result.success) {
         onStatusChange('error', result.error || 'Failed to create client')
         return
       }
 
-      // Update onboarding record with invoice/contract data if available
-      if (result.clientId && (invoice.stripeInvoiceId || contract.rabbitsignFolderId)) {
+      // Update onboarding record with invoice/contract tracking data
+      const hasTracking =
+        invoice.stripeInvoiceId ||
+        contract.rabbitsignFolderId ||
+        contract.status === 'signed' ||
+        invoice.status === 'paid'
+
+      if (result.clientId && hasTracking) {
         try {
           await fetch('/api/admin/onboarding/update-tracking', {
             method: 'POST',
@@ -102,9 +116,11 @@ export default function CreateClientStep({
               clientId: result.clientId,
               stripe_invoice_id: invoice.stripeInvoiceId,
               stripe_invoice_url: invoice.stripeInvoiceUrl,
-              stripe_invoice_status: invoice.status === 'sent' ? 'sent' : 'none',
+              stripe_invoice_status: invoice.status === 'paid' ? 'paid' : invoice.status === 'sent' ? 'sent' : 'none',
               rabbitsign_folder_id: contract.rabbitsignFolderId,
-              rabbitsign_status: contract.status === 'sent' ? 'sent' : 'none',
+              rabbitsign_status: contract.status === 'signed' ? 'signed' : contract.status === 'sent' ? 'sent' : 'none',
+              sow_signed: contract.status === 'signed',
+              payment_confirmed: invoice.status === 'paid',
             }),
           })
         } catch {
@@ -118,7 +134,7 @@ export default function CreateClientStep({
     } catch (error) {
       onStatusChange('error', error instanceof Error ? error.message : 'Unknown error')
     }
-  }, [parsedData, invoice, contract, onStatusChange, onClientCreated, onClearDraft])
+  }, [parsedData, deal, pricing, invoice, contract, onStatusChange, onClientCreated, onClearDraft])
 
   if (creationStatus === 'complete' && clientId) {
     return (
@@ -244,17 +260,17 @@ export default function CreateClientStep({
           <div className="space-y-1.5 mb-5">
             <div className="flex items-center gap-2 text-xs">
               <CreditCard className="h-3.5 w-3.5 text-gray-400" />
-              <span className={invoice.status === 'sent' ? 'text-green-700' : 'text-gray-400'}>
-                {invoice.status === 'sent' ? 'Invoice sent' : invoice.status === 'idle' ? 'No invoice sent' : invoice.status}
+              <span className={invoice.status === 'sent' || invoice.status === 'paid' ? 'text-green-700' : 'text-gray-400'}>
+                {invoice.status === 'paid' ? 'Payment confirmed' : invoice.status === 'sent' ? 'Invoice sent' : invoice.status === 'idle' ? 'No invoice sent' : invoice.status}
               </span>
-              {invoice.status === 'sent' && <Check className="h-3 w-3 text-green-600" />}
+              {(invoice.status === 'sent' || invoice.status === 'paid') && <Check className="h-3 w-3 text-green-600" />}
             </div>
             <div className="flex items-center gap-2 text-xs">
               <FileSignature className="h-3.5 w-3.5 text-gray-400" />
-              <span className={contract.status === 'sent' ? 'text-green-700' : 'text-gray-400'}>
-                {contract.status === 'sent' ? 'Contract sent for signing' : contract.status === 'idle' ? 'No contract sent' : contract.status}
+              <span className={contract.status === 'sent' || contract.status === 'signed' ? 'text-green-700' : 'text-gray-400'}>
+                {contract.status === 'signed' ? 'Contract signed' : contract.status === 'sent' ? 'Contract sent for signing' : contract.status === 'idle' ? 'No contract sent' : contract.status}
               </span>
-              {contract.status === 'sent' && <Check className="h-3 w-3 text-green-600" />}
+              {(contract.status === 'sent' || contract.status === 'signed') && <Check className="h-3 w-3 text-green-600" />}
             </div>
           </div>
 
@@ -262,7 +278,7 @@ export default function CreateClientStep({
           {!canCreate && (
             <div className="rounded-md bg-amber-50 border border-amber-200 px-3 py-2 text-xs text-amber-700 mb-4">
               <AlertTriangle className="h-3 w-3 inline mr-1" />
-              Missing required fields: company name, contact email, or packages. Go back to Review step.
+              Missing required fields: company name, contact name, contact email, or packages. Go back to Review step.
             </div>
           )}
 

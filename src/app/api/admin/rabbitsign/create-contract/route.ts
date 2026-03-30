@@ -6,6 +6,7 @@ import { requireAdmin } from '@/lib/auth/admin'
 import { createContractFromTemplate, buildContractFields } from '@/lib/integrations/rabbitsign'
 
 const requestSchema = z.object({
+  templateId: z.string().optional(), // overrides env var when provided
   companyName: z.string().min(1),
   contactName: z.string().min(1),
   contactEmail: z.string().email(),
@@ -23,14 +24,6 @@ export async function POST(req: NextRequest) {
   try {
     await requireAdmin()
 
-    const templateId = process.env.RABBITSIGN_CONTRACT_TEMPLATE_ID
-    if (!templateId) {
-      return NextResponse.json(
-        { error: 'RabbitSign template not configured. Set RABBITSIGN_CONTRACT_TEMPLATE_ID.' },
-        { status: 503 }
-      )
-    }
-
     const body = await req.json()
     const parsed = requestSchema.safeParse(body)
 
@@ -41,7 +34,16 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const { contactName, contactEmail, startDate, ...rest } = parsed.data
+    // Template ID: request body takes priority, then env var
+    const templateId = parsed.data.templateId || process.env.RABBITSIGN_CONTRACT_TEMPLATE_ID
+    if (!templateId) {
+      return NextResponse.json(
+        { error: 'No contract template ID. Enter one in the form or set RABBITSIGN_CONTRACT_TEMPLATE_ID.' },
+        { status: 503 }
+      )
+    }
+
+    const { contactName, contactEmail, startDate, templateId: _t, ...rest } = parsed.data
 
     const senderFieldValues = buildContractFields({
       ...rest,

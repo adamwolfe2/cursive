@@ -12,6 +12,8 @@ const requestSchema = z.object({
   stripe_invoice_status: z.string().nullable().optional(),
   rabbitsign_folder_id: z.string().nullable().optional(),
   rabbitsign_status: z.string().nullable().optional(),
+  sow_signed: z.boolean().optional(),
+  payment_confirmed: z.boolean().optional(),
 })
 
 export async function POST(req: NextRequest) {
@@ -27,8 +29,8 @@ export async function POST(req: NextRequest) {
 
     const { clientId, ...updates } = parsed.data
 
-    // Remove undefined/null keys
-    const cleanUpdates: Record<string, string | null> = {}
+    // Remove undefined keys
+    const cleanUpdates: Record<string, string | boolean | null> = {}
     for (const [key, value] of Object.entries(updates)) {
       if (value !== undefined) {
         cleanUpdates[key] = value ?? null

@@ -588,7 +588,7 @@ export default function ParsedPreview({
             )}
           </Section>
 
-          <Section title="Commercial" defaultOpen={false}>
+          <Section title="Commercial" defaultOpen={true}>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <NumberField
                 label="Setup Fee"

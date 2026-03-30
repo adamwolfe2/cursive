@@ -4,6 +4,17 @@ import { revalidatePath } from 'next/cache'
 import { createAdminClient } from '@/lib/supabase/server'
 import { inngest } from '@/inngest/client'
 import type { ParsedIntakeData } from '@/types/onboarding-templates'
+import type { DealState } from '@/types/onboarding-wizard'
+
+export interface CreateClientOptions {
+  sowSigned?: boolean
+  paymentConfirmed?: boolean
+  deal?: DealState | null
+  // Custom infra override fields (when not derivable from DealState)
+  customDomains?: number | null
+  customInboxes?: number | null
+  infraMonthlyFee?: number | null
+}
 
 /**
  * Create a new onboarding client from internally parsed data.
@@ -11,18 +22,13 @@ import type { ParsedIntakeData } from '@/types/onboarding-templates'
  * then fires the Inngest pipeline.
  */
 export async function createClientFromIntake(
-  data: ParsedIntakeData
+  data: ParsedIntakeData,
+  options: CreateClientOptions = {}
 ): Promise<{ success: boolean; clientId?: string; error?: string }> {
   try {
     // Validate required fields
     if (!data.company_name?.trim()) {
       return { success: false, error: 'Company name is required' }
-    }
-    if (!data.company_website?.trim()) {
-      return { success: false, error: 'Company website is required' }
-    }
-    if (!data.industry?.trim()) {
-      return { success: false, error: 'Industry is required' }
     }
     if (!data.primary_contact_name?.trim()) {
       return { success: false, error: 'Primary contact name is required' }
@@ -36,6 +42,13 @@ export async function createClientFromIntake(
 
     const supabase = createAdminClient()
 
+    // Merge deal-level overrides into DB fields
+    const { deal, sowSigned = false, paymentConfirmed = false, infraMonthlyFee } = options
+    const setupFee = deal?.setupFeeOverride ?? data.setup_fee ?? null
+    const recurringFee = deal?.recurringOverride ?? data.recurring_fee ?? null
+    const billingCadence = deal?.billingCadence ?? data.billing_cadence ?? null
+    const notes = deal?.notes?.trim() || null
+
     const { data: client, error: insertError } = await supabase
       .from('onboarding_clients')
       .insert({
@@ -44,8 +57,8 @@ export async function createClientFromIntake(
         onboarding_complete: true,
         // Company basics
         company_name: data.company_name.trim(),
-        company_website: data.company_website.trim(),
-        industry: data.industry.trim(),
+        company_website: data.company_website?.trim() || null,
+        industry: data.industry?.trim() || null,
         primary_contact_name: data.primary_contact_name.trim(),
         primary_contact_email: data.primary_contact_email.trim(),
         primary_contact_phone: data.primary_contact_phone?.trim() || null,
@@ -55,12 +68,14 @@ export async function createClientFromIntake(
         communication_channel: data.communication_channel?.trim() || 'Email',
         // Packages
         packages_selected: data.packages_selected,
-        // Commercial
-        setup_fee: data.setup_fee ?? null,
-        recurring_fee: data.recurring_fee ?? null,
-        billing_cadence: data.billing_cadence || null,
-        outbound_tier: data.outbound_tier || null,
+        // Commercial — deal-level overrides take priority over parsed values
+        setup_fee: setupFee,
+        recurring_fee: recurringFee,
+        infra_monthly_fee: infraMonthlyFee ?? null,
+        billing_cadence: billingCadence,
+        outbound_tier: deal?.outboundTierId ?? data.outbound_tier ?? null,
         payment_method: data.payment_method || null,
+        deal_notes: notes,
         // ICP
         icp_description: data.icp_description || null,
         target_industries: data.target_industries ?? [],
@@ -98,9 +113,9 @@ export async function createClientFromIntake(
         primary_crm: data.primary_crm || null,
         data_format: data.data_format || null,
         audience_count: data.audience_count || null,
-        // Legal defaults for internal intake (admin-created, no client sign-off needed yet)
-        sow_signed: false,
-        payment_confirmed: false,
+        // Legal — can be pre-confirmed when contract/payment already handled externally
+        sow_signed: sowSigned,
+        payment_confirmed: paymentConfirmed,
         data_usage_ack: false,
         privacy_ack: false,
         billing_terms_ack: false,

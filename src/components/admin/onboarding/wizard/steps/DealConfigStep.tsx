@@ -1,11 +1,11 @@
 'use client'
 
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Card } from '@/components/ui/card'
 import { Mail, Package, Globe, Calculator, ChevronDown, ChevronRight, Inbox, Users } from 'lucide-react'
 import type { DealState } from '@/types/onboarding-wizard'
 import { calculateDealPricing, fmtCurrency, fmtCurrencyDecimal } from '@/lib/utils/deal-pricing'
-import { OUTBOUND_TIERS, SERVICE_PACKAGES, INFRA_COSTS } from '@/app/admin/deal-calculator/pricing-config'
+import { OUTBOUND_TIERS, SERVICE_PACKAGES } from '@/app/admin/deal-calculator/pricing-config'
 import PricingConfigurator from '@/components/admin/onboarding/PricingConfigurator'
 import type { PricingConfig, AddOnId } from '@/components/admin/onboarding/PricingConfigurator'
 
@@ -16,6 +16,21 @@ interface DealConfigStepProps {
 
 export default function DealConfigStep({ deal, onUpdate }: DealConfigStepProps) {
   const [showInfra, setShowInfra] = useState(false)
+
+  // Local string state for infra inputs so the user can freely clear/type
+  // without the controlled number snapping back to 0
+  const [domainsText, setDomainsText] = useState(String(deal.customDomains))
+  const [inboxesText, setInboxesText] = useState(String(deal.customInboxes))
+  const [infraCostText, setInfraCostText] = useState(
+    deal.infraMonthlyOverride !== null ? String(deal.infraMonthlyOverride) : ''
+  )
+
+  // Sync if deal state changes externally (draft resume, tier selection, etc.)
+  useEffect(() => { setDomainsText(String(deal.customDomains)) }, [deal.customDomains])
+  useEffect(() => { setInboxesText(String(deal.customInboxes)) }, [deal.customInboxes])
+  useEffect(() => {
+    setInfraCostText(deal.infraMonthlyOverride !== null ? String(deal.infraMonthlyOverride) : '')
+  }, [deal.infraMonthlyOverride])
 
   const pricing = useMemo(() => calculateDealPricing(deal), [deal])
 
@@ -224,53 +239,116 @@ export default function DealConfigStep({ deal, onUpdate }: DealConfigStepProps) 
             <h2 className="text-sm font-semibold text-gray-900 flex-1">Infrastructure (At-Cost)</h2>
             {showInfra ? <ChevronDown className="h-4 w-4 text-gray-400" /> : <ChevronRight className="h-4 w-4 text-gray-400" />}
           </button>
-          {!showInfra && pricing.infraMonthly > 0 && (
+          {!showInfra && (deal.customDomains > 0 || deal.customInboxes > 0 || deal.infraMonthlyOverride !== null) && (
             <p className="text-xs text-gray-500 mt-2">
-              {pricing.domains} domains + {pricing.inboxes} inboxes = {fmtCurrencyDecimal(pricing.infraMonthly)}/mo
+              {deal.customDomains} domains + {deal.customInboxes} inboxes
+              {deal.infraMonthlyOverride !== null ? ` = ${fmtCurrencyDecimal(deal.infraMonthlyOverride)}/mo` : ' — cost TBD'}
             </p>
           )}
           {showInfra && (
             <div className="mt-4 space-y-4">
-              <label className="flex items-center gap-2">
-                <input type="checkbox" checked={deal.useCustomInfra} onChange={(e) => onUpdate('useCustomInfra', e.target.checked)} className="rounded border-gray-300 text-blue-600" />
-                <span className="text-sm text-gray-700">Custom domain/inbox count</span>
-              </label>
-              {deal.useCustomInfra && (
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Domains</label>
-                    <input type="number" min={0} value={deal.customDomains} onChange={(e) => onUpdate('customDomains', Math.max(0, Number(e.target.value)))} className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm" />
+              {/* Domain + inbox counts — used as contract variables */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Domains</label>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    placeholder="0"
+                    value={domainsText}
+                    onChange={(e) => {
+                      const v = e.target.value.replace(/[^0-9]/g, '')
+                      setDomainsText(v)
+                      if (v !== '') {
+                        onUpdate('customDomains', Number(v))
+                        onUpdate('useCustomInfra', true)
+                      }
+                    }}
+                    onBlur={() => {
+                      const n = domainsText === '' ? 0 : Number(domainsText)
+                      setDomainsText(String(n))
+                      onUpdate('customDomains', n)
+                    }}
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Inboxes</label>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    placeholder="0"
+                    value={inboxesText}
+                    onChange={(e) => {
+                      const v = e.target.value.replace(/[^0-9]/g, '')
+                      setInboxesText(v)
+                      if (v !== '') {
+                        onUpdate('customInboxes', Number(v))
+                        onUpdate('useCustomInfra', true)
+                      }
+                    }}
+                    onBlur={() => {
+                      const n = inboxesText === '' ? 0 : Number(inboxesText)
+                      setInboxesText(String(n))
+                      onUpdate('customInboxes', n)
+                    }}
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                  />
+                </div>
+              </div>
+
+              {/* Actual monthly cost — enter the real number from your vendor cart */}
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">
+                  Total infra cost ($/mo)
+                  <span className="ml-1 font-normal text-gray-400">— domains annual ÷ 12, plus inboxes monthly</span>
+                </label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">$</span>
+                  <input
+                    type="text"
+                    inputMode="decimal"
+                    placeholder="e.g. 369.48"
+                    value={infraCostText}
+                    onChange={(e) => {
+                      const v = e.target.value.replace(/[^0-9.]/g, '')
+                      setInfraCostText(v)
+                      const n = parseFloat(v)
+                      onUpdate('infraMonthlyOverride', v === '' ? null : (isNaN(n) ? null : n))
+                    }}
+                    onBlur={() => {
+                      const n = parseFloat(infraCostText)
+                      if (infraCostText === '' || isNaN(n)) {
+                        setInfraCostText('')
+                        onUpdate('infraMonthlyOverride', null)
+                      } else {
+                        setInfraCostText(n.toFixed(2))
+                        onUpdate('infraMonthlyOverride', n)
+                      }
+                    }}
+                    className="w-full rounded-md border border-gray-300 pl-7 pr-3 py-2 text-sm"
+                  />
+                </div>
+                {deal.infraMonthlyOverride === null && (
+                  <p className="text-[10px] text-amber-600 mt-1">
+                    Not set — enter your vendor total. E.g. for Olander: ($401.81/yr ÷ 12) + $336/mo = $369.48/mo
+                  </p>
+                )}
+              </div>
+
+              {/* Summary */}
+              {(deal.customDomains > 0 || deal.customInboxes > 0 || deal.infraMonthlyOverride !== null) && (
+                <div className="rounded-md bg-blue-50 border border-blue-200 px-4 py-3 text-sm">
+                  <div className="flex justify-between text-gray-700">
+                    <span>{deal.customDomains} domains + {deal.customInboxes} inboxes</span>
+                    <span className="text-gray-500 text-xs">contract variables</span>
                   </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Inboxes</label>
-                    <input type="number" min={0} value={deal.customInboxes} onChange={(e) => onUpdate('customInboxes', Math.max(0, Number(e.target.value)))} className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm" />
+                  <div className="flex justify-between font-semibold text-blue-800 border-t border-blue-200 mt-2 pt-2">
+                    <span>Total</span>
+                    <span>{deal.infraMonthlyOverride !== null ? fmtCurrencyDecimal(deal.infraMonthlyOverride) : '—'}/mo</span>
                   </div>
                 </div>
               )}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">Domain: {fmtCurrencyDecimal(deal.domainCostPer)}/yr</label>
-                  <input type="range" min={INFRA_COSTS.domain.min} max={INFRA_COSTS.domain.max} step={0.10} value={deal.domainCostPer} onChange={(e) => onUpdate('domainCostPer', Number(e.target.value))} className="w-full accent-blue-600" />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">Inbox: {fmtCurrencyDecimal(deal.inboxCostPer)}/mo</label>
-                  <input type="range" min={INFRA_COSTS.inbox.min} max={INFRA_COSTS.inbox.max} step={0.10} value={deal.inboxCostPer} onChange={(e) => onUpdate('inboxCostPer', Number(e.target.value))} className="w-full accent-blue-600" />
-                </div>
-              </div>
-              <div className="rounded-md bg-blue-50 border border-blue-200 px-4 py-3 text-sm">
-                <div className="flex justify-between text-gray-700">
-                  <span>{pricing.domains} domains</span>
-                  <span>{fmtCurrencyDecimal(pricing.domainCostMonthly)}/mo</span>
-                </div>
-                <div className="flex justify-between text-gray-700">
-                  <span>{pricing.inboxes} inboxes</span>
-                  <span>{fmtCurrencyDecimal(pricing.inboxCostMonthly)}/mo</span>
-                </div>
-                <div className="flex justify-between font-semibold text-blue-800 border-t border-blue-200 mt-2 pt-2">
-                  <span>Total</span>
-                  <span>{fmtCurrencyDecimal(pricing.infraMonthly)}/mo</span>
-                </div>
-              </div>
             </div>
           )}
         </div>

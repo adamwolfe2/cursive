@@ -27,6 +27,18 @@ interface CallNotesStepProps {
 function mergeDealIntoParsed(deal: DealState, parsed: ParsedIntakeData): ParsedIntakeData {
   const pricing = calculateDealPricing(deal)
   const tier = OUTBOUND_TIERS.find((t) => t.id === deal.outboundTierId)
+  const isCustomTier = deal.outboundTierId === 'custom'
+
+  // Sending volume: custom tier uses customTierEmailsPerMonth, else tier default
+  const emailsPerMonth = isCustomTier
+    ? deal.customTierEmailsPerMonth
+    : tier?.emailsPerMonth ?? null
+  const sendingVolume = emailsPerMonth
+    ? `Up to ${emailsPerMonth.toLocaleString()} emails/mo`
+    : (tier ? `Up to ${tier.emailsPerMonth.toLocaleString()} emails/mo` : parsed.sending_volume)
+
+  // Tier label
+  const outboundTierLabel = isCustomTier ? 'Custom' : (tier?.name || parsed.outbound_tier)
 
   return {
     ...parsed,
@@ -42,10 +54,10 @@ function mergeDealIntoParsed(deal: DealState, parsed: ParsedIntakeData): ParsedI
     setup_fee: pricing.totalSetup,
     recurring_fee: pricing.totalRecurring,
     billing_cadence: deal.billingCadence || parsed.billing_cadence,
-    outbound_tier: tier?.name || parsed.outbound_tier,
-    // Sending volume from tier
-    sending_volume: tier ? `Up to ${tier.emailsPerMonth.toLocaleString()} emails/mo` : parsed.sending_volume,
-    domain_variations: tier ? `${tier.domains} sending domains` : parsed.domain_variations,
+    outbound_tier: outboundTierLabel,
+    // Infrastructure — use actual counts from pricing (handles custom tier)
+    sending_volume: sendingVolume,
+    domain_variations: pricing.domains > 0 ? `${pricing.domains} sending domains` : parsed.domain_variations,
   }
 }
 

@@ -19,6 +19,18 @@ interface ReviewStepProps {
 function initFromDeal(deal: DealState): ParsedIntakeData {
   const pricing = calculateDealPricing(deal)
   const tier = OUTBOUND_TIERS.find((t) => t.id === deal.outboundTierId)
+  const isCustomTier = deal.outboundTierId === 'custom'
+
+  const emailsPerMonth = isCustomTier
+    ? deal.customTierEmailsPerMonth
+    : tier?.emailsPerMonth ?? null
+  const sendingVolume = emailsPerMonth
+    ? `Up to ${emailsPerMonth.toLocaleString()} emails/mo`
+    : null
+  const outboundTierLabel = isCustomTier ? 'Custom' : (tier?.name || null)
+
+  const missingCritical: string[] = []
+  if (!deal.clientName) missingCritical.push('primary_contact_name', 'company_name')
 
   return {
     company_name: deal.clientName || null,
@@ -39,7 +51,7 @@ function initFromDeal(deal: DealState): ParsedIntakeData {
     setup_fee: pricing.totalSetup,
     recurring_fee: pricing.totalRecurring,
     billing_cadence: deal.billingCadence,
-    outbound_tier: tier?.name || null,
+    outbound_tier: outboundTierLabel,
     payment_method: null,
     icp_description: null,
     target_industries: [],
@@ -55,11 +67,11 @@ function initFromDeal(deal: DealState): ParsedIntakeData {
     competitor_names: [],
     best_customers: null,
     sample_accounts: null,
-    sending_volume: tier ? `Up to ${tier.emailsPerMonth.toLocaleString()} emails/mo` : null,
+    sending_volume: sendingVolume,
     lead_volume: null,
     start_timeline: null,
     sender_names: null,
-    domain_variations: tier ? `${tier.domains} sending domains` : null,
+    domain_variations: pricing.domains > 0 ? `${pricing.domains} sending domains` : null,
     domain_provider: null,
     copy_tone: null,
     primary_cta: null,
@@ -76,14 +88,34 @@ function initFromDeal(deal: DealState): ParsedIntakeData {
     audience_count: null,
     confidence_score: 0,
     fields_inferred: [],
-    missing_critical_fields: ['company_website', 'industry', 'primary_contact_name', 'primary_contact_email'],
+    missing_critical_fields: missingCritical,
     additional_context: null,
+  }
+}
+
+/**
+ * Always overlay current deal pricing on top of any existing parsedData.
+ * Prevents stale commercial figures if the user edits Step 1 after visiting Step 3.
+ */
+function overlayDealPricing(base: ParsedIntakeData, deal: DealState): ParsedIntakeData {
+  const pricing = calculateDealPricing(deal)
+  const tier = OUTBOUND_TIERS.find((t) => t.id === deal.outboundTierId)
+  const isCustomTier = deal.outboundTierId === 'custom'
+  const outboundTierLabel = isCustomTier ? 'Custom' : (tier?.name || base.outbound_tier)
+
+  return {
+    ...base,
+    setup_fee: pricing.totalSetup,
+    recurring_fee: pricing.totalRecurring,
+    billing_cadence: deal.billingCadence,
+    outbound_tier: outboundTierLabel,
+    domain_variations: pricing.domains > 0 ? `${pricing.domains} sending domains` : base.domain_variations,
   }
 }
 
 export default function ReviewStep({ deal, parsedData, onChange }: ReviewStepProps) {
   const data = useMemo(
-    () => parsedData ?? initFromDeal(deal),
+    () => overlayDealPricing(parsedData ?? initFromDeal(deal), deal),
     [parsedData, deal]
   )
 

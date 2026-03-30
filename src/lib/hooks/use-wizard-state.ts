@@ -23,6 +23,18 @@ function loadDraft(): WizardState | null {
     if (!raw) return null
     const parsed = JSON.parse(raw) as WizardState
     if (parsed.version !== WIZARD_VERSION) return null // stale schema
+    // Backfill fields added after initial schema — keeps old drafts usable
+    if (parsed.deal.infraMonthlyOverride === undefined) {
+      parsed.deal.infraMonthlyOverride = null
+    }
+    if (!parsed.deal.packagePriceOverrides) {
+      parsed.deal.packagePriceOverrides = {}
+    }
+    if (parsed.deal.customTierDomains === undefined) {
+      parsed.deal.customTierDomains = null
+      parsed.deal.customTierInboxes = null
+      parsed.deal.customTierEmailsPerMonth = null
+    }
     return parsed
   } catch {
     return null
@@ -107,6 +119,9 @@ export function useWizardState(): UseWizardStateReturn {
   const [hasDraft, setHasDraft] = useState(false)
   const [initialized, setInitialized] = useState(false)
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  // Only save after the user has explicitly chosen to resume or start fresh.
+  // Prevents the empty initial state from overwriting the saved draft on mount.
+  const canSaveRef = useRef(false)
 
   // Check for existing draft or deal calculator handoff on mount
   useEffect(() => {
@@ -119,18 +134,22 @@ export function useWizardState(): UseWizardStateReturn {
       setState({
         ...initial,
         deal: handoff,
-        currentStep: 1, // Start at Call Notes step
+        currentStep: 1,
         completedSteps: [0],
       })
+      canSaveRef.current = true // handoff: safe to save immediately
     } else if (draft) {
       setHasDraft(true)
+      // canSaveRef stays false — don't save until user picks resume/start fresh
+    } else {
+      canSaveRef.current = true // no draft: safe to save from the start
     }
     setInitialized(true)
   }, [])
 
   // Auto-save to localStorage (debounced)
   useEffect(() => {
-    if (!initialized) return
+    if (!initialized || !canSaveRef.current) return
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
     saveTimerRef.current = setTimeout(() => {
       saveDraft({ ...state, lastModified: new Date().toISOString() })
@@ -145,6 +164,7 @@ export function useWizardState(): UseWizardStateReturn {
     if (draft) {
       setState(draft)
       setHasDraft(false)
+      canSaveRef.current = true // now safe to auto-save changes
     }
   }, [])
 
@@ -152,6 +172,7 @@ export function useWizardState(): UseWizardStateReturn {
     clearDraft()
     setState(createInitialWizardState())
     setHasDraft(false)
+    canSaveRef.current = true // now safe to auto-save new session
   }, [])
 
   // ---------------------------------------------------------------------------
