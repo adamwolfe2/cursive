@@ -235,6 +235,9 @@ export { sdrFollowupCron } from './sdr-followup'
 // Weekly Summary Email (Monday 9am CT — activity digest per workspace)
 export { weeklySummaryEmail } from './weekly-summary-email'
 
+// Monthly Summary Email (1st of each month 9am UTC — full month results per workspace)
+export { monthlySummaryEmail } from './monthly-summary-email'
+
 // Partner Stripe Connect Validation (daily 10am CT — reminds partners to complete Stripe onboarding)
 export { partnerStripeValidation } from './partner-stripe-validation'
 

@@ -1,9 +1,9 @@
 'use client'
 
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Card } from '@/components/ui/card'
-import { Loader2, Check, Rocket, CreditCard, FileSignature, AlertTriangle } from 'lucide-react'
+import { Loader2, Check, Rocket, CreditCard, FileSignature, AlertTriangle, Copy, Mail } from 'lucide-react'
 import type { ParsedIntakeData } from '@/types/onboarding-templates'
 import type { DealState, InvoiceState, ContractState } from '@/types/onboarding-wizard'
 import { calculateDealPricing, fmtCurrency } from '@/lib/utils/deal-pricing'
@@ -36,6 +36,48 @@ export default function CreateClientStep({
 }: CreateClientStepProps) {
   const router = useRouter()
   const pricing = calculateDealPricing(deal)
+  const [portalSendStatus, setPortalSendStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
+  const [portalSendError, setPortalSendError] = useState<string | null>(null)
+  const [portalUrl, setPortalUrl] = useState<string | null>(null)
+  const [copySuccess, setCopySuccess] = useState(false)
+
+  const handleSendPortal = useCallback(async () => {
+    if (!clientId) return
+    setPortalSendStatus('sending')
+    setPortalSendError(null)
+
+    try {
+      const res = await fetch('/api/admin/portal/send-invite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clientId }),
+      })
+      const data = await res.json()
+
+      if (!res.ok || !data.success) {
+        setPortalSendStatus('error')
+        setPortalSendError(data.error ?? 'Failed to send portal invite')
+        return
+      }
+
+      setPortalUrl(data.portalUrl ?? null)
+      setPortalSendStatus('sent')
+    } catch {
+      setPortalSendStatus('error')
+      setPortalSendError('Network error — please try again')
+    }
+  }, [clientId])
+
+  const handleCopyLink = useCallback(async () => {
+    if (!portalUrl) return
+    try {
+      await navigator.clipboard.writeText(portalUrl)
+      setCopySuccess(true)
+      setTimeout(() => setCopySuccess(false), 2000)
+    } catch {
+      // Clipboard not available
+    }
+  }, [portalUrl])
 
   const canCreate = parsedData?.company_name && parsedData?.primary_contact_email && parsedData?.packages_selected?.length
 
@@ -80,21 +122,90 @@ export default function CreateClientStep({
 
   if (creationStatus === 'complete' && clientId) {
     return (
-      <div className="text-center py-12">
-        <div className="mx-auto w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mb-4">
-          <Rocket className="h-8 w-8 text-blue-600" />
+      <div className="max-w-lg mx-auto space-y-5">
+        {/* Success header */}
+        <div className="text-center py-8">
+          <div className="mx-auto w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mb-4">
+            <Rocket className="h-8 w-8 text-blue-600" />
+          </div>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">Client Created</h2>
+          <p className="text-sm text-gray-500">
+            {parsedData?.company_name} is now in the pipeline. The automation pipeline is running.
+          </p>
         </div>
-        <h2 className="text-xl font-bold text-gray-900 mb-2">Client Created</h2>
-        <p className="text-sm text-gray-500 mb-6">
-          {parsedData?.company_name} is now in the pipeline. The automation pipeline is running.
-        </p>
-        <button
-          type="button"
-          onClick={() => router.push(`/admin/onboarding/${clientId}`)}
-          className="rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
-        >
-          View Client
-        </button>
+
+        {/* Send Client Portal section */}
+        <Card padding="sm">
+          <div className="px-5 py-4">
+            <h3 className="text-sm font-semibold text-gray-900 mb-3">Send Client Portal</h3>
+
+            <div className="rounded-lg bg-blue-50 border border-blue-200 px-4 py-3 mb-4 text-sm text-blue-800">
+              Send your client their onboarding portal so they can sign the contract, pay the invoice, and approve domains &amp; copy — all in one place.
+            </div>
+
+            {portalSendStatus === 'sent' && portalUrl ? (
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-sm text-green-700">
+                  <Check className="h-4 w-4 text-green-600 shrink-0" />
+                  Portal link sent to {parsedData?.primary_contact_email}
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    readOnly
+                    value={portalUrl}
+                    className="flex-1 rounded-md border border-gray-200 bg-gray-50 px-3 py-1.5 text-xs font-mono text-gray-600 outline-none"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleCopyLink}
+                    className="inline-flex items-center gap-1.5 rounded-md border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50 whitespace-nowrap"
+                  >
+                    <Copy className="h-3.5 w-3.5" />
+                    {copySuccess ? 'Copied!' : 'Copy Link'}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <>
+                {portalSendStatus === 'error' && portalSendError && (
+                  <div className="rounded-md bg-red-50 border border-red-200 px-3 py-2 text-xs text-red-700 mb-3">
+                    {portalSendError}
+                  </div>
+                )}
+                <button
+                  type="button"
+                  onClick={handleSendPortal}
+                  disabled={portalSendStatus === 'sending'}
+                  className="w-full rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  {portalSendStatus === 'sending' ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      <Mail className="h-4 w-4" />
+                      Send Portal Email
+                    </>
+                  )}
+                </button>
+              </>
+            )}
+          </div>
+        </Card>
+
+        {/* View client button */}
+        <div className="flex justify-center pb-4">
+          <button
+            type="button"
+            onClick={() => router.push(`/admin/onboarding/${clientId}`)}
+            className="rounded-lg border border-gray-200 bg-white px-6 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50"
+          >
+            View Client
+          </button>
+        </div>
       </div>
     )
   }

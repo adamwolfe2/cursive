@@ -227,6 +227,10 @@ export interface OnboardingClient {
   rabbitsign_status: string | null
   contract_signed_at: string | null
 
+  // Portal
+  portal_invite_sent_at: string | null
+  portal_last_visited_at: string | null
+
   // Automation outputs
   enriched_icp_brief: EnrichedICPBrief | null
   enrichment_status: 'pending' | 'processing' | 'complete' | 'failed'
@@ -271,6 +275,8 @@ export type OnboardingClientInsert = Omit<
   | 'rabbitsign_folder_id'
   | 'rabbitsign_status'
   | 'contract_signed_at'
+  | 'portal_invite_sent_at'
+  | 'portal_last_visited_at'
 >
 
 // ---------------------------------------------------------------------------

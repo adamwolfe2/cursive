@@ -7,6 +7,7 @@ import type {
   FulfillmentChecklist,
 } from '@/types/onboarding'
 import ClientDetailTabs from './ClientDetailTabs'
+import PortalLinkSection from './PortalLinkSection'
 import { generateStatusToken } from '@/lib/utils/status-token'
 import { ArrowLeft, ExternalLink } from 'lucide-react'
 
@@ -84,6 +85,15 @@ export default async function OnboardingClientDetailPage({ params }: PageProps) 
             Client Status Page
           </a>
         </div>
+      </div>
+
+      {/* Portal Link */}
+      <div className="mb-6">
+        <PortalLinkSection
+          clientId={client.id}
+          initialPortalInviteSentAt={client.portal_invite_sent_at ?? null}
+          primaryContactEmail={client.primary_contact_email}
+        />
       </div>
 
       {/* Tabs Content */}

@@ -7,6 +7,7 @@ import { createCheckoutSession } from '@/lib/stripe/client'
 import { createClient } from '@/lib/supabase/server'
 import { handleApiError, unauthorized, badRequest } from '@/lib/utils/api-error-handler'
 import { withRateLimit, getRequestIdentifier } from '@/lib/middleware/rate-limiter'
+import { getSubscriptionLink } from '@/lib/stripe/payment-links'
 import { z } from 'zod'
 
 const checkoutSchema = z.object({
@@ -61,17 +62,12 @@ export async function POST(request: NextRequest) {
 
     if (!finalPriceId) {
       // Yearly Stripe price ID is not yet configured in the database or request.
-      // Monthly billing is fully supported. Yearly billing is coming soon.
-      if (billingPeriod === 'yearly') {
-        return NextResponse.json(
-          { error: 'Annual billing is coming soon. Monthly billing is available now — select Monthly to continue.' },
-          { status: 400 }
-        )
-      }
-      return NextResponse.json(
-        { error: 'This plan is not currently available. Please contact support.' },
-        { status: 500 }
-      )
+      // Fall back to the Stripe Payment Link for the requested plan/period so
+      // the user is never left with a dead error.
+      const resolvedPlan = (planName as 'starter' | 'pro' | 'enterprise') ?? 'pro'
+      const cycle = billingPeriod === 'yearly' ? 'annual' : 'monthly'
+      const fallbackUrl = getSubscriptionLink(resolvedPlan, cycle)
+      return NextResponse.json({ success: true, url: fallbackUrl })
     }
 
     // 4. Check if user already has an active subscription

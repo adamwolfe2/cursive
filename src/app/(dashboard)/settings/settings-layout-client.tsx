@@ -12,6 +12,7 @@ const settingsTabs = [
   { label: 'Team', href: '/settings/team' },
   { label: 'Security', href: '/settings/security' },
   { label: 'Notifications', href: '/settings/notifications' },
+  { label: 'Email Accounts', href: '/settings/email-accounts' },
   { label: 'Integrations', href: '/settings/integrations' },
   { label: 'Pixel', href: '/settings/pixel' },
   { label: 'API Keys', href: '/settings/api-keys' },

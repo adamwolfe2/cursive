@@ -73,7 +73,7 @@ export function AffiliateSidebar({ affiliate }: { affiliate: Affiliate }) {
           Back to Dashboard
         </Link>
         <Link
-          href="/api/auth/signout"
+          href="/auth/signout"
           className="flex items-center gap-2.5 px-3 py-2 text-[12px] text-zinc-400 hover:text-zinc-600 rounded-lg hover:bg-zinc-50 transition-colors"
         >
           <LogOut size={13} />

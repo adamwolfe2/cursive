@@ -21,8 +21,8 @@ export async function GET(request: NextRequest) {
     const supabase = await createClient()
     const workspaceId = user.workspaceId
 
-    // Run all five checklist queries in parallel
-    const [pixelResult, targetingResult, creditResult, leadResult, crmResult] =
+    // Run all six checklist queries in parallel
+    const [pixelResult, targetingResult, creditResult, leadResult, crmResult, emailAccountResult] =
       await Promise.all([
         // 1. Install tracking pixel — check audiencelab_pixels
         supabase
@@ -56,6 +56,12 @@ export async function GET(request: NextRequest) {
           .select('id', { count: 'exact', head: true })
           .eq('workspace_id', workspaceId)
           .in('status', ['active', 'connected']),
+
+        // 6. Connect email account — check email_accounts
+        supabase
+          .from('email_accounts')
+          .select('id', { count: 'exact', head: true })
+          .eq('workspace_id', workspaceId),
       ])
 
     // Evaluate completion state for each step
@@ -72,6 +78,8 @@ export async function GET(request: NextRequest) {
     const hasLead = (leadResult.count ?? 0) > 0
 
     const hasCrm = (crmResult.count ?? 0) > 0
+
+    const hasEmailAccount = (emailAccountResult.count ?? 0) > 0
 
     const items: ChecklistItem[] = [
       {
@@ -108,6 +116,13 @@ export async function GET(request: NextRequest) {
         description: 'Sync leads directly to HubSpot, Salesforce, or another CRM.',
         completed: hasCrm,
         href: '/crm',
+      },
+      {
+        id: 'connect_email_account',
+        title: 'Connect Email Account',
+        description: 'Connect your email sending account to enable outreach sequences.',
+        completed: hasEmailAccount,
+        href: '/settings/email-accounts',
       },
     ]
 

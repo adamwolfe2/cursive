@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { Badge } from '@/components/ui/badge'
+import { cn } from '@/lib/design-system'
 import { PACKAGES } from '@/types/onboarding'
 import type { OnboardingClient, PackageSlug } from '@/types/onboarding'
 
@@ -51,7 +52,7 @@ export default function ClientCard({ client }: ClientCardProps) {
         {client.primary_contact_name}
       </p>
 
-      <div className="flex flex-wrap gap-1">
+      <div className="flex flex-wrap gap-1 mb-2.5">
         {visiblePackages.map((pkg) => (
           <span
             key={pkg}
@@ -66,6 +67,79 @@ export default function ClientCard({ client }: ClientCardProps) {
           </Badge>
         )}
       </div>
+
+      {/* Portal not sent warning */}
+      {!client.portal_invite_sent_at && (
+        <div className="mb-2">
+          <span className="inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-medium bg-orange-100 text-orange-700">
+            Portal not sent
+          </span>
+        </div>
+      )}
+
+      {/* Completion indicators */}
+      <div className="flex items-center gap-1.5 pt-1.5 border-t border-border/30">
+        <PortalDot
+          color={getContractColor(client.rabbitsign_status)}
+          label={`Contract: ${client.rabbitsign_status ?? 'pending'}`}
+          emoji="📄"
+        />
+        <PortalDot
+          color={getInvoiceColor(client.stripe_invoice_status)}
+          label={`Invoice: ${client.stripe_invoice_status ?? 'draft'}`}
+          emoji="💳"
+        />
+        <PortalDot
+          color={client.sender_identity_approval ? 'bg-green-500' : 'bg-gray-300'}
+          label={`Domains: ${client.sender_identity_approval ? 'approved' : 'pending'}`}
+          emoji="🌐"
+        />
+        <PortalDot
+          color={getCopyColor(client.copy_approval_status)}
+          label={`Copy: ${client.copy_approval_status ?? 'not started'}`}
+          emoji="✉️"
+        />
+      </div>
+    </div>
+  )
+}
+
+function getContractColor(status: string | null): string {
+  if (status === 'signed' || status === 'completed') return 'bg-green-500'
+  if (status === 'sent') return 'bg-yellow-400'
+  return 'bg-gray-300'
+}
+
+function getInvoiceColor(status: string | null): string {
+  if (status === 'paid') return 'bg-green-500'
+  if (status === 'open' || status === 'sent') return 'bg-yellow-400'
+  return 'bg-gray-300'
+}
+
+function getCopyColor(status: string | null): string {
+  if (status === 'approved') return 'bg-green-500'
+  if (status === 'pending' || status === 'needs_edits' || status === 'regenerating') return 'bg-yellow-400'
+  return 'bg-gray-300'
+}
+
+interface PortalDotProps {
+  color: string
+  label: string
+  emoji: string
+}
+
+function PortalDot({ color, label, emoji }: PortalDotProps) {
+  return (
+    <div
+      className="relative group flex items-center gap-0.5"
+      title={label}
+    >
+      <span className="text-[9px] leading-none">{emoji}</span>
+      <span className={cn('h-2 w-2 rounded-sm', color)} />
+      {/* Tooltip */}
+      <span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:block z-50 whitespace-nowrap rounded bg-gray-900 px-1.5 py-0.5 text-[10px] text-white shadow">
+        {label}
+      </span>
     </div>
   )
 }

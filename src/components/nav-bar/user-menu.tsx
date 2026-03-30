@@ -89,7 +89,7 @@ export function UserMenu() {
     },
     {
       label: 'Workspace Settings',
-      href: '/settings/workspace',
+      href: '/settings/client-profile',
       icon: Building2,
       show: user.role === 'owner' || user.role === 'admin',
     },

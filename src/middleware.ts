@@ -167,6 +167,9 @@ export async function middleware(req: NextRequest) {
       pathname.startsWith('/api/pixel/provision-demo') ||
       pathname.startsWith('/api/public/segment-search') ||
       pathname.startsWith('/audience-intelligence') ||
+      // Client portal — token-based auth, no user session required
+      pathname.startsWith('/portal/') ||
+      pathname.startsWith('/api/portal/') ||
       pathname === '/' ||
       pathname.startsWith('/_next') ||
       pathname.startsWith('/api/webhooks') ||

@@ -38,7 +38,15 @@ export default async function PortalPage() {
     return <NoOnboardingFound />
   }
 
-  return <PortalDashboard client={client} />
+  return (
+    <>
+      <div className="mb-6 rounded-lg border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-800">
+        Looking for your onboarding portal?{' '}
+        <span className="font-medium">Use the link in your invitation email</span> — no account required.
+      </div>
+      <PortalDashboard client={client} />
+    </>
+  )
 }
 
 function NoOnboardingFound() {

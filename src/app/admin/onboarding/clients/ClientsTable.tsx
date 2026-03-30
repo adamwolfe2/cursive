@@ -146,13 +146,14 @@ export default function ClientsTable({
               <TableHead>Status</TableHead>
               <TableHead>Enrichment</TableHead>
               <TableHead>Copy</TableHead>
+              <TableHead>Portal</TableHead>
               <TableHead>Created</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {clients.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="text-center py-8 text-sm text-muted-foreground">
+                <TableCell colSpan={9} className="text-center py-8 text-sm text-muted-foreground">
                   No clients found.
                 </TableCell>
               </TableRow>
@@ -206,6 +207,12 @@ export default function ClientsTable({
                     </Badge>
                   </TableCell>
                   <TableCell>
+                    <PortalStatusCell
+                      sentAt={client.portal_invite_sent_at ?? null}
+                      visitedAt={client.portal_last_visited_at ?? null}
+                    />
+                  </TableCell>
+                  <TableCell>
                     <span className="text-xs text-muted-foreground whitespace-nowrap">
                       {new Date(client.created_at).toLocaleDateString('en-US', {
                         month: 'short',
@@ -250,5 +257,43 @@ export default function ClientsTable({
         </div>
       )}
     </div>
+  )
+}
+
+interface PortalStatusCellProps {
+  sentAt: string | null
+  visitedAt: string | null
+}
+
+function PortalStatusCell({ sentAt, visitedAt }: PortalStatusCellProps) {
+  if (!sentAt) {
+    return (
+      <span className="inline-flex items-center rounded px-2 py-0.5 text-[11px] font-medium bg-orange-100 text-orange-700 whitespace-nowrap">
+        Not sent
+      </span>
+    )
+  }
+
+  const sentDate = new Date(sentAt).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+  })
+
+  if (visitedAt) {
+    const visitedDate = new Date(visitedAt).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+    })
+    return (
+      <span className="inline-flex items-center rounded px-2 py-0.5 text-[11px] font-medium bg-green-100 text-green-700 whitespace-nowrap">
+        Viewed {visitedDate}
+      </span>
+    )
+  }
+
+  return (
+    <span className="inline-flex items-center rounded px-2 py-0.5 text-[11px] font-medium bg-gray-100 text-gray-600 whitespace-nowrap">
+      Sent {sentDate}
+    </span>
   )
 }

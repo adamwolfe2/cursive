@@ -20,7 +20,7 @@ import Link from 'next/link'
 import {
   Users, ArrowRight,
   Star, Target, CheckCircle2, Circle,
-  Eye, Rocket, Activity,
+  Eye, Rocket, Activity, Calendar,
 } from 'lucide-react'
 import { sanitizeName, sanitizeCompanyName, sanitizeText } from '@/lib/utils/sanitize-text'
 import { DashboardAnimationWrapper, AnimatedSection } from '@/components/dashboard/dashboard-animation-wrapper'
@@ -666,12 +666,19 @@ export default async function DashboardPage({
   const workspaceId = userProfile.workspace_id
 
   // ── Fast phase: data needed for above-the-fold content ──
+  const thisMonthStart = new Date()
+  thisMonthStart.setUTCDate(1)
+  thisMonthStart.setUTCHours(0, 0, 0, 0)
+  const thisMonthStartIso = thisMonthStart.toISOString()
+
   const [
     statsData,
     pixelResult,
     userTargetingResult,
     creditsData,
     activationResult,
+    meetingsThisMonthResult,
+    meetingsAllTimeResult,
   ] = await Promise.all([
     // Stats: 2 s outer timeout (inner refresh still runs up to 4 s, but we don't wait)
     Promise.race([
@@ -699,6 +706,17 @@ export default async function DashboardPage({
       .from('custom_audience_requests')
       .select('id', { count: 'exact', head: true })
       .eq('workspace_id', workspaceId),
+    // Meetings booked this calendar month
+    supabase
+      .from('cal_bookings')
+      .select('id', { count: 'exact', head: true })
+      .eq('workspace_id', workspaceId)
+      .gte('created_at', thisMonthStartIso),
+    // Meetings booked all time
+    supabase
+      .from('cal_bookings')
+      .select('id', { count: 'exact', head: true })
+      .eq('workspace_id', workspaceId),
   ])
 
   // Derived state for above-fold rendering
@@ -724,6 +742,9 @@ export default async function DashboardPage({
   const creditsRemaining = creditsData?.remaining ?? 0
   const creditLimit      = creditsData?.limit ?? 3
   const isFree           = !userProfile.plan || userProfile.plan === 'free'
+
+  const meetingsThisMonth = meetingsThisMonthResult.count ?? 0
+  const meetingsAllTime   = meetingsAllTimeResult.count ?? 0
   const dailyLimit       = userProfile.daily_lead_limit ?? 10
 
   const outboundUpgradeTiers = ['outbound', 'pipeline', 'venture_studio']
@@ -892,9 +913,9 @@ export default async function DashboardPage({
           return null
         })()}
 
-        {/* 4 stat cards — above the fold, rendered from fast-phase data */}
+        {/* Stat cards — above the fold, rendered from fast-phase data */}
         <AnimatedSection delay={0.05}>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-5 gap-6">
             {/* Today's leads */}
             <Link href="/leads" className="group">
               <div className="rounded-xl border border-border bg-card p-5 hover:border-primary/30 transition-all h-full">
@@ -930,6 +951,16 @@ export default async function DashboardPage({
                 <p className="text-sm text-muted-foreground mt-1">{enrichedCount} enriched</p>
               </div>
             </Link>
+
+            {/* Meetings Booked */}
+            <div className="rounded-xl border border-border bg-card p-5 h-full">
+              <div className="flex items-center gap-1.5">
+                <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">Meetings Booked</span>
+              </div>
+              <div className="text-3xl font-semibold text-foreground mt-2">{meetingsThisMonth}</div>
+              <p className="text-sm text-muted-foreground mt-1">{meetingsAllTime} all time</p>
+            </div>
           </div>
         </AnimatedSection>
 

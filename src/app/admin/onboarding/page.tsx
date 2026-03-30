@@ -11,7 +11,7 @@ export default async function OnboardingPipelinePage() {
 
   const { data: clients, error } = await supabase
     .from('onboarding_clients')
-    .select('id, company_name, primary_contact_name, primary_contact_email, packages_selected, status, created_at, updated_at, setup_fee, recurring_fee, enriched_icp_brief, target_industries, target_titles, pain_points')
+    .select('id, company_name, primary_contact_name, primary_contact_email, packages_selected, status, created_at, updated_at, setup_fee, recurring_fee, enriched_icp_brief, target_industries, target_titles, pain_points, portal_invite_sent_at, portal_last_visited_at, rabbitsign_status, stripe_invoice_status, sender_identity_approval, copy_approval_status, enrichment_status, copy_generation_status')
     .order('created_at', { ascending: true })
 
   if (error) {
