@@ -4,6 +4,7 @@
  */
 
 import { createClient } from '@/lib/supabase/server'
+import { sanitizeSearchTerm } from '@/lib/utils/sanitize-search'
 
 export interface Conversation {
   id: string
@@ -163,8 +164,7 @@ export async function getConversations(
   }
 
   if (filters.search) {
-    // Escape SQL wildcard chars so literal % and _ don't act as wildcards
-    const escapedSearch = filters.search.replace(/[%_\\]/g, '\\$&')
+    const escapedSearch = sanitizeSearchTerm(filters.search)
     query = query.ilike('subject_normalized', `%${escapedSearch}%`)
   }
 

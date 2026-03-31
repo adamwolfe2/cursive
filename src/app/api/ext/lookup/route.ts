@@ -5,6 +5,7 @@ import { z } from 'zod'
 import { authenticateExtension, extAuthErrorResponse } from '@/lib/middleware/ext-auth'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { checkWorkspaceRateLimit } from '@/lib/middleware/rate-limiter'
+import { sanitizeSearchTerm } from '@/lib/utils/sanitize-search'
 
 const requestSchema = z.object({
   first_name: z.string().max(100).optional().default(''),
@@ -121,9 +122,9 @@ export async function POST(req: NextRequest) {
         if (email) {
           query = query.eq('email', email)
         } else {
-          query = query.ilike('first_name', first_name).ilike('last_name', last_name)
+          query = query.ilike('first_name', sanitizeSearchTerm(first_name)).ilike('last_name', sanitizeSearchTerm(last_name))
           if (company) {
-            query = query.ilike('company_name', `%${company}%`)
+            query = query.ilike('company_name', `%${sanitizeSearchTerm(company)}%`)
           }
         }
 

@@ -3,6 +3,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { sanitizeSearchTerm } from '@/lib/utils/sanitize-search'
 
 export interface PeopleSearchFilters {
   company?: string
@@ -130,16 +131,14 @@ export class PeopleSearchRepository {
 
     // Apply filters if provided
     if (filters) {
-      // Escape SQL wildcard chars so literal % and _ in filter values don't act as wildcards
-      const esc = (s: string) => s.replace(/[%_\\]/g, '\\$&')
       if (filters.company) {
-        query = query.ilike('person_data->>company_name', `%${esc(filters.company)}%`)
+        query = query.ilike('person_data->>company_name', `%${sanitizeSearchTerm(filters.company)}%`)
       }
       if (filters.job_title) {
-        query = query.ilike('person_data->>title', `%${esc(filters.job_title)}%`)
+        query = query.ilike('person_data->>title', `%${sanitizeSearchTerm(filters.job_title)}%`)
       }
       if (filters.location) {
-        query = query.ilike('person_data->>location', `%${esc(filters.location)}%`)
+        query = query.ilike('person_data->>location', `%${sanitizeSearchTerm(filters.location)}%`)
       }
     }
 
