@@ -5,9 +5,9 @@
  * Full Cal.com booking history with status + signed-up indicator
  */
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { createClient } from '@/lib/supabase/client'
+import { useAdminAuth } from '@/hooks/use-admin-auth'
 import Link from 'next/link'
 import { Calendar, CheckCircle2, XCircle, Clock, AlertTriangle, Copy, Check, ChevronLeft, Search } from 'lucide-react'
 import { useToast } from '@/lib/hooks/use-toast'
@@ -73,29 +73,12 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 export default function CallsPage() {
-  const [authChecked, setAuthChecked] = useState(false)
-  const [isAdmin, setIsAdmin] = useState(false)
+  const { isAdmin, authChecked } = useAdminAuth()
   const [statusFilter, setStatusFilter] = useState('')
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
-  const supabase = createClient()
   const queryClient = useQueryClient()
   const { toast } = useToast()
-
-  useEffect(() => {
-    const checkAdmin = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) { window.location.href = '/login'; return }
-      const { data: userData } = await supabase
-        .from('users').select('role').eq('auth_user_id', user.id).maybeSingle() as { data: { role: string } | null }
-      if (!userData || (userData.role !== 'admin' && userData.role !== 'owner')) {
-        window.location.href = '/dashboard'; return
-      }
-      setIsAdmin(true)
-      setAuthChecked(true)
-    }
-    checkAdmin().catch(() => setAuthChecked(true))
-  }, [supabase])
 
   const { data, isLoading } = useQuery<CallsData>({
     queryKey: ['admin', 'ops', 'calls', statusFilter, page],

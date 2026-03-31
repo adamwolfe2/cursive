@@ -9,7 +9,7 @@
  */
 
 import { useState, useEffect } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { useAdminAuth } from '@/hooks/use-admin-auth'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 // ============================================
@@ -129,34 +129,8 @@ export default function AdminEmailStatsPage() {
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
-  const [isAdmin, setIsAdmin] = useState(false)
-  const [authChecked, setAuthChecked] = useState(false)
+  const { isAdmin, authChecked } = useAdminAuth()
   const [error, setError] = useState<string | null>(null)
-
-  const supabase = createClient()
-
-  // Admin role check — matches pattern used in other admin pages
-  useEffect(() => {
-    const checkAdmin = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
-        window.location.href = '/login'
-        return
-      }
-      const { data: userData } = await supabase
-        .from('users')
-        .select('role')
-        .eq('auth_user_id', user.id)
-        .maybeSingle() as { data: { role: string } | null }
-      if (!userData || (userData.role !== 'admin' && userData.role !== 'owner')) {
-        window.location.href = '/dashboard'
-        return
-      }
-      setIsAdmin(true)
-      setAuthChecked(true)
-    }
-    checkAdmin().catch(() => setAuthChecked(true))
-  }, [supabase])
 
   async function fetchStats(isRefresh = false) {
     if (isRefresh) setRefreshing(true)

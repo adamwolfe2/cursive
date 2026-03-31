@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { useAdminAuth } from '@/hooks/use-admin-auth'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
 import { useToast } from '@/lib/hooks/use-toast'
@@ -61,8 +61,7 @@ const FILTERS = ['all', 'pending', 'completed', 'rejected'] as const
 
 export default function AdminPayoutsPage() {
   const { toast } = useToast()
-  const [isAdmin, setIsAdmin] = useState(false)
-  const [authChecked, setAuthChecked] = useState(false)
+  const { isAdmin, authChecked } = useAdminAuth()
   const [payouts, setPayouts] = useState<Payout[]>([])
   const [totals, setTotals] = useState<PayoutTotals>({
     pending_amount: 0,
@@ -76,23 +75,6 @@ export default function AdminPayoutsPage() {
   const [confirmApproveId, setConfirmApproveId] = useState<string | null>(null)
   const [rejectDialogOpen, setRejectDialogOpen] = useState<string | null>(null)
   const [rejectReason, setRejectReason] = useState('')
-
-  const supabase = createClient()
-
-  useEffect(() => {
-    const checkAdmin = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) { window.location.href = '/login'; return }
-      const { data: userData } = await supabase
-        .from('users').select('role').eq('auth_user_id', user.id).maybeSingle() as { data: { role: string } | null }
-      if (!userData || (userData.role !== 'admin' && userData.role !== 'owner')) {
-        window.location.href = '/dashboard'; return
-      }
-      setIsAdmin(true)
-      setAuthChecked(true)
-    }
-    checkAdmin().catch(() => setAuthChecked(true))
-  }, [supabase])
 
   const fetchPayouts = useCallback(async () => {
     setLoading(true)

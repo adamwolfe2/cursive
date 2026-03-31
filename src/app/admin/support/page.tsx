@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { useAdminAuth } from '@/hooks/use-admin-auth'
 import { useToast } from '@/lib/hooks/use-toast'
 import { MessageSquare, Mail, Clock, CheckCircle, Archive, AlertCircle } from 'lucide-react'
 import { safeError } from '@/lib/utils/log-sanitizer'
@@ -25,33 +25,8 @@ export default function AdminSupportPage() {
   const [loading, setLoading] = useState(true)
   const [selectedMessage, setSelectedMessage] = useState<SupportMessage | null>(null)
   const [filter, setFilter] = useState<string>('all')
-  const [isAdmin, setIsAdmin] = useState(false)
-  const [authChecked, setAuthChecked] = useState(false)
+  const { isAdmin, authChecked } = useAdminAuth()
   const { toast } = useToast()
-  const supabase = createClient()
-
-  // Admin role check - prevent non-admins from accessing
-  useEffect(() => {
-    const checkAdmin = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
-        window.location.href = '/login'
-        return
-      }
-      const { data: userData } = await supabase
-        .from('users')
-        .select('role')
-        .eq('auth_user_id', user.id)
-        .maybeSingle() as { data: { role: string } | null }
-      if (!userData || (userData.role !== 'admin' && userData.role !== 'owner')) {
-        window.location.href = '/dashboard'
-        return
-      }
-      setIsAdmin(true)
-      setAuthChecked(true)
-    }
-    checkAdmin().catch(() => setAuthChecked(true))
-  }, [supabase])
 
   useEffect(() => {
     if (authChecked && isAdmin) fetchMessages()

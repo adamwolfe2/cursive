@@ -7,6 +7,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { useAdminAuth } from '@/hooks/use-admin-auth'
 import { Upload, RefreshCw, Search, X } from 'lucide-react'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { Button } from '@/components/ui/button'
@@ -79,8 +80,7 @@ const BATCH = 200
 
 export default function SegmentCatalogPage() {
   const supabase = createClient()
-  const [authChecked, setAuthChecked] = useState(false)
-  const [isAdmin, setIsAdmin] = useState(false)
+  const { isAdmin, authChecked } = useAdminAuth()
 
   // Stats + segments
   const [stats, setStats] = useState<Stats | null>(null)
@@ -102,21 +102,6 @@ export default function SegmentCatalogPage() {
 
   // Selected segment detail
   const [selected, setSelected] = useState<Segment | null>(null)
-
-  useEffect(() => {
-    const check = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) { window.location.href = '/login'; return }
-      const { data: u } = await supabase.from('users').select('role')
-        .eq('auth_user_id', user.id).maybeSingle() as { data: { role: string } | null }
-      if (!u || (u.role !== 'admin' && u.role !== 'owner')) {
-        window.location.href = '/dashboard'; return
-      }
-      setIsAdmin(true)
-      setAuthChecked(true)
-    }
-    check()
-  }, [supabase])
 
   useEffect(() => {
     if (authChecked && isAdmin) {

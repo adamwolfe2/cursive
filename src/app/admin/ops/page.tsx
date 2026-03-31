@@ -5,10 +5,10 @@
  * Today's KPIs + live activity feed + quick links to Pipeline, Visitors, Calls
  */
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/client'
+import { useAdminAuth } from '@/hooks/use-admin-auth'
 import {
   Calendar, Users, AlertTriangle, CheckCircle2, Activity,
   ArrowRight, TrendingUp, Kanban, Eye,
@@ -94,27 +94,7 @@ function QuickLink({
 }
 
 export default function OpsHubPage() {
-  const [isAdmin, setIsAdmin] = useState(false)
-  const [authChecked, setAuthChecked] = useState(false)
-  const supabase = createClient()
-
-  useEffect(() => {
-    const checkAdmin = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) { window.location.href = '/login'; return }
-      const { data: userData } = await supabase
-        .from('users')
-        .select('role')
-        .eq('auth_user_id', user.id)
-        .maybeSingle() as { data: { role: string } | null }
-      if (!userData || (userData.role !== 'admin' && userData.role !== 'owner')) {
-        window.location.href = '/dashboard'; return
-      }
-      setIsAdmin(true)
-      setAuthChecked(true)
-    }
-    checkAdmin().catch(() => setAuthChecked(true))
-  }, [supabase])
+  const { isAdmin, authChecked } = useAdminAuth()
 
   const { data, isLoading } = useQuery<SummaryData>({
     queryKey: ['admin', 'ops', 'summary'],
