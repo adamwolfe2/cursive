@@ -11,6 +11,7 @@ import { fastAuth } from '@/lib/auth/fast-auth'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { hmacSha256Hex } from '@/lib/utils/crypto'
+import { isBlockedHost } from '@/lib/utils/ssrf-guard'
 import { z } from 'zod'
 
 // Request validation schemas
@@ -173,6 +174,14 @@ export async function PUT(req: NextRequest) {
     }
 
     const { url } = validation.data
+
+    // SSRF protection: block internal/private network targets
+    if (isBlockedHost(url)) {
+      return NextResponse.json(
+        { error: 'Webhook URL targets a blocked internal address' },
+        { status: 400 }
+      )
+    }
 
     // Get workspace webhook secret
     const { data: workspace } = await supabase
