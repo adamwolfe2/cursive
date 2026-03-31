@@ -12,6 +12,7 @@ import type {
   GeneratedVariant,
   ExperimentPlan,
 } from '@/types/autoresearch'
+import { checkSpendLimit, recordSpend } from '@/lib/services/api-spend-guard'
 import {
   FOUR_STEP_FRAMEWORK,
   PSYCHOLOGICAL_PRINCIPLES,
@@ -391,6 +392,8 @@ export async function generateExperimentPlan(params: {
   const clampedCount = Math.min(Math.max(variantCount, 1), 3)
   const client = getAnthropicClient()
 
+  await checkSpendLimit()
+
   const response = await client.messages.create({
     model: MODEL,
     max_tokens: MAX_TOKENS,
@@ -407,6 +410,12 @@ export async function generateExperimentPlan(params: {
       },
     ],
   })
+
+  // Track spend from this call
+  if (response.usage) {
+    const cost = (response.usage.input_tokens * 3.00 + response.usage.output_tokens * 15.00) / 1_000_000
+    recordSpend(cost)
+  }
 
   const textBlock = response.content.find((block) => block.type === 'text')
   if (!textBlock || textBlock.type !== 'text') {

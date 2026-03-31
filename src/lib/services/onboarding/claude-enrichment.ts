@@ -2,6 +2,7 @@
 // Uses Claude to generate an enriched ICP brief from client onboarding data
 
 import type { OnboardingClient, EnrichedICPBrief } from '@/types/onboarding'
+import { checkSpendLimit, recordSpend } from '@/lib/services/api-spend-guard'
 
 const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages'
 const MODEL = 'claude-sonnet-4-20250514'
@@ -183,6 +184,8 @@ export async function enrichClientICP(client: OnboardingClient): Promise<Enriche
     throw new Error('ANTHROPIC_API_KEY is not configured')
   }
 
+  await checkSpendLimit()
+
   const response = await fetch(ANTHROPIC_API_URL, {
     method: 'POST',
     headers: {
@@ -211,6 +214,12 @@ export async function enrichClientICP(client: OnboardingClient): Promise<Enriche
   }
 
   const result = await response.json()
+
+  // Track spend from enrichment call
+  if (result.usage) {
+    const cost = (result.usage.input_tokens * 3.00 + result.usage.output_tokens * 15.00) / 1_000_000
+    recordSpend(cost)
+  }
 
   // Validate response structure
   if (!result.content || !Array.isArray(result.content) || result.content.length === 0) {

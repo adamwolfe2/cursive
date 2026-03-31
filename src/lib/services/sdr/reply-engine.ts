@@ -24,6 +24,7 @@ import {
   LLM_ISM_RED_FLAGS,
   FOLLOW_UP_RULES,
 } from '../autoresearch/cold-email-knowledge'
+import { checkSpendLimit, recordSpend } from '@/lib/services/api-spend-guard'
 import {
   extractKeywords,
   detectSchedulingIntent,
@@ -345,12 +346,22 @@ async function callClaude(
 ): Promise<GeneratedReply> {
   const client = getAnthropicClient()
 
+  // Check daily spend cap before making a paid API call
+  await checkSpendLimit()
+
   try {
     const response = await client.messages.create({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 768,
       messages: [{ role: 'user', content: prompt }],
     })
+
+    // Track spend from this call
+    const usage = response.usage
+    if (usage) {
+      const cost = (usage.input_tokens * 0.80 + usage.output_tokens * 4.00) / 1_000_000
+      recordSpend(cost)
+    }
 
     if (!response.content || response.content.length === 0 || response.content[0].type !== 'text') {
       return buildFallbackReply(context)

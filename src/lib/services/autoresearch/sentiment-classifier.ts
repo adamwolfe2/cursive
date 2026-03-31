@@ -4,6 +4,7 @@
 
 import Anthropic from '@anthropic-ai/sdk'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { checkSpendLimit, recordSpend } from '@/lib/services/api-spend-guard'
 import type { AutoresearchSentiment } from '@/types/autoresearch'
 
 // ---------------------------------------------------------------------------
@@ -154,6 +155,8 @@ async function classifyWithClaude(
 BODY:
 ${replyBody.substring(0, 1500)}`
 
+  await checkSpendLimit()
+
   const response = await client.messages.create({
     model: 'claude-haiku-4-5-20251001',
     max_tokens: 256,
@@ -161,6 +164,11 @@ ${replyBody.substring(0, 1500)}`
       { role: 'user', content: `${CLASSIFICATION_PROMPT}\n\n${userPrompt}` },
     ],
   })
+
+  if (response.usage) {
+    const cost = (response.usage.input_tokens * 0.80 + response.usage.output_tokens * 4.00) / 1_000_000
+    recordSpend(cost)
+  }
 
   if (!response.content || response.content.length === 0 || response.content[0].type !== 'text') {
     throw new Error('Empty or invalid Claude response')
