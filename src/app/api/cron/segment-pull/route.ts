@@ -235,14 +235,24 @@ export async function GET(request: NextRequest) {
         .is('assigned_user_id', null)
 
       if (newLeads?.length) {
+        // Batch user_targeting lookup — one query per unique workspace instead of one per lead
+        const uniqueWorkspaceIds = [...new Set(newLeads.map((l) => l.workspace_id).filter(Boolean))]
+        const { data: allTargetingUsers } = await supabase
+          .from('user_targeting')
+          .select('user_id, workspace_id, target_industries, target_states, target_cities, target_zips, daily_lead_cap, daily_lead_count, weekly_lead_cap, weekly_lead_count, monthly_lead_cap, monthly_lead_count')
+          .in('workspace_id', uniqueWorkspaceIds)
+          .eq('is_active', true)
+
+        const targetingByWorkspace = new Map<string, typeof allTargetingUsers>()
+        for (const tu of allTargetingUsers ?? []) {
+          const list = targetingByWorkspace.get(tu.workspace_id) ?? []
+          list.push(tu)
+          targetingByWorkspace.set(tu.workspace_id, list)
+        }
+
         let routed = 0
         for (const lead of newLeads!) {
-          const { data: targetingUsers } = await supabase
-            .from('user_targeting')
-            .select('user_id, target_industries, target_states, target_cities, target_zips, daily_lead_cap, daily_lead_count, weekly_lead_cap, weekly_lead_count, monthly_lead_cap, monthly_lead_count')
-            .eq('workspace_id', lead.workspace_id)
-            .eq('is_active', true)
-
+          const targetingUsers = targetingByWorkspace.get(lead.workspace_id)
           if (!targetingUsers?.length) continue
 
           const leadState = lead.state_code || lead.state
