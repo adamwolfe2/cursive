@@ -133,7 +133,7 @@ export async function middleware(req: NextRequest) {
     const subdomain = getSubdomain(hostname)
 
     // Admin-only routes
-    const isAdminRoute = pathname.startsWith('/admin')
+    const isAdminRoute = pathname.startsWith('/admin') || pathname.startsWith('/api/admin')
 
     // Partner-only routes (page routes and API routes)
     const isPartnerRoute = pathname.startsWith('/partner') || pathname.startsWith('/api/partner')
