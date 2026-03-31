@@ -25,6 +25,7 @@ interface FulfillmentChecklistProps {
 export default function FulfillmentChecklist({ checklist }: FulfillmentChecklistProps) {
   const [items, setItems] = useState<ChecklistItem[]>(checklist?.items ?? [])
   const [isPending, startTransition] = useTransition()
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   if (!checklist || items.length === 0) {
     return (
@@ -51,8 +52,6 @@ export default function FulfillmentChecklist({ checklist }: FulfillmentChecklist
     }
     return acc
   }, {})
-
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   function handleToggle(itemId: string, currentCompleted: boolean) {
     const newCompleted = !currentCompleted

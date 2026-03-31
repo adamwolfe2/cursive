@@ -7,8 +7,8 @@ export async function GET(request: Request) {
   const secret = request.headers.get('x-automation-secret')
   const expectedSecret = process.env.AUTOMATION_SECRET
 
-  // Allow without secret in development, require in production
-  if (process.env.NODE_ENV === 'production' && expectedSecret && secret !== expectedSecret) {
+  // In production, always require the secret (reject if unset or wrong)
+  if (process.env.NODE_ENV === 'production' && (!expectedSecret || secret !== expectedSecret)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 

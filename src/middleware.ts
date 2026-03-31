@@ -79,6 +79,8 @@ export async function middleware(req: NextRequest) {
       '/api/onboarding/icp-suggestions',
       '/api/pixel/provision-demo',
       '/api/public/segment-search',
+      // Automation endpoint — uses x-automation-secret, no user session needed
+      '/api/admin/run-enrichment',
     ]
     if (FULLY_PUBLIC_API_ROUTES.some(r => pathname.startsWith(r))) {
       // For OPTIONS (CORS preflight) — pass through immediately, no rate limit needed
@@ -174,9 +176,7 @@ export async function middleware(req: NextRequest) {
       pathname.startsWith('/_next') ||
       pathname.startsWith('/api/webhooks') ||
       pathname.startsWith('/api/cron') ||
-      pathname.startsWith('/api/inngest') ||
-      // Automation endpoints — use x-automation-secret header auth, no session required
-      pathname.startsWith('/api/admin/run-enrichment')
+      pathname.startsWith('/api/inngest')
 
     // API routes (except webhooks and cron) require authentication
     const isApiRoute = pathname.startsWith('/api') &&

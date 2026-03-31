@@ -4,7 +4,11 @@ import { NextResponse } from 'next/server'
 import { getInngest } from '@/inngest/client'
 
 export async function POST(request: Request) {
-  // Only allow with secret
+  // Test endpoint — never run in production
+  if (process.env.NODE_ENV === 'production') {
+    return NextResponse.json({ error: 'Not found' }, { status: 404 })
+  }
+
   const secret = request.headers.get('x-automation-secret')
   if (!process.env.AUTOMATION_SECRET || secret !== process.env.AUTOMATION_SECRET) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

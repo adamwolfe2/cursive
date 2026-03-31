@@ -7,6 +7,33 @@ const requestSchema = z.object({
   url: z.string().url(),
 })
 
+// Block internal/private network targets to prevent SSRF
+function isBlockedHost(urlStr: string): boolean {
+  try {
+    const { hostname, protocol } = new URL(urlStr)
+    // Only allow http/https
+    if (protocol !== 'http:' && protocol !== 'https:') return true
+    // Block localhost and common internal hostnames
+    if (hostname === 'localhost' || hostname === '0.0.0.0') return true
+    // Block IPv6 loopback
+    if (hostname === '::1' || hostname === '[::1]') return true
+    // Block IPv4 private ranges (checked as string prefix — fast enough for our use case)
+    const ipv4 = hostname.match(/^(\d+)\.(\d+)\.(\d+)\.(\d+)$/)
+    if (ipv4) {
+      const [, a, b] = ipv4.map(Number)
+      if (a === 10) return true                          // 10.0.0.0/8
+      if (a === 127) return true                         // 127.0.0.0/8 loopback
+      if (a === 172 && b >= 16 && b <= 31) return true   // 172.16.0.0/12
+      if (a === 192 && b === 168) return true            // 192.168.0.0/16
+      if (a === 169 && b === 254) return true            // 169.254.0.0/16 link-local / cloud metadata
+      if (a === 100 && b >= 64 && b <= 127) return true  // 100.64.0.0/10 shared address space
+    }
+    return false
+  } catch {
+    return true
+  }
+}
+
 /**
  * Lightweight website enrichment.
  * Fetches a URL, extracts meta tags and visible text, returns company info.
@@ -23,6 +50,10 @@ export async function POST(req: NextRequest) {
     }
 
     const { url } = parsed.data
+
+    if (isBlockedHost(url)) {
+      return NextResponse.json({ data: null })
+    }
 
     // Fetch the website with a 5s timeout
     const controller = new AbortController()

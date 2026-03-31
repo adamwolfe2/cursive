@@ -5,8 +5,9 @@ import { createHmac } from 'crypto'
  * Token format: base64url(clientId:hmacSignature)
  */
 export function generateStatusToken(clientId: string): string {
-  const secret = process.env.STATUS_PAGE_SECRET || process.env.AUTOMATION_SECRET || 'cursive-status-default'
-  const signature = createHmac('sha256', secret).update(clientId).digest('hex').slice(0, 16)
+  const secret = process.env.STATUS_PAGE_SECRET || process.env.AUTOMATION_SECRET
+  if (!secret) throw new Error('STATUS_PAGE_SECRET or AUTOMATION_SECRET must be set')
+  const signature = createHmac('sha256', secret).update(clientId).digest('hex')
   return Buffer.from(`${clientId}:${signature}`).toString('base64url')
 }
 
@@ -19,8 +20,9 @@ export function verifyStatusToken(token: string): string | null {
     const [clientId, signature] = decoded.split(':')
     if (!clientId || !signature) return null
 
-    const secret = process.env.STATUS_PAGE_SECRET || process.env.AUTOMATION_SECRET || 'cursive-status-default'
-    const expected = createHmac('sha256', secret).update(clientId).digest('hex').slice(0, 16)
+    const secret = process.env.STATUS_PAGE_SECRET || process.env.AUTOMATION_SECRET
+    if (!secret) return null
+    const expected = createHmac('sha256', secret).update(clientId).digest('hex')
 
     if (signature !== expected) return null
     return clientId
