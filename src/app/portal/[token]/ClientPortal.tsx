@@ -856,9 +856,9 @@ export function ClientPortal({
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Welcome, {firstName}!</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Welcome to Cursive</h1>
         <p className="mt-1 text-sm text-gray-500">
-          {client.company_name} — complete the steps below to launch your Cursive campaign.
+          Hi {firstName} — complete the steps below to launch your {client.company_name} campaign.
         </p>
       </div>
 
