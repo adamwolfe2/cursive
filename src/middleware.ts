@@ -174,7 +174,9 @@ export async function middleware(req: NextRequest) {
       pathname.startsWith('/_next') ||
       pathname.startsWith('/api/webhooks') ||
       pathname.startsWith('/api/cron') ||
-      pathname.startsWith('/api/inngest')
+      pathname.startsWith('/api/inngest') ||
+      // Automation endpoints — use x-automation-secret header auth, no session required
+      pathname.startsWith('/api/admin/run-enrichment')
 
     // API routes (except webhooks and cron) require authentication
     const isApiRoute = pathname.startsWith('/api') &&
