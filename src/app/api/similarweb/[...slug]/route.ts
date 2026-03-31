@@ -5,6 +5,19 @@ import { withRateLimit } from '@/lib/middleware/rate-limiter'
 const BASE_URL = 'https://api.similarweb.com/v1/website'
 const API_KEY = process.env.SIMILARWEB_API_KEY
 
+const SAFE_SLUG_SEGMENT = /^[a-zA-Z0-9._-]+$/
+
+function isValidSlug(segments: string[]): boolean {
+  return segments.every(
+    (segment) =>
+      segment.length > 0 &&
+      segment.length <= 200 &&
+      SAFE_SLUG_SEGMENT.test(segment) &&
+      !segment.includes('..') &&
+      !segment.startsWith('.')
+  )
+}
+
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ slug: string[] }> }
@@ -22,6 +35,14 @@ export async function GET(
   }
 
   const { slug } = await params
+
+  if (!slug.length || !isValidSlug(slug)) {
+    return NextResponse.json(
+      { error: 'Invalid path segments' },
+      { status: 400 }
+    )
+  }
+
   const path = slug.join('/')
   const searchParams = req.nextUrl.searchParams
   const apiParams = new URLSearchParams(searchParams)
