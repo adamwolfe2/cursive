@@ -1,11 +1,32 @@
 // Claude ICP Enrichment Service
 // Uses Claude to generate an enriched ICP brief from client onboarding data
 
+import Anthropic from '@anthropic-ai/sdk'
 import type { OnboardingClient, EnrichedICPBrief } from '@/types/onboarding'
 import { checkSpendLimit, recordSpend } from '@/lib/services/api-spend-guard'
 
-const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages'
 const MODEL = 'claude-sonnet-4-20250514'
+
+// Sonnet pricing: $3/M input, $15/M output
+const INPUT_COST_PER_TOKEN = 3.0 / 1_000_000
+const OUTPUT_COST_PER_TOKEN = 15.0 / 1_000_000
+
+// ---------------------------------------------------------------------------
+// Lazy-initialized Anthropic client
+// ---------------------------------------------------------------------------
+
+let anthropicClient: Anthropic | null = null
+
+function getAnthropicClient(): Anthropic {
+  if (!anthropicClient) {
+    const apiKey = process.env.ANTHROPIC_API_KEY
+    if (!apiKey) {
+      throw new Error('ANTHROPIC_API_KEY is not configured')
+    }
+    anthropicClient = new Anthropic({ apiKey })
+  }
+  return anthropicClient
+}
 
 const SYSTEM_PROMPT = `You are an expert B2B sales strategist and audience intelligence analyst at Cursive, a demand generation agency. Your job is to take a client's raw ICP (Ideal Customer Profile) intake form and produce a comprehensive, enriched ICP brief that the fulfillment team can use to build precise audience segments AND that the cold email copy engine can use to write high-converting outbound sequences.
 
@@ -179,60 +200,40 @@ function safeParseJSON<T>(raw: string, label: string): T {
  * Throws on API failure or invalid response.
  */
 export async function enrichClientICP(client: OnboardingClient): Promise<EnrichedICPBrief> {
-  const apiKey = process.env.ANTHROPIC_API_KEY
-  if (!apiKey) {
-    throw new Error('ANTHROPIC_API_KEY is not configured')
-  }
+  const anthropic = getAnthropicClient()
 
   await checkSpendLimit()
 
-  const response = await fetch(ANTHROPIC_API_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify({
-      model: MODEL,
-      max_tokens: 8192,
-      system: SYSTEM_PROMPT,
-      messages: [
-        {
-          role: 'user',
-          content: buildUserMessage(client),
-        },
-      ],
-    }),
+  const response = await anthropic.messages.create({
+    model: MODEL,
+    max_tokens: 8192,
+    system: SYSTEM_PROMPT,
+    messages: [
+      {
+        role: 'user',
+        content: buildUserMessage(client),
+      },
+    ],
   })
 
-  if (!response.ok) {
-    const errorBody = await response.text().catch(() => 'unknown error')
-    throw new Error(
-      `Claude API returned ${response.status}: ${errorBody.slice(0, 200)}`
-    )
-  }
-
-  const result = await response.json()
-
   // Track spend from enrichment call
-  if (result.usage) {
-    const cost = (result.usage.input_tokens * 3.00 + result.usage.output_tokens * 15.00) / 1_000_000
+  const usage = response.usage
+  if (usage) {
+    const cost = usage.input_tokens * INPUT_COST_PER_TOKEN + usage.output_tokens * OUTPUT_COST_PER_TOKEN
     recordSpend(cost)
   }
 
   // Validate response structure
-  if (!result.content || !Array.isArray(result.content) || result.content.length === 0) {
+  if (!response.content || response.content.length === 0) {
     throw new Error('Claude API returned unexpected response structure — no content array')
   }
 
-  const textBlock = result.content.find((block: Record<string, unknown>) => block.type === 'text')
-  const content = textBlock?.text as string | undefined
-  if (!content) {
+  const textBlock = response.content.find((block) => block.type === 'text')
+  if (!textBlock || textBlock.type !== 'text') {
     throw new Error('Claude API returned empty content — no text block found')
   }
 
-  const brief = safeParseJSON<EnrichedICPBrief>(content, 'ICP Enrichment')
+  const brief = safeParseJSON<EnrichedICPBrief>(textBlock.text, 'ICP Enrichment')
 
   // Validate required top-level fields
   const missingFields: string[] = []

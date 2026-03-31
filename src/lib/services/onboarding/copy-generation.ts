@@ -2,6 +2,7 @@
 // Two-call pattern: Angle Selection → Copy Writing with spintax
 // Generates high-converting outbound email sequences with deliverability optimization
 
+import Anthropic from '@anthropic-ai/sdk'
 import type {
   OnboardingClient,
   EnrichedICPBrief,
@@ -10,9 +11,30 @@ import type {
   CopyResearch,
   QualityIssue,
 } from '@/types/onboarding'
+import { checkSpendLimit, recordSpend } from '@/lib/services/api-spend-guard'
 
-const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages'
 const MODEL = 'claude-sonnet-4-20250514'
+
+// Sonnet pricing: $3/M input, $15/M output
+const INPUT_COST_PER_TOKEN = 3.0 / 1_000_000
+const OUTPUT_COST_PER_TOKEN = 15.0 / 1_000_000
+
+// ---------------------------------------------------------------------------
+// Lazy-initialized Anthropic client
+// ---------------------------------------------------------------------------
+
+let anthropicClient: Anthropic | null = null
+
+function getAnthropicClient(): Anthropic {
+  if (!anthropicClient) {
+    const apiKey = process.env.ANTHROPIC_API_KEY
+    if (!apiKey) {
+      throw new Error('ANTHROPIC_API_KEY is not configured')
+    }
+    anthropicClient = new Anthropic({ apiKey })
+  }
+  return anthropicClient
+}
 
 // ---------------------------------------------------------------------------
 // CALL 1: Angle Selection System Prompt
@@ -228,45 +250,35 @@ function safeParseJSON<T>(raw: string, label: string): T {
   throw new Error(`${label}: Response is not valid JSON`)
 }
 
-async function callClaudeRaw<T>(systemPrompt: string, userMessage: string, label: string, maxTokens = 8192): Promise<T> {
-  const apiKey = process.env.ANTHROPIC_API_KEY
-  if (!apiKey) {
-    throw new Error('ANTHROPIC_API_KEY is not configured')
-  }
+async function callClaude<T>(systemPrompt: string, userMessage: string, label: string, maxTokens = 8192): Promise<T> {
+  const client = getAnthropicClient()
 
-  const response = await fetch(ANTHROPIC_API_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify({
-      model: MODEL,
-      max_tokens: maxTokens,
-      system: systemPrompt,
-      messages: [{ role: 'user', content: userMessage }],
-    }),
+  await checkSpendLimit()
+
+  const response = await client.messages.create({
+    model: MODEL,
+    max_tokens: maxTokens,
+    system: systemPrompt,
+    messages: [{ role: 'user', content: userMessage }],
   })
 
-  if (!response.ok) {
-    const errorBody = await response.text().catch(() => 'unknown error')
-    throw new Error(`Claude API returned ${response.status}: ${errorBody.slice(0, 200)}`)
+  // Track spend
+  const usage = response.usage
+  if (usage) {
+    const cost = usage.input_tokens * INPUT_COST_PER_TOKEN + usage.output_tokens * OUTPUT_COST_PER_TOKEN
+    recordSpend(cost)
   }
 
-  const result = await response.json()
-
-  if (!result.content || !Array.isArray(result.content) || result.content.length === 0) {
+  if (!response.content || response.content.length === 0) {
     throw new Error(`${label}: Claude API returned unexpected response structure`)
   }
 
-  const textBlock = result.content.find((block: Record<string, unknown>) => block.type === 'text')
-  const content = textBlock?.text as string | undefined
-  if (!content) {
+  const textBlock = response.content.find((block) => block.type === 'text')
+  if (!textBlock || textBlock.type !== 'text') {
     throw new Error(`${label}: Claude API returned empty content`)
   }
 
-  return safeParseJSON<T>(content, label)
+  return safeParseJSON<T>(textBlock.text, label)
 }
 
 // ---------------------------------------------------------------------------
@@ -354,7 +366,7 @@ function buildAngleSelectionMessage(client: OnboardingClient, icpBrief: Enriched
 
 async function selectAngles(client: OnboardingClient, icpBrief: EnrichedICPBrief): Promise<AngleSelection> {
   const userMessage = buildAngleSelectionMessage(client, icpBrief)
-  return callClaudeRaw<AngleSelection>(ANGLE_SELECTION_PROMPT, userMessage, 'Angle Selection', 4096)
+  return callClaude<AngleSelection>(ANGLE_SELECTION_PROMPT, userMessage, 'Angle Selection', 4096)
 }
 
 // ---------------------------------------------------------------------------
@@ -418,7 +430,7 @@ async function writeCopy(
   angleSelection: AngleSelection
 ): Promise<DraftSequences> {
   const userMessage = buildCopyWritingMessage(client, icpBrief, angleSelection)
-  const result = await callClaudeRaw<DraftSequences>(COPY_WRITING_PROMPT, userMessage, 'Copy Writing', 12000)
+  const result = await callClaude<DraftSequences>(COPY_WRITING_PROMPT, userMessage, 'Copy Writing', 12000)
 
   // Validate structure
   if (!result.sequences || !Array.isArray(result.sequences) || result.sequences.length === 0) {
@@ -467,7 +479,7 @@ async function autoFixSequences(
     JSON.stringify(sequences, null, 2),
   ].join('\n')
 
-  const fixed = await callClaudeRaw<DraftSequences>(FIX_PROMPT, userMessage, 'Copy Fix', 12000)
+  const fixed = await callClaude<DraftSequences>(FIX_PROMPT, userMessage, 'Copy Fix', 12000)
 
   // Preserve metadata from original
   return {
@@ -581,7 +593,7 @@ export async function regenerateEmailSequences(
   qualityChecker?: (sequences: DraftSequences) => { passed: boolean; issues: Array<{ sequence_index: number; email_index: number; severity: string; check: string; detail: string }> }
 ): Promise<DraftSequences> {
   const userMessage = buildRegenerationMessage(client, icpBrief, previousSequences, feedback)
-  const rawSequences = await callClaudeRaw<DraftSequences>(COPY_WRITING_PROMPT, userMessage, 'Copy Regeneration', 12000)
+  const rawSequences = await callClaude<DraftSequences>(COPY_WRITING_PROMPT, userMessage, 'Copy Regeneration', 12000)
 
   // Preserve angle selection from original (immutable)
   let sequences: DraftSequences = {
