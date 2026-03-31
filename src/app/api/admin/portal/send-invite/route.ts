@@ -10,6 +10,7 @@ import { safeError } from '@/lib/utils/log-sanitizer'
 
 const requestSchema = z.object({
   clientId: z.string().uuid(),
+  testEmail: z.string().email().optional(), // preview: send to this address instead, don't mark as sent
 })
 
 export async function POST(req: NextRequest) {
@@ -26,7 +27,7 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const { clientId } = parsed.data
+    const { clientId, testEmail } = parsed.data
     const supabase = createAdminClient()
 
     // Look up client
@@ -96,10 +97,15 @@ export async function POST(req: NextRequest) {
       content,
     })
 
+    const recipientEmail = testEmail ?? client.primary_contact_email
+    const subjectLine = testEmail
+      ? `[PREVIEW] Your Cursive onboarding portal is ready`
+      : 'Your Cursive onboarding portal is ready'
+
     const emailResult = await sendEmail({
-      to: client.primary_contact_email,
+      to: recipientEmail,
       from: 'Adam at Cursive <adam@meetcursive.com>',
-      subject: 'Your Cursive onboarding portal is ready',
+      subject: subjectLine,
       html,
     })
 
@@ -108,11 +114,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Failed to send portal invite email' }, { status: 500 })
     }
 
-    // Update invite sent timestamp
-    await supabase
-      .from('onboarding_clients')
-      .update({ portal_invite_sent_at: new Date().toISOString() })
-      .eq('id', clientId)
+    // Only mark as sent when it goes to the real client (not a preview)
+    if (!testEmail) {
+      await supabase
+        .from('onboarding_clients')
+        .update({ portal_invite_sent_at: new Date().toISOString() })
+        .eq('id', clientId)
+    }
 
     return NextResponse.json({
       success: true,
