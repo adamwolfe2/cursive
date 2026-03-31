@@ -221,9 +221,9 @@ function Slide({ children, bg = 'bg-white' }: { children: React.ReactNode; bg?: 
   return (
     <div
       className={`${bg} flex items-start sm:items-center`}
-      style={{ height: 'calc(100vh - 52px)', overflowY: 'auto' }}
+      style={{ height: 'calc(100vh - 52px)', overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}
     >
-      <div className="max-w-6xl mx-auto px-4 sm:px-12 py-4 sm:py-6 w-full">
+      <div className="max-w-6xl mx-auto px-4 sm:px-12 pt-4 sm:py-6 pb-20 sm:pb-6 w-full">
         {children}
       </div>
     </div>
@@ -458,46 +458,46 @@ function S5() {
           <span className="block font-cursive text-gray-500 text-3xl sm:text-5xl">own the funnel.</span>
         </h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-gray-200 border border-gray-200">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-px bg-gray-200 border border-gray-200">
           {[
             {
               num: '01',
               name: 'Super Pixel V4',
-              bullets: ['70% visitor ID rate', 'Real-time intent scoring', 'Person-level enrichment (not just company)'],
+              bullets: ['70% visitor ID rate', 'Real-time intent scoring', 'Person-level enrichment'],
             },
             {
               num: '02',
               name: 'Lead Marketplace',
-              bullets: ['280M+ enriched contacts', '19,000+ audience segments', 'Starting at $0.50/lead'],
+              bullets: ['280M+ enriched contacts', '19,000+ audience segments', 'From $0.50/lead'],
             },
             {
               num: '03',
               name: 'Audience Intelligence',
-              bullets: ['AI-powered semantic search', 'B2B & B2C identity coverage', 'Natural language querying'],
+              bullets: ['AI-powered semantic search', 'B2B & B2C coverage', 'Natural language querying'],
             },
             {
               num: '04',
               name: 'AI Studio',
-              bullets: ['Brand voice training', 'Multi-channel outreach sequences', 'Autonomous campaign optimization'],
+              bullets: ['Brand voice training', 'Multi-channel sequences', 'Autonomous optimization'],
             },
             {
               num: '05',
               name: 'People Search',
-              bullets: ['Real-time contact enrichment', 'Filter by company/title/seniority', 'Verified email & phone'],
+              bullets: ['Real-time enrichment', 'Company/title/seniority', 'Verified email & phone'],
             },
             {
               num: '06',
               name: 'Cursive API',
-              bullets: ['Person & company lookup', 'Email verification', '60 req/min, 1000 req/day'],
+              bullets: ['Person & company lookup', 'Email verification', '60 req/min rate limit'],
             },
           ].map((product) => (
-            <div key={product.name} className="bg-white p-5">
-              <div className="text-2xl font-light text-primary/20 mb-3">{product.num}</div>
-              <h3 className="text-sm font-semibold text-gray-900 mb-3">{product.name}</h3>
-              <ul className="space-y-1.5">
+            <div key={product.name} className="bg-white p-3 sm:p-5">
+              <div className="text-xl sm:text-2xl font-light text-primary/20 mb-1 sm:mb-3">{product.num}</div>
+              <h3 className="text-xs sm:text-sm font-semibold text-gray-900 mb-2 sm:mb-3">{product.name}</h3>
+              <ul className="space-y-1">
                 {product.bullets.map((b) => (
-                  <li key={b} className="flex items-start gap-2 text-xs text-gray-600">
-                    <span className="text-primary font-bold flex-shrink-0 mt-0.5">✓</span>
+                  <li key={b} className="flex items-start gap-1.5 text-[10px] sm:text-xs text-gray-600">
+                    <span className="text-primary font-bold flex-shrink-0">✓</span>
                     {b}
                   </li>
                 ))}
@@ -1046,13 +1046,13 @@ export default function EnterpriseDeckPage() {
       </button>
 
       {/* ── DOT NAV ── */}
-      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-[110] flex items-center gap-1.5 bg-white/95 backdrop-blur-sm border border-gray-200 rounded-full px-4 py-2 shadow-sm">
+      <div className="fixed bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 z-[110] flex items-center gap-1 sm:gap-1.5 bg-white/95 backdrop-blur-sm border border-gray-200 rounded-full px-2.5 sm:px-4 py-1.5 sm:py-2 shadow-sm">
         {Array.from({ length: SLIDE_COUNT }).map((_, i) => (
           <button
             key={i}
             onClick={() => go(i)}
             title={SLIDE_LABELS[i]}
-            className={`rounded-full transition-all duration-200 ${i === current ? 'w-6 h-2 bg-primary' : 'w-2 h-2 bg-gray-300 hover:bg-gray-400'}`}
+            className={`rounded-full transition-all duration-200 ${i === current ? 'w-4 sm:w-6 h-1.5 sm:h-2 bg-primary' : 'w-1.5 sm:w-2 h-1.5 sm:h-2 bg-gray-300 hover:bg-gray-400'}`}
             aria-label={`Go to slide ${i + 1}: ${SLIDE_LABELS[i]}`}
           />
         ))}
@@ -1063,7 +1063,7 @@ export default function EnterpriseDeckPage() {
         href={CAL_LINK}
         target="_blank"
         rel="noopener noreferrer"
-        className="fixed bottom-14 right-4 sm:bottom-16 sm:right-6 z-[120] px-4 py-2.5 sm:px-5 sm:py-3 bg-primary hover:bg-primary-dark text-white text-xs sm:text-sm font-bold rounded-full shadow-lg transition-all hover:shadow-xl"
+        className="fixed bottom-10 sm:bottom-14 right-3 sm:right-6 z-[120] px-3.5 py-2 sm:px-5 sm:py-3 bg-primary hover:bg-primary-dark text-white text-[11px] sm:text-sm font-bold rounded-full shadow-lg transition-all hover:shadow-xl"
       >
         Book a Demo
       </a>
