@@ -5,6 +5,7 @@ import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/server'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { getInngest } from '@/inngest/client'
 
 const requestSchema = z.object({
   stepType: z.enum(['contract', 'invoice', 'domains', 'copy']),
@@ -94,6 +95,18 @@ export async function POST(
           .from('onboarding_clients')
           .update({ copy_approval_status: 'approved' })
           .eq('id', tokenRecord.client_id)
+
+        // Trigger EmailBison push — same event the admin approval fires
+        try {
+          const inngest = getInngest()
+          await inngest.send({
+            name: 'onboarding/copy-approved',
+            data: { client_id: tokenRecord.client_id },
+          })
+        } catch (err) {
+          safeError('[Portal] Failed to trigger EmailBison push:', err)
+          // Non-fatal — approval is saved, pipeline will retry or admin can manually push
+        }
       }
     }
 
