@@ -4,6 +4,17 @@
   "framework": "nextjs",
   "installCommand": "pnpm install",
   "regions": ["pdx1"],
+  "functions": {
+    "src/app/api/**/*.ts": {
+      "memory": 512
+    },
+    "src/app/api/inngest/route.ts": {
+      "memory": 1024
+    },
+    "src/app/api/admin/run-enrichment/route.ts": {
+      "memory": 1024
+    }
+  },
   "crons": [
     {
       "path": "/api/cron/reset-lead-counts",

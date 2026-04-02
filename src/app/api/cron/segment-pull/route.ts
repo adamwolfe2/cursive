@@ -36,8 +36,8 @@ import {
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 
-// Allow up to 5 minutes — AL audience creation + record fetching can be slow
-export const maxDuration = 300
+// AL is currently offline — 60s is enough for the segment check + lead routing
+export const maxDuration = 60
 
 const LOG_PREFIX = '[AL Segment Pull Cron]'
 const MAX_RECORDS_PER_RUN = 500

@@ -1,3 +1,5 @@
+export const runtime = 'edge'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { authenticateExtension, extAuthErrorResponse } from '@/lib/middleware/ext-auth'
