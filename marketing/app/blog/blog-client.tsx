@@ -6,7 +6,7 @@ import { Container } from "@/components/ui/container"
 import { CategoryCard } from "@/components/blog/category-card"
 import { DashboardCTA } from "@/components/dashboard-cta"
 import { motion } from "framer-motion"
-import { ArrowRight, Calendar, Clock, Eye, Target, Database, TrendingUp, Mail, RotateCcw, BarChart3, Workflow, Filter } from "lucide-react"
+import { ArrowRight, Calendar, Clock, Eye, Target, Database, TrendingUp, Mail, RotateCcw, BarChart3, Workflow, Filter, Megaphone, Bot, Zap, Search, Users, BrainCircuit } from "lucide-react"
 import Link from "next/link"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
 
@@ -111,6 +111,36 @@ export function BlogClient() {
                 }`}
               >
                 Audience Targeting
+              </button>
+              <button
+                onClick={() => setSelectedCategory("sales-outreach")}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap ${
+                  selectedCategory === "sales-outreach"
+                    ? "bg-primary text-white shadow-md"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
+              >
+                Sales Outreach
+              </button>
+              <button
+                onClick={() => setSelectedCategory("ai-in-sales")}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap ${
+                  selectedCategory === "ai-in-sales"
+                    ? "bg-primary text-white shadow-md"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
+              >
+                AI in Sales
+              </button>
+              <button
+                onClick={() => setSelectedCategory("sales-engagement")}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap ${
+                  selectedCategory === "sales-engagement"
+                    ? "bg-primary text-white shadow-md"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
+              >
+                Sales Engagement
               </button>
             </div>
           </Container>
@@ -412,10 +442,166 @@ const blogCategories = [
     gradient: "bg-gradient-to-br from-blue-500 to-blue-600",
     postCount: 7,
   },
+  {
+    title: "Sales Outreach",
+    description: "Strategies and tools for effective outbound sales outreach at scale.",
+    slug: "sales-outreach",
+    icon: Megaphone,
+    gradient: "bg-gradient-to-br from-orange-500 to-red-500",
+    postCount: 3,
+  },
+  {
+    title: "AI in Sales",
+    description: "How AI is transforming sales workflows, from prospecting to closing deals.",
+    slug: "ai-in-sales",
+    icon: BrainCircuit,
+    gradient: "bg-gradient-to-br from-purple-500 to-indigo-600",
+    postCount: 3,
+  },
+  {
+    title: "Sales Engagement",
+    description: "Platforms and strategies to engage prospects and accelerate your pipeline.",
+    slug: "sales-engagement",
+    icon: Zap,
+    gradient: "bg-gradient-to-br from-emerald-500 to-teal-600",
+    postCount: 3,
+  },
 ]
 
 // Blog Posts Data
 const blogPosts = [
+  {
+    slug: "sales-automation-tools",
+    title: "Best Sales Automation Tools in 2026: 15 Platforms We Tested",
+    excerpt: "We put 15 sales automation platforms through real-world tests across prospecting, sequencing, and CRM sync. Here are the ones worth your budget.",
+    category: "Sales Outreach",
+    categorySlug: "sales-outreach",
+    date: "April 3, 2026",
+    readTime: "9 min read",
+    color: "bg-gradient-to-br from-orange-500 to-red-500",
+    icon: Megaphone,
+  },
+  {
+    slug: "outbound-sales-outreach",
+    title: "Outbound Sales Outreach: The Complete Guide for 2026",
+    excerpt: "From cold email to multi-channel sequences, this is the definitive playbook for building an outbound engine that books meetings consistently.",
+    category: "Sales Outreach",
+    categorySlug: "sales-outreach",
+    date: "April 3, 2026",
+    readTime: "10 min read",
+    color: "bg-gradient-to-br from-orange-500 to-red-500",
+    icon: Mail,
+  },
+  {
+    slug: "best-outreach-platforms",
+    title: "12 Best Outreach Platforms for 2026 (Pricing and Features Compared)",
+    excerpt: "A side-by-side breakdown of the top outreach platforms, including pricing tiers, deliverability features, and integration depth.",
+    category: "Sales Outreach",
+    categorySlug: "sales-outreach",
+    date: "April 3, 2026",
+    readTime: "10 min read",
+    color: "bg-gradient-to-br from-orange-500 to-red-500",
+    icon: BarChart3,
+  },
+  {
+    slug: "email-finder",
+    title: "Email Finder: Find Professional Email Addresses by Name and Company for Free",
+    excerpt: "How to find verified professional email addresses using free and paid tools, plus the accuracy benchmarks that matter for deliverability.",
+    category: "Lead Generation",
+    categorySlug: "lead-generation",
+    date: "April 3, 2026",
+    readTime: "10 min read",
+    color: "bg-gradient-to-br from-blue-500 to-blue-600",
+    icon: Search,
+  },
+  {
+    slug: "lead-generation-software",
+    title: "The 25 Best Lead Generation Software Tools for 2026",
+    excerpt: "The most comprehensive roundup of lead gen tools on the market, organized by use case: intent data, enrichment, outbound, and inbound capture.",
+    category: "Lead Generation",
+    categorySlug: "lead-generation",
+    date: "April 3, 2026",
+    readTime: "18 min read",
+    color: "bg-gradient-to-br from-blue-500 to-blue-600",
+    icon: Database,
+  },
+  {
+    slug: "sales-prospecting-tools",
+    title: "15 Best Sales Prospecting Tools for B2B Teams in 2026",
+    excerpt: "The prospecting tools top B2B sales teams actually use to build pipeline, from contact databases to AI-powered research assistants.",
+    category: "Lead Generation",
+    categorySlug: "lead-generation",
+    date: "April 3, 2026",
+    readTime: "14 min read",
+    color: "bg-gradient-to-br from-blue-500 to-blue-600",
+    icon: Users,
+  },
+  {
+    slug: "best-ai-sales-assistants",
+    title: "The 12 Best AI Sales Assistants for 2026",
+    excerpt: "AI sales assistants that handle research, email writing, and follow-ups so your reps can focus on closing. We ranked the top 12.",
+    category: "AI in Sales",
+    categorySlug: "ai-in-sales",
+    date: "April 3, 2026",
+    readTime: "10 min read",
+    color: "bg-gradient-to-br from-purple-500 to-indigo-600",
+    icon: Bot,
+  },
+  {
+    slug: "ai-sales-engagement-platform",
+    title: "Cursive: AI Sales Engagement Platform",
+    excerpt: "How Cursive combines visitor identification, AI research, and automated outreach into a single platform that replaces your entire outbound stack.",
+    category: "AI in Sales",
+    categorySlug: "ai-in-sales",
+    date: "April 3, 2026",
+    readTime: "9 min read",
+    color: "bg-gradient-to-br from-purple-500 to-indigo-600",
+    icon: BrainCircuit,
+  },
+  {
+    slug: "ai-sales-tools",
+    title: "The 15 Best AI Sales Tools to Dominate in 2026",
+    excerpt: "From AI SDRs to predictive forecasting, these are the AI-powered sales tools driving the biggest pipeline gains this year.",
+    category: "AI in Sales",
+    categorySlug: "ai-in-sales",
+    date: "April 3, 2026",
+    readTime: "8 min read",
+    color: "bg-gradient-to-br from-purple-500 to-indigo-600",
+    icon: TrendingUp,
+  },
+  {
+    slug: "sales-engagement-alternatives",
+    title: "15 Best Sales Engagement Alternatives for 2026",
+    excerpt: "Looking beyond the legacy platforms? These 15 sales engagement alternatives offer better AI, lower costs, and faster time to value.",
+    category: "Sales Engagement",
+    categorySlug: "sales-engagement",
+    date: "April 3, 2026",
+    readTime: "10 min read",
+    color: "bg-gradient-to-br from-emerald-500 to-teal-600",
+    icon: Zap,
+  },
+  {
+    slug: "sales-engagement-software",
+    title: "12 Best Sales Engagement Software for Teams in 2026",
+    excerpt: "The sales engagement platforms built for modern teams, with multi-channel sequencing, AI personalization, and real-time analytics.",
+    category: "Sales Engagement",
+    categorySlug: "sales-engagement",
+    date: "April 3, 2026",
+    readTime: "10 min read",
+    color: "bg-gradient-to-br from-emerald-500 to-teal-600",
+    icon: Workflow,
+  },
+  {
+    slug: "sales-engagement-competitors",
+    title: "10 Best Sales Engagement Competitors to Consider in 2026",
+    excerpt: "The competitive landscape for sales engagement is shifting fast. Here are the 10 platforms gaining ground and why teams are switching.",
+    category: "Sales Engagement",
+    categorySlug: "sales-engagement",
+    date: "April 3, 2026",
+    readTime: "10 min read",
+    color: "bg-gradient-to-br from-emerald-500 to-teal-600",
+    icon: Target,
+  },
   {
     slug: "cold-email-2026",
     title: "Cold Email in 2026: What's Still Working (And What's Not)",
