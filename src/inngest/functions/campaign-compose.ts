@@ -5,6 +5,7 @@ import { inngest } from '../client'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { emailComposerService } from '@/lib/services/composition/email-composer.service'
 import { assignVariant, getAssignedVariant } from '@/lib/services/campaign/ab-testing.service'
+import { generateSalesEmail } from '@/lib/services/ai/claude.service'
 
 export const composeCampaignEmail = inngest.createFunction(
   {
@@ -117,7 +118,12 @@ export const composeCampaignEmail = inngest.createFunction(
     // If we have a variant, use its templates; otherwise fall back to regular templates
     const useVariantTemplates = variant !== null
 
-    if (!useVariantTemplates && availableTemplates.length === 0) {
+    // Outbound-agent campaigns intentionally have no templates — they generate
+    // each email fresh via Claude using the agent's icp/persona/product/tone.
+    // Detect that case and skip the "no templates" failure.
+    const isOutboundAgentCampaign = (campaign as { is_outbound_agent?: boolean })?.is_outbound_agent === true
+
+    if (!useVariantTemplates && availableTemplates.length === 0 && !isOutboundAgentCampaign) {
       logger.warn('No templates available for composition')
       return {
         success: false,
@@ -126,7 +132,7 @@ export const composeCampaignEmail = inngest.createFunction(
       }
     }
 
-    // Step 4: Select best template (or use variant template)
+    // Step 4: Select best template (or generate via AI for outbound agent)
     const selectedTemplate = await step.run('select-template', async () => {
       // If using a variant, create a pseudo-template from the variant
       if (variant) {
@@ -137,6 +143,57 @@ export const composeCampaignEmail = inngest.createFunction(
           body_template: variant.bodyTemplate,
           is_variant: true,
         }
+      }
+
+      // Outbound-agent fallback: synthesize a one-off "template" by calling
+      // generateSalesEmail() with the agent's icp/persona/product/tone.
+      // The composer step below will then run its variable interpolation against it.
+      if (isOutboundAgentCampaign && availableTemplates.length === 0) {
+        const supabase = createAdminClient()
+        const { data: agent } = await supabase
+          .from('agents')
+          .select('id, name, tone, icp_text, persona_text, product_text')
+          .eq('id', campaign.agent_id)
+          .maybeSingle()
+
+        const tone = ((agent?.tone as string) || 'professional') as 'professional' | 'casual' | 'friendly' | 'urgent'
+        const icpText = (agent as any)?.icp_text || ''
+        const personaText = (agent as any)?.persona_text || ''
+        const productText = (agent as any)?.product_text || campaign.description || 'our solution'
+
+        const senderName = (workspace?.sales_co_settings as any)?.default_sender_name || 'Sales Team'
+        const senderCompany = workspace?.name || 'Our Company'
+
+        const draft = await generateSalesEmail({
+          senderName,
+          senderCompany,
+          senderProduct: productText,
+          recipientName: (lead.full_name as string) || `${lead.first_name || ''} ${lead.last_name || ''}`.trim() || 'there',
+          recipientTitle: (lead.job_title as string) || 'Decision Maker',
+          recipientCompany: (lead.company_name as string) || 'your company',
+          recipientIndustry: (lead.company_industry as string) || undefined,
+          valueProposition: personaText
+            ? `${productText} — built for ${personaText}.`
+            : productText,
+          callToAction: 'Open to a quick 15-minute call next week to share more?',
+          tone,
+        })
+
+        // Provide a synthetic template shape for the composer.
+        // Subject/body are pre-rendered by Claude; composer will run variable
+        // interpolation on them but they shouldn't contain {{tokens}} so it's a no-op.
+        const bodyHtml = draft.body
+          .split('\n\n')
+          .map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`)
+          .join('\n')
+        return {
+          id: `outbound-agent-${campaign.id}`,
+          name: `Outbound Agent: ${agent?.name ?? 'Untitled'}`,
+          subject: draft.subject,
+          body_html: bodyHtml,
+          body_text: draft.body,
+          is_outbound_agent: true,
+        } as any
       }
 
       // Otherwise use normal template selection
@@ -193,7 +250,10 @@ export const composeCampaignEmail = inngest.createFunction(
       const insertData: Record<string, any> = {
         workspace_id,
         campaign_id,
-        template_id: (selectedTemplate as any).is_variant ? null : selectedTemplate.id,
+        template_id:
+          (selectedTemplate as any).is_variant || (selectedTemplate as any).is_outbound_agent
+            ? null
+            : selectedTemplate.id,
         lead_id,
         recipient_email: lead.email,
         recipient_name: lead.full_name || `${lead.first_name || ''} ${lead.last_name || ''}`.trim(),

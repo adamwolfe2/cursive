@@ -3,287 +3,91 @@
 import * as React from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/design-system'
 import { Sidebar, SidebarMobile } from './sidebar'
 import { Header } from './header'
 import { useDismissible } from '@/lib/hooks/use-dismissible'
+import {
+  LayoutDashboard,
+  Users,
+  Eye,
+  Send,
+  Search,
+  Settings,
+  Briefcase,
+  BarChart3,
+  TrendingUp,
+  Zap,
+  Gift,
+  Handshake,
+  Package,
+  Code,
+  Rocket,
+} from 'lucide-react'
 
-// Navigation item configuration
-interface NavItemConfig {
+export interface NavItemConfig {
   name: string
   href: string
   icon: React.ReactNode
-  subText?: string
-  section: 'leads' | 'crm' | 'actions' | 'account' | 'admin'
+  section: 'main' | 'advanced' | 'admin'
   adminOnly?: boolean
   badge?: number
+  requiredPlan?: ('pro' | 'admin' | 'owner')[]
+  partnerOnly?: boolean
   children?: { name: string; href: string }[]
 }
 
-// Section labels displayed as uppercase headers in the sidebar
-export const sectionLabels: Record<string, string> = {
-  leads: 'Your Leads',
-  crm: 'CRM',
-  actions: 'Take Action',
-  account: 'Account',
-  admin: 'Admin',
-}
-
-// Navigation items for the sidebar
-// Items marked with adminOnly: true are only visible to admin/owner roles
 const navigationItems: NavItemConfig[] = [
-  // ── Your Leads ──
   {
     name: 'Dashboard',
     href: '/dashboard',
-    section: 'leads',
-    subText: 'Overview & activity',
-    icon: (
-      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-        />
-      </svg>
-    ),
+    section: 'main',
+    icon: <LayoutDashboard className="h-5 w-5" />,
   },
   {
-    name: 'Analytics',
-    href: '/analytics',
-    section: 'leads',
-    subText: 'Credits, quality & segments',
-    icon: (
-      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-      </svg>
-    ),
-  },
-  {
-    name: 'Daily Leads',
+    name: 'Leads',
     href: '/leads',
-    section: 'leads',
-    subText: 'Fresh leads every morning',
-    icon: (
-      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
-        />
-      </svg>
-    ),
+    section: 'main',
+    icon: <Users className="h-5 w-5" />,
+    children: [
+      { name: 'Today', href: '/leads' },
+      { name: 'Assigned', href: '/leads?tab=assigned' },
+      { name: 'All Leads', href: '/leads?tab=all' },
+      { name: 'Preferences', href: '/my-leads/preferences' },
+    ],
   },
   {
-    name: 'Website Visitors',
+    name: 'Visitors',
     href: '/website-visitors',
-    section: 'leads',
-    subText: 'Identify anonymous visitors',
-    icon: (
-      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-      </svg>
-    ),
+    section: 'main',
+    icon: <Eye className="h-5 w-5" />,
   },
   {
-    name: 'Segment Builder',
-    href: '/segment-builder',
-    section: 'leads',
-    subText: 'Build audience segments',
-    icon: (
-      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-      </svg>
-    ),
+    name: 'Outreach',
+    href: '/outreach',
+    section: 'main',
+    icon: <Send className="h-5 w-5" />,
+    requiredPlan: ['pro', 'admin', 'owner'],
   },
   {
-    name: 'People Search',
-    href: '/people-search',
-    section: 'leads',
-    subText: 'Search verified contacts',
-    icon: (
-      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-      </svg>
-    ),
+    name: 'Outbound Agent',
+    href: '/outbound',
+    section: 'main',
+    icon: <Rocket className="h-5 w-5" />,
+    requiredPlan: ['pro', 'admin', 'owner'],
   },
   {
-    name: 'Lead Database',
-    href: '/lead-database',
-    section: 'leads',
-    subText: 'Browse full lead database',
-    icon: (
-      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
-      </svg>
-    ),
-  },
-  {
-    name: 'My Leads',
-    href: '/my-leads',
-    section: 'leads',
-    subText: 'Assigned leads & preferences',
-    icon: (
-      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-        />
-      </svg>
-    ),
-    children: [
-      { name: 'Assigned Leads', href: '/my-leads' },
-      { name: 'Targeting Preferences', href: '/my-leads/preferences' },
-    ],
-  },
-  // ── CRM ──
-  {
-    name: 'Lead Manager',
-    href: '/crm/leads',
-    section: 'crm',
-    subText: 'Full CRM & pipeline',
-    icon: (
-      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-        />
-      </svg>
-    ),
-    children: [
-      { name: 'All Leads', href: '/crm/leads' },
-      { name: 'Contacts', href: '/crm/contacts' },
-      { name: 'Companies', href: '/crm/companies' },
-      { name: 'Deals', href: '/crm/deals' },
-      { name: 'Activities', href: '/crm/activities' },
-    ],
-  },
-  // ── Take Action ──
-  {
-    name: 'Activate',
-    href: '/activate',
-    section: 'actions',
-    subText: 'Launch outreach campaigns',
-    icon: (
-      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-      </svg>
-    ),
-  },
-  {
-    name: 'Email Sequences',
-    href: '/email-sequences',
-    section: 'actions',
-    subText: 'Automated outreach sequences',
-    icon: (
-      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-      </svg>
-    ),
-    children: [
-      { name: 'All Sequences', href: '/email-sequences' },
-      { name: 'Create New', href: '/email-sequences/new' },
-    ],
-  },
-  {
-    name: 'Inbox',
-    href: '/inbox',
-    section: 'actions',
-    subText: 'AI SDR inbox & conversations',
-    icon: (
-      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-      </svg>
-    ),
-    children: [
-      { name: 'Conversations', href: '/inbox' },
-      { name: 'Analytics', href: '/inbox/analytics' },
-    ],
-  },
-  {
-    name: 'Conversations',
-    href: '/conversations',
-    section: 'actions',
-    subText: 'Campaign reply threads',
-    icon: (
-      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-      </svg>
-    ),
-  },
-  {
-    name: 'Trending Topics',
-    href: '/trends',
-    section: 'actions',
-    subText: 'Discover rising search trends',
-    icon: (
-      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-      </svg>
-    ),
-  },
-  {
-    name: 'Refer & Earn',
-    href: '/referrals',
-    section: 'actions',
-    subText: 'Earn credits for referrals',
-    icon: (
-      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
-      </svg>
-    ),
-  },
-  {
-    name: 'Partner Hub',
-    href: '/affiliate',
-    section: 'actions',
-    subText: 'Referral stats & earnings',
-    icon: (
-      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-      </svg>
-    ),
-  },
-  // ── Account ──
-  {
-    name: 'Services',
-    href: '/services',
-    section: 'account',
-    subText: 'Upgrades & done-for-you plans',
-    icon: (
-      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-      </svg>
-    ),
+    name: 'Find Leads',
+    href: '/find-leads',
+    section: 'main',
+    icon: <Search className="h-5 w-5" />,
   },
   {
     name: 'Settings',
     href: '/settings',
-    section: 'account',
-    subText: 'Profile, billing & pixel',
-    icon: (
-      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-        />
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-        />
-      </svg>
-    ),
+    section: 'main',
+    icon: <Settings className="h-5 w-5" />,
     children: [
       { name: 'Profile', href: '/settings' },
       { name: 'Billing', href: '/settings/billing' },
@@ -299,29 +103,74 @@ const navigationItems: NavItemConfig[] = [
       { name: 'Security', href: '/settings/security' },
     ],
   },
+
+  {
+    name: 'Lead Manager',
+    href: '/crm/leads',
+    section: 'advanced',
+    icon: <Briefcase className="h-5 w-5" />,
+    requiredPlan: ['pro', 'admin', 'owner'],
+    children: [
+      { name: 'All Leads', href: '/crm/leads' },
+      { name: 'Contacts', href: '/crm/contacts' },
+      { name: 'Companies', href: '/crm/companies' },
+      { name: 'Deals', href: '/crm/deals' },
+      { name: 'Activities', href: '/crm/activities' },
+    ],
+  },
+  {
+    name: 'Analytics',
+    href: '/analytics',
+    section: 'advanced',
+    icon: <BarChart3 className="h-5 w-5" />,
+    requiredPlan: ['pro', 'admin', 'owner'],
+  },
+  {
+    name: 'Trending Topics',
+    href: '/trends',
+    section: 'advanced',
+    icon: <TrendingUp className="h-5 w-5" />,
+  },
+  {
+    name: 'Activate',
+    href: '/activate',
+    section: 'advanced',
+    icon: <Zap className="h-5 w-5" />,
+    requiredPlan: ['admin', 'owner'],
+  },
+  {
+    name: 'Refer & Earn',
+    href: '/referrals',
+    section: 'advanced',
+    icon: <Gift className="h-5 w-5" />,
+  },
+  {
+    name: 'Partner Hub',
+    href: '/affiliate',
+    section: 'advanced',
+    icon: <Handshake className="h-5 w-5" />,
+    partnerOnly: true,
+    requiredPlan: ['admin', 'owner'],
+  },
+  {
+    name: 'Services',
+    href: '/services',
+    section: 'advanced',
+    icon: <Package className="h-5 w-5" />,
+  },
   {
     name: 'API Docs',
     href: '/docs/api',
-    section: 'account',
-    subText: 'Endpoint reference',
-    icon: (
-      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
-        />
-      </svg>
-    ),
+    section: 'advanced',
+    icon: <Code className="h-5 w-5" />,
+    requiredPlan: ['pro', 'admin', 'owner'],
   },
-  // ── Admin Only ──
+
   {
     name: 'Queries',
     href: '/queries',
     section: 'admin',
     adminOnly: true,
-    subText: 'Topic tracking queries',
     icon: (
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -348,12 +197,7 @@ const navigationItems: NavItemConfig[] = [
     adminOnly: true,
     icon: (
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"
-        />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
       </svg>
     ),
     children: [
@@ -369,12 +213,7 @@ const navigationItems: NavItemConfig[] = [
     adminOnly: true,
     icon: (
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-        />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
       </svg>
     ),
     children: [
@@ -389,12 +228,7 @@ const navigationItems: NavItemConfig[] = [
     adminOnly: true,
     icon: (
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-        />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
       </svg>
     ),
     children: [
@@ -410,12 +244,7 @@ const navigationItems: NavItemConfig[] = [
     adminOnly: true,
     icon: (
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"
-        />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
       </svg>
     ),
   },
@@ -431,6 +260,7 @@ interface AppShellProps {
     creditsRemaining: number
     totalCredits: number
     avatarUrl?: string | null
+    isPartner?: boolean
   }
   workspace?: {
     name: string
@@ -440,26 +270,35 @@ interface AppShellProps {
   hotLeadCount?: number
 }
 
+const CREDITS_BANNER_PATHS = ['/leads', '/find-leads', '/lead-database', '/people-search', '/website-visitors']
+
 export function AppShell({ children, user, workspace, todayLeadCount, hotLeadCount }: AppShellProps) {
   const [sidebarOpen, setSidebarOpen] = React.useState(false)
   const { dismissed: creditsBannerDismissed, dismiss: dismissCreditsBanner } = useDismissible('cursive_credits_banner_dismissed', 24)
+  const pathname = usePathname()
 
-  // Filter navigation items based on user role
-  // Admin and owner can see all items, regular members can't see admin-only items
   const isAdmin = user?.role === 'admin' || user?.role === 'owner'
+  const userPlan = user?.plan || 'free'
+  const isPartner = user?.isPartner || false
+
   const filteredNavItems = navigationItems
     .filter((item) => {
-      if ('adminOnly' in item && item.adminOnly) {
+      if (item.adminOnly) {
         return isAdmin
+      }
+      if (item.partnerOnly && !isPartner && !isAdmin) {
+        return false
+      }
+      if (item.requiredPlan) {
+        if (isAdmin) return true
+        return item.requiredPlan.includes(userPlan as 'pro' | 'admin' | 'owner')
       }
       return true
     })
     .map((item) => {
-      // Attach today's lead count badge to the Dashboard nav item
       if (item.href === '/dashboard' && todayLeadCount && todayLeadCount > 0) {
         return { ...item, badge: todayLeadCount }
       }
-      // Attach hot leads badge to Daily Leads nav item — urgent action signal
       if (item.href === '/leads' && hotLeadCount && hotLeadCount > 0) {
         return { ...item, badge: hotLeadCount }
       }
@@ -468,27 +307,23 @@ export function AppShell({ children, user, workspace, todayLeadCount, hotLeadCou
 
   return (
     <div className="flex min-h-screen bg-muted/30">
-      {/* Desktop sidebar */}
       <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64">
         <Sidebar items={filteredNavItems} />
       </div>
 
-      {/* Mobile sidebar */}
       <SidebarMobile
         items={filteredNavItems}
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
       />
 
-      {/* Main content area */}
       <div className="flex flex-1 flex-col lg:pl-64">
         <Header
           user={user}
           workspace={workspace}
           onMenuClick={() => setSidebarOpen(!sidebarOpen)}
         />
-        {/* Credits low persistent banner */}
-        {user && typeof user.creditsRemaining === 'number' && user.creditsRemaining <= 3 && !creditsBannerDismissed && (
+        {user && typeof user.creditsRemaining === 'number' && user.creditsRemaining <= 3 && !creditsBannerDismissed && CREDITS_BANNER_PATHS.some(p => pathname.startsWith(p)) && (
           <div className={cn(
             'flex items-center justify-between gap-4 px-4 py-1.5 sm:px-6 lg:px-8 text-xs',
             user.creditsRemaining === 0

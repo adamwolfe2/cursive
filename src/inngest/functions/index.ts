@@ -290,3 +290,17 @@ export { autoresearchReplySync } from './autoresearch-reply-sync'
 
 // AI SDR Inbox Sync (every 15 min — processes new replies through AI reply engine)
 export { sdrInboxSync } from './sdr-inbox-sync'
+
+// User lead cap resets (daily/weekly/monthly — prevents leads from permanently stopping)
+export {
+  resetUserDailyLeadCaps,
+  resetUserWeeklyLeadCaps,
+  resetUserMonthlyLeadCaps,
+} from './reset-user-lead-caps'
+
+// Outbound Agent (Rox-inspired AI revenue agent)
+export { outboundWorkflowRun } from './outbound-workflow-run'
+export {
+  outboundStatsRefresherCron,
+  outboundStatsRefresherEvent,
+} from './outbound-stats-refresher'

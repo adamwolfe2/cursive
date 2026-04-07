@@ -2,6 +2,7 @@
 // Database access layer for AI agents using repository pattern
 
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import type {
   Agent,
   AgentInsert,
@@ -15,6 +16,7 @@ import type {
   EmailTask,
 } from '@/types'
 import { DatabaseError } from '@/types'
+import type { OutboundAgent, OutboundAgentUpdate } from '@/types/outbound'
 
 export class AgentRepository {
   /**
@@ -504,5 +506,150 @@ export class AgentRepository {
     )
 
     return { ready, pending, sent, failed }
+  }
+
+  // ============================================================================
+  // OUTBOUND AGENT (Rox-inspired) helpers
+  // ============================================================================
+
+  /**
+   * Find all agents for a workspace that have outbound mode enabled.
+   * Used by the /outbound list page.
+   */
+  async findOutboundEnabled(workspaceId: string): Promise<OutboundAgent[]> {
+    const supabase = await createClient()
+    const { data, error } = await supabase
+      .from('agents')
+      .select('*')
+      .eq('workspace_id', workspaceId)
+      .eq('outbound_enabled', true)
+      .order('created_at', { ascending: false })
+      .limit(200)
+
+    if (error) throw new DatabaseError(error.message)
+    return (data ?? []) as unknown as OutboundAgent[]
+  }
+
+  /**
+   * Find a single outbound-enabled agent by id (workspace-scoped).
+   * Returns null if not found OR if the agent isn't outbound-enabled.
+   */
+  async findOutboundById(id: string, workspaceId: string): Promise<OutboundAgent | null> {
+    const supabase = await createClient()
+    const { data, error } = await supabase
+      .from('agents')
+      .select('*')
+      .eq('id', id)
+      .eq('workspace_id', workspaceId)
+      .maybeSingle()
+
+    if (error) {
+      if (error.code === 'PGRST116') return null
+      throw new DatabaseError(error.message)
+    }
+    if (!data) return null
+    return data as unknown as OutboundAgent
+  }
+
+  /**
+   * Update outbound config (icp/persona/product/filters/tone).
+   * Pass a partial — only the listed keys are updated.
+   */
+  async updateOutboundConfig(
+    id: string,
+    workspaceId: string,
+    patch: OutboundAgentUpdate
+  ): Promise<OutboundAgent> {
+    const supabase = await createClient()
+
+    // Whitelist outbound-related fields to prevent accidental writes to send keys
+    const allowed: Record<string, unknown> = {}
+    if (patch.name !== undefined) allowed.name = patch.name
+    if (patch.tone !== undefined) allowed.tone = patch.tone
+    if (patch.outbound_enabled !== undefined) allowed.outbound_enabled = patch.outbound_enabled
+    if (patch.outbound_auto_approve !== undefined) allowed.outbound_auto_approve = patch.outbound_auto_approve
+    if (patch.icp_text !== undefined) allowed.icp_text = patch.icp_text
+    if (patch.persona_text !== undefined) allowed.persona_text = patch.persona_text
+    if (patch.product_text !== undefined) allowed.product_text = patch.product_text
+    if (patch.outbound_filters !== undefined) allowed.outbound_filters = patch.outbound_filters
+    if (patch.outbound_last_run_at !== undefined) allowed.outbound_last_run_at = patch.outbound_last_run_at
+
+    const { data, error } = await supabase
+      .from('agents')
+      .update(allowed)
+      .eq('id', id)
+      .eq('workspace_id', workspaceId)
+      .select('*')
+      .maybeSingle()
+
+    if (error) throw new DatabaseError(error.message)
+    if (!data) throw new DatabaseError('Agent not found')
+    return data as unknown as OutboundAgent
+  }
+
+  /**
+   * Lazy-create the synthetic `email_campaigns` row that backs an outbound
+   * agent. Idempotent — returns the existing campaign id if already linked.
+   *
+   * Uses the admin client because this runs from Inngest functions outside
+   * of any user request context.
+   */
+  async ensureOutboundCampaign(agentId: string): Promise<string> {
+    const supabase = createAdminClient()
+
+    // 1. Read agent — bypass RLS via admin client (Inngest context)
+    const { data: agent, error: agentErr } = await supabase
+      .from('agents')
+      .select('id, workspace_id, name, outbound_campaign_id')
+      .eq('id', agentId)
+      .maybeSingle()
+
+    if (agentErr || !agent) {
+      throw new DatabaseError(`Agent not found: ${agentId}`)
+    }
+
+    // Already linked? Verify the campaign actually exists.
+    if ((agent as { outbound_campaign_id?: string }).outbound_campaign_id) {
+      const { data: existing } = await supabase
+        .from('email_campaigns')
+        .select('id')
+        .eq('id', (agent as { outbound_campaign_id: string }).outbound_campaign_id)
+        .maybeSingle()
+      if (existing) {
+        return (agent as { outbound_campaign_id: string }).outbound_campaign_id
+      }
+    }
+
+    // 2. Create the synthetic campaign
+    const { data: campaign, error: campaignErr } = await supabase
+      .from('email_campaigns')
+      .insert({
+        workspace_id: agent.workspace_id,
+        agent_id: agent.id,
+        name: `Outbound: ${agent.name}`,
+        description: 'Auto-created by Outbound Agent',
+        status: 'active',
+        is_outbound_agent: true,
+        selected_template_ids: [],
+        sequence_steps: 1,
+      } as any)
+      .select('id')
+      .maybeSingle()
+
+    if (campaignErr || !campaign) {
+      throw new DatabaseError(`Failed to create outbound campaign: ${campaignErr?.message ?? 'unknown'}`)
+    }
+
+    // 3. Link agent → campaign
+    const { error: linkErr } = await supabase
+      .from('agents')
+      .update({ outbound_campaign_id: campaign.id })
+      .eq('id', agent.id)
+
+    if (linkErr) {
+      throw new DatabaseError(`Failed to link agent to campaign: ${linkErr.message}`)
+    }
+
+    return campaign.id
   }
 }
