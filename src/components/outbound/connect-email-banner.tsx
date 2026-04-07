@@ -22,9 +22,11 @@ import { Mail, ShieldAlert, CheckCircle2 } from 'lucide-react'
 import { useToast } from '@/lib/hooks/use-toast'
 import type { WorkflowStatsResponse } from '@/types/outbound'
 
-// Note: <a> intentionally used (not next/link) so the browser performs a
-// real navigation to the OAuth route — that route returns a 302 to Google,
-// which Next's client router would not follow.
+// Note: we use window.location.assign (not <a> wrapping the Button) because
+// the Button component renders <motion.button>, and <a><button>...</button></a>
+// is invalid HTML — React/framer-motion swallow the click on some browsers.
+// window.location.assign forces a hard navigation so the server's 302 to
+// Google's OAuth screen is followed properly.
 
 export interface ConnectEmailBannerProps {
   agentId: string
@@ -63,6 +65,7 @@ export function ConnectEmailBanner({ agentId }: ConnectEmailBannerProps) {
   if (!sending) return null
 
   const connectHref = `/api/integrations/gmail/authorize?return_to=${encodeURIComponent(`/outbound/${agentId}`)}`
+  const goConnect = () => window.location.assign(connectHref)
 
   // ── State A: account exists but Google revoked the token ───────────────────
   if (sending.needs_reconnect && sending.account) {
@@ -81,12 +84,10 @@ export function ConnectEmailBanner({ agentId }: ConnectEmailBannerProps) {
               Google Account or changed your password). Run is locked until you re-authorize.
             </p>
             <div className="mt-3 flex flex-wrap items-center gap-2">
-              <a href={connectHref}>
-                <Button size="sm" variant="destructive">
-                  <Mail className="h-4 w-4 mr-1.5" />
-                  Reconnect Gmail
-                </Button>
-              </a>
+              <Button size="sm" variant="destructive" onClick={goConnect}>
+                <Mail className="h-4 w-4 mr-1.5" />
+                Reconnect Gmail
+              </Button>
             </div>
           </div>
         </div>
@@ -145,12 +146,10 @@ export function ConnectEmailBanner({ agentId }: ConnectEmailBannerProps) {
           <Button variant="outline" size="sm" onClick={handleTestSend}>
             Send test
           </Button>
-          <a href={connectHref}>
-            <Button variant="outline" size="sm">
-              <Mail className="h-3.5 w-3.5 mr-1" />
-              Add another
-            </Button>
-          </a>
+          <Button variant="outline" size="sm" onClick={goConnect}>
+            <Mail className="h-3.5 w-3.5 mr-1" />
+            Add another
+          </Button>
           <Button variant="ghost" size="sm" onClick={handleDisconnect}>
             Disconnect
           </Button>
@@ -174,12 +173,10 @@ export function ConnectEmailBanner({ agentId }: ConnectEmailBannerProps) {
             domain. Until you connect an account, the Run button is locked and no email will be drafted or sent.
           </p>
           <div className="mt-3 flex flex-wrap items-center gap-2">
-            <a href={connectHref}>
-              <Button size="sm">
-                <Mail className="h-4 w-4 mr-1.5" />
-                Connect Gmail
-              </Button>
-            </a>
+            <Button size="sm" onClick={goConnect}>
+              <Mail className="h-4 w-4 mr-1.5" />
+              Connect Gmail
+            </Button>
             <span className="text-xs text-muted-foreground">
               Takes 30 seconds — Google sign-in, no password stored
             </span>

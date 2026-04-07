@@ -7,6 +7,10 @@
  * the /outbound list page has no agent_id. This variant takes the gate
  * state directly as a prop (server-rendered) so the user sees the
  * Connect Gmail prompt the moment they land on /outbound.
+ *
+ * Connect navigation uses window.location.assign (NOT <a><Button>) because
+ * the Button component renders motion.button — wrapping it in <a> is
+ * invalid HTML and the click gets swallowed by React/framer.
  */
 
 import { Card } from '@/components/ui/card'
@@ -20,6 +24,7 @@ export interface ConnectEmailListBannerProps {
 
 export function ConnectEmailListBanner({ status }: ConnectEmailListBannerProps) {
   const connectHref = '/api/integrations/gmail/authorize?return_to=/outbound'
+  const goConnect = () => window.location.assign(connectHref)
 
   // Token-revoked state
   if (status.needs_reconnect && status.account) {
@@ -37,12 +42,10 @@ export function ConnectEmailListBanner({ status }: ConnectEmailListBannerProps) 
               Run is locked across all your workflows until you reconnect.
             </p>
             <div className="mt-3">
-              <a href={connectHref}>
-                <Button size="sm" variant="destructive">
-                  <Mail className="h-4 w-4 mr-1.5" />
-                  Reconnect Gmail
-                </Button>
-              </a>
+              <Button size="sm" variant="destructive" onClick={goConnect}>
+                <Mail className="h-4 w-4 mr-1.5" />
+                Reconnect Gmail
+              </Button>
             </div>
           </div>
         </div>
@@ -84,12 +87,10 @@ export function ConnectEmailListBanner({ status }: ConnectEmailListBannerProps) 
             account is connected.
           </p>
           <div className="mt-3 flex flex-wrap items-center gap-2">
-            <a href={connectHref}>
-              <Button size="sm">
-                <Mail className="h-4 w-4 mr-1.5" />
-                Connect Gmail
-              </Button>
-            </a>
+            <Button size="sm" onClick={goConnect}>
+              <Mail className="h-4 w-4 mr-1.5" />
+              Connect Gmail
+            </Button>
             <span className="text-xs text-muted-foreground">
               Takes 30 seconds — Google sign-in, no password stored
             </span>

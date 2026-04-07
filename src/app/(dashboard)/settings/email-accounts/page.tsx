@@ -52,6 +52,10 @@ interface GmailAccount {
 }
 
 const CONNECT_HREF = '/api/integrations/gmail/authorize?return_to=/settings/email-accounts'
+// The Button component renders motion.button, which can't be wrapped by <a>
+// (invalid HTML; React/framer swallow the click). All Connect Gmail
+// navigations use this hard-navigation helper instead.
+const goConnect = () => window.location.assign(CONNECT_HREF)
 
 export default function EmailAccountsPage() {
   const queryClient = useQueryClient()
@@ -130,12 +134,10 @@ export default function EmailAccountsPage() {
           { label: 'Email Accounts' },
         ]}
         actions={
-          <a href={CONNECT_HREF}>
-            <Button>
-              <Plus className="h-4 w-4 mr-1.5" />
-              Connect Gmail
-            </Button>
-          </a>
+          <Button onClick={goConnect}>
+            <Plus className="h-4 w-4 mr-1.5" />
+            Connect Gmail
+          </Button>
         }
       />
 
@@ -170,12 +172,12 @@ export default function EmailAccountsPage() {
           <p className="mt-1 text-xs text-muted-foreground">
             Connect your Gmail to start running outbound workflows.
           </p>
-          <a href={CONNECT_HREF} className="inline-block mt-4">
-            <Button>
+          <div className="mt-4">
+            <Button onClick={goConnect}>
               <Mail className="h-4 w-4 mr-1.5" />
               Connect Gmail
             </Button>
-          </a>
+          </div>
         </Card>
       ) : (
         <div className="space-y-3">
@@ -225,12 +227,10 @@ export default function EmailAccountsPage() {
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0">
                     {status === 'needs_reconnect' ? (
-                      <a href={CONNECT_HREF}>
-                        <Button variant="destructive" size="sm">
-                          <Mail className="h-3.5 w-3.5 mr-1" />
-                          Reconnect
-                        </Button>
-                      </a>
+                      <Button variant="destructive" size="sm" onClick={goConnect}>
+                        <Mail className="h-3.5 w-3.5 mr-1" />
+                        Reconnect
+                      </Button>
                     ) : (
                       <Button
                         variant="outline"
