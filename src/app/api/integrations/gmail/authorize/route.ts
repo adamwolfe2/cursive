@@ -94,8 +94,19 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    // Step 5 — return redirect
-    return NextResponse.redirect(url)
+    // Step 5 — return redirect.
+    // IMPORTANT: NextResponse.redirect() to EXTERNAL URLs silently fails
+    // in Next.js 15 route handlers (it passes a same-origin check internally
+    // and returns a malformed/empty response). Return a raw 302 with an
+    // explicit Location header instead — this works regardless of Next.js
+    // version and is the canonical way to redirect to a third-party URL.
+    return new NextResponse(null, {
+      status: 302,
+      headers: {
+        Location: url,
+        'Cache-Control': 'no-store, max-age=0',
+      },
+    })
   } catch (error) {
     if (isDebug) {
       return NextResponse.json(

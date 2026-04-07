@@ -7,6 +7,10 @@
  *
  * Errors are surfaced via query params on the return URL so the page
  * can show a toast: ?gmail_connected=1 or ?gmail_error=…
+ *
+ * IMPORTANT: All redirects use raw 302 + Location header rather than
+ * NextResponse.redirect(). The latter has a known silent-failure issue
+ * with route handlers in Next.js 15.
  */
 
 import { NextRequest, NextResponse } from 'next/server'
@@ -16,6 +20,7 @@ import { connectGmailAccount } from '@/lib/services/gmail/email-account.service'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 export const maxDuration = 30
+export const runtime = 'nodejs'
 
 function buildReturnUrl(returnTo: string, params: Record<string, string>): string {
   const base =
@@ -27,6 +32,20 @@ function buildReturnUrl(returnTo: string, params: Record<string, string>): strin
     url.searchParams.set(k, v)
   }
   return url.toString()
+}
+
+/**
+ * Raw 302 redirect — works for both same-origin and external URLs and
+ * bypasses the Next.js 15 NextResponse.redirect() silent-failure bug.
+ */
+function redirect(url: string): NextResponse {
+  return new NextResponse(null, {
+    status: 302,
+    headers: {
+      Location: url,
+      'Cache-Control': 'no-store, max-age=0',
+    },
+  })
 }
 
 export async function GET(request: NextRequest) {
@@ -41,15 +60,11 @@ export async function GET(request: NextRequest) {
   try {
     // Google sent us back with an error (user denied, scope issue, etc.)
     if (oauthError) {
-      return NextResponse.redirect(
-        buildReturnUrl(returnTo, { gmail_error: oauthError })
-      )
+      return redirect(buildReturnUrl(returnTo, { gmail_error: oauthError }))
     }
 
     if (!code || !state) {
-      return NextResponse.redirect(
-        buildReturnUrl(returnTo, { gmail_error: 'missing_code_or_state' })
-      )
+      return redirect(buildReturnUrl(returnTo, { gmail_error: 'missing_code_or_state' }))
     }
 
     // Verify state — extracts wid + uid + returnTo securely
@@ -59,14 +74,10 @@ export async function GET(request: NextRequest) {
     // Sanity-check the user is still logged in AND matches the state
     const user = await getCurrentUser()
     if (!user || !user.workspace_id) {
-      return NextResponse.redirect(
-        buildReturnUrl(returnTo, { gmail_error: 'not_logged_in' })
-      )
+      return redirect(buildReturnUrl(returnTo, { gmail_error: 'not_logged_in' }))
     }
     if (user.workspace_id !== payload.wid) {
-      return NextResponse.redirect(
-        buildReturnUrl(returnTo, { gmail_error: 'workspace_mismatch' })
-      )
+      return redirect(buildReturnUrl(returnTo, { gmail_error: 'workspace_mismatch' }))
     }
 
     // Exchange code → tokens → upsert email_accounts row
@@ -76,7 +87,7 @@ export async function GET(request: NextRequest) {
       code,
     })
 
-    return NextResponse.redirect(
+    return redirect(
       buildReturnUrl(returnTo, {
         gmail_connected: '1',
         email: account.email_address,
@@ -86,8 +97,6 @@ export async function GET(request: NextRequest) {
     safeError('[gmail] callback failed:', err)
     const message =
       err instanceof Error ? err.message.slice(0, 200) : 'Unknown error during Gmail connect'
-    return NextResponse.redirect(
-      buildReturnUrl(returnTo, { gmail_error: message })
-    )
+    return redirect(buildReturnUrl(returnTo, { gmail_error: message }))
   }
 }
