@@ -23,13 +23,32 @@ import { vi, beforeEach, afterEach } from 'vitest'
 let fetchSpy: ReturnType<typeof vi.fn>
 let tokenSpy: ReturnType<typeof vi.spyOn>
 
-beforeEach(() => {
-  fetchSpy = vi.fn(async () =>
-    new Response(
-      JSON.stringify({ id: 'msg-123', threadId: 'thr-456', labelIds: ['SENT'] }),
+// Build a fetch mock that responds differently to /messages/send vs
+// /messages/<id> (the metadata read-back for Message-Id).
+function makeFetchMock(metadataResponse?: { headers?: Array<{ name: string; value: string }> }) {
+  return vi.fn(async (url: string) => {
+    if (typeof url === 'string' && url.includes('/messages/send')) {
+      return new Response(
+        JSON.stringify({ id: 'msg-123', threadId: 'thr-456', labelIds: ['SENT'] }),
+        { status: 200, headers: { 'Content-Type': 'application/json' } }
+      )
+    }
+    // Metadata GET (read-back of Message-Id header)
+    return new Response(
+      JSON.stringify({
+        payload: {
+          headers: metadataResponse?.headers ?? [
+            { name: 'Message-Id', value: '<CABcD123@mail.gmail.com>' },
+          ],
+        },
+      }),
       { status: 200, headers: { 'Content-Type': 'application/json' } }
     )
-  )
+  })
+}
+
+beforeEach(() => {
+  fetchSpy = makeFetchMock()
   // @ts-expect-error overriding global
   global.fetch = fetchSpy
   tokenSpy = vi.spyOn(accountService, 'getValidAccessToken').mockResolvedValue('token-abc')
@@ -40,7 +59,7 @@ afterEach(() => {
 })
 
 describe('sendViaGmail', () => {
-  it('calls Gmail API with bearer token + base64url-encoded raw message', async () => {
+  it('calls Gmail API with bearer token + base64url-encoded raw message + reads back Message-Id', async () => {
     const result = await sendViaGmail({
       accountId: 'acc-1',
       fromEmail: 'me@cursive.com',
@@ -55,11 +74,17 @@ describe('sendViaGmail', () => {
     expect(result).toMatchObject({
       messageId: 'msg-123',
       threadId: 'thr-456',
+      rfc822MessageId: '<CABcD123@mail.gmail.com>',
     })
     expect(tokenSpy).toHaveBeenCalledWith('acc-1')
-    expect(fetchSpy).toHaveBeenCalledOnce()
+    // 1 send + 1 metadata read-back
+    expect(fetchSpy).toHaveBeenCalledTimes(2)
 
-    const [url, init] = fetchSpy.mock.calls[0]
+    const sendCall = fetchSpy.mock.calls.find(
+      (c: any[]) => typeof c[0] === 'string' && c[0].includes('/messages/send')
+    )
+    expect(sendCall).toBeDefined()
+    const [url, init] = sendCall!
     expect(url).toBe('https://gmail.googleapis.com/gmail/v1/users/me/messages/send')
     expect((init as RequestInit).method).toBe('POST')
     const headers = (init as RequestInit).headers as Record<string, string>
@@ -82,6 +107,37 @@ describe('sendViaGmail', () => {
     expect(decoded).toContain('multipart/alternative')
     expect(decoded).toContain('Hi Jane')
     expect(decoded).toContain('<p>Hi Jane</p>')
+
+    // Metadata read-back call
+    const metaCall = fetchSpy.mock.calls.find(
+      (c: any[]) => typeof c[0] === 'string' && c[0].includes('/messages/msg-123')
+    )
+    expect(metaCall).toBeDefined()
+  })
+
+  it('returns null rfc822MessageId when metadata fetch fails (non-fatal)', async () => {
+    fetchSpy = vi.fn(async (url: string) => {
+      if (typeof url === 'string' && url.includes('/messages/send')) {
+        return new Response(
+          JSON.stringify({ id: 'msg-123', threadId: 'thr-456' }),
+          { status: 200 }
+        )
+      }
+      // metadata fetch returns 500
+      return new Response('boom', { status: 500 })
+    })
+    // @ts-expect-error overriding global
+    global.fetch = fetchSpy
+
+    const result = await sendViaGmail({
+      accountId: 'acc-1',
+      fromEmail: 'me@cursive.com',
+      toEmail: 'a@b.com',
+      subject: 'x',
+      bodyHtml: '<p>x</p>',
+    })
+    expect(result.messageId).toBe('msg-123')
+    expect(result.rfc822MessageId).toBeNull()
   })
 
   it('encodes non-ASCII subject as RFC 2047 encoded-word', async () => {
@@ -92,7 +148,10 @@ describe('sendViaGmail', () => {
       subject: 'Olá — café',
       bodyHtml: '<p>x</p>',
     })
-    const body = JSON.parse(fetchSpy.mock.calls[0][1].body as string) as { raw: string }
+    const sendCall = fetchSpy.mock.calls.find(
+      (c: any[]) => typeof c[0] === 'string' && c[0].includes('/messages/send')
+    )!
+    const body = JSON.parse(sendCall[1].body as string) as { raw: string }
     const decoded = Buffer.from(
       body.raw.replace(/-/g, '+').replace(/_/g, '/') + '==',
       'base64'
@@ -109,7 +168,10 @@ describe('sendViaGmail', () => {
       subject: 'x',
       bodyHtml: '<p>x</p>',
     })
-    const body = JSON.parse(fetchSpy.mock.calls[0][1].body as string) as { raw: string }
+    const sendCall = fetchSpy.mock.calls.find(
+      (c: any[]) => typeof c[0] === 'string' && c[0].includes('/messages/send')
+    )!
+    const body = JSON.parse(sendCall[1].body as string) as { raw: string }
     const decoded = Buffer.from(
       body.raw.replace(/-/g, '+').replace(/_/g, '/') + '==',
       'base64'
@@ -125,7 +187,10 @@ describe('sendViaGmail', () => {
       subject: 'x',
       bodyHtml: '<p>Line one</p><p>Line two</p>',
     })
-    const body = JSON.parse(fetchSpy.mock.calls[0][1].body as string) as { raw: string }
+    const sendCall = fetchSpy.mock.calls.find(
+      (c: any[]) => typeof c[0] === 'string' && c[0].includes('/messages/send')
+    )!
+    const body = JSON.parse(sendCall[1].body as string) as { raw: string }
     const decoded = Buffer.from(
       body.raw.replace(/-/g, '+').replace(/_/g, '/') + '==',
       'base64'

@@ -619,6 +619,13 @@ export type Events = {
     }
   }
 
+  // Gmail Reply Poller Events (Phase 2.5)
+  'gmail/reply.poll-account': {
+    data: {
+      account_id: string
+    }
+  }
+
   // Outbound Agent Events (Rox-inspired workflow)
   'outbound/workflow.run': {
     data: {

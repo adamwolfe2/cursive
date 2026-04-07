@@ -304,3 +304,9 @@ export {
   outboundStatsRefresherCron,
   outboundStatsRefresherEvent,
 } from './outbound-stats-refresher'
+
+// Gmail Reply Poller (Phase 2.5 — tracks replies for Gmail-sent emails)
+export {
+  gmailReplyPollerCron,
+  gmailReplyPollerPerAccount,
+} from './gmail-reply-poller'

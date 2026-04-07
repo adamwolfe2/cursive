@@ -238,6 +238,7 @@ export const sendApprovedEmail = inngest.createFunction(
             sent_at: result.sentAt,
             provider: 'gmail',
             thread_id: result.threadId,
+            rfc822_message_id: result.rfc822MessageId,
           }
         }
 
@@ -293,21 +294,31 @@ export const sendApprovedEmail = inngest.createFunction(
       const supabase = createAdminClient()
       const provider = (sendResult as { provider?: string }).provider ?? (USE_MOCKS ? 'mock' : 'emailbison')
       const threadId = (sendResult as { thread_id?: string }).thread_id
+      const rfc822MessageId = (sendResult as { rfc822_message_id?: string | null }).rfc822_message_id
+
+      const update: Record<string, unknown> = {
+        status: 'sent',
+        sent_at: sendResult.sent_at,
+        // Reuse the existing column for any provider's message id — it's
+        // just an opaque tracking string from the upstream provider.
+        emailbison_message_id: sendResult.message_id,
+        send_metadata: {
+          sent_via: provider,
+          sent_at: sendResult.sent_at,
+          ...(threadId && { gmail_thread_id: threadId }),
+          ...(rfc822MessageId && { rfc822_message_id: rfc822MessageId }),
+        },
+      }
+
+      // Persist the RFC 822 Message-Id header so the Gmail reply poller
+      // can match inbound In-Reply-To headers back to this send.
+      if (rfc822MessageId) {
+        update.message_id_header = rfc822MessageId
+      }
 
       const { error } = await supabase
         .from('email_sends')
-        .update({
-          status: 'sent',
-          sent_at: sendResult.sent_at,
-          // Reuse the existing column for any provider's message id — it's
-          // just an opaque tracking string from the upstream provider.
-          emailbison_message_id: sendResult.message_id,
-          send_metadata: {
-            sent_via: provider,
-            sent_at: sendResult.sent_at,
-            ...(threadId && { gmail_thread_id: threadId }),
-          },
-        })
+        .update(update)
         .eq('id', email_send_id)
 
       if (error) {
