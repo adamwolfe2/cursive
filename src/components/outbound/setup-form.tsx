@@ -91,17 +91,24 @@ export function SetupForm({ mode, initialAgent }: SetupFormProps) {
     }
     setError(null)
     setGeneratingIcp(true)
+
+    // Client-side hard cap — guarantees the spinner always resets even if the
+    // server hangs or the network drops mid-flight. Server-side maxDuration=45.
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 35_000)
+
     try {
       const response = await fetch('/api/outbound/icp/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ product_text: productText }),
+        signal: controller.signal,
       })
       if (!response.ok) {
         const j = await response.json().catch(() => ({}))
-        throw new Error(j.error || 'Failed to generate ICP')
+        throw new Error(j.error || `Failed to generate ICP (HTTP ${response.status})`)
       }
-      const { data } = await response.json() as { data: IcpGenerationResult }
+      const { data } = (await response.json()) as { data: IcpGenerationResult }
 
       setValue('icp_text', data.icp_summary, { shouldValidate: true })
       setValue('persona_text', data.persona_summary, { shouldValidate: true })
@@ -114,8 +121,13 @@ export function SetupForm({ mode, initialAgent }: SetupFormProps) {
         departments: data.departments,
       })
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to generate ICP')
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        setError('ICP generation took too long. Please try again — Claude may be slow right now.')
+      } else {
+        setError(err instanceof Error ? err.message : 'Failed to generate ICP')
+      }
     } finally {
+      clearTimeout(timeoutId)
       setGeneratingIcp(false)
     }
   }
@@ -313,10 +325,15 @@ export function SetupForm({ mode, initialAgent }: SetupFormProps) {
             </div>
           )}
 
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-2 sm:items-start">
             {/* Tone */}
             <FormField error={errors.tone?.message}>
-              <FormLabel htmlFor="tone" required>Email tone</FormLabel>
+              <FormLabel htmlFor="tone" required>
+                Email tone
+              </FormLabel>
+              <p className="-mt-1 mb-1 text-xs text-zinc-500">
+                Voice used when drafting cold emails.
+              </p>
               <FormSelect id="tone" disabled={submitting} error={errors.tone} {...register('tone')}>
                 <option value="professional">Professional</option>
                 <option value="friendly">Friendly</option>
@@ -327,9 +344,12 @@ export function SetupForm({ mode, initialAgent }: SetupFormProps) {
 
             {/* Cap per run */}
             <FormField error={errors.cap_per_run?.message}>
-              <FormLabel htmlFor="cap_per_run" required hint="Max leads per Run click. Each lead costs 0.5 credits.">
+              <FormLabel htmlFor="cap_per_run" required>
                 Leads per run
               </FormLabel>
+              <p className="-mt-1 mb-1 text-xs text-zinc-500">
+                Max leads per Run click. Each lead costs 0.5 credits.
+              </p>
               <FormInput
                 id="cap_per_run"
                 type="number"

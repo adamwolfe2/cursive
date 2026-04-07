@@ -56,6 +56,9 @@ Be specific. If the product is generic, infer the most likely buyer based on the
 /**
  * Generate an ICP from a free-text product description.
  * Returns a structured filter set + plain-English summaries.
+ *
+ * Uses an explicit 25-second SDK timeout so a stuck Anthropic call surfaces
+ * as an error rather than hanging the route.
  */
 export async function generateIcpFromProduct(productText: string): Promise<IcpGenerationResult> {
   const trimmed = productText.trim()
@@ -66,17 +69,26 @@ export async function generateIcpFromProduct(productText: string): Promise<IcpGe
   const client = getClient()
 
   try {
-    const response = await client.messages.create({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 1024,
-      system: SYSTEM_PROMPT,
-      messages: [
-        {
-          role: 'user',
-          content: `Product description:\n\n${trimmed}\n\nReturn JSON only.`,
-        },
-      ],
-    })
+    const response = await client.messages.create(
+      {
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 1024,
+        system: SYSTEM_PROMPT,
+        messages: [
+          {
+            role: 'user',
+            content: `Product description:\n\n${trimmed}\n\nReturn JSON only.`,
+          },
+        ],
+      },
+      {
+        // SDK-level timeout — abort the underlying fetch after 25s.
+        // Combined with the route's wall-clock Promise.race(30s) and
+        // maxDuration=45s, the user always sees a response within ~30s.
+        timeout: 25_000,
+        maxRetries: 1,
+      }
+    )
 
     if (!response.content?.length || response.content[0].type !== 'text') {
       throw new Error('Empty or non-text Claude response')
