@@ -18,6 +18,8 @@
  *   - userinfo.email   — to read the user's Gmail address
  *   - userinfo.profile — to read display name
  *   - gmail.send       — to send mail (Phase 2 needs this)
+ *
+ * Phase 1 launched 2026-04-08.
  */
 
 import { createHmac, timingSafeEqual } from 'crypto'
