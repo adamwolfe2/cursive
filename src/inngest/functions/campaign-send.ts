@@ -1,11 +1,16 @@
 // Campaign Email Send Functions
-// Handles sending approved emails via EmailBison
+// Handles sending approved emails via:
+//   1. The workspace's own connected Gmail account (when email_account_id
+//      is set on the row) — this is the path used by Outbound Agent.
+//   2. The platform-wide EmailBison key (legacy + non-outbound campaigns).
+// Mock mode (no provider keys set) returns a fake message id for tests.
 
 import { inngest } from '../client'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { EmailBisonClient } from '@/lib/services/emailbison'
 import { isEmailSuppressed } from '@/lib/services/campaign/suppression.service'
 import { checkSendLimits, incrementSendCount } from '@/lib/services/campaign/send-limits.service'
+import { sendViaGmail } from '@/lib/services/gmail/send.service'
 
 // Mock flag for development when API keys aren't available
 const USE_MOCKS = !process.env.EMAILBISON_API_KEY
@@ -176,14 +181,80 @@ export const sendApprovedEmail = inngest.createFunction(
       }
     }
 
-    // Step 5: Send via EmailBison or mock
+    // Step 5: Send via the appropriate provider
+    //
+    // Routing rules:
+    //   - email_account_id set + provider=gmail  → workspace's own Gmail (Phase 2)
+    //   - email_account_id set + provider=smtp   → SMTP (not yet wired — fall back)
+    //   - email_account_id NULL                  → legacy: platform EmailBison key
+    //   - any provider key missing               → mock
     const sendResult = await step.run('send-email', async () => {
+      // ---- Branch A: Per-workspace Gmail (Outbound Agent path) -------------
+      if (emailSend.email_account_id) {
+        const supabase = createAdminClient()
+        const { data: account, error: accErr } = await supabase
+          .from('email_accounts')
+          .select('id, provider, email_address, display_name, workspace_id')
+          .eq('id', emailSend.email_account_id)
+          .maybeSingle()
+
+        if (accErr || !account) {
+          throw new Error(
+            `Email account ${emailSend.email_account_id} not found — cannot send`
+          )
+        }
+        if (account.workspace_id !== workspace_id) {
+          throw new Error(
+            `Email account ${emailSend.email_account_id} does not belong to workspace ${workspace_id}`
+          )
+        }
+
+        if (account.provider === 'gmail') {
+          if (USE_MOCKS && !process.env.OAUTH_TOKEN_ENCRYPTION_KEY) {
+            // Local dev without OAuth keys — pretend it sent
+            logger.info('[MOCK] Simulating Gmail send (no OAUTH_TOKEN_ENCRYPTION_KEY)')
+            return {
+              success: true,
+              message_id: `mock-gmail-${Date.now()}`,
+              sent_at: new Date().toISOString(),
+              provider: 'gmail-mock',
+            }
+          }
+
+          const result = await sendViaGmail({
+            accountId: account.id,
+            fromEmail: account.email_address,
+            fromName: account.display_name,
+            toEmail: emailSend.recipient_email,
+            toName: emailSend.recipient_name,
+            subject: emailSend.subject,
+            bodyHtml: emailSend.body_html,
+            bodyText: emailSend.body_text,
+          })
+
+          return {
+            success: true,
+            message_id: result.messageId,
+            sent_at: result.sentAt,
+            provider: 'gmail',
+            thread_id: result.threadId,
+          }
+        }
+
+        // Unsupported provider on the account row — fall through to legacy path
+        logger.warn(
+          `[campaign-send] email_account ${account.id} has unsupported provider "${account.provider}", falling back to platform EmailBison`
+        )
+      }
+
+      // ---- Branch B: Legacy platform EmailBison ----------------------------
       if (USE_MOCKS) {
-        logger.info('[MOCK] Simulating email send')
+        logger.info('[MOCK] Simulating EmailBison send')
         return {
           success: true,
           message_id: `mock-${Date.now()}-${Math.random().toString(36).slice(2)}`,
           sent_at: new Date().toISOString(),
+          provider: 'emailbison-mock',
         }
       }
 
@@ -196,7 +267,7 @@ export const sendApprovedEmail = inngest.createFunction(
         ? parseInt(process.env.EMAILBISON_DEFAULT_ACCOUNT_ID)
         : undefined
 
-      return await client.sendEmail({
+      const ebResult = await client.sendEmail({
         to_email: emailSend.recipient_email,
         to_name: emailSend.recipient_name || undefined,
         subject: emailSend.subject,
@@ -205,6 +276,8 @@ export const sendApprovedEmail = inngest.createFunction(
         account_id: accountId,
         tracking_id: email_send_id,
       })
+
+      return { ...ebResult, provider: 'emailbison' }
     })
 
     // Step 6: Increment send counts
@@ -218,16 +291,21 @@ export const sendApprovedEmail = inngest.createFunction(
     // Step 7: Update email_sends record
     await step.run('update-email-record', async () => {
       const supabase = createAdminClient()
+      const provider = (sendResult as { provider?: string }).provider ?? (USE_MOCKS ? 'mock' : 'emailbison')
+      const threadId = (sendResult as { thread_id?: string }).thread_id
 
       const { error } = await supabase
         .from('email_sends')
         .update({
           status: 'sent',
           sent_at: sendResult.sent_at,
+          // Reuse the existing column for any provider's message id — it's
+          // just an opaque tracking string from the upstream provider.
           emailbison_message_id: sendResult.message_id,
           send_metadata: {
-            sent_via: USE_MOCKS ? 'mock' : 'emailbison',
+            sent_via: provider,
             sent_at: sendResult.sent_at,
+            ...(threadId && { gmail_thread_id: threadId }),
           },
         })
         .eq('id', email_send_id)
@@ -236,7 +314,7 @@ export const sendApprovedEmail = inngest.createFunction(
         throw new Error(`Failed to update email send record: ${error.message}`)
       }
 
-      logger.info(`Email ${email_send_id} marked as sent`)
+      logger.info(`Email ${email_send_id} marked as sent via ${provider}`)
     })
 
     // Step 8: Update campaign_lead record

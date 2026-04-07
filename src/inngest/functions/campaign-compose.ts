@@ -6,6 +6,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { emailComposerService } from '@/lib/services/composition/email-composer.service'
 import { assignVariant, getAssignedVariant } from '@/lib/services/campaign/ab-testing.service'
 import { generateSalesEmail } from '@/lib/services/ai/claude.service'
+import { findGmailAccountForWorkspace } from '@/lib/services/gmail/email-account.service'
 
 export const composeCampaignEmail = inngest.createFunction(
   {
@@ -132,6 +133,34 @@ export const composeCampaignEmail = inngest.createFunction(
       }
     }
 
+    // Phase 2 safety: outbound-agent drafts must be pinned to a connected
+    // Gmail account at compose time. If none exists (e.g. user disconnected
+    // mid-run), pause the campaign_lead and exit cleanly — no draft created.
+    let outboundEmailAccountId: string | null = null
+    if (isOutboundAgentCampaign) {
+      outboundEmailAccountId = await step.run('lookup-gmail-account', async () => {
+        const gmailAcc = await findGmailAccountForWorkspace(workspace_id)
+        return gmailAcc?.id ?? null
+      })
+      if (!outboundEmailAccountId) {
+        await step.run('pause-lead-no-gmail', async () => {
+          const supabase = createAdminClient()
+          await supabase
+            .from('campaign_leads')
+            .update({ status: 'paused' })
+            .eq('id', campaign_lead_id)
+        })
+        logger.warn(
+          `[outbound] Skipped lead ${lead_id} for campaign ${campaign_id}: no Gmail account connected for workspace ${workspace_id}. Lead paused.`
+        )
+        return {
+          success: false,
+          error: 'no_gmail_account_connected',
+          campaign_lead_id,
+        }
+      }
+    }
+
     // Step 4: Select best template (or generate via AI for outbound agent)
     const selectedTemplate = await step.run('select-template', async () => {
       // If using a variant, create a pseudo-template from the variant
@@ -193,6 +222,9 @@ export const composeCampaignEmail = inngest.createFunction(
           body_html: bodyHtml,
           body_text: draft.body,
           is_outbound_agent: true,
+          // Phase 2: pin the workspace's connected Gmail account into the
+          // email_sends row so sendApprovedEmail knows which inbox to use.
+          __pinnedEmailAccountId: outboundEmailAccountId,
         } as any
       }
 
@@ -247,6 +279,13 @@ export const composeCampaignEmail = inngest.createFunction(
         return existing
       }
 
+      // For outbound-agent campaigns, pin the workspace's connected Gmail
+      // account so the send pipeline knows which inbox to send from. If no
+      // account is connected the run gate (Phase 0) already refused the run,
+      // but we double-guard here so a draft can't slip through.
+      const pinnedEmailAccountId: string | null = (selectedTemplate as any)
+        .__pinnedEmailAccountId ?? null
+
       const insertData: Record<string, any> = {
         workspace_id,
         campaign_id,
@@ -255,6 +294,7 @@ export const composeCampaignEmail = inngest.createFunction(
             ? null
             : selectedTemplate.id,
         lead_id,
+        ...(pinnedEmailAccountId && { email_account_id: pinnedEmailAccountId }),
         recipient_email: lead.email,
         recipient_name: lead.full_name || `${lead.first_name || ''} ${lead.last_name || ''}`.trim(),
         subject: composedEmail.subject,
