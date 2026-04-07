@@ -135,6 +135,12 @@ export function SetupForm({ mode, initialAgent }: SetupFormProps) {
   const onSubmit = async (data: SetupFormData) => {
     setSubmitting(true)
     setError(null)
+
+    // Hard cap so the spinner ALWAYS resets — guards against any future
+    // server hang regression. 35s aligns with maxDuration=30 on the route.
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 35_000)
+
     try {
       const filters: OutboundFilters = {
         industries: generatedFilters?.industries,
@@ -168,18 +174,24 @@ export function SetupForm({ mode, initialAgent }: SetupFormProps) {
           tone: data.tone,
           outbound_filters: filters,
         }),
+        signal: controller.signal,
       })
 
       if (!response.ok) {
         const j = await response.json().catch(() => ({}))
-        throw new Error(j.error || 'Failed to save workflow')
+        throw new Error(j.error || `Failed to save workflow (HTTP ${response.status})`)
       }
-      const { data: created } = await response.json() as { data: OutboundAgent }
+      const { data: created } = (await response.json()) as { data: OutboundAgent }
       router.push(`/outbound/${created.id}`)
       router.refresh()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save')
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        setError('Save timed out after 35 seconds. Please try again.')
+      } else {
+        setError(err instanceof Error ? err.message : 'Failed to save')
+      }
     } finally {
+      clearTimeout(timeoutId)
       setSubmitting(false)
     }
   }

@@ -8,7 +8,13 @@ import { z } from 'zod'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { AgentRepository } from '@/lib/repositories/agent.repository'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import type { OutboundFilters } from '@/types/outbound'
+
+// Generous timeout — getCurrentUser + admin insert can together take ~2-3s
+// cold. Default Vercel timeout (10s) was killing this route.
+export const maxDuration = 30
+export const runtime = 'nodejs'
 
 const filterSchema = z.object({
   industries: z.array(z.string()).optional(),
@@ -73,28 +79,24 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const parsed = createSchema.parse(body)
 
-    const created = await agentRepo.create({
-      workspace_id: user.workspace_id,
+    // Single admin-client insert with ALL fields. Bypasses RLS (the user
+    // ownership check above already authorized the workspace) and avoids
+    // the slow two-roundtrip create-then-update pattern that was timing
+    // out under the user-scoped client + RLS subquery.
+    const created = await agentRepo.createOutboundAgent({
+      workspaceId: user.workspace_id,
       name: parsed.name,
       tone: parsed.tone,
-      // The agents table requires ai_provider/ai_model — supply harmless defaults.
-      // Outbound flow uses Anthropic globally; these fields are vestigial but not nullable.
-      ai_provider: 'anthropic',
-      ai_model: 'claude-haiku-4-5-20251001',
-    } as any)
-
-    // Now update with outbound-specific fields
-    const updated = await agentRepo.updateOutboundConfig(created.id, user.workspace_id, {
-      outbound_enabled: true,
-      outbound_auto_approve: parsed.outbound_auto_approve,
       icp_text: parsed.icp_text ?? null,
       persona_text: parsed.persona_text ?? null,
       product_text: parsed.product_text ?? null,
       outbound_filters: parsed.outbound_filters as OutboundFilters,
+      outbound_auto_approve: parsed.outbound_auto_approve,
     })
 
-    return NextResponse.json({ data: updated }, { status: 201 })
+    return NextResponse.json({ data: created }, { status: 201 })
   } catch (error) {
+    safeError('[outbound] POST /api/outbound/workflows failed:', error)
     return handleApiError(error)
   }
 }

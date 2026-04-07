@@ -588,6 +588,51 @@ export class AgentRepository {
   }
 
   /**
+   * Create a new outbound-enabled agent in a SINGLE INSERT.
+   *
+   * Bypasses RLS (uses admin client) — caller MUST verify the user owns
+   * the workspace before invoking. Used by POST /api/outbound/workflows
+   * to avoid the slow two-roundtrip create-then-update pattern that was
+   * timing out under user-scoped client + RLS subquery on every step.
+   */
+  async createOutboundAgent(input: {
+    workspaceId: string
+    name: string
+    tone: 'professional' | 'casual' | 'friendly' | 'formal'
+    icp_text: string | null
+    persona_text: string | null
+    product_text: string | null
+    outbound_filters: object
+    outbound_auto_approve?: boolean
+  }): Promise<OutboundAgent> {
+    const supabase = createAdminClient()
+
+    const { data, error } = await supabase
+      .from('agents')
+      .insert({
+        workspace_id: input.workspaceId,
+        name: input.name,
+        tone: input.tone,
+        // Vestigial but NOT NULL on the table — supply harmless defaults
+        ai_provider: 'anthropic',
+        ai_model: 'claude-haiku-4-5-20251001',
+        // Outbound fields (added by 20260408000000_outbound_agent_v1.sql)
+        outbound_enabled: true,
+        outbound_auto_approve: input.outbound_auto_approve ?? false,
+        icp_text: input.icp_text,
+        persona_text: input.persona_text,
+        product_text: input.product_text,
+        outbound_filters: input.outbound_filters,
+      } as any)
+      .select('*')
+      .maybeSingle()
+
+    if (error) throw new DatabaseError(error.message)
+    if (!data) throw new DatabaseError('Failed to create outbound agent — no row returned')
+    return data as unknown as OutboundAgent
+  }
+
+  /**
    * Lazy-create the synthetic `email_campaigns` row that backs an outbound
    * agent. Idempotent — returns the existing campaign id if already linked.
    *
