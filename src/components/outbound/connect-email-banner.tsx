@@ -64,6 +64,36 @@ export function ConnectEmailBanner({ agentId }: ConnectEmailBannerProps) {
 
   const connectHref = `/api/integrations/gmail/authorize?return_to=${encodeURIComponent(`/outbound/${agentId}`)}`
 
+  // ── State A: account exists but Google revoked the token ───────────────────
+  if (sending.needs_reconnect && sending.account) {
+    return (
+      <Card className="mb-6 border-destructive/30 bg-destructive/5 p-5">
+        <div className="flex items-start gap-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-destructive/15 text-destructive flex-shrink-0">
+            <ShieldAlert className="h-5 w-5" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-foreground">
+              Gmail access revoked — reconnect {sending.account.email_address}
+            </p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Google says the connection is no longer authorized (most likely you removed Cursive from your
+              Google Account or changed your password). Run is locked until you re-authorize.
+            </p>
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <a href={connectHref}>
+                <Button size="sm" variant="destructive">
+                  <Mail className="h-4 w-4 mr-1.5" />
+                  Reconnect Gmail
+                </Button>
+              </a>
+            </div>
+          </div>
+        </div>
+      </Card>
+    )
+  }
+
   if (sending.ready && sending.account) {
     const handleDisconnect = async () => {
       if (!confirm(`Disconnect ${sending.account!.email_address}?`)) return
@@ -80,6 +110,23 @@ export function ConnectEmailBanner({ agentId }: ConnectEmailBannerProps) {
         error((err as Error).message, { title: 'Disconnect failed' })
       }
     }
+
+    const handleTestSend = async () => {
+      try {
+        const r = await fetch('/api/integrations/gmail/test-send', { method: 'POST' })
+        const j = await r.json().catch(() => ({}))
+        if (!r.ok) throw new Error(j.error || 'Test send failed')
+        success(`Test email sent to ${j.sent_to}. Check your inbox!`, {
+          title: 'Test send successful',
+          duration: 8000,
+        })
+        // Re-poll stats in case test send revealed a token issue
+        queryClient.invalidateQueries({ queryKey: ['outbound', 'stats', agentId] })
+      } catch (err) {
+        error((err as Error).message, { title: 'Test send failed' })
+      }
+    }
+
     // Show a thin "connected" confirmation strip
     return (
       <Card className="mb-6 flex items-center justify-between gap-3 border-success/30 bg-success/5 px-5 py-3">
@@ -95,6 +142,9 @@ export function ConnectEmailBanner({ agentId }: ConnectEmailBannerProps) {
           </div>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
+          <Button variant="outline" size="sm" onClick={handleTestSend}>
+            Send test
+          </Button>
           <a href={connectHref}>
             <Button variant="outline" size="sm">
               <Mail className="h-3.5 w-3.5 mr-1" />

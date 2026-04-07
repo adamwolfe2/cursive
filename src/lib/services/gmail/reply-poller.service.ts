@@ -24,7 +24,7 @@
  */
 
 import { createAdminClient } from '@/lib/supabase/admin'
-import { getValidAccessToken } from './email-account.service'
+import { getValidAccessToken, TokenRevokedError, markNeedsReconnect } from './email-account.service'
 import { classifySentiment } from '@/lib/services/autoresearch/sentiment-classifier'
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
 
@@ -99,8 +99,18 @@ export async function pollGmailAccountForReplies(accountId: string): Promise<Pol
 
   result.email_address = account.email_address
 
-  // 2. Get a valid access token
-  const accessToken = await getValidAccessToken(accountId)
+  // 2. Get a valid access token. If revoked, mark + bail cleanly.
+  let accessToken: string
+  try {
+    accessToken = await getValidAccessToken(accountId)
+  } catch (err) {
+    if (err instanceof TokenRevokedError) {
+      // Already marked by getValidAccessToken — return empty result
+      safeLog('[gmail-poll] account needs reconnect, skipping', { account_id: accountId })
+      return result
+    }
+    throw err
+  }
 
   // 3. Build Gmail search query — newer than last poll, in INBOX, not from self
   const lastPolledAt = account.last_reply_poll_at

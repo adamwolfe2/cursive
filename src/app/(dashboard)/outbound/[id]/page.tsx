@@ -65,6 +65,7 @@ export default async function WorkflowDetailPage({ params }: { params: Promise<{
     sending_account: {
       ready: sendingGate.ready,
       count: sendingGate.count,
+      needs_reconnect: sendingGate.needs_reconnect,
       account: sendingGate.account,
     },
   }

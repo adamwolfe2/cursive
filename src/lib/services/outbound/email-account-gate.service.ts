@@ -25,15 +25,21 @@ export interface ConnectedSendingAccount {
   email_address: string
   provider: string
   is_primary: boolean
+  connection_status: 'active' | 'needs_reconnect' | 'disabled'
 }
 
 export interface SendingAccountGate {
-  /** True if the workspace has at least one verified sending account. */
+  /** True if the workspace has at least one verified, ACTIVE sending account. */
   ready: boolean
-  /** First (or primary) connected account, if any. */
+  /**
+   * First (or primary) connected account, if any. May be in needs_reconnect
+   * state — caller should check connection_status.
+   */
   account: ConnectedSendingAccount | null
-  /** Total verified accounts in the workspace. */
+  /** Total verified accounts in the workspace, regardless of connection_status. */
   count: number
+  /** True if the only available accounts are in needs_reconnect state. */
+  needs_reconnect: boolean
 }
 
 /**
@@ -48,7 +54,7 @@ export async function getSendingAccountGate(workspaceId: string): Promise<Sendin
 
   const { data, error } = await supabase
     .from('email_accounts')
-    .select('id, email_address, provider, is_primary, is_verified')
+    .select('id, email_address, provider, is_primary, is_verified, connection_status')
     .eq('workspace_id', workspaceId)
     .eq('is_verified', true)
     .in('provider', ['gmail', 'outlook', 'smtp'])
@@ -59,28 +65,37 @@ export async function getSendingAccountGate(workspaceId: string): Promise<Sendin
     throw new Error(`Failed to load sending accounts: ${error.message}`)
   }
 
-  const rows = (data ?? []) as Array<{
+  type Row = {
     id: string
     email_address: string
     provider: string
     is_primary: boolean
     is_verified: boolean
-  }>
+    connection_status: 'active' | 'needs_reconnect' | 'disabled' | null
+  }
+  const rows = (data ?? []) as Row[]
 
   if (rows.length === 0) {
-    return { ready: false, account: null, count: 0 }
+    return { ready: false, account: null, count: 0, needs_reconnect: false }
   }
 
-  const first = rows[0]
+  // Prefer an active account; fall back to surfacing the needs_reconnect one
+  // so the UI knows what to prompt about.
+  const activeRow = rows.find(r => (r.connection_status ?? 'active') === 'active')
+  const surfaceRow = activeRow ?? rows[0]
+  const status = (surfaceRow.connection_status ?? 'active') as 'active' | 'needs_reconnect' | 'disabled'
+
   return {
-    ready: true,
+    ready: !!activeRow,
     account: {
-      id: first.id,
-      email_address: first.email_address,
-      provider: first.provider,
-      is_primary: !!first.is_primary,
+      id: surfaceRow.id,
+      email_address: surfaceRow.email_address,
+      provider: surfaceRow.provider,
+      is_primary: !!surfaceRow.is_primary,
+      connection_status: status,
     },
     count: rows.length,
+    needs_reconnect: !activeRow && status === 'needs_reconnect',
   }
 }
 

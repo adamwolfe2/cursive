@@ -123,11 +123,13 @@ export interface StageCounts {
 export interface SendingAccountStatus {
   ready: boolean
   count: number
+  needs_reconnect: boolean
   account: {
     id: string
     email_address: string
     provider: string
     is_primary: boolean
+    connection_status: 'active' | 'needs_reconnect' | 'disabled'
   } | null
 }
 

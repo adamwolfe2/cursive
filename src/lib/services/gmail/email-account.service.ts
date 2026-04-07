@@ -100,6 +100,11 @@ export async function connectGmailAccount(
         oauth_scope: tokens.scope ?? GMAIL_SCOPES.join(' '),
         oauth_provider_user_id: userInfo.id,
         last_token_refresh_at: new Date().toISOString(),
+        // Reset connection status on successful (re)connect — clears any
+        // previous needs_reconnect flag from a revoked token.
+        connection_status: 'active',
+        last_error: null,
+        last_error_at: null,
         updated_at: new Date().toISOString(),
       },
       { onConflict: 'workspace_id,email_address' }
@@ -133,19 +138,58 @@ interface AccountTokenRow {
 }
 
 /**
+ * Custom error thrown when Google says the refresh token is no longer valid
+ * (user revoked app access, password changed, etc.). Caller should treat
+ * this as terminal and prompt the user to reconnect.
+ */
+export class TokenRevokedError extends Error {
+  constructor(public accountId: string, public underlyingMessage: string) {
+    super(`Gmail token revoked for account ${accountId} (${underlyingMessage})`)
+    this.name = 'TokenRevokedError'
+  }
+}
+
+function isInvalidGrant(err: unknown): boolean {
+  if (!(err instanceof Error)) return false
+  const m = err.message.toLowerCase()
+  return (
+    m.includes('invalid_grant') ||
+    m.includes('token has been expired or revoked') ||
+    m.includes('refresh token is invalid')
+  )
+}
+
+/**
+ * Mark an account as needing reconnection. Idempotent.
+ */
+export async function markNeedsReconnect(accountId: string, reason: string): Promise<void> {
+  const supabase = createAdminClient()
+  await supabase
+    .from('email_accounts')
+    .update({
+      connection_status: 'needs_reconnect',
+      last_error: reason.slice(0, 500),
+      last_error_at: new Date().toISOString(),
+    })
+    .eq('id', accountId)
+}
+
+/**
  * Returns a non-expired access token for the given account, refreshing
  * via Google if the cached one is missing or near expiry. Persists the
  * refreshed token back to email_accounts.
  *
- * Throws if the account is not a Gmail OAuth account or has no refresh
- * token on file.
+ * Throws TokenRevokedError if Google returned invalid_grant — caller
+ * should NOT retry, the user must reconnect.
+ *
+ * Throws plain Error for other failures (transient network etc.).
  */
 export async function getValidAccessToken(accountId: string): Promise<string> {
   const supabase = createAdminClient()
 
   const { data: row, error } = await supabase
     .from('email_accounts')
-    .select('id, workspace_id, oauth_refresh_token_ct, oauth_access_token, oauth_expires_at, provider')
+    .select('id, workspace_id, oauth_refresh_token_ct, oauth_access_token, oauth_expires_at, provider, connection_status')
     .eq('id', accountId)
     .maybeSingle()
 
@@ -154,6 +198,9 @@ export async function getValidAccessToken(accountId: string): Promise<string> {
   }
   if (row.provider !== 'gmail') {
     throw new Error(`Email account ${accountId} is not a Gmail account`)
+  }
+  if (row.connection_status === 'needs_reconnect') {
+    throw new TokenRevokedError(accountId, 'connection_status=needs_reconnect')
   }
   if (!row.oauth_refresh_token_ct) {
     throw new Error(`Email account ${accountId} has no refresh token on file — reconnect required`)
@@ -166,9 +213,20 @@ export async function getValidAccessToken(accountId: string): Promise<string> {
     return row.oauth_access_token!
   }
 
-  // Refresh
-  const refreshToken = decryptToken(row.oauth_refresh_token_ct)
-  const fresh = await refreshAccessToken(refreshToken)
+  // Refresh — catch invalid_grant and mark the account
+  let fresh
+  try {
+    const refreshToken = decryptToken(row.oauth_refresh_token_ct)
+    fresh = await refreshAccessToken(refreshToken)
+  } catch (err) {
+    if (isInvalidGrant(err)) {
+      const reason = err instanceof Error ? err.message : String(err)
+      await markNeedsReconnect(accountId, reason)
+      throw new TokenRevokedError(accountId, reason)
+    }
+    throw err
+  }
+
   const newExpiresAt = new Date(Date.now() + fresh.expires_in * 1000).toISOString()
 
   const { error: updateError } = await supabase
@@ -177,6 +235,8 @@ export async function getValidAccessToken(accountId: string): Promise<string> {
       oauth_access_token: fresh.access_token,
       oauth_expires_at: newExpiresAt,
       last_token_refresh_at: new Date().toISOString(),
+      connection_status: 'active', // clear any previous error state on successful refresh
+      last_error: null,
       // Google sometimes rotates refresh tokens — persist the new one if returned
       ...(fresh.refresh_token && { oauth_refresh_token_ct: encryptToken(fresh.refresh_token) }),
     })

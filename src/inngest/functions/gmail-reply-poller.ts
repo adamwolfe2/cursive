@@ -37,6 +37,7 @@ export const gmailReplyPollerCron = inngest.createFunction(
         .select('id')
         .eq('provider', 'gmail')
         .eq('is_verified', true)
+        .eq('connection_status', 'active')
         .not('oauth_refresh_token_ct', 'is', null)
         .limit(500)
 

@@ -11,6 +11,7 @@ import { EmailBisonClient } from '@/lib/services/emailbison'
 import { isEmailSuppressed } from '@/lib/services/campaign/suppression.service'
 import { checkSendLimits, incrementSendCount } from '@/lib/services/campaign/send-limits.service'
 import { sendViaGmail } from '@/lib/services/gmail/send.service'
+import { TokenRevokedError, markNeedsReconnect } from '@/lib/services/gmail/email-account.service'
 
 // Mock flag for development when API keys aren't available
 const USE_MOCKS = !process.env.EMAILBISON_API_KEY
@@ -221,24 +222,47 @@ export const sendApprovedEmail = inngest.createFunction(
             }
           }
 
-          const result = await sendViaGmail({
-            accountId: account.id,
-            fromEmail: account.email_address,
-            fromName: account.display_name,
-            toEmail: emailSend.recipient_email,
-            toName: emailSend.recipient_name,
-            subject: emailSend.subject,
-            bodyHtml: emailSend.body_html,
-            bodyText: emailSend.body_text,
-          })
+          try {
+            const result = await sendViaGmail({
+              accountId: account.id,
+              fromEmail: account.email_address,
+              fromName: account.display_name,
+              toEmail: emailSend.recipient_email,
+              toName: emailSend.recipient_name,
+              subject: emailSend.subject,
+              bodyHtml: emailSend.body_html,
+              bodyText: emailSend.body_text,
+            })
 
-          return {
-            success: true,
-            message_id: result.messageId,
-            sent_at: result.sentAt,
-            provider: 'gmail',
-            thread_id: result.threadId,
-            rfc822_message_id: result.rfc822MessageId,
+            return {
+              success: true,
+              message_id: result.messageId,
+              sent_at: result.sentAt,
+              provider: 'gmail',
+              thread_id: result.threadId,
+              rfc822_message_id: result.rfc822MessageId,
+            }
+          } catch (err) {
+            // Token-revocation: mark account, return 'paused' status — caller
+            // re-throws so the email_send row goes back to needs_attention
+            // and the user is prompted to reconnect.
+            if (err instanceof TokenRevokedError) {
+              logger.warn(`Gmail token revoked for account ${account.id} — pausing send`)
+              await markNeedsReconnect(account.id, 'invalid_grant during send')
+              throw new Error(
+                `Gmail account ${account.email_address} access has been revoked. Reconnect required.`
+              )
+            }
+            // Detect 401 invalid_grant from the raw Gmail API response too
+            const msg = err instanceof Error ? err.message : String(err)
+            if (msg.includes('401') && (msg.toLowerCase().includes('invalid_grant') || msg.toLowerCase().includes('invalid credentials'))) {
+              logger.warn(`Gmail 401 invalid_grant for account ${account.id} — pausing send`)
+              await markNeedsReconnect(account.id, msg)
+              throw new Error(
+                `Gmail account ${account.email_address} returned 401 — token likely revoked. Reconnect required.`
+              )
+            }
+            throw err
           }
         }
 

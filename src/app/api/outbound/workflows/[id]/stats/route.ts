@@ -66,6 +66,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
       sending_account: {
         ready: sendingGate.ready,
         count: sendingGate.count,
+        needs_reconnect: sendingGate.needs_reconnect,
         account: sendingGate.account,
       },
     }

@@ -7,11 +7,13 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { AgentRepository } from '@/lib/repositories/agent.repository'
+import { getSendingAccountGate } from '@/lib/services/outbound/email-account-gate.service'
 import { PageContainer, PageHeader } from '@/components/layout'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { EmptyState } from '@/components/ui/empty-state'
 import { WorkflowCard } from '@/components/outbound/workflow-card'
+import { ConnectEmailListBanner } from '@/components/outbound/connect-email-list-banner'
 import { Rocket, Plus } from 'lucide-react'
 
 export const metadata: Metadata = { title: 'Outbound Agent | Cursive' }
@@ -31,7 +33,10 @@ export default async function OutboundListPage() {
   if (!userData?.workspace_id) redirect('/welcome')
 
   const agentRepo = new AgentRepository()
-  const workflows = await agentRepo.findOutboundEnabled(userData.workspace_id)
+  const [workflows, sendingGate] = await Promise.all([
+    agentRepo.findOutboundEnabled(userData.workspace_id),
+    getSendingAccountGate(userData.workspace_id),
+  ])
 
   return (
     <PageContainer>
@@ -50,6 +55,15 @@ export default async function OutboundListPage() {
             </Button>
           </Link>
         }
+      />
+
+      <ConnectEmailListBanner
+        status={{
+          ready: sendingGate.ready,
+          count: sendingGate.count,
+          needs_reconnect: sendingGate.needs_reconnect,
+          account: sendingGate.account,
+        }}
       />
 
       {/* Hero info card — white background, primary-blue accent */}
