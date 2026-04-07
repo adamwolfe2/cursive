@@ -21,6 +21,7 @@ import {
 import { AgentRepository } from '@/lib/repositories/agent.repository'
 import { OutboundRunRepository } from '@/lib/repositories/outbound-run.repository'
 import { CREDIT_COST_PER_LEAD, HARD_CAP_PER_RUN } from '@/lib/services/outbound/al-prospecting.service'
+import { hasConnectedSendingAccount } from '@/lib/services/outbound/email-account-gate.service'
 import { inngest } from '@/inngest/client'
 import { createAdminClient } from '@/lib/supabase/admin'
 
@@ -43,6 +44,18 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     // 1. Load the agent
     const agent = await agentRepo.findOutboundById(id, user.workspace_id)
     if (!agent) throw new NotFoundError('Workflow not found')
+
+    // 1a. SAFETY LOCK (Phase 0): refuse to run unless the workspace has a
+    // verified per-user sending account. Until Gmail OAuth ships in Phase 1,
+    // this prevents random workspaces from accidentally sending through the
+    // platform-wide EMAILBISON_API_KEY (which belongs to the platform owner).
+    const hasAccount = await hasConnectedSendingAccount(user.workspace_id)
+    if (!hasAccount) {
+      throw new ApiError(
+        'Connect a sending email account before running this workflow. Outbound Agent needs your Gmail (or other inbox) to send from your domain — not the platform default.',
+        412
+      )
+    }
 
     // 2. Cap target_count
     const filterCap = (agent.outbound_filters as { cap_per_run?: number })?.cap_per_run ?? 25

@@ -17,6 +17,7 @@ import {
 } from '@/lib/utils/api-error-handler'
 import { AgentRepository } from '@/lib/repositories/agent.repository'
 import { OutboundRunRepository } from '@/lib/repositories/outbound-run.repository'
+import { getSendingAccountGate } from '@/lib/services/outbound/email-account-gate.service'
 import { createClient } from '@/lib/supabase/server'
 import type { StageCounts, WorkflowStatsResponse } from '@/types/outbound'
 
@@ -52,15 +53,21 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
       booked: (viewRow as any)?.booked_count ?? 0,
     }
 
-    const [latest_run, recent_runs] = await Promise.all([
+    const [latest_run, recent_runs, sendingGate] = await Promise.all([
       runRepo.findLatest(id, user.workspace_id),
       runRepo.findRecent(id, user.workspace_id, 10),
+      getSendingAccountGate(user.workspace_id),
     ])
 
     const response: WorkflowStatsResponse = {
       stages,
       latest_run,
       recent_runs,
+      sending_account: {
+        ready: sendingGate.ready,
+        count: sendingGate.count,
+        account: sendingGate.account,
+      },
     }
 
     return NextResponse.json({ data: response })

@@ -120,10 +120,22 @@ export interface StageCounts {
   booked: number
 }
 
+export interface SendingAccountStatus {
+  ready: boolean
+  count: number
+  account: {
+    id: string
+    email_address: string
+    provider: string
+    is_primary: boolean
+  } | null
+}
+
 export interface WorkflowStatsResponse {
   stages: StageCounts
   latest_run: OutboundRun | null
   recent_runs: OutboundRun[]
+  sending_account: SendingAccountStatus
 }
 
 // ============================================================================

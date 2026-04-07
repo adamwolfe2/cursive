@@ -6,6 +6,7 @@ import { notFound, redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { AgentRepository } from '@/lib/repositories/agent.repository'
 import { OutboundRunRepository } from '@/lib/repositories/outbound-run.repository'
+import { getSendingAccountGate } from '@/lib/services/outbound/email-account-gate.service'
 import { PageContainer, PageHeader } from '@/components/layout'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -14,6 +15,7 @@ import { RunNowButton } from '@/components/outbound/run-now-button'
 import { RunStatusBadge } from '@/components/outbound/run-status-badge'
 import { ProspectsList } from '@/components/outbound/prospects-list'
 import { ChatToggle } from '@/components/outbound/chat-toggle'
+import { ConnectEmailBanner } from '@/components/outbound/connect-email-banner'
 import { Settings as SettingsIcon } from 'lucide-react'
 import type { WorkflowStatsResponse, StageCounts } from '@/types/outbound'
 
@@ -40,10 +42,11 @@ export default async function WorkflowDetailPage({ params }: { params: Promise<{
   if (!agent) notFound()
 
   // Initial stats snapshot for SSR — avoids the empty flash before first poll
-  const [latestRun, recentRuns, viewRow] = await Promise.all([
+  const [latestRun, recentRuns, viewRow, sendingGate] = await Promise.all([
     runRepo.findLatest(id, userData.workspace_id),
     runRepo.findRecent(id, userData.workspace_id, 10),
     supabase.from('outbound_pipeline_counts').select('*').eq('agent_id', id).maybeSingle(),
+    getSendingAccountGate(userData.workspace_id),
   ])
 
   const stages: StageCounts = {
@@ -59,6 +62,11 @@ export default async function WorkflowDetailPage({ params }: { params: Promise<{
     stages,
     latest_run: latestRun,
     recent_runs: recentRuns,
+    sending_account: {
+      ready: sendingGate.ready,
+      count: sendingGate.count,
+      account: sendingGate.account,
+    },
   }
 
   return (
@@ -85,6 +93,8 @@ export default async function WorkflowDetailPage({ params }: { params: Promise<{
           </div>
         }
       />
+
+      <ConnectEmailBanner agentId={id} />
 
       <div className="grid gap-6 lg:grid-cols-[minmax(380px,420px)_1fr]">
         {/* Left column — 6 stage cards */}
