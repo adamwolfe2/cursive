@@ -15,46 +15,46 @@ interface Advantage {
 const advantages: Advantage[] = [
   {
     icon: TrendingUp,
-    title: "Industry-Leading Match Rates",
-    description: "Identify up to 70% of your website visitors—more than double the industry average of 30-40%. See exactly who's browsing your pricing page before they fill out a form.",
-    metric: "70%",
-    metricLabel: "vs 30-40% industry avg"
+    title: "Match Rates That Outclass The Industry",
+    description: "40–60% pixel match rates driven by our geo-framing methodology — versus 2–5% for cookie-based providers and 10–15% for IP databases. Deterministic, not modeled.",
+    metric: "40–60%",
+    metricLabel: "vs 2–5% cookies, 10–15% IP",
   },
   {
     icon: Database,
-    title: "Largest Data Universe",
-    description: "Access 280M US consumer profiles and 140M+ business profiles with verified contact information. Build unlimited audiences without size caps or restrictive licensing.",
-    metric: "420M+",
-    metricLabel: "total profiles"
+    title: "Offline-Rooted Identity Graph",
+    description: "280M+ verified US consumer records sourced from TransUnion and Experian, refreshed every 30 days against the National Change of Address database. Most providers reconcile annually.",
+    metric: "280M+",
+    metricLabel: "refreshed every 30 days",
   },
   {
     icon: Zap,
-    title: "Real-Time Enrichment",
-    description: "Get visitor data instantly—not hours or days later. Real-time identification and enrichment means you can reach out while prospects are actively engaged.",
-    metric: "Real-time",
-    metricLabel: "not batch processing"
-  },
-  {
-    icon: DollarSign,
-    title: "No Minimum Spend",
-    description: "Start at just $1,000/month with no long-term contracts or minimum commitments. Scale up or down based on your needs—no vendor lock-in.",
-    metric: "$1,000/mo",
-    metricLabel: "starting price"
+    title: "Coverage You Can't Get Anywhere Else",
+    description: "Standard SSP and RTB feeds plus a proprietary 15M-domain organic network. Most intent providers pull from the same ~40,000 signal-source domains. Cursive operates an additional layer no one else has.",
+    metric: "15M+",
+    metricLabel: "proprietary domains",
   },
   {
     icon: CheckCircle,
-    title: "Direct Data Access",
-    description: "We own our data infrastructure—no middleman markup. Get better pricing on higher quality data without paying for unnecessary intermediaries.",
-    metric: "Direct",
-    metricLabel: "no middleman fees"
+    title: "Closed Feedback Loop",
+    description: "We map ingested signals back to the URLs, mobile apps, and email exchanges that generated them, then validate against real conversion outcomes. The data set improves with use rather than degrading over time.",
+    metric: "Continuous",
+    metricLabel: "outcome-validated",
+  },
+  {
+    icon: DollarSign,
+    title: "Enterprise-Grade Pricing Structure",
+    description: "Pay-as-you-go for evaluation and lower-volume use, or committed tiers from $15K/month for scaled production with significantly lower per-record economics. Self-serve marketplace and managed services also available.",
+    metric: "From $15K",
+    metricLabel: "monthly committed tier",
   },
   {
     icon: Shield,
-    title: "Privacy-First Approach",
-    description: "Fully compliant with CCPA, GDPR, and all major privacy regulations. We honor opt-out requests and maintain strict data handling policies.",
-    metric: "100%",
-    metricLabel: "compliant"
-  }
+    title: "Privacy-First & Compliant",
+    description: "Fully compliant with CCPA, GDPR, and all major privacy regulations. Email validation runs continuously through Deep Verify at approximately 20 million records per day. Consumer file is API-only — never licensed as a downloadable export.",
+    metric: "20M / day",
+    metricLabel: "emails validated",
+  },
 ]
 
 export function CompetitiveAdvantagesSection() {

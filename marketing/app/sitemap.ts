@@ -21,6 +21,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/audience-builder',
     '/direct-mail',
     '/data-access',
+    '/data-partnerships',
     '/integrations',
     '/intent-audiences',
   ].map(url => ({

@@ -85,6 +85,12 @@ const navLinks: NavLink[] = [
     label: "Resources",
     dropdown: [
       {
+        href: "/data-partnerships",
+        label: "Data Partnerships",
+        description: "Identity & intent infrastructure for enterprise buyers",
+        icon: Database,
+      },
+      {
         href: "/case-studies",
         label: "Case Studies",
         description: "Real results from Cursive customers",
@@ -107,12 +113,6 @@ const navLinks: NavLink[] = [
         label: "About Cursive",
         description: "Our mission and team",
         icon: BookOpen,
-      },
-      {
-        href: "/faq",
-        label: "FAQ",
-        description: "Answers to common questions",
-        icon: FileText,
       },
       {
         href: "/demos",
