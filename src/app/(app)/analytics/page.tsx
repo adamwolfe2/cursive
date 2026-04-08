@@ -202,7 +202,7 @@ export default async function AnalyticsPage() {
           <div className="bg-card rounded-xl border border-border p-6">
             <span className="text-sm text-muted-foreground">Hot Leads</span>
             <div className="text-3xl font-semibold text-foreground mt-1">{stats.hot.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground mt-1">intent score &ge;70</p>
+            <p className="text-xs text-muted-foreground mt-1">intent score ≥70</p>
           </div>
           <div className="bg-card rounded-xl border border-border p-6">
             <span className="text-sm text-muted-foreground">Won</span>
@@ -354,7 +354,7 @@ export default async function AnalyticsPage() {
 
       </div>
 
-      {/* Bottom CTA if user isn&apos;t using pipeline features */}
+      {/* Bottom CTA if user isn't using pipeline features */}
       {stats.contacted === 0 && stats.total > 0 && (
         <AnimatedSection delay={0.16}>
           <div className="bg-muted border border-border rounded-xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
