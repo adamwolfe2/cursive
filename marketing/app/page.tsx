@@ -342,7 +342,7 @@ export default function HomePage() {
           <MachineSection title="Contact & Support">
             <MachineList items={[
               { label: "Website", href: "https://www.meetcursive.com" },
-              { label: "Email", href: "mailto:hello@meetcursive.com" },
+              { label: "Email", href: "mailto:hey@meetcursive.com" },
               { label: "Schedule Demo", href: "https://cal.com/cursiveteam/30min" },
               { label: "LinkedIn", href: "https://linkedin.com/company/cursive" },
               { label: "Twitter", href: "https://twitter.com/meetcursive" },

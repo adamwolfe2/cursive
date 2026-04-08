@@ -742,7 +742,7 @@ export default function AboutPage() {
           },
           {
             label: "Email",
-            href: "mailto:hello@meetcursive.com"
+            href: "mailto:hey@meetcursive.com"
           }
         ]} />
       </MachineSection>

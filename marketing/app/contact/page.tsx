@@ -83,7 +83,7 @@ export default function ContactPage() {
             "@type": "ContactPoint",
             "telephone": "",
             "contactType": "Sales",
-            "email": "hello@meetcursive.com",
+            "email": "hey@meetcursive.com",
             "availableLanguage": "en",
             "areaServed": "US"
           },
@@ -91,7 +91,7 @@ export default function ContactPage() {
             "@type": "ContactPoint",
             "telephone": "",
             "contactType": "Customer Support",
-            "email": "hello@meetcursive.com",
+            "email": "hey@meetcursive.com",
             "availableLanguage": "en",
             "areaServed": "US"
           }
@@ -353,8 +353,8 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="text-lg text-gray-900 mb-1">Email Us</h3>
-                    <a href="mailto:hello@meetcursive.com" className="text-primary hover:underline">
-                      hello@meetcursive.com
+                    <a href="mailto:hey@meetcursive.com" className="text-primary hover:underline">
+                      hey@meetcursive.com
                     </a>
                     <p className="text-gray-600 text-sm mt-1">We respond within 24 hours</p>
                   </div>
@@ -575,7 +575,7 @@ export default function ContactPage() {
             <div className="bg-white rounded-xl p-6 border border-gray-200 text-center">
               <Mail className="w-10 h-10 text-primary mx-auto mb-4" />
               <h3 className="text-gray-900 mb-2">General Inquiries</h3>
-              <a href="mailto:hello@meetcursive.com" className="text-primary hover:underline text-sm">hello@meetcursive.com</a>
+              <a href="mailto:hey@meetcursive.com" className="text-primary hover:underline text-sm">hey@meetcursive.com</a>
               <p className="text-gray-600 text-sm mt-2">For questions about products, pricing, or partnerships.</p>
             </div>
             <div className="bg-white rounded-xl p-6 border border-gray-200 text-center">
@@ -587,7 +587,7 @@ export default function ContactPage() {
             <div className="bg-white rounded-xl p-6 border border-gray-200 text-center">
               <MessageCircle className="w-10 h-10 text-primary mx-auto mb-4" />
               <h3 className="text-gray-900 mb-2">Sales Inquiries</h3>
-              <a href="mailto:hello@meetcursive.com" className="text-primary hover:underline text-sm">hello@meetcursive.com</a>
+              <a href="mailto:hey@meetcursive.com" className="text-primary hover:underline text-sm">hey@meetcursive.com</a>
               <p className="text-gray-600 text-sm mt-2">For enterprise pricing, white-label, and custom solutions. Response within 4 hours.</p>
             </div>
           </div>
@@ -624,8 +624,8 @@ export default function ContactPage() {
           },
           {
             label: "Email",
-            href: "mailto:hello@meetcursive.com",
-            description: "Send us an email at hello@meetcursive.com. We respond within 24 hours."
+            href: "mailto:hey@meetcursive.com",
+            description: "Send us an email at hey@meetcursive.com. We respond within 24 hours."
           },
           {
             label: "Live Chat",
@@ -777,8 +777,8 @@ export default function ContactPage() {
         <MachineList items={[
           {
             label: "General Inquiries",
-            href: "mailto:hello@meetcursive.com",
-            description: "hello@meetcursive.com - For questions about products, pricing, or partnerships"
+            href: "mailto:hey@meetcursive.com",
+            description: "hey@meetcursive.com - For questions about products, pricing, or partnerships"
           },
           {
             label: "Book a Demo",
@@ -787,8 +787,8 @@ export default function ContactPage() {
           },
           {
             label: "Sales Inquiries",
-            href: "mailto:hello@meetcursive.com",
-            description: "hello@meetcursive.com - Enterprise pricing, white-label, and custom solutions. Response within 4 hours."
+            href: "mailto:hey@meetcursive.com",
+            description: "hey@meetcursive.com - Enterprise pricing, white-label, and custom solutions. Response within 4 hours."
           }
         ]} />
       </MachineSection>

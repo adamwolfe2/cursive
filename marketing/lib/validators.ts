@@ -9,7 +9,7 @@ export const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 export const FROM_EMAIL = process.env.EMAIL_FROM || 'Cursive <noreply@meetcursive.com>'
 
 /** Support / internal notification address */
-export const SUPPORT_EMAIL = process.env.SUPPORT_EMAIL || 'hello@meetcursive.com'
+export const SUPPORT_EMAIL = process.env.SUPPORT_EMAIL || 'hey@meetcursive.com'
 
 /**
  * Returns true if the given email string passes basic format validation.

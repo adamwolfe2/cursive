@@ -33,7 +33,7 @@ async function sendVisitorReportEmails(data: {
 }): Promise<void> {
   const resendApiKey = process.env.RESEND_API_KEY
   const emailFrom = process.env.EMAIL_FROM || 'Cursive <noreply@meetcursive.com>'
-  const supportEmail = process.env.SUPPORT_EMAIL || 'hello@meetcursive.com'
+  const supportEmail = process.env.SUPPORT_EMAIL || 'hey@meetcursive.com'
 
   if (!resendApiKey) {
     throw new Error('RESEND_API_KEY is not configured')

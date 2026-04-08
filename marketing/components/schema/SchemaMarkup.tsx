@@ -20,7 +20,7 @@ export function OrganizationSchema() {
     name: "Cursive",
     url: BASE_URL,
     logo: `${BASE_URL}/cursive-logo.png`,
-    email: "hello@meetcursive.com",
+    email: "hey@meetcursive.com",
     foundingDate: "2024",
     description:
       "Cursive is an AI-powered B2B data and outbound platform that helps companies identify website visitors, build targeted audiences, and automate multi-channel outreach.",

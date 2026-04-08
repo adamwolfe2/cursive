@@ -126,10 +126,10 @@ export default function DataPartnershipsPage() {
             <p className="mt-4 text-sm text-gray-500">
               Last updated April&nbsp;2026. For commercial questions, contact{" "}
               <a
-                href="mailto:partnerships@meetcursive.com"
+                href="mailto:hey@meetcursive.com"
                 className="text-primary underline underline-offset-4 decoration-primary/40 hover:decoration-primary"
               >
-                partnerships@meetcursive.com
+                hey@meetcursive.com
               </a>
               .
             </p>
@@ -137,19 +137,20 @@ export default function DataPartnershipsPage() {
         </section>
 
         {/* ── Key facts strip ─────────────────────────────────────────────── */}
-        {/* 3 cols × 2 rows on desktop. Was 6 columns, but stat values like
-            "~20M / day" wrapped because per-column width was too narrow. The
-            3×2 layout gives every value the same horizontal weight and lets
-            the numbers breathe without any value wrapping. */}
+        {/* 3 cols × 2 rows. Container width matches every other section on
+            this page (max-w-3xl) so the left/right edges line up vertically
+            with the hero, ToC, content sections, and CTAs. Previously this
+            section used max-w-5xl which made the strip appear shifted left
+            because a wider centered container has a smaller left margin. */}
         <section className="border-b border-gray-100 py-14">
-          <Container className="max-w-5xl">
+          <Container className="max-w-3xl">
             <dl className="grid grid-cols-2 gap-y-10 gap-x-8 sm:grid-cols-3">
               {KEY_FACTS.map((fact) => (
                 <div key={fact.label} className="text-left">
                   <dt className="font-mono text-[1.75rem] font-light leading-none text-gray-900 whitespace-nowrap">
                     {fact.value}
                   </dt>
-                  <dd className="mt-2.5 text-[11px] uppercase tracking-[0.12em] text-gray-500">
+                  <dd className="mt-2.5 text-[11px] uppercase tracking-[0.12em] text-gray-500 leading-snug">
                     {fact.label}
                   </dd>
                 </div>
@@ -418,7 +419,7 @@ export default function DataPartnershipsPage() {
                 Schedule a call
               </Link>
               <a
-                href="mailto:partnerships@meetcursive.com"
+                href="mailto:hey@meetcursive.com"
                 className="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-6 py-3 text-sm font-medium text-gray-900 transition-colors hover:border-gray-400"
               >
                 Email our data team

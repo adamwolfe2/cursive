@@ -14,7 +14,7 @@ export function generateOrganizationSchema() {
       '@type': 'ContactPoint',
       contactType: 'Sales',
       url: 'https://cal.com/cursiveteam/30min',
-      email: 'hello@meetcursive.com',
+      email: 'hey@meetcursive.com',
     },
   }
 }

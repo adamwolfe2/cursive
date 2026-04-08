@@ -1253,8 +1253,8 @@ export default function CallBookedPage() {
                 <div className="text-center mt-10">
                   <p className="text-sm text-gray-400">
                     Questions before your call? Email us at{" "}
-                    <a href="mailto:hello@meetcursive.com" className="text-primary hover:underline">
-                      hello@meetcursive.com
+                    <a href="mailto:hey@meetcursive.com" className="text-primary hover:underline">
+                      hey@meetcursive.com
                     </a>
                   </p>
                 </div>
@@ -1388,7 +1388,7 @@ export default function CallBookedPage() {
               { label: "Book a Call", href: "https://cal.com/cursiveteam/30min", description: "30-minute strategy call to review your ICP and see matching leads" },
               { label: "Lead Marketplace (Free Gift)", href: "https://leads.meetcursive.com/signup?source=call-booked-gift", description: "Try the marketplace free with 100 credits — no credit card required" },
               { label: "View Pricing", href: "https://www.meetcursive.com/pricing", description: "See all plans and pricing details" },
-              { label: "Contact Us", href: "https://www.meetcursive.com/contact", description: "Email hello@meetcursive.com for questions" },
+              { label: "Contact Us", href: "https://www.meetcursive.com/contact", description: "Email hey@meetcursive.com for questions" },
             ]} />
           </MachineSection>
         </MachineContent>

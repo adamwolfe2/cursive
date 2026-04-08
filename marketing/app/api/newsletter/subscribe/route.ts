@@ -5,7 +5,7 @@
  * - Validates email
  * - Rate limits by IP (max 3 signups per IP per hour)
  * - Sends welcome email to subscriber via Resend
- * - Notifies hello@meetcursive.com of each new signup
+ * - Notifies hey@meetcursive.com of each new signup
  * - Returns success/error
  *
  * NOTE: No local file storage — Vercel filesystem is read-only at runtime.

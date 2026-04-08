@@ -414,7 +414,7 @@ export function WebMCPProvider() {
               "https://www.meetcursive.com/free-audit",
             marketplace_signup:
               "https://leads.meetcursive.com/signup",
-            email: "hello@meetcursive.com",
+            email: "hey@meetcursive.com",
           },
         }
       },

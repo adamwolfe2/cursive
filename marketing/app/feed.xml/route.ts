@@ -366,8 +366,8 @@ export async function GET() {
     <link>${BASE_URL}/blog</link>
     <description>Guides, comparisons, and strategies for B2B lead generation, website visitor identification, intent data, and AI-powered outreach automation.</description>
     <language>en-us</language>
-    <managingEditor>hello@meetcursive.com (Cursive)</managingEditor>
-    <webMaster>hello@meetcursive.com (Cursive)</webMaster>
+    <managingEditor>hey@meetcursive.com (Cursive)</managingEditor>
+    <webMaster>hey@meetcursive.com (Cursive)</webMaster>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
     <atom:link href="${BASE_URL}/feed.xml" rel="self" type="application/rss+xml"/>
     <image>

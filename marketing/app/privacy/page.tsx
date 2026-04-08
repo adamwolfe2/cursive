@@ -296,7 +296,7 @@ export default function PrivacyPage() {
           </p>
           <ul>
             <li>Email: <a href="mailto:privacy@meetcursive.com" className="text-primary hover:underline">privacy@meetcursive.com</a></li>
-            <li>General inquiries: <a href="mailto:hello@meetcursive.com" className="text-primary hover:underline">hello@meetcursive.com</a></li>
+            <li>General inquiries: <a href="mailto:hey@meetcursive.com" className="text-primary hover:underline">hey@meetcursive.com</a></li>
           </ul>
         </div>
       </Container>

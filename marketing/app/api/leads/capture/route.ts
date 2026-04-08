@@ -3,7 +3,7 @@
  * Handles popup form submissions (exit-intent, free audit, etc.)
  *
  * - Validates lead data (email, firstName, company)
- * - Sends notification email to hello@meetcursive.com via Resend
+ * - Sends notification email to hey@meetcursive.com via Resend
  * - Sends confirmation email to the lead via Resend
  * - Returns success/error
  */
@@ -172,7 +172,7 @@ async function sendLeadConfirmation(leadData: LeadData): Promise<void> {
 
       <p style="color: #666; line-height: 1.6;">
         If you have any questions, feel free to reply to this email or reach out at
-        <a href="mailto:hello@meetcursive.com" style="color: #007aff; text-decoration: none;">hello@meetcursive.com</a>.
+        <a href="mailto:hey@meetcursive.com" style="color: #007aff; text-decoration: none;">hey@meetcursive.com</a>.
       </p>
 
       <p style="color: #666; line-height: 1.6;">
@@ -249,7 +249,7 @@ export async function POST(request: NextRequest) {
       timestamp: body.timestamp || new Date().toISOString(),
     }
 
-    // Send internal notification email to hello@meetcursive.com
+    // Send internal notification email to hey@meetcursive.com
     await sendInternalNotification(leadData)
 
     // Send confirmation email to the lead
