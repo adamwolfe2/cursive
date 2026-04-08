@@ -94,7 +94,11 @@ const getCachedRecentLeads = unstable_cache(
     return data ?? []
   },
   ['recent-leads'],
-  { revalidate: 120 },
+  // Tags let revalidateTag('workspace-leads') from populate-initial purge
+  // this cache immediately when new leads arrive — without it, a brand new
+  // user could land on the dashboard right after the wizard and see stale
+  // empty state for up to 120s.
+  { revalidate: 120, tags: ['workspace-leads'] },
 )
 
 const getCachedRecentEnrichments = unstable_cache(
@@ -110,7 +114,7 @@ const getCachedRecentEnrichments = unstable_cache(
     return data ?? []
   },
   ['recent-enrichments'],
-  { revalidate: 120 },
+  { revalidate: 120, tags: ['workspace-leads'] },
 )
 
 const getCachedHotLeads = unstable_cache(
@@ -128,7 +132,7 @@ const getCachedHotLeads = unstable_cache(
     return data ?? []
   },
   ['hot-leads'],
-  { revalidate: 300 },
+  { revalidate: 300, tags: ['workspace-leads'] },
 )
 
 const getCachedPipelineStats = unstable_cache(
@@ -164,7 +168,7 @@ const getCachedPipelineStats = unstable_cache(
     return counts as { new: number; contacted: number; qualified: number; proposal: number; negotiation: number; won: number; lost: number }
   },
   ['pipeline-stats'],
-  { revalidate: 120 },
+  { revalidate: 120, tags: ['workspace-leads'] },
 )
 
 // ─── Types ────────────────────────────────────────────────────────────────────

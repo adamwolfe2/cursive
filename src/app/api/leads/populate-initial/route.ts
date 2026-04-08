@@ -8,7 +8,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { createClient } from '@/lib/supabase/server'
 import { fetchLeadsFromSegment, type AudienceLabLead } from '@/lib/services/audiencelab.service'
@@ -279,7 +279,15 @@ export async function POST(_req: NextRequest) {
     // unstable_cache wrappers on /dashboard can serve stale empty state for
     // up to 120 seconds — long enough for a new user to think the wizard
     // failed and bounce.
+    //
+    // Two layers of invalidation:
+    //   1. revalidateTag('workspace-leads') purges the unstable_cache calls
+    //      tagged on /dashboard (recent-leads, hot-leads, recent-enrichments,
+    //      pipeline-stats — all wrapped with that tag).
+    //   2. revalidatePath() invalidates the route's data cache so the next
+    //      navigation re-renders with fresh data.
     try {
+      revalidateTag('workspace-leads')
       revalidatePath('/dashboard')
       revalidatePath('/leads')
       revalidatePath('/website-visitors')
