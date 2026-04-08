@@ -146,7 +146,7 @@ function VisitorDemo({ compact = false }: { compact?: boolean }) {
             </div>
             <div className="space-y-2.5">
               <div className="flex justify-between text-xs text-gray-500">
-                <span>Cross-referencing 420M+ profiles...</span>
+                <span>Matching against 280M+ verified profiles...</span>
                 <span>{Math.round(progress)}%</span>
               </div>
               <div className="bg-gray-200 rounded-full h-1.5 overflow-hidden">
@@ -241,17 +241,17 @@ function S1({ onNext }: { onNext: () => void }) {
       <div className="max-w-4xl mx-auto w-full text-center">
         <Label>Enterprise Platform Overview</Label>
         <h1 className="text-3xl sm:text-5xl lg:text-6xl font-light text-gray-900 leading-[1.05] mb-4 sm:mb-6">
-          Turn Anonymous Traffic Into
-          <span className="block font-cursive text-gray-500 mt-1">Booked Meetings.</span>
+          The Identity & Intent
+          <span className="block font-cursive text-gray-500 mt-1">Infrastructure for Outbound.</span>
         </h1>
         <p className="text-base sm:text-xl text-gray-600 leading-relaxed mb-6 sm:mb-10 max-w-2xl mx-auto">
-          Cursive is the unified identity spine powering B2B and B2C pipeline acceleration. We turn anonymous website visitors into enriched, verified contacts — and activate them across every channel, automatically.
+          Cursive is the identity layer for outbound, intent, and enrichment. Offline-rooted consumer data, a 15M-domain organic intent network, and a closed feedback loop validated against real conversion outcomes.
         </p>
         <div className="grid grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-10 max-w-2xl mx-auto">
           {[
             { v: '280M+', l: 'Consumer Profiles' },
             { v: '140M+', l: 'Business Profiles' },
-            { v: '70%', l: 'Visitor ID Rate' },
+            { v: '40\u201360%', l: 'Pixel Match Rate' },
           ].map(s => (
             <div key={s.l}>
               <div className="text-2xl sm:text-3xl lg:text-4xl font-light text-primary">{s.v}</div>
@@ -315,7 +315,7 @@ function S2() {
 
         <div className="bg-amber-50 border border-amber-200 rounded-xl p-5">
           <p className="text-amber-900 text-sm font-medium leading-relaxed">
-            <strong>The recoverable pipeline:</strong> At a 70% ID rate, a site with 10K monthly visitors and a $25K average deal size is leaving an estimated <strong>$87K/month</strong> in recoverable pipeline on the table. Every day without identity infrastructure is revenue walking out the door.
+            <strong>The recoverable pipeline:</strong> At a 40&ndash;60% deterministic pixel match rate (vs. cookie sync at 2&ndash;5% and IP databases at 10&ndash;15%), a site with 10K monthly visitors and a $25K average deal size is leaving an estimated <strong>$60K&ndash;$87K/month</strong> in recoverable pipeline on the table. Every day without identity infrastructure is revenue walking out the door.
           </p>
         </div>
       </div>
@@ -378,7 +378,7 @@ function S4() {
       <div className="max-w-5xl mx-auto w-full">
         <Label>V4 Identity Infrastructure</Label>
         <h2 className="text-3xl sm:text-5xl font-light text-gray-900 leading-[1.05] mb-4">
-          420 million reasons
+          280 million reasons
           <span className="block font-cursive text-gray-500 text-3xl sm:text-5xl">it actually works.</span>
         </h2>
 
@@ -386,15 +386,15 @@ function S4() {
           {[
             {
               title: '30-Day NCOA Refresh',
-              desc: '308M consumer records verified every 30 days against USPS data. Industry refreshes quarterly. We refresh monthly.',
+              desc: '280M+ verified consumer records reconciled every 30 days against NCOA. Most providers do annually; serious providers do quarterly.',
             },
             {
-              title: 'Geo-Framed Proximity',
-              desc: 'Household identity tied to verified physical locations using precise Lat/Long mapping. 60% resolution rate without cookies.',
+              title: '15M+ Organic Intent Network',
+              desc: 'A proprietary 15M-domain organic network layered on top of standard SSP feeds. Bombora and 6sense pull from the same ~40,000 publisher sites the rest of the industry uses.',
             },
             {
-              title: 'UID2 Onboarding',
-              desc: '8B hashed email mappings already onboarded into the UID2 framework. Future-proof identity activation.',
+              title: 'Closed Feedback Loop',
+              desc: 'Signals are mapped back to source URLs, apps, and exchanges, then validated against real conversion outcomes. Not modeled. Not probabilistic.',
             },
           ].map((p, i) => (
             <div key={i} className="bg-white p-6 lg:p-8">
@@ -420,12 +420,12 @@ function S4() {
               </thead>
               <tbody className="divide-y divide-gray-50">
                 {[
-                  ['ID Rate', '15-35%', '70%'],
+                  ['Match Rate (deterministic)', 'Cookie 2\u20135% / IP 10\u201315%', '40\u201360%'],
                   ['Email Accuracy', '~78%', '95%+'],
-                  ['Phone Numbers', 'Add-on', '✓ Included'],
-                  ['Intent Score', 'Not available', '✓ Real-time'],
-                  ['DNC Compliance', 'Not available', '✓ Mobile + Landline'],
-                  ['Data Refresh', 'Quarterly', '30-Day NCOA'],
+                  ['Phone Numbers', 'Add-on', '\u2713 Included'],
+                  ['Intent Network', '~40K SSP-only sources', '\u2713 15M+ organic domains'],
+                  ['DNC Compliance', 'Not available', '\u2713 Mobile + Landline'],
+                  ['Data Refresh', 'Annual NCOA', '30-Day NCOA'],
                   ['Setup Time', '1-2 weeks', '5 minutes'],
                 ].map(([metric, others, cursive]) => (
                   <tr key={metric}>
@@ -462,8 +462,8 @@ function S5() {
           {[
             {
               num: '01',
-              name: 'Super Pixel V4',
-              bullets: ['70% visitor ID rate', 'Real-time intent scoring', 'Person-level enrichment'],
+              name: 'Super Pixel',
+              bullets: ['40\u201360% deterministic match', 'Real-time intent scoring', 'Person-level enrichment'],
             },
             {
               num: '02',
@@ -668,7 +668,7 @@ function S8() {
 
         <div className="grid grid-cols-4 gap-px bg-gray-200 border border-gray-200">
           {[
-            { v: '70%', l: 'ID Rate' },
+            { v: '40\u201360%', l: 'Match Rate' },
             { v: '95%+', l: 'Accuracy' },
             { v: '0.05%', l: 'Bounce' },
             { v: '<5 Min', l: 'Setup' },
@@ -706,7 +706,7 @@ function S9() {
             {
               num: '02',
               title: 'Identify',
-              desc: 'Every visitor cross-referenced against 420M+ verified contacts in real-time. 70% match rate.',
+              desc: 'Every visitor matched deterministically against an offline-rooted graph of 280M+ verified consumer profiles. 40\u201360% pixel match rate.',
             },
             {
               num: '03',
@@ -759,24 +759,24 @@ function S10() {
               bg: 'bg-white',
               highlight: false,
               items: [
-                { ok: false, text: '30-40% identification rate' },
+                { ok: false, text: 'Cookie sync 2\u20135% / IP DB 10\u201315% match' },
                 { ok: false, text: 'Company-level only' },
-                { ok: false, text: 'Stale data quarterly refresh' },
-                { ok: false, text: 'No intent signals' },
+                { ok: false, text: 'Stale data, annual refresh' },
+                { ok: false, text: 'SSP-only intent (~40K domains)' },
                 { ok: false, text: 'Complex setup (weeks)' },
                 { ok: false, text: 'Phone as paid add-on' },
               ],
             },
             {
-              label: 'Cursive V4',
+              label: 'Cursive',
               accent: 'text-primary',
               bg: 'bg-white',
               highlight: true,
               items: [
-                { ok: true, text: '70% identification rate' },
+                { ok: true, text: '40\u201360% deterministic pixel match' },
                 { ok: true, text: 'Person-level + verified email' },
                 { ok: true, text: '30-day NCOA continuous refresh' },
-                { ok: true, text: 'Real-time URL intent scoring' },
+                { ok: true, text: '15M+ domain organic intent network' },
                 { ok: true, text: '5-minute setup one script tag' },
                 { ok: true, text: 'Phone + DNC compliance included' },
               ],
@@ -819,10 +819,10 @@ function S10() {
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-gray-200 border border-gray-200">
           {[
-            { metric: '70%', vs: '15% avg', title: 'ID Rate' },
+            { metric: '40\u201360%', vs: 'Cookie 2\u20135%', title: 'Match Rate' },
             { metric: '0.05%', vs: '20% avg', title: 'Bounce Rate' },
-            { metric: 'Person', vs: 'Company', title: 'Depth' },
-            { metric: '30-day', vs: 'Quarterly', title: 'Freshness' },
+            { metric: '15M+', vs: '~40K SSP', title: 'Intent Network' },
+            { metric: '30-day', vs: 'Annual', title: 'NCOA Refresh' },
           ].map((d) => (
             <div key={d.title} className="bg-white p-3 sm:p-4">
               <div className="flex items-baseline gap-1.5 mb-1">
@@ -908,7 +908,7 @@ function S11() {
 
         <div className="grid grid-cols-3 gap-4 pt-6 border-t border-gray-200 mb-6">
           {[
-            { v: '70%', l: 'Visitor ID Rate' },
+            { v: '40\u201360%', l: 'Pixel Match Rate' },
             { v: '0.05%', l: 'Email Bounce Rate' },
             { v: '5 min', l: 'Time to First Lead' },
           ].map(s => (

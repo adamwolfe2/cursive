@@ -11,8 +11,8 @@ import { SampleLeadModal } from './SampleLeadModal'
 import { LeadCaptureStrip } from './LeadCaptureStrip'
 
 export const metadata: Metadata = {
-  title: "Identify 70% of Website Visitors — Cursive Super Pixel",
-  description: "97% of your website visitors leave without buying. The Cursive Super Pixel identifies them in real time — name, email, phone, intent score, and 50+ data points. 10-minute setup. First leads in 24 hours.",
+  title: "Cursive Super Pixel — 40\u201360% Deterministic Visitor Match",
+  description: "97% of your website visitors leave without buying. The Cursive Super Pixel matches 40\u201360% of them deterministically against an offline-rooted identity graph of 280M+ verified consumer profiles, refreshed every 30 days against NCOA. First leads in 24 hours.",
   robots: { index: true, follow: true },
 }
 
@@ -78,9 +78,9 @@ const DIFFERENTIATORS = [
   },
   {
     icon: Users,
-    title: 'We Know Almost Everyone',
-    subtitle: '98% US Household Coverage',
-    desc: '7 billion historic hashed emails tied to cookies and identifiers. 98% of US households observed. If they visit your site, we\'ll find them.',
+    title: '280M+ Verified Consumer Profiles',
+    subtitle: 'Offline-Rooted, Not Modeled',
+    desc: 'Sourced primarily from offline data partners (TransUnion, Experian) rather than purely digital signals. The result is verified, authoritative records — not probabilistic guesses inferred from cookies or device IDs.',
   },
   {
     icon: TrendingUp,
@@ -425,14 +425,14 @@ export default function SuperPixelPage() {
           <div className="max-w-5xl mx-auto bg-white rounded-2xl p-8 shadow-xl border border-gray-200">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
               {[
-                { number: '98%', label: 'US Households Covered' },
-                { number: '60B+', label: 'Daily Intent Signals' },
+                { number: '280M+', label: 'Verified Consumer Profiles' },
+                { number: '15M+', label: 'Organic-Network Domains' },
                 { number: '0.05%', label: 'Email Bounce Rate' },
-                { number: '70%', label: 'Average ID Rate' },
+                { number: '40\u201360%', label: 'Pixel Match Rate' },
                 { number: '30 days', label: 'NCOA Refresh Cycle' },
-                { number: '10–15M', label: 'Daily Email Verifications' },
-                { number: '50,000', label: 'Records Per Second' },
-                { number: '7B', label: 'Historic Hashed Emails' },
+                { number: '~20M / day', label: 'Emails Validated' },
+                { number: '~50K', label: 'Intent Segments' },
+                { number: '60\u201380%', label: 'Pixel-Level Accuracy' },
               ].map(stat => (
                 <div key={stat.label} className="bg-[#F7F9FB] rounded-xl p-5 text-center">
                   <div className="text-3xl font-light text-primary mb-1">{stat.number}</div>
@@ -468,7 +468,7 @@ export default function SuperPixelPage() {
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {[
-                    ['Visitor ID Rate', '~2% (forms only)', '~15%', '70%'],
+                    ['Visitor Match Rate', '~2% (forms only)', 'Cookie sync 2\u20135% / IP DB 10\u201315%', '40\u201360% deterministic'],
                     ['Email Bounce Rate', 'N/A', '~20%', '0.05%'],
                     ['Intent Scoring', 'None', 'None', 'High / Med / Low'],
                     ['Data Freshness', 'N/A', 'Quarterly', '30-Day NCOA'],
@@ -511,12 +511,12 @@ export default function SuperPixelPage() {
               </div>
               <div className="p-6 text-center bg-primary/4">
                 <p className="text-xs font-mono uppercase tracking-widest text-primary mb-2">After Cursive</p>
-                <div className="text-4xl font-light text-primary mb-1">70%</div>
-                <p className="text-sm text-gray-600">Visitor identification rate</p>
+                <div className="text-4xl font-light text-primary mb-1">40&ndash;60%</div>
+                <p className="text-sm text-gray-600">Deterministic pixel match rate</p>
               </div>
             </div>
             <div className="border-t border-gray-100 bg-emerald-50 px-6 py-3 text-center">
-              <p className="text-emerald-800 font-semibold text-sm">35× more identified contacts. Same traffic.</p>
+              <p className="text-emerald-800 font-semibold text-sm">20&ndash;30&times; more identified contacts. Same traffic.</p>
             </div>
           </div>
 

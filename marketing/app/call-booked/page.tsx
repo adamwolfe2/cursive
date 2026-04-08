@@ -167,7 +167,7 @@ export default function CallBookedPage() {
                   What is <span className="font-cursive text-6xl lg:text-7xl text-gray-500">Cursive</span>?
                 </h2>
                 <p className="text-xl text-gray-600 leading-relaxed max-w-3xl mx-auto mb-6">
-                  Cursive is the all-in-one growth platform that identifies your website visitors, builds targeted audiences from 420M+ verified contacts, and runs automated outbound campaigns — so you can turn anonymous traffic into revenue.
+                  Cursive is the identity layer for outbound, intent, and enrichment &mdash; 280M+ verified consumer profiles refreshed every 30 days, a 15M-domain organic intent network, and a closed feedback loop validated against real conversion outcomes.
                 </p>
                 <p className="text-lg text-gray-500 leading-relaxed max-w-3xl mx-auto">
                   Tools like ZoomInfo, Apollo, and RB2B are great for simple, single-channel solutions. But they only give you one piece of the pie. You deserve the whole thing when it comes to growth and driving revenue for your business. Cursive replaces your entire stack with one platform that compounds — every channel, every signal, every interaction feeding the next.
@@ -177,10 +177,10 @@ export default function CallBookedPage() {
               {/* 4 Key Stats */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
                 {[
-                  { stat: "420M+", label: "Verified Contacts", icon: Database },
-                  { stat: "70%", label: "Visitor Identification Rate", icon: Eye },
-                  { stat: "200+", label: "Integrations", icon: Link2 },
-                  { stat: "95%+", label: "Email Deliverability", icon: Mail },
+                  { stat: "280M+", label: "Verified Consumer Profiles", icon: Database },
+                  { stat: "40\u201360%", label: "Pixel Match Rate", icon: Eye },
+                  { stat: "15M+", label: "Organic-Network Domains", icon: Link2 },
+                  { stat: "~50K", label: "Intent Segments", icon: Mail },
                 ].map((item, i) => (
                   <motion.div
                     key={i}
@@ -341,7 +341,7 @@ export default function CallBookedPage() {
                   {
                     icon: Eye,
                     title: "Visitor Identification",
-                    description: "See who's on your site right now. Identify up to 70% of anonymous B2B traffic with company + individual data.",
+                    description: "See who's on your site right now. 40\u201360% deterministic pixel match against 280M+ verified profiles &mdash; with company + individual data.",
                     href: "/visitor-identification",
                   },
                   {
@@ -353,7 +353,7 @@ export default function CallBookedPage() {
                   {
                     icon: Target,
                     title: "Intent Data",
-                    description: "Track 60B+ behaviors & URLs scanned weekly. Know who's actively researching solutions like yours before they fill out a form.",
+                    description: "15M+ domain organic network layered on standard SSP feeds. ~50K white-label intent segments. Closed feedback loop validated against real conversions.",
                     href: "/intent-audiences",
                   },
                   {
@@ -727,7 +727,7 @@ export default function CallBookedPage() {
                     {
                       step: "01",
                       title: "We Learn Your ICP",
-                      description: "Share your ideal customer profile. We map it against our database of 420M+ contacts to find your best-fit prospects.",
+                      description: "Share your ideal customer profile. We map it against our database of 280M+ verified consumer and 140M+ business profiles to find your best-fit prospects.",
                       icon: Search,
                     },
                     {
@@ -932,7 +932,7 @@ export default function CallBookedPage() {
                     {[
                       {
                         question: "What exactly is Cursive?",
-                        answer: "Cursive is an all-in-one growth platform that combines website visitor identification, audience building from 420M+ verified contacts, and automated multi-channel outbound campaigns. Instead of juggling 5-10 different tools, Cursive gives you everything in one platform — from identifying who's on your website to putting meetings on your calendar.",
+                        answer: "Cursive is the identity layer for outbound, intent, and enrichment. The platform combines a 40\u201360% deterministic pixel match against an offline-rooted graph of 280M+ verified consumer and 140M+ business profiles, a 15M-domain organic intent network, and automated multi-channel outbound campaigns \u2014 all in one platform, from identifying who's on your website to putting meetings on your calendar.",
                       },
                       {
                         question: "How is Cursive different from other lead gen tools?",
@@ -982,7 +982,7 @@ export default function CallBookedPage() {
                     {[
                       {
                         question: "How does visitor identification work?",
-                        answer: "We provide a lightweight JavaScript pixel you add to your site (takes about 5 minutes). When visitors land on your pages, Cursive uses multi-source data enrichment — including IP intelligence, device fingerprinting, and email graph matching — to identify up to 70% of your B2B traffic. You get company name, individual contact info, and behavioral data in real-time.",
+                        answer: "We provide a lightweight JavaScript pixel you add to your site (takes about 5 minutes). When visitors land on your pages, Cursive matches their digital signals deterministically against an offline-rooted identity graph of 280M+ verified consumer profiles \u2014 achieving a 40\u201360% pixel match rate. For context, cookie sync averages 2\u20135% and IP-only databases sit around 10\u201315%. You get company name, individual contact info, and behavioral data in real-time.",
                       },
                       {
                         question: "What data do you provide for identified visitors?",
@@ -994,7 +994,7 @@ export default function CallBookedPage() {
                       },
                       {
                         question: "How accurate is the identification?",
-                        answer: "We average a 70% identification rate for B2B traffic — significantly higher than the industry average of 20-30%. For matched records, our data accuracy exceeds 95%. We continuously verify and re-enrich data to maintain this quality.",
+                        answer: "We deliver a 40\u201360% deterministic pixel match rate for US B2B traffic \u2014 driven by geo-framing methodology against an offline-rooted identity graph of 280M+ verified consumer profiles. Pixel-level accuracy on a matched record is 60\u201380%, and matched records are continuously verified and re-enriched against NCOA on a 30-day cycle.",
                       },
                     ].map((faq, i) => {
                       const idx = 100 + i
@@ -1032,7 +1032,7 @@ export default function CallBookedPage() {
                     {[
                       {
                         question: "How big is your database?",
-                        answer: "Our database includes 280M consumer profiles, 140M+ business profiles, and we track 60B+ behaviors & URLs scanned weekly. Combined, that's 420M+ verified contacts across virtually every industry, geography, and company size. It's one of the largest B2B and B2C contact databases available.",
+                        answer: "Our database includes 280M+ verified consumer profiles (sourced primarily from offline data partners like TransUnion and Experian, refreshed every 30 days against NCOA) and 140M+ business profiles. On top of that, Cursive runs a proprietary 15M+ domain organic intent network layered over standard SSP feeds, and exposes ~50,000 white-label intent segments via a taxonomy endpoint.",
                       },
                       {
                         question: "What filters can I use to build audiences?",

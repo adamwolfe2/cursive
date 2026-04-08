@@ -11,7 +11,7 @@ const platformFAQs = [
   },
   {
     question: 'How does Cursive identify anonymous website visitors?',
-    answer: 'Cursive uses a JavaScript pixel placed on your website that captures visitor signals. Our system matches those signals against our database of 280M US consumer and 140M+ business profiles using IP intelligence, device fingerprinting, and behavioral analysis to identify up to 70% of B2B visitors in real-time.',
+    answer: 'Cursive uses a JavaScript pixel placed on your website that captures visitor signals. Our system matches those signals deterministically against an offline-rooted identity graph of 280M+ verified consumer profiles and 140M+ business profiles, refreshed every 30 days against NCOA. Pixel match rate is 40\u201360% on US B2B traffic with 60\u201380% pixel-level accuracy on a matched record \u2014 not modeled or probabilistic. For context: cookie sync averages 2\u20135% and IP-only databases sit around 10\u201315%.',
   },
   {
     question: 'What is an AI SDR and how does Cursive use it?',
@@ -27,7 +27,7 @@ const platformFAQs = [
   },
   {
     question: 'What is intent data and how does Cursive use it?',
-    answer: 'Intent data tracks online research behavior to predict purchase readiness. Cursive tracks 60B+ behaviors & URLs scanned weekly across 30,000+ commercial categories. When someone researches topics related to your product, Cursive surfaces them as high-intent prospects. Audiences update weekly with three intent tiers: Hot (7-day activity), Warm (14-day), and Scale (30-day).',
+    answer: 'Intent data tracks online research behavior to predict purchase readiness. Cursive layers a 15M+ domain organic intent network on top of standard SSP feeds (the same ~40,000 signal-source domains the rest of the industry pulls from), and exposes ~50,000 white-label intent segments via a taxonomy endpoint. The closed feedback loop maps signals back to source URLs/apps/exchanges and validates against real conversions. Audiences update weekly with three intent tiers: Hot (7-day activity), Warm (14-day), and Scale (30-day).',
   },
   {
     question: 'Can Cursive replace my existing sales tools?',
