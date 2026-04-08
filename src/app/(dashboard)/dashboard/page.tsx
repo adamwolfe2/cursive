@@ -384,11 +384,17 @@ async function DashboardMainGrid(props: MainGridProps) {
               </div>
             ) : (
               <div className="text-center py-10">
-                <p className="text-sm font-medium text-muted-foreground">No leads yet today</p>
-                <p className="text-xs text-muted-foreground mt-1">Leads arrive every morning at 8am CT based on your targeting preferences.</p>
+                <p className="text-sm font-medium text-muted-foreground">
+                  {hasPreferences ? 'No leads yet — your audience is being built' : 'Tell us who you sell to'}
+                </p>
+                <p className="text-xs text-muted-foreground mt-1 max-w-sm mx-auto">
+                  {hasPreferences
+                    ? 'Your first leads should arrive within a few minutes. We\'re also pulling fresh ones every morning at 8am CT.'
+                    : 'Complete setup to unlock your first batch of enriched leads matching your ICP.'}
+                </p>
                 {!hasPreferences && (
-                  <Link href="/my-leads/preferences" className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
-                    Set preferences <ArrowRight className="h-3.5 w-3.5" />
+                  <Link href="/setup" className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
+                    Complete setup <ArrowRight className="h-3.5 w-3.5" />
                   </Link>
                 )}
               </div>

@@ -59,24 +59,31 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     }
 
     if (campaignId) {
+      // Live stage counts mirror the outbound_pipeline_counts view's logic
+      // exactly. Queried directly so updates are immediate (the view is
+      // refreshed by a cron and lagged reality by minutes).
+      //
+      // CRITICAL: don't query cal_bookings here — it has no campaign_id
+      // column. The view tracks "booked" via email_replies with positive
+      // intent_score, which matches the rest of the reply pipeline. We do
+      // the same.
       const [
-        { count: prospectingCount },
-        { count: enrichingCount },
-        { count: draftingCount },
-        { count: engagingCount },
-        { count: replyingCount },
-        { count: bookedCount },
+        prospectingResult,
+        enrichingResult,
+        draftingResult,
+        engagingResult,
+        replyingResult,
+        bookedResult,
       ] = await Promise.all([
         supabase
           .from('campaign_leads')
           .select('*', { count: 'exact', head: true })
-          .eq('campaign_id', campaignId)
-          .eq('status', 'pending'),
+          .eq('campaign_id', campaignId),
         supabase
           .from('campaign_leads')
           .select('*', { count: 'exact', head: true })
           .eq('campaign_id', campaignId)
-          .eq('status', 'enriching'),
+          .in('status', ['pending', 'enriching']),
         supabase
           .from('email_sends')
           .select('*', { count: 'exact', head: true })
@@ -92,18 +99,20 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
           .select('*', { count: 'exact', head: true })
           .eq('campaign_id', campaignId),
         supabase
-          .from('cal_bookings')
+          .from('email_replies')
           .select('*', { count: 'exact', head: true })
-          .eq('campaign_id', campaignId),
+          .eq('campaign_id', campaignId)
+          .gte('intent_score', 8)
+          .in('sentiment', ['positive', 'question']),
       ])
 
       stages = {
-        prospecting: prospectingCount ?? 0,
-        enriching: enrichingCount ?? 0,
-        drafting: draftingCount ?? 0,
-        engaging: engagingCount ?? 0,
-        replying: replyingCount ?? 0,
-        booked: bookedCount ?? 0,
+        prospecting: prospectingResult.count ?? 0,
+        enriching: enrichingResult.count ?? 0,
+        drafting: draftingResult.count ?? 0,
+        engaging: engagingResult.count ?? 0,
+        replying: replyingResult.count ?? 0,
+        booked: bookedResult.count ?? 0,
       }
     } else {
       // Fallback — agent has no campaign yet, try the view
