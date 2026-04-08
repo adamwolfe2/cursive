@@ -842,19 +842,37 @@ export default async function DashboardPage({
           </AnimatedSection>
         )}
 
-        {/* Onboarding complete banner */}
+        {/* Onboarding complete banner — the celebration moment after the
+            setup wizard. Upgraded copy + primary-color accent so users feel
+            they accomplished something rather than landing on a beige notice. */}
         {onboarding === 'complete' && (
-          <div className="rounded-xl bg-muted border border-border p-4 flex items-start gap-3">
-            <CheckCircle2 className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
-            <div>
-              <p className="font-semibold text-foreground">Setup complete!</p>
-              <p className="text-sm text-muted-foreground">
-                {totalCount > 0
-                  ? `Your first ${totalCount} leads are ready — check them out below.`
-                  : 'We\'re setting up your lead pipeline now. Your first leads will arrive shortly.'}
-              </p>
+          <AnimatedSection delay={0.02}>
+            <div className="rounded-xl border-2 border-primary/30 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent p-5 flex items-start gap-4">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/15 shrink-0">
+                <CheckCircle2 className="h-6 w-6 text-primary" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-base font-bold text-foreground">
+                  {totalCount > 0
+                    ? `${totalCount} enriched lead${totalCount === 1 ? '' : 's'} ready — you're all set up.`
+                    : 'You\'re all set up.'}
+                </p>
+                <p className="mt-1 text-sm text-muted-foreground leading-relaxed">
+                  {totalCount > 0
+                    ? 'Your audience is configured, your pixel is ready, and your first leads are waiting below. Click any lead to see the full enrichment.'
+                    : 'Your audience is configured and your pipeline is being built. Your first leads will land here shortly — we\'ll email you the moment they arrive.'}
+                </p>
+                {hasPixel && (
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    Want to track YOUR website visitors too?{' '}
+                    <Link href="/settings/pixel" className="font-medium text-primary hover:underline">
+                      Install your pixel →
+                    </Link>
+                  </p>
+                )}
+              </div>
             </div>
-          </div>
+          </AnimatedSection>
         )}
 
         {/* Targeting failed during onboarding — immediate corrective action */}

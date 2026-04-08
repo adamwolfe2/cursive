@@ -14,7 +14,12 @@ import { StagePipeline } from '@/components/outbound/stage-pipeline'
 import { RunNowButton } from '@/components/outbound/run-now-button'
 import { RunStatusBadge } from '@/components/outbound/run-status-badge'
 import { ProspectsList } from '@/components/outbound/prospects-list'
-import { ChatToggle } from '@/components/outbound/chat-toggle'
+// ChatToggle intentionally not imported — the chat panel exists and works as
+// a Q&A endpoint but doesn't have tool-calling yet (can't regenerate drafts,
+// update workflow settings, or trigger runs from chat). Until that ships,
+// the toggle is hidden so users aren't promised functionality that isn't
+// there. The endpoint + components are kept for the upcoming tool-calling
+// upgrade.
 import { ConnectEmailBanner } from '@/components/outbound/connect-email-banner'
 import { Settings as SettingsIcon, Sparkles, CheckCircle2 } from 'lucide-react'
 import type { WorkflowStatsResponse, StageCounts } from '@/types/outbound'
@@ -97,7 +102,6 @@ export default async function WorkflowDetailPage({
                 Edit Setup
               </Button>
             </Link>
-            <ChatToggle agentId={id} agentName={agent.name} />
             <RunNowButton agentId={id} />
           </div>
         }

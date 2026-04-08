@@ -8,6 +8,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { createClient } from '@/lib/supabase/server'
 import { fetchLeadsFromSegment, type AudienceLabLead } from '@/lib/services/audiencelab.service'
@@ -272,6 +273,19 @@ export async function POST(_req: NextRequest) {
         location: userProfile.location_segment ?? null,
       },
     }).catch(() => null)
+
+    // Revalidate the dashboard + leads pages so the user sees the new leads
+    // immediately when the setup wizard redirects them. Without this, the
+    // unstable_cache wrappers on /dashboard can serve stale empty state for
+    // up to 120 seconds — long enough for a new user to think the wizard
+    // failed and bounce.
+    try {
+      revalidatePath('/dashboard')
+      revalidatePath('/leads')
+      revalidatePath('/website-visitors')
+    } catch (revalidateErr) {
+      safeError('[PopulateInitialLeads] Cache revalidation failed (non-fatal):', revalidateErr)
+    }
 
     return NextResponse.json({
       success: true,
