@@ -11,9 +11,9 @@ import { getSendingAccountGate } from '@/lib/services/outbound/email-account-gat
 import { PageContainer, PageHeader } from '@/components/layout'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { EmptyState } from '@/components/ui/empty-state'
 import { WorkflowCard } from '@/components/outbound/workflow-card'
 import { ConnectEmailListBanner } from '@/components/outbound/connect-email-list-banner'
+import { TrySampleCard } from '@/components/outbound/try-sample-card'
 import { Rocket, Plus } from 'lucide-react'
 
 export const metadata: Metadata = { title: 'Outbound Agent | Cursive' }
@@ -66,32 +66,32 @@ export default async function OutboundListPage() {
         }}
       />
 
-      {/* Hero info card — white background, primary-blue accent */}
-      <Card className="mb-6 p-5 bg-primary/5 border-primary/20">
-        <div className="flex items-start gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
-            <Rocket className="h-5 w-5" />
-          </div>
-          <div>
-            <p className="text-sm font-semibold text-foreground">How it works</p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Define your ICP, persona, and product in three sentences. Click Run, and Cursive
-              prospects high-intent leads from AudienceLab, enriches each one, and drafts a
-              personalized email — all waiting for your one-click approval.
-            </p>
-          </div>
-        </div>
-      </Card>
-
       {workflows.length === 0 ? (
-        <Card padding="none">
-          <EmptyState
-            icon={<Rocket className="h-8 w-8" />}
-            title="No outbound workflows yet"
-            description="Create your first workflow to start prospecting in under a minute."
-            action={{ label: 'Create Workflow', href: '/outbound/new' }}
-          />
-        </Card>
+        <>
+          {/* The aha-moment card — first-run users skip the form-configure
+              friction entirely and get real drafts against real leads in
+              under 30 seconds. */}
+          <TrySampleCard />
+
+          {/* Secondary info — "how it works" explainer for users who want
+              to understand before clicking. */}
+          <Card className="mt-6 p-5 bg-muted/30 border-border">
+            <div className="flex items-start gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary shrink-0">
+                <Rocket className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-foreground">How it works</p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Define your ICP, persona, and product in three sentences. Click Run, and Cursive
+                  prospects high-intent leads from AudienceLab, enriches each one, and drafts a
+                  personalized email — all waiting for your one-click approval. Connect your
+                  Gmail when you&apos;re ready to send.
+                </p>
+              </div>
+            </div>
+          </Card>
+        </>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {workflows.map(agent => (

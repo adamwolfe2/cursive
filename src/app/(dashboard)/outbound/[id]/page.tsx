@@ -16,13 +16,21 @@ import { RunStatusBadge } from '@/components/outbound/run-status-badge'
 import { ProspectsList } from '@/components/outbound/prospects-list'
 import { ChatToggle } from '@/components/outbound/chat-toggle'
 import { ConnectEmailBanner } from '@/components/outbound/connect-email-banner'
-import { Settings as SettingsIcon } from 'lucide-react'
+import { Settings as SettingsIcon, Sparkles, CheckCircle2 } from 'lucide-react'
 import type { WorkflowStatsResponse, StageCounts } from '@/types/outbound'
 
 export const metadata: Metadata = { title: 'Outbound Workflow | Cursive' }
 
-export default async function WorkflowDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function WorkflowDetailPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>
+  searchParams: Promise<{ sample?: string }>
+}) {
   const { id } = await params
+  const { sample } = await searchParams
+  const isSampleReady = sample === 'ready'
   const supabase = await createClient()
   const {
     data: { user },
@@ -94,6 +102,31 @@ export default async function WorkflowDetailPage({ params }: { params: Promise<{
           </div>
         }
       />
+
+      {/* Sample-ready celebration banner — only shown after the user
+          completes the 1-click sample flow from /outbound's empty state. */}
+      {isSampleReady && (
+        <Card className="mb-5 p-5 border-primary/30 bg-gradient-to-br from-primary/10 to-transparent">
+          <div className="flex items-start gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/15 text-primary shrink-0">
+              <Sparkles className="h-5 w-5" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-foreground">Your sample workflow is ready</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                We picked 3 enriched leads from your workspace and drafted a personalized
+                cold email for each one. Click any prospect on the right to review and edit
+                the draft. Connect Gmail in Settings → Email Accounts when you&apos;re ready
+                to actually send.
+              </p>
+              <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
+                <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
+                No credits spent. Real leads. Real Claude-generated drafts.
+              </div>
+            </div>
+          </div>
+        </Card>
+      )}
 
       <ConnectEmailBanner agentId={id} />
 

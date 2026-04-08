@@ -4,8 +4,11 @@
  * Returns the live counts for the 6 stage cards plus latest_run + recent_runs.
  * Polled by the StagePipeline component every 5 seconds.
  *
- * Reads from the `outbound_pipeline_counts` view (single query) plus the
- * outbound_runs table.
+ * Computes stage counts from live queries on campaign_leads + email_sends
+ * so the numbers reflect reality immediately, not what the stats-refresher
+ * cron had at its last run. We still fall back to the pre-aggregated view
+ * if the agent has no outbound_campaign_id wired up yet (rare — only for
+ * agents that have never had a run triggered).
  */
 
 import { NextRequest, NextResponse } from 'next/server'
@@ -37,20 +40,87 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
 
     const supabase = await createClient()
 
-    // Read from the view
-    const { data: viewRow } = await supabase
-      .from('outbound_pipeline_counts')
-      .select('*')
-      .eq('agent_id', id)
-      .maybeSingle()
+    // ── Live stage counts ────────────────────────────────────────────────
+    // Previously we read from `outbound_pipeline_counts` (a view that's
+    // refreshed by the outbound-stats-refresher cron). That lagged behind
+    // reality by up to a few minutes, which made the detail page feel
+    // unresponsive while a run was in flight. Now we compute the counts
+    // directly from the source tables.
+    const campaignId = (agent as { outbound_campaign_id?: string | null }).outbound_campaign_id
+      ?? null
 
-    const stages: StageCounts = {
-      prospecting: (viewRow as any)?.prospecting_count ?? 0,
-      enriching: (viewRow as any)?.enriching_count ?? 0,
-      drafting: (viewRow as any)?.drafting_count ?? 0,
-      engaging: (viewRow as any)?.engaging_count ?? 0,
-      replying: (viewRow as any)?.replying_count ?? 0,
-      booked: (viewRow as any)?.booked_count ?? 0,
+    let stages: StageCounts = {
+      prospecting: 0,
+      enriching: 0,
+      drafting: 0,
+      engaging: 0,
+      replying: 0,
+      booked: 0,
+    }
+
+    if (campaignId) {
+      const [
+        { count: prospectingCount },
+        { count: enrichingCount },
+        { count: draftingCount },
+        { count: engagingCount },
+        { count: replyingCount },
+        { count: bookedCount },
+      ] = await Promise.all([
+        supabase
+          .from('campaign_leads')
+          .select('*', { count: 'exact', head: true })
+          .eq('campaign_id', campaignId)
+          .eq('status', 'pending'),
+        supabase
+          .from('campaign_leads')
+          .select('*', { count: 'exact', head: true })
+          .eq('campaign_id', campaignId)
+          .eq('status', 'enriching'),
+        supabase
+          .from('email_sends')
+          .select('*', { count: 'exact', head: true })
+          .eq('campaign_id', campaignId)
+          .eq('status', 'pending_approval'),
+        supabase
+          .from('email_sends')
+          .select('*', { count: 'exact', head: true })
+          .eq('campaign_id', campaignId)
+          .in('status', ['approved', 'sending', 'sent']),
+        supabase
+          .from('email_replies')
+          .select('*', { count: 'exact', head: true })
+          .eq('campaign_id', campaignId),
+        supabase
+          .from('cal_bookings')
+          .select('*', { count: 'exact', head: true })
+          .eq('campaign_id', campaignId),
+      ])
+
+      stages = {
+        prospecting: prospectingCount ?? 0,
+        enriching: enrichingCount ?? 0,
+        drafting: draftingCount ?? 0,
+        engaging: engagingCount ?? 0,
+        replying: replyingCount ?? 0,
+        booked: bookedCount ?? 0,
+      }
+    } else {
+      // Fallback — agent has no campaign yet, try the view
+      const { data: viewRow } = await supabase
+        .from('outbound_pipeline_counts')
+        .select('*')
+        .eq('agent_id', id)
+        .maybeSingle()
+
+      stages = {
+        prospecting: (viewRow as any)?.prospecting_count ?? 0,
+        enriching: (viewRow as any)?.enriching_count ?? 0,
+        drafting: (viewRow as any)?.drafting_count ?? 0,
+        engaging: (viewRow as any)?.engaging_count ?? 0,
+        replying: (viewRow as any)?.replying_count ?? 0,
+        booked: (viewRow as any)?.booked_count ?? 0,
+      }
     }
 
     const [latest_run, recent_runs, sendingGate] = await Promise.all([
