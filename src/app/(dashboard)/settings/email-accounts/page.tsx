@@ -24,7 +24,9 @@
 import { useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useSearchParams, useRouter, usePathname } from 'next/navigation'
-import { PageContainer, PageHeader } from '@/components/layout'
+// PageContainer + PageHeader removed — settings-layout-client already wraps
+// every settings page in those, and including them again created a doubled
+// header / breadcrumbs / padding stack.
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -124,22 +126,23 @@ export default function EmailAccountsPage() {
   })
 
   return (
-    <PageContainer>
-      <PageHeader
-        title="Email Accounts"
-        description="Connect the Gmail (or other) inboxes Cursive uses to send your outbound emails. Each workspace sends from its own inbox — never the platform default."
-        breadcrumbs={[
-          { label: 'Dashboard', href: '/dashboard' },
-          { label: 'Settings', href: '/settings' },
-          { label: 'Email Accounts' },
-        ]}
-        actions={
-          <Button onClick={goConnect}>
-            <Plus className="h-4 w-4 mr-1.5" />
-            Connect Gmail
-          </Button>
-        }
-      />
+    <div>
+      {/* The settings layout already wraps every page in PageContainer +
+          PageHeader, so we just render the local section header inline.
+          Wrapping the whole thing in a second PageContainer was creating
+          double padding + double breadcrumbs + double "Settings" headers. */}
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h2 className="text-lg font-semibold text-foreground">Email Accounts</h2>
+          <p className="mt-1 text-sm text-muted-foreground max-w-2xl">
+            Connect the Gmail (or other) inboxes Cursive uses to send your outbound emails. Each workspace sends from its own inbox — never the platform default.
+          </p>
+        </div>
+        <Button onClick={goConnect}>
+          <Plus className="h-4 w-4 mr-1.5" />
+          Connect Gmail
+        </Button>
+      </div>
 
       {/* Hero — explain what this is */}
       <Card className="mb-6 p-5 bg-primary/5 border-primary/20">
@@ -262,7 +265,7 @@ export default function EmailAccountsPage() {
           })}
         </div>
       )}
-    </PageContainer>
+    </div>
   )
 }
 

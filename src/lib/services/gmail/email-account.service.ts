@@ -237,6 +237,10 @@ export async function getValidAccessToken(accountId: string): Promise<string> {
       last_token_refresh_at: new Date().toISOString(),
       connection_status: 'active', // clear any previous error state on successful refresh
       last_error: null,
+      // Also clear the error timestamp — without this the admin dashboard +
+      // diagnostic UI can show a stale "last error 3 days ago" badge on a
+      // perfectly healthy account.
+      last_error_at: null,
       // Google sometimes rotates refresh tokens — persist the new one if returned
       ...(fresh.refresh_token && { oauth_refresh_token_ct: encryptToken(fresh.refresh_token) }),
     })
@@ -274,6 +278,11 @@ export async function disconnectAccount(accountId: string, workspaceId: string):
  * Returns the workspace's primary Gmail account (or first available),
  * or null if none. Used by the outbound run orchestrator to attach a
  * sending account to each draft.
+ *
+ * Filters by `connection_status='active'` so accounts that Google has
+ * revoked (needs_reconnect) are NEVER returned. Without this filter,
+ * test-send would hand a stale account to sendViaGmail and throw
+ * TokenRevokedError mid-pipeline.
  */
 export async function findGmailAccountForWorkspace(
   workspaceId: string
@@ -285,6 +294,7 @@ export async function findGmailAccountForWorkspace(
     .eq('workspace_id', workspaceId)
     .eq('provider', 'gmail')
     .eq('is_verified', true)
+    .eq('connection_status', 'active')
     .order('is_primary', { ascending: false })
     .order('created_at', { ascending: true })
     .limit(1)

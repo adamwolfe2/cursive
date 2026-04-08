@@ -21,7 +21,7 @@ import {
 import { AgentRepository } from '@/lib/repositories/agent.repository'
 import { OutboundRunRepository } from '@/lib/repositories/outbound-run.repository'
 import { CREDIT_COST_PER_LEAD, HARD_CAP_PER_RUN } from '@/lib/services/outbound/al-prospecting.service'
-import { hasConnectedSendingAccount } from '@/lib/services/outbound/email-account-gate.service'
+import { getSendingAccountGate } from '@/lib/services/outbound/email-account-gate.service'
 import { inngest } from '@/inngest/client'
 import { createAdminClient } from '@/lib/supabase/admin'
 
@@ -46,11 +46,17 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     if (!agent) throw new NotFoundError('Workflow not found')
 
     // 1a. SAFETY LOCK (Phase 0): refuse to run unless the workspace has a
-    // verified per-user sending account. Until Gmail OAuth ships in Phase 1,
-    // this prevents random workspaces from accidentally sending through the
-    // platform-wide EMAILBISON_API_KEY (which belongs to the platform owner).
-    const hasAccount = await hasConnectedSendingAccount(user.workspace_id)
-    if (!hasAccount) {
+    // verified, ACTIVE sending account. Distinguishes "no account" from
+    // "account exists but token revoked" so the UI can show the right CTA
+    // (Connect Gmail vs Reconnect Gmail) and route the user accordingly.
+    const gate = await getSendingAccountGate(user.workspace_id)
+    if (!gate.ready) {
+      if (gate.needs_reconnect && gate.account) {
+        throw new ApiError(
+          `Reconnect Gmail (${gate.account.email_address}) before running this workflow. Google revoked the token — visit Settings → Email Accounts to re-authorize.`,
+          412
+        )
+      }
       throw new ApiError(
         'Connect a sending email account before running this workflow. Outbound Agent needs your Gmail (or other inbox) to send from your domain — not the platform default.',
         412

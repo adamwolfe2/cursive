@@ -280,11 +280,20 @@ export const composeCampaignEmail = inngest.createFunction(
       }
 
       // For outbound-agent campaigns, pin the workspace's connected Gmail
-      // account so the send pipeline knows which inbox to send from. If no
-      // account is connected the run gate (Phase 0) already refused the run,
-      // but we double-guard here so a draft can't slip through.
-      const pinnedEmailAccountId: string | null = (selectedTemplate as any)
-        .__pinnedEmailAccountId ?? null
+      // account so the send pipeline knows which inbox to send from.
+      //
+      // CRITICAL: read this from the OUTER `outboundEmailAccountId` scope
+      // (set in the gate check above) instead of from `selectedTemplate.
+      // __pinnedEmailAccountId`. The synthetic-template branch was the only
+      // one that stamped the property — when the workspace has any real
+      // templates in the DB, the normal selectTemplate() path returned a
+      // template WITHOUT the pinned account, and the email would fall
+      // through to the platform EmailBison sender (sending from the wrong
+      // domain). Reading from the outer scope guarantees every outbound
+      // draft on every code path gets pinned to the correct account.
+      const pinnedEmailAccountId: string | null = isOutboundAgentCampaign
+        ? outboundEmailAccountId
+        : ((selectedTemplate as any).__pinnedEmailAccountId ?? null)
 
       const insertData: Record<string, any> = {
         workspace_id,

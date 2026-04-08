@@ -20,7 +20,12 @@ export async function GET() {
     const { data, error } = await supabase
       .from('email_accounts')
       .select(
-        'id, email_address, display_name, is_primary, is_verified, last_token_refresh_at, created_at, oauth_provider_user_id'
+        // connection_status MUST be in the select list — the email-accounts
+        // settings UI reads it to render the "Needs reconnect" badge and
+        // swap the "Send test" → "Reconnect" button when Google has revoked
+        // the token. Without it, users with stale OAuth see the same UI as
+        // a healthy account and have no obvious way to recover.
+        'id, email_address, display_name, is_primary, is_verified, connection_status, last_token_refresh_at, last_error, last_error_at, created_at, oauth_provider_user_id'
       )
       .eq('workspace_id', user.workspace_id)
       .eq('provider', 'gmail')
