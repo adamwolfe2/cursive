@@ -1,7 +1,7 @@
 'use client'
 
 import { Skeleton } from '@/components/ui'
-import { ConversationStatusBadge } from './ConversationStatusBadge'
+import { SentimentBadge } from './SentimentBadge'
 import type { InboxConversation } from '@/types/sdr'
 
 interface ConversationListProps {
@@ -22,22 +22,6 @@ function timeAgo(date: string): string {
   const hrs = Math.floor(mins / 60)
   if (hrs < 24) return `${hrs}h ago`
   return `${Math.floor(hrs / 24)}d ago`
-}
-
-function SentimentDot({ sentiment }: { readonly sentiment: string | null }) {
-  if (!sentiment) return null
-  const colors: Record<string, string> = {
-    positive: 'bg-green-500',
-    neutral: 'bg-gray-400',
-    negative: 'bg-red-500',
-    question: 'bg-yellow-500',
-  }
-  return (
-    <span
-      className={`inline-block w-2 h-2 rounded-full ${colors[sentiment] || 'bg-gray-400'}`}
-      title={sentiment}
-    />
-  )
 }
 
 export function ConversationList({
@@ -68,8 +52,16 @@ export function ConversationList({
 
   if (conversations.length === 0) {
     return (
-      <div className="flex-1 flex items-center justify-center text-sm text-zinc-400">
-        No conversations found
+      <div className="flex-1 flex flex-col items-center justify-center text-center px-6">
+        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted/40 mb-4">
+          <svg className="h-6 w-6 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+          </svg>
+        </div>
+        <p className="text-sm font-medium text-foreground">No conversations yet</p>
+        <p className="mt-1.5 max-w-xs text-xs text-muted-foreground">
+          Your inbox will populate as your prospects reply. Run an Outbound Agent workflow to start sending — replies appear here automatically.
+        </p>
       </div>
     )
   }
@@ -126,8 +118,7 @@ export function ConversationList({
               )}
 
               <div className="flex items-center gap-1.5 flex-wrap">
-                <ConversationStatusBadge stage={conv.conversationStage} />
-                <SentimentDot sentiment={conv.sentiment} />
+                <SentimentBadge sentiment={conv.sentiment} />
                 {conv.hasPendingDraft && (
                   <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-100 text-amber-700">
                     draft

@@ -58,8 +58,18 @@ export function ConversationThread({ conversationId, conversation, onBack }: Con
 
   if (!conversationId) {
     return (
-      <div className="flex items-center justify-center h-full text-zinc-400 text-sm">
-        Select a conversation to view
+      <div className="flex items-center justify-center h-full px-6">
+        <div className="text-center max-w-sm">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-muted/40 mb-4">
+            <svg className="h-6 w-6 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+            </svg>
+          </div>
+          <p className="text-sm font-medium text-foreground">No conversation selected</p>
+          <p className="mt-1.5 text-xs text-muted-foreground">
+            Pick a conversation from the list on the left to read the thread, see the AI-suggested reply, and respond.
+          </p>
+        </div>
       </div>
     )
   }
