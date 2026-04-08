@@ -155,7 +155,10 @@ export function LeadsDataTable({
       </div>
 
       {/* Desktop Table View */}
-      <ScrollArea className="hidden md:block h-[calc(100vh-240px)] rounded-md border-border/10">
+      {/* w-full + max-w-full + min-w-0 keep the ScrollArea bounded inside its
+          parent column. Without these the table's intrinsic width can spill
+          out and render behind the fixed sidebar on the left. */}
+      <ScrollArea className="hidden md:block h-[calc(100vh-240px)] w-full max-w-full min-w-0 rounded-md border-border/10">
         <Table>
           <TableHeader className="sticky top-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-10" role="rowgroup">
             {table.getHeaderGroups().map((headerGroup) => (

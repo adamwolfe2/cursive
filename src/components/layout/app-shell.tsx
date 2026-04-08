@@ -279,7 +279,11 @@ export function AppShell({ children, user, workspace, todayLeadCount, hotLeadCou
         onClose={() => setSidebarOpen(false)}
       />
 
-      <div className="flex flex-1 flex-col lg:pl-64">
+      {/* min-w-0 is critical here. Without it, flex children expand to their
+          content width and wide tables (e.g. CRM leads table) push the column
+          wider than the viewport, causing the table to render BEHIND the
+          fixed sidebar. The min-w-0 lets the flex layout constrain properly. */}
+      <div className="flex flex-1 flex-col min-w-0 lg:pl-64">
         <Header
           user={user}
           workspace={workspace}
@@ -321,7 +325,11 @@ export function AppShell({ children, user, workspace, todayLeadCount, hotLeadCou
             </div>
           </div>
         )}
-        <main id="main-content" className="flex-1 px-4 py-6 sm:px-6 lg:px-8" tabIndex={-1}>
+        <main
+          id="main-content"
+          className="flex-1 min-w-0 overflow-x-hidden px-4 py-6 sm:px-6 lg:px-8"
+          tabIndex={-1}
+        >
           {children}
         </main>
       </div>

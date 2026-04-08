@@ -64,6 +64,11 @@ export default async function LeadDetailPage({ params }: PageProps) {
     source: lead.source,
     status: lead.status,
     linkedin_url: lead.linkedin_url ?? undefined,
+    // Score fields — must be passed through or the right-rail Lead Scores
+    // panel renders "%" with no value (undefined !== null is true, so the
+    // panel mounts but interpolating undefined produces an empty string).
+    intent_score_calculated: (lead as { intent_score_calculated?: number | null }).intent_score_calculated ?? undefined,
+    freshness_score: (lead as { freshness_score?: number | null }).freshness_score ?? undefined,
     created_at: lead.created_at,
     updated_at: lead.updated_at ?? lead.created_at,
   }

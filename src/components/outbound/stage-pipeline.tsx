@@ -7,9 +7,14 @@
  * Pauses polling when the tab is hidden (refetchIntervalInBackground: false).
  * Hydrates from `initialData` (passed from the server component) so the
  * first paint is instant.
+ *
+ * Visible feedback: a "live" badge at the top of the pipeline pulses on every
+ * successful poll so users SEE that the pipeline is actively updating, and
+ * the active stage card pulses its count number when a run is in flight.
  */
 
 import { useQuery } from '@tanstack/react-query'
+import { useState, useEffect } from 'react'
 import { Search, Sparkles, FileText, Send, MessageSquare, CalendarCheck } from 'lucide-react'
 import { StageCard } from './stage-card'
 import type { WorkflowStatsResponse } from '@/types/outbound'
@@ -20,7 +25,7 @@ export interface StagePipelineProps {
 }
 
 export function StagePipeline({ agentId, initialStats }: StagePipelineProps) {
-  const { data, isError } = useQuery<WorkflowStatsResponse>({
+  const { data, isError, dataUpdatedAt } = useQuery<WorkflowStatsResponse>({
     queryKey: ['outbound', 'stats', agentId],
     queryFn: async () => {
       const res = await fetch(`/api/outbound/workflows/${agentId}/stats`)
@@ -34,6 +39,16 @@ export function StagePipeline({ agentId, initialStats }: StagePipelineProps) {
     staleTime: 2_000,
   })
 
+  // Compute "x seconds ago" for the live badge so users SEE the polling.
+  // Re-renders every second on its own so the timestamp ticks even when
+  // no new data arrives.
+  const [now, setNow] = useState(() => Date.now())
+  useEffect(() => {
+    const interval = setInterval(() => setNow(Date.now()), 1_000)
+    return () => clearInterval(interval)
+  }, [])
+  const secondsSinceUpdate = dataUpdatedAt ? Math.max(0, Math.floor((now - dataUpdatedAt) / 1_000)) : null
+
   const stages = data?.stages ?? {
     prospecting: 0,
     enriching: 0,
@@ -46,8 +61,6 @@ export function StagePipeline({ agentId, initialStats }: StagePipelineProps) {
   const isRunning = latestRun?.status === 'running'
 
   // Pick which stage card gets the primary accent (most "active" stage).
-  // Cast to the wider union so the JSX comparisons against 'booked' typecheck
-  // (booked never wins activeness — the entire booked column is its own win-state).
   type ActiveStage =
     | 'prospecting'
     | 'enriching'
@@ -69,12 +82,31 @@ export function StagePipeline({ agentId, initialStats }: StagePipelineProps) {
     : null) as ActiveStage
 
   return (
-    <div className="space-y-4 relative">
-      {/* Vertical connector line on the left */}
-      <div
-        aria-hidden
-        className="absolute left-[35px] top-12 bottom-12 w-px bg-border"
-      />
+    <div className="space-y-4">
+      {/* Live activity badge — visible proof that the pipeline is polling.
+          Pulses while running, dims when idle. The "x seconds ago" timestamp
+          ticks every second so users see motion even when no run is active. */}
+      <div className="flex items-center justify-between px-1">
+        <div className="flex items-center gap-2">
+          <span
+            className={[
+              'h-2 w-2 rounded-full',
+              isRunning ? 'bg-primary animate-pulse' : 'bg-muted-foreground/30',
+            ].join(' ')}
+            aria-hidden
+          />
+          <span className="text-xs font-medium text-muted-foreground">
+            {isRunning ? 'Live — updating in real time' : 'Idle'}
+          </span>
+        </div>
+        {secondsSinceUpdate !== null && (
+          <span className="text-[11px] text-muted-foreground/70">
+            {secondsSinceUpdate < 5
+              ? 'Updated just now'
+              : `Updated ${secondsSinceUpdate}s ago`}
+          </span>
+        )}
+      </div>
 
       <StageCard
         label="Prospecting"

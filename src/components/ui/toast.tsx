@@ -22,25 +22,41 @@ export interface ToastProps {
   onClose: (id: string) => void
 }
 
+// Use explicit Tailwind colors with HIGH contrast — the previous theme tokens
+// (text-success-foreground on bg-success-muted) rendered green text on a soft
+// green background which looked illegible / "ghosted" in screenshots. These
+// styles guarantee readable text on every background.
 const toastStyles = {
   success: {
-    container: 'bg-success-muted border-success/30 text-success-foreground',
-    icon: 'text-success',
+    container: 'bg-green-50 border-green-200',
+    title: 'text-green-900',
+    message: 'text-green-800',
+    icon: 'text-green-600',
+    progress: 'bg-green-500',
     iconComponent: CheckCircle,
   },
   error: {
-    container: 'bg-destructive-muted border-destructive/30 text-destructive-foreground',
-    icon: 'text-destructive',
+    container: 'bg-red-50 border-red-200',
+    title: 'text-red-900',
+    message: 'text-red-800',
+    icon: 'text-red-600',
+    progress: 'bg-red-500',
     iconComponent: XCircle,
   },
   warning: {
-    container: 'bg-warning-muted border-warning/30 text-warning-foreground',
-    icon: 'text-warning',
+    container: 'bg-amber-50 border-amber-200',
+    title: 'text-amber-900',
+    message: 'text-amber-800',
+    icon: 'text-amber-600',
+    progress: 'bg-amber-500',
     iconComponent: AlertTriangle,
   },
   info: {
-    container: 'bg-info-muted border-info/30 text-info-foreground',
-    icon: 'text-info',
+    container: 'bg-blue-50 border-blue-200',
+    title: 'text-blue-900',
+    message: 'text-blue-800',
+    icon: 'text-blue-600',
+    progress: 'bg-blue-500',
     iconComponent: Info,
   },
 }
@@ -149,9 +165,9 @@ export function Toast({
         {/* Content */}
         <div className="flex-1 min-w-0">
           {title && (
-            <div className="font-medium text-[13px] mb-1">{title}</div>
+            <div className={`font-semibold text-sm mb-1 ${style.title}`}>{title}</div>
           )}
-          <div className="text-[13px] leading-relaxed">{message}</div>
+          <div className={`text-sm leading-snug ${style.message}`}>{message}</div>
 
           {/* Action Button */}
           {action && (
@@ -160,7 +176,7 @@ export function Toast({
                 action.onClick()
                 handleClose()
               }}
-              className="mt-3 text-[13px] font-medium underline hover:no-underline transition-all opacity-80 hover:opacity-100"
+              className={`mt-3 text-sm font-medium underline hover:no-underline transition-all ${style.title}`}
             >
               {action.label}
             </button>
@@ -170,7 +186,7 @@ export function Toast({
         {/* Close Button */}
         <button
           onClick={handleClose}
-          className="flex-shrink-0 rounded p-1 transition-colors hover:bg-black/10"
+          className={`flex-shrink-0 rounded p-1 transition-colors hover:bg-black/5 ${style.icon}`}
           aria-label="Close notification"
         >
           <X className="h-4 w-4" />
@@ -180,18 +196,7 @@ export function Toast({
       {/* Progress Bar */}
       {duration > 0 && (
         <div
-          className={`
-            absolute bottom-0 left-0 h-1 rounded-b-lg transition-all
-            ${
-              type === 'success'
-                ? 'bg-success'
-                : type === 'error'
-                  ? 'bg-destructive'
-                  : type === 'warning'
-                    ? 'bg-warning'
-                    : 'bg-info'
-            }
-          `}
+          className={`absolute bottom-0 left-0 h-1 rounded-b-lg transition-all ${style.progress}`}
           style={{
             width: `${progress}%`,
             transition: isPaused ? 'none' : 'width 100ms linear',

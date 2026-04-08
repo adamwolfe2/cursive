@@ -4,11 +4,12 @@
  * ProspectsList — table of prospects in the outbound workflow.
  * Polls /api/outbound/workflows/[id]/prospects every 10 seconds.
  *
- * Click a row that has a draft → opens the EmailDraftModal (Feature 7 wires it).
+ * Click a row that has a draft → opens the EmailDraftModal.
  */
 
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
+import { Loader2, Inbox } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { EmailDraftModal } from './email-draft-modal'
 import type { OutboundProspect } from '@/types/outbound'
@@ -20,7 +21,7 @@ export interface ProspectsListProps {
 export function ProspectsList({ agentId }: ProspectsListProps) {
   const [openLeadId, setOpenLeadId] = useState<string | null>(null)
 
-  const { data, isLoading, isError } = useQuery<{ data: OutboundProspect[] }>({
+  const { data, isPending, isError, isFetching } = useQuery<{ data: OutboundProspect[] }>({
     queryKey: ['outbound', 'prospects', agentId],
     queryFn: async () => {
       const r = await fetch(`/api/outbound/workflows/${agentId}/prospects?limit=100`)
@@ -33,25 +34,47 @@ export function ProspectsList({ agentId }: ProspectsListProps) {
 
   const prospects = data?.data ?? []
 
-  if (isLoading && prospects.length === 0) {
+  // ── Loading state ─────────────────────────────────────────────────────
+  // Use isPending (TanStack v5) which is true ONLY on the very first fetch.
+  // Background refetches don't trigger this — once data has loaded once
+  // (even an empty array), we drop out of the loading branch and into the
+  // empty state, so users never see "Loading…" forever for empty workflows.
+  if (isPending) {
     return (
-      <div className="px-5 py-12 text-center text-sm text-muted-foreground">Loading prospects…</div>
+      <div className="flex flex-col items-center justify-center px-5 py-16">
+        <Loader2 className="h-5 w-5 animate-spin text-muted-foreground mb-3" />
+        <p className="text-sm text-muted-foreground">Loading prospects...</p>
+      </div>
     )
   }
 
   if (isError) {
     return (
-      <div className="px-5 py-12 text-center text-sm text-destructive">
-        Failed to load prospects. Will retry in 10 seconds.
+      <div className="px-5 py-12 text-center">
+        <p className="text-sm text-destructive">Failed to load prospects.</p>
+        <p className="mt-1 text-xs text-muted-foreground">Will retry in 10 seconds.</p>
       </div>
     )
   }
 
+  // ── Empty state — no prospects yet ────────────────────────────────────
+  // Once we've successfully fetched and the result is empty, show a clear
+  // call-to-action instead of an indefinite "Loading…".
   if (prospects.length === 0) {
     return (
-      <div className="px-5 py-12 text-center">
+      <div className="flex flex-col items-center justify-center px-5 py-16 text-center">
+        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted/40 mb-4">
+          <Inbox className="h-6 w-6 text-muted-foreground" />
+        </div>
         <p className="text-sm font-medium text-foreground">No prospects yet</p>
-        <p className="mt-1 text-xs text-muted-foreground">Click <span className="font-semibold">Run Now</span> to start prospecting.</p>
+        <p className="mt-1.5 max-w-xs text-xs text-muted-foreground">
+          Click <span className="font-semibold text-foreground">Run Now</span> in the header to pull prospects from AudienceLab matching your ICP filters.
+        </p>
+        {isFetching && (
+          <p className="mt-4 text-[10px] text-muted-foreground/60">
+            Checking for updates...
+          </p>
+        )}
       </div>
     )
   }

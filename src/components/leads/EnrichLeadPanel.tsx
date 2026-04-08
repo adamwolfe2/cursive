@@ -214,10 +214,13 @@ export function EnrichLeadPanel({
                 </p>
               </div>
               <Button asChild className="w-full">
-                <a href="/settings/billing">
-                  <Sparkles className="h-4 w-4 mr-2" />
-                  Upgrade to Pro
-                  <ArrowRight className="h-4 w-4 ml-2" />
+                <a
+                  href="/settings/billing"
+                  className="inline-flex w-full items-center justify-center gap-2 whitespace-nowrap"
+                >
+                  <Sparkles className="h-4 w-4 shrink-0" />
+                  <span>Upgrade to Pro</span>
+                  <ArrowRight className="h-4 w-4 shrink-0" />
                 </a>
               </Button>
             </div>
