@@ -644,7 +644,7 @@ function SuccessCard({ result, onContinue }: SuccessCardProps) {
           </div>
           <p className="text-sm text-muted-foreground">
             {pendingSetup
-              ? "We're building your custom audience right now. Your first leads will land in your dashboard within a few hours — we'll email you as soon as they arrive."
+              ? "Your targeting is being processed. Most users see leads within minutes — we'll email you the moment your first matches arrive. If we need more info to dial in your audience, we'll reach out within a few hours."
               : 'Your targeting is configured. New leads will appear in your dashboard as we identify matches.'}
           </p>
           <button
