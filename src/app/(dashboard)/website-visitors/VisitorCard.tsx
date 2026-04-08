@@ -85,8 +85,9 @@ export function VisitorCard({ lead, onEnrich, onView }: VisitorCardProps) {
               )}
             </div>
 
-            {/* Intent score */}
-            {lead.intent_score_calculated !== null && (
+            {/* Intent score — typeof check, not !== null, so undefined
+                values don't render an empty zero-value badge. */}
+            {typeof lead.intent_score_calculated === 'number' && (
               <div className={cn('shrink-0 rounded-lg border px-2.5 py-1 text-center', getIntentBg(lead.intent_score_calculated))}>
                 <div className={cn('text-sm font-bold', getIntentColor(lead.intent_score_calculated))}>
                   {lead.intent_score_calculated}
