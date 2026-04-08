@@ -20,7 +20,14 @@ export const metadata: Metadata = {
   title: 'Get Started | Cursive',
 }
 
-export default async function SetupPage() {
+export default async function SetupPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ targeting_failed?: string }>
+}) {
+  const params = await searchParams
+  const targetingFailed = params.targeting_failed === 'true'
+
   const supabase = await createClient()
   const {
     data: { user: authUser },
@@ -81,6 +88,7 @@ export default async function SetupPage() {
       <SetupWizard
         initialUrl={initialUrl}
         userName={userData.full_name ?? null}
+        targetingFailed={targetingFailed}
         existingPixel={
           existingPixel
             ? {

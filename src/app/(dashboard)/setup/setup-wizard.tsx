@@ -83,6 +83,10 @@ interface SampleLead {
 interface SetupWizardProps {
   initialUrl: string
   userName: string | null
+  /** True when AutoSubmitOnboarding flagged a targeting save failure on the
+   *  POST /api/onboarding/setup call. Surfaced as a banner so the user knows
+   *  the wizard's "save preferences" step is the recovery path. */
+  targetingFailed?: boolean
   existingPixel: ExistingPixel | null
   existingTargeting: ExistingTargeting | null
 }
@@ -111,6 +115,7 @@ interface SetupResult {
 export function SetupWizard({
   initialUrl,
   userName,
+  targetingFailed = false,
   existingPixel,
   existingTargeting: _existingTargeting,
 }: SetupWizardProps) {
@@ -326,6 +331,25 @@ export function SetupWizard({
           analyze your site, and pull your first batch of enriched leads.
         </p>
       </div>
+
+      {/* Targeting failure recovery banner — surfaced when AutoSubmitOnboarding
+          flagged a targeting save failure on the workspace creation call.
+          Without this, users land on the wizard with no idea their initial
+          targeting wasn't saved and just see "Find My First Leads" with no
+          context. Completing the wizard recovers the failed state. */}
+      {targetingFailed && phase === 'idle' && (
+        <div className="mb-6 flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 p-3">
+          <AlertCircle className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
+          <div className="text-xs">
+            <p className="font-medium text-amber-900">
+              We didn&apos;t finish saving your targeting from signup
+            </p>
+            <p className="text-amber-800 mt-0.5">
+              No worries — completing this step rebuilds your audience from your URL and pulls your first leads.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Idle / form */}
       {phase === 'idle' && (

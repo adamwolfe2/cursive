@@ -46,11 +46,21 @@ export async function POST(_req: NextRequest) {
       return NextResponse.json({ error: 'No workspace assigned' }, { status: 400 })
     }
 
+    // If segments aren't set yet, return a friendly "pending" state instead
+    // of a 400 error. This happens for users who signed up via /signup
+    // (no quiz, no industry choice) before completing the setup wizard.
+    // The wizard's success screen uses pending_setup to show the right copy.
+    // Without this graceful handling, the setup-wizard's populate-initial
+    // call (in Promise.allSettled) would silently fail and the user would
+    // see an empty leads page forever.
     if (!userProfile.industry_segment || !userProfile.location_segment) {
-      return NextResponse.json(
-        { error: 'Industry and location segments required' },
-        { status: 400 }
-      )
+      return NextResponse.json({
+        success: true,
+        message: 'Your audience is being configured. Complete the setup wizard to pull your first leads.',
+        count: 0,
+        filtered: 0,
+        pending_setup: true,
+      })
     }
 
     // Check if user already received leads today (prevent multiple calls)
