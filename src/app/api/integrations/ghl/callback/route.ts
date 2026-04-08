@@ -5,6 +5,8 @@
  * Handles OAuth callback from GoHighLevel and stores credentials.
  */
 
+export const maxDuration = 15
+
 import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { cookies } from 'next/headers'
@@ -110,20 +112,28 @@ export async function GET(req: NextRequest) {
     }
 
     // Exchange code for tokens
-    const tokenResponse = await fetch(GHL_TOKEN_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        Accept: 'application/json',
-      },
-      body: new URLSearchParams({
-        client_id: clientId,
-        client_secret: clientSecret,
-        grant_type: 'authorization_code',
-        code,
-        redirect_uri: `${process.env.NEXT_PUBLIC_APP_URL}/api/integrations/ghl/callback`,
-      }),
-    })
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 10000)
+    let tokenResponse: Response
+    try {
+      tokenResponse = await fetch(GHL_TOKEN_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          Accept: 'application/json',
+        },
+        body: new URLSearchParams({
+          client_id: clientId,
+          client_secret: clientSecret,
+          grant_type: 'authorization_code',
+          code,
+          redirect_uri: `${process.env.NEXT_PUBLIC_APP_URL}/api/integrations/ghl/callback`,
+        }),
+        signal: controller.signal,
+      })
+    } finally {
+      clearTimeout(timeout)
+    }
 
     if (!tokenResponse.ok) {
       const errorData = await tokenResponse.text()
@@ -151,7 +161,9 @@ export async function GET(req: NextRequest) {
 
     const connectionData = {
       workspace_id: context.workspace_id,
-      provider: 'gohighlevel',
+      created_by: context.user_id,
+      provider: 'gohighlevel' as const,
+      provider_account_id: tokens.locationId,
       access_token: tokens.access_token,
       refresh_token: tokens.refresh_token,
       token_expires_at: expiresAt,
@@ -192,6 +204,26 @@ export async function GET(req: NextRequest) {
         )
       }
     }
+
+    // Also track in ghl_app_installs for marketplace install tracking
+    await supabase
+      .from('ghl_app_installs')
+      .upsert(
+        {
+          location_id: tokens.locationId,
+          company_id: tokens.companyId ?? null,
+          workspace_id: context.workspace_id,
+          user_id: context.user_id,
+          status: 'active',
+          access_token: tokens.access_token,
+          refresh_token: tokens.refresh_token,
+          token_expires_at: expiresAt,
+          scopes: tokens.scope.split(' '),
+          installed_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: 'location_id' }
+      )
 
     // Log the connection event
     await supabase.from('audit_logs').insert({

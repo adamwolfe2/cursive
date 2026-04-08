@@ -1,6 +1,7 @@
 export { ConversationList } from './ConversationList'
 export { ConversationThread } from './ConversationThread'
 export { ConversationStatusBadge } from './ConversationStatusBadge'
+export { SentimentBadge } from './SentimentBadge'
 export { InboxFilters } from './InboxFilters'
 export { AIDraftCard } from './AIDraftCard'
 export { ReplyComposer } from './ReplyComposer'

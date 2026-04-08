@@ -11,6 +11,7 @@ import {
   type ConversationFilters,
   type PaginationParams,
 } from '@/lib/services/campaign/conversation.service'
+import { createClient } from '@/lib/supabase/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function GET(request: NextRequest) {
@@ -42,9 +43,9 @@ export async function GET(request: NextRequest) {
 
     const stageValues = searchParams.getAll('stage')
     if (stageValues.length === 1) {
-      filters.conversationStage = stageValues[0]
+      filters.stage = stageValues[0]
     } else if (stageValues.length > 1) {
-      filters.conversationStage = stageValues
+      filters.stage = stageValues
     }
 
     const pagination: PaginationParams = {
@@ -55,6 +56,20 @@ export async function GET(request: NextRequest) {
     }
 
     const result = await getConversations(user.workspace_id, filters, pagination)
+
+    const conversationIds = result.conversations.map((c) => c.id)
+    let pendingDraftIds = new Set<string>()
+    if (conversationIds.length > 0) {
+      const supabase = await createClient()
+      const { data: drafts } = await supabase
+        .from('email_replies')
+        .select('conversation_id')
+        .in('conversation_id', conversationIds)
+        .eq('draft_status', 'needs_approval')
+      if (drafts) {
+        pendingDraftIds = new Set(drafts.map((d) => d.conversation_id))
+      }
+    }
 
     return success({
       conversations: result.conversations.map((c) => ({
@@ -73,16 +88,15 @@ export async function GET(request: NextRequest) {
             }
           : null,
         status: c.status,
-        conversationStage: c.sentiment || 'new',
         lastMessageAt: c.lastMessageAt,
         lastMessageDirection: c.lastMessageDirection,
         lastMessageSnippet: c.latestMessage?.snippet ?? null,
         messageCount: c.messageCount,
         unreadCount: c.unreadCount,
-        sentiment: c.sentiment,
+        sentiment: c.sentiment || 'new',
         priority: c.priority,
         aiTurnCount: 0,
-        hasPendingDraft: false,
+        hasPendingDraft: pendingDraftIds.has(c.id),
         tags: c.tags,
       })),
       total: result.total,

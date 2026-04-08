@@ -486,25 +486,8 @@ export function addSecurityHeaders(response: NextResponse): NextResponse {
     'camera=(), microphone=(), geolocation=(), payment=()'
   )
 
-  // Content Security Policy (adjust based on your needs)
-  if (process.env.NODE_ENV === 'production') {
-    response.headers.set(
-      'Content-Security-Policy',
-      [
-        "default-src 'self'",
-        "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com",
-        "style-src 'self' 'unsafe-inline'",
-        "img-src 'self' data: https: blob:",
-        "font-src 'self' data:",
-        "connect-src 'self' https://api.stripe.com https://*.supabase.co wss://*.supabase.co",
-        "frame-src 'self' https://js.stripe.com https://hooks.stripe.com",
-        "object-src 'none'",
-        "base-uri 'self'",
-        "form-action 'self'",
-        "frame-ancestors 'none'",
-      ].join('; ')
-    )
-  }
+  // CSP is set in next.config.js headers — do not duplicate here.
+  // Middleware CSP would override the config-level headers and cause conflicts.
 
   return response
 }

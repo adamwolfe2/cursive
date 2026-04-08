@@ -25,7 +25,7 @@ const createExperimentSchema = z.object({
   variantBLabel: z.string().min(1).max(50).optional(),
 })
 
-// GET /api/ab-testing/experiments?sequenceId=xxx
+// GET /api/ab-testing/experiments?sequenceId=xxx&campaignId=xxx
 export async function GET(request: NextRequest) {
   try {
     const user = await getCurrentUser()
@@ -35,23 +35,30 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url)
     const sequenceId = searchParams.get('sequenceId')
+    const campaignId = searchParams.get('campaignId')
 
-    if (!sequenceId) {
-      return badRequest('sequenceId is required')
+    // Sequence-level A/B testing is not yet supported.
+    // The email_campaigns table does not have a sequence_id column,
+    // so we cannot resolve campaigns for a given sequence.
+    if (sequenceId && !campaignId) {
+      return NextResponse.json({ experiments: [] })
+    }
+
+    if (!campaignId) {
+      return badRequest('campaignId is required')
     }
 
     const supabase = await createClient()
 
-    // Resolve campaign IDs linked to this sequence
-    const { data: campaigns } = await supabase
+    // Verify workspace access to the campaign
+    const { data: campaign } = await supabase
       .from('email_campaigns')
       .select('id')
-      .eq('sequence_id', sequenceId)
+      .eq('id', campaignId)
       .eq('workspace_id', user.workspace_id)
+      .maybeSingle()
 
-    const campaignIds = (campaigns || []).map((c) => c.id)
-
-    if (campaignIds.length === 0) {
+    if (!campaign) {
       return NextResponse.json({ experiments: [] })
     }
 
@@ -63,7 +70,7 @@ export async function GET(request: NextRequest) {
         winner_variant:email_template_variants!winner_variant_id(id, name)
       `
       )
-      .in('campaign_id', campaignIds)
+      .eq('campaign_id', campaignId)
       .eq('workspace_id', user.workspace_id)
       .order('created_at', { ascending: false })
 

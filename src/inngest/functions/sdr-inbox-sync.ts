@@ -93,14 +93,14 @@ export const sdrInboxSync = inngest.createFunction(
               // Get conversation history
               const { data: conversation } = await supabase
                 .from('email_conversations')
-                .select('id, conversation_stage, ai_turn_count, message_count')
+                .select('id, sentiment, ai_turn_count, message_count')
                 .eq('workspace_id', config.workspace_id)
                 .eq('lead_id', reply.lead_id)
                 .order('last_message_at', { ascending: false })
                 .limit(1)
                 .maybeSingle()
 
-              const conversationStage = (conversation?.conversation_stage ?? 'new') as ConversationStage
+              const conversationStage = (conversation?.sentiment ?? 'new') as ConversationStage
               const turnCount = conversation?.ai_turn_count ?? 0
 
               // Get conversation messages for history
@@ -182,7 +182,7 @@ export const sdrInboxSync = inngest.createFunction(
                   await supabase
                     .from('email_conversations')
                     .update({
-                      conversation_stage: decision.reply.suggestedStageTransition,
+                      sentiment: decision.reply.suggestedStageTransition,
                       ai_turn_count: turnCount + 1,
                       last_ai_reply_at: new Date().toISOString(),
                       updated_at: new Date().toISOString(),

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import type { InboxFilters as InboxFiltersType, ConversationStage } from '@/types/sdr'
+import type { InboxFilters as InboxFiltersType } from '@/types/sdr'
 
 interface InboxFiltersProps {
   readonly filters: InboxFiltersType
@@ -16,15 +16,16 @@ const STATUS_OPTIONS = [
   { value: 'closed', label: 'Closed' },
 ]
 
-const STAGE_OPTIONS: { value: '' | ConversationStage; label: string }[] = [
-  { value: '', label: 'All stages' },
+const STAGE_OPTIONS: { value: string; label: string }[] = [
+  { value: '', label: 'All sentiments' },
   { value: 'new', label: 'New' },
-  { value: 'engaged', label: 'Engaged' },
-  { value: 'qualifying', label: 'Qualifying' },
-  { value: 'scheduling', label: 'Scheduling' },
-  { value: 'booked', label: 'Booked' },
-  { value: 'closed', label: 'Closed' },
-  { value: 'lost', label: 'Lost' },
+  { value: 'positive', label: 'Positive' },
+  { value: 'neutral', label: 'Neutral' },
+  { value: 'negative', label: 'Negative' },
+  { value: 'question', label: 'Question' },
+  { value: 'interested', label: 'Interested' },
+  { value: 'not_interested', label: 'Not Interested' },
+  { value: 'out_of_office', label: 'Out of Office' },
 ]
 
 export function InboxFilters({ filters, onChange }: InboxFiltersProps) {
@@ -48,7 +49,7 @@ export function InboxFilters({ filters, onChange }: InboxFiltersProps) {
   const handleStageChange = (value: string) => {
     onChange({
       ...filters,
-      conversationStage: (value as ConversationStage) || undefined,
+      stage: value || undefined,
     })
   }
 
@@ -81,7 +82,7 @@ export function InboxFilters({ filters, onChange }: InboxFiltersProps) {
           ))}
         </select>
         <select
-          value={(filters.conversationStage as string) ?? ''}
+          value={(filters.stage as string) ?? ''}
           onChange={(e) => handleStageChange(e.target.value)}
           className="flex-1 px-2 py-1.5 text-xs border rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-blue-500"
         >

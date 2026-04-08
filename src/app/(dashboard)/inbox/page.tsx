@@ -21,10 +21,10 @@ export default function InboxPage() {
         const statuses = Array.isArray(filters.status) ? filters.status : [filters.status]
         statuses.forEach((s) => params.append('status', s))
       }
-      if (filters.conversationStage) {
-        const stages = Array.isArray(filters.conversationStage)
-          ? filters.conversationStage
-          : [filters.conversationStage]
+      if (filters.stage) {
+        const stages = Array.isArray(filters.stage)
+          ? filters.stage
+          : [filters.stage]
         stages.forEach((s) => params.append('stage', s))
       }
       if (filters.campaignId) params.set('campaign_id', filters.campaignId)

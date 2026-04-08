@@ -8,10 +8,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
+import { sanitizeSearchTerm } from '@/lib/utils/sanitize-search'
 import { z } from 'zod'
 
-// Import AL API client
 import {
   previewAudience,
   createAudience,
@@ -19,22 +20,17 @@ import {
   type ALAudienceSegmentFilters,
 } from '@/lib/audiencelab/api-client'
 
+const AL_SEARCH_TIMEOUT = 20_000
+
 const searchSchema = z.object({
-  // Filters
   industries: z.array(z.string()).optional(),
   states: z.array(z.string()).optional(),
   company_sizes: z.array(z.string()).optional(),
   job_titles: z.array(z.string()).optional(),
   seniority_levels: z.array(z.string()).optional(),
-
-  // Search
   search: z.string().optional(),
-
-  // Pagination
   page: z.number().min(1).default(1),
   limit: z.number().min(1).max(100).default(25),
-
-  // Action
   action: z.enum(['preview', 'pull']).default('preview'),
 })
 
@@ -63,20 +59,21 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Workspace not found' }, { status: 404 })
     }
 
-    // Build AL audience query from filters
-    const audienceQuery = buildAudienceQuery(params)
-
     if (params.action === 'preview') {
-      // Preview mode: just get count and sample
       try {
-        const preview = await previewAudience({
-          days_back: 7,
-          filters: audienceQuery,
-          limit: 25,
-          include_dnc: false,
-        })
+        const segmentId = await findMatchingSegment(params)
 
-        // Calculate credit cost for 25 leads (or fewer if less available)
+        const previewPromise = segmentId
+          ? previewAudience({ days_back: 7, limit: 25, segment: parseInt(segmentId, 10) })
+          : previewAudience({ days_back: 7, limit: 25 })
+
+        const preview = await Promise.race([
+          previewPromise,
+          new Promise<never>((_, reject) =>
+            setTimeout(() => reject(new Error('AL preview timed out')), AL_SEARCH_TIMEOUT)
+          ),
+        ])
+
         const creditCostPerLead = 0.5
         const maxPullable = Math.min(preview.count, 25)
         const totalCost = maxPullable * creditCostPerLead
@@ -84,18 +81,20 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({
           preview: {
             count: preview.count,
-            sample: preview.sample || [],
+            sample: preview.result || [],
             credit_cost: totalCost,
             credit_cost_per_lead: creditCostPerLead,
             can_afford: workspace.credits_balance >= totalCost,
             current_balance: workspace.credits_balance,
+            segment_id: segmentId || null,
           },
         })
       } catch (alError) {
+        const isTimeout = alError instanceof Error && alError.message.includes('timed out')
         safeError('[AL Database Search] Preview error:', alError)
         return NextResponse.json(
-          { error: 'Failed to preview audience. AL API may be unavailable.' },
-          { status: 502 }
+          { error: isTimeout ? 'Search timed out. Try narrowing your filters.' : 'Failed to preview audience. AL API may be unavailable.' },
+          { status: isTimeout ? 504 : 502 }
         )
       }
     } else {
@@ -118,11 +117,17 @@ export async function POST(request: NextRequest) {
       }
 
       try {
-        // Step 1: Create audience with filters
-        const audience = await createAudience({
-          filters: audienceQuery,
-          name: `db-search-${Date.now()}-${workspace.id.substring(0, 8)}`,
-        })
+        const audienceFilters = buildAudienceFilters(params)
+
+        const audience = await Promise.race([
+          createAudience({
+            filters: audienceFilters,
+            name: `db-search-${Date.now()}-${workspace.id.substring(0, 8)}`,
+          }),
+          new Promise<never>((_, reject) =>
+            setTimeout(() => reject(new Error('AL pull timed out')), AL_SEARCH_TIMEOUT)
+          ),
+        ])
 
         // Step 2: Fetch records from created audience
         const recordsResponse = await fetchAudienceRecords(
@@ -260,10 +265,11 @@ export async function POST(request: NextRequest) {
           }`,
         })
       } catch (alError) {
+        const isTimeout = alError instanceof Error && alError.message.includes('timed out')
         safeError('[AL Database Search] Pull error:', alError)
         return NextResponse.json(
-          { error: 'Failed to pull records from AL database' },
-          { status: 502 }
+          { error: isTimeout ? 'Pull timed out. Try again or narrow your filters.' : 'Failed to pull records from AL database' },
+          { status: isTimeout ? 504 : 502 }
         )
       }
     }
@@ -272,32 +278,51 @@ export async function POST(request: NextRequest) {
   }
 }
 
-/**
- * Build AL audience query from search parameters
- */
-function buildAudienceQuery(params: z.infer<typeof searchSchema>): ALAudienceSegmentFilters {
-  const query: ALAudienceSegmentFilters = {}
+function buildAudienceFilters(params: z.infer<typeof searchSchema>): ALAudienceSegmentFilters {
+  const filters: ALAudienceSegmentFilters = {}
 
-  const hasBusinessFilters = (params.industries?.length || 0) > 0 ||
-    (params.seniority_levels?.length || 0) > 0 ||
-    (params.job_titles?.length || 0) > 0
-
-  if (hasBusinessFilters) {
-    query.business = {}
-    if (params.industries && params.industries.length > 0) {
-      query.business.industry = params.industries
-    }
-    if (params.seniority_levels && params.seniority_levels.length > 0) {
-      query.business.seniority = params.seniority_levels as Array<'C-Suite' | 'VP' | 'Director' | 'Manager' | 'Individual Contributor' | 'Entry Level'>
-    }
-    if (params.job_titles && params.job_titles.length > 0) {
-      query.business.jobTitle = params.job_titles
+  if (params.industries?.length || params.job_titles?.length || params.seniority_levels?.length) {
+    filters.business = {
+      ...(params.industries?.length && { industry: params.industries }),
+      ...(params.job_titles?.length && { jobTitle: params.job_titles }),
+      ...(params.seniority_levels?.length && {
+        seniority: params.seniority_levels as Array<'C-Suite' | 'VP' | 'Director' | 'Manager' | 'Individual Contributor' | 'Entry Level'>,
+      }),
     }
   }
 
-  if (params.states && params.states.length > 0) {
-    query.location = { state: params.states }
+  if (params.states?.length) {
+    filters.location = { state: params.states }
   }
 
-  return query
+  return filters
+}
+
+async function findMatchingSegment(
+  params: z.infer<typeof searchSchema>
+): Promise<string | null> {
+  const searchTerms: string[] = []
+
+  if (params.industries?.length) searchTerms.push(...params.industries)
+  if (params.search) searchTerms.push(params.search)
+  if (params.job_titles?.length) searchTerms.push(...params.job_titles)
+
+  if (searchTerms.length === 0) return null
+
+  try {
+    const admin = createAdminClient()
+    const term = sanitizeSearchTerm(searchTerms.join(' '))
+
+    const { data } = await admin
+      .from('al_segment_catalog')
+      .select('segment_id')
+      .or(`name.ilike.%${term}%,category.ilike.%${term}%,keywords.ilike.%${term}%`)
+      .limit(1)
+      .maybeSingle()
+
+    return data?.segment_id ?? null
+  } catch (err) {
+    safeError('[AL Database Search] Segment catalog lookup failed:', err)
+    return null
+  }
 }

@@ -220,13 +220,12 @@ export interface InboxConversation {
   readonly leadId: string
   readonly lead: LeadContext
   readonly status: string
-  readonly conversationStage: ConversationStage
   readonly lastMessageAt: string
   readonly lastMessageDirection: 'outbound' | 'inbound'
   readonly lastMessageSnippet: string | null
   readonly messageCount: number
   readonly unreadCount: number
-  readonly sentiment: string | null
+  readonly sentiment: string
   readonly priority: string
   readonly aiTurnCount: number
   readonly hasPendingDraft: boolean
@@ -235,7 +234,7 @@ export interface InboxConversation {
 
 export interface InboxFilters {
   readonly status?: string | string[]
-  readonly conversationStage?: ConversationStage | ConversationStage[]
+  readonly stage?: string | string[]
   readonly campaignId?: string
   readonly sentiment?: string
   readonly priority?: string

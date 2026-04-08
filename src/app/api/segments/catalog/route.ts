@@ -4,6 +4,10 @@ import { createClient } from '@/lib/supabase/server'
 import { sanitizeSearchTerm } from '@/lib/utils/sanitize-search'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
+const CACHE_HEADERS = {
+  'Cache-Control': 's-maxage=300, stale-while-revalidate=600',
+} as const
+
 export async function GET(req: NextRequest) {
   const supabase = await createClient()
   // SECURITY: Use getUser() for server-side JWT verification (not getSession which trusts local cache)
@@ -52,7 +56,7 @@ export async function GET(req: NextRequest) {
           total_pages: 1,
           categories,
           search_type: 'semantic',
-        })
+        }, { headers: CACHE_HEADERS })
       }
 
       // If semantic search returned nothing, fall through to ilike
@@ -98,5 +102,5 @@ export async function GET(req: NextRequest) {
     total_pages: Math.ceil((count ?? 0) / perPage),
     categories,
     search_type: q ? 'keyword' : 'browse',
-  })
+  }, { headers: CACHE_HEADERS })
 }

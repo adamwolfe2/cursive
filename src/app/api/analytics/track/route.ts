@@ -3,6 +3,8 @@
  * POST /api/analytics/track - Track analytics events
  */
 
+export const maxDuration = 10
+
 import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { getCurrentUser } from '@/lib/auth/helpers'
@@ -82,12 +84,15 @@ async function sendToPostHog(
   properties: any,
   userId?: string
 ): Promise<void> {
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 5000)
   try {
     await fetch('https://app.posthog.com/capture/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
+      signal: controller.signal,
       body: JSON.stringify({
         api_key: process.env.POSTHOG_API_KEY,
         event,
@@ -100,5 +105,7 @@ async function sendToPostHog(
     })
   } catch (error) {
     safeError('PostHog tracking error:', error)
+  } finally {
+    clearTimeout(timeout)
   }
 }

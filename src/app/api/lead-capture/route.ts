@@ -1,3 +1,5 @@
+export const maxDuration = 10
+
 import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { withRateLimit } from '@/lib/middleware/rate-limiter'
@@ -30,15 +32,24 @@ export async function POST(req: NextRequest) {
     const webhookUrl = process.env.NEXT_PUBLIC_LEAD_WEBHOOK_URL
 
     if (webhookUrl) {
-      await fetch(webhookUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...body,
-          timestamp: new Date().toISOString(),
-          source: 'superpixel_calculator',
-        }),
-      }).catch((err) => safeError('[LeadCapture] Pixel notify failed:', err))
+      const controller = new AbortController()
+      const timeout = setTimeout(() => controller.abort(), 5000)
+      try {
+        await fetch(webhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          signal: controller.signal,
+          body: JSON.stringify({
+            ...body,
+            timestamp: new Date().toISOString(),
+            source: 'superpixel_calculator',
+          }),
+        })
+      } catch (err) {
+        safeError('[LeadCapture] Pixel notify failed:', err)
+      } finally {
+        clearTimeout(timeout)
+      }
     }
 
     return NextResponse.json({ success: true })

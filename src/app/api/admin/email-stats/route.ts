@@ -1,4 +1,5 @@
 export const runtime = 'nodejs'
+export const maxDuration = 15
 
 /**
  * Admin Email Stats API
@@ -105,6 +106,8 @@ export async function GET() {
     let emails: ResendEmailRecord[] = []
     let apiNote = ''
 
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 10000)
     try {
       const resendRes = await fetch('https://api.resend.com/emails?limit=100', {
         headers: {
@@ -112,6 +115,7 @@ export async function GET() {
           'Content-Type': 'application/json',
         },
         cache: 'no-store',
+        signal: controller.signal,
       })
 
       if (!resendRes.ok) {
@@ -128,6 +132,8 @@ export async function GET() {
     } catch (fetchErr) {
       safeError('[AdminEmailStats] Fetch error:', fetchErr)
       apiNote = 'Could not reach Resend API. Showing zeroed stats.'
+    } finally {
+      clearTimeout(timeout)
     }
 
     safeLog('[AdminEmailStats] Emails fetched:', emails.length)

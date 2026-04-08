@@ -46,6 +46,7 @@ const GROUPS = [
       { href: '/admin/custom-audiences',   label: 'Audiences' },
       { href: '/admin/audiencelab/pixels',   label: 'Pixels' },
       { href: '/admin/audiencelab/segments', label: 'Segments' },
+      { href: '/admin/lead-ingestion',       label: 'Pull Leads' },
     ],
   },
   {

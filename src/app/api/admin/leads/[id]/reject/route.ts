@@ -1,6 +1,8 @@
 // Admin Lead Reject API
 // Reject a lead with reason code and notify partner
 
+export const maxDuration = 15
+
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
@@ -107,12 +109,15 @@ export async function POST(
     // Send email notification to partner
     const partnerData = lead.partners as unknown as { id: string; company_name: string; contact_email: string } | null
     if (partnerData && partnerData.contact_email) {
+      const emailController = new AbortController()
+      const emailTimeout = setTimeout(() => emailController.abort(), 10000)
       try {
         const leadName = [lead.first_name, lead.last_name].filter(Boolean).join(' ') || lead.email || 'Unknown'
 
         await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/emails/send`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          signal: emailController.signal,
           body: JSON.stringify({
             to: partnerData.contact_email,
             subject: 'Lead Rejected - Action Required',
@@ -127,7 +132,8 @@ export async function POST(
         })
       } catch (emailError) {
         safeError('Failed to send rejection email:', emailError)
-        // Don't fail the request if email fails
+      } finally {
+        clearTimeout(emailTimeout)
       }
     }
 

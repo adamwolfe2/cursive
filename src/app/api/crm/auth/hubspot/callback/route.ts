@@ -6,6 +6,8 @@
  * in the crm_connections table for use by HubSpotService.
  */
 
+export const maxDuration = 15
+
 import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { cookies } from 'next/headers'
@@ -157,20 +159,28 @@ export async function GET(req: NextRequest) {
     // Exchange code for tokens
     const redirectUri = `${process.env.NEXT_PUBLIC_APP_URL}/api/crm/auth/hubspot/callback`
 
-    const tokenResponse = await fetch(HS_TOKEN_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        Accept: 'application/json',
-      },
-      body: new URLSearchParams({
-        grant_type: 'authorization_code',
-        code,
-        client_id: clientId,
-        client_secret: clientSecret,
-        redirect_uri: redirectUri,
-      }),
-    })
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 10000)
+    let tokenResponse: Response
+    try {
+      tokenResponse = await fetch(HS_TOKEN_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          Accept: 'application/json',
+        },
+        body: new URLSearchParams({
+          grant_type: 'authorization_code',
+          code,
+          client_id: clientId,
+          client_secret: clientSecret,
+          redirect_uri: redirectUri,
+        }),
+        signal: controller.signal,
+      })
+    } finally {
+      clearTimeout(timeout)
+    }
 
     if (!tokenResponse.ok) {
       const errorData = await tokenResponse.text()

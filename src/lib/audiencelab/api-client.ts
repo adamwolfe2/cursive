@@ -290,7 +290,8 @@ export interface ALAudienceCreateResponse {
 export interface ALAudiencePreviewRequest {
   days_back: number
   filters?: ALAudienceSegmentFilters
-  segment?: number
+  /** Segment ID from al_segment_catalog. Sent as string to AL API. */
+  segment?: number | string
   limit?: number  // 0–500 sample records to return
   score?: boolean
   include_dnc?: boolean
@@ -551,14 +552,24 @@ export async function getAudienceAttributes(
 export async function previewAudience(
   params: ALAudiencePreviewRequest
 ): Promise<ALAudiencePreviewResponse> {
+  // AL sub-account API only accepts: days_back, limit, segment (as string).
+  // Extra fields (score, include_dnc, filters) cause JSON parse errors on sub-accounts.
+  // When using segment-based queries, send ONLY the fields AL accepts.
   const body: Record<string, unknown> = {
     days_back: params.days_back,
   }
-  if (params.filters) body.filters = params.filters
-  if (params.segment !== undefined) body.segment = params.segment
+
   if (params.limit !== undefined) body.limit = params.limit
-  if (params.score !== undefined) body.score = params.score
-  if (params.include_dnc !== undefined) body.include_dnc = params.include_dnc
+
+  if (params.segment !== undefined) {
+    // AL API expects segment as an array of strings: ["106328"]
+    body.segment = [String(params.segment)]
+  } else {
+    // Filter-based preview — only add optional fields when NOT using segments
+    if (params.filters) body.filters = params.filters
+    if (params.score !== undefined) body.score = params.score
+    if (params.include_dnc !== undefined) body.include_dnc = params.include_dnc
+  }
 
   return alFetch<ALAudiencePreviewResponse>('/audiences/preview', {
     method: 'POST',

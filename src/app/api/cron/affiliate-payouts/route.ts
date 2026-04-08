@@ -10,13 +10,17 @@ import Stripe from 'stripe'
 import { sendPartnerPayoutSummary } from '@/lib/email/affiliate-emails'
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
 
+export const maxDuration = 60
+
 const MIN_PAYOUT_CENTS = 5000 // $50
+const STRIPE_TIMEOUT_MS = 15_000
 
 function getStripe(): Stripe {
   const key = process.env.STRIPE_SECRET_KEY
   if (!key) throw new Error('STRIPE_SECRET_KEY is not configured')
   return new Stripe(key, {
     apiVersion: '2025-02-24.acacia' as Stripe.LatestApiVersion,
+    timeout: STRIPE_TIMEOUT_MS,
   })
 }
 

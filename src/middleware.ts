@@ -55,8 +55,19 @@ export async function middleware(req: NextRequest) {
       return NextResponse.next()
     }
 
-    // Webhook and Inngest paths handle their own auth — return immediately
-    // without creating a Supabase client (which can hang on serverless functions)
+    if (pathname === '/my-leads') {
+      const url = new URL('/leads?tab=assigned', req.url)
+      return NextResponse.redirect(url, 308)
+    }
+
+    if (
+      pathname.startsWith('/my-leads/') &&
+      !pathname.startsWith('/my-leads/preferences')
+    ) {
+      const url = new URL('/leads?tab=assigned', req.url)
+      return NextResponse.redirect(url, 308)
+    }
+
     if (
       pathname.startsWith('/api/webhooks') ||
       pathname.startsWith('/api/cron') ||

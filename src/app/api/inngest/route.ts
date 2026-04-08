@@ -247,5 +247,10 @@ export const { GET, POST, PUT } = serve({
 
     // AI SDR Inbox Sync (processes replies through AI reply engine)
     functions.sdrInboxSync,
+
+    // User lead cap resets (prevents leads from permanently stopping after cap hit)
+    functions.resetUserDailyLeadCaps,
+    functions.resetUserWeeklyLeadCaps,
+    functions.resetUserMonthlyLeadCaps,
   ],
 })
