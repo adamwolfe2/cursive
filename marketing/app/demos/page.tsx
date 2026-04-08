@@ -153,7 +153,7 @@ export default function DemosPage() {
 
           <MachineSection title="Core Feature Demos">
             <MachineList items={[
-              { label: "Visitor Identification", href: "/visitor-identification", description: "See how Cursive identifies anonymous website visitors in real-time with 70% match rates, revealing company name, job title, email, and pages viewed" },
+              { label: "Visitor Identification", href: "/visitor-identification", description: "See how Cursive identifies anonymous website visitors in real-time with a 40\u201360% deterministic pixel match rate (vs 2\u20135% for cookies, 10\u201315% for IP databases), revealing company name, job title, email, and pages viewed" },
               { label: "Intent Signals Dashboard", href: "/platform", description: "Track buying signals across your website -- pricing page visits, feature comparisons, return visits, and content downloads scored by intent level" },
               { label: "Audience Builder", href: "/audience-builder", description: "Build custom audiences from identified visitors, filter by industry, company size, intent score, and behavior patterns for targeted campaigns" },
               { label: "Custom Audiences", href: "/custom-audiences", description: "Access pre-built intent segments and layer demographic parameters for precision ad targeting across platforms" },

@@ -12,11 +12,11 @@ export const metadata = generateMetadata({
 const retailFAQs = [
   {
     question: 'How does Cursive help B2B retail companies identify wholesale buyers?',
-    answer: 'Cursive identifies up to 70% of anonymous companies visiting your B2B retail or wholesale website, revealing which buyers, purchasing managers, and retail chains are researching your product lines and wholesale pricing. Your sales team can then reach out proactively with personalized account proposals, turning anonymous web traffic into identified wholesale opportunities.',
+    answer: 'Cursive resolves anonymous visitors on your B2B retail or wholesale site against a deterministic identity graph of 280M+ verified consumer and 140M+ business profiles, with a 40–60% pixel match rate (vs 2–5% for cookie-based tools and 10–15% for IP databases). Your sales team can then reach out proactively with personalized account proposals, turning anonymous web traffic into identified wholesale opportunities.',
   },
   {
     question: 'What visitor identification rate can retail companies expect?',
-    answer: 'B2B retail and wholesale companies using Cursive typically identify up to 70% of their anonymous website visitors, providing a continuous pipeline of warm buyer prospects far beyond what contact forms alone can generate. This high identification rate ensures your sales team always has a rich list of engaged accounts to work, even from modest amounts of monthly website traffic.',
+    answer: 'B2B retail and wholesale companies using Cursive see a 40–60% deterministic pixel match rate — driven by our proprietary geo-framing methodology — providing a continuous pipeline of warm buyer prospects far beyond what contact forms alone (1–3% conversion) or cookie-based tools (2–5% resolution) can generate.',
   },
   {
     question: "How do retail companies use Cursive's intent data for buyer targeting?",

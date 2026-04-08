@@ -35,11 +35,11 @@ const deanonymizationFAQs = [
   },
   {
     question: 'What is probabilistic vs deterministic matching?',
-    answer: 'Deterministic matching is 100% certain — a visitor is logged into an account, and you know exactly who they are. Probabilistic matching uses statistical models to infer identity from indirect signals (device type + IP range + browser fingerprint + time-of-day pattern). Probabilistic matches come with confidence scores (e.g., 87% likely to be John Smith). Best tools use deterministic data where available and fall back to probabilistic — Cursive\'s 70% identification rate reflects this combined approach.',
+    answer: 'Deterministic matching resolves visitors against verified, opted-in identity data — not statistical inference. Probabilistic matching uses models to infer identity from indirect signals (device type + IP range + browser fingerprint + time-of-day pattern). Cursive is fully deterministic: our 40–60% pixel match rate, with 60–80% pixel-level accuracy, comes from resolving visitors against an identity graph of 280M+ verified consumer and 140M+ business profiles refreshed every 30 days via NCOA — not modeled or guessed.',
   },
   {
     question: 'How accurate is visitor deanonymization?',
-    answer: 'For B2B US website traffic, leading deanonymization tools identify 50-70% of visitors as specific individuals. Cursive achieves ~70% person-level identification of US B2B visitors. Accuracy is highest for visitors from corporate IP ranges (office networks), lower for visitors on consumer ISPs (home, mobile). Email deliverability on identified contacts averages 95%+ for verified profiles, ensuring the data quality is usable for outreach.',
+    answer: 'Cursive delivers a 40–60% deterministic pixel match rate with 60–80% pixel-level accuracy on US B2B traffic — driven by our proprietary geo-framing methodology and an identity graph of 280M+ verified consumer and 140M+ business profiles refreshed every 30 days via NCOA. For comparison, cookie-based tools resolve 2–5% of visitors and IP databases resolve 10–15%. Email validation runs through Deep Verify (~20 million records per day, in-house), keeping deliverability high on identified contacts.',
   },
   {
     question: 'Is visitor deanonymization GDPR compliant?',

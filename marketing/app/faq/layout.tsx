@@ -12,11 +12,11 @@ export const metadata = generateMetadata({
 const faqPageFAQs = [
   {
     question: 'What is Cursive and what does it do?',
-    answer: 'Cursive is a B2B revenue intelligence platform that identifies anonymous website visitors and converts them into actionable sales leads. It combines visitor identification (revealing who is visiting your site), intent data (tracking active buying signals), an AI SDR for automated outreach, and a B2B lead marketplace — all in one platform starting at $1,000/month.',
+    answer: 'Cursive is the identity layer for outbound, intent, and enrichment. We combine deterministic visitor identification (40–60% pixel match rate, not modeled), 280M+ verified consumer and 140M+ business profiles refreshed every 30 days via NCOA, and a closed feedback loop that maps signals back to source URLs and validates against real conversions. Self-serve marketplace from $0.60/lead, managed services from $1,000/month, committed-tier data partnerships from $15K/month.',
   },
   {
     question: 'How does Cursive identify anonymous website visitors?',
-    answer: 'Cursive uses a lightweight JavaScript snippet on your website that cross-references visitor IP data, device fingerprinting, and our database of 280M+ verified US profiles. When a visitor matches a profile, Cursive reveals their name, email, company, job title, and LinkedIn — typically identifying 50-70% of US B2B visitors. Installation takes under 5 minutes.',
+    answer: 'Cursive uses a lightweight JavaScript pixel that resolves visitors against our deterministic identity graph of 280M+ verified consumer and 140M+ business profiles, refreshed every 30 days via NCOA. The pixel delivers a 40–60% match rate driven by our proprietary geo-framing methodology — significantly higher than cookie-based tools (2–5%) or IP databases (10–15%) — with 60–80% pixel-level accuracy. Installation takes under 5 minutes.',
   },
   {
     question: 'What integrations does Cursive support?',
@@ -28,11 +28,11 @@ const faqPageFAQs = [
   },
   {
     question: 'How accurate is Cursive\'s visitor identification?',
-    answer: 'Cursive identifies 50-70% of US B2B website visitors with 95%+ email deliverability on identified contacts. This compares favorably to competitors: Warmly identifies ~40%, Clearbit ~30-40%, and RB2B ~50-60%. Accuracy varies by industry — B2B SaaS and professional services typically see the highest identification rates.',
+    answer: 'Cursive delivers a 40–60% deterministic pixel match rate with 60–80% pixel-level accuracy — not modeled or probabilistic. For comparison, cookie-based tools resolve 2–5% of visitors and IP databases resolve 10–15%. Accuracy is reinforced by Deep Verify, our in-house email validation engine processing ~20 million records per day, plus a closed feedback loop that validates signals against real conversions.',
   },
   {
-    question: 'What is the difference between the self-serve platform and managed services?',
-    answer: 'The self-serve platform (leads.meetcursive.com) lets you access visitor identification, intent audiences, and the lead marketplace directly — you manage your own campaigns and outreach. Managed services (Cursive Outbound and Pipeline) are done-for-you: Cursive builds and runs your outreach campaigns, handles deliverability, and books meetings on your behalf.',
+    question: 'What is the difference between the self-serve marketplace, managed services, and committed data partnerships?',
+    answer: 'Self-serve marketplace (from $0.60/lead) lets you buy verified leads on demand from our identity graph — you run your own campaigns. Managed services (from $1,000/month) are done-for-you: Cursive builds and runs your outreach, handles deliverability, and books meetings. Committed data partnerships (from $15K/month) give enterprise teams direct access to the underlying identity infrastructure — pixel, taxonomy of ~50,000 intent segments, ~20M/day email validation, and the full closed-feedback-loop dataset.',
   },
   {
     question: 'How do I get started with Cursive?',

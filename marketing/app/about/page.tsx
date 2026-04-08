@@ -417,7 +417,7 @@ export default function AboutPage() {
             >
               <h3 className="text-xl font-light text-gray-900 mb-3">Website Visitor Intelligence</h3>
               <p className="text-gray-600 leading-relaxed">
-                Our proprietary <Link href="/pixel" className="text-primary hover:underline">visitor identification pixel</Link> identifies up to 70% of anonymous website visitors, revealing not just the company but the specific individual visiting your site. Combined with intent scoring and page-level behavior tracking, you always know which prospects are ready to buy and how to reach them.
+                Our proprietary <Link href="/pixel" className="text-primary hover:underline">visitor identification pixel</Link> delivers a 40&ndash;60% deterministic match rate&mdash;not modeled, not probabilistic&mdash;rooted in a graph of 280M+ verified consumer and 140M+ business profiles refreshed every 30 days via NCOA. For context, cookie-based tools resolve 2&ndash;5% and IP databases resolve 10&ndash;15%. Combined with intent scoring and page-level behavior tracking, you know exactly which accounts are in-market and how to reach them.
               </p>
             </motion.div>
 
@@ -666,7 +666,7 @@ export default function AboutPage() {
           </div>
           <div>
             <p className="text-gray-900 mb-2">Website Visitor Intelligence:</p>
-            <p className="text-gray-600">Proprietary visitor identification pixel identifies up to 70% of anonymous website visitors, revealing not just the company but the specific individual. Combined with intent scoring and page-level behavior tracking.</p>
+            <p className="text-gray-600">Proprietary visitor identification pixel delivers a 40&ndash;60% deterministic match rate (vs 2&ndash;5% for cookies, 10&ndash;15% for IP databases), backed by 280M+ verified consumer and 140M+ business profiles refreshed every 30 days via NCOA. Combined with intent scoring and page-level behavior tracking.</p>
           </div>
           <div>
             <p className="text-gray-900 mb-2">Multi-Channel Orchestration:</p>

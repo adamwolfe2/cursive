@@ -12,7 +12,7 @@ export const metadata = generateMetadata({
 const agenciesFAQs = [
   {
     question: 'How can marketing agencies use Cursive for client lead generation?',
-    answer: 'Marketing agencies use Cursive to identify up to 70% of anonymous visitors on their clients websites, giving them a rich pipeline of warm leads that would otherwise be invisible. Agencies layer in Cursive intent data and AI-powered outreach to build always-on lead generation programs for clients across industries, improving retention and demonstrating measurable pipeline impact.',
+    answer: 'Marketing agencies use Cursive to resolve anonymous visitors on client sites against a deterministic identity graph of 280M+ verified consumer and 140M+ business profiles, with a 40–60% pixel match rate (vs 2–5% for cookie-based tools and 10–15% for IP databases). Agencies layer in Cursive intent data and AI-powered outreach to build always-on lead generation programs for clients across industries, improving retention and demonstrating measurable pipeline impact.',
   },
   {
     question: 'Does Cursive offer white-label or agency pricing?',
@@ -20,7 +20,7 @@ const agenciesFAQs = [
   },
   {
     question: "How do agencies use visitor identification for client campaigns?",
-    answer: "Agencies install Cursive's lightweight tracking pixel on client websites to begin identifying up to 70% of anonymous B2B visitors in real time. This visitor data powers highly targeted outreach campaigns, allowing agencies to show clients exactly which companies are engaging with their site and how those accounts are progressing through the funnel.",
+    answer: "Agencies install Cursive's lightweight tracking pixel on client websites to resolve anonymous B2B visitors in real time at a 40–60% deterministic match rate — significantly higher than cookie-based tools (2–5%) or IP databases (10–15%). This visitor data powers highly targeted outreach campaigns, allowing agencies to show clients exactly which companies are engaging with their site and how those accounts are progressing through the funnel.",
   },
   {
     question: 'What reporting does Cursive provide for agency client reporting?',

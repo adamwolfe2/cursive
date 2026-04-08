@@ -16,7 +16,7 @@ interface DashboardCTAProps {
 export function DashboardCTA({
   headline = "Stop Guessing. Start Converting.",
   subheadline = "your pipeline starts here",
-  description = "Identify 70% of your anonymous website visitors and turn them into pipeline — automatically.",
+  description = "Resolve 40–60% of your anonymous website visitors with a deterministic pixel and turn them into pipeline — automatically.",
   ctaText = "Book Your Free AI Audit Now",
   ctaUrl = "https://cal.com/cursiveteam/30min",
 }: DashboardCTAProps = {}) {

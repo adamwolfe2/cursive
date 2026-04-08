@@ -17,15 +17,15 @@ interface FAQ {
 const faqs: FAQ[] = [
   {
     question: "How does visitor identification work?",
-    answer: "Cursive uses advanced IP intelligence, device fingerprinting, and behavioral analysis to identify up to 70% of your anonymous website visitors in real-time. When someone visits your site, we instantly match their digital footprint against our database of 280M US consumer and 140M+ business profiles to reveal who they are, which company they work for, and what pages they're viewing. Unlike batch processing tools, Cursive identifies visitors the moment they land on your site, so your sales team can reach out while they're still engaged."
+    answer: "Cursive's deterministic pixel resolves anonymous visitors against an identity graph of 280M+ verified consumer and 140M+ business profiles, refreshed every 30 days via NCOA. The result is a 40–60% match rate driven by our proprietary geo-framing methodology — significantly higher than cookie-based tools (2–5%) or IP databases (10–15%) — with 60–80% pixel-level accuracy. Visitors are resolved the moment they land, so your sales team can reach out while they're still engaged."
   },
   {
     question: "How accurate is the data?",
-    answer: "Cursive maintains a 70% identification rate for B2B traffic with 95%+ accuracy on matched records. Our data is verified and updated in real-time from multiple authoritative sources including business registries, public records, and verified professional networks. Each visitor record includes confidence scores, and we only surface leads that meet our quality thresholds. We track 60B+ behaviors & URLs scanned weekly to ensure you're reaching prospects with current, verified information."
+    answer: "Cursive's pixel is fully deterministic — not modeled or probabilistic. We deliver a 40–60% match rate with 60–80% pixel-level accuracy on identified visitors, backed by an identity graph of 280M+ verified consumer and 140M+ business profiles refreshed every 30 days via NCOA. Email validation runs through Deep Verify, our in-house engine processing ~20 million records per day. Our closed feedback loop maps signals back to source URLs, apps, and exchanges and validates against real conversions."
   },
   {
     question: "What pricing plans are available?",
-    answer: "Cursive pricing typically ranges from $2,000-5,000/month for most B2B SaaS companies, depending on your website traffic volume and feature requirements. All plans include visitor identification, AI-powered outreach, and CRM integrations. Enterprise plans add custom intent audiences, dedicated onboarding, and priority support. We offer transparent pricing with no hidden fees, and you can book a free AI audit to see exactly which features you need and get a custom quote tailored to your use case."
+    answer: "Cursive offers three tiers. The self-serve marketplace starts at $0.60/lead. Managed services start at $1,000/month and are done-for-you across email, LinkedIn, SMS, and direct mail. Committed-tier data partnerships start at $15K/month and give enterprise teams direct access to the underlying identity infrastructure — pixel, taxonomy of ~50,000 intent segments, ~20M/day email validation, and the full closed-feedback-loop dataset. Book a call to find the right fit."
   },
   {
     question: "What integrations does Cursive support?",

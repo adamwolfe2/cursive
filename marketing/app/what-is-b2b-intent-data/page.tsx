@@ -453,7 +453,7 @@ export default function WhatIsB2BIntentDataPage() {
                     <tr>
                       <td className="border border-gray-200 px-4 py-3 font-medium">Cursive</td>
                       <td className="border border-gray-200 px-4 py-3">First + third-party</td>
-                      <td className="border border-gray-200 px-4 py-3">Yes (70% match)</td>
+                      <td className="border border-gray-200 px-4 py-3">Yes (40&ndash;60% deterministic)</td>
                       <td className="border border-gray-200 px-4 py-3">Yes (built-in)</td>
                       <td className="border border-gray-200 px-4 py-3">Platform license</td>
                       <td className="border border-gray-200 px-4 py-3">Full-stack GTM teams</td>

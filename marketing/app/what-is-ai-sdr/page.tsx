@@ -479,7 +479,7 @@ export default function WhatIsAISDRPage() {
                       <td className="border border-gray-200 px-4 py-3">Full-stack (ID + intent + outreach)</td>
                       <td className="border border-gray-200 px-4 py-3">Email, LinkedIn, direct mail</td>
                       <td className="border border-gray-200 px-4 py-3">Built-in</td>
-                      <td className="border border-gray-200 px-4 py-3">Built-in (70%)</td>
+                      <td className="border border-gray-200 px-4 py-3">Built-in (40&ndash;60% deterministic)</td>
                       <td className="border border-gray-200 px-4 py-3">End-to-end pipeline generation</td>
                     </tr>
                     <tr className="bg-gray-50">

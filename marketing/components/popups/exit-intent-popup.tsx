@@ -166,7 +166,7 @@ export function ExitIntentPopup({ enabled = true, onSubmit }: ExitIntentPopupPro
                       id="popup-title"
                       className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4 pr-8"
                     >
-                      Wait! See How Cursive Identifies 70% of Your Website Visitors
+                      Wait! See How Cursive&apos;s Deterministic Pixel Resolves 40&ndash;60% of Your Visitors
                     </h2>
 
                     {/* Subheadline */}

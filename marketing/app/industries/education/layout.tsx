@@ -12,7 +12,7 @@ export const metadata = generateMetadata({
 const educationFAQs = [
   {
     question: 'How does Cursive help education companies identify prospective clients?',
-    answer: 'Cursive identifies up to 70% of the anonymous companies and decision-makers visiting your EdTech or corporate training website, revealing which organizations are actively researching your programs, pricing, and curriculum pages. This identification gives your sales team a warm prospect list of companies already expressing interest, eliminating cold outreach to unqualified targets.',
+    answer: 'Cursive resolves anonymous visitors on your EdTech or corporate training site against a deterministic identity graph of 280M+ verified consumer and 140M+ business profiles, with a 40–60% pixel match rate (vs 2–5% for cookie-based tools and 10–15% for IP databases). This gives your sales team a warm prospect list of organizations actively researching your programs, pricing, and curriculum pages — eliminating cold outreach to unqualified targets.',
   },
   {
     question: 'What intent signals indicate someone is researching education solutions?',
@@ -28,7 +28,7 @@ const educationFAQs = [
   },
   {
     question: "How does Cursive's visitor identification work for EdTech SaaS?",
-    answer: "Cursive's lightweight JavaScript pixel installs on your EdTech website in minutes and immediately begins identifying up to 70% of anonymous B2B visitors by matching their digital footprint to Cursive's proprietary identity graph. Identified companies and contacts are surfaced in the Cursive dashboard and can be pushed directly to your CRM for sales team follow-up.",
+    answer: "Cursive's lightweight JavaScript pixel installs on your EdTech website in minutes and resolves anonymous B2B visitors at a 40–60% deterministic match rate (with 60–80% pixel-level accuracy) against an identity graph of 280M+ verified consumer and 140M+ business profiles refreshed every 30 days via NCOA. Identified companies and contacts are surfaced in the Cursive dashboard and can be pushed directly to your CRM for sales team follow-up.",
   },
   {
     question: 'What results do education companies typically see with Cursive?',

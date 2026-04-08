@@ -12,7 +12,7 @@ export const metadata = generateMetadata({
 const franchisesFAQs = [
   {
     question: 'How does Cursive help franchise brands generate franchise leads?',
-    answer: 'Cursive identifies up to 70% of anonymous visitors browsing your franchise opportunity pages, FDD request forms, and investment information, giving your franchise development team a pipeline of warm candidates who have already expressed interest. Once identified, Cursive automatically triggers personalized outreach to engage these candidates at the peak of their interest.',
+    answer: 'Cursive resolves anonymous visitors on your franchise opportunity pages, FDD request forms, and investment information against a deterministic identity graph of 280M+ verified consumer and 140M+ business profiles, with a 40–60% pixel match rate (vs 2–5% for cookie-based tools and 10–15% for IP databases). This gives your franchise development team a pipeline of warm candidates who have already expressed interest, and Cursive automatically triggers personalized outreach to engage them at the peak of their interest.',
   },
   {
     question: 'Can Cursive identify visitors researching franchise opportunities?',

@@ -12,11 +12,11 @@ export const metadata = generateMetadata({
 const homeServicesFAQs = [
   {
     question: 'How does Cursive help home services companies generate B2B leads?',
-    answer: 'Cursive identifies up to 70% of anonymous businesses visiting your home services website, revealing which property managers, facility directors, and commercial clients are researching your services. Your team can then reach out proactively with personalized proposals before these prospects contact a competitor, significantly increasing your commercial win rate.',
+    answer: 'Cursive resolves anonymous businesses visiting your home services site against a deterministic identity graph of 280M+ verified consumer and 140M+ business profiles, with a 40–60% pixel match rate (vs 2–5% for cookie-based tools and 10–15% for IP databases). Your team can then reach out proactively with personalized proposals before these prospects contact a competitor, significantly increasing your commercial win rate.',
   },
   {
     question: 'What visitor identification rate can home services companies expect?',
-    answer: 'Home services companies using Cursive typically identify up to 70% of their anonymous B2B website visitors, converting previously invisible traffic into a warm commercial prospect list. This identification rate is transformative for home services businesses that rely heavily on inbound marketing but see most visitors leave without ever filling out a contact form.',
+    answer: 'Home services companies using Cursive see a 40–60% deterministic pixel match rate — driven by our proprietary geo-framing methodology — converting previously invisible traffic into a warm commercial prospect list. This rate is transformative compared to the 1–3% that contact forms convert and the 2–5% that cookie-based tools resolve.',
   },
   {
     question: "How do home services franchises use Cursive's lead generation?",

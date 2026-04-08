@@ -12,7 +12,7 @@ export const metadata = generateMetadata({
 const realEstateFAQs = [
   {
     question: 'How does Cursive help commercial real estate firms generate leads?',
-    answer: 'Cursive identifies up to 70% of anonymous companies visiting your commercial real estate website, revealing which tenants, investors, and buyers are researching your listings, market reports, and investment opportunities. Your brokerage or development team can then reach out proactively with personalized proposals, shortening the sales cycle and increasing deal flow from your existing web traffic.',
+    answer: 'Cursive resolves anonymous visitors on your commercial real estate site against a deterministic identity graph of 280M+ verified consumer and 140M+ business profiles, with a 40–60% pixel match rate (vs 2–5% for cookie-based tools and 10–15% for IP databases). Your brokerage or development team can then reach out proactively with personalized proposals, shortening the sales cycle and increasing deal flow from your existing web traffic.',
   },
   {
     question: 'Can Cursive identify which properties visitors are researching?',

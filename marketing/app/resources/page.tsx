@@ -169,7 +169,7 @@ export default function ResourcesPage() {
 
           <MachineSection title="Get Started with Cursive">
             <p className="text-gray-700 mb-3">
-              Ready to turn anonymous website visitors into qualified leads? Cursive identifies 70% of your B2B website traffic and automates personalized outreach.
+              Ready to turn anonymous website visitors into qualified leads? Cursive resolves visitors against a deterministic identity graph of 280M+ verified consumer and 140M+ business profiles, with a 40&ndash;60% pixel match rate (vs 2&ndash;5% for cookies, 10&ndash;15% for IP databases) and automated multi-channel outreach.
             </p>
             <MachineList items={[
               { label: "Full Blog", href: "/blog", description: "Browse all 70+ articles on B2B growth and lead generation" },

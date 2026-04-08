@@ -1,9 +1,9 @@
 const STATS = [
-  { label: 'Visitor ID Rate', value: '70%' },
-  { label: 'Email Bounce Rate', value: '0.05%' },
-  { label: 'Verified Contacts', value: '420M+' },
-  { label: 'US Households', value: '98%' },
-  { label: 'Daily Intent Signals', value: '60B+' },
+  { label: 'Pixel Match Rate', value: '40\u201360%' },
+  { label: 'Pixel Accuracy', value: '60\u201380%' },
+  { label: 'Consumer Profiles', value: '280M+' },
+  { label: 'Business Profiles', value: '140M+' },
+  { label: 'Email Validation', value: '~20M/day' },
   { label: 'Data Refresh', value: '30-Day NCOA' },
 ]
 

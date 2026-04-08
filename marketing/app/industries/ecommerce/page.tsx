@@ -248,7 +248,7 @@ export default function EcommercePage() {
           <MachineList items={[
             {
               label: "Visitor Identification",
-              description: "Identify up to 70% of anonymous website visitors—turn browsers into buyers"
+              description: "40–60% deterministic pixel match rate (vs 2–5% for cookies, 10–15% for IP databases)—turn anonymous browsers into named buyers"
             },
             {
               label: "Cart Abandonment Recovery",
@@ -297,7 +297,7 @@ export default function EcommercePage() {
 const benefits = [
   {
     title: 'Visitor Identification',
-    description: 'Identify up to 70% of anonymous website visitors—turn browsers into buyers.',
+    description: '40–60% deterministic pixel match rate (vs 2–5% for cookies, 10–15% for IP databases)—turn anonymous browsers into named buyers.',
   },
   {
     title: 'Cart Abandonment Recovery',
