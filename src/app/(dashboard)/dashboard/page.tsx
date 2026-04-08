@@ -78,7 +78,11 @@ const getCachedWorkspaceStats = unstable_cache(
     return fresh
   },
   ['workspace-stats'],
-  { revalidate: 120 },
+  // Same workspace-leads tag as the other lead-derived caches so
+  // populate-initial's revalidateTag purges the stats too. Otherwise the
+  // dashboard's "Total leads" stat could lag the actual lead count by up
+  // to 120s after the wizard completes.
+  { revalidate: 120, tags: ['workspace-leads'] },
 )
 
 const getCachedRecentLeads = unstable_cache(
