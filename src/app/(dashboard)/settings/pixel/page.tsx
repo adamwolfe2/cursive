@@ -229,7 +229,7 @@ export default function PixelSettingsPage() {
         )}
 
         {/* Trial Active Countdown */}
-        {isTrialActive && daysLeft !== null && (
+        {isTrialActive && daysLeft !== null && trialEndsAt && (
           <div className={`rounded-xl border p-6 ${
             daysLeft <= 3
               ? 'border-red-200 bg-red-50'
@@ -247,7 +247,7 @@ export default function PixelSettingsPage() {
                 <p className={`text-sm mt-1 ${
                   daysLeft <= 3 ? 'text-red-700' : daysLeft <= 7 ? 'text-amber-700' : 'text-blue-700'
                 }`}>
-                  After {trialEndsAt?.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}, your pixel stops identifying visitors unless you upgrade.
+                  After {trialEndsAt.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}, your pixel stops identifying visitors unless you upgrade.
                 </p>
               </div>
               <a
@@ -605,7 +605,7 @@ export default function PixelSettingsPage() {
             <input
               type="url"
               placeholder="https://yourcompany.com"
-              className="block w-full rounded-lg border-zinc-300 shadow-sm focus:border-primary focus:ring-primary"
+              className="block w-full rounded-lg border border-zinc-300 px-3 py-2 shadow-sm focus:border-primary focus:ring-primary"
               value={websiteUrl}
               onChange={(e) => setWebsiteUrl(e.target.value)}
             />
@@ -618,7 +618,7 @@ export default function PixelSettingsPage() {
             <input
               type="text"
               placeholder="My Company"
-              className="block w-full rounded-lg border-zinc-300 shadow-sm focus:border-primary focus:ring-primary"
+              className="block w-full rounded-lg border border-zinc-300 px-3 py-2 shadow-sm focus:border-primary focus:ring-primary"
               value={websiteName}
               onChange={(e) => setWebsiteName(e.target.value)}
             />
