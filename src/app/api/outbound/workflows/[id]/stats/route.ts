@@ -89,11 +89,17 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
           .select('*', { count: 'exact', head: true })
           .eq('campaign_id', campaignId)
           .eq('status', 'pending_approval'),
+        // Engaging = sent emails that have NOT yet received a reply.
+        // Without the replied_at IS NULL filter, a lead that replied still
+        // counted as "engaging" forever (because email_sends.status='sent'
+        // never flips), causing the stage counts to add up to MORE than the
+        // total prospect count and confusing users.
         supabase
           .from('email_sends')
           .select('*', { count: 'exact', head: true })
           .eq('campaign_id', campaignId)
-          .in('status', ['approved', 'sending', 'sent']),
+          .in('status', ['approved', 'sending', 'sent'])
+          .is('replied_at', null),
         supabase
           .from('email_replies')
           .select('*', { count: 'exact', head: true })

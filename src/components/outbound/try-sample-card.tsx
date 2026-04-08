@@ -50,6 +50,13 @@ export function TrySampleCard() {
 
       if (!res.ok) {
         const body = await res.json().catch(() => ({}))
+        // Check for the structured NO_LEADS code (not substring match) so
+        // copy drift never breaks the "Go to Setup" CTA path.
+        if (body.code === 'NO_LEADS') {
+          setError('NO_LEADS')
+          setPhase('error')
+          return
+        }
         throw new Error(
           body.error ||
             'We couldn\'t create your sample workflow. Please try again or create a workflow manually.',
@@ -58,9 +65,14 @@ export function TrySampleCard() {
 
       const { data } = (await res.json()) as { data: SampleResponse }
 
-      // Redirect into the workflow detail page with a query param so the
-      // detail page can show a celebratory "sample ready" banner.
-      router.push(`/outbound/${data.workflow_id}?sample=ready`)
+      // Show the celebration banner only on the FIRST sample creation. If
+      // the user clicks Try Sample again and we returned the existing
+      // workflow, drop the ?sample=ready query param so they don't see the
+      // congratulatory banner every time.
+      const target = data.already_existed
+        ? `/outbound/${data.workflow_id}`
+        : `/outbound/${data.workflow_id}?sample=ready`
+      router.push(target)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
       setPhase('error')
@@ -69,14 +81,19 @@ export function TrySampleCard() {
 
   // ── Error state ──────────────────────────────────────────────────────
   if (phase === 'error') {
-    const needsSetup = error?.includes('setup wizard')
+    const needsSetup = error === 'NO_LEADS'
+    const displayMessage = needsSetup
+      ? "You haven't pulled any leads yet. Complete the setup wizard first — it pulls your first batch of enriched leads, and the Outbound Agent sample drafts emails against them."
+      : error
     return (
       <Card className="p-6 border-destructive/30 bg-destructive/5">
         <div className="flex items-start gap-3">
           <AlertCircle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
           <div className="flex-1">
-            <h3 className="text-base font-semibold text-foreground">Sample workflow couldn&apos;t start</h3>
-            <p className="mt-1 text-sm text-muted-foreground">{error}</p>
+            <h3 className="text-base font-semibold text-foreground">
+              {needsSetup ? 'Run setup first' : "Sample workflow couldn't start"}
+            </h3>
+            <p className="mt-1 text-sm text-muted-foreground">{displayMessage}</p>
             <div className="mt-4 flex items-center gap-3">
               {needsSetup ? (
                 <Link href="/setup">

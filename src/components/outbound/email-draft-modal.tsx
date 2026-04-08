@@ -97,17 +97,29 @@ export function EmailDraftModal({ agentId, leadId, onClose }: EmailDraftModalPro
     if (state.kind !== 'editable') return
     setState({ kind: 'saving', draft: state.draft })
     try {
+      const savedSubject = state.subject
+      const savedBody = state.body
       const r = await fetch(`/api/outbound/drafts/${state.draft.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ subject: state.subject, body_text: state.body }),
+        body: JSON.stringify({ subject: savedSubject, body_text: savedBody }),
       })
       if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || 'Save failed')
       success('Draft updated')
       await refreshAndKeepOpen()
     } catch (err) {
       error((err as Error).message, { title: 'Save failed' })
-      setState(s => (s.kind === 'saving' ? { kind: 'editable', draft: s.draft, subject: s.draft.subject, body: s.draft.body_text || stripHtml(s.draft.body_html) } : s))
+      // Restore the user's IN-PROGRESS edits, not the stale server values.
+      // Previously this restored from `s.draft.subject` / `s.draft.body_text`,
+      // which threw away whatever the user had typed. Now we close the
+      // saving state by going back to editable with the same values.
+      const subject = state.subject
+      const body = state.body
+      setState(s =>
+        s.kind === 'saving'
+          ? { kind: 'editable', draft: s.draft, subject, body }
+          : s,
+      )
     }
   }
 
@@ -131,15 +143,24 @@ export function EmailDraftModal({ agentId, leadId, onClose }: EmailDraftModalPro
 
   const handleApprove = async () => {
     if (state.kind !== 'editable') return
-    // First save any edits, then approve
+    // First save any edits, then approve. CRITICAL: the previous version
+    // didn't check the save response, so a failed PATCH would silently
+    // approve whatever was on the server (which could be stale or
+    // un-edited). Now we throw if the save fails so the user re-tries.
+    const savedSubject = state.subject
+    const savedBody = state.body
     setState({ kind: 'saving', draft: state.draft })
     try {
-      // Save current edits inline
-      await fetch(`/api/outbound/drafts/${state.draft.id}`, {
+      // Save current edits inline — if this fails, abort the approve.
+      const saveRes = await fetch(`/api/outbound/drafts/${state.draft.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ subject: state.subject, body_text: state.body }),
+        body: JSON.stringify({ subject: savedSubject, body_text: savedBody }),
       })
+      if (!saveRes.ok) {
+        const body = await saveRes.json().catch(() => ({}))
+        throw new Error(body.error || 'Could not save your edits before approving')
+      }
 
       const r = await fetch(`/api/outbound/drafts/${state.draft.id}/approve`, {
         method: 'POST',
@@ -153,7 +174,24 @@ export function EmailDraftModal({ agentId, leadId, onClose }: EmailDraftModalPro
       onClose()
     } catch (err) {
       error((err as Error).message, { title: 'Approve failed' })
-      await refreshAndKeepOpen()
+      // Recovery: keep the user's edits in the input fields, don't
+      // overwrite with stale server data. If the save failed, their work
+      // is still in savedSubject / savedBody and we restore it on the
+      // editable state.
+      if (state.kind === 'editable' || (state as { draft?: unknown }).draft) {
+        setState(s =>
+          s.kind === 'saving'
+            ? {
+                kind: 'editable',
+                draft: s.draft,
+                subject: savedSubject,
+                body: savedBody,
+              }
+            : s,
+        )
+      } else {
+        await refreshAndKeepOpen()
+      }
     }
   }
 

@@ -133,9 +133,17 @@ export async function POST() {
       .limit(SAMPLE_LEAD_COUNT)
 
     if (!sampleLeads || sampleLeads.length === 0) {
-      throw new ApiError(
-        'No leads available for a sample. Complete the setup wizard at /setup first — it pulls your first batch of enriched leads, and the Outbound Agent sample drafts emails against them.',
-        409,
+      // Return a structured error so the client can detect this specific
+      // case and route the user to /setup. Substring matching on error
+      // messages was the previous approach and broke on copy drift.
+      return NextResponse.json(
+        {
+          error:
+            'No leads available for a sample. Complete the setup wizard first — it pulls your first batch of enriched leads, and the Outbound Agent sample drafts emails against them.',
+          code: 'NO_LEADS',
+          setup_url: '/setup',
+        },
+        { status: 409 },
       )
     }
 
@@ -193,12 +201,23 @@ export async function POST() {
 
     const draftCount = draftsInserted.filter((x) => x === true).length
 
-    // ── 8. Mark campaign_leads status='drafted' for the ones we wrote ────
-    // Keeps the prospects list + stage pipeline in sync.
+    // ── 8. Mark campaign_leads status='awaiting_approval' for the rows we
+    //      successfully drafted. CRITICAL: must be 'awaiting_approval', not
+    //      'drafted'. The campaign_leads CHECK constraint only allows
+    //      ('pending','enriching','ready','awaiting_approval','in_sequence',
+    //       'replied','positive','negative','completed','skipped',
+    //       'unsubscribed','bounced','paused'). Using 'drafted' silently
+    //      fails the update — supabase-js returns {error}, we don't throw,
+    //      and the row stays 'pending'. The /prospects endpoint then maps
+    //      'pending' → display_stage='enriching', and the prospects-list
+    //      only opens the draft modal when display_stage === 'drafting'.
+    //      Net effect: sample shows "3 drafted" in the pipeline but every
+    //      row in the list shows "Enriching" and is unclickable. This is
+    //      what was killing the aha moment.
     if (draftCount > 0) {
       await supabase
         .from('campaign_leads')
-        .update({ status: 'drafted' })
+        .update({ status: 'awaiting_approval' })
         .in(
           'lead_id',
           sampleLeads.map((l) => l.id),

@@ -84,8 +84,8 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       const available = workspace?.credits_balance ?? 0
       if (available < required) {
         throw new ApiError(
-          `Insufficient credits: ${required} required, ${available} available`,
-          402
+          `Not enough credits — this run needs ${required.toLocaleString()} credits but you have ${available.toLocaleString()}. Buy more credits at /settings/billing or lower the prospect cap on this workflow.`,
+          402,
         )
       }
     }

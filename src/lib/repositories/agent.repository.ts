@@ -515,6 +515,12 @@ export class AgentRepository {
   /**
    * Find all agents for a workspace that have outbound mode enabled.
    * Used by the /outbound list page.
+   *
+   * Sample workflows (name starts with "Sample:") are deliberately filtered
+   * out — they're a one-time aha experience and shouldn't clutter the user's
+   * real workflow list. Users who want to revisit the sample can hit the
+   * "Try Sample Workflow" button on the empty state, which is idempotent
+   * and returns the existing sample.
    */
   async findOutboundEnabled(workspaceId: string): Promise<OutboundAgent[]> {
     const supabase = await createClient()
@@ -523,6 +529,7 @@ export class AgentRepository {
       .select('*')
       .eq('workspace_id', workspaceId)
       .eq('outbound_enabled', true)
+      .not('name', 'ilike', 'Sample:%')
       .order('created_at', { ascending: false })
       .limit(200)
 
