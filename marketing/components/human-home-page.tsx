@@ -12,7 +12,7 @@ import Link from "next/link"
 import { useState } from "react"
 import {
   Eye, Bot, TrendingUp, ShoppingCart, Briefcase,
-  Zap, Users, Database, Mail, Sparkles, ShieldCheck,
+  Users, Database, Mail, Sparkles, ShieldCheck,
   BarChart3, GitBranch, Building2, Search, Flame,
   type LucideIcon,
 } from "lucide-react"
@@ -92,19 +92,6 @@ export function HumanHomePage() {
       {/* ===== HERO SECTION ===== */}
       <section id="hero" className="pt-14 pb-6 bg-white min-h-[100svh] lg:min-h-[90vh] lg:flex lg:flex-col lg:justify-center">
         <Container className="max-w-[1440px] lg:px-12">
-          {/* Eyebrow Badge */}
-          <motion.div
-            initial={false}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-            className="text-center lg:text-left mb-4"
-          >
-            <span className="inline-flex items-center gap-2 px-3 py-1 bg-gray-50 border border-gray-200 rounded-full text-xs text-gray-600">
-              <Zap className="w-3 h-3 text-primary" />
-              Identity & Intent Infrastructure
-            </span>
-          </motion.div>
-
           {/* Split Layout: Copy Left, Demo Right */}
           <div className="lg:flex lg:gap-8 xl:gap-12 items-start">
             {/* Left Column: Copy */}
@@ -112,12 +99,16 @@ export function HumanHomePage() {
               initial={false}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-              className="lg:w-[40%] lg:flex-shrink-0 text-center lg:text-left mb-8 lg:mb-0"
+              className="lg:w-[46%] lg:flex-shrink-0 text-center lg:text-left mb-8 lg:mb-0"
             >
-              <h1 className="text-[2rem] sm:text-[2.4rem] lg:text-[2.4rem] xl:text-[2.65rem] font-light mb-4 leading-[1.12] tracking-tight">
-                <span className="text-gray-900">The Identity Layer for</span>
+              {/* Locked to two lines: explicit <br> for the break, whitespace-nowrap
+                  on each line at lg+ so the long second line never wraps to a
+                  third row. Font sizes are tuned to fit the longer line inside
+                  the 46%-width column at every breakpoint we support. */}
+              <h1 className="text-[1.75rem] sm:text-[2rem] md:text-[2.25rem] lg:text-[1.5rem] xl:text-[1.875rem] 2xl:text-[2.15rem] font-light mb-4 leading-[1.12] tracking-tight">
+                <span className="text-gray-900 lg:whitespace-nowrap">The Data Identity Layer</span>
                 <br />
-                <span className="text-gray-400">Outbound, Intent, and Enrichment.</span>
+                <span className="text-gray-400 lg:whitespace-nowrap">for Outbound, Intent, and Enrichment</span>
               </h1>
 
               <p className="text-base text-gray-600 mb-4 leading-relaxed max-w-lg mx-auto lg:mx-0">

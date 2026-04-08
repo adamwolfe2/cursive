@@ -52,7 +52,7 @@ const KEY_FACTS = [
   { value: "30-day", label: "NCOA refresh cycle" },
   { value: "40–60%", label: "Pixel match rate" },
   { value: "~50K", label: "Intent segments" },
-  { value: "20M / day", label: "Emails validated" },
+  { value: "~20M", label: "Emails validated daily" },
 ] as const
 
 export default function DataPartnershipsPage() {
@@ -96,14 +96,25 @@ export default function DataPartnershipsPage() {
 
       <article className="bg-white text-gray-900">
         {/* ── Hero ────────────────────────────────────────────────────────── */}
-        <section className="border-b border-gray-100 pt-20 pb-16 sm:pt-24 sm:pb-20">
-          <Container className="max-w-3xl">
-            <p className="text-xs font-medium uppercase tracking-[0.18em] text-gray-500">
+        <section className="relative border-b border-gray-100 pt-20 pb-16 sm:pt-24 sm:pb-20 overflow-hidden">
+          {/* Subtle brand-color wash so the page reads as Cursive at first glance
+              instead of a generic doc page. Soft enough to keep the enterprise
+              tone — visible enough to ground the brand. */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 bg-gradient-to-b from-blue-50/40 via-white to-white"
+          />
+          <Container className="relative max-w-3xl">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
               Data Partnership Overview
             </p>
             <h1 className="mt-5 text-4xl sm:text-5xl font-light tracking-tight text-gray-900 leading-[1.1]">
-              The Identity and Intent Infrastructure Behind&nbsp;
-              <span className="font-cursive text-gray-500">Cursive</span>.
+              The Identity and Intent
+              <br className="hidden sm:block" /> Infrastructure Behind&nbsp;
+              <span className="font-cursive text-primary text-[1.1em] leading-none">
+                Cursive
+              </span>
+              .
             </h1>
             <p className="mt-6 text-lg text-gray-600 leading-relaxed">
               A reference for data buyers, intent partners, and enterprise
@@ -116,7 +127,7 @@ export default function DataPartnershipsPage() {
               Last updated April&nbsp;2026. For commercial questions, contact{" "}
               <a
                 href="mailto:partnerships@meetcursive.com"
-                className="text-gray-900 underline underline-offset-4 hover:text-primary"
+                className="text-primary underline underline-offset-4 decoration-primary/40 hover:decoration-primary"
               >
                 partnerships@meetcursive.com
               </a>
@@ -126,15 +137,19 @@ export default function DataPartnershipsPage() {
         </section>
 
         {/* ── Key facts strip ─────────────────────────────────────────────── */}
-        <section className="border-b border-gray-100 py-12">
+        {/* 3 cols × 2 rows on desktop. Was 6 columns, but stat values like
+            "~20M / day" wrapped because per-column width was too narrow. The
+            3×2 layout gives every value the same horizontal weight and lets
+            the numbers breathe without any value wrapping. */}
+        <section className="border-b border-gray-100 py-14">
           <Container className="max-w-5xl">
-            <dl className="grid grid-cols-2 gap-y-8 gap-x-6 sm:grid-cols-3 md:grid-cols-6">
+            <dl className="grid grid-cols-2 gap-y-10 gap-x-8 sm:grid-cols-3">
               {KEY_FACTS.map((fact) => (
                 <div key={fact.label} className="text-left">
-                  <dt className="font-mono text-2xl font-light text-gray-900 sm:text-[1.65rem]">
+                  <dt className="font-mono text-[1.75rem] font-light leading-none text-gray-900 whitespace-nowrap">
                     {fact.value}
                   </dt>
-                  <dd className="mt-1.5 text-xs uppercase tracking-wide text-gray-500">
+                  <dd className="mt-2.5 text-[11px] uppercase tracking-[0.12em] text-gray-500">
                     {fact.label}
                   </dd>
                 </div>
@@ -146,7 +161,7 @@ export default function DataPartnershipsPage() {
         {/* ── Table of contents ───────────────────────────────────────────── */}
         <section className="border-b border-gray-100 py-10">
           <Container className="max-w-3xl">
-            <p className="text-xs font-medium uppercase tracking-[0.18em] text-gray-500">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
               Contents
             </p>
             <ol className="mt-5 space-y-2.5">
@@ -154,12 +169,12 @@ export default function DataPartnershipsPage() {
                 <li key={section.id}>
                   <a
                     href={`#${section.id}`}
-                    className="group flex items-baseline gap-4 text-base text-gray-700 hover:text-gray-900"
+                    className="group flex items-baseline gap-4 text-base text-gray-700 hover:text-primary transition-colors"
                   >
-                    <span className="font-mono text-xs text-gray-400 group-hover:text-gray-600">
+                    <span className="font-mono text-xs text-primary/60 group-hover:text-primary">
                       {section.n}
                     </span>
-                    <span className="border-b border-transparent group-hover:border-gray-300">
+                    <span className="border-b border-transparent group-hover:border-primary/40">
                       {section.title}
                     </span>
                   </a>
