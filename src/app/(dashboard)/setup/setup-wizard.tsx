@@ -53,6 +53,7 @@ interface IcpSuggestions {
 
 interface SetupWizardProps {
   initialStep: 1 | 2 | 3
+  initialUrl: string
   userName: string | null
   existingPixel: ExistingPixel | null
   existingTargeting: ExistingTargeting | null
@@ -91,6 +92,7 @@ const US_STATES: Array<{ code: string; name: string }> = [
 
 export function SetupWizard({
   initialStep,
+  initialUrl,
   userName,
   existingPixel,
   existingTargeting,
@@ -99,13 +101,18 @@ export function SetupWizard({
   const toast = useToast()
 
   const [step, setStep] = useState<1 | 2 | 3>(initialStep)
-  const [url, setUrl] = useState('')
+  const [url, setUrl] = useState(initialUrl)
   const [loading, setLoading] = useState(false)
   const [pixel, setPixel] = useState<ExistingPixel | null>(existingPixel)
   const [icp, setIcp] = useState<IcpSuggestions | null>(null)
   const [industries, setIndustries] = useState<string[]>(existingTargeting?.target_industries ?? [])
   const [states, setStates] = useState<string[]>(existingTargeting?.target_states ?? [])
   const [saving, setSaving] = useState(false)
+
+  // Whether the URL field was pre-filled from an auto-provisioned pixel.
+  // Step 1 surfaces a "we guessed this from your email — change it if needed"
+  // banner so users don't silently end up tracking the wrong domain.
+  const wasPrefilledFromEmail = !!existingPixel?.domain && !!initialUrl
 
   const firstName = userName?.split(' ')[0] || 'there'
 
@@ -132,6 +139,8 @@ export function SetupWizard({
             setUrl={setUrl}
             loading={loading}
             setLoading={setLoading}
+            wasPrefilledFromEmail={wasPrefilledFromEmail}
+            existingDomain={existingPixel?.domain ?? null}
             onComplete={(newPixel, newIcp) => {
               setPixel(newPixel)
               setIcp(newIcp)
@@ -262,12 +271,39 @@ interface StepOneUrlProps {
   setUrl: (v: string) => void
   loading: boolean
   setLoading: (v: boolean) => void
+  wasPrefilledFromEmail: boolean
+  existingDomain: string | null
   onComplete: (pixel: ExistingPixel, icp: IcpSuggestions) => void
 }
 
-function StepOneUrl({ url, setUrl, loading, setLoading, onComplete }: StepOneUrlProps) {
+function StepOneUrl({
+  url,
+  setUrl,
+  loading,
+  setLoading,
+  wasPrefilledFromEmail,
+  existingDomain,
+  onComplete,
+}: StepOneUrlProps) {
   const toast = useToast()
   const [phase, setPhase] = useState<'idle' | 'creating-pixel' | 'analyzing-site'>('idle')
+
+  // Did the user actually change the URL since it was pre-filled? Used to
+  // show different copy on the submit button + a confirmation hint when
+  // they're about to swap their pixel domain.
+  const inputDomain = (() => {
+    try {
+      const normalized = /^https?:\/\//i.test(url) ? url : `https://${url}`
+      return new URL(normalized).hostname.replace(/^www\./, '')
+    } catch {
+      return null
+    }
+  })()
+  const isReplacingPixel =
+    wasPrefilledFromEmail &&
+    !!existingDomain &&
+    !!inputDomain &&
+    inputDomain !== existingDomain
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -374,9 +410,41 @@ function StepOneUrl({ url, setUrl, loading, setLoading, onComplete }: StepOneUrl
       <div>
         <h2 className="text-lg font-semibold text-foreground">What&apos;s your website?</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          We&apos;ll create your tracking pixel and use AI to suggest your ideal customer profile from your homepage.
+          We&apos;ll install your tracking pixel and use AI to draft your ideal customer profile from your homepage.
         </p>
       </div>
+
+      {/* Pre-fill notice — surfaces when we guessed the URL from the user's
+          email domain. Critical so users don't silently end up tracking the
+          wrong site (e.g. signed up with darren@gmail.com but actually run
+          acme.com, or signed up with adam@parent-co.com for subsidiary.com). */}
+      {wasPrefilledFromEmail && !isReplacingPixel && (
+        <div className="flex items-start gap-3 rounded-lg border border-primary/20 bg-primary/5 p-3">
+          <Sparkles className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+          <div className="text-xs">
+            <p className="font-medium text-foreground">
+              We pre-filled this from your email — is this your actual marketing site?
+            </p>
+            <p className="text-muted-foreground mt-0.5">
+              Change it if your customers visit a different domain than the one in your email address.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {isReplacingPixel && (
+        <div className="flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 p-3">
+          <Sparkles className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
+          <div className="text-xs">
+            <p className="font-medium text-amber-900">
+              Replacing your tracking pixel
+            </p>
+            <p className="text-amber-800 mt-0.5">
+              We&apos;ll deactivate the pixel for <strong>{existingDomain}</strong> and create a new one for <strong>{inputDomain}</strong>. Your trial status carries over.
+            </p>
+          </div>
+        </div>
+      )}
 
       <div>
         <label htmlFor="url" className="block text-sm font-medium text-foreground mb-2">
@@ -408,14 +476,14 @@ function StepOneUrl({ url, setUrl, loading, setLoading, onComplete }: StepOneUrl
         {loading ? (
           <>
             <Loader2 className="h-4 w-4 animate-spin" />
-            {phase === 'creating-pixel' && 'Creating your pixel...'}
+            {phase === 'creating-pixel' && (isReplacingPixel ? 'Replacing your pixel...' : 'Setting up your pixel...')}
             {phase === 'analyzing-site' && 'Analyzing your site with AI...'}
             {phase === 'idle' && 'Working...'}
           </>
         ) : (
           <>
             <Sparkles className="h-4 w-4" />
-            Continue
+            {isReplacingPixel ? 'Confirm new domain' : wasPrefilledFromEmail ? 'Yes, this is correct' : 'Continue'}
             <ArrowRight className="h-4 w-4" />
           </>
         )}

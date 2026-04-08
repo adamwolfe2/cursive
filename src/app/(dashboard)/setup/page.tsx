@@ -66,19 +66,26 @@ export default async function SetupPage() {
     existingTargeting?.target_states?.length
   )
 
-  // If the user already has both pixel AND targeting, setup is done.
-  // Don't trap them in an obsolete wizard — kick them to the dashboard.
+  // Fully set up → don't trap users in an obsolete wizard.
   if (hasPixel && hasTargeting) {
     redirect('/dashboard')
   }
 
-  // Pick the step the user should land on
-  const initialStep: 1 | 2 | 3 = !hasPixel ? 1 : !hasTargeting ? 2 : 3
+  // Always start at step 1. Even when a pixel was auto-provisioned from the
+  // user's email domain (which is most business signups), we still want the
+  // user to confirm or correct the URL — their email domain is not always
+  // their actual marketing site.
+  const initialStep: 1 | 2 | 3 = 1
+
+  // Pre-fill the URL input from the auto-provisioned pixel's domain (if any),
+  // so the user only has to type something if they want to change it.
+  const initialUrl = existingPixel?.domain ? `https://${existingPixel.domain}` : ''
 
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-muted/20">
       <SetupWizard
         initialStep={initialStep}
+        initialUrl={initialUrl}
         userName={userData.full_name ?? null}
         existingPixel={
           existingPixel

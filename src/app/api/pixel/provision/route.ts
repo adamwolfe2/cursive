@@ -71,16 +71,23 @@ export async function POST(request: NextRequest) {
 
     const adminSupabase = createAdminClient()
 
-    // Check if workspace already has an active pixel — return it (idempotent)
+    // Extract input domain — strip www. so comparisons / demo lookups match
+    // regardless of prefix.
+    const domain = new URL(validated.website_url).hostname.replace(/^www\./, '')
+    const websiteName = validated.website_name || domain
+
+    // Check if workspace already has an active pixel
     const { data: existingPixel } = await adminSupabase
       .from('audiencelab_pixels')
-      .select('pixel_id, domain, is_active, snippet, install_url, label, created_at')
+      .select('id, pixel_id, domain, is_active, snippet, install_url, label, created_at, trial_status, trial_ends_at')
       .eq('workspace_id', user.workspace_id)
       .eq('is_active', true)
       .maybeSingle()
 
-    if (existingPixel) {
-      // Idempotent: return existing pixel instead of 409
+    // Domain matches → idempotent return. The /setup wizard hits this path on
+    // every step-1 submit so users can confirm their pre-filled URL without
+    // re-provisioning anything in AL.
+    if (existingPixel && existingPixel.domain === domain) {
       return NextResponse.json({
         pixel_id: existingPixel.pixel_id,
         snippet: existingPixel.snippet,
@@ -90,9 +97,43 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Extract domain from URL — strip www. so demo pixel lookup matches regardless of prefix
-    const domain = new URL(validated.website_url).hostname.replace(/^www\./, '')
-    const websiteName = validated.website_name || domain
+    // Domain CHANGED → user is correcting a wrong default (most often: their
+    // email domain ≠ their actual marketing site). Deactivate the old pixel
+    // so its events stop routing to this workspace, then fall through to
+    // provision a fresh one. Trial status carries over so users don't get a
+    // free trial reset by simply changing the URL.
+    const replacedPixel = existingPixel && existingPixel.domain !== domain
+      ? existingPixel
+      : null
+
+    if (replacedPixel) {
+      const { error: deactivateError } = await adminSupabase
+        .from('audiencelab_pixels')
+        .update({ is_active: false })
+        .eq('id', replacedPixel.id)
+        .eq('workspace_id', user.workspace_id)
+
+      if (deactivateError) {
+        // Non-fatal — log and continue. Worst case: workspace ends up with two
+        // pixel rows, only the new one routing events.
+        safeError('[Pixel Provision] Failed to deactivate replaced pixel:', deactivateError)
+      }
+
+      sendSlackAlert({
+        type: 'pipeline_update',
+        severity: 'info',
+        message: `Workspace replaced pixel domain: ${replacedPixel.domain} → ${domain}`,
+        metadata: {
+          workspace_id: user.workspace_id,
+          user: user.full_name || user.email,
+          old_pixel_id: replacedPixel.pixel_id,
+          old_domain: replacedPixel.domain,
+          new_domain: domain,
+        },
+      }).catch((error) => {
+        safeError('[Pixel Provision] Slack notification failed:', error)
+      })
+    }
 
     // Check for an unclaimed demo pixel from a sales call — claim it instead of creating new
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
@@ -108,13 +149,17 @@ export async function POST(request: NextRequest) {
       .maybeSingle()
 
     if (demoPixel) {
-      const trialEndsAt = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
+      // If we just deactivated a replaced pixel, inherit its trial state so
+      // the user doesn't get a fresh 14-day trial just by changing their URL.
+      const trialEndsAt = replacedPixel?.trial_ends_at
+        ?? new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
+      const trialStatus = replacedPixel?.trial_status ?? 'trial'
 
       const { error: claimError } = await adminSupabase
         .from('audiencelab_pixels')
         .update({
           workspace_id: user.workspace_id,
-          trial_status: 'trial',
+          trial_status: trialStatus,
           trial_ends_at: trialEndsAt,
           label: demoPixel.label || websiteName,
         })
@@ -177,8 +222,11 @@ export async function POST(request: NextRequest) {
     }
     const snippet = result.script || `<script src="${installUrl}" defer></script>`
 
-    // Trial ends 14 days from now
-    const trialEndsAt = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
+    // Inherit trial status from a replaced pixel so changing the URL never
+    // resets the trial clock. New users get a fresh 14-day trial.
+    const trialEndsAt = replacedPixel?.trial_ends_at
+      ?? new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
+    const trialStatus = replacedPixel?.trial_status ?? 'trial'
 
     // Store in audiencelab_pixels (install_url is primary, snippet is derived/optional)
     const { error: insertError } = await adminSupabase
@@ -192,7 +240,7 @@ export async function POST(request: NextRequest) {
         install_url: installUrl,
         snippet,
         trial_ends_at: trialEndsAt,
-        trial_status: 'trial',
+        trial_status: trialStatus,
       })
 
     if (insertError) {
