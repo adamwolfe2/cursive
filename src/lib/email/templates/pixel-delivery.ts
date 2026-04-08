@@ -152,7 +152,13 @@ export interface PostCallRecapEmailData {
 
 export async function sendPostCallRecapEmail(data: PostCallRecapEmailData) {
   const { to, domain, snippet, pixelId } = data
-  const loginUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://leads.meetcursive.com'}/welcome?ref=call`
+  // URL carries the pixel_id and domain so the signup flow can (a) skip the
+  // qualification quiz entirely and (b) deterministically claim THIS exact
+  // pixel when the user creates their account. Without these params the
+  // claim falls back to email-domain matching, which breaks for any user
+  // whose signup email domain doesn't match their marketing site domain.
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://leads.meetcursive.com'
+  const loginUrl = `${siteUrl}/welcome?ref=call&claim=${encodeURIComponent(pixelId)}&domain=${encodeURIComponent(domain)}&email=${encodeURIComponent(to)}`
   const calendarLink = 'https://cal.com/cursiveteam/30min'
   const displayDomain = domain.replace(/^www\./, '')
 

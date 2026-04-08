@@ -32,9 +32,23 @@ interface BusinessSignupFormProps {
   isSubmitting?: boolean
   /** True when we are waiting for a Google OAuth redirect */
   oauthPending?: boolean
+  /** Pre-fill the email field (from ?email= on post-call recap link) */
+  prefilledEmail?: string
+  /** Pre-fill the company name (derived from ?domain= on post-call recap link) */
+  prefilledCompanyName?: string
 }
 
-export function BusinessSignupForm({ vslAnswers, onSubmit, onBack, error, onClearError, isSubmitting: parentSubmitting, oauthPending }: BusinessSignupFormProps) {
+export function BusinessSignupForm({
+  vslAnswers,
+  onSubmit,
+  onBack,
+  error,
+  onClearError,
+  isSubmitting: parentSubmitting,
+  oauthPending,
+  prefilledEmail = '',
+  prefilledCompanyName = '',
+}: BusinessSignupFormProps) {
   const [localSubmitting, setLocalSubmitting] = useState(false)
   const isSubmitting = localSubmitting || !!parentSubmitting
   const [password, setPassword] = useState('')
@@ -49,6 +63,8 @@ export function BusinessSignupForm({ vslAnswers, onSubmit, onBack, error, onClea
     resolver: zodResolver(businessFormSchema),
     defaultValues: {
       monthlyLeadNeed: vslAnswers.q1 || '',
+      email: prefilledEmail || '',
+      companyName: prefilledCompanyName || '',
     },
   })
 
