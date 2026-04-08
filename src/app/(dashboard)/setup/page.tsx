@@ -1,13 +1,13 @@
 /**
  * Setup Wizard — the aha-moment onboarding
  *
- * 3 steps, no Gmail required:
- *   1. Paste your website URL (creates pixel + AI extracts ICP)
- *   2. Confirm ICP (industries + geography pre-filled from the AI pass)
- *   3. Install pixel (copy snippet + live verification)
+ * Single-page flow (no multi-step wizard):
+ *   1. User enters / confirms their URL
+ *   2. We orchestrate pixel + AI ICP + targeting + lead pull in one shot
+ *   3. User sees real, enriched leads on the same screen before /dashboard
  *
  * Runs AFTER workspace creation. New users are routed here from the
- * post-signup flow. Returns to /dashboard when done (or skipped).
+ * post-signup flow. Pixel install is a secondary CTA — not gating.
  */
 
 import type { Metadata } from 'next'
@@ -71,20 +71,14 @@ export default async function SetupPage() {
     redirect('/dashboard')
   }
 
-  // Always start at step 1. Even when a pixel was auto-provisioned from the
-  // user's email domain (which is most business signups), we still want the
-  // user to confirm or correct the URL — their email domain is not always
-  // their actual marketing site.
-  const initialStep: 1 | 2 | 3 = 1
-
   // Pre-fill the URL input from the auto-provisioned pixel's domain (if any),
-  // so the user only has to type something if they want to change it.
+  // so the user only has to type something if they want to change it. Most
+  // business signups already have a pixel auto-created from their email domain.
   const initialUrl = existingPixel?.domain ? `https://${existingPixel.domain}` : ''
 
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-muted/20">
       <SetupWizard
-        initialStep={initialStep}
         initialUrl={initialUrl}
         userName={userData.full_name ?? null}
         existingPixel={

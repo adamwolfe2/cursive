@@ -1,20 +1,37 @@
 'use client'
 
 /**
- * Setup Wizard — client component
+ * Setup Wizard — single-page aha-moment flow
  *
- * Owns the multi-step state for the 3-step onboarding flow:
- *   1. URL paste → creates pixel + runs AI ICP extraction
- *   2. Confirm ICP (industries + geography) → saves to user_targeting
- *   3. Pixel install with live verification → redirects to /dashboard
+ * The user enters their URL once. We then orchestrate four backend calls
+ * in sequence (pixel + AI ICP run in parallel first, then targeting save,
+ * then lead population) and surface real, enriched leads on the same
+ * page before the user ever lands on /dashboard.
+ *
+ * Phases:
+ *   idle      → URL form (pre-filled from auto-provisioned pixel domain)
+ *   working   → loading checklist (animated as each step completes)
+ *   done      → success screen with sample leads + CTA into dashboard
+ *   error     → recoverable error with retry
+ *
+ * Pixel install is intentionally NOT a step here. It's surfaced as a
+ * secondary CTA on the dashboard for users who want to also track their
+ * own website visitors. The aha moment is "I see real leads NOW" — the
+ * pixel is a value-multiplier, not a gate.
  */
 
-import { useState, useCallback, useEffect, useRef } from 'react'
+import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useToast } from '@/lib/hooks/use-toast'
 import Link from 'next/link'
-import { ArrowRight, CheckCircle2, Loader2, Sparkles, Globe, Target, Code2 } from 'lucide-react'
-import { PixelInstallTabs } from '@/components/pixel/PixelInstallTabs'
+import {
+  ArrowRight,
+  CheckCircle2,
+  Loader2,
+  Sparkles,
+  Globe,
+  AlertCircle,
+} from 'lucide-react'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -51,328 +68,224 @@ interface IcpSuggestions {
   }
 }
 
+interface SampleLead {
+  id: string
+  full_name: string | null
+  first_name: string | null
+  last_name: string | null
+  job_title: string | null
+  company_name: string | null
+  email: string | null
+  city: string | null
+  state: string | null
+}
+
 interface SetupWizardProps {
-  initialStep: 1 | 2 | 3
   initialUrl: string
   userName: string | null
   existingPixel: ExistingPixel | null
   existingTargeting: ExistingTargeting | null
 }
 
-// ─── US states — aligned with existing /api/leads/targeting schema ────────────
-const US_STATES: Array<{ code: string; name: string }> = [
-  { code: 'AL', name: 'Alabama' }, { code: 'AK', name: 'Alaska' },
-  { code: 'AZ', name: 'Arizona' }, { code: 'AR', name: 'Arkansas' },
-  { code: 'CA', name: 'California' }, { code: 'CO', name: 'Colorado' },
-  { code: 'CT', name: 'Connecticut' }, { code: 'DE', name: 'Delaware' },
-  { code: 'FL', name: 'Florida' }, { code: 'GA', name: 'Georgia' },
-  { code: 'HI', name: 'Hawaii' }, { code: 'ID', name: 'Idaho' },
-  { code: 'IL', name: 'Illinois' }, { code: 'IN', name: 'Indiana' },
-  { code: 'IA', name: 'Iowa' }, { code: 'KS', name: 'Kansas' },
-  { code: 'KY', name: 'Kentucky' }, { code: 'LA', name: 'Louisiana' },
-  { code: 'ME', name: 'Maine' }, { code: 'MD', name: 'Maryland' },
-  { code: 'MA', name: 'Massachusetts' }, { code: 'MI', name: 'Michigan' },
-  { code: 'MN', name: 'Minnesota' }, { code: 'MS', name: 'Mississippi' },
-  { code: 'MO', name: 'Missouri' }, { code: 'MT', name: 'Montana' },
-  { code: 'NE', name: 'Nebraska' }, { code: 'NV', name: 'Nevada' },
-  { code: 'NH', name: 'New Hampshire' }, { code: 'NJ', name: 'New Jersey' },
-  { code: 'NM', name: 'New Mexico' }, { code: 'NY', name: 'New York' },
-  { code: 'NC', name: 'North Carolina' }, { code: 'ND', name: 'North Dakota' },
-  { code: 'OH', name: 'Ohio' }, { code: 'OK', name: 'Oklahoma' },
-  { code: 'OR', name: 'Oregon' }, { code: 'PA', name: 'Pennsylvania' },
-  { code: 'RI', name: 'Rhode Island' }, { code: 'SC', name: 'South Carolina' },
-  { code: 'SD', name: 'South Dakota' }, { code: 'TN', name: 'Tennessee' },
-  { code: 'TX', name: 'Texas' }, { code: 'UT', name: 'Utah' },
-  { code: 'VT', name: 'Vermont' }, { code: 'VA', name: 'Virginia' },
-  { code: 'WA', name: 'Washington' }, { code: 'WV', name: 'West Virginia' },
-  { code: 'WI', name: 'Wisconsin' }, { code: 'WY', name: 'Wyoming' },
-]
+// ─── Phase machine ────────────────────────────────────────────────────────────
+
+type Phase =
+  | 'idle'
+  | 'creating-pixel'
+  | 'analyzing-site'
+  | 'saving-icp'
+  | 'finding-leads'
+  | 'done'
+  | 'error'
+
+interface SetupResult {
+  pixel: ExistingPixel
+  icp: IcpSuggestions
+  leadCount: number
+  sampleLeads: SampleLead[]
+  pendingSetup: boolean
+}
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export function SetupWizard({
-  initialStep,
   initialUrl,
   userName,
   existingPixel,
-  existingTargeting,
+  existingTargeting: _existingTargeting,
 }: SetupWizardProps) {
   const router = useRouter()
   const toast = useToast()
 
-  const [step, setStep] = useState<1 | 2 | 3>(initialStep)
   const [url, setUrl] = useState(initialUrl)
-  const [loading, setLoading] = useState(false)
-  const [pixel, setPixel] = useState<ExistingPixel | null>(existingPixel)
-  const [icp, setIcp] = useState<IcpSuggestions | null>(null)
-  const [industries, setIndustries] = useState<string[]>(existingTargeting?.target_industries ?? [])
-  const [states, setStates] = useState<string[]>(existingTargeting?.target_states ?? [])
-  const [saving, setSaving] = useState(false)
+  const [phase, setPhase] = useState<Phase>('idle')
+  const [error, setError] = useState<string | null>(null)
+  const [result, setResult] = useState<SetupResult | null>(null)
 
-  // Whether the URL field was pre-filled from an auto-provisioned pixel.
-  // Step 1 surfaces a "we guessed this from your email — change it if needed"
-  // banner so users don't silently end up tracking the wrong domain.
   const wasPrefilledFromEmail = !!existingPixel?.domain && !!initialUrl
-
   const firstName = userName?.split(' ')[0] || 'there'
+  const isWorking =
+    phase === 'creating-pixel' ||
+    phase === 'analyzing-site' ||
+    phase === 'saving-icp' ||
+    phase === 'finding-leads'
 
-  return (
-    <div className="mx-auto max-w-2xl px-4 py-8 sm:py-12">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-foreground sm:text-3xl">
-          Let&apos;s get you set up, {firstName}
-        </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          3 quick steps to start identifying your website visitors and building your lead database.
-        </p>
-      </div>
+  // ── Run the full setup pipeline ──────────────────────────────────────────
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault()
+      setError(null)
 
-      {/* Progress rail */}
-      <StepRail currentStep={step} />
+      if (!url) {
+        toast.error('Please enter your website URL')
+        return
+      }
 
-      {/* Step content */}
-      <div className="mt-8">
-        {step === 1 && (
-          <StepOneUrl
-            url={url}
-            setUrl={setUrl}
-            loading={loading}
-            setLoading={setLoading}
-            wasPrefilledFromEmail={wasPrefilledFromEmail}
-            existingDomain={existingPixel?.domain ?? null}
-            onComplete={(newPixel, newIcp) => {
-              setPixel(newPixel)
-              setIcp(newIcp)
-              // Pre-fill targeting from ICP if the user hasn't set any yet
-              if (!existingTargeting?.target_industries?.length) {
-                setIndustries(newIcp.target_industries.slice(0, 3))
-              }
-              // Default to US if target_geography includes United States
-              if (!existingTargeting?.target_states?.length &&
-                  newIcp.target_geography.includes('United States')) {
-                // Leave states empty — user picks specific ones or skips for "all US"
-              }
-              setStep(2)
-            }}
-          />
-        )}
+      // Auto-prefix https:// and validate
+      let normalized = url.trim()
+      if (!/^https?:\/\//i.test(normalized)) {
+        normalized = `https://${normalized}`
+      }
+      try {
+        new URL(normalized)
+      } catch {
+        toast.error('Please enter a valid website URL')
+        return
+      }
 
-        {step === 2 && (
-          <StepTwoIcp
-            icp={icp}
-            pixel={pixel}
-            industries={industries}
-            setIndustries={setIndustries}
-            states={states}
-            setStates={setStates}
-            saving={saving}
-            onSave={async () => {
-              setSaving(true)
-              try {
-                const res = await fetch('/api/leads/targeting', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({
-                    target_industries: industries,
-                    target_states: states,
-                    is_active: true,
-                  }),
-                })
-                if (!res.ok) {
-                  const body = await res.json().catch(() => ({}))
-                  throw new Error(body.error || 'Failed to save preferences')
-                }
-                toast.success('Preferences saved')
-                setStep(3)
-              } catch (err) {
-                toast.error(err instanceof Error ? err.message : 'Failed to save preferences')
-              } finally {
-                setSaving(false)
-              }
-            }}
-            onBack={() => setStep(1)}
-          />
-        )}
+      try {
+        // ── Phase 1: pixel + ICP in parallel ──────────────────────────────
+        setPhase('creating-pixel')
 
-        {step === 3 && pixel && (
-          <StepThreePixel
-            pixel={pixel}
-            onDone={() => {
-              router.push('/dashboard?onboarding=complete')
-            }}
-            onBack={() => setStep(2)}
-          />
-        )}
-      </div>
-
-      {/* Skip link — always available, nothing is blocking */}
-      <div className="mt-10 text-center">
-        <Link
-          href="/dashboard"
-          className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-        >
-          Skip for now → go to dashboard
-        </Link>
-      </div>
-    </div>
-  )
-}
-
-// ─── Progress rail ────────────────────────────────────────────────────────────
-
-function StepRail({ currentStep }: { currentStep: 1 | 2 | 3 }) {
-  const steps = [
-    { n: 1, label: 'Your site', icon: Globe },
-    { n: 2, label: 'Your ICP', icon: Target },
-    { n: 3, label: 'Install pixel', icon: Code2 },
-  ]
-  return (
-    <div className="flex items-center gap-2">
-      {steps.map(({ n, label, icon: Icon }, idx) => {
-        const isCurrent = currentStep === n
-        const isComplete = currentStep > n
-        return (
-          <div key={n} className="flex flex-1 items-center gap-2">
-            <div
-              className={[
-                'flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold transition-colors',
-                isComplete
-                  ? 'bg-primary text-primary-foreground'
-                  : isCurrent
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-muted text-muted-foreground',
-              ].join(' ')}
-            >
-              {isComplete ? <CheckCircle2 className="h-4 w-4" /> : <Icon className="h-4 w-4" />}
-            </div>
-            <span
-              className={[
-                'text-sm font-medium',
-                isCurrent ? 'text-foreground' : 'text-muted-foreground',
-              ].join(' ')}
-            >
-              {label}
-            </span>
-            {idx < steps.length - 1 && (
-              <div className="ml-2 h-px flex-1 bg-border" />
-            )}
-          </div>
-        )
-      })}
-    </div>
-  )
-}
-
-// ─── Step 1: Paste URL ────────────────────────────────────────────────────────
-
-interface StepOneUrlProps {
-  url: string
-  setUrl: (v: string) => void
-  loading: boolean
-  setLoading: (v: boolean) => void
-  wasPrefilledFromEmail: boolean
-  existingDomain: string | null
-  onComplete: (pixel: ExistingPixel, icp: IcpSuggestions) => void
-}
-
-function StepOneUrl({
-  url,
-  setUrl,
-  loading,
-  setLoading,
-  wasPrefilledFromEmail,
-  existingDomain,
-  onComplete,
-}: StepOneUrlProps) {
-  const toast = useToast()
-  const [phase, setPhase] = useState<'idle' | 'creating-pixel' | 'analyzing-site'>('idle')
-
-  // Did the user actually change the URL since it was pre-filled? Used to
-  // show different copy on the submit button + a confirmation hint when
-  // they're about to swap their pixel domain.
-  const inputDomain = (() => {
-    try {
-      const normalized = /^https?:\/\//i.test(url) ? url : `https://${url}`
-      return new URL(normalized).hostname.replace(/^www\./, '')
-    } catch {
-      return null
-    }
-  })()
-  const isReplacingPixel =
-    wasPrefilledFromEmail &&
-    !!existingDomain &&
-    !!inputDomain &&
-    inputDomain !== existingDomain
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!url) {
-      toast.error('Please enter your website URL')
-      return
-    }
-    // Auto-prefix https:// if missing
-    let normalized = url.trim()
-    if (!/^https?:\/\//i.test(normalized)) {
-      normalized = `https://${normalized}`
-    }
-    try {
-      new URL(normalized)
-    } catch {
-      toast.error('Please enter a valid website URL')
-      return
-    }
-
-    setLoading(true)
-    setPhase('creating-pixel')
-
-    try {
-      // Run both in parallel — provisioning the pixel is independent of the
-      // LLM analysis so we don't pay for the slowest path twice.
-      const [pixelRes, icpRes] = await Promise.all([
-        fetch('/api/pixel/provision', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ website_url: normalized }),
-        }),
-        (async () => {
-          setPhase('analyzing-site')
-          return fetch('/api/onboarding/icp-from-url', {
+        const [pixelRes, icpRes] = await Promise.all([
+          fetch('/api/pixel/provision', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ url: normalized }),
-          })
-        })(),
-      ])
+            body: JSON.stringify({ website_url: normalized }),
+          }),
+          // Bump phase as soon as the AI call kicks off so the user sees
+          // forward progress instead of staring at "creating pixel" for the
+          // full duration.
+          (async () => {
+            setPhase('analyzing-site')
+            return fetch('/api/onboarding/icp-from-url', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ url: normalized }),
+            })
+          })(),
+        ])
 
-      if (!pixelRes.ok) {
-        const body = await pixelRes.json().catch(() => ({}))
-        throw new Error(body.error || 'Failed to create pixel')
-      }
-      const pixelData = await pixelRes.json()
-
-      if (!icpRes.ok) {
-        // Non-fatal — we can still proceed without ICP pre-fill
-        const fallback: IcpSuggestions = {
-          company_name: '',
-          company_summary: '',
-          icp_description: '',
-          target_industries: [],
-          target_titles: [],
-          target_company_sizes: [],
-          target_geography: [],
-          intent_keywords: [],
-          pain_points: '',
-          value_prop: '',
-          site_preview: {
-            title: null,
-            description: null,
-            image: null,
-            favicon: `https://www.google.com/s2/favicons?domain=${new URL(normalized).hostname}&sz=128`,
-          },
+        if (!pixelRes.ok) {
+          const body = await pixelRes.json().catch(() => ({}))
+          throw new Error(body.error || 'Failed to set up your pixel. Please try again.')
         }
-        onComplete(
-          {
+        const pixelData = await pixelRes.json()
+
+        // ICP failure is non-fatal — we can still pull leads using a default
+        // industry/state, the user just won't see AI-generated context.
+        let icp: IcpSuggestions
+        if (icpRes.ok) {
+          const icpBody = await icpRes.json()
+          icp = icpBody.data as IcpSuggestions
+        } else {
+          icp = {
+            company_name: '',
+            company_summary: '',
+            icp_description: '',
+            target_industries: [],
+            target_titles: [],
+            target_company_sizes: [],
+            target_geography: [],
+            intent_keywords: [],
+            pain_points: '',
+            value_prop: '',
+            site_preview: {
+              title: null,
+              description: null,
+              image: null,
+              favicon: `https://www.google.com/s2/favicons?domain=${new URL(normalized).hostname}&sz=128`,
+            },
+          }
+        }
+
+        // ── Phase 2: save targeting from AI suggestions ────────────────────
+        // /api/leads/targeting also writes users.industry_segment +
+        // users.location_segment, which is what populate-initial reads.
+        // This MUST complete before we call populate-initial.
+        setPhase('saving-icp')
+
+        const industriesToSave =
+          icp.target_industries.length > 0
+            ? icp.target_industries.slice(0, 5)
+            : ['Technology'] // sensible default if AI returned nothing
+
+        const targetingRes = await fetch('/api/leads/targeting', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            target_industries: industriesToSave,
+            target_states: [], // empty = nationwide US — broadest match
+            is_active: true,
+          }),
+        })
+
+        // Targeting failure is also non-fatal — we'll still try populate-initial
+        // and rely on its fallback chain.
+        if (!targetingRes.ok) {
+          // log but don't throw
+          // eslint-disable-next-line no-console
+          console.warn('[setup] targeting save failed, continuing')
+        }
+
+        // ── Phase 3: pull real leads from AudienceLab ──────────────────────
+        setPhase('finding-leads')
+
+        let leadCount = 0
+        let pendingSetup = false
+        try {
+          const populateRes = await fetch('/api/leads/populate-initial', {
+            method: 'POST',
+          })
+          if (populateRes.ok) {
+            const populateData = await populateRes.json()
+            leadCount = populateData.count ?? 0
+            pendingSetup = populateData.pending_setup === true
+          }
+        } catch {
+          // Network or timeout — continue, user will see the "preparing" state
+        }
+
+        // ── Phase 4: fetch a few sample leads to show in the success screen
+        let sampleLeads: SampleLead[] = []
+        if (leadCount > 0) {
+          try {
+            const sampleRes = await fetch('/api/leads?per_page=3&page=1')
+            if (sampleRes.ok) {
+              const sampleData = await sampleRes.json()
+              const rawLeads: unknown =
+                sampleData?.data?.leads ?? sampleData?.leads ?? sampleData?.data ?? []
+              const arr = Array.isArray(rawLeads) ? rawLeads : []
+              sampleLeads = arr.slice(0, 3).map((l: Record<string, unknown>) => ({
+                id: String(l.id ?? ''),
+                full_name: (l.full_name as string | null) ?? null,
+                first_name: (l.first_name as string | null) ?? null,
+                last_name: (l.last_name as string | null) ?? null,
+                job_title: (l.job_title as string | null) ?? null,
+                company_name: (l.company_name as string | null) ?? null,
+                email: (l.email as string | null) ?? null,
+                city: (l.city as string | null) ?? null,
+                state: (l.state as string | null) ?? null,
+              }))
+            }
+          } catch {
+            // sample leads are nice-to-have, not required
+          }
+        }
+
+        // ── Done ───────────────────────────────────────────────────────────
+        setResult({
+          pixel: {
             pixel_id: pixelData.pixel_id,
             domain: pixelData.domain,
             install_url: pixelData.install_url,
@@ -380,67 +293,110 @@ function StepOneUrl({
             trial_status: 'trial',
             trial_ends_at: null,
           },
-          fallback,
-        )
-        return
+          icp,
+          leadCount,
+          sampleLeads,
+          pendingSetup,
+        })
+        setPhase('done')
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : 'Something went wrong. Please try again.'
+        setError(message)
+        setPhase('error')
       }
+    },
+    [url, toast],
+  )
 
-      const icpBody = await icpRes.json()
-      onComplete(
-        {
-          pixel_id: pixelData.pixel_id,
-          domain: pixelData.domain,
-          install_url: pixelData.install_url,
-          snippet: pixelData.snippet,
-          trial_status: 'trial',
-          trial_ends_at: null,
-        },
-        icpBody.data as IcpSuggestions,
-      )
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Something went wrong')
-    } finally {
-      setLoading(false)
-      setPhase('idle')
-    }
+  const goToDashboard = () => {
+    router.push('/dashboard?onboarding=complete')
   }
 
+  // ── Render ────────────────────────────────────────────────────────────────
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 rounded-xl border border-border bg-card p-6 shadow-sm">
-      <div>
-        <h2 className="text-lg font-semibold text-foreground">What&apos;s your website?</h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          We&apos;ll install your tracking pixel and use AI to draft your ideal customer profile from your homepage.
+    <div className="mx-auto max-w-2xl px-4 py-10 sm:py-14">
+      {/* Header */}
+      <div className="mb-8 text-center sm:text-left">
+        <h1 className="text-2xl font-bold text-foreground sm:text-3xl">
+          Let&apos;s find your first leads, {firstName}
+        </h1>
+        <p className="mt-2 text-sm text-muted-foreground">
+          One step. Enter your website and we&apos;ll set up your pixel,
+          analyze your site, and pull your first batch of enriched leads.
         </p>
       </div>
 
-      {/* Pre-fill notice — surfaces when we guessed the URL from the user's
-          email domain. Critical so users don't silently end up tracking the
-          wrong site (e.g. signed up with darren@gmail.com but actually run
-          acme.com, or signed up with adam@parent-co.com for subsidiary.com). */}
-      {wasPrefilledFromEmail && !isReplacingPixel && (
+      {/* Idle / form */}
+      {phase === 'idle' && (
+        <FormCard
+          url={url}
+          setUrl={setUrl}
+          onSubmit={handleSubmit}
+          wasPrefilledFromEmail={wasPrefilledFromEmail}
+          existingDomain={existingPixel?.domain ?? null}
+        />
+      )}
+
+      {/* Working / loading checklist */}
+      {isWorking && <WorkingChecklist phase={phase} />}
+
+      {/* Error */}
+      {phase === 'error' && (
+        <ErrorCard
+          message={error ?? 'Something went wrong.'}
+          onRetry={() => {
+            setError(null)
+            setPhase('idle')
+          }}
+        />
+      )}
+
+      {/* Done */}
+      {phase === 'done' && result && (
+        <SuccessCard result={result} onContinue={goToDashboard} />
+      )}
+
+      {/* Skip — only visible while idle, never during work */}
+      {phase === 'idle' && (
+        <div className="mt-8 text-center">
+          <Link
+            href="/dashboard"
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Skip for now → go to dashboard
+          </Link>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ─── Form card (idle state) ──────────────────────────────────────────────────
+
+interface FormCardProps {
+  url: string
+  setUrl: (v: string) => void
+  onSubmit: (e: React.FormEvent) => void
+  wasPrefilledFromEmail: boolean
+  existingDomain: string | null
+}
+
+function FormCard({
+  url,
+  setUrl,
+  onSubmit,
+  wasPrefilledFromEmail,
+  existingDomain,
+}: FormCardProps) {
+  return (
+    <form onSubmit={onSubmit} className="space-y-5 rounded-xl border border-border bg-card p-6 shadow-sm">
+      {wasPrefilledFromEmail && existingDomain && (
         <div className="flex items-start gap-3 rounded-lg border border-primary/20 bg-primary/5 p-3">
           <Sparkles className="h-4 w-4 text-primary shrink-0 mt-0.5" />
           <div className="text-xs">
             <p className="font-medium text-foreground">
-              We pre-filled this from your email — is this your actual marketing site?
-            </p>
-            <p className="text-muted-foreground mt-0.5">
-              Change it if your customers visit a different domain than the one in your email address.
-            </p>
-          </div>
-        </div>
-      )}
-
-      {isReplacingPixel && (
-        <div className="flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 p-3">
-          <Sparkles className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
-          <div className="text-xs">
-            <p className="font-medium text-amber-900">
-              Replacing your tracking pixel
-            </p>
-            <p className="text-amber-800 mt-0.5">
-              We&apos;ll deactivate the pixel for <strong>{existingDomain}</strong> and create a new one for <strong>{inputDomain}</strong>. Your trial status carries over.
+              We pre-filled this from your email — change it if your marketing site is different.
             </p>
           </div>
         </div>
@@ -448,7 +404,7 @@ function StepOneUrl({
 
       <div>
         <label htmlFor="url" className="block text-sm font-medium text-foreground mb-2">
-          Website URL
+          Your website URL
         </label>
         <div className="relative">
           <Globe className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -460,88 +416,110 @@ function StepOneUrl({
             className="block w-full rounded-lg border border-border bg-background pl-9 pr-3 py-2.5 text-sm shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
-            disabled={loading}
+            onFocus={(e) => e.currentTarget.select()}
           />
         </div>
-        <p className="mt-1.5 text-xs text-muted-foreground">
-          We&apos;ll use this to identify anonymous visitors and pre-fill your ICP.
+        <p className="mt-2 text-xs text-muted-foreground">
+          We&apos;ll use this to identify your audience and set up your tracking pixel. No code required from you.
         </p>
       </div>
 
       <button
         type="submit"
-        disabled={loading || !url}
-        className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+        disabled={!url}
+        className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
       >
-        {loading ? (
-          <>
-            <Loader2 className="h-4 w-4 animate-spin" />
-            {phase === 'creating-pixel' && (isReplacingPixel ? 'Replacing your pixel...' : 'Setting up your pixel...')}
-            {phase === 'analyzing-site' && 'Analyzing your site with AI...'}
-            {phase === 'idle' && 'Working...'}
-          </>
-        ) : (
-          <>
-            <Sparkles className="h-4 w-4" />
-            {isReplacingPixel ? 'Confirm new domain' : wasPrefilledFromEmail ? 'Yes, this is correct' : 'Continue'}
-            <ArrowRight className="h-4 w-4" />
-          </>
-        )}
+        <Sparkles className="h-4 w-4" />
+        Find My First Leads
+        <ArrowRight className="h-4 w-4" />
       </button>
+
+      <p className="text-center text-[11px] text-muted-foreground">
+        Takes about 30 seconds. No credit card required.
+      </p>
     </form>
   )
 }
 
-// ─── Step 2: Confirm ICP ──────────────────────────────────────────────────────
+// ─── Working checklist ───────────────────────────────────────────────────────
 
-interface StepTwoIcpProps {
-  icp: IcpSuggestions | null
-  pixel: ExistingPixel | null
-  industries: string[]
-  setIndustries: (v: string[]) => void
-  states: string[]
-  setStates: (v: string[]) => void
-  saving: boolean
-  onSave: () => void
-  onBack: () => void
+interface ChecklistStep {
+  key: Phase
+  label: string
+  workingLabel: string
 }
 
-function StepTwoIcp({
-  icp,
-  pixel,
-  industries,
-  setIndustries,
-  states,
-  setStates,
-  saving,
-  onSave,
-  onBack,
-}: StepTwoIcpProps) {
-  const [industryInput, setIndustryInput] = useState('')
+const STEPS: ChecklistStep[] = [
+  { key: 'creating-pixel', label: 'Tracking pixel ready', workingLabel: 'Setting up your tracking pixel' },
+  { key: 'analyzing-site', label: 'Analyzed your site', workingLabel: 'Analyzing your homepage with AI' },
+  { key: 'saving-icp', label: 'Audience configured', workingLabel: 'Configuring your target audience' },
+  { key: 'finding-leads', label: 'Pulled enriched leads', workingLabel: 'Finding leads matching your audience' },
+]
 
-  const addIndustry = (value: string) => {
-    const trimmed = value.trim()
-    if (!trimmed || industries.includes(trimmed)) return
-    setIndustries([...industries, trimmed])
-    setIndustryInput('')
-  }
+const PHASE_ORDER: Phase[] = ['creating-pixel', 'analyzing-site', 'saving-icp', 'finding-leads']
 
-  const removeIndustry = (value: string) => {
-    setIndustries(industries.filter((i) => i !== value))
-  }
-
-  const toggleState = (code: string) => {
-    if (states.includes(code)) {
-      setStates(states.filter((s) => s !== code))
-    } else {
-      setStates([...states, code])
-    }
-  }
+function WorkingChecklist({ phase }: { phase: Phase }) {
+  const currentIdx = PHASE_ORDER.indexOf(phase)
 
   return (
-    <div className="space-y-6">
-      {/* AI-generated company summary */}
-      {icp && (icp.company_summary || icp.value_prop) && (
+    <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+      <div className="mb-5 flex items-center gap-3">
+        <Loader2 className="h-5 w-5 animate-spin text-primary" />
+        <span className="text-base font-medium text-foreground">Working on it...</span>
+      </div>
+      <ol className="space-y-3.5">
+        {STEPS.map((step, idx) => {
+          const isComplete = idx < currentIdx
+          const isCurrent = idx === currentIdx
+          const isPending = idx > currentIdx
+
+          return (
+            <li key={step.key} className="flex items-start gap-3">
+              <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center">
+                {isComplete && <CheckCircle2 className="h-5 w-5 text-primary" />}
+                {isCurrent && <Loader2 className="h-4 w-4 animate-spin text-primary" />}
+                {isPending && (
+                  <div className="h-4 w-4 rounded-full border-2 border-muted" />
+                )}
+              </div>
+              <span
+                className={[
+                  'text-sm',
+                  isComplete && 'text-foreground',
+                  isCurrent && 'text-foreground font-medium',
+                  isPending && 'text-muted-foreground',
+                ]
+                  .filter(Boolean)
+                  .join(' ')}
+              >
+                {isCurrent ? step.workingLabel : step.label}
+              </span>
+            </li>
+          )
+        })}
+      </ol>
+      <p className="mt-6 text-center text-xs text-muted-foreground">
+        Hang tight — usually 10–30 seconds.
+      </p>
+    </div>
+  )
+}
+
+// ─── Success card ────────────────────────────────────────────────────────────
+
+interface SuccessCardProps {
+  result: SetupResult
+  onContinue: () => void
+}
+
+function SuccessCard({ result, onContinue }: SuccessCardProps) {
+  const { pixel, icp, leadCount, sampleLeads, pendingSetup } = result
+  const hasLeads = leadCount > 0 && sampleLeads.length > 0
+
+  return (
+    <div className="space-y-5">
+      {/* AI summary card */}
+      {(icp.company_summary || icp.value_prop) && (
         <div className="rounded-xl border border-border bg-card p-5 shadow-sm">
           <div className="flex items-start gap-3">
             {icp.site_preview.favicon && (
@@ -553,326 +531,154 @@ function StepTwoIcp({
               />
             )}
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <Sparkles className="h-3.5 w-3.5 text-primary shrink-0" />
-                <span className="text-xs font-medium text-primary uppercase tracking-wide">
+              <div className="flex items-center gap-1.5">
+                <Sparkles className="h-3 w-3 text-primary" />
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-primary">
                   AI-generated from your site
                 </span>
               </div>
               {icp.company_name && (
-                <p className="mt-1.5 font-semibold text-foreground">{icp.company_name}</p>
+                <p className="mt-1 font-semibold text-foreground">{icp.company_name}</p>
               )}
-              {icp.company_summary && (
-                <p className="mt-1 text-sm text-muted-foreground">{icp.company_summary}</p>
+              {icp.icp_description && (
+                <p className="mt-1 text-sm text-muted-foreground leading-relaxed">
+                  {icp.icp_description}
+                </p>
               )}
             </div>
           </div>
         </div>
       )}
 
-      {/* ICP description readout (read-only, for context) */}
-      {icp?.icp_description && (
-        <div className="rounded-xl border border-border bg-muted/30 p-5">
-          <div className="flex items-center gap-2 mb-2">
-            <Target className="h-4 w-4 text-muted-foreground" />
-            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-              Suggested ideal customer
-            </span>
+      {/* Lead count + sample leads */}
+      {hasLeads ? (
+        <div className="rounded-xl border-2 border-primary/30 bg-card p-6 shadow-sm">
+          <div className="mb-5 flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+              <CheckCircle2 className="h-6 w-6 text-primary" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-foreground">
+                {leadCount} enriched lead{leadCount === 1 ? '' : 's'} ready
+              </h2>
+              <p className="text-xs text-muted-foreground">
+                Real people, verified contact info, matched to your audience.
+              </p>
+            </div>
           </div>
-          <p className="text-sm text-foreground">{icp.icp_description}</p>
-        </div>
-      )}
 
-      {/* Industries */}
-      <div className="rounded-xl border border-border bg-card p-5 shadow-sm">
-        <label className="block text-sm font-semibold text-foreground mb-1">
-          Target industries
-        </label>
-        <p className="text-xs text-muted-foreground mb-3">
-          Industries you want to target. We&apos;ve pre-filled suggestions — tweak them if you like.
-        </p>
+          <div className="space-y-2">
+            {sampleLeads.map((lead) => {
+              const name =
+                lead.full_name ||
+                [lead.first_name, lead.last_name].filter(Boolean).join(' ') ||
+                'Unknown'
+              const initials = name
+                .split(' ')
+                .filter(Boolean)
+                .slice(0, 2)
+                .map((p) => p[0])
+                .join('')
+                .toUpperCase()
+              const location = [lead.city, lead.state].filter(Boolean).join(', ')
 
-        {/* Selected industries as chips */}
-        {industries.length > 0 && (
-          <div className="mb-3 flex flex-wrap gap-1.5">
-            {industries.map((industry) => (
-              <span
-                key={industry}
-                className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
-              >
-                {industry}
-                <button
-                  type="button"
-                  onClick={() => removeIndustry(industry)}
-                  className="text-primary/70 hover:text-primary"
-                  aria-label={`Remove ${industry}`}
+              return (
+                <div
+                  key={lead.id}
+                  className="flex items-center gap-3 rounded-lg border border-border bg-background p-3"
                 >
-                  ×
-                </button>
-              </span>
-            ))}
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
+                    {initials || '?'}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="truncate text-sm font-medium text-foreground">{name}</p>
+                    <p className="truncate text-xs text-muted-foreground">
+                      {[lead.job_title, lead.company_name].filter(Boolean).join(' · ') || '—'}
+                      {location && <span className="ml-1">· {location}</span>}
+                    </p>
+                  </div>
+                </div>
+              )
+            })}
           </div>
-        )}
 
-        {/* Add-new input */}
-        <div className="flex gap-2">
-          <input
-            type="text"
-            placeholder="Add an industry (e.g. SaaS, HVAC, Real Estate)..."
-            value={industryInput}
-            onChange={(e) => setIndustryInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault()
-                addIndustry(industryInput)
-              }
-            }}
-            className="block flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-          />
           <button
             type="button"
-            onClick={() => addIndustry(industryInput)}
-            className="rounded-lg border border-border bg-card px-3 py-2 text-sm font-medium text-foreground hover:bg-muted transition-colors"
+            onClick={onContinue}
+            className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90"
           >
-            Add
+            View All {leadCount} Lead{leadCount === 1 ? '' : 's'}
+            <ArrowRight className="h-4 w-4" />
           </button>
         </div>
-
-        {/* AI suggestions that aren't selected yet */}
-        {icp && icp.target_industries.length > 0 && (
-          <div className="mt-3">
-            <p className="text-xs text-muted-foreground mb-1.5">Click to add:</p>
-            <div className="flex flex-wrap gap-1.5">
-              {icp.target_industries
-                .filter((i) => !industries.includes(i))
-                .slice(0, 8)
-                .map((industry) => (
-                  <button
-                    key={industry}
-                    type="button"
-                    onClick={() => addIndustry(industry)}
-                    className="rounded-full border border-border bg-background px-3 py-1 text-xs text-muted-foreground hover:border-primary hover:text-primary transition-colors"
-                  >
-                    + {industry}
-                  </button>
-                ))}
-            </div>
+      ) : (
+        /* No leads yet — pending setup or empty audience */
+        <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+          <div className="mb-3 flex items-center gap-3">
+            <CheckCircle2 className="h-5 w-5 text-primary" />
+            <h2 className="text-lg font-semibold text-foreground">Your audience is set up</h2>
           </div>
-        )}
-      </div>
-
-      {/* US states (optional) */}
-      <div className="rounded-xl border border-border bg-card p-5 shadow-sm">
-        <label className="block text-sm font-semibold text-foreground mb-1">
-          Target US states <span className="font-normal text-muted-foreground">(optional)</span>
-        </label>
-        <p className="text-xs text-muted-foreground mb-3">
-          Leave blank to target all US states. Pick specific states if you only sell regionally.
-        </p>
-
-        <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-5 lg:grid-cols-8">
-          {US_STATES.map(({ code, name }) => {
-            const selected = states.includes(code)
-            return (
-              <button
-                key={code}
-                type="button"
-                onClick={() => toggleState(code)}
-                title={name}
-                className={[
-                  'rounded-md border px-2 py-1.5 text-xs font-medium transition-colors',
-                  selected
-                    ? 'border-primary bg-primary/10 text-primary'
-                    : 'border-border bg-background text-muted-foreground hover:border-primary/40',
-                ].join(' ')}
-              >
-                {code}
-              </button>
-            )
-          })}
-        </div>
-      </div>
-
-      {/* Pixel status badge — reassures the user it's already done */}
-      {pixel && (
-        <div className="flex items-center gap-2 rounded-lg bg-muted/40 px-3 py-2">
-          <CheckCircle2 className="h-4 w-4 text-primary" />
-          <span className="text-xs text-muted-foreground">
-            Your pixel is ready — install it in the next step.
-          </span>
+          <p className="text-sm text-muted-foreground">
+            {pendingSetup
+              ? "We're building your custom audience right now. Your first leads will land in your dashboard within a few hours — we'll email you as soon as they arrive."
+              : 'Your targeting is configured. New leads will appear in your dashboard as we identify matches.'}
+          </p>
+          <button
+            type="button"
+            onClick={onContinue}
+            className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90"
+          >
+            Go to Dashboard
+            <ArrowRight className="h-4 w-4" />
+          </button>
         </div>
       )}
 
-      {/* Actions */}
-      <div className="flex items-center gap-3">
-        <button
-          type="button"
-          onClick={onBack}
-          className="rounded-lg border border-border bg-card px-4 py-2.5 text-sm font-medium text-muted-foreground hover:bg-muted transition-colors"
-        >
-          Back
-        </button>
-        <button
-          type="button"
-          onClick={onSave}
-          disabled={saving || industries.length === 0}
-          className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          {saving ? (
-            <>
-              <Loader2 className="h-4 w-4 animate-spin" />
-              Saving...
-            </>
-          ) : (
-            <>
-              Continue
-              <ArrowRight className="h-4 w-4" />
-            </>
-          )}
-        </button>
+      {/* Pixel install — secondary CTA. Not gating anything. */}
+      <div className="rounded-xl border border-border bg-muted/30 p-5">
+        <div className="flex items-start gap-3">
+          <Globe className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-foreground">
+              Want to track YOUR website visitors too?
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Install the tracking pixel on{' '}
+              <strong className="text-foreground">{pixel.domain || 'your site'}</strong>{' '}
+              to identify anonymous visitors in real time. Takes 2 minutes — copy a snippet
+              into your &lt;head&gt;.
+            </p>
+            <Link
+              href="/settings/pixel"
+              className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
+            >
+              Install pixel →
+            </Link>
+          </div>
+        </div>
       </div>
     </div>
   )
 }
 
-// ─── Step 3: Install pixel with verification ──────────────────────────────────
+// ─── Error card ──────────────────────────────────────────────────────────────
 
-type VerifyState = 'idle' | 'polling' | 'verified' | 'timeout'
-
-interface StepThreePixelProps {
-  pixel: ExistingPixel
-  onDone: () => void
-  onBack: () => void
-}
-
-function StepThreePixel({ pixel, onDone, onBack }: StepThreePixelProps) {
-  const [verifyState, setVerifyState] = useState<VerifyState>('idle')
-  const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
-  const pollCountRef = useRef(0)
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (pollIntervalRef.current) clearInterval(pollIntervalRef.current)
-    }
-  }, [])
-
-  const handleVerify = useCallback(async () => {
-    if (pollIntervalRef.current) {
-      clearInterval(pollIntervalRef.current)
-      pollIntervalRef.current = null
-    }
-    pollCountRef.current = 0
-    setVerifyState('polling')
-
-    const doPoll = async () => {
-      try {
-        const response = await fetch('/api/pixel/verify')
-        if (!response.ok) throw new Error('Verification request failed')
-        const result: { verified: boolean } = await response.json()
-        pollCountRef.current += 1
-
-        if (result.verified) {
-          if (pollIntervalRef.current) {
-            clearInterval(pollIntervalRef.current)
-            pollIntervalRef.current = null
-          }
-          setVerifyState('verified')
-          return
-        }
-
-        // 24 attempts × 5s = 2 minutes
-        if (pollCountRef.current >= 24) {
-          if (pollIntervalRef.current) {
-            clearInterval(pollIntervalRef.current)
-            pollIntervalRef.current = null
-          }
-          setVerifyState('timeout')
-        }
-      } catch {
-        // Network error — keep polling, will hit timeout naturally
-      }
-    }
-
-    await doPoll()
-    pollIntervalRef.current = setInterval(doPoll, 5_000)
-  }, [])
-
+function ErrorCard({ message, onRetry }: { message: string; onRetry: () => void }) {
   return (
-    <div className="space-y-6">
-      <div className="rounded-xl border border-border bg-card p-5 shadow-sm">
-        <h2 className="text-lg font-semibold text-foreground">Install your pixel</h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Add the snippet below to your site. Once installed, we&apos;ll identify anonymous visitors in real-time and turn them into enriched leads you can follow up with.
-        </p>
-
-        <div className="mt-5">
-          <PixelInstallTabs pixelId={pixel.pixel_id} />
+    <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-6">
+      <div className="flex items-start gap-3">
+        <AlertCircle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
+        <div className="flex-1">
+          <h2 className="text-base font-semibold text-foreground">Setup hit a snag</h2>
+          <p className="mt-1 text-sm text-muted-foreground">{message}</p>
+          <button
+            type="button"
+            onClick={onRetry}
+            className="mt-4 inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+          >
+            Try Again
+          </button>
         </div>
-
-        {/* Verification */}
-        <div className="mt-5 rounded-lg border border-border bg-muted/30 p-4">
-          {verifyState === 'verified' ? (
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="h-4 w-4 text-green-600" />
-              <span className="text-sm font-medium text-foreground">
-                Pixel verified! You&apos;re ready to go.
-              </span>
-            </div>
-          ) : verifyState === 'polling' ? (
-            <div className="flex items-center gap-2">
-              <Loader2 className="h-4 w-4 animate-spin text-primary" />
-              <span className="text-sm text-muted-foreground">
-                Listening for pixel events... visit any page on your site in a new tab.
-              </span>
-            </div>
-          ) : verifyState === 'timeout' ? (
-            <div className="space-y-2">
-              <p className="text-sm text-foreground">
-                No events yet. Make sure the snippet is in your <code className="rounded bg-muted px-1 text-xs">&lt;head&gt;</code> and try again, or skip and come back later.
-              </p>
-              <button
-                type="button"
-                onClick={handleVerify}
-                className="text-xs font-medium text-primary hover:underline"
-              >
-                Check again
-              </button>
-            </div>
-          ) : (
-            <div className="flex items-center justify-between gap-3">
-              <span className="text-sm text-muted-foreground">
-                Already installed? Verify it&apos;s working.
-              </span>
-              <button
-                type="button"
-                onClick={handleVerify}
-                className="rounded-md border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted transition-colors"
-              >
-                Verify installation
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Actions */}
-      <div className="flex items-center gap-3">
-        <button
-          type="button"
-          onClick={onBack}
-          className="rounded-lg border border-border bg-card px-4 py-2.5 text-sm font-medium text-muted-foreground hover:bg-muted transition-colors"
-        >
-          Back
-        </button>
-        <button
-          type="button"
-          onClick={onDone}
-          className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90"
-        >
-          {verifyState === 'verified' ? 'Go to dashboard' : 'I\'ll install it later'}
-          <ArrowRight className="h-4 w-4" />
-        </button>
       </div>
     </div>
   )
