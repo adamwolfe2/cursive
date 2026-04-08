@@ -102,7 +102,7 @@ export default function DataPartnershipsPage() {
               Data Partnership Overview
             </p>
             <h1 className="mt-5 text-4xl sm:text-5xl font-light tracking-tight text-gray-900 leading-[1.1]">
-              The identity and intent infrastructure behind&nbsp;
+              The Identity and Intent Infrastructure Behind&nbsp;
               <span className="font-cursive text-gray-500">Cursive</span>.
             </h1>
             <p className="mt-6 text-lg text-gray-600 leading-relaxed">
@@ -386,7 +386,7 @@ export default function DataPartnershipsPage() {
               Next Step
             </p>
             <h2 className="mt-5 text-3xl sm:text-4xl font-light tracking-tight text-gray-900">
-              Start a data conversation.
+              Start a Data Conversation.
             </h2>
             <p className="mt-5 text-base text-gray-600 leading-relaxed">
               We&apos;ll scope a conversion look-back against your own data,

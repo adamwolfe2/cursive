@@ -115,9 +115,9 @@ export function HumanHomePage() {
               className="lg:w-[40%] lg:flex-shrink-0 text-center lg:text-left mb-8 lg:mb-0"
             >
               <h1 className="text-[2rem] sm:text-[2.4rem] lg:text-[2.4rem] xl:text-[2.65rem] font-light mb-4 leading-[1.12] tracking-tight">
-                <span className="text-gray-900">The identity layer for</span>
+                <span className="text-gray-900">The Identity Layer for</span>
                 <br />
-                <span className="text-gray-400">outbound, intent, and enrichment.</span>
+                <span className="text-gray-400">Outbound, Intent, and Enrichment.</span>
               </h1>
 
               <p className="text-base text-gray-600 mb-4 leading-relaxed max-w-lg mx-auto lg:mx-0">
