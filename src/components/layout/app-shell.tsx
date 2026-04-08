@@ -11,18 +11,13 @@ import { useDismissible } from '@/lib/hooks/use-dismissible'
 import {
   LayoutDashboard,
   Users,
-  Eye,
   Send,
   Search,
   Settings,
   Briefcase,
   BarChart3,
-  TrendingUp,
-  Zap,
   Gift,
   Handshake,
-  Package,
-  Code,
   Rocket,
 } from 'lucide-react'
 
@@ -38,6 +33,11 @@ export interface NavItemConfig {
   children?: { name: string; href: string }[]
 }
 
+// Aha-moment-first navigation: 4 main items surface the core flow
+// (identified visitors → leads → outreach → settings). Outbound Agent
+// and deeper power-user tools live in the Advanced section, hidden until
+// a user has completed initial setup. Everything else is admin-only or
+// reachable by direct URL but intentionally not in the sidebar.
 const navigationItems: NavItemConfig[] = [
   {
     name: 'Dashboard',
@@ -52,16 +52,10 @@ const navigationItems: NavItemConfig[] = [
     icon: <Users className="h-5 w-5" />,
     children: [
       { name: 'Today', href: '/leads' },
-      { name: 'Assigned', href: '/leads?tab=assigned' },
       { name: 'All Leads', href: '/leads?tab=all' },
+      { name: 'Website Visitors', href: '/website-visitors' },
       { name: 'Preferences', href: '/my-leads/preferences' },
     ],
-  },
-  {
-    name: 'Visitors',
-    href: '/website-visitors',
-    section: 'main',
-    icon: <Eye className="h-5 w-5" />,
   },
   {
     name: 'Outreach',
@@ -71,41 +65,36 @@ const navigationItems: NavItemConfig[] = [
     requiredPlan: ['pro', 'admin', 'owner'],
   },
   {
-    name: 'Outbound Agent',
-    href: '/outbound',
-    section: 'main',
-    icon: <Rocket className="h-5 w-5" />,
-    requiredPlan: ['pro', 'admin', 'owner'],
-  },
-  {
-    name: 'Find Leads',
-    href: '/find-leads',
-    section: 'main',
-    icon: <Search className="h-5 w-5" />,
-  },
-  {
     name: 'Settings',
     href: '/settings',
     section: 'main',
     icon: <Settings className="h-5 w-5" />,
     children: [
       { name: 'Profile', href: '/settings' },
-      { name: 'Billing', href: '/settings/billing' },
-      { name: 'Credit History', href: '/settings/billing/usage' },
-      { name: 'Team', href: '/settings/team' },
-      { name: 'API Keys', href: '/settings/api-keys' },
       { name: 'Pixel & Tracking', href: '/settings/pixel' },
-      { name: 'Client Profile', href: '/settings/client-profile' },
-      { name: 'Branding', href: '/settings/branding' },
+      { name: 'Email Accounts', href: '/settings/email-accounts' },
+      { name: 'Billing', href: '/settings/billing' },
+      { name: 'Team', href: '/settings/team' },
       { name: 'Integrations', href: '/settings/integrations' },
-      { name: 'Notifications', href: '/settings/notifications' },
-      { name: 'Webhooks', href: '/settings/webhooks' },
-      { name: 'Security', href: '/settings/security' },
     ],
   },
 
+  // ── Advanced — collapsed by default, shown for power users ──
   {
-    name: 'Lead Manager',
+    name: 'Outbound Agent',
+    href: '/outbound',
+    section: 'advanced',
+    icon: <Rocket className="h-5 w-5" />,
+    requiredPlan: ['pro', 'admin', 'owner'],
+  },
+  {
+    name: 'Find Leads',
+    href: '/find-leads',
+    section: 'advanced',
+    icon: <Search className="h-5 w-5" />,
+  },
+  {
+    name: 'CRM',
     href: '/crm/leads',
     section: 'advanced',
     icon: <Briefcase className="h-5 w-5" />,
@@ -115,7 +104,6 @@ const navigationItems: NavItemConfig[] = [
       { name: 'Contacts', href: '/crm/contacts' },
       { name: 'Companies', href: '/crm/companies' },
       { name: 'Deals', href: '/crm/deals' },
-      { name: 'Activities', href: '/crm/activities' },
     ],
   },
   {
@@ -124,19 +112,6 @@ const navigationItems: NavItemConfig[] = [
     section: 'advanced',
     icon: <BarChart3 className="h-5 w-5" />,
     requiredPlan: ['pro', 'admin', 'owner'],
-  },
-  {
-    name: 'Trending Topics',
-    href: '/trends',
-    section: 'advanced',
-    icon: <TrendingUp className="h-5 w-5" />,
-  },
-  {
-    name: 'Activate',
-    href: '/activate',
-    section: 'advanced',
-    icon: <Zap className="h-5 w-5" />,
-    requiredPlan: ['admin', 'owner'],
   },
   {
     name: 'Refer & Earn',
@@ -151,19 +126,6 @@ const navigationItems: NavItemConfig[] = [
     icon: <Handshake className="h-5 w-5" />,
     partnerOnly: true,
     requiredPlan: ['admin', 'owner'],
-  },
-  {
-    name: 'Services',
-    href: '/services',
-    section: 'advanced',
-    icon: <Package className="h-5 w-5" />,
-  },
-  {
-    name: 'API Docs',
-    href: '/docs/api',
-    section: 'advanced',
-    icon: <Code className="h-5 w-5" />,
-    requiredPlan: ['pro', 'admin', 'owner'],
   },
 
   {

@@ -18,7 +18,7 @@ import { CreditService } from '@/lib/services/credit.service'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import {
-  Users, ArrowRight,
+  ArrowRight,
   Star, Target, CheckCircle2, Circle,
   Eye, Rocket, Activity, Calendar,
 } from 'lucide-react'
@@ -272,15 +272,26 @@ async function DashboardMainGrid(props: MainGridProps) {
 
   return (
     <div className="space-y-8">
-      {/* Hot leads */}
+      {/* Hot leads — the aha-moment surface. When pixel is active these are
+          typically the highest-intent visitors the pixel just identified.
+          Each card surfaces Draft Email as the primary action because this is
+          the point in the flow where outreach actually makes sense (enriched,
+          verified, ICP-matched leads only — never raw visitors). */}
       {typedHotLeads.length > 0 && (
         <AnimatedSection delay={0.08}>
           <div className="bg-card rounded-xl border border-border p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-semibold text-foreground">
-                Top Leads to Act On
-              </h2>
-              <Link href="/leads?sort=intent" className="text-sm text-primary hover:underline flex items-center gap-1">
+              <div>
+                <h2 className="font-semibold text-foreground">
+                  {hasVerifiedPixel ? 'Hot Leads from Your Website' : 'Top Leads to Act On'}
+                </h2>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {hasVerifiedPixel
+                    ? 'Enriched & verified visitors matching your ICP — ready for personalized outreach.'
+                    : 'Your highest-intent prospects right now.'}
+                </p>
+              </div>
+              <Link href="/leads?sort=intent" className="text-sm text-primary hover:underline flex items-center gap-1 shrink-0">
                 All leads <ArrowRight className="h-3.5 w-3.5" />
               </Link>
             </div>
@@ -292,32 +303,30 @@ async function DashboardMainGrid(props: MainGridProps) {
                 const score = lead.intent_score_calculated
                 const isEnriched = lead.enrichment_status === 'enriched'
                 return (
-                  <div key={lead.id} className="rounded-lg border border-border bg-card p-4 flex flex-col gap-2.5">
+                  <Link
+                    key={lead.id}
+                    href={`/crm/leads/${lead.id}`}
+                    className="rounded-lg border border-border bg-card p-4 flex flex-col gap-2.5 hover:border-primary/40 hover:shadow-sm transition-all"
+                  >
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
                         <p className="text-sm font-medium text-foreground truncate">{name}</p>
                         {lead.company_name && <p className="text-xs text-muted-foreground truncate">{sanitizeCompanyName(lead.company_name)}</p>}
                       </div>
                       {score !== null && (
-                        <span className="text-xs text-muted-foreground shrink-0">{score}</span>
+                        <span className="text-xs font-medium text-muted-foreground shrink-0">{score}</span>
                       )}
                     </div>
-                    <div className="flex items-center gap-3">
-                      {isEnriched && lead.email && (
-                        <a href={`mailto:${lead.email}`} className="text-xs text-muted-foreground hover:text-foreground transition-colors">
-                          Email
-                        </a>
+                    <div className="flex items-center gap-2 mt-auto pt-1">
+                      {isEnriched ? (
+                        <span className="text-xs font-medium text-primary group-hover:underline">
+                          Draft email →
+                        </span>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">Enrich to unlock</span>
                       )}
-                      {isEnriched && lead.phone && (
-                        <a href={`tel:${lead.phone}`} className="text-xs text-muted-foreground hover:text-foreground transition-colors">
-                          Call
-                        </a>
-                      )}
-                      <Link href={`/crm/leads/${lead.id}`} className="text-xs text-muted-foreground hover:text-foreground transition-colors ml-auto flex items-center gap-1">
-                        View <ArrowRight className="h-2.5 w-2.5" />
-                      </Link>
                     </div>
-                  </div>
+                  </Link>
                 )
               })}
             </div>
@@ -721,7 +730,6 @@ export default async function DashboardPage({
 
   // Derived state for above-fold rendering
   const todayCount      = statsData?.today_leads      ?? 0
-  const weekCount       = statsData?.week_leads       ?? 0
   const totalCount      = statsData?.total_leads      ?? 0
   const enrichedCount   = statsData?.enriched_leads   ?? 0
   const pixelEventCount = statsData?.pixel_event_count ?? 0
@@ -772,28 +780,43 @@ export default async function DashboardPage({
     <div className="space-y-8 p-6">
       <DashboardAnimationWrapper>
 
-        {/* Header */}
+        {/* Header — pixel-aware. When pixel is installed we lead with the
+            live-visitor story; otherwise we nudge toward installing the pixel. */}
         <AnimatedSection delay={0}>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <h1 className="text-2xl font-bold text-foreground">
-                Welcome back, {userProfile.full_name?.split(' ')[0] || 'there'}!
+                Welcome back, {userProfile.full_name?.split(' ')[0] || 'there'}
               </h1>
               <p className="text-sm text-muted-foreground mt-0.5">
                 {userProfile.workspaces?.name && (
                   <span className="font-medium text-foreground">{userProfile.workspaces.name} · </span>
                 )}
-                Here&apos;s your lead pipeline. New leads arrive every morning at 8am CT.
+                {hasVerifiedPixel
+                  ? `Your pixel is live${pixel?.trial_status === 'trial' ? ' (trial)' : ''}. Here's who visited your site recently.`
+                  : hasPixel
+                    ? 'Your pixel is installed — waiting for the first visitor. Leads will appear here automatically.'
+                    : 'Install your pixel to start identifying anonymous website visitors in real time.'}
               </p>
             </div>
             <div className="flex items-center gap-2">
-              <Link
-                href="/leads"
-                className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary/90 transition-colors"
-              >
-                <Star className="h-4 w-4 fill-white" />
-                Today&apos;s Leads
-              </Link>
+              {!hasPixel ? (
+                <Link
+                  href="/setup"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary/90 transition-colors"
+                >
+                  <Rocket className="h-4 w-4" />
+                  Install Pixel
+                </Link>
+              ) : (
+                <Link
+                  href="/leads"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary/90 transition-colors"
+                >
+                  <Star className="h-4 w-4 fill-white" />
+                  View Leads
+                </Link>
+              )}
             </div>
           </div>
         </AnimatedSection>
@@ -913,46 +936,47 @@ export default async function DashboardPage({
           return null
         })()}
 
-        {/* Stat cards — above the fold, rendered from fast-phase data */}
+        {/* Stat cards — pared down from 5 to 3 to reduce dashboard noise.
+            When pixel is installed we lead with visitors identified; otherwise
+            we lead with daily leads. */}
         <AnimatedSection delay={0.05}>
-          <div className="grid grid-cols-2 lg:grid-cols-5 gap-6">
-            {/* Today's leads */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {/* Pixel identified visitors (when pixel active) — otherwise Today's leads */}
+            {hasPixel ? (
+              <Link href="/website-visitors" className="group">
+                <div className="rounded-xl border border-border bg-card p-5 hover:border-primary/30 transition-all h-full">
+                  <div className="flex items-center gap-1.5">
+                    <Eye className="h-3.5 w-3.5 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Visitors Identified</span>
+                  </div>
+                  <div className="text-3xl font-semibold text-foreground mt-2">
+                    {(visitorCountTotal ?? pixelEventCount).toLocaleString()}
+                  </div>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {hasVerifiedPixel ? 'From your website pixel' : 'Waiting for first visitor'}
+                  </p>
+                </div>
+              </Link>
+            ) : (
+              <Link href="/leads" className="group">
+                <div className="rounded-xl border border-border bg-card p-5 hover:border-primary/30 transition-all h-full">
+                  <span className="text-sm text-muted-foreground">Today&apos;s Leads</span>
+                  <div className="text-3xl font-semibold text-foreground mt-2">{todayCount}</div>
+                  <p className="text-sm text-muted-foreground mt-1">{todayCount} of {dailyLimit} delivered</p>
+                </div>
+              </Link>
+            )}
+
+            {/* Total enriched leads */}
             <Link href="/leads" className="group">
-              <div className="rounded-xl border border-border bg-card p-5 hover:border-primary/30 transition-all h-full">
-                <span className="text-sm text-muted-foreground">Today&apos;s Leads</span>
-                <div className="text-3xl font-semibold text-foreground mt-2">{todayCount}</div>
-                <p className="text-sm text-muted-foreground mt-1">{todayCount} of {dailyLimit} delivered</p>
-              </div>
-            </Link>
-
-            {/* This week */}
-            <Link href="/leads" className="group">
-              <div className="rounded-xl border border-border bg-card p-5 hover:border-primary/30 transition-all h-full">
-                <span className="text-sm text-muted-foreground">This Week</span>
-                <div className="text-3xl font-semibold text-foreground mt-2">{weekCount}</div>
-                <p className="text-sm text-muted-foreground mt-1">{(weekCount / 7).toFixed(1)} avg/day</p>
-              </div>
-            </Link>
-
-            {/* Credits */}
-            <Link href="/settings/billing" className="group">
-              <div className="rounded-xl border border-border bg-card p-5 hover:border-primary/30 transition-all h-full">
-                <span className="text-sm text-muted-foreground" title="2 credits per Intel Pack · 10 credits per Deep Research">Enrichment Credits</span>
-                <div className="text-3xl font-semibold text-foreground mt-2">{creditsRemaining}</div>
-                <p className="text-sm text-muted-foreground mt-1">of {creditLimit}/day · resets daily</p>
-              </div>
-            </Link>
-
-            {/* Total leads */}
-            <Link href="/crm/leads" className="group">
               <div className="rounded-xl border border-border bg-card p-5 hover:border-primary/30 transition-all h-full">
                 <span className="text-sm text-muted-foreground">Total Leads</span>
                 <div className="text-3xl font-semibold text-foreground mt-2">{totalCount}</div>
-                <p className="text-sm text-muted-foreground mt-1">{enrichedCount} enriched</p>
+                <p className="text-sm text-muted-foreground mt-1">{enrichedCount} enriched & verified</p>
               </div>
             </Link>
 
-            {/* Meetings Booked */}
+            {/* Meetings booked */}
             <div className="rounded-xl border border-border bg-card p-5 h-full">
               <div className="flex items-center gap-1.5">
                 <Calendar className="h-3.5 w-3.5 text-muted-foreground" />

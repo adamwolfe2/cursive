@@ -21,8 +21,8 @@ export async function GET(request: NextRequest) {
     const supabase = await createClient()
     const workspaceId = user.workspaceId
 
-    // Run all six checklist queries in parallel
-    const [pixelResult, targetingResult, creditResult, leadResult, crmResult, emailAccountResult] =
+    // Run checklist queries in parallel — one per step shown to the user.
+    const [pixelResult, targetingResult, leadResult, crmResult, emailAccountResult] =
       await Promise.all([
         // 1. Install tracking pixel — check audiencelab_pixels
         supabase
@@ -38,26 +38,20 @@ export async function GET(request: NextRequest) {
           .eq('workspace_id', workspaceId)
           .maybeSingle(),
 
-        // 3. Buy your first credits — check credit_purchases
-        supabase
-          .from('credit_purchases')
-          .select('id', { count: 'exact', head: true })
-          .eq('workspace_id', workspaceId),
-
-        // 4. Receive your first lead — check leads table
+        // 3. Receive first lead — check leads table
         supabase
           .from('leads')
           .select('id', { count: 'exact', head: true })
           .eq('workspace_id', workspaceId),
 
-        // 5. Connect a CRM — check crm_connections for active/connected status
+        // 4. Connect a CRM — check crm_connections for active/connected status
         supabase
           .from('crm_connections')
           .select('id', { count: 'exact', head: true })
           .eq('workspace_id', workspaceId)
           .in('status', ['active', 'connected']),
 
-        // 6. Connect email account — check email_accounts
+        // 5. Connect email account — check email_accounts
         supabase
           .from('email_accounts')
           .select('id', { count: 'exact', head: true })
@@ -73,56 +67,48 @@ export async function GET(request: NextRequest) {
       targetingData?.target_states?.length
     )
 
-    const hasCredits = (creditResult.count ?? 0) > 0
-
     const hasLead = (leadResult.count ?? 0) > 0
-
     const hasCrm = (crmResult.count ?? 0) > 0
-
     const hasEmailAccount = (emailAccountResult.count ?? 0) > 0
 
+    // Aha-moment ordering: pixel + ICP are the essentials, done together via
+    // the /setup wizard. Email + CRM come later, only after the user has leads
+    // worth following up on. Credits are a billing concern, not a setup step.
     const items: ChecklistItem[] = [
       {
         id: 'pixel',
         title: 'Install tracking pixel',
-        description: 'Add the Cursive pixel to your website to identify anonymous visitors.',
+        description: 'Identify anonymous visitors on your website in real time.',
         completed: hasPixel,
-        href: '/settings/pixel',
+        href: '/setup',
       },
       {
         id: 'preferences',
-        title: 'Set lead preferences',
-        description: 'Choose your target industries and locations so we match the right leads.',
+        title: 'Define your ideal customer',
+        description: 'Tell us your target industries + geography so we match the right leads.',
         completed: hasPreferences,
-        href: '/my-leads/preferences',
-      },
-      {
-        id: 'credits',
-        title: 'Buy your first credits',
-        description: 'Purchase enrichment credits to reveal verified contact info on your leads.',
-        completed: hasCredits,
-        href: '/settings/billing',
+        href: '/setup',
       },
       {
         id: 'first-lead',
-        title: 'Receive your first lead',
-        description: 'Fresh leads are delivered every morning at 8am CT based on your preferences.',
+        title: 'Get your first identified lead',
+        description: 'Your pixel will surface enriched, verified leads automatically.',
         completed: hasLead,
         href: '/leads',
       },
       {
-        id: 'crm',
-        title: 'Connect a CRM',
-        description: 'Sync leads directly to HubSpot, Salesforce, or another CRM.',
-        completed: hasCrm,
-        href: '/crm',
-      },
-      {
         id: 'connect_email_account',
-        title: 'Connect Email Account',
-        description: 'Connect your email sending account to enable outreach sequences.',
+        title: 'Connect your email',
+        description: 'When you\'re ready to reach out, connect Gmail or any SMTP provider.',
         completed: hasEmailAccount,
         href: '/settings/email-accounts',
+      },
+      {
+        id: 'crm',
+        title: 'Connect your CRM (optional)',
+        description: 'Sync leads to HubSpot, Salesforce, or Google Sheets.',
+        completed: hasCrm,
+        href: '/settings/integrations',
       },
     ]
 

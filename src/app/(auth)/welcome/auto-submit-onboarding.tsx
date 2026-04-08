@@ -188,7 +188,7 @@ export function AutoSubmitOnboarding({ isMarketplace, isReturning }: AutoSubmitO
           // Check if it's a slug collision vs already-has-workspace
           const body409 = await lastResponse.json()
           if (body409.workspace_id) {
-            // Already has workspace — redirect to dashboard
+            // Already has workspace — skip setup wizard, go straight to dashboard
             localStorage.removeItem('cursive_onboarding')
             localStorage.removeItem(RETRY_KEY)
             router.push(isMarketplace ? '/marketplace' : '/dashboard?onboarding=complete')
@@ -254,13 +254,16 @@ export function AutoSubmitOnboarding({ isMarketplace, isReturning }: AutoSubmitO
             : Promise.resolve(),
         ])
 
-        // Clear storage (including retry counter) and redirect to dashboard
+        // Clear storage (including retry counter) and send the user into the
+        // 3-step setup wizard. /setup is the aha-moment onboarding — URL → ICP
+        // → pixel install — and redirects to /dashboard when done. Marketplace
+        // users bypass it since they have their own post-signup flow.
         localStorage.removeItem('cursive_onboarding')
         localStorage.removeItem(RETRY_KEY)
-        const dashboardUrl = isMarketplace
+        const nextUrl = isMarketplace
           ? '/marketplace'
-          : `/dashboard?onboarding=complete${targetingFailed ? '&targeting_failed=true' : ''}`
-        router.push(dashboardUrl)
+          : `/setup${targetingFailed ? '?targeting_failed=true' : ''}`
+        router.push(nextUrl)
       } catch (err: unknown) {
         // Increment the persistent failure counter so reloads don't cause
         // an infinite retry loop.

@@ -35,9 +35,11 @@ export default async function WelcomePage({
       .eq('auth_user_id', authUser.id)
       .maybeSingle()
 
-    // If user already has workspace, redirect to dashboard
+    // User already has a workspace — send them into the setup wizard.
+    // /setup checks whether pixel + targeting are configured and either runs
+    // the remaining steps or auto-forwards to /dashboard when everything is done.
     if (user?.workspace_id) {
-      redirect('/dashboard')
+      redirect('/setup')
     }
 
     // User has session but no workspace — they're returning from OAuth.

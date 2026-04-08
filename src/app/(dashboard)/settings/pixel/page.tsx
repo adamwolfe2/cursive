@@ -190,10 +190,10 @@ export default function PixelSettingsPage() {
     const trialEndsAt = data.pixel.trial_ends_at ? new Date(data.pixel.trial_ends_at) : null
     const daysLeft = trialEndsAt ? Math.max(0, Math.ceil((trialEndsAt.getTime() - Date.now()) / 86_400_000)) : null
 
-    // Build the proper installation snippet:
-    // 1. If snippet already contains a <script tag, use it as-is
-    // 2. If install_url is available, wrap it in a script tag
-    // 3. Fallback: generate from pixel_id using the known V3 SuperPixel CDN format
+    // Build the proper installation snippet — always trust what AudienceLab returned.
+    // 1. If stored snippet already contains a <script tag, use it as-is
+    // 2. Otherwise wrap install_url in a script tag
+    // No hardcoded CDN fallback: if AL didn't give us a URL, we don't guess a version.
     const _installSnippet = (() => {
       if (data.pixel!.snippet && data.pixel!.snippet.includes('<script')) {
         return data.pixel!.snippet
@@ -201,11 +201,9 @@ export default function PixelSettingsPage() {
       if (data.pixel!.install_url) {
         return `<script src="${data.pixel!.install_url}" defer></script>`
       }
-      return data.pixel!.pixel_id
-        ? `<script src="https://cdn.v3.identitypxl.app/pixels/${data.pixel!.pixel_id}/p.js" defer></script>`
-        : ''
+      return ''
     })()
-    const hasSnippet = true // We can always generate a snippet from pixel_id
+    const hasSnippet = !!(data.pixel!.install_url || (data.pixel!.snippet && data.pixel!.snippet.includes('<script')))
 
     return (
       <div className="space-y-6">

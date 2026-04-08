@@ -163,12 +163,19 @@ export async function POST(request: NextRequest) {
       websiteUrl: validated.website_url,
     })
 
-    // Build snippet from AL response: prefer script if provided, else derive from install_url,
-    // else fallback to V3 SuperPixel CDN format using pixel_id
+    // Build snippet from AL response — always trust AL's install_url so whichever pixel
+    // version AudienceLab provisions (v3 today, v4 when they enable it on our account)
+    // flows through without code changes. We only fall back to a derived snippet if AL
+    // returns no install_url at all.
     const installUrl = result.install_url
-    const snippet = result.script ||
-      (installUrl ? `<script src="${installUrl}" defer></script>` :
-        `<script src="https://cdn.v3.identitypxl.app/pixels/${result.pixel_id}/p.js" defer></script>`)
+    if (!installUrl && !result.script) {
+      safeError('[API] Pixel provision: AL returned no install_url or script', { pixel_id: result.pixel_id })
+      return NextResponse.json(
+        { error: 'Pixel provisioning failed — upstream did not return an install URL. Our team has been notified.' },
+        { status: 502 }
+      )
+    }
+    const snippet = result.script || `<script src="${installUrl}" defer></script>`
 
     // Trial ends 14 days from now
     const trialEndsAt = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
