@@ -20,9 +20,8 @@ import { getInngest } from '../client'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
 import {
-  previewAudience,
+  fetchAudienceRecords,
   AudienceLabUnfilteredError,
-  UNFILTERED_PREVIEW_THRESHOLD,
   type ALEnrichedProfile,
 } from '@/lib/audiencelab/api-client'
 
@@ -31,12 +30,9 @@ const inngest = getInngest()
 // Target marketplace size — if we have this many available leads, skip refresh.
 const TARGET_MARKETPLACE_SIZE = 500
 
-// Max leads to fetch per segment per run — prevents any one segment
+// Max leads to fetch per audience per run — prevents any one audience
 // from dominating and controls AL API cost per run.
 const MAX_LEADS_PER_SEGMENT = 60
-
-// How far back to look in the AL intent graph for each segment.
-const DAYS_BACK = 7
 
 // Minimum quality — skip any AL record that doesn't meet our bar.
 const MIN_QUALITY_SCORE = 40
@@ -175,25 +171,23 @@ export const marketplaceLeadRefresh = inngest.createFunction(
             return { added: 0, skipped: 0, error: 'AL API key not configured' }
           }
 
-          let preview
+          // The "segment_id" in audience_lab_segments is actually an AL audience UUID.
+          // Use fetchAudienceRecords to pull from the prebuilt audience.
+          let recordsResponse
           try {
-            preview = await previewAudience({
-              days_back: DAYS_BACK,
-              segment: segment.segment_id,
-              limit: MAX_LEADS_PER_SEGMENT,
-            })
-          } catch (previewErr) {
-            if (previewErr instanceof AudienceLabUnfilteredError) {
+            recordsResponse = await fetchAudienceRecords(
+              segment.segment_id,
+              1,
+              MAX_LEADS_PER_SEGMENT
+            )
+          } catch (fetchErr) {
+            if (fetchErr instanceof AudienceLabUnfilteredError) {
               return { added: 0, skipped: 0, error: 'unfiltered-response' }
             }
-            throw previewErr
+            throw fetchErr
           }
 
-          if (preview.count && preview.count >= UNFILTERED_PREVIEW_THRESHOLD) {
-            return { added: 0, skipped: 0, error: 'preview-count-too-high' }
-          }
-
-          const records = (preview.result ?? []).slice(0, MAX_LEADS_PER_SEGMENT)
+          const records = (recordsResponse.data ?? []).slice(0, MAX_LEADS_PER_SEGMENT)
           if (records.length === 0) {
             return { added: 0, skipped: 0 }
           }
@@ -234,17 +228,19 @@ export const marketplaceLeadRefresh = inngest.createFunction(
                 marketplace_status: 'available',
                 marketplace_price: 0.6,
                 verification_status: 'valid',
-                intent_score: Math.min(100, q.score + 20),
+                intent_score_calculated: Math.min(100, q.score + 20),
                 freshness_score: 90,
+                lead_score: Math.min(100, q.score + 20),
                 delivered_at: new Date().toISOString(),
                 company_industry: r.COMPANY_INDUSTRY ?? segment.industry,
                 city: r.COMPANY_CITY ?? r.PERSONAL_CITY ?? null,
                 state: r.COMPANY_STATE ?? r.PERSONAL_STATE ?? null,
                 postal_code: r.COMPANY_ZIP ?? r.PERSONAL_ZIP ?? null,
-                raw_data: {
+                metadata: {
                   audiencelab_segment_id: segment.segment_id,
                   audiencelab_segment_name: segment.segment_name,
                   audiencelab_industry: segment.industry,
+                  source: 'marketplace_refresh',
                 },
               }
             })
