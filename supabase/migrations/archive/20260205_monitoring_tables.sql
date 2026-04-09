@@ -35,6 +35,12 @@ CREATE TABLE IF NOT EXISTS platform_alerts (
   resolved_by UUID REFERENCES users(id)
 );
 
+-- Add triggered_at if table pre-existed without it
+ALTER TABLE platform_alerts
+  ADD COLUMN IF NOT EXISTS triggered_at TIMESTAMPTZ DEFAULT NOW(),
+  ADD COLUMN IF NOT EXISTS resolved_at TIMESTAMPTZ,
+  ADD COLUMN IF NOT EXISTS resolved_by UUID REFERENCES users(id) ON DELETE SET NULL;
+
 -- Indexes for alerts
 CREATE INDEX IF NOT EXISTS idx_platform_alerts_triggered
   ON platform_alerts(triggered_at DESC);
@@ -66,6 +72,7 @@ ALTER TABLE platform_metrics ENABLE ROW LEVEL SECURITY;
 ALTER TABLE platform_alerts ENABLE ROW LEVEL SECURITY;
 
 -- Policy: Only platform admins can read metrics
+DROP POLICY IF EXISTS "Platform admins can read metrics" ON platform_metrics;
 CREATE POLICY "Platform admins can read metrics" ON platform_metrics
   FOR SELECT
   USING (
@@ -77,11 +84,13 @@ CREATE POLICY "Platform admins can read metrics" ON platform_metrics
   );
 
 -- Policy: Service role can insert metrics
+DROP POLICY IF EXISTS "Service role can insert metrics" ON platform_metrics;
 CREATE POLICY "Service role can insert metrics" ON platform_metrics
   FOR INSERT
   WITH CHECK (auth.role() = 'service_role');
 
 -- Policy: Only platform admins can read alerts
+DROP POLICY IF EXISTS "Platform admins can read alerts" ON platform_alerts;
 CREATE POLICY "Platform admins can read alerts" ON platform_alerts
   FOR SELECT
   USING (
@@ -93,6 +102,7 @@ CREATE POLICY "Platform admins can read alerts" ON platform_alerts
   );
 
 -- Policy: Service role can insert and update alerts
+DROP POLICY IF EXISTS "Service role can manage alerts" ON platform_alerts;
 CREATE POLICY "Service role can manage alerts" ON platform_alerts
   FOR ALL
   USING (auth.role() = 'service_role')
