@@ -2,11 +2,23 @@
 // GET /api/admin/credit-usage
 // Returns: top 10 workspaces by credit spend (last 30 days), platform totals, daily velocity, anomalies
 // Auth: requireAdmin()
+//
+// Returns graceful empty state if underlying tables are missing (PostgreSQL 42P01).
 
 import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { requireAdmin } from '@/lib/auth/admin'
 import { safeError } from '@/lib/utils/log-sanitizer'
+
+// PostgreSQL error code for "relation does not exist"
+const PG_UNDEFINED_TABLE = '42P01'
+
+const EMPTY_RESPONSE = {
+  top_workspaces: [],
+  platform: { total_credits_issued: 0, total_credits_redeemed: 0 },
+  daily_velocity: [],
+  anomalies: [],
+}
 
 export async function GET() {
   try {
@@ -21,11 +33,16 @@ export async function GET() {
     const sixtyDaysAgoISO = sixtyDaysAgo.toISOString()
 
     // ── Marketplace purchases (last 30 days) ──────────────────────────────────
-    const { data: recentPurchases } = await adminClient
+    const { data: recentPurchases, error: recentErr } = await adminClient
       .from('marketplace_purchases')
       .select('buyer_workspace_id, credits_used, total_price, created_at')
       .eq('status', 'completed')
       .gte('created_at', thirtyDaysAgoISO)
+
+    if (recentErr && (recentErr as { code?: string }).code === PG_UNDEFINED_TABLE) {
+      safeError('[AdminCreditUsage] marketplace_purchases table missing — returning empty state')
+      return NextResponse.json(EMPTY_RESPONSE)
+    }
 
     // ── All-time totals (cap at 500k rows — sufficient for platform-scale total) ──
     const { data: allPurchases } = await adminClient

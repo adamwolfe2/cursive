@@ -19,6 +19,14 @@ export async function GET() {
     })
   } catch (error) {
     safeError('[Admin] Waitlist fetch error:', error)
+
+    // Return empty state if the table doesn't exist yet (new environment)
+    // The DatabaseError message will contain the Supabase error details
+    const msg = error instanceof Error ? error.message : String(error)
+    if (msg.includes('42P01') || msg.includes('does not exist') || msg.includes('relation')) {
+      return NextResponse.json({ signups: [], total: 0 })
+    }
+
     return NextResponse.json(
       { error: 'Failed to fetch waitlist' },
       { status: 500 }

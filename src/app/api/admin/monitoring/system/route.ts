@@ -5,6 +5,18 @@ import { requireAdmin } from '@/lib/auth/admin'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
+// PostgreSQL error code for "relation does not exist"
+const PG_UNDEFINED_TABLE = '42P01'
+
+const EMPTY_RESPONSE = {
+  data: {
+    apiResponseTime: { p50: 0, p95: 0, p99: 0 },
+    dbQueryTime: { p50: 0, p95: 0, p99: 0 },
+    errorRate: 0,
+    uptime: 0.999,
+  },
+}
+
 export async function GET(_req: NextRequest) {
   try {
     const user = await getCurrentUser()
@@ -19,13 +31,17 @@ export async function GET(_req: NextRequest) {
     // Calculate metrics from the last 24 hours
     const since = new Date(Date.now() - 24 * 60 * 60 * 1000)
 
-    // Get API response times
-    const { data: apiMetrics } = await supabase
+    // Get API response times — platform_metrics may not exist yet in all envs
+    const { data: apiMetrics, error: apiErr } = await supabase
       .from('platform_metrics')
       .select('metric_value')
       .eq('metric_name', 'api.request.duration')
       .gte('created_at', since.toISOString())
       .order('metric_value', { ascending: true })
+
+    if (apiErr && (apiErr as { code?: string }).code === PG_UNDEFINED_TABLE) {
+      return NextResponse.json(EMPTY_RESPONSE)
+    }
 
     const responseTimes = apiMetrics?.map((m) => m.metric_value) || []
     const p50 = percentile(responseTimes, 0.5)
