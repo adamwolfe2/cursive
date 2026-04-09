@@ -11,71 +11,70 @@ const ENDPOINTS = [
     method: 'POST',
     path: '/api/ext/lookup',
     title: 'Person Lookup',
-    description: 'Look up a person by name and company. Returns verified email, phone, job title, company data, and social profiles from our 280M+ identity graph.',
+    description: 'Enrich a person with identity data from AudienceLab. Supply at least one identifier: email, phone, (first_name + last_name), or company_domain. Returns personal/business emails, mobile phone, job title, demographics, and SHA-256 hashed identifiers. Scope: ext:lookup. Rate limit: 30/min per workspace, 500/day per workspace.',
     cost: '1 credit',
     request: `{
-  "first_name": "Jensen",
-  "last_name": "Huang",
-  "company": "NVIDIA",
-  "domain": "nvidia.com"
+  "email": "jensen@nvidia.com"
 }`,
     response: `{
+  "found": true,
+  "provider": "audiencelab",
   "data": {
     "first_name": "Jensen",
     "last_name": "Huang",
-    "email": "jhuang@nvidia.com",
-    "phone": "+1-408-555-0100",
+    "business_email": "jensen@nvidia.com",
+    "mobile_phone": "+1-408-555-0100",
+    "job_title": "CEO",
+    "seniority_level": "C-Suite",
     "company_name": "NVIDIA",
     "company_domain": "nvidia.com",
-    "job_title": "CEO",
-    "linkedin_url": "linkedin.com/in/jensenhuan",
     "company_industry": "Semiconductors",
-    "company_size": "26000+",
-    "source": "audiencelab"
-  },
-  "credits_used": 1
+    "personal_city": "Santa Clara",
+    "personal_state": "CA",
+    "sha256_personal_email": "<64-char hex>"
+  }
 }`,
   },
   {
     method: 'POST',
     path: '/api/ext/company',
     title: 'Company Lookup',
-    description: 'Look up a company by domain. Returns firmographic data including name, industry, employee count, and description.',
+    description: 'Look up a company by domain. Returns firmographics including industry, SIC/NAICS, employee count, revenue, HQ location, and LinkedIn URL. Accepts URLs or plain domains — protocol/path/www are stripped. Scope: ext:company. Rate limit: 30/min per workspace, 500/day per workspace.',
     cost: '1 credit',
     request: `{
   "domain": "nvidia.com"
 }`,
     response: `{
+  "found": true,
+  "provider": "audiencelab",
   "data": {
-    "domain": "nvidia.com",
-    "name": "NVIDIA",
-    "description": "NVIDIA is a computing company...",
-    "industry": "Technology"
-  },
-  "credits_used": 1
+    "company_name": "NVIDIA",
+    "company_domain": "nvidia.com",
+    "company_industry": "Semiconductors",
+    "company_sic": "3674",
+    "company_naics": "334413",
+    "company_employee_count": "26000",
+    "company_revenue": "$60B+",
+    "company_city": "Santa Clara",
+    "company_state": "CA",
+    "company_linkedin_url": "linkedin.com/company/nvidia"
+  }
 }`,
   },
   {
     method: 'POST',
     path: '/api/ext/verify-email',
     title: 'Email Verification',
-    description: 'Verify if an email address is valid, catch-all, or invalid. Checks format, MX records, disposable domains, role-based addresses, and runs MillionVerifier verification.',
+    description: 'Verify email deliverability via the AudienceLab identity graph. Returns status (valid / catch_all / invalid / unknown) and is_deliverable boolean. Scope: ext:verify. Rate limit: 30/min per workspace, 500/day per workspace.',
     cost: '1 credit',
     request: `{
-  "email": "john@example.com"
+  "email": "jensen@nvidia.com"
 }`,
     response: `{
-  "data": {
-    "email": "john@example.com",
-    "status": "valid",
-    "confidence": 95,
-    "checks": {
-      "format": true,
-      "disposable": false,
-      "role_based": false
-    }
-  },
-  "credits_used": 1
+  "email": "jensen@nvidia.com",
+  "status": "valid",
+  "is_deliverable": true,
+  "provider": "audiencelab"
 }`,
   },
   {

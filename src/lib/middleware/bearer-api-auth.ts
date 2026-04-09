@@ -6,7 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 
-interface BearerAuthResult {
+export interface BearerAuthResult {
   workspaceId: string
   userId: string
   scopes: string[]

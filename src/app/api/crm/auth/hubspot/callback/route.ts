@@ -9,10 +9,11 @@
 export const maxDuration = 15
 
 import { NextRequest, NextResponse } from 'next/server'
-import { safeError } from '@/lib/utils/log-sanitizer'
+import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
 import { cookies } from 'next/headers'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
+import { createHubSpotService } from '@/lib/services/hubspot.service'
 
 // HubSpot OAuth Token URL
 const HS_TOKEN_URL = 'https://api.hubapi.com/oauth/v1/token'
@@ -269,6 +270,24 @@ export async function GET(req: NextRequest) {
       },
       severity: 'info',
     })
+
+    // Provision Cursive intent custom properties on the Contact object.
+    // Idempotent — safe on reconnect. Failures don't block the OAuth flow;
+    // users can retry provisioning from Settings > Integrations later.
+    try {
+      const hsService = await createHubSpotService(context.workspace_id)
+      if (hsService) {
+        const provisionResult = await hsService.provisionIntentProperties()
+        safeLog('[HubSpot OAuth] Intent properties provisioned', {
+          workspace_id: context.workspace_id,
+          created: provisionResult.created.length,
+          existed: provisionResult.existed.length,
+          failed: provisionResult.failed.length,
+        })
+      }
+    } catch (provisionErr) {
+      safeError('[HubSpot OAuth] Intent property provisioning failed (non-fatal):', provisionErr)
+    }
 
     // Redirect to success page
     return NextResponse.redirect(

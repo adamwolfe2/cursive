@@ -9,7 +9,7 @@
 export const maxDuration = 15
 
 import { NextRequest, NextResponse } from 'next/server'
-import { safeError } from '@/lib/utils/log-sanitizer'
+import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
 import { cookies } from 'next/headers'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getCurrentUser } from '@/lib/auth/helpers'
@@ -215,6 +215,25 @@ export async function GET(req: NextRequest) {
       },
       severity: 'info',
     })
+
+    // Provision Cursive intent custom fields on Contact and Lead objects.
+    // Idempotent — safe on reconnect. Failures don't block OAuth; users can
+    // retry from Settings > Integrations.
+    try {
+      const { createSalesforceService } = await import('@/lib/services/salesforce.service')
+      const sfService = await createSalesforceService(context.workspace_id)
+      if (sfService) {
+        const provisionResult = await sfService.provisionIntentFields()
+        safeLog('[Salesforce OAuth] Intent fields provisioned', {
+          workspace_id: context.workspace_id,
+          created: provisionResult.created.length,
+          existed: provisionResult.existed.length,
+          failed: provisionResult.failed.length,
+        })
+      }
+    } catch (provisionErr) {
+      safeError('[Salesforce OAuth] Intent field provisioning failed (non-fatal):', provisionErr)
+    }
 
     // Redirect to success page
     return NextResponse.redirect(
