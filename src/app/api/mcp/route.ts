@@ -16,9 +16,18 @@
  *  - Every tool call logged to api_usage_log for forensic cost tracking
  *  - Tool responses are field-whitelisted — raw AL responses never leak
  *
- * Tools shipped in this slice:
+ * Tools shipped:
  *  - enrich_person: email/name → identity profile
  *  - lookup_company: company name or domain → firmographics
+ *  - pull_in_market_identities: live in-market buyers within workspace targeting
+ *  - get_intent_signals: recent behavioral events for a known identity
+ *
+ * Cross-workspace isolation:
+ *  - Every tool resolves the caller's workspace from the bearer token and
+ *    enforces workspace_id in all DB queries.
+ *  - pull_in_market_identities loads the caller's user_targeting rows and
+ *    refuses to broaden beyond configured industries/states — caller args
+ *    can only NARROW the filter.
  */
 
 import { NextRequest, NextResponse } from 'next/server'
@@ -29,8 +38,21 @@ import {
 } from '@/lib/middleware/bearer-api-auth'
 import { withRateLimit } from '@/lib/middleware/rate-limiter'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { enrich, type ALEnrichedProfile } from '@/lib/audiencelab/api-client'
+import {
+  enrich,
+  previewAudience,
+  buildWorkspaceAudienceFilters,
+  AudienceLabUnfilteredError,
+  type ALEnrichedProfile,
+} from '@/lib/audiencelab/api-client'
 import { safeError } from '@/lib/utils/log-sanitizer'
+
+// Hard caps — defense-in-depth. Never let agent loops explode these.
+const PULL_MAX_RECORDS = 50
+const PULL_MAX_DAYS_BACK = 7
+const INTENT_SIGNALS_MAX_RESULTS = 20
+const INTENT_SIGNALS_DEFAULT_HOURS = 24
+const INTENT_SIGNALS_MAX_HOURS = 168 // 7 days
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -104,13 +126,64 @@ const TOOLS = [
   {
     name: 'lookup_company',
     description:
-      'Look up a company by name or domain and return firmographics: industry, SIC/NAICS, employee count, revenue, HQ location, LinkedIn URL.',
+      'Look up a company by domain and return firmographics: industry, SIC/NAICS, employee count, revenue, HQ location, LinkedIn URL. Pass the company domain (e.g. "nvidia.com"), not the company name.',
     inputSchema: {
       type: 'object',
       properties: {
-        company: { type: 'string', description: 'Company name or domain' },
+        domain: { type: 'string', description: 'Company domain like "nvidia.com"' },
       },
-      required: ['company'],
+      required: ['domain'],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: 'pull_in_market_identities',
+    description:
+      'Pull a sample of in-market identities matching the caller workspace\'s targeting (industries + geographies). ' +
+      'Data refreshes every 6 hours via the AudienceLab intent graph. Returns up to 50 sanitized profiles with SHA-256 ' +
+      'hashed emails, job title, company, and location. Caller args can only NARROW workspace targeting — never broaden. ' +
+      'Rate limited to 5 pulls per hour per workspace.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        industries: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'Industry names to narrow to. Must be a subset of workspace targeting. Omit for all configured industries.',
+        },
+        states: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'State codes (e.g. ["CA","TX"]) to narrow to. Must be a subset of workspace targeting. Omit for all configured states.',
+        },
+        days_back: {
+          type: 'integer',
+          minimum: 1,
+          maximum: 7,
+          description: 'How many days of intent signal freshness to include. Defaults to 7, hard-capped at 7.',
+        },
+      },
+      additionalProperties: false,
+    },
+  },
+  {
+    name: 'get_intent_signals',
+    description:
+      'Retrieve recent behavioral intent events for a known identity from the caller workspace\'s pixel. ' +
+      'Requires either hem_sha256 (the SHA-256 hashed email identifier) or profile_id. Returns the last 20 events ' +
+      'within the lookback window. Workspace-isolated — cannot query other workspaces\' event streams.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        hem_sha256: { type: 'string', description: 'SHA-256 hashed email (hex). Obtain via enrich_person or pull_in_market_identities.' },
+        profile_id: { type: 'string', description: 'AudienceLab profile id.' },
+        hours: {
+          type: 'integer',
+          minimum: 1,
+          maximum: INTENT_SIGNALS_MAX_HOURS,
+          description: `Lookback window in hours. Defaults to ${INTENT_SIGNALS_DEFAULT_HOURS}, hard-capped at ${INTENT_SIGNALS_MAX_HOURS} (7 days).`,
+        },
+      },
       additionalProperties: false,
     },
   },
@@ -180,7 +253,7 @@ async function toolEnrichPerson(
   }
 
   const profile = response.result?.[0]
-  if (!profile) {
+  if (!profile || !hasPersonData(profile)) {
     return {
       content: [
         {
@@ -194,7 +267,7 @@ async function toolEnrichPerson(
 
   const sanitized = sanitizePersonProfile(profile)
   return {
-    content: [{ type: 'text', text: JSON.stringify(sanitized) }],
+    content: [{ type: 'text', text: JSON.stringify({ found: true, profile: sanitized }) }],
     structuredContent: { found: true, profile: sanitized },
   }
 }
@@ -203,9 +276,23 @@ async function toolLookupCompany(
   args: Record<string, unknown>,
   ctx: ToolContext
 ): Promise<ToolResult> {
-  const company = typeof args.company === 'string' ? args.company.trim() : ''
-  if (!company) {
-    throw new ToolError(ERROR_INVALID_PARAMS, 'lookup_company requires the `company` field.')
+  const rawDomain = typeof args.domain === 'string' ? args.domain.trim().toLowerCase() : ''
+  if (!rawDomain) {
+    throw new ToolError(ERROR_INVALID_PARAMS, 'lookup_company requires the `domain` field.')
+  }
+  // Strip protocol, path, and leading "www." so callers can pass either
+  // "https://nvidia.com/about" or "nvidia.com" and we normalize.
+  const domain = rawDomain
+    .replace(/^https?:\/\//, '')
+    .replace(/\/.*$/, '')
+    .replace(/^www\./, '')
+
+  // Reject anything that isn't a plausible domain (avoid AL 400s on garbage).
+  if (!/^[a-z0-9][a-z0-9.-]*\.[a-z]{2,}$/i.test(domain)) {
+    throw new ToolError(
+      ERROR_INVALID_PARAMS,
+      `Domain "${rawDomain}" is not a valid domain format. Expected e.g. "nvidia.com".`
+    )
   }
 
   const perToolLimit = await withRateLimit(
@@ -222,7 +309,7 @@ async function toolLookupCompany(
 
   let response
   try {
-    response = await enrich({ filter: { company } })
+    response = await enrich({ filter: { company_domain: domain } })
   } catch (err) {
     safeError('[mcp:lookup_company] AudienceLab enrich failed:', err)
     throw new ToolError(
@@ -232,12 +319,15 @@ async function toolLookupCompany(
   }
 
   const profile = response.result?.[0]
-  if (!profile) {
+  if (!profile || !hasCompanyData(profile)) {
     return {
       content: [
         {
           type: 'text',
-          text: JSON.stringify({ found: false, message: 'No matching company found.' }),
+          text: JSON.stringify({
+            found: false,
+            message: `No company data found for domain "${domain}".`,
+          }),
         },
       ],
       structuredContent: { found: false, company: null },
@@ -246,8 +336,297 @@ async function toolLookupCompany(
 
   const sanitized = sanitizeCompanyProfile(profile)
   return {
-    content: [{ type: 'text', text: JSON.stringify(sanitized) }],
+    content: [{ type: 'text', text: JSON.stringify({ found: true, company: sanitized }) }],
     structuredContent: { found: true, company: sanitized },
+  }
+}
+
+/** AL sometimes returns a profile with all nullish fields — treat those as "no data". */
+function hasPersonData(p: ALEnrichedProfile): boolean {
+  return Boolean(
+    p.FIRST_NAME ||
+      p.LAST_NAME ||
+      p.PERSONAL_EMAILS ||
+      p.BUSINESS_EMAIL ||
+      p.MOBILE_PHONE ||
+      p.JOB_TITLE ||
+      p.COMPANY_NAME
+  )
+}
+
+function hasCompanyData(p: ALEnrichedProfile): boolean {
+  return Boolean(p.COMPANY_NAME || p.COMPANY_DOMAIN || p.COMPANY_INDUSTRY)
+}
+
+async function toolPullInMarketIdentities(
+  args: Record<string, unknown>,
+  ctx: ToolContext
+): Promise<ToolResult> {
+  // Strict per-tool rate limit — this is the most expensive tool because it
+  // hits AL preview API (billable) and can return up to 50 records.
+  const perToolLimit = await withRateLimit(
+    ctx.req,
+    'mcp-segment-pull',
+    `workspace:${ctx.workspaceId}`
+  )
+  if (perToolLimit) {
+    throw new ToolError(
+      ERROR_RATE_LIMITED,
+      'Per-tool rate limit exceeded for pull_in_market_identities (mcp-segment-pull: 5/hour/workspace).'
+    )
+  }
+
+  // Load the caller workspace's targeting preferences — this is the security
+  // boundary for this tool. Any call that doesn't intersect with configured
+  // targeting returns empty.
+  const admin = createAdminClient()
+  const { data: targetingRows, error: targetingErr } = await admin
+    .from('user_targeting')
+    .select('target_industries, target_states, target_cities, target_zips')
+    .eq('workspace_id', ctx.workspaceId)
+    .eq('is_active', true)
+
+  if (targetingErr) {
+    safeError('[mcp:pull_in_market_identities] targeting load failed:', targetingErr)
+    throw new ToolError(ERROR_TOOL_FAILURE, 'Failed to load workspace targeting preferences.')
+  }
+
+  if (!targetingRows || targetingRows.length === 0) {
+    return {
+      content: [
+        {
+          type: 'text',
+          text: JSON.stringify({
+            found: false,
+            message:
+              'No active targeting configured for this workspace. Add targeting preferences in Settings → Targeting before using this tool.',
+          }),
+        },
+      ],
+      structuredContent: { found: false, identities: [], reason: 'no_targeting_configured' },
+    }
+  }
+
+  // Union all active targeting rows in the workspace to form the authoritative
+  // set of industries/states/cities/zips the workspace is allowed to query.
+  const workspaceIndustries = new Set<string>()
+  const workspaceStates = new Set<string>()
+  const workspaceCities = new Set<string>()
+  const workspaceZips = new Set<string>()
+  for (const row of targetingRows) {
+    for (const v of row.target_industries ?? []) workspaceIndustries.add(v)
+    for (const v of row.target_states ?? []) workspaceStates.add(v)
+    for (const v of row.target_cities ?? []) workspaceCities.add(v)
+    for (const v of row.target_zips ?? []) workspaceZips.add(v)
+  }
+
+  // Parse caller narrowing args. If provided, they must be a SUBSET of the
+  // workspace's configured values. We intersect — never union, never replace.
+  const requestedIndustries = Array.isArray(args.industries)
+    ? (args.industries as unknown[]).filter((v): v is string => typeof v === 'string')
+    : null
+  const requestedStates = Array.isArray(args.states)
+    ? (args.states as unknown[]).filter((v): v is string => typeof v === 'string')
+    : null
+
+  const effectiveIndustries = requestedIndustries
+    ? requestedIndustries.filter((v) => workspaceIndustries.has(v))
+    : Array.from(workspaceIndustries)
+  const effectiveStates = requestedStates
+    ? requestedStates.filter((v) => workspaceStates.has(v))
+    : Array.from(workspaceStates)
+
+  // If caller specified narrowing but none of it intersects workspace targeting,
+  // return empty rather than fall through to the workspace's full targeting.
+  if (requestedIndustries && effectiveIndustries.length === 0) {
+    return {
+      content: [
+        {
+          type: 'text',
+          text: JSON.stringify({
+            found: false,
+            message:
+              'None of the requested industries are in your workspace targeting. Narrow to a subset of your configured industries.',
+          }),
+        },
+      ],
+      structuredContent: {
+        found: false,
+        identities: [],
+        reason: 'narrowing_outside_workspace_targeting',
+        allowed_industries: Array.from(workspaceIndustries),
+      },
+    }
+  }
+  if (requestedStates && effectiveStates.length === 0) {
+    return {
+      content: [
+        {
+          type: 'text',
+          text: JSON.stringify({
+            found: false,
+            message:
+              'None of the requested states are in your workspace targeting. Narrow to a subset of your configured states.',
+          }),
+        },
+      ],
+      structuredContent: {
+        found: false,
+        identities: [],
+        reason: 'narrowing_outside_workspace_targeting',
+        allowed_states: Array.from(workspaceStates),
+      },
+    }
+  }
+
+  // Build the AL filter. Cities/zips stay at workspace level — the tool's
+  // narrowing args don't expose them in v1 (too many footguns in free-text zip).
+  const segmentFilters = buildWorkspaceAudienceFilters({
+    industries: effectiveIndustries.length > 0 ? effectiveIndustries : undefined,
+    states: effectiveStates.length > 0 ? effectiveStates : undefined,
+    cities: workspaceCities.size > 0 ? Array.from(workspaceCities) : undefined,
+    zips: workspaceZips.size > 0 ? Array.from(workspaceZips) : undefined,
+  })
+
+  // Parse and hard-cap days_back
+  const rawDays = args.days_back
+  const daysBack =
+    typeof rawDays === 'number' && rawDays >= 1 && rawDays <= PULL_MAX_DAYS_BACK
+      ? Math.floor(rawDays)
+      : PULL_MAX_DAYS_BACK
+
+  // Call AL preview — this is the billable action. Hard-capped at 50 records.
+  let preview
+  try {
+    preview = await previewAudience({
+      days_back: daysBack,
+      filters: segmentFilters,
+      limit: PULL_MAX_RECORDS,
+      include_dnc: false,
+    })
+  } catch (err) {
+    if (err instanceof AudienceLabUnfilteredError) {
+      safeError('[mcp:pull_in_market_identities] unfiltered response refused:', err)
+      throw new ToolError(
+        ERROR_TOOL_FAILURE,
+        'Audience query returned an unfiltered response and was refused for safety. Try narrowing your filters.'
+      )
+    }
+    safeError('[mcp:pull_in_market_identities] previewAudience failed:', err)
+    throw new ToolError(
+      ERROR_TOOL_FAILURE,
+      'Audience preview failed upstream. The request was well-formed but the provider errored.'
+    )
+  }
+
+  const records = (preview.result ?? []).slice(0, PULL_MAX_RECORDS)
+  const sanitized = records.map(sanitizeInMarketIdentity)
+
+  return {
+    content: [
+      {
+        type: 'text',
+        text: JSON.stringify({
+          found: sanitized.length,
+          total_count: preview.count ?? null,
+          window: { days_back: daysBack },
+          filters_applied: {
+            industries: effectiveIndustries,
+            states: effectiveStates,
+          },
+          identities: sanitized,
+        }),
+      },
+    ],
+    structuredContent: {
+      found: sanitized.length,
+      total_count: preview.count ?? null,
+      window: { days_back: daysBack },
+      filters_applied: {
+        industries: effectiveIndustries,
+        states: effectiveStates,
+      },
+      identities: sanitized,
+    },
+  }
+}
+
+async function toolGetIntentSignals(
+  args: Record<string, unknown>,
+  ctx: ToolContext
+): Promise<ToolResult> {
+  const hemSha256 = typeof args.hem_sha256 === 'string' ? args.hem_sha256.trim() : ''
+  const profileId = typeof args.profile_id === 'string' ? args.profile_id.trim() : ''
+
+  if (!hemSha256 && !profileId) {
+    throw new ToolError(
+      ERROR_INVALID_PARAMS,
+      'get_intent_signals requires at least one of: hem_sha256 or profile_id.'
+    )
+  }
+
+  const rawHours = args.hours
+  const hours =
+    typeof rawHours === 'number' && rawHours >= 1 && rawHours <= INTENT_SIGNALS_MAX_HOURS
+      ? Math.floor(rawHours)
+      : INTENT_SIGNALS_DEFAULT_HOURS
+
+  const since = new Date(Date.now() - hours * 60 * 60 * 1000).toISOString()
+
+  // Critical: workspace_id filter MUST be present — this is the security
+  // boundary for cross-workspace isolation. We use the admin client so RLS
+  // does not apply; the filter is explicit.
+  const admin = createAdminClient()
+  let query = admin
+    .from('audiencelab_events')
+    .select('event_type, source, pixel_id, received_at, hem_sha256, profile_id')
+    .eq('workspace_id', ctx.workspaceId)
+    .gte('received_at', since)
+    .order('received_at', { ascending: false })
+    .limit(INTENT_SIGNALS_MAX_RESULTS)
+
+  if (hemSha256 && profileId) {
+    // Both identifiers supplied — OR them so we don't miss events that only
+    // carry one of the two identifiers
+    query = query.or(`hem_sha256.eq.${hemSha256},profile_id.eq.${profileId}`)
+  } else if (hemSha256) {
+    query = query.eq('hem_sha256', hemSha256)
+  } else {
+    query = query.eq('profile_id', profileId)
+  }
+
+  const { data, error } = await query
+
+  if (error) {
+    safeError('[mcp:get_intent_signals] query failed:', error)
+    throw new ToolError(ERROR_TOOL_FAILURE, 'Failed to query intent signals.')
+  }
+
+  const events = (data ?? []).map((e) => ({
+    event_type: e.event_type ?? null,
+    source: e.source ?? null,
+    pixel_id: e.pixel_id ?? null,
+    received_at: e.received_at ?? null,
+    hem_sha256: e.hem_sha256 ?? null,
+    profile_id: e.profile_id ?? null,
+  }))
+
+  return {
+    content: [
+      {
+        type: 'text',
+        text: JSON.stringify({
+          found: events.length,
+          window_hours: hours,
+          events,
+        }),
+      },
+    ],
+    structuredContent: {
+      found: events.length,
+      window_hours: hours,
+      events,
+    },
   }
 }
 
@@ -293,6 +672,32 @@ function sanitizeCompanyProfile(p: ALEnrichedProfile): Record<string, unknown> {
   }
 }
 
+/**
+ * Sanitize a bulk-pulled in-market identity. Intentionally LESS detailed than
+ * enrich_person because these are batch-returned speculative matches —
+ * return hashed identifiers and summary fields only. Agents should call
+ * enrich_person on a specific hem_sha256 to get full contact details.
+ */
+function sanitizeInMarketIdentity(p: ALEnrichedProfile): Record<string, unknown> {
+  return {
+    sha256_personal_email: p.SHA256_PERSONAL_EMAIL ?? null,
+    sha256_business_email: p.SHA256_BUSINESS_EMAIL ?? null,
+    first_name_initial: typeof p.FIRST_NAME === 'string' && p.FIRST_NAME.length > 0
+      ? `${p.FIRST_NAME[0]}.`
+      : null,
+    last_name: p.LAST_NAME ?? null,
+    job_title: p.JOB_TITLE ?? null,
+    seniority_level: p.SENIORITY_LEVEL ?? null,
+    department: p.DEPARTMENT ?? null,
+    company_name: p.COMPANY_NAME ?? null,
+    company_domain: p.COMPANY_DOMAIN ?? null,
+    company_industry: p.COMPANY_INDUSTRY ?? null,
+    company_employee_count: p.COMPANY_EMPLOYEE_COUNT ?? null,
+    state: p.PERSONAL_STATE ?? p.COMPANY_STATE ?? null,
+    city: p.PERSONAL_CITY ?? p.COMPANY_CITY ?? null,
+  }
+}
+
 // ─── Tool dispatch ─────────────────────────────────────────────────────────
 
 class ToolError extends Error {
@@ -304,11 +709,17 @@ class ToolError extends Error {
   }
 }
 
-type ToolName = 'enrich_person' | 'lookup_company'
+type ToolName =
+  | 'enrich_person'
+  | 'lookup_company'
+  | 'pull_in_market_identities'
+  | 'get_intent_signals'
 
 const TOOL_HANDLERS: Record<ToolName, (args: Record<string, unknown>, ctx: ToolContext) => Promise<ToolResult>> = {
   enrich_person: toolEnrichPerson,
   lookup_company: toolLookupCompany,
+  pull_in_market_identities: toolPullInMarketIdentities,
+  get_intent_signals: toolGetIntentSignals,
 }
 
 function isKnownTool(name: string): name is ToolName {

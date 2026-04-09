@@ -90,6 +90,9 @@ export async function middleware(req: NextRequest) {
       '/api/onboarding/icp-suggestions',
       '/api/pixel/provision-demo',
       '/api/public/segment-search',
+      // MCP server — uses bearer token auth via workspace API keys, not session cookies.
+      // Route handler enforces its own auth, workspace isolation, and multi-layer rate limiting.
+      '/api/mcp',
       // Automation endpoint — uses x-automation-secret, no user session needed
       '/api/admin/run-enrichment',
     ]

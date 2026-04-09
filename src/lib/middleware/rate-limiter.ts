@@ -230,6 +230,15 @@ export const RATE_LIMITS = {
     message: 'Too many MCP requests. Please slow down.',
   },
 
+  // MCP segment pull - pull_in_market_identities tool.
+  // Extremely strict because each call hits AudienceLab preview API (billable)
+  // and can return up to 50 records. Hard cap prevents credit burn from agent loops.
+  'mcp-segment-pull': {
+    windowMs: 60 * 60 * 1000, // 1 hour
+    maxRequests: 5, // 5 segment pulls per hour per workspace
+    message: 'Segment pull limit reached. Please wait before pulling more identities.',
+  },
+
   // Lead export - prevent bulk scraping
   'lead-export': {
     windowMs: 60 * 60 * 1000, // 1 hour

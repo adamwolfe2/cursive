@@ -12,9 +12,9 @@ const rejectSchema = z.object({
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: Promise<{ partnerId: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const { partnerId } = await params
+  const { id: partnerId } = await params
 
   // Verify admin using centralized helper
   const admin = await requireAdmin()

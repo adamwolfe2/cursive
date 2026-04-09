@@ -7,10 +7,10 @@ import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: Promise<{ partnerId: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const supabase = await createClient()
-  const { partnerId } = await params
+  const { id: partnerId } = await params
 
   // SECURITY: Verify platform admin authorization
   const admin = await requireAdmin()

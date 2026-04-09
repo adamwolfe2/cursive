@@ -86,7 +86,12 @@ export interface ALEnrichFilter {
   email?: string
   first_name?: string
   last_name?: string
+  /**
+   * @deprecated AL's /enrich endpoint rejects this field with "invalid filter field: COMPANY".
+   * Use `company_domain` instead. Left here for existing callers that will be migrated.
+   */
   company?: string
+  company_domain?: string
   phone?: string
   address?: string
   city?: string
@@ -97,6 +102,13 @@ export interface ALEnrichFilter {
 export interface ALEnrichRequest {
   filter: ALEnrichFilter
   fields?: string[]
+  /**
+   * How to combine multiple filter fields when more than one is supplied.
+   * `true` = match ANY field (OR), `false` = match ALL fields (AND).
+   * AL's /enrich endpoint requires this field even when only one filter is set.
+   * Defaults to `false` (AND) — more precise match with less noise.
+   */
+  is_or_match?: boolean
 }
 
 /** Enrich response: { timestamp, found, result: [...] } */
@@ -506,6 +518,9 @@ export async function enrich(params: ALEnrichRequest): Promise<ALEnrichResult> {
     method: 'POST',
     body: JSON.stringify({
       filter: params.filter,
+      // AL's /enrich endpoint requires is_or_match — default to AND-match (false)
+      // for more precise results. Callers can override per-request.
+      is_or_match: params.is_or_match ?? false,
       ...(params.fields && { fields: params.fields }),
     }),
   })

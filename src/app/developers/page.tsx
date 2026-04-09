@@ -290,12 +290,25 @@ export default function DevelopersPage() {
                   <code className="font-mono text-xs bg-gray-50 px-1.5 py-0.5 rounded">enrich_person</code>
                   {' '}— Enrich a person by email, phone, or name → returns personal/business emails,
                   mobile phone, company, job title, seniority, demographics, and SHA-256 hashed
-                  email identifiers.
+                  email identifiers. Rate limit: 30/min/workspace.
                 </li>
                 <li>
                   <code className="font-mono text-xs bg-gray-50 px-1.5 py-0.5 rounded">lookup_company</code>
                   {' '}— Look up a company by name or domain → returns firmographics (industry,
-                  SIC/NAICS, employee count, revenue, HQ, LinkedIn).
+                  SIC/NAICS, employee count, revenue, HQ, LinkedIn). Rate limit: 30/min/workspace.
+                </li>
+                <li>
+                  <code className="font-mono text-xs bg-gray-50 px-1.5 py-0.5 rounded">pull_in_market_identities</code>
+                  {' '}— Pull a sample of live in-market identities (up to 50) matching your workspace&apos;s
+                  targeting preferences. Refreshes every 6 hours via the AudienceLab intent graph.
+                  Returns SHA-256 hashed emails, job titles, companies, and geographies. Caller args
+                  can only <em>narrow</em> your configured targeting, never broaden it. Rate limit: 5/hour/workspace.
+                </li>
+                <li>
+                  <code className="font-mono text-xs bg-gray-50 px-1.5 py-0.5 rounded">get_intent_signals</code>
+                  {' '}— Fetch recent behavioral intent events for a known identity (by <code>hem_sha256</code>{' '}
+                  or <code>profile_id</code>) from your workspace&apos;s pixel. Returns the last 20 events
+                  within the lookback window (default 24h, max 7 days). Workspace-isolated.
                 </li>
               </ul>
 
