@@ -34,6 +34,7 @@ import { TrialCountdown } from '@/components/dashboard/TrialCountdown'
 import { FirstEnrichmentModal } from '@/components/onboarding/FirstEnrichmentModal'
 import { ProvisioningWidget } from '@/components/dashboard/ProvisioningWidget'
 import { FreePlanBanner } from '@/components/dashboard/FreePlanBanner'
+import { LiveLeadsFeed } from '@/components/leads/live-leads-feed'
 
 export const metadata: Metadata = {
   title: 'Dashboard | Cursive',
@@ -1019,6 +1020,13 @@ export default async function DashboardPage({
             </div>
           </div>
         </AnimatedSection>
+
+        {/* ── Live AudienceLab leads feed (only shown when pixel active) ── */}
+        {hasPixel && (
+          <AnimatedSection delay={0.07}>
+            <LiveLeadsFeed workspaceId={workspaceId} />
+          </AnimatedSection>
+        )}
 
         {/* ── Streamed section: hot leads + main content grid ── */}
         <Suspense fallback={<DashboardMainGridSkeleton />}>

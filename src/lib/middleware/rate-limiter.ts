@@ -222,6 +222,14 @@ export const RATE_LIMITS = {
     message: 'Too many enrichment requests. Please slow down.',
   },
 
+  // MCP server envelope - outer rate limit for all MCP method calls per workspace
+  // Per-tool limits apply on top (e.g. enrich_person also uses 'lead-enrich')
+  'mcp-request': {
+    windowMs: 60 * 1000, // 1 minute
+    maxRequests: 60, // 60 MCP method calls per minute per workspace
+    message: 'Too many MCP requests. Please slow down.',
+  },
+
   // Lead export - prevent bulk scraping
   'lead-export': {
     windowMs: 60 * 60 * 1000, // 1 hour

@@ -256,6 +256,87 @@ export default function DevelopersPage() {
           </div>
         </div>
 
+        {/* MCP Server */}
+        <div className="mt-12">
+          <h2 className="text-xl font-bold text-gray-900 mb-4">MCP Server (for AI agents)</h2>
+          <p className="text-sm text-gray-600 mb-4">
+            Cursive ships a <strong>Model Context Protocol</strong> server that exposes the
+            AudienceLab identity graph as tools any MCP-compatible AI agent can call — Claude
+            Desktop, Claude Code, Cursor, Rox, and custom agents. The server speaks standard
+            JSON-RPC 2.0 over HTTP POST.
+          </p>
+
+          <div className="border border-gray-200 rounded-xl overflow-hidden mb-4">
+            <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
+              <div className="flex items-center gap-3 mb-1">
+                <MethodBadge method="POST" />
+                <code className="text-sm font-mono font-semibold text-gray-900">/api/mcp</code>
+                <span className="ml-auto text-xs text-gray-500 bg-white border border-gray-200 rounded-full px-2 py-0.5">
+                  scope: mcp:access
+                </span>
+              </div>
+              <h3 className="text-base font-semibold text-gray-900 mt-2">MCP JSON-RPC Endpoint</h3>
+              <p className="text-sm text-gray-600 mt-1">
+                Single endpoint serving all MCP methods: <code>initialize</code>,{' '}
+                <code>tools/list</code>, <code>tools/call</code>, <code>ping</code>.
+              </p>
+            </div>
+            <div className="p-4">
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                Tools shipped
+              </p>
+              <ul className="text-sm text-gray-700 space-y-2 mb-4">
+                <li>
+                  <code className="font-mono text-xs bg-gray-50 px-1.5 py-0.5 rounded">enrich_person</code>
+                  {' '}— Enrich a person by email, phone, or name → returns personal/business emails,
+                  mobile phone, company, job title, seniority, demographics, and SHA-256 hashed
+                  email identifiers.
+                </li>
+                <li>
+                  <code className="font-mono text-xs bg-gray-50 px-1.5 py-0.5 rounded">lookup_company</code>
+                  {' '}— Look up a company by name or domain → returns firmographics (industry,
+                  SIC/NAICS, employee count, revenue, HQ, LinkedIn).
+                </li>
+              </ul>
+
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                Install in Claude Code
+              </p>
+              <pre className="text-xs text-gray-800 font-mono bg-gray-50 rounded-lg p-3 overflow-x-auto whitespace-pre mb-4">
+{`claude mcp add cursive --transport http https://leads.meetcursive.com/api/mcp \\
+  --header "Authorization: Bearer <YOUR_CURSIVE_API_KEY>"`}
+              </pre>
+
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                Direct JSON-RPC call
+              </p>
+              <pre className="text-xs text-gray-800 font-mono bg-gray-50 rounded-lg p-3 overflow-x-auto whitespace-pre">
+{`curl -X POST https://leads.meetcursive.com/api/mcp \\
+  -H "Authorization: Bearer <YOUR_CURSIVE_API_KEY>" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "tools/call",
+    "params": {
+      "name": "enrich_person",
+      "arguments": { "email": "jensen@nvidia.com" }
+    }
+  }'`}
+              </pre>
+
+              <p className="text-xs text-gray-500 mt-4">
+                Rate limits: <strong>60 MCP calls per minute per workspace</strong> (outer) plus{' '}
+                <strong>30 enrichment calls per minute per workspace</strong> (per-tool). Create
+                an API key scoped <code>mcp:access</code> at{' '}
+                <Link href="/settings/api-keys" className="text-blue-600 hover:underline">
+                  Settings → API Keys
+                </Link>.
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* Error Codes */}
         <div className="mt-12">
           <h2 className="text-xl font-bold text-gray-900 mb-4">Error Codes</h2>
