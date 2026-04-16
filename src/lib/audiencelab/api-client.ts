@@ -366,7 +366,38 @@ export interface ALBatchEnrichStatusResponse {
   total?: number
   processed?: number
   result?: ALEnrichedProfile[]
+  download_url?: string
   [key: string]: unknown
+}
+
+// --- Enrichment Job list types ---
+
+export interface ALEnrichmentJob {
+  jobId: string
+  status: 'pending' | 'processing' | 'completed' | 'failed'
+  total?: number
+  processed?: number
+  created_at?: string
+  updated_at?: string
+  download_url?: string
+  [key: string]: unknown
+}
+
+export interface ALEnrichmentJobListResponse {
+  data: ALEnrichmentJob[]
+  page: number
+  page_size: number
+  total: number
+  total_pages: number
+}
+
+// --- Custom Audience (intent-topic based) types ---
+
+export interface ALCustomAudienceRequest {
+  name: string
+  /** Intent topic keywords — AL matches contacts showing interest in these topics */
+  topics: string[]
+  description?: string
 }
 
 // ============================================================================
@@ -482,6 +513,13 @@ export async function listPixels(): Promise<ALPixel[]> {
   return response.data || []
 }
 
+/**
+ * Delete a pixel by ID.
+ */
+export async function deletePixel(pixelId: string): Promise<void> {
+  await alFetch<void>(`/pixels/${pixelId}`, { method: 'DELETE' })
+}
+
 // ============================================================================
 // AUDIENCE MANAGEMENT
 // ============================================================================
@@ -502,6 +540,13 @@ export async function listAudiences(params?: {
   const endpoint = query ? `/audiences?${query}` : '/audiences'
 
   return alFetch<ALAudienceListResponse>(endpoint, { method: 'GET' })
+}
+
+/**
+ * Delete an audience by ID.
+ */
+export async function deleteAudience(audienceId: string): Promise<void> {
+  await alFetch<void>(`/audiences/${audienceId}`, { method: 'DELETE' })
 }
 
 // ============================================================================
@@ -607,6 +652,23 @@ export async function createAudience(
     body: JSON.stringify({
       name: params.name,
       filters: params.filters,
+      ...(params.description && { description: params.description }),
+    }),
+  })
+}
+
+/**
+ * Create an intent-based custom audience from topic keywords.
+ * Returns { audienceId } for fetching paginated records via fetchAudienceRecords().
+ */
+export async function createCustomAudience(
+  params: ALCustomAudienceRequest
+): Promise<ALAudienceCreateResponse> {
+  return alFetch<ALAudienceCreateResponse>('/audiences/custom', {
+    method: 'POST',
+    body: JSON.stringify({
+      name: params.name,
+      topics: params.topics,
       ...(params.description && { description: params.description }),
     }),
   })
@@ -781,6 +843,23 @@ export async function getBatchEnrichmentStatus(
   return alFetch<ALBatchEnrichStatusResponse>(`/enrichments/${jobId}`, {
     method: 'GET',
   })
+}
+
+/**
+ * List all batch enrichment jobs, optionally paginated.
+ */
+export async function listEnrichmentJobs(params?: {
+  page?: number
+  page_size?: number
+}): Promise<ALEnrichmentJobListResponse> {
+  const searchParams = new URLSearchParams()
+  if (params?.page) searchParams.set('page', String(params.page))
+  if (params?.page_size) searchParams.set('page_size', String(params.page_size))
+
+  const query = searchParams.toString()
+  const endpoint = query ? `/enrichments?${query}` : '/enrichments'
+
+  return alFetch<ALEnrichmentJobListResponse>(endpoint, { method: 'GET' })
 }
 
 // ============================================================================

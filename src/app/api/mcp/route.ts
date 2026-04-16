@@ -42,6 +42,8 @@ import {
   enrich,
   previewAudience,
   buildWorkspaceAudienceFilters,
+  listAudiences,
+  getAudienceAttributes,
   AudienceLabUnfilteredError,
   type ALEnrichedProfile,
 } from '@/lib/audiencelab/api-client'
@@ -183,6 +185,73 @@ const TOOLS = [
           maximum: INTENT_SIGNALS_MAX_HOURS,
           description: `Lookback window in hours. Defaults to ${INTENT_SIGNALS_DEFAULT_HOURS}, hard-capped at ${INTENT_SIGNALS_MAX_HOURS} (7 days).`,
         },
+      },
+      additionalProperties: false,
+    },
+  },
+  {
+    name: 'preview_audience',
+    description:
+      'Preview the count and a sample of contacts matching given ICP filters, without creating an audience. ' +
+      'Use this to validate targeting before committing to a full audience pull. Returns the match count ' +
+      'and up to 10 sample profiles. Filters are applied at the caller workspace level.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        industries: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'Industry names to filter by (e.g. ["Healthcare", "Technology"]).',
+        },
+        states: {
+          type: 'array',
+          items: { type: 'string' },
+          description: '2-letter state codes to filter by (e.g. ["TX", "CA"]).',
+        },
+        seniority: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'Seniority levels: "C-Suite", "VP", "Director", "Manager", "Individual Contributor", "Entry Level".',
+        },
+        days_back: {
+          type: 'integer',
+          minimum: 1,
+          maximum: 10,
+          description: 'Intent signal freshness window in days. Defaults to 7.',
+        },
+      },
+      additionalProperties: false,
+    },
+  },
+  {
+    name: 'get_audience_attributes',
+    description:
+      'Fetch valid attribute values for audience building — industries, seniority levels, departments, etc. ' +
+      'Use this before building audiences to see available filter options. ' +
+      'Pass "industries" to get all valid industry strings, "seniority" for seniority levels, "departments" for department names.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        attribute: {
+          type: 'string',
+          enum: ['industries', 'seniority', 'departments', 'segments'],
+          description: 'Which attribute catalog to fetch.',
+        },
+      },
+      required: ['attribute'],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: 'list_audiences',
+    description:
+      'List AL audiences that have been created for this account. Returns audience IDs, names, and refresh schedules. ' +
+      'Use the returned audience IDs to understand what targeting segments have been provisioned.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        page: { type: 'integer', minimum: 1, description: 'Page number (1-indexed). Defaults to 1.' },
+        page_size: { type: 'integer', minimum: 1, maximum: 50, description: 'Records per page. Defaults to 20, max 50.' },
       },
       additionalProperties: false,
     },
@@ -698,6 +767,141 @@ function sanitizeInMarketIdentity(p: ALEnrichedProfile): Record<string, unknown>
   }
 }
 
+async function toolPreviewAudience(
+  args: Record<string, unknown>,
+  _ctx: ToolContext
+): Promise<ToolResult> {
+  const industries = Array.isArray(args.industries)
+    ? (args.industries as unknown[]).filter((v): v is string => typeof v === 'string')
+    : []
+  const states = Array.isArray(args.states)
+    ? (args.states as unknown[]).filter((v): v is string => typeof v === 'string')
+    : []
+  const seniority = Array.isArray(args.seniority)
+    ? (args.seniority as unknown[]).filter((v): v is string => typeof v === 'string')
+    : []
+  const rawDays = args.days_back
+  const daysBack =
+    typeof rawDays === 'number' && rawDays >= 1 && rawDays <= 10 ? Math.floor(rawDays) : 7
+
+  const filters = buildWorkspaceAudienceFilters({
+    industries: industries.length > 0 ? industries : undefined,
+    states: states.length > 0 ? states : undefined,
+  })
+
+  if (seniority.length > 0 && filters.business) {
+    filters.business = { ...filters.business, seniority: seniority as never[] }
+  } else if (seniority.length > 0) {
+    filters.business = { seniority: seniority as never[] }
+  }
+
+  let preview
+  try {
+    preview = await previewAudience({
+      days_back: daysBack,
+      filters,
+      limit: 10,
+      include_dnc: false,
+      score: false,
+    })
+  } catch (err) {
+    if (err instanceof AudienceLabUnfilteredError) {
+      throw new ToolError(ERROR_TOOL_FAILURE, 'Audience query returned an unfiltered response and was refused for safety.')
+    }
+    safeError('[mcp:preview_audience] previewAudience failed:', err)
+    throw new ToolError(ERROR_TOOL_FAILURE, 'Audience preview failed upstream.')
+  }
+
+  const result = {
+    count: preview.count ?? 0,
+    filters_applied: { industries, states, seniority, days_back: daysBack },
+    sample_profiles: (preview.result ?? []).slice(0, 10).map(p => ({
+      job_title: p.JOB_TITLE ?? null,
+      department: p.DEPARTMENT ?? null,
+      seniority_level: p.SENIORITY_LEVEL ?? null,
+      company_industry: p.COMPANY_INDUSTRY ?? null,
+      company_employee_count: p.COMPANY_EMPLOYEE_COUNT ?? null,
+      state: p.PERSONAL_STATE ?? p.COMPANY_STATE ?? null,
+    })),
+  }
+
+  return {
+    content: [{ type: 'text', text: JSON.stringify(result) }],
+    structuredContent: result,
+  }
+}
+
+async function toolGetAudienceAttributes(
+  args: Record<string, unknown>,
+  _ctx: ToolContext
+): Promise<ToolResult> {
+  const attribute = typeof args.attribute === 'string' ? args.attribute : ''
+  if (!['industries', 'seniority', 'departments', 'segments'].includes(attribute)) {
+    throw new ToolError(
+      ERROR_INVALID_PARAMS,
+      'get_audience_attributes requires attribute to be one of: industries, seniority, departments, segments.'
+    )
+  }
+
+  let values
+  try {
+    values = await getAudienceAttributes(attribute)
+  } catch (err) {
+    safeError('[mcp:get_audience_attributes] failed:', err)
+    throw new ToolError(ERROR_TOOL_FAILURE, 'Failed to fetch audience attributes from upstream.')
+  }
+
+  const names = values
+    .map(v => (typeof v.name === 'string' ? v.name : null))
+    .filter(Boolean)
+    .slice(0, 200)
+
+  const result = { attribute, count: names.length, values: names }
+  return {
+    content: [{ type: 'text', text: JSON.stringify(result) }],
+    structuredContent: result,
+  }
+}
+
+async function toolListAudiences(
+  args: Record<string, unknown>,
+  _ctx: ToolContext
+): Promise<ToolResult> {
+  const page = typeof args.page === 'number' && args.page >= 1 ? Math.floor(args.page) : 1
+  const pageSize =
+    typeof args.page_size === 'number' && args.page_size >= 1 && args.page_size <= 50
+      ? Math.floor(args.page_size)
+      : 20
+
+  let response
+  try {
+    response = await listAudiences({ page, page_size: pageSize })
+  } catch (err) {
+    safeError('[mcp:list_audiences] failed:', err)
+    throw new ToolError(ERROR_TOOL_FAILURE, 'Failed to list audiences from upstream.')
+  }
+
+  const audiences = (response.data || []).map(a => ({
+    id: a.id,
+    name: a.name,
+    scheduled_refresh: a.scheduled_refresh ?? null,
+    next_scheduled_refresh: a.next_scheduled_refresh ?? null,
+  }))
+
+  const result = {
+    page,
+    page_size: pageSize,
+    total: response.total ?? 0,
+    total_pages: response.total_pages ?? 1,
+    audiences,
+  }
+
+  return {
+    content: [{ type: 'text', text: JSON.stringify(result) }],
+    structuredContent: result,
+  }
+}
+
 // ─── Tool dispatch ─────────────────────────────────────────────────────────
 
 class ToolError extends Error {
@@ -714,12 +918,18 @@ type ToolName =
   | 'lookup_company'
   | 'pull_in_market_identities'
   | 'get_intent_signals'
+  | 'preview_audience'
+  | 'get_audience_attributes'
+  | 'list_audiences'
 
 const TOOL_HANDLERS: Record<ToolName, (args: Record<string, unknown>, ctx: ToolContext) => Promise<ToolResult>> = {
   enrich_person: toolEnrichPerson,
   lookup_company: toolLookupCompany,
   pull_in_market_identities: toolPullInMarketIdentities,
   get_intent_signals: toolGetIntentSignals,
+  preview_audience: toolPreviewAudience,
+  get_audience_attributes: toolGetAudienceAttributes,
+  list_audiences: toolListAudiences,
 }
 
 function isKnownTool(name: string): name is ToolName {

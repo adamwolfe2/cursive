@@ -310,3 +310,9 @@ export {
   gmailReplyPollerCron,
   gmailReplyPollerPerAccount,
 } from './gmail-reply-poller'
+
+// AudienceLab DFY Fulfillment Automation
+// Weekly Monday refresh of DFY client audiences (net-new leads)
+export { alAudienceRefresh } from './al-audience-refresh'
+// Every-5-min poller for pending batch enrichment jobs
+export { alEnrichmentPoller } from './al-enrichment-poller'
