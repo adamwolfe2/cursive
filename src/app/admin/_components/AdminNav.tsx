@@ -11,6 +11,7 @@ import { ChevronDown, Menu, X } from 'lucide-react'
 const PRIMARY = [
   { href: '/admin/ops',             label: 'Ops Hub' },
   { href: '/admin/dashboard',       label: 'Dashboard' },
+  { href: '/admin/copilot',         label: 'Copilot' },
   { href: '/admin/accounts',        label: 'Accounts' },
   { href: '/admin/revenue',         label: 'Revenue' },
   { href: '/admin/onboarding',      label: 'Onboarding' },
