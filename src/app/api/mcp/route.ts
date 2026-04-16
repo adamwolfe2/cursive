@@ -42,7 +42,6 @@ import {
   enrich,
   previewAudience,
   buildWorkspaceAudienceFilters,
-  listAudiences,
   getAudienceAttributes,
   AudienceLabUnfilteredError,
   type ALEnrichedProfile,
@@ -767,19 +766,36 @@ function sanitizeInMarketIdentity(p: ALEnrichedProfile): Record<string, unknown>
   }
 }
 
+const VALID_SENIORITY_LEVELS = [
+  'C-Suite', 'VP', 'Director', 'Manager', 'Individual Contributor', 'Entry Level',
+] as const
+type SeniorityLevel = typeof VALID_SENIORITY_LEVELS[number]
+
 async function toolPreviewAudience(
   args: Record<string, unknown>,
-  _ctx: ToolContext
+  ctx: ToolContext
 ): Promise<ToolResult> {
+  // Per-tool rate limit — preview hits billable AL API
+  const perToolLimit = await withRateLimit(ctx.req, 'mcp-preview', `workspace:${ctx.workspaceId}`)
+  if (perToolLimit) {
+    throw new ToolError(
+      ERROR_RATE_LIMITED,
+      'Per-tool rate limit exceeded for preview_audience (mcp-preview: 10/hour/workspace).'
+    )
+  }
   const industries = Array.isArray(args.industries)
     ? (args.industries as unknown[]).filter((v): v is string => typeof v === 'string')
     : []
   const states = Array.isArray(args.states)
     ? (args.states as unknown[]).filter((v): v is string => typeof v === 'string')
     : []
-  const seniority = Array.isArray(args.seniority)
+  const rawSeniority = Array.isArray(args.seniority)
     ? (args.seniority as unknown[]).filter((v): v is string => typeof v === 'string')
     : []
+  // Validate against the known enum — reject any string not in the list
+  const seniority = rawSeniority.filter(
+    (s): s is SeniorityLevel => (VALID_SENIORITY_LEVELS as readonly string[]).includes(s)
+  )
   const rawDays = args.days_back
   const daysBack =
     typeof rawDays === 'number' && rawDays >= 1 && rawDays <= 10 ? Math.floor(rawDays) : 7
@@ -790,9 +806,9 @@ async function toolPreviewAudience(
   })
 
   if (seniority.length > 0 && filters.business) {
-    filters.business = { ...filters.business, seniority: seniority as never[] }
+    filters.business = { ...filters.business, seniority }
   } else if (seniority.length > 0) {
-    filters.business = { seniority: seniority as never[] }
+    filters.business = { seniority }
   }
 
   let preview
@@ -865,7 +881,7 @@ async function toolGetAudienceAttributes(
 
 async function toolListAudiences(
   args: Record<string, unknown>,
-  _ctx: ToolContext
+  ctx: ToolContext
 ): Promise<ToolResult> {
   const page = typeof args.page === 'number' && args.page >= 1 ? Math.floor(args.page) : 1
   const pageSize =
@@ -873,26 +889,39 @@ async function toolListAudiences(
       ? Math.floor(args.page_size)
       : 20
 
-  let response
-  try {
-    response = await listAudiences({ page, page_size: pageSize })
-  } catch (err) {
-    safeError('[mcp:list_audiences] failed:', err)
-    throw new ToolError(ERROR_TOOL_FAILURE, 'Failed to list audiences from upstream.')
+  // Return only audiences belonging to this workspace (workspace-scoped via al_audiences table).
+  // We do NOT call listAudiences() directly because it returns account-wide data shared
+  // across all Cursive workspaces.
+  const admin = createAdminClient()
+  const offset = (page - 1) * pageSize
+  const { data, error, count } = await admin
+    .from('al_audiences')
+    .select('al_audience_id, name, source, leads_imported, refresh_enabled, last_refreshed_at, created_at', { count: 'exact' })
+    .eq('workspace_id', ctx.workspaceId)
+    .order('created_at', { ascending: false })
+    .range(offset, offset + pageSize - 1)
+
+  if (error) {
+    safeError('[mcp:list_audiences] DB query failed:', error)
+    throw new ToolError(ERROR_TOOL_FAILURE, 'Failed to list audiences.')
   }
 
-  const audiences = (response.data || []).map(a => ({
-    id: a.id,
+  const audiences = (data || []).map(a => ({
+    audience_id: a.al_audience_id,
     name: a.name,
-    scheduled_refresh: a.scheduled_refresh ?? null,
-    next_scheduled_refresh: a.next_scheduled_refresh ?? null,
+    source: a.source,
+    leads_imported: a.leads_imported,
+    refresh_enabled: a.refresh_enabled,
+    last_refreshed_at: a.last_refreshed_at ?? null,
+    created_at: a.created_at,
   }))
 
+  const total = count ?? 0
   const result = {
     page,
     page_size: pageSize,
-    total: response.total ?? 0,
-    total_pages: response.total_pages ?? 1,
+    total,
+    total_pages: Math.ceil(total / pageSize),
     audiences,
   }
 

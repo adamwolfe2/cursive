@@ -239,6 +239,13 @@ export const RATE_LIMITS = {
     message: 'Segment pull limit reached. Please wait before pulling more identities.',
   },
 
+  // MCP audience preview - billable AL API call
+  'mcp-preview': {
+    windowMs: 60 * 60 * 1000, // 1 hour
+    maxRequests: 10, // 10 previews per hour per workspace
+    message: 'Audience preview limit reached. Please wait before previewing more audiences.',
+  },
+
   // Lead export - prevent bulk scraping
   'lead-export': {
     windowMs: 60 * 60 * 1000, // 1 hour

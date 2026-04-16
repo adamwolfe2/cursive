@@ -61,16 +61,14 @@ export const alEnrichmentPoller = inngest.createFunction(
     let completed = 0
 
     for (const job of pendingJobs) {
-      await step.run(`poll-job-${job.id}`, async () => {
+      const pollResult = await step.run(`poll-job-${job.id}`, async () => {
         const supabase = createAdminClient()
-        polled++
 
         try {
           const status = await getBatchEnrichmentStatus(job.al_job_id)
           const now = new Date().toISOString()
 
           if (status.status === 'completed') {
-            completed++
             safeLog(`${LOG_PREFIX} Job ${job.al_job_id} complete — ${status.processed || 0} records enriched`)
 
             // Update job record with completion info
@@ -97,6 +95,7 @@ export const alEnrichmentPoller = inngest.createFunction(
                 },
               })
             }
+            return { didPoll: true, didComplete: true }
           } else if (status.status === 'failed') {
             safeLog(`${LOG_PREFIX} Job ${job.al_job_id} failed`)
             await supabase
@@ -107,6 +106,7 @@ export const alEnrichmentPoller = inngest.createFunction(
                 last_polled_at: now,
               })
               .eq('id', job.id)
+            return { didPoll: true, didComplete: false }
           } else {
             // Still pending or processing — update last_polled_at only
             await supabase
@@ -116,12 +116,18 @@ export const alEnrichmentPoller = inngest.createFunction(
                 last_polled_at: now,
               })
               .eq('id', job.id)
+            return { didPoll: true, didComplete: false }
           }
         } catch (err) {
           safeError(`${LOG_PREFIX} Failed to poll job ${job.al_job_id}:`, err)
           // Don't mark as failed — a transient poll error shouldn't kill the job
+          return { didPoll: false, didComplete: false }
         }
       })
+
+      // Aggregate outside step.run so counts survive Inngest replay
+      if (pollResult.didPoll) polled++
+      if (pollResult.didComplete) completed++
     }
 
     return { polled, completed }

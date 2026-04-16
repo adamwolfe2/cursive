@@ -37,7 +37,7 @@ import {
 } from '@/lib/audiencelab/api-client'
 import { bulkInsertALRecords } from '@/lib/audiencelab/lead-inserter'
 
-import { APP_URL as _APP_URL, CAL_BOOKING_URL as BOOKING_URL } from '@/lib/config/urls'
+import { CAL_BOOKING_URL as BOOKING_URL } from '@/lib/config/urls'
 
 const LOG_PREFIX = '[DFY Onboarding]'
 const MAX_DFY_INITIAL_LEADS = 500
@@ -156,16 +156,17 @@ export const dfyOnboardingSequence = inngest.createFunction(
 
         safeLog(`${LOG_PREFIX} Pixel created for ${company_name}: ${pixel.pixel_id}`)
 
-        // Store pixel record in DB
+        // Store pixel record in DB using actual audiencelab_pixels column names
         const supabase = createAdminClient()
         await supabase
           .from('audiencelab_pixels')
           .upsert({
             workspace_id,
             pixel_id: pixel.pixel_id,
-            website_name: company_name,
-            website_url,
-            webhook_url: pixel.webhook_url || null,
+            label: company_name,
+            domain: website_url,
+            install_url: pixel.install_url || null,
+            snippet: pixel.script || null,
             provisioned_by_automation: true,
           }, { onConflict: 'pixel_id' })
 

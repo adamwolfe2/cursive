@@ -154,8 +154,10 @@ export const { GET, POST, PUT } = serve({
     functions.ghlSyncContact,
     functions.ghlBulkSync,
 
-    // DFY Onboarding Sequence
+    // DFY Onboarding Sequence + AL Fulfillment Automation
     functions.dfyOnboardingSequence,
+    functions.alAudienceRefresh,
+    functions.alEnrichmentPoller,
 
     // Autonomous Monitoring & Pipeline Tracking
     functions.universalFailureHandler,
