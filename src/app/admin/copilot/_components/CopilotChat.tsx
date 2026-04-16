@@ -11,7 +11,8 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowUp, AlertTriangle } from 'lucide-react'
 import { SegmentCard } from './SegmentCard'
 import { ReasoningPanel } from './ReasoningPanel'
-import { InlineMarkdown } from './InlineMarkdown'
+import { StreamingText } from './StreamingText'
+import { LiveSteps } from './LiveSteps'
 import { CursiveOrb } from './CursiveOrb'
 import { HistorySidebar, SidebarToggle } from './HistorySidebar'
 import type { SegmentResult, StreamEvent } from '@/lib/copilot/types'
@@ -387,15 +388,26 @@ function MessageBubble({ message }: { message: Message }) {
       className="flex justify-start"
     >
       <div className="w-full max-w-[95%] space-y-2 sm:max-w-[90%]">
-        <ReasoningPanel
-          thinking={message.thinking}
+        {/* Live step ticker while streaming — replaces the collapsed panel */}
+        <LiveSteps
+          isStreaming={!!message.isStreaming}
+          hasThinking={!!message.thinking}
+          hasText={!!message.text}
           toolCalls={message.toolCalls}
-          isActive={message.isStreaming && !message.text}
         />
+
+        {/* Collapsed reasoning panel — shown only after streaming completes */}
+        {!message.isStreaming && (
+          <ReasoningPanel
+            thinking={message.thinking}
+            toolCalls={message.toolCalls}
+            isActive={false}
+          />
+        )}
 
         {message.text && (
           <div className="text-[14.5px] leading-[1.6] text-foreground sm:text-sm">
-            <InlineMarkdown text={message.text} />
+            <StreamingText text={message.text} isStreaming={message.isStreaming} />
             {message.isStreaming && (
               <span className="ml-0.5 inline-block h-3.5 w-1.5 translate-y-0.5 animate-pulse bg-foreground/40" />
             )}
@@ -411,13 +423,6 @@ function MessageBubble({ message }: { message: Message }) {
                 index={i}
               />
             ))}
-          </div>
-        )}
-
-        {message.isStreaming && !message.text && !message.thinking && (
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <CursiveOrb size={16} pulsing />
-            <span>Thinking…</span>
           </div>
         )}
 
