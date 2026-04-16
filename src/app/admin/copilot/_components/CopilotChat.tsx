@@ -12,6 +12,8 @@ import { ArrowUp, AlertTriangle } from 'lucide-react'
 import { SegmentCard } from './SegmentCard'
 import { ReasoningPanel } from './ReasoningPanel'
 import { InlineMarkdown } from './InlineMarkdown'
+import { CursiveOrb } from './CursiveOrb'
+import { HistorySidebar, SidebarToggle } from './HistorySidebar'
 import type { SegmentResult, StreamEvent } from '@/lib/copilot/types'
 
 interface Message {
@@ -47,6 +49,12 @@ const SUGGESTIONS: Array<{ label: string; prompt: string }> = [
   },
 ]
 
+function genSessionId(): string {
+  return typeof crypto !== 'undefined' && 'randomUUID' in crypto
+    ? crypto.randomUUID()
+    : Math.random().toString(36).slice(2)
+}
+
 interface CopilotChatProps {
   adminEmail: string
 }
@@ -56,11 +64,9 @@ export function CopilotChat({ adminEmail }: CopilotChatProps) {
   const [input, setInput] = useState('')
   const [isSending, setIsSending] = useState(false)
   const [extendedThinking, setExtendedThinking] = useState(false)
-  const sessionIdRef = useRef<string>(
-    typeof crypto !== 'undefined' && 'randomUUID' in crypto
-      ? crypto.randomUUID()
-      : Math.random().toString(36).slice(2)
-  )
+  const [sessionId, setSessionId] = useState<string>(() => genSessionId())
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [sessionsRefresh, setSessionsRefresh] = useState(0)
   const scrollRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const abortRef = useRef<AbortController | null>(null)
@@ -83,6 +89,45 @@ export function CopilotChat({ adminEmail }: CopilotChatProps) {
   }, [input])
 
   const hasMessages = messages.length > 0
+
+  const startNewChat = useCallback(() => {
+    abortRef.current?.abort()
+    setMessages([])
+    setInput('')
+    setIsSending(false)
+    setSessionId(genSessionId())
+    setSidebarOpen(false)
+  }, [])
+
+  const loadSession = useCallback(async (id: string) => {
+    setSidebarOpen(false)
+    try {
+      abortRef.current?.abort()
+      const res = await fetch(`/api/admin/copilot/sessions/${id}`)
+      if (!res.ok) return
+      const data = await res.json()
+      const hydrated: Message[] = (data.messages ?? []).map((m: {
+        id: string
+        role: 'user' | 'assistant'
+        content: string
+        segments: SegmentResult[] | null
+        tool_calls:
+          | Array<{ id: string; name: string; input: unknown; summary?: string }>
+          | null
+      }) => ({
+        id: m.id,
+        role: m.role,
+        text: m.content,
+        segments: m.segments ?? undefined,
+        toolCalls: m.tool_calls ?? undefined,
+      }))
+      setMessages(hydrated)
+      setSessionId(id)
+      setIsSending(false)
+    } catch {
+      // silent
+    }
+  }, [])
 
   const sendMessage = useCallback(
     async (text: string) => {
@@ -112,7 +157,7 @@ export function CopilotChat({ adminEmail }: CopilotChatProps) {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            sessionId: sessionIdRef.current,
+            sessionId,
             extendedThinking,
             messages: [
               ...messages.map((m) => ({ role: m.role, content: m.text })),
@@ -193,9 +238,10 @@ export function CopilotChat({ adminEmail }: CopilotChatProps) {
       } finally {
         setIsSending(false)
         abortRef.current = null
+        setSessionsRefresh((k) => k + 1)
       }
     },
-    [messages, isSending, extendedThinking]
+    [messages, isSending, extendedThinking, sessionId]
   )
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -211,98 +257,111 @@ export function CopilotChat({ adminEmail }: CopilotChatProps) {
   }
 
   const handleSuggestion = (prompt: string) => sendMessage(prompt)
-
   const handleStop = () => abortRef.current?.abort()
 
   return (
-    <div className="mx-auto flex h-[calc(100vh-64px)] max-w-3xl flex-col px-3 sm:px-6">
-      {/* Header — minimal */}
-      <header className="py-4 sm:py-5">
-        <h1 className="text-base font-semibold text-foreground sm:text-lg">
-          Audience Copilot
-        </h1>
-        <p className="mt-0.5 text-xs text-muted-foreground sm:text-[13px]">
-          Describe your ICP and I&apos;ll find the right segments from 19,894 in catalog.
-        </p>
-      </header>
+    <div className="flex h-[calc(100vh-64px)] w-full">
+      <HistorySidebar
+        activeSessionId={sessionId}
+        refreshKey={sessionsRefresh}
+        onNewChat={startNewChat}
+        onSelectSession={loadSession}
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+      />
 
-      {/* Messages */}
-      <div
-        ref={scrollRef}
-        className="flex-1 overflow-y-auto py-2 sm:py-4"
-        style={{ scrollBehavior: 'smooth' }}
-      >
-        {!hasMessages ? (
-          <EmptyState onSuggestionClick={handleSuggestion} adminEmail={adminEmail} />
-        ) : (
-          <div className="space-y-5">
-            <AnimatePresence initial={false}>
-              {messages.map((m) => (
-                <MessageBubble key={m.id} message={m} />
-              ))}
-            </AnimatePresence>
+      <div className="mx-auto flex h-full w-full max-w-3xl flex-col px-3 sm:px-6">
+        {/* Header — minimal */}
+        <header className="flex items-center gap-3 py-4 sm:py-5">
+          <SidebarToggle onOpen={() => setSidebarOpen(true)} />
+          <div className="min-w-0 flex-1">
+            <h1 className="text-base font-semibold text-foreground sm:text-lg">
+              Audience Copilot
+            </h1>
+            <p className="mt-0.5 text-xs text-muted-foreground sm:text-[13px]">
+              Describe your ICP and I&apos;ll find the right segments from 19,894 in catalog.
+            </p>
           </div>
-        )}
-      </div>
+        </header>
 
-      {/* Composer — glassmorphic, borderless */}
-      <div className="sticky bottom-0 pb-4 pt-2">
-        <form onSubmit={handleSubmit}>
-          <div className="flex items-end gap-2 rounded-2xl border border-border/30 bg-white/60 px-3 py-2 shadow-enterprise-sm backdrop-blur-xl transition-shadow focus-within:shadow-enterprise-md sm:rounded-3xl">
-            <textarea
-              ref={textareaRef}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Describe your ICP…"
-              rows={1}
-              disabled={isSending}
-              data-gramm="false"
-              data-gramm_editor="false"
-              data-enable-grammarly="false"
-              className="min-h-[28px] flex-1 resize-none border-0 bg-transparent px-1 py-1.5 text-[15px] text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-0 sm:text-sm"
-              style={{
-                outline: 'none',
-                boxShadow: 'none',
-              }}
-            />
-            {isSending ? (
-              <button
-                type="button"
-                onClick={handleStop}
-                aria-label="Stop"
-                className="mb-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border/60 bg-background/80 text-foreground transition-colors hover:bg-muted"
-              >
-                <span className="h-2.5 w-2.5 rounded-sm bg-foreground" />
-              </button>
-            ) : (
-              <button
-                type="submit"
-                disabled={!input.trim()}
-                aria-label="Send"
-                className="mb-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground transition-all hover:bg-primary/90 disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground"
-              >
-                <ArrowUp className="h-4 w-4" />
-              </button>
-            )}
-          </div>
+        {/* Messages */}
+        <div
+          ref={scrollRef}
+          className="flex-1 overflow-y-auto py-2 sm:py-4"
+          style={{ scrollBehavior: 'smooth' }}
+        >
+          {!hasMessages ? (
+            <EmptyState onSuggestionClick={handleSuggestion} adminEmail={adminEmail} />
+          ) : (
+            <div className="space-y-5">
+              <AnimatePresence initial={false}>
+                {messages.map((m) => (
+                  <MessageBubble key={m.id} message={m} />
+                ))}
+              </AnimatePresence>
+            </div>
+          )}
+        </div>
 
-          <div className="mt-1.5 flex items-center justify-between gap-2 px-1 text-[11px] text-muted-foreground">
-            <label className="flex cursor-pointer items-center gap-1.5">
-              <input
-                type="checkbox"
-                checked={extendedThinking}
-                onChange={(e) => setExtendedThinking(e.target.checked)}
-                className="h-3 w-3 accent-primary"
+        {/* Composer — glassmorphic, borderless */}
+        <div className="sticky bottom-0 pb-4 pt-2">
+          <form onSubmit={handleSubmit}>
+            <div className="flex items-end gap-2 rounded-2xl border border-border/30 bg-white/60 px-3 py-2 shadow-enterprise-sm backdrop-blur-xl transition-shadow focus-within:shadow-enterprise-md sm:rounded-3xl">
+              <textarea
+                ref={textareaRef}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Describe your ICP…"
+                rows={1}
                 disabled={isSending}
+                data-gramm="false"
+                data-gramm_editor="false"
+                data-enable-grammarly="false"
+                className="min-h-[28px] flex-1 resize-none border-0 bg-transparent px-1 py-1.5 text-[15px] text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-0 sm:text-sm"
+                style={{
+                  outline: 'none',
+                  boxShadow: 'none',
+                }}
               />
-              <span>Extended thinking</span>
-            </label>
-            <span className="hidden sm:inline">
-              Enter to send · Shift+Enter for newline
-            </span>
-          </div>
-        </form>
+              {isSending ? (
+                <button
+                  type="button"
+                  onClick={handleStop}
+                  aria-label="Stop"
+                  className="mb-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border/60 bg-background/80 text-foreground transition-colors hover:bg-muted"
+                >
+                  <span className="h-2.5 w-2.5 rounded-sm bg-foreground" />
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  disabled={!input.trim()}
+                  aria-label="Send"
+                  className="mb-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground transition-all hover:bg-primary/90 disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground"
+                >
+                  <ArrowUp className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+
+            <div className="mt-1.5 flex items-center justify-between gap-2 px-1 text-[11px] text-muted-foreground">
+              <label className="flex cursor-pointer items-center gap-1.5">
+                <input
+                  type="checkbox"
+                  checked={extendedThinking}
+                  onChange={(e) => setExtendedThinking(e.target.checked)}
+                  className="h-3 w-3 accent-primary"
+                  disabled={isSending}
+                />
+                <span>Extended thinking</span>
+              </label>
+              <span className="hidden sm:inline">
+                Enter to send · Shift+Enter for newline
+              </span>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   )
@@ -364,8 +423,8 @@ function MessageBubble({ message }: { message: Message }) {
         )}
 
         {message.isStreaming && !message.text && !message.thinking && (
-          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-foreground/40" />
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <CursiveOrb size={16} pulsing />
             <span>Thinking…</span>
           </div>
         )}
@@ -405,7 +464,9 @@ function EmptyState({
   }, [adminEmail])
 
   return (
-    <div className="flex h-full flex-col items-center justify-center gap-8 px-2 text-center">
+    <div className="flex h-full flex-col items-center justify-center gap-6 px-2 text-center">
+      <CursiveOrb size={56} />
+
       <div>
         <h2 className="text-xl font-semibold text-foreground sm:text-2xl">
           {greeting}, {firstName}

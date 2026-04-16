@@ -22,6 +22,7 @@ import { getUserWithRole } from '@/lib/auth/roles'
 import { ADMIN_SYSTEM_PROMPT } from '@/lib/copilot/system-prompt'
 import { ADMIN_TOOLS, runTool, type CopilotToolName } from '@/lib/copilot/tools'
 import { checkDailyBudget, logTurn, type CopilotModel } from '@/lib/copilot/cost'
+import { ensureSession, persistTurn } from '@/lib/copilot/sessions'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import type { SegmentResult, StreamEvent } from '@/lib/copilot/types'
 
@@ -92,6 +93,15 @@ export async function POST(req: NextRequest) {
   const sessionId = body.sessionId || crypto.randomUUID()
   const extendedThinking = body.extendedThinking === true
 
+  // Persist session (idempotent) + extract first user message for title
+  const firstUserMessage = history[history.length - 1].content
+  await ensureSession({
+    session_id: sessionId,
+    user_id: userWithRole.id,
+    first_user_message: firstUserMessage,
+    surface: 'admin',
+  })
+
   const apiKey = process.env.ANTHROPIC_API_KEY
   if (!apiKey) {
     return new Response('ANTHROPIC_API_KEY not configured', { status: 500 })
@@ -113,6 +123,16 @@ export async function POST(req: NextRequest) {
       let totalThinking = 0
       let totalToolCalls = 0
       let totalSegments = 0
+
+      // Accumulate assistant output for persistence
+      let assistantText = ''
+      const assistantSegments: SegmentResult[] = []
+      const assistantToolCalls: Array<{
+        id: string
+        name: string
+        input: unknown
+        summary?: string
+      }> = []
 
       // Start with the user's history. Assistant turns from history have plain strings.
       // As the agentic loop runs, we extend with tool_use / tool_result blocks.
@@ -155,6 +175,7 @@ export async function POST(req: NextRequest) {
               const d = event.delta
               if (d.type === 'text_delta') {
                 send({ type: 'text', delta: d.text })
+                assistantText += d.text
               } else if (d.type === 'thinking_delta') {
                 send({ type: 'thinking', delta: d.thinking })
               }
@@ -185,6 +206,7 @@ export async function POST(req: NextRequest) {
             if (block.type !== 'tool_use') continue
             totalToolCalls++
             send({ type: 'tool_use', id: block.id, name: block.name, input: block.input })
+            assistantToolCalls.push({ id: block.id, name: block.name, input: block.input })
 
             const toolName = block.name as CopilotToolName
             let resultSummary = ''
@@ -201,9 +223,13 @@ export async function POST(req: NextRequest) {
 
             if (resultSegments && resultSegments.length > 0) {
               totalSegments += resultSegments.length
+              assistantSegments.push(...resultSegments)
               send({ type: 'segments', segments: resultSegments })
             }
             send({ type: 'tool_result', tool_use_id: block.id, summary: resultSummary })
+
+            const tcIdx = assistantToolCalls.findIndex((t) => t.id === block.id)
+            if (tcIdx >= 0) assistantToolCalls[tcIdx] = { ...assistantToolCalls[tcIdx], summary: resultSummary }
 
             toolResults.push({
               type: 'tool_result',
@@ -222,6 +248,15 @@ export async function POST(req: NextRequest) {
           cache_creation_tokens: totalCacheCreate,
           cache_read_tokens: totalCacheRead,
           thinking_tokens: totalThinking,
+        })
+
+        // Persist the completed turn to history (fire-and-forget semantics)
+        await persistTurn({
+          session_id: sessionId,
+          user_message: firstUserMessage,
+          assistant_text: assistantText,
+          segments: assistantSegments,
+          tool_calls: assistantToolCalls,
         })
 
         await logTurn({
