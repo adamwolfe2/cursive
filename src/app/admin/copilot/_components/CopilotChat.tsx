@@ -271,18 +271,10 @@ export function CopilotChat({ adminEmail }: CopilotChatProps) {
       />
 
       <div className="mx-auto flex h-full w-full max-w-3xl flex-col px-3 sm:px-6">
-        {/* Header — minimal */}
-        <header className="flex items-center gap-3 py-4 sm:py-5">
+        {/* Mobile-only hamburger — desktop has the fixed sidebar */}
+        <div className="flex items-center pt-3 md:hidden">
           <SidebarToggle onOpen={() => setSidebarOpen(true)} />
-          <div className="min-w-0 flex-1">
-            <h1 className="text-base font-semibold text-foreground sm:text-lg">
-              Audience Copilot
-            </h1>
-            <p className="mt-0.5 text-xs text-muted-foreground sm:text-[13px]">
-              Describe your ICP and I&apos;ll find the right segments from 19,894 in catalog.
-            </p>
-          </div>
-        </header>
+        </div>
 
         {/* Messages */}
         <div
