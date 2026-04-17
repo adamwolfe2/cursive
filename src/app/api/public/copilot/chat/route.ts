@@ -23,8 +23,14 @@ import { NextRequest } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { PUBLIC_SYSTEM_PROMPT } from '@/lib/copilot/public-prompt'
-import { PUBLIC_TOOLS, runPublicTool, sanitizeText } from '@/lib/copilot/public-tools'
-import type { CopilotToolName } from '@/lib/copilot/tools'
+import {
+  PUBLIC_TOOLS,
+  runPublicTool,
+  sanitizeText,
+  type PublicToolName,
+  type SampleToolResult,
+  type MaskedSamplePerson,
+} from '@/lib/copilot/public-tools'
 import { checkDailyBudget, logTurn, calculateCostUSD, type CopilotModel } from '@/lib/copilot/cost'
 import { verifyToken } from '@/lib/copilot/public-session'
 import { safeError } from '@/lib/utils/log-sanitizer'
@@ -40,6 +46,39 @@ const MAX_TOOL_ITERATIONS = 3
 const MAX_HISTORY_TURNS = 6
 const TURN_LIMIT_PER_SESSION = 10
 const TURNS_PER_DAY_LIMIT = 30
+// Lead-magnet gates — how many live AL pulls a given lead can trigger per day
+const SAMPLES_PER_LEAD_PER_DAY = 3
+const SAMPLES_PER_SEGMENT_PER_LEAD_PER_DAY = 1
+
+async function logConversion(
+  admin: ReturnType<typeof createAdminClient>,
+  leadId: string | null,
+  sessionId: string | null,
+  eventType:
+    | 'preview_done'
+    | 'email_captured'
+    | 'segment_viewed'
+    | 'sample_pulled'
+    | 'reveal_gate_shown'
+    | 'qualifier_submitted'
+    | 'reveal_unlocked'
+    | 'call_booked'
+    | 'export_requested'
+    | 'trial_started'
+    | 'pixel_interest',
+  metadata: Record<string, unknown> = {}
+) {
+  try {
+    await admin.from('audience_builder_conversions').insert({
+      lead_id: leadId,
+      session_id: sessionId,
+      event_type: eventType,
+      metadata,
+    })
+  } catch {
+    // Non-critical — don't break the stream
+  }
+}
 
 interface ChatRequestBody {
   messages: Array<{ role: 'user' | 'assistant'; content: string }>
@@ -219,21 +258,95 @@ export async function POST(req: NextRequest) {
             totalToolCalls++
             send({ type: 'tool_use', id: block.id, name: block.name, input: block.input })
 
-            const toolName = block.name as CopilotToolName
+            const toolName = block.name as PublicToolName
             let resultSummary = ''
             let resultSegments: SegmentResult[] | undefined
+            let resultSample: SampleToolResult['sample'] = undefined
 
-            try {
-              const result = await runPublicTool(
-                toolName,
-                (block.input ?? {}) as Record<string, unknown>
-              )
-              // runPublicTool already sanitizes segment_ids
-              resultSummary = sanitizeText(result.summary)
-              resultSegments = result.segments
-            } catch (err) {
-              resultSummary = `Tool error: ${err instanceof Error ? err.message : 'unknown'}`
-              safeError('[copilot/public/chat] tool error:', err)
+            // Sample-specific pre-flight: enforce per-lead + per-segment daily quota
+            if (toolName === 'get_segment_sample') {
+              const segmentIdInput = String((block.input as Record<string, unknown>)?.segment_id ?? '')
+              const { verifyOpaqueId } = await import('@/lib/copilot/public-tools')
+              const realId = verifyOpaqueId('seg', segmentIdInput)
+              if (!realId) {
+                resultSummary =
+                  'That segment reference is invalid or expired. Ask me to search again and pick a segment from the results.'
+              } else {
+                const { data: quota } = await admin.rpc('audience_builder_sample_check', {
+                  lead_id_filter: payload.lead_id,
+                  segment_real_id_filter: realId,
+                })
+                const qRow = Array.isArray(quota) ? quota[0] : quota
+                const samplesToday = Number(qRow?.samples_today ?? 0)
+                const samplesForSegmentToday = Number(qRow?.samples_for_segment_today ?? 0)
+
+                if (samplesForSegmentToday >= SAMPLES_PER_SEGMENT_PER_LEAD_PER_DAY) {
+                  resultSummary =
+                    "You've already pulled a sample from this segment today. Try another segment, or book a call to unlock full access."
+                } else if (samplesToday >= SAMPLES_PER_LEAD_PER_DAY) {
+                  resultSummary = `You've pulled ${SAMPLES_PER_LEAD_PER_DAY} sample lists today — that's the daily free-tier cap. Book a 15-min call to unlock full access.`
+                } else {
+                  // Within quota — actually call AL
+                  try {
+                    const result = await runPublicTool(
+                      toolName,
+                      (block.input ?? {}) as Record<string, unknown>
+                    )
+                    resultSummary = sanitizeText(result.summary)
+                    resultSample = result.sample
+
+                    if (resultSample) {
+                      // Record the pull + the conversion event
+                      const { data: viewRow } = await admin
+                        .from('audience_builder_sample_views')
+                        .insert({
+                          lead_id: payload.lead_id,
+                          session_id: payload.session_id,
+                          segment_pseudo_id: resultSample.segment_pseudo_id,
+                          segment_real_id: resultSample.segment_real_id,
+                          sample_count: resultSample.sample_count,
+                          revealed_count: 3,
+                          al_total_count: resultSample.total_count,
+                          ip_hash: null,
+                        })
+                        .select('id')
+                        .single()
+
+                      await logConversion(admin, payload.lead_id, payload.session_id, 'sample_pulled', {
+                        sample_view_id: viewRow?.id,
+                        segment_pseudo_id: resultSample.segment_pseudo_id,
+                        sample_count: resultSample.sample_count,
+                        total_count: resultSample.total_count,
+                      })
+
+                      // Don't round-trip the real ID back to the model — strip it
+                      send({
+                        type: 'sample',
+                        sample_view_id: viewRow?.id ?? null,
+                        segment_pseudo_id: resultSample.segment_pseudo_id,
+                        total_count: resultSample.total_count,
+                        sample_count: resultSample.sample_count,
+                        people: resultSample.people as MaskedSamplePerson[],
+                      } as StreamEvent)
+                    }
+                  } catch (err) {
+                    resultSummary = `Tool error: ${err instanceof Error ? err.message : 'unknown'}`
+                    safeError('[copilot/public/chat] sample tool error:', err)
+                  }
+                }
+              }
+            } else {
+              try {
+                const result = await runPublicTool(
+                  toolName,
+                  (block.input ?? {}) as Record<string, unknown>
+                )
+                resultSummary = sanitizeText(result.summary)
+                resultSegments = result.segments
+              } catch (err) {
+                resultSummary = `Tool error: ${err instanceof Error ? err.message : 'unknown'}`
+                safeError('[copilot/public/chat] tool error:', err)
+              }
             }
 
             if (resultSegments && resultSegments.length > 0) {

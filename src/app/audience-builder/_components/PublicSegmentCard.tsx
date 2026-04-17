@@ -1,13 +1,14 @@
 'use client'
 
 import { AnimatePresence, motion } from 'framer-motion'
-import { ChevronDown } from 'lucide-react'
+import { ArrowRight, ChevronDown, Users } from 'lucide-react'
 import { useState } from 'react'
 import type { SegmentResult } from '@/lib/copilot/types'
 
 interface PublicSegmentCardProps {
   segment: SegmentResult
   index: number
+  onShowSample?: () => void
 }
 
 /**
@@ -15,7 +16,11 @@ interface PublicSegmentCardProps {
  * segment_id (even the hashed pseudo-id). Shows name, type, similarity,
  * and an expandable category/description section only.
  */
-export function PublicSegmentCard({ segment, index }: PublicSegmentCardProps) {
+export function PublicSegmentCard({
+  segment,
+  index,
+  onShowSample,
+}: PublicSegmentCardProps) {
   const [open, setOpen] = useState(false)
 
   return (
@@ -72,6 +77,23 @@ export function PublicSegmentCard({ segment, index }: PublicSegmentCardProps) {
                 <p className="text-[13px] leading-relaxed text-slate-700">
                   {segment.description}
                 </p>
+              )}
+
+              {onShowSample && (
+                <div className="pt-1">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onShowSample()
+                    }}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-blue-200 bg-white px-2.5 py-1 text-[11px] font-medium text-blue-600 transition-colors hover:border-blue-300 hover:bg-blue-50"
+                  >
+                    <Users className="h-3 w-3" />
+                    Show me real leads
+                    <ArrowRight className="h-3 w-3" />
+                  </button>
+                </div>
               )}
             </div>
           </motion.div>

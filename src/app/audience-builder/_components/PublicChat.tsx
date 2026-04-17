@@ -5,12 +5,22 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { AlertTriangle, ArrowUp, Calendar, LogOut } from 'lucide-react'
 import { CursiveOrb } from '@/app/admin/copilot/_components/CursiveOrb'
 import { LiveSteps } from '@/app/admin/copilot/_components/LiveSteps'
-import type { SegmentResult, StreamEvent } from '@/lib/copilot/types'
+import type {
+  SampleStreamPerson,
+  SegmentResult,
+  StreamEvent,
+} from '@/lib/copilot/types'
 import { StreamingText } from '@/app/admin/copilot/_components/StreamingText'
 import { PublicSegmentCard } from './PublicSegmentCard'
 import { TurnsMeter } from './TurnsMeter'
 import { BookCallCard } from './BookCallCard'
 import { EmailCaptureModal, type EmailSubmitData } from './EmailCaptureModal'
+import {
+  SampleLeadList,
+  type UnmaskedSamplePerson,
+} from './SampleLeadList'
+import { QualifierModal } from './QualifierModal'
+import { CalBookingInline } from './CalBookingInline'
 
 const BOOK_URL =
   'https://cal.com/meetcursive/intro?utm_source=audience-builder&utm_medium=copilot'
@@ -37,7 +47,7 @@ const SUGGESTIONS: Array<{ label: string; prompt: string }> = [
   },
 ]
 
-type MessageKind = 'text' | 'book_card'
+type MessageKind = 'text' | 'book_card' | 'sample_list'
 
 interface ToolCall {
   id: string
@@ -46,12 +56,27 @@ interface ToolCall {
   summary?: string
 }
 
+interface SampleUnlockState {
+  count: number
+  reveals: UnmaskedSamplePerson[]
+  exportAllowed: boolean
+}
+
+interface SampleAttachment {
+  sampleViewId: string | null
+  totalCount: number
+  sampleCount: number
+  people: SampleStreamPerson[]
+  unlocked?: SampleUnlockState | null
+}
+
 interface Message {
   id: string
   role: 'user' | 'assistant'
   kind?: MessageKind
   text: string
   segments?: SegmentResult[]
+  sample?: SampleAttachment
   isStreaming?: boolean
   hasThinking?: boolean
   toolCalls?: ToolCall[]
@@ -146,6 +171,17 @@ export function PublicChat({
   const [previewSegmentCount, setPreviewSegmentCount] = useState(0)
   const [isSubmittingEmail, setIsSubmittingEmail] = useState(false)
   const [emailError, setEmailError] = useState<string | null>(null)
+
+  // Lead-magnet funnel state
+  const [qualifierOpen, setQualifierOpen] = useState(false)
+  const [qualifierSampleViewId, setQualifierSampleViewId] = useState<
+    string | null
+  >(null)
+  const [calOpen, setCalOpen] = useState(false)
+  const [calSampleViewId, setCalSampleViewId] = useState<string | null>(null)
+  // Highest unlock tier the lead has reached across all samples in the chat.
+  // Currently only informational — the authoritative tier lives per-message.
+  const [, setUnlockTier] = useState<0 | 1 | 2>(0)
 
   const scrollRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -566,7 +602,12 @@ export function PublicChat({
       setIsSending(true)
 
       const priorTurns = [...messages, userMsg]
-        .filter((m) => m.kind === 'text' || m.kind === undefined)
+        .filter(
+          (m) =>
+            m.kind === 'text' ||
+            m.kind === undefined ||
+            m.kind === 'sample_list'
+        )
         .filter((m) => m.text.length > 0)
         .map((m) => ({ role: m.role, content: m.text }))
 
@@ -690,6 +731,102 @@ export function PublicChat({
       },
     ])
   }, [hasHadAssistantReply, token])
+
+  // ─── Sample funnel handlers ──────────────────────────────────────────
+  const handleShowSample = useCallback(
+    (segment: SegmentResult) => {
+      if (atHardLimit) return
+      const name = segment.name || 'this segment'
+      const prompt = `Show me 15 sample leads from the ${name} segment (id: ${segment.segment_id}).`
+      handleUserSubmit(prompt)
+    },
+    [atHardLimit, handleUserSubmit]
+  )
+
+  const handleOpenQualifier = useCallback((sampleViewId: string) => {
+    setQualifierSampleViewId(sampleViewId)
+    setQualifierOpen(true)
+  }, [])
+
+  const handleOpenBookCall = useCallback((sampleViewId: string | null) => {
+    setCalSampleViewId(sampleViewId)
+    setCalOpen(true)
+  }, [])
+
+  const handleQualifierSuccess = useCallback(
+    (data: {
+      revealedCount: number
+      reveals: UnmaskedSamplePerson[]
+      stillMasked: SampleStreamPerson[]
+    }) => {
+      const viewId = qualifierSampleViewId
+      if (!viewId) return
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.sample?.sampleViewId === viewId
+            ? {
+                ...m,
+                sample: {
+                  ...m.sample,
+                  unlocked: {
+                    count: data.revealedCount,
+                    reveals: data.reveals,
+                    exportAllowed: false,
+                  },
+                },
+              }
+            : m
+        )
+      )
+      setUnlockTier((prev) => (prev < 1 ? 1 : prev))
+    },
+    [qualifierSampleViewId]
+  )
+
+  const handleCallBooked = useCallback(
+    (data: {
+      revealedCount: number
+      reveals: UnmaskedSamplePerson[]
+      stillMasked: SampleStreamPerson[]
+      exportAllowed: boolean
+    }) => {
+      const viewId = calSampleViewId
+      if (!viewId) {
+        setUnlockTier(2)
+        return
+      }
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.sample?.sampleViewId === viewId
+            ? {
+                ...m,
+                sample: {
+                  ...m.sample,
+                  unlocked: {
+                    count: data.revealedCount,
+                    reveals: data.reveals,
+                    exportAllowed: data.exportAllowed,
+                  },
+                },
+              }
+            : m
+        )
+      )
+      setUnlockTier(2)
+    },
+    [calSampleViewId]
+  )
+
+  const handleExportCSV = useCallback((msgId: string) => {
+    setMessages((prev) => {
+      const msg = prev.find((m) => m.id === msgId)
+      const reveals = msg?.sample?.unlocked?.reveals
+      if (reveals && reveals.length > 0) {
+        downloadRevealsAsCSV(reveals)
+      }
+      return prev
+    })
+  }, [])
 
   const suggestionsVisible = useMemo(() => emptyState, [emptyState])
   const composerDisabled =
@@ -852,7 +989,14 @@ export function PublicChat({
           >
             <AnimatePresence initial={false}>
               {messages.map((m) => (
-                <MessageBubble key={m.id} message={m} />
+                <MessageBubble
+                  key={m.id}
+                  message={m}
+                  onShowSample={token ? handleShowSample : undefined}
+                  onOpenQualifier={handleOpenQualifier}
+                  onBookCall={handleOpenBookCall}
+                  onExportCSV={handleExportCSV}
+                />
               ))}
             </AnimatePresence>
 
@@ -915,6 +1059,27 @@ export function PublicChat({
           </div>
         )}
       </div>
+
+      {/* Qualifier modal (unlocks 5 more leads) */}
+      {qualifierSampleViewId && token && (
+        <QualifierModal
+          open={qualifierOpen}
+          onOpenChange={setQualifierOpen}
+          sampleViewId={qualifierSampleViewId}
+          token={token}
+          onSuccess={handleQualifierSuccess}
+        />
+      )}
+
+      {/* Cal.com booking modal (unlocks ALL + CSV) */}
+      <CalBookingInline
+        open={calOpen}
+        onOpenChange={setCalOpen}
+        sampleViewId={calSampleViewId}
+        token={token}
+        prefillName={authState.firstName ?? undefined}
+        onBooked={handleCallBooked}
+      />
 
       {/* Sticky composer */}
       <div className="border-t border-slate-200/80 bg-white">
@@ -985,9 +1150,19 @@ export function PublicChat({
 
 interface MessageBubbleProps {
   message: Message
+  onShowSample?: (segment: SegmentResult) => void
+  onOpenQualifier: (sampleViewId: string) => void
+  onBookCall: (sampleViewId: string | null) => void
+  onExportCSV: (msgId: string) => void
 }
 
-function MessageBubble({ message }: MessageBubbleProps) {
+function MessageBubble({
+  message,
+  onShowSample,
+  onOpenQualifier,
+  onBookCall,
+  onExportCSV,
+}: MessageBubbleProps) {
   if (message.kind === 'book_card') {
     return (
       <motion.div
@@ -1060,8 +1235,29 @@ function MessageBubble({ message }: MessageBubbleProps) {
                 key={`${message.id}-${i}`}
                 segment={seg}
                 index={i}
+                onShowSample={
+                  onShowSample ? () => onShowSample(seg) : undefined
+                }
               />
             ))}
+          </div>
+        )}
+
+        {message.sample && (
+          <div className="mt-3">
+            <SampleLeadList
+              sampleViewId={message.sample.sampleViewId}
+              totalCount={message.sample.totalCount}
+              people={message.sample.people}
+              unlocked={message.sample.unlocked}
+              onOpenQualifier={onOpenQualifier}
+              onBookCall={() => onBookCall(message.sample?.sampleViewId ?? null)}
+              onExportCSV={
+                message.sample.unlocked?.exportAllowed
+                  ? () => onExportCSV(message.id)
+                  : undefined
+              }
+            />
           </div>
         )}
 
@@ -1117,6 +1313,57 @@ function LimitCard({
   )
 }
 
+// ─── CSV export ────────────────────────────────────────────────────────
+
+const CSV_COLUMNS: Array<{
+  key: keyof UnmaskedSamplePerson
+  header: string
+}> = [
+  { key: 'first_name', header: 'first_name' },
+  { key: 'last_name', header: 'last_name' },
+  { key: 'email', header: 'email' },
+  { key: 'company', header: 'company' },
+  { key: 'domain', header: 'domain' },
+  { key: 'job_title', header: 'job_title' },
+  { key: 'seniority', header: 'seniority' },
+  { key: 'industry', header: 'industry' },
+  { key: 'city', header: 'city' },
+  { key: 'state', header: 'state' },
+]
+
+function escapeCSV(value: string): string {
+  if (value.includes(',') || value.includes('"') || value.includes('\n')) {
+    return `"${value.replace(/"/g, '""')}"`
+  }
+  return value
+}
+
+function downloadRevealsAsCSV(reveals: UnmaskedSamplePerson[]): void {
+  if (typeof window === 'undefined') return
+  const header = CSV_COLUMNS.map((c) => c.header).join(',')
+  const rows = reveals.map((r) =>
+    CSV_COLUMNS.map((c) => {
+      const v = r[c.key]
+      return escapeCSV(v == null ? '' : String(v))
+    }).join(',')
+  )
+  const csv = [header, ...rows].join('\n')
+
+  try {
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `audience-builder-leads-${Date.now()}.csv`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  } catch {
+    // Best-effort download; fail silently if the browser blocks it
+  }
+}
+
 // ─── Event folding ─────────────────────────────────────────────────────
 
 function applyEvent(msg: Message, evt: StreamEvent): Message {
@@ -1149,6 +1396,18 @@ function applyEvent(msg: Message, evt: StreamEvent): Message {
       return {
         ...msg,
         segments: [...(msg.segments ?? []), ...evt.segments],
+      }
+    case 'sample':
+      return {
+        ...msg,
+        kind: 'sample_list',
+        sample: {
+          sampleViewId: evt.sample_view_id,
+          totalCount: evt.total_count,
+          sampleCount: evt.sample_count,
+          people: evt.people,
+          unlocked: null,
+        },
       }
     case 'done':
       return { ...msg, isStreaming: false }

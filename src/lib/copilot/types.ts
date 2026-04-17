@@ -32,11 +32,32 @@ export interface PreviewAudienceArgs {
   industries?: string[] | null
 }
 
+/** Masked sample-lead payload emitted by the public copilot `get_segment_sample` tool. */
+export interface SampleStreamPerson {
+  id: string
+  first_name: string
+  last_name_masked: string
+  email_masked: string
+  company: string | null
+  state: string | null
+  job_title: string | null
+  industry: string | null
+  seniority: string | null
+}
+
 export type StreamEvent =
   | { type: 'thinking'; delta: string }
   | { type: 'text'; delta: string }
   | { type: 'tool_use'; id: string; name: string; input: unknown }
   | { type: 'segments'; segments: SegmentResult[] }
+  | {
+      type: 'sample'
+      sample_view_id: string | null
+      segment_pseudo_id: string
+      total_count: number
+      sample_count: number
+      people: SampleStreamPerson[]
+    }
   | { type: 'tool_result'; tool_use_id: string; summary: string }
   | { type: 'error'; message: string }
   | {
