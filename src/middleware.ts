@@ -182,6 +182,8 @@ export async function middleware(req: NextRequest) {
       pathname.startsWith('/api/similarweb') ||
       pathname.startsWith('/api/pixel/provision-demo') ||
       pathname.startsWith('/api/public/segment-search') ||
+      pathname.startsWith('/api/public/copilot') ||
+      pathname.startsWith('/audience-builder') ||
       pathname.startsWith('/audience-intelligence') ||
       // Client portal — token-based auth, no user session required
       pathname.startsWith('/portal/') ||
@@ -341,6 +343,7 @@ export async function middleware(req: NextRequest) {
       pathname.startsWith('/welcome') ||
       pathname.startsWith('/onboarding') ||
       pathname.startsWith('/client-onboarding') ||
+      pathname.startsWith('/audience-builder') ||
       pathname.startsWith('/role-selection') ||
       pathname.startsWith('/forgot-password') ||
       pathname.startsWith('/reset-password') ||
