@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { AlertTriangle, ArrowUp, Calendar, LogOut, Sparkles } from 'lucide-react'
+import { AlertTriangle, ArrowUp, Calendar, LogOut } from 'lucide-react'
+import { CursiveOrb } from '@/app/admin/copilot/_components/CursiveOrb'
 import type { SegmentResult, StreamEvent } from '@/lib/copilot/types'
 import { StreamingText } from '@/app/admin/copilot/_components/StreamingText'
 import { PublicSegmentCard } from './PublicSegmentCard'
@@ -681,18 +682,17 @@ export function PublicChat({
   // ─── RENDER: empty hero state ────────────────────────────────────────
   if (emptyState) {
     return (
-      <div className="mx-auto w-full max-w-2xl px-4 py-12 sm:py-20">
+      <div className="mx-auto w-full max-w-3xl px-4 py-12 sm:py-20">
         <div className="text-center">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700 ring-1 ring-blue-200/60">
-            <Sparkles className="h-3 w-3" />
-            Free AI tool · No signup
-          </span>
-          <h1 className="mt-4 text-3xl font-bold tracking-tight text-[#0F172A] sm:text-4xl md:text-5xl">
+          <div className="mx-auto mb-6 flex items-center justify-center">
+            <CursiveOrb size={64} />
+          </div>
+          <h1 className="text-4xl font-bold leading-[1.05] tracking-tight text-[#0F172A] sm:text-5xl md:text-6xl lg:text-7xl">
             Find the perfect audience
             <br />
             for your next campaign
           </h1>
-          <p className="mx-auto mt-4 max-w-xl text-base text-slate-600">
+          <p className="mx-auto mt-6 max-w-xl text-base text-slate-600 sm:text-lg">
             Describe your ideal customer. Our AI matches you to{' '}
             <strong>19,000+</strong> pre-built audience segments in seconds.
           </p>
@@ -747,32 +747,35 @@ export function PublicChat({
           </div>
         )}
 
-        <div className="mt-12 grid grid-cols-1 gap-4 text-center sm:grid-cols-3">
+        <div className="mt-14 grid grid-cols-2 gap-6 text-center sm:grid-cols-4 sm:gap-4">
           <div>
-            <div className="text-2xl font-bold text-[#0F172A]">19,000+</div>
-            <div className="mt-1 text-xs text-slate-500">
-              pre-built audience segments
+            <div className="text-2xl font-bold text-[#0F172A] sm:text-3xl">280M+</div>
+            <div className="mt-1 text-[11px] leading-snug text-slate-500">
+              identified consumer<br />+ B2B profiles
             </div>
           </div>
           <div>
-            <div className="text-2xl font-bold text-[#0F172A]">Live counts</div>
-            <div className="mt-1 text-xs text-slate-500">
-              real in-market sizes
+            <div className="text-2xl font-bold text-[#0F172A] sm:text-3xl">40M+</div>
+            <div className="mt-1 text-[11px] leading-snug text-slate-500">
+              website visitors<br />tracked monthly
             </div>
           </div>
           <div>
-            <div className="text-2xl font-bold text-[#0F172A]">
-              Activate now
+            <div className="text-2xl font-bold text-[#0F172A] sm:text-3xl">19K+</div>
+            <div className="mt-1 text-[11px] leading-snug text-slate-500">
+              pre-built audience<br />segments
             </div>
-            <div className="mt-1 text-xs text-slate-500">
-              plug into your stack
+          </div>
+          <div>
+            <div className="text-2xl font-bold text-[#0F172A] sm:text-3xl">500K+</div>
+            <div className="mt-1 text-[11px] leading-snug text-slate-500">
+              fresh in-market<br />signals daily
             </div>
           </div>
         </div>
 
         <p className="mt-10 text-center text-[11px] text-slate-400">
-          Powered by Cursive · Used by B2B & B2C teams to build their next
-          audience
+          Powered by Cursive · Used by B2B & B2C teams to build their next audience
         </p>
       </div>
     )
