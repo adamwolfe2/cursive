@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { PACKAGES } from '@/types/onboarding'
@@ -158,49 +157,64 @@ export default function ClientOverview({ client }: ClientOverviewProps) {
         <h3 className="text-lg font-semibold mb-4">Enriched ICP Brief</h3>
 
         {client.enrichment_status === 'pending' || client.enrichment_status === 'processing' ? (
-          <div className="space-y-4">
-            {/* Company Summary skeleton */}
+          <div className="space-y-4 animate-pulse">
+            {/* Company Summary skeleton — 3 lines */}
             <Card padding="default">
               <CardHeader>
-                <Skeleton className="h-5 w-40" />
+                <div className="h-5 w-40 rounded bg-blue-50" />
               </CardHeader>
               <CardContent className="space-y-3 mt-3">
                 <div className="flex items-center gap-2 mb-4">
-                  <RefreshCw className="h-4 w-4 animate-spin text-muted-foreground" />
+                  <RefreshCw className="h-4 w-4 animate-spin text-blue-500" />
                   <span className="text-sm text-muted-foreground">
                     {client.enrichment_status === 'pending' ? 'Enrichment pending...' : 'Enrichment in progress...'}
                   </span>
                 </div>
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-5/6" />
-                <Skeleton className="h-4 w-3/4" />
+                <div className="h-3.5 w-full rounded bg-blue-50" />
+                <div className="h-3.5 w-5/6 rounded bg-blue-50" />
+                <div className="h-3.5 w-3/4 rounded bg-blue-50" />
               </CardContent>
             </Card>
-            {/* Buyer Profile skeleton */}
-            <Card padding="default">
-              <CardHeader>
-                <Skeleton className="h-5 w-36" />
-              </CardHeader>
-              <CardContent className="space-y-3 mt-3">
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-4/5" />
-                <Skeleton className="h-4 w-2/3" />
-                <Skeleton className="h-4 w-5/6" />
-              </CardContent>
-            </Card>
-            {/* Verticals / Personas skeleton */}
-            <Card padding="default">
-              <CardHeader>
-                <Skeleton className="h-5 w-32" />
-              </CardHeader>
-              <CardContent className="mt-3">
-                <div className="flex flex-wrap gap-2">
-                  <Skeleton className="h-7 w-24 rounded-full" />
-                  <Skeleton className="h-7 w-32 rounded-full" />
-                  <Skeleton className="h-7 w-20 rounded-full" />
-                </div>
-              </CardContent>
-            </Card>
+
+            {/* Buyer Personas skeleton — 2 cards side-by-side */}
+            <div>
+              <div className="h-4 w-32 rounded bg-blue-50 mb-3" />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {[0, 1].map((i) => (
+                  <Card key={i} padding="sm">
+                    <CardContent className="space-y-2">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="h-5 w-16 rounded-full bg-blue-50" />
+                        <div className="h-5 w-20 rounded-full bg-blue-50" />
+                      </div>
+                      <div className="h-4 w-3/4 rounded bg-blue-50 mb-2" />
+                      <div className="space-y-1.5">
+                        <div className="h-2.5 w-full rounded bg-blue-50" />
+                        <div className="h-2.5 w-5/6 rounded bg-blue-50" />
+                        <div className="h-2.5 w-2/3 rounded bg-blue-50" />
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            {/* Messaging Angles skeleton — 3 cards in grid */}
+            <div>
+              <div className="h-4 w-36 rounded bg-blue-50 mb-3" />
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {[0, 1, 2].map((i) => (
+                  <Card key={i} padding="sm">
+                    <CardContent className="space-y-2">
+                      <div className="h-4 w-3/4 rounded bg-blue-50" />
+                      <div className="h-2.5 w-full rounded bg-blue-50 mt-2" />
+                      <div className="h-2.5 w-5/6 rounded bg-blue-50" />
+                      <div className="h-2.5 w-2/3 rounded bg-blue-50" />
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
           </div>
         ) : client.enrichment_status === 'failed' ? (
           <Card padding="default" className="border-destructive/50">

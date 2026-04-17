@@ -170,7 +170,7 @@ export default function ClientDetailTabs({ client, files, checklist }: ClientDet
 
       {/* Tabs */}
       <Tabs defaultValue="overview">
-        <TabsList className="mb-4">
+        <TabsList className="mb-4 h-11 bg-slate-100/80">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="sequences">Email Sequences</TabsTrigger>
           <TabsTrigger value="fulfillment">Fulfillment</TabsTrigger>

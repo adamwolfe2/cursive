@@ -1,12 +1,22 @@
 'use client'
 
 import { useState, useTransition } from 'react'
+import { formatDistanceToNow } from 'date-fns'
+import { cn } from '@/lib/design-system'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Progress } from '@/components/ui/progress'
 import { updateChecklistItem } from '@/app/admin/onboarding/actions'
 import type { FulfillmentChecklist as FulfillmentChecklistType, ChecklistItem } from '@/types/onboarding'
 import { ClipboardList, CheckCircle } from 'lucide-react'
+
+function formatRelativeTime(iso: string): string {
+  try {
+    return formatDistanceToNow(new Date(iso), { addSuffix: true })
+  } catch {
+    return ''
+  }
+}
 
 const CATEGORY_LABELS: Record<string, string> = {
   pixel: 'Pixel',
@@ -145,22 +155,31 @@ export default function FulfillmentChecklist({ checklist }: FulfillmentChecklist
               {catItems.map((item) => (
                 <div
                   key={item.id}
-                  className="flex items-start justify-between gap-3 py-1.5"
+                  className={cn(
+                    'flex items-start justify-between gap-3 py-1.5 transition-opacity',
+                    item.completed && 'opacity-60'
+                  )}
                 >
-                  <Checkbox
-                    checked={item.completed}
-                    onChange={() => handleToggle(item.id, item.completed)}
-                    label={item.label}
-                    disabled={isPending}
-                  />
-                  {item.completed_at && (
-                    <span className="text-[10px] text-muted-foreground whitespace-nowrap shrink-0">
-                      {new Date(item.completed_at).toLocaleDateString('en-US', {
-                        month: 'short',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
+                  <label className="flex gap-3 flex-1 min-w-0 cursor-pointer">
+                    <div className="flex h-5 items-center">
+                      <Checkbox
+                        checked={item.completed}
+                        onChange={() => handleToggle(item.id, item.completed)}
+                        disabled={isPending}
+                      />
+                    </div>
+                    <span
+                      className={cn(
+                        'text-sm font-medium text-foreground',
+                        item.completed && 'line-through text-muted-foreground'
+                      )}
+                    >
+                      {item.label}
+                    </span>
+                  </label>
+                  {item.completed && item.completed_at && (
+                    <span className="text-[10px] text-muted-foreground whitespace-nowrap shrink-0 mt-0.5">
+                      {formatRelativeTime(item.completed_at)}
                     </span>
                   )}
                 </div>

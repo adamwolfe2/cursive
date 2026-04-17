@@ -25,6 +25,7 @@ function formatFileSize(bytes: number): string {
 export function FileUpload({ label, helperText, accept, value, onChange, fileType, className }: FileUploadProps) {
   const [isDragging, setIsDragging] = React.useState(false)
   const [error, setError] = React.useState<string | null>(null)
+  const [announcement, setAnnouncement] = React.useState<string>('')
   const inputRef = React.useRef<HTMLInputElement>(null)
 
   const acceptedTypes = accept.split(',').map(t => t.trim())
@@ -55,6 +56,7 @@ export function FileUpload({ label, helperText, accept, value, onChange, fileTyp
   const handleFile = (file: File) => {
     if (!validateFile(file)) return
     onChange({ file, type: fileType, preview: file.name })
+    setAnnouncement(`File ${file.name} added (${formatFileSize(file.size)})`)
   }
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -86,6 +88,7 @@ export function FileUpload({ label, helperText, accept, value, onChange, fileTyp
   const handleRemove = () => {
     setError(null)
     onChange(null)
+    setAnnouncement('File removed')
   }
 
   return (
@@ -123,8 +126,17 @@ export function FileUpload({ label, helperText, accept, value, onChange, fileTyp
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
           onClick={() => inputRef.current?.click()}
+          role="button"
+          tabIndex={0}
+          aria-label={`${label} — drop zone, click or press Enter to browse`}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault()
+              inputRef.current?.click()
+            }
+          }}
           className={cn(
-            'flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed px-6 py-8 transition-all duration-200',
+            'flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed px-6 py-8 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
             isDragging
               ? 'border-blue-400 bg-blue-50/50'
               : 'border-border hover:border-blue-300 hover:bg-muted/30',
@@ -160,6 +172,11 @@ export function FileUpload({ label, helperText, accept, value, onChange, fileTyp
         className="hidden"
         aria-label={label}
       />
+
+      {/* Screen reader announcement for file add/remove */}
+      <div aria-live="polite" aria-atomic="true" className="sr-only">
+        {announcement}
+      </div>
     </div>
   )
 }

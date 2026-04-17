@@ -18,9 +18,11 @@ import {
   useSortable,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import Link from 'next/link'
 import { cn } from '@/lib/design-system'
 import { Badge } from '@/components/ui/badge'
-import { CheckSquare, Square, Download, X } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { CheckSquare, Square, Download, X, ClipboardList, Inbox, Plus } from 'lucide-react'
 import ClientCard from './ClientCard'
 import { updateClientStatus } from '@/app/admin/onboarding/actions'
 import type { OnboardingClient, ClientStatus } from '@/types/onboarding'
@@ -208,6 +210,31 @@ export default function OnboardingKanban({ clients: initialClients }: Onboarding
     }
   }, [clients])
 
+  if (clients.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-slate-300 bg-slate-50/50 px-6 py-16 text-center">
+        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+          <ClipboardList className="h-7 w-7" />
+        </div>
+        <h3 className="mt-4 text-base font-semibold text-foreground">
+          No onboarding clients yet
+        </h3>
+        <p className="mt-1.5 max-w-md text-sm text-muted-foreground">
+          Send a client the link at{' '}
+          <code className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-xs text-slate-700">
+            /client-onboarding
+          </code>{' '}
+          or create one manually via &apos;New Client&apos;.
+        </p>
+        <Link href="/admin/onboarding/new" className="mt-5">
+          <Button size="sm" leftIcon={<Plus className="h-3.5 w-3.5" />}>
+            Create first client
+          </Button>
+        </Link>
+      </div>
+    )
+  }
+
   return (
     <div>
       {/* Bulk toolbar */}
@@ -279,12 +306,21 @@ export default function OnboardingKanban({ clients: initialClients }: Onboarding
                 count={columnClients.length}
               >
                 {columnClients.map((client) => (
-                  <div key={client.id} className="relative">
+                  <div
+                    key={client.id}
+                    className="relative"
+                    aria-label={`${client.company_name} — ${STATUS_LABELS[client.status]}`}
+                  >
                     {selectMode && (
                       <button
                         type="button"
                         onClick={(e) => { e.stopPropagation(); toggleSelect(client.id) }}
                         className="absolute top-2 left-2 z-10"
+                        aria-label={
+                          selectedIds.has(client.id)
+                            ? `Deselect ${client.company_name}`
+                            : `Select ${client.company_name}`
+                        }
                       >
                         {selectedIds.has(client.id) ? (
                           <CheckSquare className="h-4 w-4 text-blue-600" />
@@ -332,6 +368,8 @@ function KanbanColumn({ status, count, children }: KanbanColumnProps) {
   return (
     <div
       ref={setNodeRef}
+      role="region"
+      aria-label={`${STATUS_LABELS[status]} clients (${count})`}
       className={cn(
         'flex flex-col shrink-0 w-[260px] rounded-lg border p-2',
         COLUMN_COLORS[status]
@@ -349,11 +387,15 @@ function KanbanColumn({ status, count, children }: KanbanColumnProps) {
         </Badge>
       </div>
 
-      <div className="flex flex-col gap-2 flex-1 overflow-y-auto max-h-[calc(100vh-360px)] min-h-[60px]">
+      <div className="flex flex-col gap-2 flex-1 overflow-y-auto max-h-[calc(100vh-360px)] min-h-[80px]">
         {children}
         {count === 0 && (
-          <div className="flex-1 flex items-center justify-center text-xs text-muted-foreground py-8">
-            No clients
+          <div
+            className="flex flex-col items-center justify-center gap-1.5 rounded-md border border-dashed border-border/60 bg-background/40 px-3 py-5 min-h-[80px] text-muted-foreground/70"
+            aria-hidden="true"
+          >
+            <Inbox className="h-4 w-4" />
+            <span className="text-[11px] font-medium">No clients</span>
           </div>
         )}
       </div>
