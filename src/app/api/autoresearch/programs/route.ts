@@ -28,7 +28,7 @@ const createProgramSchema = z.object({
  * GET /api/autoresearch/programs
  * List all autoresearch programs for the current workspace
  */
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const user = await getCurrentUser()
     if (!user) return unauthorized()

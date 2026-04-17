@@ -5,7 +5,6 @@
  * Today's KPIs + live activity feed + quick links to Pipeline, Visitors, Calls
  */
 
-import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import Link from 'next/link'
 import { useAdminAuth } from '@/hooks/use-admin-auth'

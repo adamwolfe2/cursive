@@ -5,7 +5,7 @@
 
 import { type NextRequest } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
-import { handleApiError, unauthorized, success, badRequest } from '@/lib/utils/api-error-handler'
+import { handleApiError, unauthorized, success } from '@/lib/utils/api-error-handler'
 import {
   getConversations,
   type ConversationFilters,

@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import { redirect } from 'next/navigation'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'

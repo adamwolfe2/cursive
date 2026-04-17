@@ -69,7 +69,7 @@ export default function AdminAffiliatesPage() {
   const [expanded, setExpanded] = useState<string | null>(null)
   const qc = useQueryClient()
 
-  const { data, isLoading, error: queryError } = useQuery<AffiliatesData>({
+  const { data, isLoading } = useQuery<AffiliatesData>({
     queryKey: ['admin', 'affiliates', statusFilter],
     queryFn: async () => {
       const params = new URLSearchParams()

@@ -7,7 +7,7 @@ import { getFileSignedUrl } from '@/app/admin/onboarding/actions'
 import type { ClientFile, ClientFileType } from '@/types/onboarding'
 import {
   FileText,
-  Image,
+  Image as ImageIcon,
   File,
   Presentation,
   Table,
@@ -37,7 +37,7 @@ const FILE_TYPE_ORDER: ClientFileType[] = [
 
 function getMimeIcon(mimeType: string | null) {
   if (!mimeType) return <File className="h-4 w-4" />
-  if (mimeType.startsWith('image/')) return <Image className="h-4 w-4" />
+  if (mimeType.startsWith('image/')) return <ImageIcon className="h-4 w-4" />
   if (mimeType.includes('pdf')) return <FileText className="h-4 w-4 text-red-500" />
   if (mimeType.includes('presentation') || mimeType.includes('pptx'))
     return <Presentation className="h-4 w-4 text-orange-500" />

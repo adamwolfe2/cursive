@@ -117,7 +117,7 @@ export async function POST(request: Request) {
       name: 'onboarding/intake-complete' as const,
       data: { client_id: clientId },
     })
-  } catch (inngestError: any) {
+  } catch (_inngestError: any) {
     // Fallback: call API route directly
     try {
       const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://leads.meetcursive.com'

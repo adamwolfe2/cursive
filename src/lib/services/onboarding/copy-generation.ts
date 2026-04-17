@@ -8,7 +8,6 @@ import type {
   EnrichedICPBrief,
   DraftSequences,
   AngleSelection,
-  CopyResearch,
   QualityIssue,
 } from '@/types/onboarding'
 import { checkSpendLimit, recordSpend } from '@/lib/services/api-spend-guard'

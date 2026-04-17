@@ -333,7 +333,7 @@ export default function ParsedPreview({
   onSubmit,
   isSubmitting,
 }: ParsedPreviewProps) {
-  const fieldsInferred = data.fields_inferred || []
+  const fieldsInferred = useMemo(() => data.fields_inferred || [], [data.fields_inferred])
 
   // Count field statuses
   const { filledCount, needsInputCount } = useMemo(() => {

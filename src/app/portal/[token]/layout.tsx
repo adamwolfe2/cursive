@@ -1,3 +1,5 @@
+import Image from 'next/image'
+
 export const metadata = {
   title: 'Onboarding Portal | Cursive',
   description: 'Complete your onboarding steps to launch your Cursive campaign.',
@@ -12,10 +14,13 @@ export default function TokenPortalLayout({
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white border-b border-gray-200">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 py-4 flex items-center justify-between">
-          <img
+          <Image
             src="/cursive-logo.png"
             alt="Cursive"
+            width={120}
+            height={32}
             className="h-8 w-auto"
+            priority
           />
           <a
             href="mailto:support@meetcursive.com"

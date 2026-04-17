@@ -24,7 +24,7 @@
  */
 
 import { createAdminClient } from '@/lib/supabase/admin'
-import { getValidAccessToken, TokenRevokedError, markNeedsReconnect } from './email-account.service'
+import { getValidAccessToken, TokenRevokedError } from './email-account.service'
 import { classifySentiment } from '@/lib/services/autoresearch/sentiment-classifier'
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
 

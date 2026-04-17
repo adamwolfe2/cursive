@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Card } from '@/components/ui/card'
-import { Mail, Package, Globe, Calculator, ChevronDown, ChevronRight, Inbox, Users } from 'lucide-react'
+import { Mail, Package, Globe, Calculator, ChevronDown, ChevronRight, Users } from 'lucide-react'
 import type { DealState } from '@/types/onboarding-wizard'
 import { calculateDealPricing, fmtCurrency, fmtCurrencyDecimal } from '@/lib/utils/deal-pricing'
 import { OUTBOUND_TIERS, SERVICE_PACKAGES } from '@/app/admin/deal-calculator/pricing-config'

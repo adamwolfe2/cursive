@@ -20,7 +20,7 @@ import {
 import { CSS } from '@dnd-kit/utilities'
 import { cn } from '@/lib/design-system'
 import { Badge } from '@/components/ui/badge'
-import { CheckSquare, Square, Download, ArrowRight, X } from 'lucide-react'
+import { CheckSquare, Square, Download, X } from 'lucide-react'
 import ClientCard from './ClientCard'
 import { updateClientStatus } from '@/app/admin/onboarding/actions'
 import type { OnboardingClient, ClientStatus } from '@/types/onboarding'

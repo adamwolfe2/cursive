@@ -8,7 +8,6 @@ import { getCurrentUser } from '@/lib/auth/helpers'
 import {
   handleApiError,
   unauthorized,
-  notFound,
   success,
   badRequest,
 } from '@/lib/utils/api-error-handler'

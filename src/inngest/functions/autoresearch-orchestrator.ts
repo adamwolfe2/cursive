@@ -12,7 +12,6 @@ import {
   selectNextElement,
   validateVariant,
 } from '@/lib/services/autoresearch/variant-generator'
-import { classifySentiment } from '@/lib/services/autoresearch/sentiment-classifier'
 import { determineWinner } from '@/lib/services/autoresearch/experiment-metrics'
 import {
   createVariant,

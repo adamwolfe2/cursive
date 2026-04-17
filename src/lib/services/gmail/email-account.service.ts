@@ -129,14 +129,6 @@ export async function connectGmailAccount(
 // REFRESH / READ
 // ============================================================================
 
-interface AccountTokenRow {
-  id: string
-  workspace_id: string
-  oauth_refresh_token_ct: string | null
-  oauth_access_token: string | null
-  oauth_expires_at: string | null
-}
-
 /**
  * Custom error thrown when Google says the refresh token is no longer valid
  * (user revoked app access, password changed, etc.). Caller should treat

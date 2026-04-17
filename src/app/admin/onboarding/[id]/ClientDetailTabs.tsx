@@ -37,7 +37,6 @@ import {
   MessageSquare,
   RefreshCw,
   Copy,
-  ExternalLink,
 } from 'lucide-react'
 import { DEAL_CALCULATOR_HANDOFF_KEY } from '@/types/onboarding-wizard'
 

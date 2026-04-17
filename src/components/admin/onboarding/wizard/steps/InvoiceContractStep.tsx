@@ -4,11 +4,11 @@ import { useState, useCallback, useMemo } from 'react'
 import { Card } from '@/components/ui/card'
 import {
   CreditCard, FileSignature, Loader2, Check, ExternalLink,
-  AlertTriangle, Upload, Eye, Send, ChevronDown, ChevronUp,
+  AlertTriangle, Eye, Send, ChevronDown, ChevronUp,
 } from 'lucide-react'
 import type { ParsedIntakeData } from '@/types/onboarding-templates'
 import type { DealState, InvoiceState, ContractState } from '@/types/onboarding-wizard'
-import { calculateDealPricing, fmtCurrency, fmtCurrencyDecimal } from '@/lib/utils/deal-pricing'
+import { calculateDealPricing, fmtCurrency } from '@/lib/utils/deal-pricing'
 import { buildInvoiceLineItems } from '@/lib/integrations/stripe-invoice'
 
 interface InvoiceContractStepProps {

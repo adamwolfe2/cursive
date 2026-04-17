@@ -3,7 +3,7 @@
 import { useMemo, useState, useCallback } from 'react'
 import { DollarSign, Copy, Check, ChevronDown, Globe, Inbox } from 'lucide-react'
 import { Card } from '@/components/ui/card'
-import type { DealState, DealPricing } from '@/types/onboarding-wizard'
+import type { DealState } from '@/types/onboarding-wizard'
 import { calculateDealPricing, fmtCurrency, fmtCurrencyDecimal } from '@/lib/utils/deal-pricing'
 import { OUTBOUND_TIERS, SERVICE_PACKAGES } from '@/app/admin/deal-calculator/pricing-config'
 

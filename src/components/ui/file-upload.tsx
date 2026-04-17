@@ -739,6 +739,7 @@ const FileUploadDropzone = React.forwardRef<
   const DropzonePrimitive = asChild ? Slot : "div";
 
   return (
+    // eslint-disable-next-line jsx-a11y/role-supports-aria-props -- aria-disabled/invalid convey state to AT even if role="region" technically doesn't mandate them
     <DropzonePrimitive
       role="region"
       id={context.dropzoneId}
@@ -836,6 +837,7 @@ const FileUploadList = React.forwardRef<HTMLDivElement, FileUploadListProps>(
     const ListPrimitive = asChild ? Slot : "div";
 
     return (
+      // eslint-disable-next-line jsx-a11y/role-supports-aria-props -- orientation affects layout styling; role="list" is semantically correct here
       <ListPrimitive
         role="list"
         id={context.listId}

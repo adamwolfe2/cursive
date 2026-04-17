@@ -218,7 +218,8 @@ function OnboardingPageContent() {
   }
 
   // Watch packages to compute active steps
-  const watchedPackages = methods.watch('packages_selected') ?? []
+  const rawWatchedPackages = methods.watch('packages_selected')
+  const watchedPackages = React.useMemo(() => rawWatchedPackages ?? [], [rawWatchedPackages])
   const activeSteps = React.useMemo(() => getActiveSteps(watchedPackages), [watchedPackages])
 
   // Clamp currentStep when activeSteps shrinks (e.g. user goes back and deselects packages)

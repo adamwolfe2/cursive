@@ -127,7 +127,7 @@ export async function checkRateLimit(
  */
 export async function checkWorkspaceRateLimit(
   workspaceId: string,
-  limitPerMinute = 60
+  _limitPerMinute = 60
 ): Promise<RateLimitResult> {
   return checkRateLimit(`workspace:${workspaceId}`, 'ext', 60)
 }

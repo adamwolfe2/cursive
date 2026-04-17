@@ -11,7 +11,6 @@ import {
   INFRA_COSTS,
   BUNDLE_DISCOUNT,
   calculateInfraCost,
-  type OutboundTier,
 } from './pricing-config'
 
 // ---------------------------------------------------------------------------
