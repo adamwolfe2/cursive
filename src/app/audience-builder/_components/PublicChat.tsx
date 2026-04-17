@@ -238,7 +238,11 @@ export function PublicChat({
       }
       if (evt.type === 'done') {
         if (evt.preview_id) setPreviewId(evt.preview_id)
-        setPreviewState('locked')
+        // Give the user ~2.5s to read the final text + scan segments before
+        // the blur overlay + email modal appears. Feels less like a bait-and-
+        // switch — they see the work complete, appreciate the result, then
+        // the gate drops in.
+        setTimeout(() => setPreviewState('locked'), 2500)
       }
     },
     []

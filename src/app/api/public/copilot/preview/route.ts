@@ -135,6 +135,8 @@ export async function POST(req: NextRequest) {
       const send = (evt: StreamEvent | Record<string, unknown>) =>
         controller.enqueue(encoder.encode(ssePayload(evt)))
 
+      const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
+
       let totalInput = 0
       let totalOutput = 0
       let totalCacheCreate = 0
@@ -147,16 +149,24 @@ export async function POST(req: NextRequest) {
       ]
 
       try {
+        // Multi-step reasoning simulation. Streams visible "working" events
+        // BEFORE the LLM call so the user sees meaningful progress rather
+        // than a 3-second black box. Each step is a live thinking nudge
+        // that the UI's LiveSteps ticker renders as a labelled progress row.
+        const reasoningSteps: Array<{ delta: string; pauseMs: number }> = [
+          { delta: 'Parsing your audience description...', pauseMs: 600 },
+          { delta: 'Identifying intent signals and buyer traits...', pauseMs: 700 },
+          { delta: 'Searching the 19,000-segment catalog...', pauseMs: 900 },
+          { delta: 'Ranking matches by relevance and freshness...', pauseMs: 700 },
+          { delta: 'Scoring in-market activity in the last 30 days...', pauseMs: 800 },
+          { delta: 'Preparing your top recommendations...', pauseMs: 500 },
+        ]
+        for (const step of reasoningSteps) {
+          send({ type: 'thinking', delta: step.delta })
+          await sleep(step.pauseMs)
+        }
+
         for (let iter = 0; iter < MAX_TOOL_ITERATIONS; iter++) {
-          // Emit a lightweight "thinking" nudge on the first iteration so the
-          // live-step ticker has something to render before text/tool events
-          // start flowing (extended thinking is not enabled for public).
-          if (iter === 0) {
-            send({
-              type: 'thinking',
-              delta: 'Analyzing your audience description...',
-            })
-          }
 
           const params: Anthropic.MessageStreamParams = {
             model: MODEL,
@@ -224,8 +234,20 @@ export async function POST(req: NextRequest) {
             }
 
             if (resultSegments && resultSegments.length > 0) {
+              // Show a "found N matches" thinking step before revealing cards
+              send({
+                type: 'thinking',
+                delta: `Found ${resultSegments.length} candidate segments — picking the best fits...`,
+              })
+              await sleep(600)
               totalSegments += resultSegments.length
               send({ type: 'segments', segments: resultSegments })
+              await sleep(400)
+              send({
+                type: 'thinking',
+                delta: 'Synthesizing recommendations...',
+              })
+              await sleep(500)
             }
             send({
               type: 'tool_result',

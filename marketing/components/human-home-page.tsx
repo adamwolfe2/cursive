@@ -105,7 +105,7 @@ export function HumanHomePage() {
                   on each line at lg+ so the long second line never wraps to a
                   third row. Font sizes are tuned to fit the longer line inside
                   the 46%-width column at every breakpoint we support. */}
-              <h1 className="text-[1.75rem] sm:text-[2rem] md:text-[2.25rem] lg:text-[1.5rem] xl:text-[1.875rem] 2xl:text-[2.15rem] font-light mb-4 leading-[1.12] tracking-tight">
+              <h1 className="text-[2.25rem] sm:text-[2.75rem] md:text-[3.25rem] lg:text-[1.875rem] xl:text-[2.375rem] 2xl:text-[2.75rem] font-light mb-4 leading-[1.08] tracking-tight">
                 <span className="text-gray-900 lg:whitespace-nowrap">The Data Identity Layer</span>
                 <br />
                 <span className="text-gray-400 lg:whitespace-nowrap">for Outbound, Intent, and Enrichment</span>
