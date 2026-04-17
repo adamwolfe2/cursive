@@ -21,7 +21,7 @@ import {
   PACKAGES,
 } from '@/types/onboarding'
 import type { OnboardingClient, ClientStatus, PackageSlug } from '@/types/onboarding'
-import { Search, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Search, ChevronLeft, ChevronRight, Download } from 'lucide-react'
 
 const STATUS_BADGE_VARIANT: Record<ClientStatus, 'muted' | 'info' | 'default' | 'warning' | 'success' | 'destructive'> = {
   lead: 'muted',
@@ -104,6 +104,52 @@ export default function ClientsTable({
     ...CLIENT_STATUSES.map((s) => ({ value: s, label: STATUS_LABELS[s] })),
   ]
 
+  function handleExportCSV() {
+    const headers = [
+      'Company',
+      'Contact Name',
+      'Email',
+      'Phone',
+      'Packages',
+      'Status',
+      'Setup Fee',
+      'Billing Cadence',
+      'Outbound Tier',
+      'Enrichment',
+      'Copy Status',
+      'Created',
+    ]
+    const escape = (v: string | number | null | undefined): string => {
+      const s = v === null || v === undefined ? '' : String(v)
+      if (/[",\n]/.test(s)) return `"${s.replace(/"/g, '""')}"`
+      return s
+    }
+    const rows = clients.map((c) =>
+      [
+        escape(c.company_name),
+        escape(c.primary_contact_name),
+        escape(c.primary_contact_email),
+        escape(c.primary_contact_phone),
+        escape(c.packages_selected.map((p) => PACKAGES[p]?.label ?? p).join('; ')),
+        escape(STATUS_LABELS[c.status]),
+        escape(c.setup_fee ?? ''),
+        escape(c.billing_cadence ?? ''),
+        escape(c.outbound_tier ?? ''),
+        escape(c.enrichment_status),
+        escape(c.copy_generation_status),
+        escape(new Date(c.created_at).toISOString().slice(0, 10)),
+      ].join(',')
+    )
+    const csv = [headers.join(','), ...rows].join('\n')
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `onboarding-clients-${new Date().toISOString().slice(0, 10)}.csv`
+    link.click()
+    URL.revokeObjectURL(url)
+  }
+
   return (
     <div className="space-y-4">
       {/* Filters */}
@@ -132,6 +178,17 @@ export default function ClientsTable({
           onChange={(e) => updateParams({ status: e.target.value })}
           className="w-full sm:w-[200px]"
         />
+        <Button
+          type="button"
+          variant="outline"
+          onClick={handleExportCSV}
+          disabled={clients.length === 0}
+          className="sm:w-auto"
+          title="Export current page as CSV"
+        >
+          <Download className="mr-2 h-4 w-4" />
+          Export CSV
+        </Button>
       </div>
 
       {/* Table */}

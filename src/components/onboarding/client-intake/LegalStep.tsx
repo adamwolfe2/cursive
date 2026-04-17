@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label'
 import type { OnboardingFormData } from '@/types/onboarding'
 
 export function LegalStep() {
-  const { register, watch, formState: { errors } } = useFormContext<OnboardingFormData>()
+  const { register, formState: { errors } } = useFormContext<OnboardingFormData>()
   const today = new Date().toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',

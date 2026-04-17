@@ -186,7 +186,6 @@ export const composeCampaignEmail = inngest.createFunction(
           .maybeSingle()
 
         const tone = ((agent?.tone as string) || 'professional') as 'professional' | 'casual' | 'friendly' | 'urgent'
-        const icpText = (agent as any)?.icp_text || ''
         const personaText = (agent as any)?.persona_text || ''
         const productText = (agent as any)?.product_text || campaign.description || 'our solution'
 

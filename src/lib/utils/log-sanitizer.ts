@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- this module wraps console.log/error with sanitization; console methods are the intended implementation */
 /**
  * Log Sanitization Utility
  * Prevents sensitive data (API keys, tokens, emails) from appearing in application logs

@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { PACKAGES } from '@/types/onboarding'
@@ -21,6 +20,8 @@ import {
   Save,
   RefreshCw,
   AlertTriangle,
+  Copy,
+  Check,
 } from 'lucide-react'
 
 interface ClientOverviewProps {
@@ -57,8 +58,8 @@ export default function ClientOverview({ client }: ClientOverviewProps) {
           </CardHeader>
           <CardContent className="space-y-3 mt-3">
             <InfoRow icon={<User className="h-3.5 w-3.5" />} label="Primary Contact" value={client.primary_contact_name} />
-            <InfoRow icon={<Mail className="h-3.5 w-3.5" />} label="Email" value={client.primary_contact_email} />
-            <InfoRow icon={<Phone className="h-3.5 w-3.5" />} label="Phone" value={client.primary_contact_phone} />
+            <InfoRow icon={<Mail className="h-3.5 w-3.5" />} label="Email" value={client.primary_contact_email} copyable />
+            <InfoRow icon={<Phone className="h-3.5 w-3.5" />} label="Phone" value={client.primary_contact_phone} copyable />
             {client.billing_contact_name && (
               <InfoRow icon={<CreditCard className="h-3.5 w-3.5" />} label="Billing Contact" value={`${client.billing_contact_name} (${client.billing_contact_email ?? ''})`} />
             )}
@@ -120,7 +121,7 @@ export default function ClientOverview({ client }: ClientOverviewProps) {
               <InfoRow icon={<CreditCard className="h-3.5 w-3.5" />} label="Payment Method" value={client.payment_method} />
             )}
             {client.invoice_email && (
-              <InfoRow icon={<Mail className="h-3.5 w-3.5" />} label="Invoice Email" value={client.invoice_email} />
+              <InfoRow icon={<Mail className="h-3.5 w-3.5" />} label="Invoice Email" value={client.invoice_email} copyable />
             )}
           </CardContent>
         </Card>
@@ -158,49 +159,64 @@ export default function ClientOverview({ client }: ClientOverviewProps) {
         <h3 className="text-lg font-semibold mb-4">Enriched ICP Brief</h3>
 
         {client.enrichment_status === 'pending' || client.enrichment_status === 'processing' ? (
-          <div className="space-y-4">
-            {/* Company Summary skeleton */}
+          <div className="space-y-4 animate-pulse">
+            {/* Company Summary skeleton — 3 lines */}
             <Card padding="default">
               <CardHeader>
-                <Skeleton className="h-5 w-40" />
+                <div className="h-5 w-40 rounded bg-blue-50" />
               </CardHeader>
               <CardContent className="space-y-3 mt-3">
                 <div className="flex items-center gap-2 mb-4">
-                  <RefreshCw className="h-4 w-4 animate-spin text-muted-foreground" />
+                  <RefreshCw className="h-4 w-4 animate-spin text-blue-500" />
                   <span className="text-sm text-muted-foreground">
                     {client.enrichment_status === 'pending' ? 'Enrichment pending...' : 'Enrichment in progress...'}
                   </span>
                 </div>
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-5/6" />
-                <Skeleton className="h-4 w-3/4" />
+                <div className="h-3.5 w-full rounded bg-blue-50" />
+                <div className="h-3.5 w-5/6 rounded bg-blue-50" />
+                <div className="h-3.5 w-3/4 rounded bg-blue-50" />
               </CardContent>
             </Card>
-            {/* Buyer Profile skeleton */}
-            <Card padding="default">
-              <CardHeader>
-                <Skeleton className="h-5 w-36" />
-              </CardHeader>
-              <CardContent className="space-y-3 mt-3">
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-4/5" />
-                <Skeleton className="h-4 w-2/3" />
-                <Skeleton className="h-4 w-5/6" />
-              </CardContent>
-            </Card>
-            {/* Verticals / Personas skeleton */}
-            <Card padding="default">
-              <CardHeader>
-                <Skeleton className="h-5 w-32" />
-              </CardHeader>
-              <CardContent className="mt-3">
-                <div className="flex flex-wrap gap-2">
-                  <Skeleton className="h-7 w-24 rounded-full" />
-                  <Skeleton className="h-7 w-32 rounded-full" />
-                  <Skeleton className="h-7 w-20 rounded-full" />
-                </div>
-              </CardContent>
-            </Card>
+
+            {/* Buyer Personas skeleton — 2 cards side-by-side */}
+            <div>
+              <div className="h-4 w-32 rounded bg-blue-50 mb-3" />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {[0, 1].map((i) => (
+                  <Card key={i} padding="sm">
+                    <CardContent className="space-y-2">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="h-5 w-16 rounded-full bg-blue-50" />
+                        <div className="h-5 w-20 rounded-full bg-blue-50" />
+                      </div>
+                      <div className="h-4 w-3/4 rounded bg-blue-50 mb-2" />
+                      <div className="space-y-1.5">
+                        <div className="h-2.5 w-full rounded bg-blue-50" />
+                        <div className="h-2.5 w-5/6 rounded bg-blue-50" />
+                        <div className="h-2.5 w-2/3 rounded bg-blue-50" />
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            {/* Messaging Angles skeleton — 3 cards in grid */}
+            <div>
+              <div className="h-4 w-36 rounded bg-blue-50 mb-3" />
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {[0, 1, 2].map((i) => (
+                  <Card key={i} padding="sm">
+                    <CardContent className="space-y-2">
+                      <div className="h-4 w-3/4 rounded bg-blue-50" />
+                      <div className="h-2.5 w-full rounded bg-blue-50 mt-2" />
+                      <div className="h-2.5 w-5/6 rounded bg-blue-50" />
+                      <div className="h-2.5 w-2/3 rounded bg-blue-50" />
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
           </div>
         ) : client.enrichment_status === 'failed' ? (
           <Card padding="default" className="border-destructive/50">
@@ -403,13 +419,52 @@ export default function ClientOverview({ client }: ClientOverviewProps) {
   )
 }
 
-function InfoRow({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
+function InfoRow({
+  icon,
+  label,
+  value,
+  copyable,
+}: {
+  icon: React.ReactNode
+  label: string
+  value: string
+  copyable?: boolean
+}) {
+  const [copied, setCopied] = useState(false)
+
+  async function handleCopy() {
+    try {
+      await navigator.clipboard.writeText(value)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1500)
+    } catch {
+      // Clipboard API may be unavailable in insecure contexts; silently no-op
+    }
+  }
+
   return (
-    <div className="flex items-start gap-2">
+    <div className="group flex items-start gap-2">
       <span className="text-muted-foreground mt-0.5">{icon}</span>
-      <div className="min-w-0">
+      <div className="min-w-0 flex-1">
         <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">{label}</p>
-        <p className="text-sm text-foreground break-words">{value}</p>
+        <div className="flex items-center gap-1.5">
+          <p className="text-sm text-foreground break-words">{value}</p>
+          {copyable && value && (
+            <button
+              type="button"
+              onClick={handleCopy}
+              className="opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity text-muted-foreground hover:text-foreground"
+              aria-label={`Copy ${label.toLowerCase()}`}
+              title={copied ? 'Copied' : `Copy ${label.toLowerCase()}`}
+            >
+              {copied ? (
+                <Check className="h-3 w-3 text-green-600" />
+              ) : (
+                <Copy className="h-3 w-3" />
+              )}
+            </button>
+          )}
+        </div>
       </div>
     </div>
   )

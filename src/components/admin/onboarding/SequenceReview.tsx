@@ -42,11 +42,14 @@ export default function SequenceReview({ client }: SequenceReviewProps) {
 
   if (client.copy_generation_status === 'not_applicable') {
     return (
-      <Card padding="default">
-        <CardContent className="flex items-center gap-3 py-6">
-          <Mail className="h-5 w-5 text-muted-foreground" />
-          <p className="text-sm text-muted-foreground">
-            No email sequences needed for this client&apos;s packages.
+      <Card padding="default" className="border-slate-200 bg-slate-50/50">
+        <CardContent className="flex flex-col items-center justify-center gap-2 py-10 text-center">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-400">
+            <Mail className="h-5 w-5" />
+          </div>
+          <p className="text-sm font-medium text-foreground">No email sequences needed</p>
+          <p className="max-w-md text-xs text-muted-foreground">
+            This client didn&apos;t select an outbound package, so no sequences were generated.
           </p>
         </CardContent>
       </Card>
@@ -59,19 +62,21 @@ export default function SequenceReview({ client }: SequenceReviewProps) {
         <CardContent className="space-y-5 py-6">
           <div className="flex flex-col items-center justify-center gap-3 py-4">
             <RefreshCw className="h-6 w-6 animate-spin text-primary" />
-            <p className="text-sm font-medium text-foreground">
+            <p className="text-sm font-medium text-foreground inline-flex items-center">
               {client.copy_generation_status === 'pending'
                 ? 'Copy generation pending'
-                : 'Generating email sequences'}
-              <span className="inline-flex w-6">
-                <span className="animate-pulse">...</span>
+                : 'Claude is writing your sequences'}
+              <span aria-hidden="true" className="inline-flex ml-0.5">
+                <span className="animate-[bounce_1s_infinite_0ms]">.</span>
+                <span className="animate-[bounce_1s_infinite_150ms]">.</span>
+                <span className="animate-[bounce_1s_infinite_300ms]">.</span>
               </span>
             </p>
             <p className="text-xs text-muted-foreground">
               This may take a minute. The page will update automatically.
             </p>
           </div>
-          <div className="space-y-3">
+          <div className="space-y-3 animate-pulse">
             <Skeleton className="h-14 w-full rounded-lg" />
             <Skeleton className="h-14 w-full rounded-lg" />
             <Skeleton className="h-14 w-3/4 rounded-lg" />
@@ -83,14 +88,16 @@ export default function SequenceReview({ client }: SequenceReviewProps) {
 
   if (client.copy_generation_status === 'failed') {
     return (
-      <Card padding="default" className="border-destructive/50">
-        <CardContent className="space-y-4 py-4">
-          <div className="flex items-center gap-3">
-            <AlertTriangle className="h-5 w-5 text-destructive" />
+      <Card padding="default" className="border-destructive/50 bg-destructive/5">
+        <CardContent className="space-y-4 py-5">
+          <div className="flex items-start gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+              <AlertTriangle className="h-5 w-5" />
+            </div>
             <div>
-              <p className="text-sm font-medium text-destructive">Copy Generation Failed</p>
-              <p className="text-xs text-muted-foreground">
-                The email sequence generation encountered an error.
+              <p className="text-sm font-semibold text-destructive">Copy Generation Failed</p>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                The email sequence generation encountered an error. Optionally provide feedback and retry.
               </p>
             </div>
           </div>
@@ -114,7 +121,7 @@ export default function SequenceReview({ client }: SequenceReviewProps) {
             }}
             leftIcon={<RefreshCw className="h-3.5 w-3.5" />}
           >
-            Regenerate Copy
+            Regenerate
           </Button>
         </CardContent>
       </Card>
@@ -223,9 +230,13 @@ export default function SequenceReview({ client }: SequenceReviewProps) {
 
       {/* Sequences */}
       {sequences.length === 0 ? (
-        <Card padding="default">
-          <CardContent className="py-4">
-            <p className="text-sm text-muted-foreground">No sequences generated yet.</p>
+        <Card padding="default" className="border-amber-200 bg-amber-50/40">
+          <CardContent className="flex flex-col items-center justify-center gap-2 py-8 text-center">
+            <AlertTriangle className="h-5 w-5 text-amber-600" />
+            <p className="text-sm font-medium text-foreground">No sequences generated</p>
+            <p className="max-w-md text-xs text-muted-foreground">
+              Claude returned zero sequences. Click &apos;Regenerate&apos; below to try again.
+            </p>
           </CardContent>
         </Card>
       ) : (

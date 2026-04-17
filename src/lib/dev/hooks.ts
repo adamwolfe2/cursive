@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- dev-only React hooks for debugging; console.log is the intended output */
 /**
  * Development React Hooks
  * Cursive Platform

@@ -2,7 +2,6 @@
 // Combines deal calculator state + AI-parsed intake data + invoice/contract tracking
 
 import type { ContextFormat, TemplateData, ParsedIntakeData } from './onboarding-templates'
-import type { PackageSlug } from './onboarding'
 
 // ---------------------------------------------------------------------------
 // Deal configuration (from deal calculator)

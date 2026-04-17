@@ -51,7 +51,6 @@ export function PixelSetupStep() {
   const installer = watch('pixel_installer')
 
   const { field: deliveryField } = useController({ name: 'pixel_delivery', control })
-  const pixelDeliveryOther = watch('pixel_delivery_other')
 
   const toggleDelivery = (option: string) => {
     const current: string[] = deliveryField.value ?? []

@@ -5,6 +5,7 @@
 
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useUser } from '@/hooks/use-user'
@@ -78,7 +79,7 @@ export function NavBar() {
               href="/"
               className="flex items-center flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-primary rounded-lg"
             >
-              <img src="/cursive-logo.png" alt="Cursive" className="h-7 w-auto" />
+              <Image src="/cursive-logo.png" alt="Cursive" width={105} height={28} className="h-7 w-auto" priority />
             </Link>
 
             {/* Desktop Navigation */}

@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- dev-only debug helpers (all gated by NODE_ENV==='development'); console.log is the intended output */
 /**
  * Debug Utilities
  * Cursive Platform

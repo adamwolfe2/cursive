@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- this IS the logger module; console methods are the implementation */
 /**
  * Structured Logging Utility
  * Provides consistent logging across the platform

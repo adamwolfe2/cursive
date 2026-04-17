@@ -8,7 +8,7 @@
  * and severity color-coding for compliance and debugging.
  */
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useAdminAuth } from '@/hooks/use-admin-auth'
 import { safeError } from '@/lib/utils/log-sanitizer'

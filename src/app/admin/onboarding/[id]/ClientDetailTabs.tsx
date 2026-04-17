@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { formatDistanceToNow } from 'date-fns'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
@@ -37,7 +38,6 @@ import {
   MessageSquare,
   RefreshCw,
   Copy,
-  ExternalLink,
 } from 'lucide-react'
 import { DEAL_CALCULATOR_HANDOFF_KEY } from '@/types/onboarding-wizard'
 
@@ -57,6 +57,14 @@ interface ClientDetailTabsProps {
   client: OnboardingClient
   files: ClientFile[]
   checklist: FulfillmentChecklistType | null
+}
+
+function formatRelative(iso: string): string {
+  try {
+    return formatDistanceToNow(new Date(iso), { addSuffix: true })
+  } catch {
+    return ''
+  }
 }
 
 export default function ClientDetailTabs({ client, files, checklist }: ClientDetailTabsProps) {
@@ -141,6 +149,13 @@ export default function ClientDetailTabs({ client, files, checklist }: ClientDet
           Regenerate Copy
         </Button>
 
+        <span
+          className="ml-auto text-xs text-muted-foreground"
+          title={new Date(client.updated_at).toLocaleString()}
+        >
+          Updated {formatRelative(client.updated_at)}
+        </span>
+
         <Button
           variant="outline"
           size="sm"
@@ -171,7 +186,7 @@ export default function ClientDetailTabs({ client, files, checklist }: ClientDet
 
       {/* Tabs */}
       <Tabs defaultValue="overview">
-        <TabsList className="mb-4">
+        <TabsList className="mb-4 h-11 bg-slate-100/80">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="sequences">Email Sequences</TabsTrigger>
           <TabsTrigger value="fulfillment">Fulfillment</TabsTrigger>

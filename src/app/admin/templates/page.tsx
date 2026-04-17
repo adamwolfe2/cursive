@@ -33,12 +33,6 @@ const STATUS_VARIANTS: Record<string, 'success' | 'warning' | 'muted' | 'default
   archived: 'muted',
 }
 
-const STATUS_ICONS: Record<string, typeof FileText> = {
-  active: CheckCircle2,
-  draft: Clock,
-  archived: Archive,
-}
-
 export default async function AdminTemplatesPage() {
   const supabase = createAdminClient()
 

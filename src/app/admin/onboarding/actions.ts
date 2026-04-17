@@ -20,7 +20,7 @@ export async function updateClientStatus(clientId: string, status: ClientStatus,
     query = query.eq('updated_at', expectedUpdatedAt)
   }
 
-  const { data, error, count } = await query.select('id').maybeSingle()
+  const { data, error } = await query.select('id').maybeSingle()
 
   if (error) {
     throw new Error(`Failed to update client status: ${error.message}`)

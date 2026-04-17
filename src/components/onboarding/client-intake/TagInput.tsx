@@ -52,6 +52,8 @@ export function TagInput({ value, onChange, placeholder = 'Type and press Enter.
   return (
     <div
       ref={containerRef}
+      role="group"
+      aria-label={placeholder}
       className={cn(
         'flex flex-wrap items-center gap-2 rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background transition-all duration-200',
         'focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-0',

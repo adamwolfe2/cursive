@@ -39,6 +39,26 @@ export function StepWizard({
     onBack()
   }
 
+  // Cmd/Ctrl+Enter advances to the next step (or submits on the last step).
+  // Plain Enter in text inputs must NOT submit mid-wizard — the parent form
+  // already preventDefaults, and we intentionally don't listen for bare Enter.
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault()
+        if (isSubmitting) return
+        if (isLast) {
+          onSubmit()
+        } else {
+          void handleNext()
+        }
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLast, isSubmitting])
+
   const variants = {
     enter: (d: number) => ({
       x: d > 0 ? 80 : -80,

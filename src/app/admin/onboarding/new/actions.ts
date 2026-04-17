@@ -142,7 +142,7 @@ export async function createClientFromIntake(
           contact_email: data.primary_contact_email,
         },
       })
-    } catch (inngestError) {
+    } catch (_inngestError) {
       // Fallback: direct API call
       try {
         const baseUrl =
