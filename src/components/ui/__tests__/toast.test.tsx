@@ -36,7 +36,7 @@ describe('Toast', () => {
 
     const toast = screen.getByRole('alert')
     expect(toast).toBeInTheDocument()
-    expect(toast).toHaveClass('bg-success-muted')
+    expect(toast).toHaveClass('bg-green-50')
     expect(screen.getByText('Test message')).toBeInTheDocument()
   })
 
@@ -44,21 +44,21 @@ describe('Toast', () => {
     render(<Toast {...defaultProps} type="error" />)
 
     const toast = screen.getByRole('alert')
-    expect(toast).toHaveClass('bg-destructive-muted')
+    expect(toast).toHaveClass('bg-red-50')
   })
 
   it('renders warning toast with correct styling', () => {
     render(<Toast {...defaultProps} type="warning" />)
 
     const toast = screen.getByRole('alert')
-    expect(toast).toHaveClass('bg-warning-muted')
+    expect(toast).toHaveClass('bg-amber-50')
   })
 
   it('renders info toast with correct styling', () => {
     render(<Toast {...defaultProps} type="info" />)
 
     const toast = screen.getByRole('alert')
-    expect(toast).toHaveClass('bg-info-muted')
+    expect(toast).toHaveClass('bg-blue-50')
   })
 
   it('renders title when provided', () => {

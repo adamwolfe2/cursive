@@ -142,26 +142,40 @@ export class OnboardingClientRepository {
   async appendAutomationLog(id: string, entry: AutomationLogEntry): Promise<void> {
     const supabase = createAdminClient()
 
-    for (let attempt = 0; attempt < 3; attempt++) {
-      const { data } = await supabase
+    // Retry loop with optimistic locking — prevents lost entries when multiple
+    // Inngest steps append concurrently. `.select()` returns the updated rows
+    // so we can detect zero-row updates (lock conflict).
+    for (let attempt = 0; attempt < 5; attempt++) {
+      const { data: current, error: readError } = await supabase
         .from('onboarding_clients')
         .select('automation_log, updated_at')
         .eq('id', id)
-        .single()
+        .maybeSingle()
 
-      if (!data) return
+      if (readError || !current) return
 
-      const currentLog = (data.automation_log as AutomationLogEntry[]) || []
+      const currentLog = (current.automation_log as AutomationLogEntry[] | null) ?? []
       const newLog = [...currentLog, entry]
 
-      const { error } = await supabase
+      const { data: updated, error: updateError } = await supabase
         .from('onboarding_clients')
         .update({ automation_log: newLog })
         .eq('id', id)
-        .eq('updated_at', data.updated_at) // Optimistic lock
+        .eq('updated_at', current.updated_at)
+        .select('id')
 
-      if (!error) return // Success
-      // If error (concurrent modification), retry
+      if (updateError) {
+        // Real DB error — don't retry endlessly
+        return
+      }
+
+      if (updated && updated.length > 0) {
+        return // Success
+      }
+
+      // Zero rows updated = lock conflict, retry with fresh read
+      // Back off slightly to reduce contention
+      await new Promise((resolve) => setTimeout(resolve, 10 * (attempt + 1)))
     }
   }
 
