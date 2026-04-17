@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { formatDistanceToNow } from 'date-fns'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
@@ -56,6 +57,14 @@ interface ClientDetailTabsProps {
   client: OnboardingClient
   files: ClientFile[]
   checklist: FulfillmentChecklistType | null
+}
+
+function formatRelative(iso: string): string {
+  try {
+    return formatDistanceToNow(new Date(iso), { addSuffix: true })
+  } catch {
+    return ''
+  }
 }
 
 export default function ClientDetailTabs({ client, files, checklist }: ClientDetailTabsProps) {
@@ -139,6 +148,13 @@ export default function ClientDetailTabs({ client, files, checklist }: ClientDet
         >
           Regenerate Copy
         </Button>
+
+        <span
+          className="ml-auto text-xs text-muted-foreground"
+          title={new Date(client.updated_at).toLocaleString()}
+        >
+          Updated {formatRelative(client.updated_at)}
+        </span>
 
         <Button
           variant="outline"

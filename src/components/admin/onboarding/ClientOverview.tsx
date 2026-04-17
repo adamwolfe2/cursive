@@ -20,6 +20,8 @@ import {
   Save,
   RefreshCw,
   AlertTriangle,
+  Copy,
+  Check,
 } from 'lucide-react'
 
 interface ClientOverviewProps {
@@ -56,8 +58,8 @@ export default function ClientOverview({ client }: ClientOverviewProps) {
           </CardHeader>
           <CardContent className="space-y-3 mt-3">
             <InfoRow icon={<User className="h-3.5 w-3.5" />} label="Primary Contact" value={client.primary_contact_name} />
-            <InfoRow icon={<Mail className="h-3.5 w-3.5" />} label="Email" value={client.primary_contact_email} />
-            <InfoRow icon={<Phone className="h-3.5 w-3.5" />} label="Phone" value={client.primary_contact_phone} />
+            <InfoRow icon={<Mail className="h-3.5 w-3.5" />} label="Email" value={client.primary_contact_email} copyable />
+            <InfoRow icon={<Phone className="h-3.5 w-3.5" />} label="Phone" value={client.primary_contact_phone} copyable />
             {client.billing_contact_name && (
               <InfoRow icon={<CreditCard className="h-3.5 w-3.5" />} label="Billing Contact" value={`${client.billing_contact_name} (${client.billing_contact_email ?? ''})`} />
             )}
@@ -119,7 +121,7 @@ export default function ClientOverview({ client }: ClientOverviewProps) {
               <InfoRow icon={<CreditCard className="h-3.5 w-3.5" />} label="Payment Method" value={client.payment_method} />
             )}
             {client.invoice_email && (
-              <InfoRow icon={<Mail className="h-3.5 w-3.5" />} label="Invoice Email" value={client.invoice_email} />
+              <InfoRow icon={<Mail className="h-3.5 w-3.5" />} label="Invoice Email" value={client.invoice_email} copyable />
             )}
           </CardContent>
         </Card>
@@ -417,13 +419,52 @@ export default function ClientOverview({ client }: ClientOverviewProps) {
   )
 }
 
-function InfoRow({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
+function InfoRow({
+  icon,
+  label,
+  value,
+  copyable,
+}: {
+  icon: React.ReactNode
+  label: string
+  value: string
+  copyable?: boolean
+}) {
+  const [copied, setCopied] = useState(false)
+
+  async function handleCopy() {
+    try {
+      await navigator.clipboard.writeText(value)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1500)
+    } catch {
+      // Clipboard API may be unavailable in insecure contexts; silently no-op
+    }
+  }
+
   return (
-    <div className="flex items-start gap-2">
+    <div className="group flex items-start gap-2">
       <span className="text-muted-foreground mt-0.5">{icon}</span>
-      <div className="min-w-0">
+      <div className="min-w-0 flex-1">
         <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">{label}</p>
-        <p className="text-sm text-foreground break-words">{value}</p>
+        <div className="flex items-center gap-1.5">
+          <p className="text-sm text-foreground break-words">{value}</p>
+          {copyable && value && (
+            <button
+              type="button"
+              onClick={handleCopy}
+              className="opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity text-muted-foreground hover:text-foreground"
+              aria-label={`Copy ${label.toLowerCase()}`}
+              title={copied ? 'Copied' : `Copy ${label.toLowerCase()}`}
+            >
+              {copied ? (
+                <Check className="h-3 w-3 text-green-600" />
+              ) : (
+                <Copy className="h-3 w-3" />
+              )}
+            </button>
+          )}
+        </div>
       </div>
     </div>
   )
