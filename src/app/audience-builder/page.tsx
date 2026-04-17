@@ -1,22 +1,33 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
-import { EmailGate, type LeadInfo } from './_components/EmailGate'
 import { PublicChat } from './_components/PublicChat'
 
 const TOKEN_KEY = 'audience_builder_token'
 const SESSION_KEY = 'audience_builder_session_id'
 const LEAD_INFO_KEY = 'audience_builder_lead_info'
 
-interface SessionState {
-  token: string
-  sessionId: string
-  leadInfo: LeadInfo
+export interface LeadInfo {
+  firstName: string | null
+  company: string | null
+}
+
+interface AuthState {
+  token: string | null
+  sessionId: string | null
+  firstName: string | null
+  company: string | null
+}
+
+const EMPTY_AUTH: AuthState = {
+  token: null,
+  sessionId: null,
+  firstName: null,
+  company: null,
 }
 
 export default function AudienceBuilderPage() {
-  const [session, setSession] = useState<SessionState | null>(null)
+  const [authState, setAuthState] = useState<AuthState>(EMPTY_AUTH)
   const [hydrated, setHydrated] = useState(false)
 
   // Hydrate from sessionStorage so refresh doesn't kick user out.
@@ -25,35 +36,59 @@ export default function AudienceBuilderPage() {
       const token = sessionStorage.getItem(TOKEN_KEY)
       const sessionId = sessionStorage.getItem(SESSION_KEY)
       const leadInfoRaw = sessionStorage.getItem(LEAD_INFO_KEY)
-      if (token && sessionId) {
-        let leadInfo: LeadInfo = { firstName: '', company: '' }
-        if (leadInfoRaw) {
-          try {
-            const parsed = JSON.parse(leadInfoRaw) as Partial<LeadInfo>
-            leadInfo = {
-              firstName: parsed.firstName ?? '',
-              company: parsed.company ?? '',
+      const leadInfo: Partial<LeadInfo> | null = leadInfoRaw
+        ? (() => {
+            try {
+              return JSON.parse(leadInfoRaw) as Partial<LeadInfo>
+            } catch {
+              return null
             }
-          } catch {
-            /* ignore malformed */
-          }
-        }
-        setSession({ token, sessionId, leadInfo })
+          })()
+        : null
+      if (token && sessionId) {
+        setAuthState({
+          token,
+          sessionId,
+          firstName: leadInfo?.firstName ?? null,
+          company: leadInfo?.company ?? null,
+        })
       }
     } catch {
       /* sessionStorage unavailable */
+    } finally {
+      setHydrated(true)
     }
-    setHydrated(true)
   }, [])
 
-  const handleStart = useCallback(
-    (token: string, sessionId: string, leadInfo: LeadInfo) => {
-      setSession({ token, sessionId, leadInfo })
+  const handleAuth = useCallback(
+    (
+      token: string,
+      sessionId: string,
+      leadInfo: { firstName?: string | null; company?: string | null }
+    ) => {
+      const nextFirstName = leadInfo.firstName ?? null
+      const nextCompany = leadInfo.company ?? null
+      try {
+        sessionStorage.setItem(TOKEN_KEY, token)
+        sessionStorage.setItem(SESSION_KEY, sessionId)
+        sessionStorage.setItem(
+          LEAD_INFO_KEY,
+          JSON.stringify({ firstName: nextFirstName, company: nextCompany })
+        )
+      } catch {
+        /* ignore */
+      }
+      setAuthState({
+        token,
+        sessionId,
+        firstName: nextFirstName,
+        company: nextCompany,
+      })
     },
     []
   )
 
-  const handleResetSession = useCallback(() => {
+  const handleSessionExpired = useCallback(() => {
     try {
       sessionStorage.removeItem(TOKEN_KEY)
       sessionStorage.removeItem(SESSION_KEY)
@@ -61,17 +96,7 @@ export default function AudienceBuilderPage() {
     } catch {
       /* ignore */
     }
-    setSession(null)
-  }, [])
-
-  const handleSessionExpired = useCallback(() => {
-    try {
-      sessionStorage.removeItem(TOKEN_KEY)
-      sessionStorage.removeItem(SESSION_KEY)
-    } catch {
-      /* ignore */
-    }
-    // Leave lead_info in place so they don't have to retype name/company.
+    setAuthState(EMPTY_AUTH)
   }, [])
 
   if (!hydrated) {
@@ -83,34 +108,10 @@ export default function AudienceBuilderPage() {
   }
 
   return (
-    <AnimatePresence mode="wait">
-      {session ? (
-        <motion.div
-          key="chat"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-        >
-          <PublicChat
-            token={session.token}
-            sessionId={session.sessionId}
-            leadInfo={session.leadInfo}
-            onSessionExpired={handleSessionExpired}
-            onResetSession={handleResetSession}
-          />
-        </motion.div>
-      ) : (
-        <motion.div
-          key="gate"
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -8 }}
-          transition={{ duration: 0.25 }}
-        >
-          <EmailGate onStart={handleStart} />
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <PublicChat
+      authState={authState}
+      onAuth={handleAuth}
+      onSessionExpired={handleSessionExpired}
+    />
   )
 }

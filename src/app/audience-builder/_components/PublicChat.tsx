@@ -2,12 +2,13 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { AlertTriangle, ArrowUp, Calendar, LogOut } from 'lucide-react'
+import { AlertTriangle, ArrowUp, Calendar, LogOut, Sparkles } from 'lucide-react'
 import type { SegmentResult, StreamEvent } from '@/lib/copilot/types'
 import { StreamingText } from '@/app/admin/copilot/_components/StreamingText'
 import { PublicSegmentCard } from './PublicSegmentCard'
 import { TurnsMeter } from './TurnsMeter'
 import { BookCallCard } from './BookCallCard'
+import { EmailCaptureCard, type EmailCaptureFields } from './EmailCaptureCard'
 
 const BOOK_URL =
   'https://cal.com/meetcursive/intro?utm_source=audience-builder&utm_medium=copilot'
@@ -29,32 +30,38 @@ const SUGGESTIONS: Array<{ label: string; prompt: string }> = [
     prompt: 'Fitness enthusiasts researching home gym equipment',
   },
   {
-    label: 'Catalog overview',
+    label: 'What categories?',
     prompt: 'What categories do you have?',
   },
 ]
 
+type MessageKind = 'text' | 'email_gate' | 'book_card'
+
 interface Message {
   id: string
   role: 'user' | 'assistant'
+  kind?: MessageKind
   text: string
   segments?: SegmentResult[]
   isStreaming?: boolean
   error?: string
-  showBookCard?: boolean
 }
 
-export interface LeadInfo {
-  firstName: string
-  company: string
+interface AuthState {
+  token: string | null
+  sessionId: string | null
+  firstName: string | null
+  company: string | null
 }
 
 interface PublicChatProps {
-  token: string
-  sessionId: string
-  leadInfo: LeadInfo
+  authState: AuthState
+  onAuth: (
+    token: string,
+    sessionId: string,
+    leadInfo: { firstName?: string | null; company?: string | null }
+  ) => void
   onSessionExpired: () => void
-  onResetSession: () => void
 }
 
 interface DonePayload {
@@ -62,31 +69,48 @@ interface DonePayload {
   turns_remaining_day?: number
 }
 
+interface StartPayload {
+  email: string
+  first_name?: string
+  company?: string
+  use_case?: string
+  source: string
+  utm_source?: string
+  utm_medium?: string
+  utm_campaign?: string
+  utm_content?: string
+  utm_term?: string
+}
+
 function genId(prefix: string): string {
   return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`
 }
 
-function greeting(firstName: string): string {
-  const name = firstName?.trim() ? firstName.trim() : 'there'
-  return `Hi ${name} — tell me about the audience you're trying to reach, and I'll find you 2–3 matched segments from our catalog of 19,000+.`
+function readUtmParams(): Record<string, string> {
+  if (typeof window === 'undefined') return {}
+  const params = new URLSearchParams(window.location.search)
+  const out: Record<string, string> = {}
+  for (const key of [
+    'utm_source',
+    'utm_medium',
+    'utm_campaign',
+    'utm_content',
+    'utm_term',
+  ]) {
+    const v = params.get(key)
+    if (v) out[key] = v.slice(0, 200)
+  }
+  return out
 }
 
 export function PublicChat({
-  token,
-  sessionId: _sessionId,
-  leadInfo,
+  authState,
+  onAuth,
   onSessionExpired,
-  onResetSession,
 }: PublicChatProps) {
-  const initialGreetingRef = useRef<string>(greeting(leadInfo.firstName))
+  const { token } = authState
 
-  const [messages, setMessages] = useState<Message[]>(() => [
-    {
-      id: 'a_greeting',
-      role: 'assistant',
-      text: initialGreetingRef.current,
-    },
-  ])
+  const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [isSending, setIsSending] = useState(false)
   const [turnsUsed, setTurnsUsed] = useState(0)
@@ -95,18 +119,30 @@ export function PublicChat({
   const [sessionExpired, setSessionExpired] = useState(false)
   const [hasHadAssistantReply, setHasHadAssistantReply] = useState(false)
 
+  // Gate state
+  const [pendingFirstMessage, setPendingFirstMessage] = useState<string | null>(
+    null
+  )
+  const [emailGateError, setEmailGateError] = useState<string | null>(null)
+  const [isSubmittingEmail, setIsSubmittingEmail] = useState(false)
+
   const scrollRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const heroTextareaRef = useRef<HTMLTextAreaElement>(null)
   const abortRef = useRef<AbortController | null>(null)
+  const bookCardInsertedRef = useRef(false)
 
-  // Auto-scroll on new content
+  const emptyState = messages.length === 0
+
+  // Auto-scroll when messages update (only once there's a conversation)
   useEffect(() => {
+    if (emptyState) return
     const el = scrollRef.current
     if (!el) return
     el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
-  }, [messages])
+  }, [messages, emptyState])
 
-  // Auto-resize textarea
+  // Auto-resize composer textarea
   useEffect(() => {
     const el = textareaRef.current
     if (!el) return
@@ -114,8 +150,17 @@ export function PublicChat({
     el.style.height = Math.min(el.scrollHeight, 180) + 'px'
   }, [input])
 
-  // Load initial counters
+  // Auto-resize hero textarea
   useEffect(() => {
+    const el = heroTextareaRef.current
+    if (!el) return
+    el.style.height = 'auto'
+    el.style.height = Math.min(el.scrollHeight, 240) + 'px'
+  }, [input])
+
+  // Load session counters whenever we have a token
+  useEffect(() => {
+    if (!token) return
     let cancelled = false
     ;(async () => {
       try {
@@ -151,39 +196,18 @@ export function PublicChat({
   }, [])
 
   const sessionTurnLimitReached = turnsUsed >= TURN_LIMIT
-  const atHardLimit = sessionTurnLimitReached || dailyLimitReached || sessionExpired
+  const atHardLimit =
+    sessionTurnLimitReached || dailyLimitReached || sessionExpired
 
-  const sendMessage = useCallback(
-    async (text: string) => {
-      const trimmed = text.trim()
-      if (!trimmed || isSending || atHardLimit) return
-
-      const userMsg: Message = {
-        id: genId('u'),
-        role: 'user',
-        text: trimmed,
-      }
-      const asstId = genId('a')
-      const asstMsg: Message = {
-        id: asstId,
-        role: 'assistant',
-        text: '',
-        isStreaming: true,
-      }
-      setMessages((prev) => [...prev, userMsg, asstMsg])
-      setInput('')
-      setIsSending(true)
+  // ─── Streaming an authenticated chat turn ────────────────────────────
+  const streamAssistantReply = useCallback(
+    async (asstId: string, priorTurns: Array<{ role: string; content: string }>) => {
+      if (!token) return
 
       const controller = new AbortController()
       abortRef.current = controller
 
       try {
-        // The API only sees the last 6 messages, but we send full user/assistant
-        // prose (no segments, no tool internals) so the model has context.
-        const priorTurns = [...messages, userMsg]
-          .filter((m) => m.id !== 'a_greeting')
-          .map((m) => ({ role: m.role, content: m.text }))
-
         const res = await fetch('/api/public/copilot/chat', {
           method: 'POST',
           headers: {
@@ -199,11 +223,7 @@ export function PublicChat({
           setMessages((prev) =>
             prev.map((m) =>
               m.id === asstId
-                ? {
-                    ...m,
-                    isStreaming: false,
-                    error: 'Your session expired.',
-                  }
+                ? { ...m, isStreaming: false, error: 'Your session expired.' }
                 : m
             )
           )
@@ -284,15 +304,11 @@ export function PublicChat({
               continue
             }
 
-            // Update counters on `done`
             if (evt.type === 'done') {
               if (typeof evt.turns_remaining_session === 'number') {
                 setTurnsUsed(
                   Math.max(0, TURN_LIMIT - evt.turns_remaining_session)
                 )
-                if (evt.turns_remaining_session <= 0) {
-                  // Hit session ceiling
-                }
               }
               if (typeof evt.turns_remaining_day === 'number') {
                 setTurnsToday(Math.max(0, DAILY_LIMIT - evt.turns_remaining_day))
@@ -327,48 +343,445 @@ export function PublicChat({
         abortRef.current = null
       }
     },
-    [messages, isSending, atHardLimit, token, onSessionExpired]
+    [token, onSessionExpired]
   )
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // ─── Submitting a user message ───────────────────────────────────────
+  const handleUserSubmit = useCallback(
+    (raw: string) => {
+      const trimmed = raw.trim()
+      if (!trimmed || isSending || atHardLimit) return
+
+      // Case 1 — no token yet: add user msg + email_gate bubble, hold the message.
+      if (!token) {
+        const userMsg: Message = {
+          id: genId('u'),
+          role: 'user',
+          kind: 'text',
+          text: trimmed,
+        }
+        const gateMsg: Message = {
+          id: genId('gate'),
+          role: 'assistant',
+          kind: 'email_gate',
+          text: '',
+        }
+        setMessages((prev) => [...prev, userMsg, gateMsg])
+        setPendingFirstMessage(trimmed)
+        setInput('')
+        return
+      }
+
+      // Case 2 — authenticated: standard flow.
+      const userMsg: Message = {
+        id: genId('u'),
+        role: 'user',
+        kind: 'text',
+        text: trimmed,
+      }
+      const asstId = genId('a')
+      const asstMsg: Message = {
+        id: asstId,
+        role: 'assistant',
+        kind: 'text',
+        text: '',
+        isStreaming: true,
+      }
+      setMessages((prev) => [...prev, userMsg, asstMsg])
+      setInput('')
+      setIsSending(true)
+
+      const priorTurns = [...messages, userMsg]
+        .filter((m) => m.kind === 'text' || m.kind === undefined)
+        .filter((m) => m.text.length > 0)
+        .map((m) => ({ role: m.role, content: m.text }))
+
+      void streamAssistantReply(asstId, priorTurns)
+    },
+    [token, isSending, atHardLimit, messages, streamAssistantReply]
+  )
+
+  // ─── Email submit inside the inline gate ─────────────────────────────
+  const handleEmailSubmit = useCallback(
+    async (fields: EmailCaptureFields) => {
+      if (!pendingFirstMessage) return
+      setEmailGateError(null)
+      setIsSubmittingEmail(true)
+
+      const body: StartPayload = {
+        email: fields.email,
+        first_name: fields.first_name,
+        company: fields.company,
+        use_case: pendingFirstMessage,
+        source: 'audience-builder',
+        ...readUtmParams(),
+      }
+
+      try {
+        const res = await fetch('/api/public/copilot/start', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        })
+
+        if (res.status === 429) {
+          let message = "You've hit the daily limit."
+          try {
+            const j = await res.json()
+            if (j?.message) message = j.message
+          } catch {
+            /* noop */
+          }
+          setEmailGateError(message)
+          return
+        }
+
+        if (!res.ok) {
+          setEmailGateError('Something went wrong. Please try again.')
+          return
+        }
+
+        const data = (await res.json()) as { token: string; session_id: string }
+        if (!data?.token || !data?.session_id) {
+          setEmailGateError('Unexpected response. Please try again.')
+          return
+        }
+
+        // Persist auth
+        onAuth(data.token, data.session_id, {
+          firstName: fields.first_name ?? null,
+          company: fields.company ?? null,
+        })
+
+        // Replace the email_gate bubble with a streaming assistant bubble
+        // and fire the chat request with the pending first message.
+        const asstId = genId('a')
+        const firstMessage = pendingFirstMessage
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.kind === 'email_gate'
+              ? {
+                  id: asstId,
+                  role: 'assistant',
+                  kind: 'text',
+                  text: '',
+                  isStreaming: true,
+                }
+              : m
+          )
+        )
+        setPendingFirstMessage(null)
+        setIsSending(true)
+
+        // Use a fresh fetch for the chat call — we can't rely on `token` state
+        // having propagated, so we issue the stream directly with the new token.
+        const controller = new AbortController()
+        abortRef.current = controller
+
+        try {
+          const chatRes = await fetch('/api/public/copilot/chat', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${data.token}`,
+            },
+            body: JSON.stringify({
+              messages: [{ role: 'user', content: firstMessage }],
+            }),
+            signal: controller.signal,
+          })
+
+          if (chatRes.status === 401) {
+            setSessionExpired(true)
+            setMessages((prev) =>
+              prev.map((m) =>
+                m.id === asstId
+                  ? {
+                      ...m,
+                      isStreaming: false,
+                      error: 'Your session expired.',
+                    }
+                  : m
+              )
+            )
+            onSessionExpired()
+            return
+          }
+
+          if (chatRes.status === 429) {
+            let message = 'Limit reached. Book a call to continue.'
+            let kind: 'session' | 'daily' = 'session'
+            try {
+              const b = await chatRes.json()
+              if (b?.error === 'daily_turn_limit') kind = 'daily'
+              if (b?.error === 'daily_budget_exceeded') kind = 'daily'
+              if (b?.message) message = b.message
+            } catch {
+              /* noop */
+            }
+            if (kind === 'daily') setDailyLimitReached(true)
+            else setTurnsUsed(TURN_LIMIT)
+            setMessages((prev) =>
+              prev.map((m) =>
+                m.id === asstId
+                  ? { ...m, isStreaming: false, error: message }
+                  : m
+              )
+            )
+            return
+          }
+
+          if (!chatRes.ok || !chatRes.body) {
+            setMessages((prev) =>
+              prev.map((m) =>
+                m.id === asstId
+                  ? {
+                      ...m,
+                      isStreaming: false,
+                      error: `Request failed (${chatRes.status})`,
+                    }
+                  : m
+              )
+            )
+            return
+          }
+
+          const reader = chatRes.body.getReader()
+          const decoder = new TextDecoder()
+          let buffer = ''
+
+          while (true) {
+            const { value, done } = await reader.read()
+            if (done) break
+            buffer += decoder.decode(value, { stream: true })
+
+            let idx: number
+            while ((idx = buffer.indexOf('\n\n')) !== -1) {
+              const frame = buffer.slice(0, idx)
+              buffer = buffer.slice(idx + 2)
+              const dataLine = frame
+                .split('\n')
+                .find((l) => l.startsWith('data:'))
+              if (!dataLine) continue
+              const payload = dataLine.slice(5).trim()
+              if (!payload) continue
+
+              let evt: StreamEvent & DonePayload
+              try {
+                evt = JSON.parse(payload) as StreamEvent & DonePayload
+              } catch {
+                continue
+              }
+
+              if (evt.type === 'done') {
+                if (typeof evt.turns_remaining_session === 'number') {
+                  setTurnsUsed(
+                    Math.max(0, TURN_LIMIT - evt.turns_remaining_session)
+                  )
+                }
+                if (typeof evt.turns_remaining_day === 'number') {
+                  setTurnsToday(
+                    Math.max(0, DAILY_LIMIT - evt.turns_remaining_day)
+                  )
+                  if (evt.turns_remaining_day <= 0) {
+                    setDailyLimitReached(true)
+                  }
+                }
+                setHasHadAssistantReply(true)
+              }
+
+              setMessages((prev) =>
+                prev.map((m) => (m.id === asstId ? applyEvent(m, evt) : m))
+              )
+            }
+          }
+        } catch (err) {
+          if ((err as Error).name === 'AbortError') return
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === asstId
+                ? {
+                    ...m,
+                    isStreaming: false,
+                    error:
+                      err instanceof Error
+                        ? err.message
+                        : 'Unknown error occurred',
+                  }
+                : m
+            )
+          )
+        } finally {
+          setIsSending(false)
+          abortRef.current = null
+        }
+      } catch {
+        setEmailGateError('Network error. Please try again.')
+      } finally {
+        setIsSubmittingEmail(false)
+      }
+    },
+    [pendingFirstMessage, onAuth, onSessionExpired]
+  )
+
+  const handleHeroSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    sendMessage(input)
+    handleUserSubmit(input)
+  }
+
+  const handleComposerSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    handleUserSubmit(input)
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
-      sendMessage(input)
+      handleUserSubmit(input)
     }
   }
 
   const handleStop = () => abortRef.current?.abort()
 
-  const suggestionsVisible = useMemo(
-    () => messages.length <= 1 && !isSending && !atHardLimit,
-    [messages.length, isSending, atHardLimit]
-  )
+  const handleResetSession = useCallback(() => {
+    onSessionExpired()
+    setMessages([])
+    setInput('')
+    setTurnsUsed(0)
+    setTurnsToday(0)
+    setDailyLimitReached(false)
+    setSessionExpired(false)
+    setHasHadAssistantReply(false)
+    setPendingFirstMessage(null)
+    setEmailGateError(null)
+    bookCardInsertedRef.current = false
+  }, [onSessionExpired])
 
-  const bookCardInserted = useRef(false)
+  // Inline book-call card after the first real assistant reply
   useEffect(() => {
-    // After the first assistant reply with real content, show the inline book-a-call card once.
-    if (bookCardInserted.current) return
+    if (bookCardInsertedRef.current) return
     if (!hasHadAssistantReply) return
-    bookCardInserted.current = true
+    bookCardInsertedRef.current = true
     setMessages((prev) => [
       ...prev,
       {
         id: genId('book'),
         role: 'assistant',
+        kind: 'book_card',
         text: '',
-        showBookCard: true,
       },
     ])
   }, [hasHadAssistantReply])
 
+  const suggestionsVisible = useMemo(
+    () => emptyState,
+    [emptyState]
+  )
+
+  // ─── RENDER: empty hero state ────────────────────────────────────────
+  if (emptyState) {
+    return (
+      <div className="mx-auto w-full max-w-2xl px-4 py-12 sm:py-20">
+        <div className="text-center">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700 ring-1 ring-blue-200/60">
+            <Sparkles className="h-3 w-3" />
+            Free AI tool · No signup
+          </span>
+          <h1 className="mt-4 text-3xl font-bold tracking-tight text-[#0F172A] sm:text-4xl md:text-5xl">
+            Find the perfect audience
+            <br />
+            for your next campaign
+          </h1>
+          <p className="mx-auto mt-4 max-w-xl text-base text-slate-600">
+            Describe your ideal customer. Our AI matches you to{' '}
+            <strong>19,000+</strong> pre-built audience segments in seconds.
+          </p>
+        </div>
+
+        <form onSubmit={handleHeroSubmit} className="mt-10">
+          <div className="relative rounded-2xl border border-slate-200 bg-white shadow-sm transition-shadow focus-within:border-blue-300 focus-within:shadow-md">
+            <textarea
+              ref={heroTextareaRef}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Describe the audience you want to reach..."
+              rows={3}
+              data-gramm="false"
+              data-gramm_editor="false"
+              data-enable-grammarly="false"
+              className="w-full resize-none rounded-2xl bg-transparent px-5 py-4 pr-14 text-base text-slate-900 placeholder:text-slate-400 focus:outline-none"
+              style={{ outline: 'none', boxShadow: 'none' }}
+            />
+            <button
+              type="submit"
+              disabled={!input.trim()}
+              aria-label="Send"
+              className="absolute bottom-3 right-3 flex h-9 w-9 items-center justify-center rounded-full bg-blue-600 text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-300"
+            >
+              <ArrowUp className="h-4 w-4" />
+            </button>
+          </div>
+        </form>
+
+        {suggestionsVisible && (
+          <div className="mt-6 text-center">
+            <p className="mb-3 text-xs font-medium uppercase tracking-wide text-slate-400">
+              Try one of these
+            </p>
+            <div className="flex flex-wrap justify-center gap-2">
+              {SUGGESTIONS.map((s) => (
+                <button
+                  key={s.label}
+                  type="button"
+                  onClick={() => {
+                    setInput(s.prompt)
+                    heroTextareaRef.current?.focus()
+                  }}
+                  className="rounded-full border border-slate-200 bg-white px-4 py-1.5 text-xs text-slate-600 transition-colors hover:border-slate-300 hover:bg-slate-50"
+                >
+                  {s.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className="mt-12 grid grid-cols-1 gap-4 text-center sm:grid-cols-3">
+          <div>
+            <div className="text-2xl font-bold text-[#0F172A]">19,000+</div>
+            <div className="mt-1 text-xs text-slate-500">
+              pre-built audience segments
+            </div>
+          </div>
+          <div>
+            <div className="text-2xl font-bold text-[#0F172A]">Live counts</div>
+            <div className="mt-1 text-xs text-slate-500">
+              real in-market sizes
+            </div>
+          </div>
+          <div>
+            <div className="text-2xl font-bold text-[#0F172A]">
+              Activate now
+            </div>
+            <div className="mt-1 text-xs text-slate-500">
+              plug into your stack
+            </div>
+          </div>
+        </div>
+
+        <p className="mt-10 text-center text-[11px] text-slate-400">
+          Powered by Cursive · Used by B2B & B2C teams to build their next
+          audience
+        </p>
+      </div>
+    )
+  }
+
+  // ─── RENDER: active conversation ─────────────────────────────────────
   return (
     <div className="flex h-[calc(100vh-3.5rem)] w-full flex-col">
-      {/* Chat header row */}
+      {/* Slim header */}
       <div className="border-b border-slate-200/80 bg-white">
         <div className="mx-auto flex max-w-2xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
           <div className="min-w-0">
@@ -380,13 +793,15 @@ export function PublicChat({
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <TurnsMeter
-              used={turnsUsed}
-              limit={TURN_LIMIT}
-              showDaily
-              dailyUsed={turnsToday}
-              dailyLimit={DAILY_LIMIT}
-            />
+            {token && (
+              <TurnsMeter
+                used={turnsUsed}
+                limit={TURN_LIMIT}
+                showDaily
+                dailyUsed={turnsToday}
+                dailyLimit={DAILY_LIMIT}
+              />
+            )}
             <a
               href={BOOK_URL}
               target="_blank"
@@ -409,7 +824,13 @@ export function PublicChat({
         <div className="mx-auto w-full max-w-2xl space-y-5 px-4 py-5 sm:px-6">
           <AnimatePresence initial={false}>
             {messages.map((m) => (
-              <MessageBubble key={m.id} message={m} />
+              <MessageBubble
+                key={m.id}
+                message={m}
+                onEmailSubmit={handleEmailSubmit}
+                emailError={emailGateError}
+                isSubmittingEmail={isSubmittingEmail}
+              />
             ))}
           </AnimatePresence>
 
@@ -417,7 +838,7 @@ export function PublicChat({
             <LimitCard
               title="You've used all 10 messages in this session"
               body="Want to keep exploring? Book a 15-min call to activate these audiences, or start a new session."
-              onReset={onResetSession}
+              onReset={handleResetSession}
             />
           )}
 
@@ -439,7 +860,7 @@ export function PublicChat({
               </p>
               <button
                 type="button"
-                onClick={onResetSession}
+                onClick={handleResetSession}
                 className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-blue-700"
               >
                 <LogOut className="h-3.5 w-3.5" />
@@ -450,25 +871,10 @@ export function PublicChat({
         </div>
       </div>
 
-      {/* Composer */}
+      {/* Sticky composer */}
       <div className="border-t border-slate-200/80 bg-white">
         <div className="mx-auto w-full max-w-2xl px-4 py-3 sm:px-6 sm:py-4">
-          {suggestionsVisible && (
-            <div className="mb-3 flex flex-wrap gap-1.5">
-              {SUGGESTIONS.map((s) => (
-                <button
-                  key={s.label}
-                  type="button"
-                  onClick={() => sendMessage(s.prompt)}
-                  className="rounded-full bg-slate-100 px-3 py-1.5 text-xs text-slate-600 transition-colors hover:bg-slate-200"
-                >
-                  {s.prompt}
-                </button>
-              ))}
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleComposerSubmit}>
             <div className="flex items-end gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 shadow-sm transition-shadow focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-100">
               <textarea
                 ref={textareaRef}
@@ -478,10 +884,14 @@ export function PublicChat({
                 placeholder={
                   atHardLimit
                     ? 'Limit reached — book a call to continue'
-                    : 'Describe your ideal customer…'
+                    : pendingFirstMessage
+                      ? 'Waiting for email…'
+                      : 'Describe your ideal customer…'
                 }
                 rows={1}
-                disabled={isSending || atHardLimit}
+                disabled={
+                  isSending || atHardLimit || Boolean(pendingFirstMessage)
+                }
                 data-gramm="false"
                 data-gramm_editor="false"
                 data-enable-grammarly="false"
@@ -500,7 +910,9 @@ export function PublicChat({
               ) : (
                 <button
                   type="submit"
-                  disabled={!input.trim() || atHardLimit}
+                  disabled={
+                    !input.trim() || atHardLimit || Boolean(pendingFirstMessage)
+                  }
                   aria-label="Send"
                   className="mb-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white transition-all hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400"
                 >
@@ -526,10 +938,22 @@ export function PublicChat({
   )
 }
 
-// ─── Message rendering ───────────────────────────────────────────────────
+// ─── Message rendering ─────────────────────────────────────────────────
 
-function MessageBubble({ message }: { message: Message }) {
-  if (message.showBookCard) {
+interface MessageBubbleProps {
+  message: Message
+  onEmailSubmit: (fields: EmailCaptureFields) => void | Promise<void>
+  emailError: string | null
+  isSubmittingEmail: boolean
+}
+
+function MessageBubble({
+  message,
+  onEmailSubmit,
+  emailError,
+  isSubmittingEmail,
+}: MessageBubbleProps) {
+  if (message.kind === 'book_card') {
     return (
       <motion.div
         initial={{ opacity: 0, y: 6 }}
@@ -542,6 +966,29 @@ function MessageBubble({ message }: { message: Message }) {
           body="Book a 15-min call to activate these audiences — we'll plug the best matches straight into your outbound stack."
           cta="Book a call"
         />
+      </motion.div>
+    )
+  }
+
+  if (message.kind === 'email_gate') {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2 }}
+        className="flex justify-start"
+      >
+        <div className="w-full max-w-[95%] sm:max-w-[90%]">
+          <p className="mb-2 text-[14.5px] leading-[1.6] text-slate-700 sm:text-sm">
+            Great question — let me pull up some matches. First, drop your email
+            so I can save your session (takes 2 sec).
+          </p>
+          <EmailCaptureCard
+            onSubmit={onEmailSubmit}
+            error={emailError}
+            isSubmitting={isSubmittingEmail}
+          />
+        </div>
       </motion.div>
     )
   }
@@ -573,7 +1020,10 @@ function MessageBubble({ message }: { message: Message }) {
       <div className="w-full max-w-[95%] space-y-2.5 sm:max-w-[90%]">
         {message.text && (
           <div className="text-[14.5px] leading-[1.6] text-slate-700 sm:text-sm">
-            <StreamingText text={message.text} isStreaming={message.isStreaming} />
+            <StreamingText
+              text={message.text}
+              isStreaming={message.isStreaming}
+            />
             {message.isStreaming && (
               <span className="ml-0.5 inline-block h-3.5 w-1.5 translate-y-0.5 animate-pulse bg-slate-400" />
             )}
@@ -603,7 +1053,7 @@ function MessageBubble({ message }: { message: Message }) {
   )
 }
 
-// ─── Limit card ──────────────────────────────────────────────────────────
+// ─── Limit card ────────────────────────────────────────────────────────
 
 function LimitCard({
   title,
@@ -644,14 +1094,13 @@ function LimitCard({
   )
 }
 
-// ─── Event folding ───────────────────────────────────────────────────────
+// ─── Event folding ─────────────────────────────────────────────────────
 
 function applyEvent(msg: Message, evt: StreamEvent): Message {
   switch (evt.type) {
     case 'text':
       return { ...msg, text: (msg.text || '') + evt.delta }
     case 'thinking':
-      // Public surface disables thinking — we ignore deltas if they do arrive.
       return msg
     case 'tool_use':
       return msg
