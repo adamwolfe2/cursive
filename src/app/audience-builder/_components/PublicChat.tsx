@@ -4,12 +4,13 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { AlertTriangle, ArrowUp, Calendar, LogOut } from 'lucide-react'
 import { CursiveOrb } from '@/app/admin/copilot/_components/CursiveOrb'
+import { LiveSteps } from '@/app/admin/copilot/_components/LiveSteps'
 import type { SegmentResult, StreamEvent } from '@/lib/copilot/types'
 import { StreamingText } from '@/app/admin/copilot/_components/StreamingText'
 import { PublicSegmentCard } from './PublicSegmentCard'
 import { TurnsMeter } from './TurnsMeter'
 import { BookCallCard } from './BookCallCard'
-import { EmailCaptureCard, type EmailCaptureFields } from './EmailCaptureCard'
+import { EmailCaptureModal, type EmailSubmitData } from './EmailCaptureModal'
 
 const BOOK_URL =
   'https://cal.com/meetcursive/intro?utm_source=audience-builder&utm_medium=copilot'
@@ -36,7 +37,14 @@ const SUGGESTIONS: Array<{ label: string; prompt: string }> = [
   },
 ]
 
-type MessageKind = 'text' | 'email_gate' | 'book_card'
+type MessageKind = 'text' | 'book_card'
+
+interface ToolCall {
+  id: string
+  name: string
+  input: unknown
+  summary?: string
+}
 
 interface Message {
   id: string
@@ -45,6 +53,8 @@ interface Message {
   text: string
   segments?: SegmentResult[]
   isStreaming?: boolean
+  hasThinking?: boolean
+  toolCalls?: ToolCall[]
   error?: string
 }
 
@@ -68,20 +78,27 @@ interface PublicChatProps {
 interface DonePayload {
   turns_remaining_session?: number
   turns_remaining_day?: number
+  preview_id?: string | null
+  previews_remaining?: number
 }
 
 interface StartPayload {
   email: string
   first_name?: string
+  last_name?: string
+  username?: string
   company?: string
   use_case?: string
   source: string
+  preview_id?: string
   utm_source?: string
   utm_medium?: string
   utm_campaign?: string
   utm_content?: string
   utm_term?: string
 }
+
+type PreviewState = 'idle' | 'streaming' | 'locked' | 'unlocked' | 'error'
 
 function genId(prefix: string): string {
   return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`
@@ -120,12 +137,15 @@ export function PublicChat({
   const [sessionExpired, setSessionExpired] = useState(false)
   const [hasHadAssistantReply, setHasHadAssistantReply] = useState(false)
 
-  // Gate state
-  const [pendingFirstMessage, setPendingFirstMessage] = useState<string | null>(
-    null
+  // Preview-first flow state
+  const [previewState, setPreviewState] = useState<PreviewState>(
+    token ? 'unlocked' : 'idle'
   )
-  const [emailGateError, setEmailGateError] = useState<string | null>(null)
+  const [previewId, setPreviewId] = useState<string | null>(null)
+  const [previewQuery, setPreviewQuery] = useState<string | null>(null)
+  const [previewSegmentCount, setPreviewSegmentCount] = useState(0)
   const [isSubmittingEmail, setIsSubmittingEmail] = useState(false)
+  const [emailError, setEmailError] = useState<string | null>(null)
 
   const scrollRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -134,6 +154,13 @@ export function PublicChat({
   const bookCardInsertedRef = useRef(false)
 
   const emptyState = messages.length === 0
+
+  // Keep previewState in sync with auth: if token becomes truthy, we're unlocked.
+  useEffect(() => {
+    if (token) {
+      setPreviewState((prev) => (prev === 'locked' ? 'unlocked' : prev))
+    }
+  }, [token])
 
   // Auto-scroll when messages update (only once there's a conversation)
   useEffect(() => {
@@ -200,7 +227,141 @@ export function PublicChat({
   const atHardLimit =
     sessionTurnLimitReached || dailyLimitReached || sessionExpired
 
-  // ─── Streaming an authenticated chat turn ────────────────────────────
+  // ─── Generic SSE frame → message folding ─────────────────────────────
+  const processPreviewEvent = useCallback(
+    (asstId: string, evt: StreamEvent & DonePayload) => {
+      setMessages((prev) =>
+        prev.map((m) => (m.id === asstId ? applyEvent(m, evt) : m))
+      )
+      if (evt.type === 'segments') {
+        setPreviewSegmentCount((c) => c + evt.segments.length)
+      }
+      if (evt.type === 'done') {
+        if (evt.preview_id) setPreviewId(evt.preview_id)
+        setPreviewState('locked')
+      }
+    },
+    []
+  )
+
+  // ─── Streaming the PREVIEW (unauthenticated) ─────────────────────────
+  const streamPreview = useCallback(
+    async (asstId: string, query: string) => {
+      const controller = new AbortController()
+      abortRef.current = controller
+
+      try {
+        const res = await fetch('/api/public/copilot/preview', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query }),
+          signal: controller.signal,
+        })
+
+        if (res.status === 429) {
+          let message = "You've used all your free previews for today."
+          try {
+            const body = await res.json()
+            if (body?.message) message = body.message
+          } catch {
+            /* noop */
+          }
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === asstId
+                ? { ...m, isStreaming: false, error: message }
+                : m
+            )
+          )
+          setPreviewState('error')
+          return
+        }
+
+        if (!res.ok) {
+          let errMsg = `Request failed (${res.status})`
+          try {
+            const body = await res.json()
+            if (body?.message) errMsg = body.message
+          } catch {
+            /* noop */
+          }
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === asstId
+                ? { ...m, isStreaming: false, error: errMsg }
+                : m
+            )
+          )
+          setPreviewState('error')
+          return
+        }
+
+        if (!res.body) {
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === asstId
+                ? { ...m, isStreaming: false, error: 'No response body' }
+                : m
+            )
+          )
+          setPreviewState('error')
+          return
+        }
+
+        const reader = res.body.getReader()
+        const decoder = new TextDecoder()
+        let buffer = ''
+
+        while (true) {
+          const { value, done } = await reader.read()
+          if (done) break
+          buffer += decoder.decode(value, { stream: true })
+
+          let idx: number
+          while ((idx = buffer.indexOf('\n\n')) !== -1) {
+            const frame = buffer.slice(0, idx)
+            buffer = buffer.slice(idx + 2)
+            const dataLine = frame.split('\n').find((l) => l.startsWith('data:'))
+            if (!dataLine) continue
+            const payload = dataLine.slice(5).trim()
+            if (!payload) continue
+
+            let evt: StreamEvent & DonePayload
+            try {
+              evt = JSON.parse(payload) as StreamEvent & DonePayload
+            } catch {
+              continue
+            }
+
+            processPreviewEvent(asstId, evt)
+          }
+        }
+      } catch (err) {
+        if ((err as Error).name === 'AbortError') return
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === asstId
+              ? {
+                  ...m,
+                  isStreaming: false,
+                  error:
+                    err instanceof Error
+                      ? err.message
+                      : 'Unknown error occurred',
+                }
+              : m
+          )
+        )
+        setPreviewState('error')
+      } finally {
+        setIsSending(false)
+        abortRef.current = null
+      }
+    },
+    [processPreviewEvent]
+  )
+
+  // ─── Streaming an AUTHENTICATED chat turn ───────────────────────────
   const streamAssistantReply = useCallback(
     async (asstId: string, priorTurns: Array<{ role: string; content: string }>) => {
       if (!token) return
@@ -353,7 +514,8 @@ export function PublicChat({
       const trimmed = raw.trim()
       if (!trimmed || isSending || atHardLimit) return
 
-      // Case 1 — no token yet: add user msg + email_gate bubble, hold the message.
+      // Case 1 — no token yet: kick off the unauthenticated preview. The
+      // UI will blur + show the email modal once streaming finishes.
       if (!token) {
         const userMsg: Message = {
           id: genId('u'),
@@ -361,15 +523,22 @@ export function PublicChat({
           kind: 'text',
           text: trimmed,
         }
-        const gateMsg: Message = {
-          id: genId('gate'),
+        const asstId = genId('a')
+        const asstMsg: Message = {
+          id: asstId,
           role: 'assistant',
-          kind: 'email_gate',
+          kind: 'text',
           text: '',
+          isStreaming: true,
+          toolCalls: [],
         }
-        setMessages((prev) => [...prev, userMsg, gateMsg])
-        setPendingFirstMessage(trimmed)
+        setMessages((prev) => [...prev, userMsg, asstMsg])
         setInput('')
+        setIsSending(true)
+        setPreviewState('streaming')
+        setPreviewQuery(trimmed)
+        setPreviewSegmentCount(0)
+        void streamPreview(asstId, trimmed)
         return
       }
 
@@ -399,22 +568,24 @@ export function PublicChat({
 
       void streamAssistantReply(asstId, priorTurns)
     },
-    [token, isSending, atHardLimit, messages, streamAssistantReply]
+    [token, isSending, atHardLimit, messages, streamAssistantReply, streamPreview]
   )
 
-  // ─── Email submit inside the inline gate ─────────────────────────────
+  // ─── Email modal submit (after preview completes) ────────────────────
   const handleEmailSubmit = useCallback(
-    async (fields: EmailCaptureFields) => {
-      if (!pendingFirstMessage) return
-      setEmailGateError(null)
+    async (fields: EmailSubmitData) => {
+      setEmailError(null)
       setIsSubmittingEmail(true)
 
-      const body: StartPayload = {
+      const payload: StartPayload = {
         email: fields.email,
         first_name: fields.first_name,
+        last_name: fields.last_name,
+        username: fields.username,
         company: fields.company,
-        use_case: pendingFirstMessage,
+        use_case: previewQuery ?? undefined,
         source: 'audience-builder',
+        preview_id: previewId ?? undefined,
         ...readUtmParams(),
       }
 
@@ -422,7 +593,7 @@ export function PublicChat({
         const res = await fetch('/api/public/copilot/start', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body),
+          body: JSON.stringify(payload),
         })
 
         if (res.status === 429) {
@@ -433,196 +604,34 @@ export function PublicChat({
           } catch {
             /* noop */
           }
-          setEmailGateError(message)
+          setEmailError(message)
           return
         }
 
         if (!res.ok) {
-          setEmailGateError('Something went wrong. Please try again.')
+          setEmailError('Something went wrong. Please try again.')
           return
         }
 
         const data = (await res.json()) as { token: string; session_id: string }
         if (!data?.token || !data?.session_id) {
-          setEmailGateError('Unexpected response. Please try again.')
+          setEmailError('Unexpected response. Please try again.')
           return
         }
 
-        // Persist auth
         onAuth(data.token, data.session_id, {
           firstName: fields.first_name ?? null,
           company: fields.company ?? null,
         })
-
-        // Replace the email_gate bubble with a streaming assistant bubble
-        // and fire the chat request with the pending first message.
-        const asstId = genId('a')
-        const firstMessage = pendingFirstMessage
-        setMessages((prev) =>
-          prev.map((m) =>
-            m.kind === 'email_gate'
-              ? {
-                  id: asstId,
-                  role: 'assistant',
-                  kind: 'text',
-                  text: '',
-                  isStreaming: true,
-                }
-              : m
-          )
-        )
-        setPendingFirstMessage(null)
-        setIsSending(true)
-
-        // Use a fresh fetch for the chat call — we can't rely on `token` state
-        // having propagated, so we issue the stream directly with the new token.
-        const controller = new AbortController()
-        abortRef.current = controller
-
-        try {
-          const chatRes = await fetch('/api/public/copilot/chat', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${data.token}`,
-            },
-            body: JSON.stringify({
-              messages: [{ role: 'user', content: firstMessage }],
-            }),
-            signal: controller.signal,
-          })
-
-          if (chatRes.status === 401) {
-            setSessionExpired(true)
-            setMessages((prev) =>
-              prev.map((m) =>
-                m.id === asstId
-                  ? {
-                      ...m,
-                      isStreaming: false,
-                      error: 'Your session expired.',
-                    }
-                  : m
-              )
-            )
-            onSessionExpired()
-            return
-          }
-
-          if (chatRes.status === 429) {
-            let message = 'Limit reached. Book a call to continue.'
-            let kind: 'session' | 'daily' = 'session'
-            try {
-              const b = await chatRes.json()
-              if (b?.error === 'daily_turn_limit') kind = 'daily'
-              if (b?.error === 'daily_budget_exceeded') kind = 'daily'
-              if (b?.message) message = b.message
-            } catch {
-              /* noop */
-            }
-            if (kind === 'daily') setDailyLimitReached(true)
-            else setTurnsUsed(TURN_LIMIT)
-            setMessages((prev) =>
-              prev.map((m) =>
-                m.id === asstId
-                  ? { ...m, isStreaming: false, error: message }
-                  : m
-              )
-            )
-            return
-          }
-
-          if (!chatRes.ok || !chatRes.body) {
-            setMessages((prev) =>
-              prev.map((m) =>
-                m.id === asstId
-                  ? {
-                      ...m,
-                      isStreaming: false,
-                      error: `Request failed (${chatRes.status})`,
-                    }
-                  : m
-              )
-            )
-            return
-          }
-
-          const reader = chatRes.body.getReader()
-          const decoder = new TextDecoder()
-          let buffer = ''
-
-          while (true) {
-            const { value, done } = await reader.read()
-            if (done) break
-            buffer += decoder.decode(value, { stream: true })
-
-            let idx: number
-            while ((idx = buffer.indexOf('\n\n')) !== -1) {
-              const frame = buffer.slice(0, idx)
-              buffer = buffer.slice(idx + 2)
-              const dataLine = frame
-                .split('\n')
-                .find((l) => l.startsWith('data:'))
-              if (!dataLine) continue
-              const payload = dataLine.slice(5).trim()
-              if (!payload) continue
-
-              let evt: StreamEvent & DonePayload
-              try {
-                evt = JSON.parse(payload) as StreamEvent & DonePayload
-              } catch {
-                continue
-              }
-
-              if (evt.type === 'done') {
-                if (typeof evt.turns_remaining_session === 'number') {
-                  setTurnsUsed(
-                    Math.max(0, TURN_LIMIT - evt.turns_remaining_session)
-                  )
-                }
-                if (typeof evt.turns_remaining_day === 'number') {
-                  setTurnsToday(
-                    Math.max(0, DAILY_LIMIT - evt.turns_remaining_day)
-                  )
-                  if (evt.turns_remaining_day <= 0) {
-                    setDailyLimitReached(true)
-                  }
-                }
-                setHasHadAssistantReply(true)
-              }
-
-              setMessages((prev) =>
-                prev.map((m) => (m.id === asstId ? applyEvent(m, evt) : m))
-              )
-            }
-          }
-        } catch (err) {
-          if ((err as Error).name === 'AbortError') return
-          setMessages((prev) =>
-            prev.map((m) =>
-              m.id === asstId
-                ? {
-                    ...m,
-                    isStreaming: false,
-                    error:
-                      err instanceof Error
-                        ? err.message
-                        : 'Unknown error occurred',
-                  }
-                : m
-            )
-          )
-        } finally {
-          setIsSending(false)
-          abortRef.current = null
-        }
+        setPreviewState('unlocked')
+        setHasHadAssistantReply(true)
       } catch {
-        setEmailGateError('Network error. Please try again.')
+        setEmailError('Network error. Please try again.')
       } finally {
         setIsSubmittingEmail(false)
       }
     },
-    [pendingFirstMessage, onAuth, onSessionExpired]
+    [previewId, previewQuery, onAuth]
   )
 
   const handleHeroSubmit = (e: React.FormEvent) => {
@@ -653,15 +662,19 @@ export function PublicChat({
     setDailyLimitReached(false)
     setSessionExpired(false)
     setHasHadAssistantReply(false)
-    setPendingFirstMessage(null)
-    setEmailGateError(null)
+    setPreviewState('idle')
+    setPreviewId(null)
+    setPreviewQuery(null)
+    setPreviewSegmentCount(0)
+    setEmailError(null)
     bookCardInsertedRef.current = false
   }, [onSessionExpired])
 
-  // Inline book-call card after the first real assistant reply
+  // Inline book-call card after the first real assistant reply (authenticated only)
   useEffect(() => {
     if (bookCardInsertedRef.current) return
     if (!hasHadAssistantReply) return
+    if (!token) return
     bookCardInsertedRef.current = true
     setMessages((prev) => [
       ...prev,
@@ -672,12 +685,11 @@ export function PublicChat({
         text: '',
       },
     ])
-  }, [hasHadAssistantReply])
+  }, [hasHadAssistantReply, token])
 
-  const suggestionsVisible = useMemo(
-    () => emptyState,
-    [emptyState]
-  )
+  const suggestionsVisible = useMemo(() => emptyState, [emptyState])
+  const composerDisabled =
+    isSending || atHardLimit || previewState === 'streaming' || previewState === 'locked'
 
   // ─── RENDER: empty hero state ────────────────────────────────────────
   if (emptyState) {
@@ -782,6 +794,8 @@ export function PublicChat({
   }
 
   // ─── RENDER: active conversation ─────────────────────────────────────
+  const showOverlay = previewState === 'locked' && !token
+
   return (
     <div className="flex h-[calc(100vh-3.5rem)] w-full flex-col">
       {/* Slim header */}
@@ -818,60 +832,84 @@ export function PublicChat({
         </div>
       </div>
 
-      {/* Messages */}
-      <div
-        ref={scrollRef}
-        className="flex-1 overflow-y-auto"
-        style={{ scrollBehavior: 'smooth' }}
-      >
-        <div className="mx-auto w-full max-w-2xl space-y-5 px-4 py-5 sm:px-6">
-          <AnimatePresence initial={false}>
-            {messages.map((m) => (
-              <MessageBubble
-                key={m.id}
-                message={m}
-                onEmailSubmit={handleEmailSubmit}
-                emailError={emailGateError}
-                isSubmittingEmail={isSubmittingEmail}
+      {/* Messages + locked overlay */}
+      <div className="relative flex-1 overflow-hidden">
+        <div
+          ref={scrollRef}
+          className="h-full overflow-y-auto"
+          style={{ scrollBehavior: 'smooth' }}
+        >
+          <div
+            className={`mx-auto w-full max-w-2xl space-y-5 px-4 py-5 sm:px-6 ${
+              showOverlay ? 'pointer-events-none select-none' : ''
+            }`}
+            style={showOverlay ? { filter: 'blur(3px)' } : undefined}
+            aria-hidden={showOverlay ? 'true' : undefined}
+          >
+            <AnimatePresence initial={false}>
+              {messages.map((m) => (
+                <MessageBubble key={m.id} message={m} />
+              ))}
+            </AnimatePresence>
+
+            {sessionTurnLimitReached && !dailyLimitReached && (
+              <LimitCard
+                title="You've used all 10 messages in this session"
+                body="Want to keep exploring? Book a 15-min call to activate these audiences, or start a new session."
+                onReset={handleResetSession}
               />
-            ))}
-          </AnimatePresence>
+            )}
 
-          {sessionTurnLimitReached && !dailyLimitReached && (
-            <LimitCard
-              title="You've used all 10 messages in this session"
-              body="Want to keep exploring? Book a 15-min call to activate these audiences, or start a new session."
-              onReset={handleResetSession}
-            />
-          )}
+            {dailyLimitReached && (
+              <LimitCard
+                title="Daily message limit reached"
+                body="We've saved your session — come back tomorrow, or book a call to get unlimited access now."
+                hideReset
+              />
+            )}
 
-          {dailyLimitReached && (
-            <LimitCard
-              title="Daily message limit reached"
-              body="We've saved your session — come back tomorrow, or book a call to get unlimited access now."
-              hideReset
-            />
-          )}
-
-          {sessionExpired && !sessionTurnLimitReached && !dailyLimitReached && (
-            <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
-              <p className="text-sm font-semibold text-amber-900">
-                Your session expired
-              </p>
-              <p className="mt-1 text-xs text-amber-800">
-                Re-enter your email to pick up where you left off.
-              </p>
-              <button
-                type="button"
-                onClick={handleResetSession}
-                className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-blue-700"
-              >
-                <LogOut className="h-3.5 w-3.5" />
-                Start a new session
-              </button>
-            </div>
-          )}
+            {sessionExpired && !sessionTurnLimitReached && !dailyLimitReached && (
+              <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
+                <p className="text-sm font-semibold text-amber-900">
+                  Your session expired
+                </p>
+                <p className="mt-1 text-xs text-amber-800">
+                  Re-enter your email to pick up where you left off.
+                </p>
+                <button
+                  type="button"
+                  onClick={handleResetSession}
+                  className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-blue-700"
+                >
+                  <LogOut className="h-3.5 w-3.5" />
+                  Start a new session
+                </button>
+              </div>
+            )}
+          </div>
         </div>
+
+        {showOverlay && (
+          <div className="absolute inset-0 z-10 flex items-start justify-center overflow-y-auto px-4 pb-8 pt-6 sm:pt-12">
+            <div
+              className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/30 via-white/60 to-white/95"
+              aria-hidden="true"
+            />
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+              className="pointer-events-auto relative z-20 flex w-full max-w-md justify-center"
+            >
+              <EmailCaptureModal
+                onSubmit={handleEmailSubmit}
+                error={emailError}
+                isSubmitting={isSubmittingEmail}
+                segmentCount={previewSegmentCount}
+              />
+            </motion.div>
+          </div>
+        )}
       </div>
 
       {/* Sticky composer */}
@@ -887,14 +925,14 @@ export function PublicChat({
                 placeholder={
                   atHardLimit
                     ? 'Limit reached — book a call to continue'
-                    : pendingFirstMessage
-                      ? 'Waiting for email…'
-                      : 'Describe your ideal customer…'
+                    : previewState === 'streaming'
+                      ? 'Generating your preview…'
+                      : previewState === 'locked'
+                        ? 'Unlock to keep chatting'
+                        : 'Describe your ideal customer…'
                 }
                 rows={1}
-                disabled={
-                  isSending || atHardLimit || Boolean(pendingFirstMessage)
-                }
+                disabled={composerDisabled}
                 data-gramm="false"
                 data-gramm_editor="false"
                 data-enable-grammarly="false"
@@ -913,9 +951,7 @@ export function PublicChat({
               ) : (
                 <button
                   type="submit"
-                  disabled={
-                    !input.trim() || atHardLimit || Boolean(pendingFirstMessage)
-                  }
+                  disabled={!input.trim() || composerDisabled}
                   aria-label="Send"
                   className="mb-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white transition-all hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400"
                 >
@@ -945,17 +981,9 @@ export function PublicChat({
 
 interface MessageBubbleProps {
   message: Message
-  onEmailSubmit: (fields: EmailCaptureFields) => void | Promise<void>
-  emailError: string | null
-  isSubmittingEmail: boolean
 }
 
-function MessageBubble({
-  message,
-  onEmailSubmit,
-  emailError,
-  isSubmittingEmail,
-}: MessageBubbleProps) {
+function MessageBubble({ message }: MessageBubbleProps) {
   if (message.kind === 'book_card') {
     return (
       <motion.div
@@ -969,29 +997,6 @@ function MessageBubble({
           body="Book a 15-min call to activate these audiences — we'll plug the best matches straight into your outbound stack."
           cta="Book a call"
         />
-      </motion.div>
-    )
-  }
-
-  if (message.kind === 'email_gate') {
-    return (
-      <motion.div
-        initial={{ opacity: 0, y: 6 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.2 }}
-        className="flex justify-start"
-      >
-        <div className="w-full max-w-[95%] sm:max-w-[90%]">
-          <p className="mb-2 text-[14.5px] leading-[1.6] text-slate-700 sm:text-sm">
-            Great question — let me pull up some matches. First, drop your email
-            so I can save your session (takes 2 sec).
-          </p>
-          <EmailCaptureCard
-            onSubmit={onEmailSubmit}
-            error={emailError}
-            isSubmitting={isSubmittingEmail}
-          />
-        </div>
       </motion.div>
     )
   }
@@ -1013,6 +1018,8 @@ function MessageBubble({
     )
   }
 
+  const hasToolCalls = (message.toolCalls?.length ?? 0) > 0
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 6 }}
@@ -1021,6 +1028,15 @@ function MessageBubble({
       className="flex justify-start"
     >
       <div className="w-full max-w-[95%] space-y-2.5 sm:max-w-[90%]">
+        {(message.isStreaming || hasToolCalls) && (
+          <LiveSteps
+            isStreaming={Boolean(message.isStreaming)}
+            hasThinking={Boolean(message.hasThinking)}
+            hasText={message.text.length > 0}
+            toolCalls={message.toolCalls}
+          />
+        )}
+
         {message.text && (
           <div className="text-[14.5px] leading-[1.6] text-slate-700 sm:text-sm">
             <StreamingText
@@ -1104,11 +1120,27 @@ function applyEvent(msg: Message, evt: StreamEvent): Message {
     case 'text':
       return { ...msg, text: (msg.text || '') + evt.delta }
     case 'thinking':
-      return msg
-    case 'tool_use':
-      return msg
-    case 'tool_result':
-      return msg
+      return { ...msg, hasThinking: true }
+    case 'tool_use': {
+      const nextCall: ToolCall = {
+        id: evt.id,
+        name: evt.name,
+        input: evt.input,
+      }
+      return {
+        ...msg,
+        toolCalls: [...(msg.toolCalls ?? []), nextCall],
+      }
+    }
+    case 'tool_result': {
+      const current = msg.toolCalls ?? []
+      return {
+        ...msg,
+        toolCalls: current.map((tc) =>
+          tc.id === evt.tool_use_id ? { ...tc, summary: evt.summary } : tc
+        ),
+      }
+    }
     case 'segments':
       return {
         ...msg,

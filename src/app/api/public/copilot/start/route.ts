@@ -31,6 +31,8 @@ const BOOK_URL = 'https://cal.com/meetcursive/intro'
 const StartBodySchema = z.object({
   email: z.string().email().max(320),
   first_name: z.string().max(100).optional(),
+  last_name: z.string().max(100).optional(),
+  username: z.string().max(100).optional(),
   company: z.string().max(200).optional(),
   use_case: z.string().max(2000).optional(),
   source: z.string().max(100).optional().default('audience-builder'),
@@ -39,6 +41,7 @@ const StartBodySchema = z.object({
   utm_campaign: z.string().max(200).optional(),
   utm_content: z.string().max(200).optional(),
   utm_term: z.string().max(200).optional(),
+  preview_id: z.string().uuid().optional(),
 })
 
 function getIp(req: NextRequest): string {
@@ -119,6 +122,8 @@ export async function POST(req: NextRequest) {
           total_sessions: (existingLead.total_sessions ?? 0) + 1,
           last_seen_at: new Date().toISOString(),
           ...(body.first_name ? { first_name: body.first_name } : {}),
+          ...(body.last_name ? { last_name: body.last_name } : {}),
+          ...(body.username ? { username: body.username } : {}),
           ...(body.company ? { company: body.company } : {}),
           ...(body.use_case ? { use_case: body.use_case } : {}),
         })
@@ -136,6 +141,8 @@ export async function POST(req: NextRequest) {
         .insert({
           email,
           first_name: body.first_name ?? null,
+          last_name: body.last_name ?? null,
+          username: body.username ?? null,
           company: body.company ?? null,
           use_case: body.use_case ?? null,
           source: body.source,
@@ -274,6 +281,24 @@ export async function POST(req: NextRequest) {
           `,
         }),
       }).catch((err) => safeError('[copilot/public/start] welcome email failed:', err))
+    }
+
+    // ── Attribute preview → lead conversion (if provided) ─────────────
+    if (body.preview_id) {
+      const { error: previewConvErr } = await admin
+        .from('audience_builder_previews')
+        .update({
+          converted_lead_id: leadId,
+          converted_at: new Date().toISOString(),
+        })
+        .eq('id', body.preview_id)
+        .is('converted_lead_id', null)
+      if (previewConvErr) {
+        safeError(
+          '[copilot/public/start] preview conversion update failed:',
+          previewConvErr
+        )
+      }
     }
 
     safeLog('[copilot/public/start] session opened', {
