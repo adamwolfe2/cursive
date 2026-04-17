@@ -9,9 +9,14 @@ import { Users, Rocket, Settings, CheckCircle, Plus } from 'lucide-react'
 export default async function OnboardingPipelinePage() {
   const supabase = createAdminClient()
 
+  // Select only columns rendered on the kanban cards / stats bar / analytics row.
+  // Excludes large JSONB blobs (enriched_icp_brief, draft_sequences, automation_log)
+  // which are only needed on the client detail page.
   const { data: clients, error } = await supabase
     .from('onboarding_clients')
-    .select('id, company_name, primary_contact_name, primary_contact_email, packages_selected, status, created_at, updated_at, setup_fee, recurring_fee, enriched_icp_brief, target_industries, target_titles, pain_points, portal_invite_sent_at, portal_last_visited_at, rabbitsign_status, stripe_invoice_status, sender_identity_approval, copy_approval_status, enrichment_status, copy_generation_status')
+    .select(
+      'id, company_name, primary_contact_name, primary_contact_email, packages_selected, status, created_at, updated_at, setup_fee, recurring_fee, target_industries, target_titles, pain_points, portal_invite_sent_at, portal_last_visited_at, rabbitsign_status, stripe_invoice_status, sender_identity_approval, copy_approval_status, enrichment_status, copy_generation_status'
+    )
     .order('created_at', { ascending: true })
 
   if (error) {
