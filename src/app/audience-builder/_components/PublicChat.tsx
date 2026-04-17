@@ -840,13 +840,18 @@ export function PublicChat({
           <div className="mx-auto mb-5 flex items-center justify-center">
             <CursiveOrb size={48} />
           </div>
-          <h1 className="text-2xl font-bold leading-[1.15] tracking-tight text-[#0F172A] sm:text-3xl md:text-4xl">
+          <h1 className="text-3xl font-bold leading-[1.1] tracking-tight text-[#0F172A] sm:text-4xl md:text-5xl">
             Describe your dream customer.
             <br className="hidden sm:block" />
-            <span className="text-slate-400"> We&apos;ll show you real ones.</span>
+            <span
+              className="font-normal text-slate-400"
+              style={{ fontFamily: 'var(--font-dancing-script), cursive' }}
+            >
+              We&apos;ll show you real ones.
+            </span>
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-sm text-slate-600 sm:text-base">
-            Our AI matches you to <strong>19,000+</strong> pre-built audience segments and pulls real in-market profiles — live, in seconds.
+            Our AI matches you to <strong>19,000+</strong> pre-built audience segments and pulls real in-market profiles, live in seconds.
           </p>
         </div>
 
