@@ -450,6 +450,7 @@ openinfo-platform/
 ## 📚 Documentation
 
 ### Core Documentation
+- **[ARCHITECTURE.md](./ARCHITECTURE.md)**: Live snapshot — file counts, baselines, data flow, subsystem map. Start here when onboarding to the code.
 - **[CLAUDE.md](./CLAUDE.md)**: Development guidelines and best practices
 - **[docs/deployment.md](./docs/deployment.md)**: Complete deployment guide for Vercel + Supabase
 - **[docs/database-schema.md](./docs/database-schema.md)**: Database schema with RLS policies
