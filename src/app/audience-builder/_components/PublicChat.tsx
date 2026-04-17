@@ -837,17 +837,16 @@ export function PublicChat({
     return (
       <div className="mx-auto w-full max-w-3xl px-4 py-12 sm:py-20">
         <div className="text-center">
-          <div className="mx-auto mb-6 flex items-center justify-center">
-            <CursiveOrb size={64} />
+          <div className="mx-auto mb-5 flex items-center justify-center">
+            <CursiveOrb size={48} />
           </div>
-          <h1 className="text-4xl font-bold leading-[1.05] tracking-tight text-[#0F172A] sm:text-5xl md:text-6xl lg:text-7xl">
-            Find the perfect audience
-            <br />
-            for your next campaign
+          <h1 className="text-2xl font-bold leading-[1.15] tracking-tight text-[#0F172A] sm:text-3xl md:text-4xl">
+            Describe your dream customer.
+            <br className="hidden sm:block" />
+            <span className="text-slate-400"> We&apos;ll show you real ones.</span>
           </h1>
-          <p className="mx-auto mt-6 max-w-xl text-base text-slate-600 sm:text-lg">
-            Describe your ideal customer. Our AI matches you to{' '}
-            <strong>19,000+</strong> pre-built audience segments in seconds.
+          <p className="mx-auto mt-4 max-w-xl text-sm text-slate-600 sm:text-base">
+            Our AI matches you to <strong>19,000+</strong> pre-built audience segments and pulls real in-market profiles — live, in seconds.
           </p>
         </div>
 
