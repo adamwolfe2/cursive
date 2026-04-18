@@ -840,18 +840,17 @@ export function PublicChat({
           <div className="mx-auto mb-5 flex items-center justify-center">
             <CursiveOrb size={48} />
           </div>
-          <h1 className="text-3xl font-bold leading-[1.1] tracking-tight text-[#0F172A] sm:text-4xl md:text-5xl">
+          <h1 className="text-4xl font-light leading-[1.1] tracking-tight text-[#0F172A] sm:text-5xl md:text-6xl">
             Describe your dream customer.
-            <br className="hidden sm:block" />
-            <span
-              className="font-normal text-slate-400"
-              style={{ fontFamily: 'var(--font-dancing-script), cursive' }}
-            >
-              We&apos;ll show you real ones.
-            </span>
           </h1>
-          <p className="mx-auto mt-4 max-w-xl text-sm text-slate-600 sm:text-base">
-            Our AI matches you to <strong>19,000+</strong> pre-built audience segments and pulls real in-market profiles, live in seconds.
+          <p
+            className="mt-2 text-5xl leading-none text-slate-400 sm:text-6xl md:text-7xl"
+            style={{ fontFamily: 'var(--font-dancing-script), cursive' }}
+          >
+            We&apos;ll show you real ones.
+          </p>
+          <p className="mx-auto mt-6 max-w-xl text-sm font-light text-slate-600 sm:text-base">
+            Our AI matches you to <span className="font-medium text-slate-900">19,000+</span> pre-built audience segments and pulls real in-market profiles, live in seconds.
           </p>
         </div>
 
@@ -883,7 +882,7 @@ export function PublicChat({
 
         {suggestionsVisible && (
           <div className="mt-6 text-center">
-            <p className="mb-3 text-xs font-medium uppercase tracking-wide text-slate-400">
+            <p className="mb-3 text-[11px] font-light uppercase tracking-[0.18em] text-slate-400">
               Try one of these
             </p>
             <div className="flex flex-wrap justify-center gap-2">
@@ -895,7 +894,7 @@ export function PublicChat({
                     setInput(s.prompt)
                     heroTextareaRef.current?.focus()
                   }}
-                  className="rounded-full border border-slate-200 bg-white px-4 py-1.5 text-xs text-slate-600 transition-colors hover:border-slate-300 hover:bg-slate-50"
+                  className="rounded-full border border-slate-200 bg-white px-4 py-1.5 text-xs font-light text-slate-600 transition-colors hover:border-slate-300 hover:bg-slate-50"
                 >
                   {s.label}
                 </button>
@@ -906,32 +905,32 @@ export function PublicChat({
 
         <div className="mt-14 grid grid-cols-2 gap-6 text-center sm:grid-cols-4 sm:gap-4">
           <div>
-            <div className="text-2xl font-bold text-[#0F172A] sm:text-3xl">280M+</div>
-            <div className="mt-1 text-[11px] leading-snug text-slate-500">
+            <div className="text-2xl font-light tracking-tight text-[#0F172A] sm:text-3xl">280M+</div>
+            <div className="mt-1 text-[11px] font-light leading-snug text-slate-500">
               identified consumer<br />+ B2B profiles
             </div>
           </div>
           <div>
-            <div className="text-2xl font-bold text-[#0F172A] sm:text-3xl">40M+</div>
-            <div className="mt-1 text-[11px] leading-snug text-slate-500">
+            <div className="text-2xl font-light tracking-tight text-[#0F172A] sm:text-3xl">40M+</div>
+            <div className="mt-1 text-[11px] font-light leading-snug text-slate-500">
               website visitors<br />tracked monthly
             </div>
           </div>
           <div>
-            <div className="text-2xl font-bold text-[#0F172A] sm:text-3xl">19K+</div>
-            <div className="mt-1 text-[11px] leading-snug text-slate-500">
+            <div className="text-2xl font-light tracking-tight text-[#0F172A] sm:text-3xl">19K+</div>
+            <div className="mt-1 text-[11px] font-light leading-snug text-slate-500">
               pre-built audience<br />segments
             </div>
           </div>
           <div>
-            <div className="text-2xl font-bold text-[#0F172A] sm:text-3xl">500K+</div>
-            <div className="mt-1 text-[11px] leading-snug text-slate-500">
+            <div className="text-2xl font-light tracking-tight text-[#0F172A] sm:text-3xl">500K+</div>
+            <div className="mt-1 text-[11px] font-light leading-snug text-slate-500">
               fresh in-market<br />signals daily
             </div>
           </div>
         </div>
 
-        <p className="mt-10 text-center text-[11px] text-slate-400">
+        <p className="mt-10 text-center text-[11px] font-light text-slate-400">
           Powered by Cursive · Used by B2B & B2C teams to build their next audience
         </p>
       </div>
