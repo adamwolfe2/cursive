@@ -95,7 +95,7 @@ const SAMPLE_TOOL: ToolDefinition = {
       },
       days_back: {
         type: 'number',
-        description: 'How many days of in-market activity to include. Default 30, max 30.',
+        description: 'How many days of in-market activity to include. Default 90, max 365.',
       },
     },
     required: ['segment_id'],
@@ -189,24 +189,42 @@ export interface MaskedSamplePerson {
   seniority: string | null
 }
 
-/** Build a masked sample person from an AL profile. Returns null for unusable rows. */
+const EMAIL_PLACEHOLDER = 'Unlocks after call'
+
+/**
+ * Build a masked sample person from an AL profile. Returns null for unusable rows.
+ *
+ * A row is usable if we have a first name AND at least one additional signal
+ * (email, company, job title, or state). B2C segments often have sparse email
+ * coverage, so requiring email would drop most profiles — instead we show what
+ * we have and put a placeholder in the email slot when missing.
+ */
 export function maskProfileForPublic(profile: ALEnrichedProfile): MaskedSamplePerson | null {
   const firstName = profile.FIRST_NAME?.trim()
   if (!firstName) return null
 
-  const uuid = profile.UUID ?? `fallback-${Math.random().toString(36).slice(2)}-${Date.now()}`
   const bestEmail = profile.BUSINESS_EMAIL?.trim() || profile.PERSONAL_EMAILS?.split(/[,;]/)[0]?.trim()
-  const masked = maskEmail(bestEmail)
-  if (!masked) return null
+  const maskedEmail = maskEmail(bestEmail)
+  const company = maskCompany(profile)
+  const state = profile.COMPANY_STATE || profile.PERSONAL_STATE || null
+  const jobTitle = profile.JOB_TITLE || null
+
+  // Require at least one corroborating signal beyond first name so we don't
+  // ship a row that says "Jane — — — —". Email, company, job title, or state
+  // each qualify.
+  const hasSignal = Boolean(maskedEmail || company || jobTitle || state)
+  if (!hasSignal) return null
+
+  const uuid = profile.UUID ?? `fallback-${Math.random().toString(36).slice(2)}-${Date.now()}`
 
   return {
     id: signOpaqueId('person', uuid),
     first_name: firstName,
     last_name_masked: maskLastName(profile.LAST_NAME),
-    email_masked: masked,
-    company: maskCompany(profile),
-    state: profile.COMPANY_STATE || profile.PERSONAL_STATE || null,
-    job_title: profile.JOB_TITLE || null,
+    email_masked: maskedEmail || EMAIL_PLACEHOLDER,
+    company,
+    state,
+    job_title: jobTitle,
     industry: profile.COMPANY_INDUSTRY || null,
     seniority: profile.SENIORITY_LEVEL || null,
   }
@@ -268,6 +286,37 @@ export interface SampleToolResult {
   }
 }
 
+/**
+ * Progressively wider retry windows for segments that don't yield 15 enriched
+ * profiles at the default window. Capped at 365 days — beyond that AL's data
+ * starts to get stale.
+ */
+const DAYS_BACK_RETRIES: number[] = [90, 180, 365]
+const TARGET_SAMPLE_SIZE = 15
+/** Pull 50 from AL each time so we can filter down to 15 after masking. */
+const AL_PULL_LIMIT = 50
+
+async function pullAndMask(
+  realId: string,
+  daysBack: number,
+): Promise<{ masked: MaskedSamplePerson[]; totalCount: number }> {
+  const response = await previewAudience({
+    segment: realId,
+    days_back: daysBack,
+    limit: AL_PULL_LIMIT,
+  })
+  const profiles = response.result ?? []
+  const totalCount = response.count ?? 0
+
+  const masked: MaskedSamplePerson[] = []
+  for (const p of profiles) {
+    const m = maskProfileForPublic(p)
+    if (m) masked.push(m)
+    if (masked.length >= TARGET_SAMPLE_SIZE) break
+  }
+  return { masked, totalCount }
+}
+
 async function runSampleTool(input: Record<string, unknown>): Promise<SampleToolResult> {
   const opaque = String(input.segment_id ?? '')
   const realId = verifyOpaqueId('seg', opaque)
@@ -275,45 +324,54 @@ async function runSampleTool(input: Record<string, unknown>): Promise<SampleTool
     return { summary: 'Invalid or expired segment reference. Please search again and pick a segment.' }
   }
 
-  const daysBack = Math.min(30, Math.max(1, typeof input.days_back === 'number' ? input.days_back : 30))
+  // Start at the user-requested window (capped 1-365), then progressively widen
+  // through DAYS_BACK_RETRIES until we have enough enriched profiles.
+  const requested = typeof input.days_back === 'number' ? input.days_back : 90
+  const initialDaysBack = Math.min(365, Math.max(1, requested))
 
-  try {
-    const response = await previewAudience({
-      segment: realId,
-      days_back: daysBack,
-      limit: 15,
-    })
+  const windows = Array.from(
+    new Set([initialDaysBack, ...DAYS_BACK_RETRIES.filter((d) => d >= initialDaysBack)]),
+  )
 
-    const profiles = response.result ?? []
-    const totalCount = response.count ?? 0
+  let bestResult: { masked: MaskedSamplePerson[]; totalCount: number; daysBack: number } | null = null
+  let lastError: unknown = null
 
-    const masked: MaskedSamplePerson[] = []
-    for (const p of profiles) {
-      const m = maskProfileForPublic(p)
-      if (m) masked.push(m)
-      if (masked.length >= 15) break
+  for (const daysBack of windows) {
+    try {
+      const { masked, totalCount } = await pullAndMask(realId, daysBack)
+      if (!bestResult || masked.length > bestResult.masked.length) {
+        bestResult = { masked, totalCount, daysBack }
+      }
+      if (masked.length >= TARGET_SAMPLE_SIZE) break
+    } catch (err) {
+      lastError = err
+      // Keep trying wider windows — transient AL failures shouldn't kill the tool.
     }
+  }
 
-    if (masked.length === 0) {
+  if (!bestResult || bestResult.masked.length === 0) {
+    if (lastError) {
       return {
-        summary: `No sample profiles are currently available for this segment (total pool size: ${totalCount.toLocaleString()}).`,
+        summary: `Could not fetch sample profiles right now: ${lastError instanceof Error ? lastError.message : 'unknown error'}. Try another segment or try again in a moment.`,
       }
     }
+    return {
+      summary: `No sample profiles are currently available for this segment (total pool size: ${bestResult?.totalCount.toLocaleString() ?? 'unknown'}). Try a broader or related segment.`,
+    }
+  }
 
-    return {
-      summary: `Pulled ${masked.length} real in-market profiles from a pool of ~${totalCount.toLocaleString()}. Showing first name, masked email, and company. Full contact details unlock after booking a call.`,
-      sample: {
-        segment_pseudo_id: opaque,
-        segment_real_id: realId,
-        total_count: totalCount,
-        sample_count: masked.length,
-        people: masked,
-      },
-    }
-  } catch (err) {
-    return {
-      summary: `Could not fetch sample profiles right now: ${err instanceof Error ? err.message : 'unknown error'}. Try another segment or try again in a moment.`,
-    }
+  const { masked, totalCount, daysBack } = bestResult
+  const windowNote = daysBack === initialDaysBack ? '' : ` (widened lookback to ${daysBack} days to surface enriched profiles)`
+
+  return {
+    summary: `Pulled ${masked.length} real in-market profiles from a pool of ~${totalCount.toLocaleString()}${windowNote}. Showing first name, masked email, and company. Full contact details unlock after booking a call.`,
+    sample: {
+      segment_pseudo_id: opaque,
+      segment_real_id: realId,
+      total_count: totalCount,
+      sample_count: masked.length,
+      people: masked,
+    },
   }
 }
 
