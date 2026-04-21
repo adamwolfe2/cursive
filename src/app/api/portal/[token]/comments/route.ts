@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { sendSlackAlert } from '@/lib/monitoring/alerts'
 
 const postSchema = z.object({
   sequence_index: z.number().int().min(0).max(100),
@@ -114,6 +115,35 @@ export async function POST(
     if (error) {
       safeError('[Portal] Failed to insert comment:', error)
       return NextResponse.json({ error: 'Failed to save comment' }, { status: 500 })
+    }
+
+    // Ping Slack so admin knows the client left feedback (fire-and-forget).
+    try {
+      const { data: clientMeta } = await supabase
+        .from('onboarding_clients')
+        .select('company_name')
+        .eq('id', tokenRecord.client_id)
+        .maybeSingle()
+      const companyName = clientMeta?.company_name ?? 'Unknown client'
+      const isReply = !!input.parent_comment_id
+      const preview = input.body.length > 240 ? input.body.slice(0, 240) + '…' : input.body
+
+      await sendSlackAlert({
+        type: 'dfy_onboarding_complete',
+        severity: 'warning',
+        message: `${companyName} ${isReply ? 'replied on' : 'commented on'} Sequence ${input.sequence_index + 1}, Email ${input.email_step} — "${preview}"`,
+        metadata: {
+          company: companyName,
+          client_id: tokenRecord.client_id,
+          sequence_index: input.sequence_index,
+          email_step: input.email_step,
+          is_reply: isReply,
+          quoted_text: input.quoted_text ?? null,
+        },
+      })
+    } catch (err) {
+      safeError('[Portal] Slack alert for comment failed:', err)
+      // Non-fatal — the comment is saved.
     }
 
     return NextResponse.json({ comment: data })

@@ -43,6 +43,11 @@ export default function SequenceReview({ client }: SequenceReviewProps) {
   const [regenerating, setRegenerating] = useState(false)
   const [showDeploy, setShowDeploy] = useState(false)
   const [comments, setComments] = useState<CopyComment[]>([])
+  const [copyApproval, setCopyApproval] = useState<{
+    status: string
+    notes: string | null
+    updated_at: string
+  } | null>(null)
 
   const fetchComments = useCallback(async () => {
     try {
@@ -55,16 +60,37 @@ export default function SequenceReview({ client }: SequenceReviewProps) {
     }
   }, [client.id])
 
+  const fetchApprovals = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/admin/onboarding/${client.id}/approvals`, { cache: 'no-store' })
+      if (!res.ok) return
+      const json = (await res.json()) as {
+        approvals?: Array<{ step_type: string; status: string; notes: string | null; updated_at: string }>
+      }
+      const copy = (json.approvals ?? []).find((a) => a.step_type === 'copy')
+      setCopyApproval(copy ?? null)
+    } catch {
+      // silent
+    }
+  }, [client.id])
+
   useEffect(() => {
     fetchComments()
-    const interval = setInterval(fetchComments, 15000)
-    const onFocus = () => fetchComments()
+    fetchApprovals()
+    const interval = setInterval(() => {
+      fetchComments()
+      fetchApprovals()
+    }, 15000)
+    const onFocus = () => {
+      fetchComments()
+      fetchApprovals()
+    }
     window.addEventListener('focus', onFocus)
     return () => {
       clearInterval(interval)
       window.removeEventListener('focus', onFocus)
     }
-  }, [fetchComments])
+  }, [fetchComments, fetchApprovals])
 
   const commentsByEmail = groupCommentsByEmail(comments)
 
@@ -233,6 +259,23 @@ export default function SequenceReview({ client }: SequenceReviewProps) {
           </div>
         </CardContent>
       </Card>
+
+      {/* Client's bulk "Request Changes" note — shown alongside per-email comments so admin sees both sources of feedback. */}
+      {copyApproval?.status === 'changes_requested' && copyApproval.notes && (
+        <Card padding="default" className="border-amber-200 bg-amber-50">
+          <CardContent className="flex items-start gap-3 py-3">
+            <AlertTriangle className="h-4 w-4 flex-shrink-0 text-amber-600 mt-0.5" />
+            <div className="flex-1">
+              <p className="text-xs font-semibold text-amber-900 uppercase tracking-wide mb-1">
+                Client requested changes (bulk note)
+              </p>
+              <p className="text-sm text-amber-900 whitespace-pre-wrap leading-relaxed">
+                {copyApproval.notes}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Quality Check Results */}
       {qualityCheck && (

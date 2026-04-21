@@ -10,7 +10,9 @@ interface Props {
   emailStep: number
   comments: CopyComment[]
   onChange: () => void
-  bodyRef: React.RefObject<HTMLDivElement | null>
+  // Resolved at click time so we always get the live DOM node — a ref object
+  // created in the parent render can be stale before the callback ref fires.
+  getBodyElement: () => HTMLElement | null
 }
 
 function formatRelative(iso: string): string {
@@ -32,7 +34,7 @@ export default function CopyCommentThread({
   emailStep,
   comments,
   onChange,
-  bodyRef,
+  getBodyElement,
 }: Props) {
   const [draft, setDraft] = useState('')
   const [replyParent, setReplyParent] = useState<string | null>(null)
@@ -51,13 +53,14 @@ export default function CopyCommentThread({
       return
     }
     const text = sel.toString().trim()
-    if (!bodyRef.current) {
+    const bodyEl = getBodyElement()
+    if (!bodyEl) {
       setQuotedText(null)
       return
     }
     // Only treat as a quote if the selection is inside this email's body.
     const anchorNode = sel.anchorNode
-    if (!anchorNode || !bodyRef.current.contains(anchorNode)) {
+    if (!anchorNode || !bodyEl.contains(anchorNode)) {
       setQuotedText(null)
       return
     }

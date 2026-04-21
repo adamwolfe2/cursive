@@ -527,7 +527,19 @@ function CopyStep({
     })
   }
 
+  const totalOpenComments = Array.from(commentsByEmail.values()).reduce(
+    (n, list) => n + list.filter((c) => c.status === 'open').length,
+    0
+  )
+
   async function handleApprove() {
+    if (totalOpenComments > 0) {
+      const ok = confirm(
+        `You have ${totalOpenComments} open comment${totalOpenComments === 1 ? '' : 's'} on your email copy. ` +
+          `Approving now will lock the copy and send it to launch as-is. Continue?`
+      )
+      if (!ok) return
+    }
     setSubmitting(true)
     try {
       await fetch(`/api/portal/${token}/approve`, {
@@ -651,7 +663,7 @@ function CopyStep({
                             emailStep={email.step}
                             comments={emailComments}
                             onChange={onCommentsChange}
-                            bodyRef={{ current: bodyRefs.current.get(key) ?? null }}
+                            getBodyElement={() => bodyRefs.current.get(key) ?? null}
                           />
                         </div>
                       )
@@ -661,6 +673,17 @@ function CopyStep({
               </div>
             ))}
           </div>
+
+          {totalOpenComments > 0 && (
+            <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-2.5 flex items-center gap-2">
+              <svg className="h-4 w-4 flex-shrink-0 text-amber-600" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+              </svg>
+              <p className="text-xs text-amber-800">
+                You have <span className="font-semibold">{totalOpenComments}</span> open comment{totalOpenComments === 1 ? '' : 's'}. Resolve them or add a reply before approving the copy.
+              </p>
+            </div>
+          )}
 
           {showNotes && (
             <div>
