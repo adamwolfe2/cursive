@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
 
 const EmailBisonDeployModal = dynamic(() => import('./EmailBisonDeployModal'), { ssr: false })
@@ -15,7 +15,10 @@ import {
   regenerateCopy,
 } from '@/app/admin/onboarding/actions'
 import type { OnboardingClient, EmailSequence, QualityCheckResult, QualityIssue } from '@/types/onboarding'
+import type { CopyComment } from '@/types/copy-comments'
+import { commentKey, groupCommentsByEmail } from '@/types/copy-comments'
 import SpintaxRenderer from './SpintaxRenderer'
+import AdminCommentThread from './AdminCommentThread'
 import {
   ChevronDown,
   ChevronRight,
@@ -39,6 +42,31 @@ export default function SequenceReview({ client }: SequenceReviewProps) {
   const [requesting, setRequesting] = useState(false)
   const [regenerating, setRegenerating] = useState(false)
   const [showDeploy, setShowDeploy] = useState(false)
+  const [comments, setComments] = useState<CopyComment[]>([])
+
+  const fetchComments = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/admin/onboarding/${client.id}/comments`, { cache: 'no-store' })
+      if (!res.ok) return
+      const json = (await res.json()) as { comments?: CopyComment[] }
+      setComments(json.comments ?? [])
+    } catch {
+      // silent
+    }
+  }, [client.id])
+
+  useEffect(() => {
+    fetchComments()
+    const interval = setInterval(fetchComments, 15000)
+    const onFocus = () => fetchComments()
+    window.addEventListener('focus', onFocus)
+    return () => {
+      clearInterval(interval)
+      window.removeEventListener('focus', onFocus)
+    }
+  }, [fetchComments])
+
+  const commentsByEmail = groupCommentsByEmail(comments)
 
   if (client.copy_generation_status === 'not_applicable') {
     return (
@@ -246,6 +274,10 @@ export default function SequenceReview({ client }: SequenceReviewProps) {
             sequence={seq}
             index={idx}
             issues={qualityCheck?.issues?.filter((i: QualityIssue) => i.sequence_index === idx) ?? []}
+            clientId={client.id}
+            clientName={client.primary_contact_name ?? client.company_name}
+            commentsByEmail={commentsByEmail}
+            onCommentsChange={fetchComments}
           />
         ))
       )}
@@ -305,15 +337,27 @@ function SequenceAccordion({
   sequence,
   index,
   issues,
+  clientId,
+  clientName,
+  commentsByEmail,
+  onCommentsChange,
 }: {
   sequence: EmailSequence
   index: number
   issues: QualityIssue[]
+  clientId: string
+  clientName: string
+  commentsByEmail: Map<string, CopyComment[]>
+  onCommentsChange: () => void
 }) {
   const [expanded, setExpanded] = useState(false)
 
   const errorCount = issues.filter((i) => i.severity === 'error').length
   const warningCount = issues.filter((i) => i.severity === 'warning').length
+  const openCommentsForSequence = sequence.emails.reduce((n, email) => {
+    const k = commentKey(index, email.step)
+    return n + (commentsByEmail.get(k)?.filter((c) => c.status === 'open').length ?? 0)
+  }, 0)
 
   return (
     <Card padding="none">
@@ -341,6 +385,11 @@ function SequenceAccordion({
           </div>
         </div>
         <div className="flex items-center gap-2">
+          {openCommentsForSequence > 0 && (
+            <Badge variant="warning" size="sm">
+              {openCommentsForSequence} open comment{openCommentsForSequence === 1 ? '' : 's'}
+            </Badge>
+          )}
           {errorCount > 0 && (
             <span className="flex items-center gap-1 text-xs text-red-600">
               <ShieldAlert className="h-3 w-3" />
@@ -427,6 +476,16 @@ function SequenceAccordion({
                     ))}
                   </div>
                 )}
+
+                {/* Client ↔ admin comment thread */}
+                <AdminCommentThread
+                  clientId={clientId}
+                  clientName={clientName}
+                  sequenceIndex={index}
+                  emailStep={email.step}
+                  comments={commentsByEmail.get(commentKey(index, email.step)) ?? []}
+                  onChange={onCommentsChange}
+                />
               </div>
             )
           })}

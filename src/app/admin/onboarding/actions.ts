@@ -158,6 +158,28 @@ export async function updateAdminNotes(clientId: string, notes: string) {
   revalidatePath(`/admin/onboarding/${clientId}`)
 }
 
+export async function updateDomainsApprovalUrl(clientId: string, url: string) {
+  const supabase = createAdminClient()
+
+  const trimmed = url.trim()
+  const value = trimmed.length > 0 ? trimmed : null
+
+  if (value && !/^https?:\/\//i.test(value)) {
+    throw new Error('URL must start with http:// or https://')
+  }
+
+  const { error } = await supabase
+    .from('onboarding_clients')
+    .update({ domains_approval_url: value, updated_at: new Date().toISOString() })
+    .eq('id', clientId)
+
+  if (error) {
+    throw new Error(`Failed to update domains approval URL: ${error.message}`)
+  }
+
+  revalidatePath(`/admin/onboarding/${clientId}`)
+}
+
 export async function regenerateCopy(clientId: string, feedback?: string) {
   const supabase = createAdminClient()
 
@@ -224,4 +246,106 @@ export async function getFileSignedUrl(storagePath: string): Promise<string> {
     throw new Error('Failed to generate download URL')
   }
   return data.signedUrl
+}
+
+// ---------------------------------------------------------------------------
+// Per-email copy comments (admin side)
+// ---------------------------------------------------------------------------
+
+export async function addAdminComment(args: {
+  clientId: string
+  sequenceIndex: number
+  emailStep: number
+  body: string
+  parentCommentId?: string | null
+  authorName?: string | null
+}) {
+  const { clientId, sequenceIndex, emailStep, body, parentCommentId, authorName } = args
+
+  const trimmed = body.trim()
+  if (trimmed.length === 0 || trimmed.length > 4000) {
+    throw new Error('Comment body must be between 1 and 4000 characters')
+  }
+  if (sequenceIndex < 0 || emailStep < 0) {
+    throw new Error('Invalid email reference')
+  }
+
+  const supabase = createAdminClient()
+
+  if (parentCommentId) {
+    const { data: parent } = await supabase
+      .from('client_portal_copy_comments')
+      .select('client_id')
+      .eq('id', parentCommentId)
+      .maybeSingle()
+    if (!parent || parent.client_id !== clientId) {
+      throw new Error('Invalid parent comment')
+    }
+  }
+
+  const { error } = await supabase.from('client_portal_copy_comments').insert({
+    client_id: clientId,
+    sequence_index: sequenceIndex,
+    email_step: emailStep,
+    parent_comment_id: parentCommentId ?? null,
+    author_type: 'admin',
+    author_name: authorName ?? 'Cursive Team',
+    body: trimmed,
+  })
+
+  if (error) {
+    throw new Error(`Failed to save comment: ${error.message}`)
+  }
+
+  revalidatePath(`/admin/onboarding/${clientId}`)
+}
+
+export async function resolveComment(commentId: string, clientId: string) {
+  const supabase = createAdminClient()
+  const now = new Date().toISOString()
+
+  const { error } = await supabase
+    .from('client_portal_copy_comments')
+    .update({ status: 'resolved', resolved_by: 'admin', resolved_at: now, updated_at: now })
+    .eq('id', commentId)
+    .eq('client_id', clientId)
+
+  if (error) {
+    throw new Error(`Failed to resolve comment: ${error.message}`)
+  }
+
+  revalidatePath(`/admin/onboarding/${clientId}`)
+}
+
+export async function reopenComment(commentId: string, clientId: string) {
+  const supabase = createAdminClient()
+  const now = new Date().toISOString()
+
+  const { error } = await supabase
+    .from('client_portal_copy_comments')
+    .update({ status: 'open', resolved_by: null, resolved_at: null, updated_at: now })
+    .eq('id', commentId)
+    .eq('client_id', clientId)
+
+  if (error) {
+    throw new Error(`Failed to reopen comment: ${error.message}`)
+  }
+
+  revalidatePath(`/admin/onboarding/${clientId}`)
+}
+
+export async function deleteComment(commentId: string, clientId: string) {
+  const supabase = createAdminClient()
+
+  const { error } = await supabase
+    .from('client_portal_copy_comments')
+    .delete()
+    .eq('id', commentId)
+    .eq('client_id', clientId)
+
+  if (error) {
+    throw new Error(`Failed to delete comment: ${error.message}`)
+  }
+
+  revalidatePath(`/admin/onboarding/${clientId}`)
 }

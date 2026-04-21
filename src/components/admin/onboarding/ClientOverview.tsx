@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { PACKAGES } from '@/types/onboarding'
-import { updateAdminNotes } from '@/app/admin/onboarding/actions'
+import { updateAdminNotes, updateDomainsApprovalUrl } from '@/app/admin/onboarding/actions'
 import type { OnboardingClient } from '@/types/onboarding'
 import {
   User,
@@ -22,6 +22,8 @@ import {
   AlertTriangle,
   Copy,
   Check,
+  Link as LinkIcon,
+  ExternalLink,
 } from 'lucide-react'
 
 interface ClientOverviewProps {
@@ -31,6 +33,10 @@ interface ClientOverviewProps {
 export default function ClientOverview({ client }: ClientOverviewProps) {
   const [adminNotes, setAdminNotes] = useState(client.admin_notes ?? '')
   const [saving, setSaving] = useState(false)
+  const [domainsUrl, setDomainsUrl] = useState(client.domains_approval_url ?? '')
+  const [savingUrl, setSavingUrl] = useState(false)
+  const [urlError, setUrlError] = useState<string | null>(null)
+  const [urlSaved, setUrlSaved] = useState(false)
 
   async function handleSaveNotes() {
     setSaving(true)
@@ -40,6 +46,21 @@ export default function ClientOverview({ client }: ClientOverviewProps) {
       // error is non-fatal for UI
     } finally {
       setSaving(false)
+    }
+  }
+
+  async function handleSaveDomainsUrl() {
+    setSavingUrl(true)
+    setUrlError(null)
+    setUrlSaved(false)
+    try {
+      await updateDomainsApprovalUrl(client.id, domainsUrl)
+      setUrlSaved(true)
+      setTimeout(() => setUrlSaved(false), 2000)
+    } catch (err) {
+      setUrlError(err instanceof Error ? err.message : 'Failed to save link')
+    } finally {
+      setSavingUrl(false)
     }
   }
 
@@ -126,6 +147,51 @@ export default function ClientOverview({ client }: ClientOverviewProps) {
           </CardContent>
         </Card>
       </div>
+
+      {/* Domains & Sender Approval Link */}
+      <Card padding="default">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <LinkIcon className="h-4 w-4" /> Domains & Sender Approval Link
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="mt-3 space-y-2">
+          <p className="text-xs text-muted-foreground">
+            Paste a Google Sheet or shared doc listing the sending domains and sender names for this client.
+            It will appear on their portal (Step 3) as a &ldquo;View Domains &amp; Sender Names&rdquo; button.
+          </p>
+          <div className="flex items-stretch gap-2">
+            <input
+              type="url"
+              value={domainsUrl}
+              onChange={(e) => setDomainsUrl(e.target.value)}
+              placeholder="https://docs.google.com/spreadsheets/d/..."
+              className="flex-1 rounded-md border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+            />
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleSaveDomainsUrl}
+              loading={savingUrl}
+              leftIcon={urlSaved ? <Check className="h-3.5 w-3.5 text-green-600" /> : <Save className="h-3.5 w-3.5" />}
+            >
+              {urlSaved ? 'Saved' : 'Save Link'}
+            </Button>
+            {domainsUrl && /^https?:\/\//i.test(domainsUrl) && (
+              <a
+                href={domainsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors"
+                title="Open link in new tab"
+              >
+                <ExternalLink className="h-3.5 w-3.5" /> Open
+              </a>
+            )}
+          </div>
+          {urlError && <p className="text-xs text-destructive">{urlError}</p>}
+        </CardContent>
+      </Card>
 
       {/* Admin Notes */}
       <Card padding="default">

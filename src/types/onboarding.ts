@@ -166,6 +166,7 @@ export interface OnboardingClient {
   start_timeline: string | null
   sender_names: string | null
   domain_variations: string | null
+  domains_approval_url: string | null
   domain_provider: string | null
   existing_domains: string | null
   copy_tone: string | null

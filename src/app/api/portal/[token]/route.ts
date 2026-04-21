@@ -60,6 +60,7 @@ export async function GET(
           'recurring_fee',
           'domain_variations',
           'sender_names',
+          'domains_approval_url',
           'draft_sequences',
           'copy_generation_status',
           'copy_approval_status',

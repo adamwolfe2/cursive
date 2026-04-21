@@ -1,8 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { PackageSlug } from '@/types/onboarding'
 import { PACKAGES } from '@/types/onboarding'
+import type { CopyComment } from '@/types/copy-comments'
+import { commentKey, groupCommentsByEmail } from '@/types/copy-comments'
+import CopyCommentThread from './CopyCommentThread'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -32,6 +35,8 @@ export interface PortalClient {
   // Domain / sender setup — stored as JSON array or newline-separated string
   domain_variations?: string | string[] | null
   sender_names?: string | string[] | null
+  // Optional external link (Google Sheet, etc.) to the domains & sender-name list
+  domains_approval_url?: string | null
 
   // Copy
   copy_generation_status?: string | null
@@ -312,6 +317,8 @@ function DomainsStep({
 
   const domains = parseStringArray(client.domain_variations)
   const senders = parseStringArray(client.sender_names)
+  const approvalUrl = client.domains_approval_url?.trim()
+  const hasApprovalUrl = !!approvalUrl && /^https?:\/\//i.test(approvalUrl)
 
   async function handleApprove() {
     setSubmitting(true)
@@ -365,6 +372,21 @@ function DomainsStep({
             them or request changes.
           </p>
 
+          {hasApprovalUrl && (
+            <a
+              href={approvalUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm font-medium text-blue-700 hover:bg-blue-100 transition-colors"
+            >
+              <svg className="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+              </svg>
+              View Domains &amp; Sender Names
+              <span className="text-xs text-blue-600/70 font-normal">(opens in new tab)</span>
+            </a>
+          )}
+
           {domains.length > 0 ? (
             <div className="rounded-lg border border-gray-200 overflow-hidden">
               <table className="w-full text-sm">
@@ -397,9 +419,9 @@ function DomainsStep({
                 </tbody>
               </table>
             </div>
-          ) : (
+          ) : !hasApprovalUrl ? (
             <p className="text-sm text-gray-400 italic">Domain and sender details are being finalized.</p>
-          )}
+          ) : null}
 
           {showNotes && (
             <div>
@@ -459,16 +481,23 @@ function CopyStep({
   approvalStatus,
   token,
   onApprovalUpdate,
+  clientName,
+  commentsByEmail,
+  onCommentsChange,
 }: {
   client: PortalClient
   approvalStatus: 'pending' | 'approved' | 'changes_requested' | null | undefined
   token: string
   onApprovalUpdate: (step: 'domains' | 'copy', status: 'approved' | 'changes_requested') => void
+  clientName: string
+  commentsByEmail: Map<string, CopyComment[]>
+  onCommentsChange: () => void
 }) {
   const [showNotes, setShowNotes] = useState(false)
   const [notes, setNotes] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [expandedSeqs, setExpandedSeqs] = useState<Set<number>>(new Set([0]))
+  const bodyRefs = useRef<Map<string, HTMLDivElement | null>>(new Map())
 
   const isApproved = approvalStatus === 'approved'
   const isChangesRequested = approvalStatus === 'changes_requested'
@@ -587,22 +616,46 @@ function CopyStep({
 
                 {expandedSeqs.has(seqIdx) && (
                   <div className="divide-y divide-gray-100">
-                    {seq.emails.map((email, emailIdx) => (
-                      <div key={emailIdx} className="px-4 py-4">
-                        <div className="flex items-center gap-2 mb-2.5">
-                          <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700">
-                            Email {email.step}
-                          </span>
-                          <span className="text-xs text-gray-400">{email.purpose}</span>
+                    {seq.emails.map((email, emailIdx) => {
+                      const key = commentKey(seqIdx, email.step)
+                      const emailComments = commentsByEmail.get(key) ?? []
+                      const openCount = emailComments.filter((c) => c.status === 'open').length
+                      return (
+                        <div key={emailIdx} className="px-4 py-4">
+                          <div className="flex items-center gap-2 mb-2.5 flex-wrap">
+                            <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700">
+                              Email {email.step}
+                            </span>
+                            <span className="text-xs text-gray-400">{email.purpose}</span>
+                            {openCount > 0 && (
+                              <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-medium text-amber-800">
+                                {openCount} open comment{openCount === 1 ? '' : 's'}
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-sm font-semibold text-gray-900 mb-2">
+                            Subject: {email.subject_line}
+                          </p>
+                          <div
+                            ref={(el) => {
+                              bodyRefs.current.set(key, el)
+                            }}
+                            className="text-sm text-gray-600 whitespace-pre-line leading-relaxed selection:bg-blue-100"
+                          >
+                            {email.body}
+                          </div>
+                          <CopyCommentThread
+                            token={token}
+                            clientName={clientName}
+                            sequenceIndex={seqIdx}
+                            emailStep={email.step}
+                            comments={emailComments}
+                            onChange={onCommentsChange}
+                            bodyRef={{ current: bodyRefs.current.get(key) ?? null }}
+                          />
                         </div>
-                        <p className="text-sm font-semibold text-gray-900 mb-2">
-                          Subject: {email.subject_line}
-                        </p>
-                        <p className="text-sm text-gray-600 whitespace-pre-line leading-relaxed line-clamp-6">
-                          {email.body}
-                        </p>
-                      </div>
-                    ))}
+                      )
+                    })}
                   </div>
                 )}
               </div>
@@ -834,6 +887,7 @@ export function ClientPortal({
   token,
 }: ClientPortalProps) {
   const [approvals, setApprovals] = useState<PortalApprovals>(initialApprovals)
+  const [comments, setComments] = useState<CopyComment[]>([])
 
   function handleApprovalUpdate(
     step: 'domains' | 'copy',
@@ -841,6 +895,30 @@ export function ClientPortal({
   ) {
     setApprovals((prev) => ({ ...prev, [step]: status }))
   }
+
+  const fetchComments = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/portal/${token}/comments`, { cache: 'no-store' })
+      if (!res.ok) return
+      const json = (await res.json()) as { comments?: CopyComment[] }
+      setComments(json.comments ?? [])
+    } catch {
+      // Silent — polling will retry.
+    }
+  }, [token])
+
+  useEffect(() => {
+    fetchComments()
+    const interval = setInterval(fetchComments, 15000)
+    const onFocus = () => fetchComments()
+    window.addEventListener('focus', onFocus)
+    return () => {
+      clearInterval(interval)
+      window.removeEventListener('focus', onFocus)
+    }
+  }, [fetchComments])
+
+  const commentsByEmail = groupCommentsByEmail(comments)
 
   const invoicePaid = client.stripe_invoice_status === 'paid'
   const domainsApproved = approvals.domains === 'approved'
@@ -890,6 +968,9 @@ export function ClientPortal({
                   approvalStatus={approvals.copy}
                   token={token}
                   onApprovalUpdate={handleApprovalUpdate}
+                  clientName={client.primary_contact_name ?? client.company_name}
+                  commentsByEmail={commentsByEmail}
+                  onCommentsChange={fetchComments}
                 />
                 <SetupStep client={client} allStepsComplete={allStepsComplete} />
                 <CampaignLiveStep client={client} />
