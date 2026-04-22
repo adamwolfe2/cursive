@@ -33,6 +33,8 @@ export default function InvoiceContractStep({
   const [invoiceReview, setInvoiceReview] = useState(false)
   const [externalInvoiceUrl, setExternalInvoiceUrl] = useState('')
   const [showExternalInvoice, setShowExternalInvoice] = useState(false)
+  const [priceOverrides, setPriceOverrides] = useState<Record<string, number>>({})
+  const [includeMonthlyFee, setIncludeMonthlyFee] = useState(false)
 
   // Contract state
   const [contractTemplateId, setContractTemplateId] = useState(
@@ -59,7 +61,18 @@ export default function InvoiceContractStep({
     }),
     [pricing, clientName]
   )
-  const totalAmount = lineItems.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0)
+
+  const editableLineItems = useMemo(() => {
+    const filtered = includeMonthlyFee
+      ? lineItems
+      : lineItems.filter((item) => !item.name.includes('Monthly Service Fee'))
+    return filtered.map((item) => ({
+      ...item,
+      unitPrice: priceOverrides[item.name] ?? item.unitPrice,
+    }))
+  }, [lineItems, includeMonthlyFee, priceOverrides])
+
+  const totalAmount = editableLineItems.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0)
 
   // Contract fields preview — exactly what RabbitSign will receive
   const contractFields = useMemo(() => ({
@@ -95,7 +108,7 @@ export default function InvoiceContractStep({
         body: JSON.stringify({
           customerEmail: clientEmail,
           customerName: clientName,
-          lineItems,
+          lineItems: editableLineItems,
           daysUntilDue,
           memo: `Cursive AI services for ${clientName}`,
           sendEmail: true,
@@ -115,7 +128,7 @@ export default function InvoiceContractStep({
         error: error instanceof Error ? error.message : 'Failed to create invoice',
       })
     }
-  }, [clientEmail, clientName, lineItems, daysUntilDue, onInvoiceUpdate])
+  }, [clientEmail, clientName, editableLineItems, daysUntilDue, onInvoiceUpdate])
 
   const handleMarkInvoiceSentExternally = useCallback(() => {
     onInvoiceUpdate({
@@ -208,15 +221,31 @@ export default function InvoiceContractStep({
             </div>
           )}
 
-          {/* Line items — always visible */}
-          <div className="rounded-md bg-gray-50 border border-gray-200 px-3 py-2 space-y-1">
+          {/* Line items — editable */}
+          <div className="rounded-md bg-gray-50 border border-gray-200 px-3 py-2 space-y-1.5">
             <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
               Sending to: {clientEmail || '—'}
             </p>
-            {lineItems.map((item, i) => (
-              <div key={i} className="flex justify-between text-xs">
-                <span className="text-gray-600 flex-1 mr-2">{item.name}</span>
-                <span className="font-medium">{fmtCurrency(item.unitPrice)}</span>
+            {editableLineItems.map((item) => (
+              <div key={item.name} className="flex items-center gap-2 text-xs">
+                <span className="text-gray-600 flex-1">{item.name}</span>
+                <div className="relative w-24 shrink-0">
+                  <span className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 text-xs">$</span>
+                  <input
+                    type="number"
+                    min={0}
+                    step={1}
+                    value={priceOverrides[item.name] ?? item.unitPrice}
+                    onChange={(e) => {
+                      const val = parseFloat(e.target.value)
+                      setPriceOverrides((prev) => ({
+                        ...prev,
+                        [item.name]: isNaN(val) ? 0 : val,
+                      }))
+                    }}
+                    className="w-full rounded border border-gray-300 pl-5 pr-1 py-0.5 text-xs text-right font-medium focus:border-blue-400 focus:ring-1 focus:ring-blue-400/20"
+                  />
+                </div>
               </div>
             ))}
             <div className="flex justify-between text-sm font-semibold border-t border-gray-200 pt-1.5 mt-1">
@@ -224,6 +253,17 @@ export default function InvoiceContractStep({
               <span>{fmtCurrency(totalAmount)}</span>
             </div>
           </div>
+
+          {/* Monthly fee toggle */}
+          <label className="flex items-center gap-2 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={includeMonthlyFee}
+              onChange={(e) => setIncludeMonthlyFee(e.target.checked)}
+              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            />
+            <span className="text-xs text-gray-600">Include first month&apos;s service fee on this invoice</span>
+          </label>
 
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">Due in (days)</label>
