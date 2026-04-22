@@ -35,6 +35,7 @@ export default function InvoiceContractStep({
   const [showExternalInvoice, setShowExternalInvoice] = useState(false)
   const [priceOverrides, setPriceOverrides] = useState<Record<string, number>>({})
   const [includeMonthlyFee, setIncludeMonthlyFee] = useState(false)
+  const [recipientOverride, setRecipientOverride] = useState('')
 
   // Contract state
   const [contractTemplateId, setContractTemplateId] = useState(
@@ -48,6 +49,8 @@ export default function InvoiceContractStep({
   const clientEmail = parsedData?.primary_contact_email || ''
   const clientName = parsedData?.company_name || deal.clientName || ''
   const contactName = parsedData?.primary_contact_name || ''
+  const sendToEmail = recipientOverride.trim() || clientEmail
+  const isTestSend = !!recipientOverride.trim() && recipientOverride.trim() !== clientEmail
 
   const lineItems = useMemo(
     () => buildInvoiceLineItems({
@@ -97,7 +100,7 @@ export default function InvoiceContractStep({
   // ---------------------------------------------------------------------------
 
   const handleSendInvoice = useCallback(async () => {
-    if (!clientEmail) return
+    if (!sendToEmail) return
     onInvoiceUpdate({ status: 'creating', error: null })
     setInvoiceReview(false)
 
@@ -106,11 +109,13 @@ export default function InvoiceContractStep({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          customerEmail: clientEmail,
-          customerName: clientName,
+          customerEmail: sendToEmail,
+          customerName: isTestSend ? `TEST — ${clientName}` : clientName,
           lineItems: editableLineItems,
           daysUntilDue,
-          memo: `Cursive AI services for ${clientName}`,
+          memo: isTestSend
+            ? `[TEST] Cursive AI services for ${clientName}`
+            : `Cursive AI services for ${clientName}`,
           sendEmail: true,
         }),
       })
@@ -128,7 +133,7 @@ export default function InvoiceContractStep({
         error: error instanceof Error ? error.message : 'Failed to create invoice',
       })
     }
-  }, [clientEmail, clientName, editableLineItems, daysUntilDue, onInvoiceUpdate])
+  }, [sendToEmail, clientName, isTestSend, editableLineItems, daysUntilDue, onInvoiceUpdate])
 
   const handleMarkInvoiceSentExternally = useCallback(() => {
     onInvoiceUpdate({
@@ -221,10 +226,30 @@ export default function InvoiceContractStep({
             </div>
           )}
 
+          {/* Test recipient override */}
+          <div>
+            <label className="block text-xs font-medium text-gray-600 mb-1">
+              Send to (override)
+              <span className="ml-1 font-normal text-gray-400">— leave blank to send to client</span>
+            </label>
+            <input
+              type="email"
+              placeholder={clientEmail || 'your@email.com'}
+              value={recipientOverride}
+              onChange={(e) => setRecipientOverride(e.target.value)}
+              className="w-full rounded-md border border-gray-300 px-3 py-1.5 text-sm placeholder:text-gray-400"
+            />
+            {isTestSend && (
+              <p className="text-[10px] text-amber-600 mt-1">
+                Test mode — invoice will be addressed to &ldquo;TEST — {clientName}&rdquo; and sent to {recipientOverride.trim()}
+              </p>
+            )}
+          </div>
+
           {/* Line items — editable */}
           <div className="rounded-md bg-gray-50 border border-gray-200 px-3 py-2 space-y-1.5">
             <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
-              Sending to: {clientEmail || '—'}
+              Sending to: {sendToEmail || '—'}{isTestSend ? ' (test)' : ''}
             </p>
             {editableLineItems.map((item) => (
               <div key={item.name} className="flex items-center gap-2 text-xs">
@@ -281,11 +306,11 @@ export default function InvoiceContractStep({
               <button
                 type="button"
                 onClick={() => setInvoiceReview(true)}
-                disabled={!clientEmail}
+                disabled={!sendToEmail}
                 className="w-full rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 <Eye className="h-4 w-4" />
-                Review & Send Invoice
+                {isTestSend ? 'Review & Send Test Invoice' : 'Review & Send Invoice'}
               </button>
 
               {/* External / already-handled options */}
@@ -331,11 +356,15 @@ export default function InvoiceContractStep({
 
           {/* ── Confirmation step ── */}
           {invoice.status === 'idle' && invoiceReview && (
-            <div className="rounded-md border border-blue-200 bg-blue-50 px-4 py-3 space-y-3">
-              <p className="text-sm font-semibold text-blue-900">Ready to send?</p>
-              <p className="text-xs text-blue-700">
-                This will create and email a <strong>{fmtCurrency(totalAmount)}</strong> Stripe invoice to{' '}
-                <strong>{clientEmail}</strong>, due in {daysUntilDue} days. The email sends immediately.
+            <div className={`rounded-md border px-4 py-3 space-y-3 ${isTestSend ? 'border-amber-200 bg-amber-50' : 'border-blue-200 bg-blue-50'}`}>
+              <p className={`text-sm font-semibold ${isTestSend ? 'text-amber-900' : 'text-blue-900'}`}>
+                {isTestSend ? 'Send test invoice?' : 'Ready to send?'}
+              </p>
+              <p className={`text-xs ${isTestSend ? 'text-amber-700' : 'text-blue-700'}`}>
+                {isTestSend
+                  ? <>This will send a <strong>{fmtCurrency(totalAmount)}</strong> <strong>TEST</strong> invoice to <strong>{sendToEmail}</strong> (not the client). The customer name will be prefixed with &ldquo;TEST —&rdquo;.</>
+                  : <>This will create and email a <strong>{fmtCurrency(totalAmount)}</strong> Stripe invoice to <strong>{sendToEmail}</strong>, due in {daysUntilDue} days. The email sends immediately.</>
+                }
               </p>
               <div className="flex gap-2">
                 <button
