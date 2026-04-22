@@ -1,6 +1,7 @@
 // Stripe Invoice Client for Onboarding Deals
 // Creates and sends Stripe invoices from deal calculator pricing
 
+import Stripe from 'stripe'
 import { getStripeClient } from '@/lib/stripe/client'
 
 // ---------------------------------------------------------------------------
@@ -29,6 +30,35 @@ export interface StripeInvoiceResult {
   status: string
   amountDue: number // in cents
   currency: string
+}
+
+export interface StripeSubscriptionResult {
+  id: string
+  status: string
+  trialEnd: number | null // unix timestamp
+  currentPeriodStart: number
+  currentPeriodEnd: number
+}
+
+interface SubscriptionLineItem {
+  name: string
+  amount: number // in dollars
+}
+
+type BillingCadence = 'monthly' | 'quarterly' | 'annual'
+
+interface CreateInvoiceWithSubscriptionParams {
+  customerEmail: string
+  customerName: string
+  // One-time invoice
+  invoiceLineItems: InvoiceLineItem[]
+  daysUntilDue: number
+  memo?: string
+  // Recurring subscription
+  subscriptionItems: SubscriptionLineItem[]
+  billingCadence: BillingCadence
+  trialDays: number
+  metadata?: Record<string, string>
 }
 
 // ---------------------------------------------------------------------------
@@ -166,4 +196,97 @@ export function buildInvoiceLineItems(params: {
   }
 
   return items
+}
+
+// ---------------------------------------------------------------------------
+// Invoice + Subscription (combined)
+// ---------------------------------------------------------------------------
+
+const CADENCE_TO_INTERVAL: Record<BillingCadence, { interval: 'month' | 'year'; interval_count: number }> = {
+  monthly:   { interval: 'month', interval_count: 1 },
+  quarterly: { interval: 'month', interval_count: 3 },
+  annual:    { interval: 'year',  interval_count: 1 },
+}
+
+/**
+ * Creates a one-time Stripe invoice (setup + infra) AND a subscription with a
+ * trial period so recurring billing starts automatically after X days.
+ */
+export async function createDealInvoiceWithSubscription(
+  params: CreateInvoiceWithSubscriptionParams
+): Promise<{ invoice: StripeInvoiceResult; subscription: StripeSubscriptionResult }> {
+  const stripe = getStripeClient()
+
+  // Find or create customer
+  const existing = await stripe.customers.list({ email: params.customerEmail, limit: 1 })
+  let customerId: string
+  if (existing.data.length > 0) {
+    customerId = existing.data[0].id
+  } else {
+    const customer = await stripe.customers.create({
+      email: params.customerEmail,
+      name: params.customerName,
+      metadata: params.metadata ?? {},
+    })
+    customerId = customer.id
+  }
+
+  // ── One-time invoice ────────────────────────────────────────────────────────
+  const stripeInvoice = await stripe.invoices.create({
+    customer: customerId,
+    collection_method: 'send_invoice',
+    days_until_due: params.daysUntilDue,
+    description: params.memo ?? `Cursive AI — Services for ${params.customerName}`,
+    metadata: { source: 'deal_calculator', ...params.metadata },
+  })
+
+  for (const item of params.invoiceLineItems) {
+    await stripe.invoiceItems.create({
+      customer: customerId,
+      invoice: stripeInvoice.id,
+      description: item.name,
+      quantity: item.quantity,
+      unit_amount: Math.round(item.unitPrice * 100),
+      currency: 'usd',
+    })
+  }
+
+  const finalized = await stripe.invoices.finalizeInvoice(stripeInvoice.id)
+  await stripe.invoices.sendInvoice(stripeInvoice.id)
+
+  const invoiceResult: StripeInvoiceResult = {
+    id: finalized.id,
+    hostedUrl: finalized.hosted_invoice_url ?? null,
+    status: finalized.status ?? 'draft',
+    amountDue: finalized.amount_due,
+    currency: finalized.currency,
+  }
+
+  // ── Subscription with trial ─────────────────────────────────────────────────
+  const { interval, interval_count } = CADENCE_TO_INTERVAL[params.billingCadence]
+  const trialEnd = Math.floor(Date.now() / 1000) + params.trialDays * 86400
+
+  const subscription = await stripe.subscriptions.create({
+    customer: customerId,
+    trial_end: trialEnd,
+    items: params.subscriptionItems.map((item) => ({
+      price_data: {
+        currency: 'usd' as const,
+        product_data: { name: item.name },
+        unit_amount: Math.round(item.amount * 100),
+        recurring: { interval, interval_count },
+      },
+    })) as unknown as Stripe.SubscriptionCreateParams.Item[],
+    metadata: { source: 'deal_calculator', ...params.metadata },
+  })
+
+  const subscriptionResult: StripeSubscriptionResult = {
+    id: subscription.id,
+    status: subscription.status,
+    trialEnd: typeof subscription.trial_end === 'number' ? subscription.trial_end : null,
+    currentPeriodStart: subscription.items.data[0]?.created ?? 0,
+    currentPeriodEnd: trialEnd,
+  }
+
+  return { invoice: invoiceResult, subscription: subscriptionResult }
 }

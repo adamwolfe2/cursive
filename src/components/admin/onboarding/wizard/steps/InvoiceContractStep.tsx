@@ -36,6 +36,8 @@ export default function InvoiceContractStep({
   const [priceOverrides, setPriceOverrides] = useState<Record<string, number>>({})
   const [includeMonthlyFee, setIncludeMonthlyFee] = useState(false)
   const [recipientOverride, setRecipientOverride] = useState('')
+  const [createSubscription, setCreateSubscription] = useState(true)
+  const [trialDays, setTrialDays] = useState(14)
 
   // Contract state
   const [contractTemplateId, setContractTemplateId] = useState(
@@ -77,6 +79,33 @@ export default function InvoiceContractStep({
 
   const totalAmount = editableLineItems.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0)
 
+  // Subscription line items — monthly service + infra that recur
+  const subscriptionItems = useMemo(() => {
+    const items: { name: string; amount: number }[] = []
+    if (pricing.totalRecurring > 0) {
+      items.push({
+        name: `Cursive AI — Monthly Service (${clientName})`,
+        amount: priceOverrides[`sub:service`] ?? pricing.totalRecurring,
+      })
+    }
+    if (pricing.inboxCostMonthly > 0) {
+      items.push({
+        name: `Email Inboxes — ${pricing.inboxes} inboxes (monthly, at-cost)`,
+        amount: priceOverrides[`sub:inboxes`] ?? pricing.inboxCostMonthly,
+      })
+    }
+    return items
+  }, [pricing, clientName, priceOverrides])
+
+  const subscriptionMonthlyTotal = subscriptionItems.reduce((s, i) => s + i.amount, 0)
+
+  // Subscription start date (for display)
+  const subscriptionStartDate = useMemo(() => {
+    const d = new Date()
+    d.setDate(d.getDate() + trialDays)
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+  }, [trialDays])
+
   // Contract fields preview — exactly what RabbitSign will receive
   const contractFields = useMemo(() => ({
     client_company: clientName,
@@ -104,36 +133,76 @@ export default function InvoiceContractStep({
     onInvoiceUpdate({ status: 'creating', error: null })
     setInvoiceReview(false)
 
+    const customerName = isTestSend ? `TEST — ${clientName}` : clientName
+    const memo = isTestSend
+      ? `[TEST] Cursive AI services for ${clientName}`
+      : `Cursive AI services for ${clientName}`
+
     try {
-      const res = await fetch('/api/admin/stripe/create-invoice', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          customerEmail: sendToEmail,
-          customerName: isTestSend ? `TEST — ${clientName}` : clientName,
-          lineItems: editableLineItems,
-          daysUntilDue,
-          memo: isTestSend
-            ? `[TEST] Cursive AI services for ${clientName}`
-            : `Cursive AI services for ${clientName}`,
-          sendEmail: true,
-        }),
-      })
-
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({ error: 'Failed' }))
-        throw new Error(err.error || 'Failed to create invoice')
+      if (createSubscription && subscriptionItems.length > 0) {
+        // Combined invoice + subscription
+        const res = await fetch('/api/admin/stripe/create-invoice-with-subscription', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            customerEmail: sendToEmail,
+            customerName,
+            invoiceLineItems: editableLineItems,
+            daysUntilDue,
+            memo,
+            subscriptionItems,
+            billingCadence: deal.billingCadence,
+            trialDays,
+          }),
+        })
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({ error: 'Failed' }))
+          throw new Error(err.error || 'Failed to create invoice + subscription')
+        }
+        const { data } = await res.json()
+        onInvoiceUpdate({
+          status: 'sent',
+          stripeInvoiceId: data.invoice.id,
+          stripeInvoiceUrl: data.invoice.hostedUrl,
+          stripeSubscriptionId: data.subscription.id,
+        })
+      } else {
+        // Invoice only
+        const res = await fetch('/api/admin/stripe/create-invoice', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            customerEmail: sendToEmail,
+            customerName,
+            lineItems: editableLineItems,
+            daysUntilDue,
+            memo,
+            sendEmail: true,
+          }),
+        })
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({ error: 'Failed' }))
+          throw new Error(err.error || 'Failed to create invoice')
+        }
+        const { data } = await res.json()
+        onInvoiceUpdate({
+          status: 'sent',
+          stripeInvoiceId: data.id,
+          stripeInvoiceUrl: data.hostedUrl,
+          stripeSubscriptionId: null,
+        })
       }
-
-      const { data } = await res.json()
-      onInvoiceUpdate({ status: 'sent', stripeInvoiceId: data.id, stripeInvoiceUrl: data.hostedUrl })
     } catch (error) {
       onInvoiceUpdate({
         status: 'error',
         error: error instanceof Error ? error.message : 'Failed to create invoice',
       })
     }
-  }, [sendToEmail, clientName, isTestSend, editableLineItems, daysUntilDue, onInvoiceUpdate])
+  }, [
+    sendToEmail, clientName, isTestSend, editableLineItems, daysUntilDue,
+    createSubscription, subscriptionItems, deal.billingCadence, trialDays,
+    onInvoiceUpdate,
+  ])
 
   const handleMarkInvoiceSentExternally = useCallback(() => {
     onInvoiceUpdate({
@@ -290,14 +359,85 @@ export default function InvoiceContractStep({
             <span className="text-xs text-gray-600">Include first month&apos;s service fee on this invoice</span>
           </label>
 
+          {/* Subscription */}
+          <div className="rounded-md border border-gray-200 bg-gray-50 px-3 py-3 space-y-3">
+            <label className="flex items-center gap-2 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={createSubscription}
+                onChange={(e) => setCreateSubscription(e.target.checked)}
+                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+              <span className="text-xs font-medium text-gray-700">Start monthly subscription automatically</span>
+            </label>
+
+            {createSubscription && subscriptionItems.length > 0 && (
+              <div className="space-y-2 pl-5">
+                <div className="space-y-1">
+                  {subscriptionItems.map((item) => (
+                    <div key={item.name} className="flex items-center gap-2 text-xs">
+                      <span className="text-gray-600 flex-1 truncate">{item.name}</span>
+                      <div className="relative w-24 shrink-0">
+                        <span className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 text-xs">$</span>
+                        <input
+                          type="number"
+                          min={0}
+                          step={1}
+                          value={priceOverrides[`sub:${item.name.includes('Inboxes') ? 'inboxes' : 'service'}`] ?? item.amount}
+                          onChange={(e) => {
+                            const val = parseFloat(e.target.value)
+                            const key = `sub:${item.name.includes('Inboxes') ? 'inboxes' : 'service'}`
+                            setPriceOverrides((prev) => ({ ...prev, [key]: isNaN(val) ? 0 : val }))
+                          }}
+                          className="w-full rounded border border-gray-300 pl-5 pr-1 py-0.5 text-xs text-right font-medium focus:border-blue-400 focus:ring-1 focus:ring-blue-400/20"
+                        />
+                      </div>
+                      <span className="text-gray-400 text-[10px] w-8">/mo</span>
+                    </div>
+                  ))}
+                  <div className="flex justify-between text-xs font-semibold text-gray-700 border-t border-gray-200 pt-1 mt-0.5">
+                    <span>Total recurring</span>
+                    <span>{fmtCurrency(subscriptionMonthlyTotal)}/mo</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <label className="text-xs text-gray-600 whitespace-nowrap">Subscription starts after</label>
+                  <input
+                    type="number"
+                    min={1}
+                    max={365}
+                    value={trialDays}
+                    onChange={(e) => setTrialDays(Number(e.target.value))}
+                    className="w-16 rounded border border-gray-300 px-2 py-0.5 text-xs text-center"
+                  />
+                  <span className="text-xs text-gray-600">days</span>
+                </div>
+
+                <p className="text-[10px] text-blue-700 bg-blue-50 rounded px-2 py-1.5">
+                  First charge of <strong>{fmtCurrency(subscriptionMonthlyTotal)}/mo</strong> on <strong>{subscriptionStartDate}</strong>. Renews {deal.billingCadence}.
+                </p>
+              </div>
+            )}
+
+            {createSubscription && subscriptionItems.length === 0 && (
+              <p className="text-[11px] text-amber-600 pl-5">No recurring fees configured — set a monthly service fee in Deal Config.</p>
+            )}
+          </div>
+
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">Due in (days)</label>
             <input
               type="number" min={1} max={90}
               value={daysUntilDue}
-              onChange={(e) => setDaysUntilDue(Number(e.target.value))}
+              onChange={(e) => {
+                const v = Number(e.target.value)
+                setDaysUntilDue(v)
+                setTrialDays(v)
+              }}
               className="w-24 rounded-md border border-gray-300 px-3 py-1.5 text-sm"
             />
+            <p className="text-[10px] text-gray-400 mt-0.5">Subscription trial synced to invoice due date</p>
           </div>
 
           {/* ── Idle / Review ── */}
@@ -363,8 +503,11 @@ export default function InvoiceContractStep({
               <p className={`text-xs ${isTestSend ? 'text-amber-700' : 'text-blue-700'}`}>
                 {isTestSend
                   ? <>This will send a <strong>{fmtCurrency(totalAmount)}</strong> <strong>TEST</strong> invoice to <strong>{sendToEmail}</strong> (not the client). The customer name will be prefixed with &ldquo;TEST —&rdquo;.</>
-                  : <>This will create and email a <strong>{fmtCurrency(totalAmount)}</strong> Stripe invoice to <strong>{sendToEmail}</strong>, due in {daysUntilDue} days. The email sends immediately.</>
+                  : <>This will create and email a <strong>{fmtCurrency(totalAmount)}</strong> Stripe invoice to <strong>{sendToEmail}</strong>, due in {daysUntilDue} days.</>
                 }
+                {createSubscription && subscriptionItems.length > 0 && (
+                  <> A <strong>{fmtCurrency(subscriptionMonthlyTotal)}/mo</strong> subscription will also be created and will start billing on <strong>{subscriptionStartDate}</strong>.</>
+                )}
               </p>
               <div className="flex gap-2">
                 <button
@@ -389,7 +532,7 @@ export default function InvoiceContractStep({
           {invoice.status === 'creating' && (
             <div className="flex items-center justify-center gap-2 text-sm text-gray-500 py-2">
               <Loader2 className="h-4 w-4 animate-spin" />
-              Sending invoice...
+              {createSubscription ? 'Creating invoice + subscription...' : 'Sending invoice...'}
             </div>
           )}
 
@@ -399,6 +542,12 @@ export default function InvoiceContractStep({
                 <Check className="h-4 w-4" />
                 Invoice sent{clientEmail ? ` to ${clientEmail}` : ''}
               </div>
+              {invoice.stripeSubscriptionId && (
+                <div className="flex items-center gap-2 text-xs text-green-700">
+                  <Check className="h-3.5 w-3.5" />
+                  Subscription created — billing starts {subscriptionStartDate}
+                </div>
+              )}
               {invoice.stripeInvoiceUrl && (
                 <a href={invoice.stripeInvoiceUrl} target="_blank" rel="noopener noreferrer"
                   className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700">

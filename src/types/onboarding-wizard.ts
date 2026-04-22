@@ -41,6 +41,7 @@ export interface InvoiceState {
   status: 'idle' | 'creating' | 'sent' | 'paid' | 'error'
   stripeInvoiceId: string | null
   stripeInvoiceUrl: string | null
+  stripeSubscriptionId: string | null
   error: string | null
 }
 
@@ -171,6 +172,7 @@ export function createInitialWizardState(): WizardState {
       status: 'idle',
       stripeInvoiceId: null,
       stripeInvoiceUrl: null,
+      stripeSubscriptionId: null,
       error: null,
     },
 
