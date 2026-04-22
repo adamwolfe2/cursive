@@ -46,6 +46,8 @@ export default function InvoiceContractStep({
   const [contractReview, setContractReview] = useState(false)
   const [contractExternalUrl, setContractExternalUrl] = useState('')
   const [showExternalContract, setShowExternalContract] = useState(false)
+  const [contractEmailOverride, setContractEmailOverride] = useState('')
+  const [contractNameOverride, setContractNameOverride] = useState('')
 
   const pricing = useMemo(() => calculateDealPricing(deal), [deal])
   const clientEmail = parsedData?.primary_contact_email || ''
@@ -53,6 +55,10 @@ export default function InvoiceContractStep({
   const contactName = parsedData?.primary_contact_name || ''
   const sendToEmail = recipientOverride.trim() || clientEmail
   const isTestSend = !!recipientOverride.trim() && recipientOverride.trim() !== clientEmail
+
+  const contractSendEmail = contractEmailOverride.trim() || clientEmail
+  const contractSendName = contractNameOverride.trim() || (contractEmailOverride.trim() ? 'Test Recipient' : contactName)
+  const isContractTest = !!contractEmailOverride.trim() && contractEmailOverride.trim() !== clientEmail
 
   const lineItems = useMemo(
     () => buildInvoiceLineItems({
@@ -223,7 +229,7 @@ export default function InvoiceContractStep({
   // ---------------------------------------------------------------------------
 
   const handleSendContract = useCallback(async () => {
-    if (!clientEmail || !contactName) return
+    if (!contractSendEmail || !contractSendName) return
     onContractUpdate({ status: 'creating', error: null })
     setContractReview(false)
 
@@ -233,9 +239,9 @@ export default function InvoiceContractStep({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           templateId: contractTemplateId || undefined,
-          companyName: clientName,
-          contactName,
-          contactEmail: clientEmail,
+          companyName: isContractTest ? `TEST — ${clientName}` : clientName,
+          contactName: contractSendName,
+          contactEmail: contractSendEmail,
           setupFee: pricing.totalSetup,
           monthlyFee: pricing.totalRecurring,
           infraMonthly: pricing.infraMonthly,
@@ -244,7 +250,7 @@ export default function InvoiceContractStep({
           packages: parsedData?.packages_selected || [],
           billingCadence: deal.billingCadence,
           outboundTier: deal.outboundTierId,
-          notes: deal.notes,
+          notes: isContractTest ? `[TEST SEND] ${deal.notes}` : deal.notes,
         }),
       })
 
@@ -261,7 +267,10 @@ export default function InvoiceContractStep({
         error: error instanceof Error ? error.message : 'Failed to create contract',
       })
     }
-  }, [clientEmail, contactName, clientName, contractTemplateId, pricing, parsedData, deal, onContractUpdate])
+  }, [
+    contractSendEmail, contractSendName, isContractTest, clientName,
+    contractTemplateId, pricing, parsedData, deal, onContractUpdate,
+  ])
 
   const handleContractAlreadySigned = useCallback(() => {
     onContractUpdate({ status: 'signed', rabbitsignFolderId: contractExternalUrl || 'external' })
@@ -621,11 +630,42 @@ export default function InvoiceContractStep({
             )}
           </div>
 
+          {/* Test recipient override */}
+          <div>
+            <label className="block text-xs font-medium text-gray-600 mb-1">
+              Send to (override)
+              <span className="ml-1 font-normal text-gray-400">— leave blank to send to client</span>
+            </label>
+            <input
+              type="email"
+              placeholder={clientEmail || 'your@email.com'}
+              value={contractEmailOverride}
+              onChange={(e) => setContractEmailOverride(e.target.value)}
+              className="w-full rounded-md border border-gray-300 px-3 py-1.5 text-sm placeholder:text-gray-400"
+            />
+            {isContractTest && (
+              <input
+                type="text"
+                placeholder="Signer name (e.g. Adam Wolfe)"
+                value={contractNameOverride}
+                onChange={(e) => setContractNameOverride(e.target.value)}
+                className="w-full rounded-md border border-gray-300 px-3 py-1.5 text-sm mt-1.5 placeholder:text-gray-400"
+              />
+            )}
+            {isContractTest && (
+              <p className="text-[10px] text-amber-600 mt-1">
+                Test mode — signing request will go to {contractEmailOverride.trim()}, company shown as &ldquo;TEST — {clientName}&rdquo;
+              </p>
+            )}
+          </div>
+
           {/* Recipient summary */}
           <div className="rounded-md bg-gray-50 border border-gray-200 px-3 py-2 text-xs text-gray-600 space-y-0.5">
-            <p className="font-semibold text-gray-700 text-[10px] uppercase tracking-wide mb-1">Sending to</p>
-            <p className="font-medium text-gray-900">{contactName || '(name required)'}</p>
-            <p>{clientEmail || '(email required)'}</p>
+            <p className="font-semibold text-gray-700 text-[10px] uppercase tracking-wide mb-1">
+              Signing request goes to{isContractTest ? ' (test)' : ''}
+            </p>
+            <p className="font-medium text-gray-900">{contractSendName || '(name required)'}</p>
+            <p>{contractSendEmail || '(email required)'}</p>
           </div>
 
           {/* ── Idle / Review ── */}
@@ -634,11 +674,11 @@ export default function InvoiceContractStep({
               <button
                 type="button"
                 onClick={() => setContractReview(true)}
-                disabled={!clientEmail || !contactName || !contractTemplateId}
+                disabled={!contractSendEmail || !contractSendName || !contractTemplateId}
                 className="w-full rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 <Eye className="h-4 w-4" />
-                Review Contract Fields
+                {isContractTest ? 'Review & Send Test Contract' : 'Review Contract Fields'}
               </button>
 
               {/* External options */}
@@ -699,10 +739,12 @@ export default function InvoiceContractStep({
                 </div>
               </div>
 
-              <div className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2">
+              <div className={`rounded-md border px-3 py-2 ${isContractTest ? 'border-amber-300 bg-amber-50' : 'border-amber-200 bg-amber-50'}`}>
                 <p className="text-xs text-amber-700">
-                  <strong>Heads up:</strong> Clicking Confirm will immediately create the contract in RabbitSign
-                  and email the signing request to <strong>{clientEmail}</strong>. There is no draft mode via the API.
+                  {isContractTest
+                    ? <><strong>Test send:</strong> Signing request goes to <strong>{contractSendEmail}</strong> (not the client). Company will appear as &ldquo;TEST — {clientName}&rdquo; in the contract.</>
+                    : <><strong>Heads up:</strong> Clicking Confirm will immediately create the contract in RabbitSign and email the signing request to <strong>{contractSendEmail}</strong>. There is no draft mode via the API.</>
+                  }
                 </p>
               </div>
 
