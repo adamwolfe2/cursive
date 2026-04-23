@@ -1,7 +1,6 @@
 // Stripe Invoice Client for Onboarding Deals
 // Creates and sends Stripe invoices from deal calculator pricing
 
-import Stripe from 'stripe'
 import { getStripeClient } from '@/lib/stripe/client'
 
 // ---------------------------------------------------------------------------
@@ -263,20 +262,28 @@ export async function createDealInvoiceWithSubscription(
   }
 
   // ── Subscription with trial ─────────────────────────────────────────────────
+  // Stripe subscriptions don't support inline product_data in price_data —
+  // must create product + price first, then reference by ID.
   const { interval, interval_count } = CADENCE_TO_INTERVAL[params.billingCadence]
   const trialEnd = Math.floor(Date.now() / 1000) + params.trialDays * 86400
+
+  const priceIds = await Promise.all(
+    params.subscriptionItems.map(async (item) => {
+      const product = await stripe.products.create({ name: item.name })
+      const price = await stripe.prices.create({
+        product: product.id,
+        unit_amount: Math.round(item.amount * 100),
+        currency: 'usd',
+        recurring: { interval, interval_count },
+      })
+      return price.id
+    })
+  )
 
   const subscription = await stripe.subscriptions.create({
     customer: customerId,
     trial_end: trialEnd,
-    items: params.subscriptionItems.map((item) => ({
-      price_data: {
-        currency: 'usd' as const,
-        product_data: { name: item.name },
-        unit_amount: Math.round(item.amount * 100),
-        recurring: { interval, interval_count },
-      },
-    })) as unknown as Stripe.SubscriptionCreateParams.Item[],
+    items: priceIds.map((priceId) => ({ price: priceId })),
     metadata: { source: 'deal_calculator', ...params.metadata },
   })
 
