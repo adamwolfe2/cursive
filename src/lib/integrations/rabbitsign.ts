@@ -244,6 +244,7 @@ export function buildContractFields(params: {
     client_company: params.companyName,
     client_company_2: params.companyName,  // duplicate in Introduction paragraph
     effective_date_2: effectiveDateFormatted, // duplicate in Introduction paragraph
+    effective_date_3: effectiveDateFormatted, // "billed monthly in advance beginning ___" in fees table
     engagement_type: engagementType,
     effective_date: effectiveDateFormatted,
     initial_term: params.initialTerm || '3 months',
