@@ -242,6 +242,7 @@ export function buildContractFields(params: {
     // ── Commercial Summary table fields ─────────────────────────
     review_days: String(params.reviewDays ?? 3),
     client_company: params.companyName,
+    client_company_2: params.companyName, // duplicate in Introduction paragraph
     engagement_type: engagementType,
     effective_date: effectiveDateFormatted,
     initial_term: params.initialTerm || '3 months',
