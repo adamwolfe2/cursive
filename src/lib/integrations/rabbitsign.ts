@@ -194,18 +194,60 @@ export function buildContractFields(params: {
   setupFee: number
   monthlyFee: number
   infraMonthly: number
-  domainAnnualCost?: number   // total annual domain cost (billed upfront)
-  inboxMonthlyCost?: number   // total monthly inbox cost
+  domainAnnualCost?: number
+  inboxMonthlyCost?: number
+  domains?: number
+  inboxes?: number
+  emailsPerMonth?: number
   packages: string[]
   billingCadence: string
   outboundTier: string | null
+  outboundTierName?: string
+  initialTerm?: string        // e.g. "3 months", "6 months"
   startDate: string
   notes?: string
 }): Record<string, string> {
   const domainAnnual = params.domainAnnualCost ?? params.infraMonthly * 12
   const inboxMonthly = params.inboxMonthlyCost ?? params.infraMonthly
+  const domains = params.domains ?? 0
+  const inboxes = params.inboxes ?? 0
+  const emailsPerMonth = params.emailsPerMonth ?? 0
+
+  const effectiveDateFormatted = new Date(params.startDate + 'T00:00:00').toLocaleDateString(
+    'en-US', { year: 'numeric', month: 'long', day: 'numeric' }
+  )
+
+  const cadenceLabel: Record<string, string> = {
+    monthly: 'Month-to-Month',
+    quarterly: 'Quarterly',
+    annual: 'Annual',
+  }
+
+  const engagementType = params.outboundTierName
+    ? `Outbound Email Activation — ${params.outboundTierName} Tier`
+    : 'Outbound Email Activation'
+
+  const targetSendVolume = emailsPerMonth > 0
+    ? `${emailsPerMonth.toLocaleString()} emails/month`
+    : params.outboundTier
+      ? `See ${params.outboundTier} tier`
+      : 'Per agreed scope'
+
+  const domainsAndInboxes = domains > 0 || inboxes > 0
+    ? `${domains} sending domain${domains !== 1 ? 's' : ''}, ${inboxes} inbox${inboxes !== 1 ? 'es' : ''}`
+    : 'Per agreed scope'
+
   return {
+    // ── Commercial Summary table fields ─────────────────────────
     client_company: params.companyName,
+    engagement_type: engagementType,
+    effective_date: effectiveDateFormatted,
+    initial_term: params.initialTerm || '3 months',
+    target_send_volume: targetSendVolume,
+    domains_and_inboxes: domainsAndInboxes,
+    delivery_method: 'Cold Email (SMTP)',
+
+    // ── Body / fee fields ────────────────────────────────────────
     client_name: params.contactName,
     client_email: params.contactEmail,
     setup_fee: `$${params.setupFee.toLocaleString()}`,
@@ -214,11 +256,11 @@ export function buildContractFields(params: {
     domain_annual: `$${domainAnnual.toFixed(2)}`,
     inbox_monthly: `$${inboxMonthly.toFixed(2)}`,
     total_monthly: `$${(params.monthlyFee + params.infraMonthly).toLocaleString()}`,
-    packages: params.packages.join(', '),
-    billing_cadence: params.billingCadence,
-    outbound_tier: params.outboundTier || 'N/A',
-    start_date: params.startDate,
+    packages: params.packages.join(', ') || 'Standard',
+    billing_cadence: cadenceLabel[params.billingCadence] ?? params.billingCadence,
+    outbound_tier: params.outboundTierName || params.outboundTier || 'Custom',
+    start_date: effectiveDateFormatted,
+    date: effectiveDateFormatted,
     notes: params.notes || '',
-    date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
   }
 }

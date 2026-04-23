@@ -48,6 +48,7 @@ export default function InvoiceContractStep({
   const [showExternalContract, setShowExternalContract] = useState(false)
   const [contractEmailOverride, setContractEmailOverride] = useState('')
   const [contractNameOverride, setContractNameOverride] = useState('')
+  const [initialTerm, setInitialTerm] = useState('3 months')
 
   const pricing = useMemo(() => calculateDealPricing(deal), [deal])
   const clientEmail = parsedData?.primary_contact_email || ''
@@ -113,22 +114,36 @@ export default function InvoiceContractStep({
   }, [trialDays])
 
   // Contract fields preview — exactly what RabbitSign will receive
-  const contractFields = useMemo(() => ({
-    client_company: clientName,
-    client_name: contactName,
-    client_email: clientEmail,
-    setup_fee: `$${pricing.totalSetup.toLocaleString()}`,
-    monthly_fee: `$${pricing.totalRecurring.toLocaleString()}`,
-    infra_monthly: `$${pricing.infraMonthly.toFixed(2)}`,
-    domain_annual: `$${pricing.domainCostAnnual.toFixed(2)}`,
-    inbox_monthly: `$${pricing.inboxCostMonthly.toFixed(2)}`,
-    total_monthly: `$${(pricing.totalRecurring + pricing.infraMonthly).toLocaleString()}`,
-    packages: (parsedData?.packages_selected || []).join(', ') || 'None',
-    billing_cadence: deal.billingCadence,
-    outbound_tier: deal.outboundTierId || 'N/A',
-    start_date: new Date().toISOString().split('T')[0],
-    notes: deal.notes || '',
-  }), [clientName, contactName, clientEmail, pricing, parsedData, deal])
+  const contractFields = useMemo(() => {
+    const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+    const domains = pricing.domains
+    const inboxes = pricing.inboxes
+    return {
+      // Commercial Summary table
+      client_company: clientName,
+      engagement_type: `Outbound Email Activation${deal.outboundTierId ? ` — ${deal.outboundTierId}` : ''}`,
+      effective_date: today,
+      initial_term: initialTerm,
+      target_send_volume: domains > 0 ? `${(domains * 500).toLocaleString()} emails/month` : 'Per agreed scope',
+      domains_and_inboxes: `${domains} domain${domains !== 1 ? 's' : ''}, ${inboxes} inbox${inboxes !== 1 ? 'es' : ''}`,
+      delivery_method: 'Cold Email (SMTP)',
+      // Fee fields
+      client_name: contactName,
+      client_email: clientEmail,
+      setup_fee: `$${pricing.totalSetup.toLocaleString()}`,
+      monthly_fee: `$${pricing.totalRecurring.toLocaleString()}`,
+      infra_monthly: `$${pricing.infraMonthly.toFixed(2)}`,
+      domain_annual: `$${pricing.domainCostAnnual.toFixed(2)}`,
+      inbox_monthly: `$${pricing.inboxCostMonthly.toFixed(2)}`,
+      total_monthly: `$${(pricing.totalRecurring + pricing.infraMonthly).toLocaleString()}`,
+      packages: (parsedData?.packages_selected || []).join(', ') || 'Standard',
+      billing_cadence: deal.billingCadence,
+      outbound_tier: deal.outboundTierId || 'Custom',
+      start_date: today,
+      date: today,
+      notes: deal.notes || '',
+    }
+  }, [clientName, contactName, clientEmail, pricing, parsedData, deal, initialTerm])
 
   // ---------------------------------------------------------------------------
   // Invoice handlers
@@ -247,9 +262,13 @@ export default function InvoiceContractStep({
           infraMonthly: pricing.infraMonthly,
           domainAnnualCost: pricing.domainCostAnnual,
           inboxMonthlyCost: pricing.inboxCostMonthly,
+          domains: pricing.domains,
+          inboxes: pricing.inboxes,
           packages: parsedData?.packages_selected || [],
           billingCadence: deal.billingCadence,
           outboundTier: deal.outboundTierId,
+          initialTerm,
+          startDate: new Date().toISOString().split('T')[0],
           notes: isContractTest ? `[TEST SEND] ${deal.notes}` : deal.notes,
         }),
       })
@@ -269,7 +288,7 @@ export default function InvoiceContractStep({
     }
   }, [
     contractSendEmail, contractSendName, isContractTest, clientName,
-    contractTemplateId, pricing, parsedData, deal, onContractUpdate,
+    contractTemplateId, pricing, parsedData, deal, initialTerm, onContractUpdate,
   ])
 
   const handleContractAlreadySigned = useCallback(() => {
@@ -628,6 +647,21 @@ export default function InvoiceContractStep({
                 No template ID — set RABBITSIGN_CONTRACT_TEMPLATE_ID in env or enter it above.
               </p>
             )}
+          </div>
+
+          {/* Initial term */}
+          <div>
+            <label className="block text-xs font-medium text-gray-600 mb-1">Initial Term</label>
+            <select
+              value={initialTerm}
+              onChange={(e) => setInitialTerm(e.target.value)}
+              className="w-full rounded-md border border-gray-300 px-3 py-1.5 text-sm"
+            >
+              <option value="Month-to-Month">Month-to-Month</option>
+              <option value="3 months">3 months</option>
+              <option value="6 months">6 months</option>
+              <option value="12 months">12 months</option>
+            </select>
           </div>
 
           {/* Test recipient override */}

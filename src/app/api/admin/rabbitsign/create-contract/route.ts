@@ -4,9 +4,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { requireAdmin } from '@/lib/auth/admin'
 import { createContractFromTemplate, buildContractFields } from '@/lib/integrations/rabbitsign'
+import { OUTBOUND_TIERS } from '@/app/admin/deal-calculator/pricing-config'
 
 const requestSchema = z.object({
-  templateId: z.string().optional(), // overrides env var when provided
+  templateId: z.string().optional(),
   companyName: z.string().min(1),
   contactName: z.string().min(1),
   contactEmail: z.string().email(),
@@ -15,9 +16,12 @@ const requestSchema = z.object({
   infraMonthly: z.number().min(0),
   domainAnnualCost: z.number().min(0).optional(),
   inboxMonthlyCost: z.number().min(0).optional(),
+  domains: z.number().int().min(0).optional(),
+  inboxes: z.number().int().min(0).optional(),
   packages: z.array(z.string()),
   billingCadence: z.string(),
   outboundTier: z.string().nullable(),
+  initialTerm: z.string().optional(),
   startDate: z.string().optional(),
   notes: z.string().optional(),
 })
@@ -36,7 +40,6 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // Template ID: request body takes priority, then env var
     const templateId = parsed.data.templateId || process.env.RABBITSIGN_CONTRACT_TEMPLATE_ID
     if (!templateId) {
       return NextResponse.json(
@@ -47,11 +50,18 @@ export async function POST(req: NextRequest) {
 
     const { contactName, contactEmail, startDate, templateId: _t, ...rest } = parsed.data
 
+    // Resolve tier details for volume + name
+    const tierConfig = OUTBOUND_TIERS.find((t) => t.id === rest.outboundTier)
+
     const senderFieldValues = buildContractFields({
       ...rest,
       contactName,
       contactEmail,
       startDate: startDate || new Date().toISOString().split('T')[0],
+      outboundTierName: tierConfig?.name,
+      emailsPerMonth: tierConfig?.emailsPerMonth,
+      domains: rest.domains ?? tierConfig?.domains,
+      inboxes: rest.inboxes ?? tierConfig?.inboxes,
     })
 
     const folder = await createContractFromTemplate({
