@@ -204,6 +204,7 @@ export function buildContractFields(params: {
   outboundTier: string | null
   outboundTierName?: string
   initialTerm?: string        // e.g. "3 months", "6 months"
+  reviewDays?: number         // business days client has to approve copy (default 3)
   startDate: string
   notes?: string
 }): Record<string, string> {
@@ -239,6 +240,7 @@ export function buildContractFields(params: {
 
   return {
     // ── Commercial Summary table fields ─────────────────────────
+    review_days: String(params.reviewDays ?? 3),
     client_company: params.companyName,
     engagement_type: engagementType,
     effective_date: effectiveDateFormatted,
