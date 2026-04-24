@@ -1,9 +1,37 @@
 import { NextResponse } from 'next/server'
-import { createHash } from 'crypto'
+import { createHash, createHmac } from 'crypto'
 import { requireAdmin } from '@/lib/auth/admin'
 
-function sig(method: string, path: string, timestamp: string, secret: string) {
-  return createHash('sha512').update(`${method} ${path} ${timestamp} ${secret}`).digest('hex').toUpperCase()
+async function tryVariant(label: string, method: string, urlPath: string, sigFn: () => string, body?: string) {
+  const keyId = process.env.RABBITSIGN_API_KEY_ID ?? ''
+  const sig = sigFn()
+  const timestamp = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z')
+
+  try {
+    const res = await fetch(`https://www.rabbitsign.com${urlPath}`, {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        'x-rabbitsign-api-time-utc': timestamp,
+        'x-rabbitsign-api-key-id': keyId,
+        'x-rabbitsign-api-signature': sig,
+      },
+      body,
+    })
+
+    let resBody = ''
+    try { resBody = await res.text() } catch {}
+
+    return {
+      label,
+      status: res.status,
+      // 403 = auth fail, 404/400/500 = auth passed but request issue
+      authPassed: res.status !== 403,
+      body: resBody.slice(0, 100),
+    }
+  } catch (e) {
+    return { label, error: e instanceof Error ? e.message : 'unknown' }
+  }
 }
 
 export async function GET() {
@@ -12,27 +40,53 @@ export async function GET() {
 
     const keyId = process.env.RABBITSIGN_API_KEY_ID ?? ''
     const secret = process.env.RABBITSIGN_API_SECRET ?? ''
-    const templateId = process.env.RABBITSIGN_CONTRACT_TEMPLATE_ID ?? 'NO_TEMPLATE'
+    const templateId = process.env.RABBITSIGN_CONTRACT_TEMPLATE_ID ?? ''
+
+    // Use a GET to folder status — 404 if auth passes but folder doesn't exist
+    const testUrlPath = '/api/v1/folder/debug-test-id-does-not-exist'
     const timestamp = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z')
 
-    // Three path variants to identify which format RabbitSign expects
-    const pathFull = `/api/v1/folderFromTemplate/${templateId}`
-    const pathShort = `/folderFromTemplate/${templateId}`
-    const pathVer = `/v1/folderFromTemplate/${templateId}`
+    const variants = [
+      // Variant A: current — SHA512("METHOD PATH TIMESTAMP SECRET")
+      ['A-sha512-full-path', () =>
+        createHash('sha512').update(`GET ${testUrlPath} ${timestamp} ${secret}`).digest('hex').toUpperCase()],
+      // Variant B: SHA512("METHOD PATH TIMESTAMP") — secret as HMAC key
+      ['B-hmac-sha512', () =>
+        createHmac('sha512', secret).update(`GET ${testUrlPath} ${timestamp}`).digest('hex').toUpperCase()],
+      // Variant C: SHA512 with key ID in payload instead of secret
+      ['C-sha512-keyid', () =>
+        createHash('sha512').update(`GET ${testUrlPath} ${timestamp} ${keyId}`).digest('hex').toUpperCase()],
+      // Variant D: SHA512 with key_id:secret concatenated
+      ['D-sha512-keyid-secret', () =>
+        createHash('sha512').update(`GET ${testUrlPath} ${timestamp} ${keyId}:${secret}`).digest('hex').toUpperCase()],
+      // Variant E: SHA256
+      ['E-sha256', () =>
+        createHash('sha256').update(`GET ${testUrlPath} ${timestamp} ${secret}`).digest('hex').toUpperCase()],
+      // Variant F: lowercase hex output
+      ['F-sha512-lowercase', () =>
+        createHash('sha512').update(`GET ${testUrlPath} ${timestamp} ${secret}`).digest('hex')],
+      // Variant G: base64 output
+      ['G-sha512-base64', () =>
+        createHash('sha512').update(`GET ${testUrlPath} ${timestamp} ${secret}`).digest('base64')],
+      // Variant H: unix epoch timestamp instead of ISO string
+      ['H-sha512-epoch-ts', () => {
+        const epoch = Math.floor(Date.now() / 1000).toString()
+        return createHash('sha512').update(`GET ${testUrlPath} ${epoch} ${secret}`).digest('hex').toUpperCase()
+      }],
+    ] as const
+
+    const results = await Promise.all(
+      (variants as [string, () => string][]).map(([label, fn]) =>
+        tryVariant(label, 'GET', testUrlPath, fn)
+      )
+    )
 
     return NextResponse.json({
-      keyId: keyId ? `${keyId.slice(0, 6)}...${keyId.slice(-4)} (len=${keyId.length})` : 'MISSING',
+      keyIdSnip: keyId ? `${keyId.slice(0, 6)}...${keyId.slice(-4)} (len=${keyId.length})` : 'MISSING',
       secretLength: secret.length,
-      secretLastCharCode: secret.charCodeAt(secret.length - 1),
-      secretFirstCharCode: secret.charCodeAt(0),
-      templateId: templateId ? `${templateId.slice(0, 8)}... (len=${templateId.length})` : 'MISSING',
+      templateIdLength: templateId.length,
       timestamp,
-      // Partial signatures (first 20 chars) for each path variant
-      sig_fullPath: sig('POST', pathFull, timestamp, secret).slice(0, 20),
-      sig_shortPath: sig('POST', pathShort, timestamp, secret).slice(0, 20),
-      sig_v1Path: sig('POST', pathVer, timestamp, secret).slice(0, 20),
-      // Same but with lowercase method (just in case)
-      sig_lowercaseMethod: sig('post', pathFull, timestamp, secret).slice(0, 20),
+      results,
     })
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error'
