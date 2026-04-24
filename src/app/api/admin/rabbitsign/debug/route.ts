@@ -1,34 +1,32 @@
 import { NextResponse } from 'next/server'
 import { createHash } from 'crypto'
-import { request as httpsRequest } from 'node:https'
 import { requireAdmin } from '@/lib/auth/admin'
 
 function sig(method: string, path: string, timestamp: string, secret: string) {
   return createHash('sha512').update(`${method} ${path} ${timestamp} ${secret}`).digest('hex').toUpperCase()
 }
 
-function rawHttpsPost(path: string, headers: Record<string, string>, body: string): Promise<{ status: number; body: string }> {
-  return new Promise((resolve, reject) => {
-    const req = httpsRequest(
-      {
-        hostname: 'www.rabbitsign.com',
-        path,
-        method: 'POST',
-        headers: {
-          ...headers,
-          'Content-Length': Buffer.byteLength(body),
-        },
+async function post(keyId: string, secret: string, urlPath: string, body: unknown) {
+  const timestamp = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z')
+  const signature = sig('POST', urlPath, timestamp, secret)
+  const bodyString = JSON.stringify(body)
+  try {
+    const res = await fetch(`https://www.rabbitsign.com${urlPath}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'x-rabbitsign-api-time-utc': timestamp,
+        'x-rabbitsign-api-key-id': keyId,
+        'x-rabbitsign-api-signature': signature,
       },
-      (res) => {
-        let data = ''
-        res.on('data', (chunk) => { data += chunk })
-        res.on('end', () => resolve({ status: res.statusCode ?? 0, body: data }))
-      }
-    )
-    req.on('error', reject)
-    req.write(body)
-    req.end()
-  })
+      body: bodyString,
+    })
+    const resBody = await res.text().catch(() => '')
+    return { urlPath, status: res.status, response: resBody.slice(0, 200) }
+  } catch (e) {
+    return { urlPath, error: e instanceof Error ? e.message : 'unknown' }
+  }
 }
 
 export async function GET() {
@@ -38,50 +36,34 @@ export async function GET() {
     const keyId = (process.env.RABBITSIGN_API_KEY_ID ?? '').trim()
     const secret = (process.env.RABBITSIGN_API_SECRET ?? '').trim()
     const templateId = (process.env.RABBITSIGN_CONTRACT_TEMPLATE_ID ?? '').trim()
-    const urlPath = `/api/v1/folderFromTemplate/${templateId}`
     const today = new Date().toISOString().split('T')[0]
-    const timestamp = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z')
-    const signature = sig('POST', urlPath, timestamp, secret)
 
-    const body = JSON.stringify({
-      title: 'Debug Test',
-      summary: 'test',
-      date: today,
-      senderFieldValues: {},
-      roles: [{ roleName: 'Client', signerName: 'Test User', signerEmail: 'test@example.com' }],
-    })
+    const minimalRole = { roleName: 'Client', signerName: 'Test User', signerEmail: 'test@example.com' }
 
-    // Test 1: raw https.request (HTTP/1.1, full control)
-    const rawResult = await rawHttpsPost(urlPath, {
-      'Content-Type': 'application/json',
-      'x-rabbitsign-api-time-utc': timestamp,
-      'x-rabbitsign-api-key-id': keyId,
-      'x-rabbitsign-api-signature': signature,
-    }, body)
+    const results = await Promise.all([
+      // Current: templateId in URL path
+      post(keyId, secret, `/api/v1/folderFromTemplate/${templateId}`, {
+        title: 'Test', summary: 'test', date: today, senderFieldValues: {}, roles: [minimalRole],
+      }),
+      // Alt: templateId in body, no ID in path
+      post(keyId, secret, `/api/v1/folderFromTemplate`, {
+        templateId, title: 'Test', summary: 'test', date: today, senderFieldValues: {}, roles: [minimalRole],
+      }),
+      // Alt: different URL casing
+      post(keyId, secret, `/api/v1/folder-from-template/${templateId}`, {
+        title: 'Test', summary: 'test', date: today, senderFieldValues: {}, roles: [minimalRole],
+      }),
+      // Alt: createFolder with templateId
+      post(keyId, secret, `/api/v1/folder`, {
+        templateId, title: 'Test', summary: 'test', date: today, senderFieldValues: {}, roles: [minimalRole],
+      }),
+      // Alt: template endpoint
+      post(keyId, secret, `/api/v1/template/${templateId}/create`, {
+        title: 'Test', summary: 'test', date: today, senderFieldValues: {}, roles: [minimalRole],
+      }),
+    ])
 
-    // Test 2: fetch with explicit Accept header
-    const ts2 = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z')
-    const sig2 = sig('POST', urlPath, ts2, secret)
-    const fetchRes = await fetch(`https://www.rabbitsign.com${urlPath}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'x-rabbitsign-api-time-utc': ts2,
-        'x-rabbitsign-api-key-id': keyId,
-        'x-rabbitsign-api-signature': sig2,
-      },
-      body,
-    })
-    const fetchBody = await fetchRes.text().catch(() => '')
-
-    return NextResponse.json({
-      templateId,
-      urlPath,
-      bodySent: body,
-      rawHttps: { status: rawResult.status, response: rawResult.body.slice(0, 200) },
-      fetchWithAccept: { status: fetchRes.status, response: fetchBody.slice(0, 200) },
-    })
+    return NextResponse.json({ templateId, results })
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error'
     return NextResponse.json({ error: message }, { status: 500 })
