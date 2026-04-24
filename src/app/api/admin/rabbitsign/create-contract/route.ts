@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const templateId = parsed.data.templateId || process.env.RABBITSIGN_CONTRACT_TEMPLATE_ID
+    const templateId = (parsed.data.templateId || process.env.RABBITSIGN_CONTRACT_TEMPLATE_ID || '').trim()
     if (!templateId) {
       return NextResponse.json(
         { error: 'No contract template ID. Enter one in the form or set RABBITSIGN_CONTRACT_TEMPLATE_ID.' },

@@ -41,7 +41,7 @@ export default function InvoiceContractStep({
 
   // Contract state
   const [contractTemplateId, setContractTemplateId] = useState(
-    process.env.NEXT_PUBLIC_RABBITSIGN_CONTRACT_TEMPLATE_ID || ''
+    (process.env.NEXT_PUBLIC_RABBITSIGN_CONTRACT_TEMPLATE_ID || '').trim()
   )
   const [contractReview, setContractReview] = useState(false)
   const [contractExternalUrl, setContractExternalUrl] = useState('')
