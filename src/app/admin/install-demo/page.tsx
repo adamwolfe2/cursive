@@ -201,7 +201,7 @@ export default function InstallDemoPage() {
             <Row k="Slug" v={result.workspace.slug} mono />
           </ResultCard>
 
-          <ResultCard label="Pixel (provisioned in AudienceLab)">
+          <ResultCard label="Pixel (provisioned in Cursive)">
             <Row k="Pixel ID" v={result.pixel.id} mono />
             <Row k="Install URL" v={result.pixel.installUrl} mono wrap />
             <div className="mt-2">

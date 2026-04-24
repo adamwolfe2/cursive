@@ -471,7 +471,7 @@ export default function PixelSettingsPage() {
           <div className="mt-4 flex items-start gap-2.5 rounded-lg bg-primary/5 border border-primary/20 p-3">
             <span className="text-primary shrink-0 mt-0.5">ℹ</span>
             <p className="text-xs text-zinc-600">
-              Data is pulled from AudienceLab&apos;s identity graph of 280M+ verified US consumers and enriched automatically every 2 hours via the v4 API.
+              Data is pulled from the Cursive identity graph of 280M+ verified US consumers and enriched automatically every 2 hours.
             </p>
           </div>
         </div>
@@ -519,7 +519,7 @@ export default function PixelSettingsPage() {
               <h3 className="text-sm font-semibold text-zinc-900 mb-3">What happens after you install?</h3>
               <ol className="space-y-3">
                 {[
-                  { step: '1', title: 'Pixel fires on your first visitor', desc: 'Usually within minutes of install. AudienceLab identifies the visitor by matching their browser fingerprint to our database.' },
+                  { step: '1', title: 'Pixel fires on your first visitor', desc: 'Usually within minutes of install. Cursive identifies the visitor by matching their browser fingerprint to our database.' },
                   { step: '2', title: 'Lead appears in your dashboard', desc: 'Identified visitors become leads automatically. Expect 5–25% identification rate depending on your traffic source.' },
                   { step: '3', title: 'Free auto-enrichment runs', desc: 'Every lead gets tech stack and email quality scored automatically — no credits needed.' },
                   { step: '4', title: 'Enrich for full contact details', desc: 'Use Intelligence Pack (2 credits) to unlock LinkedIn, phone, and social profiles. Deep Research (10 credits) for an AI-written outreach angle.' },

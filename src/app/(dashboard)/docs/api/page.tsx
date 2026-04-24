@@ -910,7 +910,7 @@ curl -X POST "https://your-server.com/webhooks/cursive" \\
           <EndpointBlock
             method="GET"
             path="/api/pixel/verify"
-            description="Check whether the workspace's AudienceLab pixel has received any events within the last 7 days. Use this to confirm pixel installation is working."
+            description="Check whether the workspace's Cursive pixel has received any events within the last 7 days. Use this to confirm pixel installation is working."
             auth="Session cookie or Bearer JWT"
             response={`// Pixel installed and firing:
 {

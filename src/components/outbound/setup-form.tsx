@@ -309,10 +309,10 @@ export function SetupForm({ mode, initialAgent }: SetupFormProps) {
             <div className="rounded-lg border border-border bg-muted/30 p-4">
               <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
                 <CheckCircle2 className="h-4 w-4 text-primary" />
-                AudienceLab filters
+                Prospect filters
               </div>
               <p className="mt-1 text-xs text-muted-foreground">
-                These will be sent to AudienceLab when you click Run.
+                These filters will be applied when you click Run.
               </p>
               <div className="mt-3 space-y-2">
                 {generatedFilters.industries?.length ? (

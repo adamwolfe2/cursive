@@ -106,7 +106,7 @@ export function LiveLeadsFeed({ workspaceId }: LiveLeadsFeedProps) {
     const description = feedLead.company
       ? `${displayName} from ${feedLead.company}`
       : displayName
-    toast.success('Live AudienceLab lead', {
+    toast.success('New visitor lead', {
       description,
       duration: 4000,
     })
@@ -145,7 +145,7 @@ export function LiveLeadsFeed({ workspaceId }: LiveLeadsFeedProps) {
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-base">
           <Activity className="h-4 w-4 text-emerald-500" />
-          Live AudienceLab Leads
+          Live Visitor Leads
           <span className="ml-auto flex items-center gap-1.5 text-xs font-normal text-muted-foreground">
             <span className="relative flex h-2 w-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
@@ -167,7 +167,7 @@ export function LiveLeadsFeed({ workspaceId }: LiveLeadsFeedProps) {
               Waiting for your next pixel fire…
             </p>
             <p className="text-xs text-muted-foreground/80">
-              New AudienceLab leads appear here in real time.
+              New leads appear here in real time.
             </p>
           </div>
         ) : (
