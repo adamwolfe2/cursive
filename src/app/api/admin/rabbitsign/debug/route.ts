@@ -46,39 +46,29 @@ export async function GET() {
     const testUrlPath = '/api/v1/folder/debug-test-id-does-not-exist'
     const timestamp = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z')
 
-    const variants = [
-      // Variant A: current — SHA512("METHOD PATH TIMESTAMP SECRET")
-      ['A-sha512-full-path', () =>
+    const variants: Array<[string, () => string]> = [
+      ['A-sha512-plain', () =>
         createHash('sha512').update(`GET ${testUrlPath} ${timestamp} ${secret}`).digest('hex').toUpperCase()],
-      // Variant B: SHA512("METHOD PATH TIMESTAMP") — secret as HMAC key
       ['B-hmac-sha512', () =>
         createHmac('sha512', secret).update(`GET ${testUrlPath} ${timestamp}`).digest('hex').toUpperCase()],
-      // Variant C: SHA512 with key ID in payload instead of secret
       ['C-sha512-keyid', () =>
         createHash('sha512').update(`GET ${testUrlPath} ${timestamp} ${keyId}`).digest('hex').toUpperCase()],
-      // Variant D: SHA512 with key_id:secret concatenated
-      ['D-sha512-keyid-secret', () =>
+      ['D-sha512-keyid-colon-secret', () =>
         createHash('sha512').update(`GET ${testUrlPath} ${timestamp} ${keyId}:${secret}`).digest('hex').toUpperCase()],
-      // Variant E: SHA256
-      ['E-sha256', () =>
+      ['E-sha256-plain', () =>
         createHash('sha256').update(`GET ${testUrlPath} ${timestamp} ${secret}`).digest('hex').toUpperCase()],
-      // Variant F: lowercase hex output
       ['F-sha512-lowercase', () =>
         createHash('sha512').update(`GET ${testUrlPath} ${timestamp} ${secret}`).digest('hex')],
-      // Variant G: base64 output
       ['G-sha512-base64', () =>
         createHash('sha512').update(`GET ${testUrlPath} ${timestamp} ${secret}`).digest('base64')],
-      // Variant H: unix epoch timestamp instead of ISO string
       ['H-sha512-epoch-ts', () => {
         const epoch = Math.floor(Date.now() / 1000).toString()
         return createHash('sha512').update(`GET ${testUrlPath} ${epoch} ${secret}`).digest('hex').toUpperCase()
       }],
-    ] as const
+    ]
 
     const results = await Promise.all(
-      (variants as [string, () => string][]).map(([label, fn]) =>
-        tryVariant(label, 'GET', testUrlPath, fn)
-      )
+      variants.map(([label, fn]) => tryVariant(label, 'GET', testUrlPath, fn))
     )
 
     return NextResponse.json({
