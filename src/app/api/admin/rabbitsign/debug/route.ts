@@ -1,33 +1,34 @@
 import { NextResponse } from 'next/server'
 import { createHash } from 'crypto'
+import { request as httpsRequest } from 'node:https'
 import { requireAdmin } from '@/lib/auth/admin'
 
 function sig(method: string, path: string, timestamp: string, secret: string) {
   return createHash('sha512').update(`${method} ${path} ${timestamp} ${secret}`).digest('hex').toUpperCase()
 }
 
-async function postVariant(label: string, keyId: string, secret: string, urlPath: string, body: unknown) {
-  const timestamp = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z')
-  const signature = sig('POST', urlPath, timestamp, secret)
-  const bodyString = JSON.stringify(body)
-
-  try {
-    const res = await fetch(`https://www.rabbitsign.com${urlPath}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-rabbitsign-api-time-utc': timestamp,
-        'x-rabbitsign-api-key-id': keyId,
-        'x-rabbitsign-api-signature': signature,
+function rawHttpsPost(path: string, headers: Record<string, string>, body: string): Promise<{ status: number; body: string }> {
+  return new Promise((resolve, reject) => {
+    const req = httpsRequest(
+      {
+        hostname: 'www.rabbitsign.com',
+        path,
+        method: 'POST',
+        headers: {
+          ...headers,
+          'Content-Length': Buffer.byteLength(body),
+        },
       },
-      body: bodyString,
-    })
-    let resBody = ''
-    try { resBody = await res.text() } catch {}
-    return { label, status: res.status, response: resBody.slice(0, 150) }
-  } catch (e) {
-    return { label, error: e instanceof Error ? e.message : 'unknown' }
-  }
+      (res) => {
+        let data = ''
+        res.on('data', (chunk) => { data += chunk })
+        res.on('end', () => resolve({ status: res.statusCode ?? 0, body: data }))
+      }
+    )
+    req.on('error', reject)
+    req.write(body)
+    req.end()
+  })
 }
 
 export async function GET() {
@@ -39,58 +40,48 @@ export async function GET() {
     const templateId = (process.env.RABBITSIGN_CONTRACT_TEMPLATE_ID ?? '').trim()
     const urlPath = `/api/v1/folderFromTemplate/${templateId}`
     const today = new Date().toISOString().split('T')[0]
+    const timestamp = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z')
+    const signature = sig('POST', urlPath, timestamp, secret)
 
-    const baseRole = { roleName: 'Client', signerName: 'Test User', signerEmail: 'test@example.com' }
-    const baseFields = { client_company: 'Test Company', setup_fee: '$250', monthly_fee: '$154' }
+    const body = JSON.stringify({
+      title: 'Debug Test',
+      summary: 'test',
+      date: today,
+      senderFieldValues: {},
+      roles: [{ roleName: 'Client', signerName: 'Test User', signerEmail: 'test@example.com' }],
+    })
 
-    const results = await Promise.all([
-      // A: current format
-      postVariant('A-current', keyId, secret, urlPath, {
-        title: 'Test', summary: 'test', date: today,
-        senderFieldValues: baseFields,
-        roles: [baseRole],
-      }),
-      // B: roles with email/name instead of signerEmail/signerName
-      postVariant('B-roles-email-name', keyId, secret, urlPath, {
-        title: 'Test', summary: 'test', date: today,
-        senderFieldValues: baseFields,
-        roles: [{ roleName: 'Client', name: 'Test User', email: 'test@example.com' }],
-      }),
-      // C: no senderFieldValues
-      postVariant('C-no-fields', keyId, secret, urlPath, {
-        title: 'Test', summary: 'test', date: today,
-        roles: [baseRole],
-      }),
-      // D: empty senderFieldValues
-      postVariant('D-empty-fields', keyId, secret, urlPath, {
-        title: 'Test', summary: 'test', date: today,
-        senderFieldValues: {},
-        roles: [baseRole],
-      }),
-      // E: no summary/date
-      postVariant('E-minimal', keyId, secret, urlPath, {
-        title: 'Test',
-        senderFieldValues: baseFields,
-        roles: [baseRole],
-      }),
-      // F: signers array instead of roles
-      postVariant('F-signers', keyId, secret, urlPath, {
-        title: 'Test', summary: 'test', date: today,
-        senderFieldValues: baseFields,
-        signers: [{ roleName: 'Client', signerName: 'Test User', signerEmail: 'test@example.com' }],
-      }),
-      // G: both roles (AM Collective + Client)
-      postVariant('G-both-roles', keyId, secret, urlPath, {
-        title: 'Test', summary: 'test', date: today,
-        senderFieldValues: baseFields,
-        roles: [
-          { roleName: 'AM Collective', signerName: 'Adam Wolfe', signerEmail: 'adamwolfe100@gmail.com' },
-          { roleName: 'Client', signerName: 'Test User', signerEmail: 'test@example.com' },
-        ],
-      }),
-    ])
+    // Test 1: raw https.request (HTTP/1.1, full control)
+    const rawResult = await rawHttpsPost(urlPath, {
+      'Content-Type': 'application/json',
+      'x-rabbitsign-api-time-utc': timestamp,
+      'x-rabbitsign-api-key-id': keyId,
+      'x-rabbitsign-api-signature': signature,
+    }, body)
 
-    return NextResponse.json({ templateId, results })
+    // Test 2: fetch with explicit Accept header
+    const ts2 = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z')
+    const sig2 = sig('POST', urlPath, ts2, secret)
+    const fetchRes = await fetch(`https://www.rabbitsign.com${urlPath}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'x-rabbitsign-api-time-utc': ts2,
+        'x-rabbitsign-api-key-id': keyId,
+        'x-rabbitsign-api-signature': sig2,
+      },
+      body,
+    })
+    const fetchBody = await fetchRes.text().catch(() => '')
+
+    return NextResponse.json({
+      templateId,
+      urlPath,
+      bodySent: body,
+      rawHttps: { status: rawResult.status, response: rawResult.body.slice(0, 200) },
+      fetchWithAccept: { status: fetchRes.status, response: fetchBody.slice(0, 200) },
+    })
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error'
     return NextResponse.json({ error: message }, { status: 500 })
