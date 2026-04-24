@@ -37,15 +37,6 @@ function buildHeaders(method: string, path: string): Record<string, string> {
   const timestamp = generateTimestamp()
   const signature = generateSignature(method, path, timestamp, secret)
 
-  // DEBUG: log signature inputs to identify 403 mismatch
-  console.log('[RabbitSign] signing:', JSON.stringify({
-    method, path, timestamp,
-    keyIdSnip: `${keyId.slice(0, 6)}...${keyId.slice(-4)}`,
-    secretLen: secret.length,
-    secretLastChar: secret.charCodeAt(secret.length - 1),
-    sigSnip: signature.slice(0, 20),
-  }))
-
   return {
     'Content-Type': 'application/json',
     'x-rabbitsign-api-time-utc': timestamp,
