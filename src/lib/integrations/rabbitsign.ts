@@ -120,7 +120,7 @@ export async function createContractFromTemplate(
 
   if (!response.ok) {
     const errorBody = await response.text().catch(() => 'Unknown error')
-    throw new Error(`RabbitSign API error ${response.status}: ${errorBody.slice(0, 200)}`)
+    throw new Error(`RabbitSign API error ${response.status}: ${errorBody.slice(0, 1500)}`)
   }
 
   return response.json()
