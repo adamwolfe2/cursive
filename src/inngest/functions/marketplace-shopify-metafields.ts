@@ -20,6 +20,7 @@ import {
   writeCustomerMetafields,
 } from '@/lib/marketplace/shopify/client'
 import { fireVisitorResolvedTriggers } from '@/lib/marketplace/shopify/flow-triggers'
+import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
 
 const BATCH_SIZE = 50
@@ -175,6 +176,23 @@ async function syncOneInstall(install: InstallRow): Promise<{
         err: err instanceof Error ? err.message : String(err),
       })
     }
+  }
+
+  // Alert on systemic failure
+  if (leads.length >= 5 && failed >= leads.length * 0.5) {
+    void sendSlackAlert({
+      type: 'system_event',
+      severity: 'error',
+      message: `Shopify metafield writeback failure ≥50% — install=${install.id} shop=${install.external_id}: ${failed}/${leads.length} failed`,
+      metadata: {
+        install_id: install.id,
+        workspace_id: install.workspace_id,
+        shop: install.external_id,
+        written: written,
+        matched: matched,
+        failed: failed,
+      },
+    })
   }
 
   const now = new Date().toISOString()

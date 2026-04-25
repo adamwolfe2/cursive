@@ -35,6 +35,7 @@ import { FirstEnrichmentModal } from '@/components/onboarding/FirstEnrichmentMod
 import { ProvisioningWidget } from '@/components/dashboard/ProvisioningWidget'
 import { FreePlanBanner } from '@/components/dashboard/FreePlanBanner'
 import { LiveLeadsFeed } from '@/components/leads/live-leads-feed'
+import { MarketplaceSetupBanner } from '@/components/marketplace/MarketplaceSetupBanner'
 
 export const metadata: Metadata = {
   title: 'Dashboard | Cursive',
@@ -281,6 +282,10 @@ async function DashboardMainGrid(props: MainGridProps) {
 
   return (
     <div className="space-y-8">
+      {/* Marketplace install setup banner — only shown when a GHL or Shopify
+          install needs the pixel embed completed. Dismissible per session. */}
+      <MarketplaceSetupBanner />
+
       {/* Hot leads — the aha-moment surface. When pixel is active these are
           typically the highest-intent visitors the pixel just identified.
           Each card surfaces Draft Email as the primary action because this is

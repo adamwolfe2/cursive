@@ -11,6 +11,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { InstallSyncPanel } from '@/components/marketplace/InstallSyncPanel'
 
 interface Install {
   id: string
@@ -160,6 +161,8 @@ export default function GhlIntegrationsPage() {
                     </div>
                   </div>
                 </div>
+
+                <InstallSyncPanel installId={install.id} />
               </div>
             )
           })}

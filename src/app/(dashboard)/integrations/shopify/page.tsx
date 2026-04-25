@@ -10,6 +10,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { InstallSyncPanel } from '@/components/marketplace/InstallSyncPanel'
 
 interface Install {
   id: string
@@ -163,6 +164,8 @@ export default function ShopifyIntegrationsPage() {
                     </div>
                   </div>
                 </div>
+
+                <InstallSyncPanel installId={install.id} />
               </div>
             )
           })}

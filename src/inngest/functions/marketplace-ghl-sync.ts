@@ -27,6 +27,7 @@ import {
   addContactTags,
   normalizePhoneE164,
 } from '@/lib/marketplace/ghl/client'
+import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
 
 const BATCH_SIZE = 100
@@ -187,6 +188,23 @@ async function syncOneInstall(install: InstallRow): Promise<{ synced: number; fa
         err: err instanceof Error ? err.message : String(err),
       })
     }
+  }
+
+  // Alert on systemic failure (>=50% of records failed) — likely token,
+  // permissions, or rate-limit issue requiring user attention
+  if (leads.length >= 5 && failed >= leads.length * 0.5) {
+    void sendSlackAlert({
+      type: 'ghl_sync_failure',
+      severity: 'error',
+      message: `GHL sync failure ≥50% — install=${install.id} location=${install.external_id}: ${failed}/${leads.length} failed`,
+      metadata: {
+        install_id: install.id,
+        workspace_id: install.workspace_id,
+        location_id: install.external_id,
+        synced: synced,
+        failed: failed,
+      },
+    })
   }
 
   // Update install + log
