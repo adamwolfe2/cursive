@@ -92,6 +92,20 @@ export async function createContractFromTemplate(
 
   const today = new Date().toISOString().split('T')[0]
 
+  // RabbitSign expects senderFieldValues as an ARRAY of { name, currentValue }
+  const senderFieldValues = Object.entries(params.senderFieldValues).map(
+    ([name, currentValue]) => ({ name, currentValue })
+  )
+
+  // RabbitSign expects roles as an OBJECT keyed by roleName → { name, email }
+  const roles = params.roles.reduce<Record<string, { name: string; email: string }>>(
+    (acc, role) => {
+      acc[role.roleName] = { name: role.signerName, email: role.signerEmail }
+      return acc
+    },
+    {}
+  )
+
   const response = await fetch(`${RABBITSIGN_API_URL.replace('/api/v1', '')}${path}`, {
     method: 'POST',
     headers,
@@ -99,8 +113,8 @@ export async function createContractFromTemplate(
       title: params.title,
       summary: params.summary || '',
       date: today,
-      senderFieldValues: params.senderFieldValues,
-      roles: params.roles,
+      senderFieldValues,
+      roles,
     }),
   })
 
