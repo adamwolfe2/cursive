@@ -154,6 +154,12 @@ export const { GET, POST, PUT } = serve({
     functions.ghlSyncContact,
     functions.ghlBulkSync,
 
+    // GHL Marketplace App (post-install visitor sync, 6h cron)
+    functions.marketplaceGhlSync,
+
+    // Shopify Marketplace App (metafield writeback, 6h cron)
+    functions.marketplaceShopifyMetafields,
+
     // DFY Onboarding Sequence + AL Fulfillment Automation
     functions.dfyOnboardingSequence,
     functions.alAudienceRefresh,
