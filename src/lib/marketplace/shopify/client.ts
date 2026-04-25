@@ -266,6 +266,7 @@ export type ShopifyWebhookTopic =
   | 'CUSTOMERS_REDACT'
   | 'SHOP_REDACT'
   | 'APP_UNINSTALLED'
+  | 'APP_SUBSCRIPTIONS_UPDATE'
   | 'CHECKOUTS_COMPLETED'
   | 'ORDERS_PAID'
 

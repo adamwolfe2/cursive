@@ -19,6 +19,7 @@ import {
   findCustomerByEmail,
   writeCustomerMetafields,
 } from '@/lib/marketplace/shopify/client'
+import { fireVisitorResolvedTriggers } from '@/lib/marketplace/shopify/flow-triggers'
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
 
 const BATCH_SIZE = 50
@@ -88,7 +89,7 @@ async function syncOneInstall(install: InstallRow): Promise<{
 
   const { data: leads } = await admin
     .from('leads')
-    .select('id, email, intent_score_calculated, created_at')
+    .select('id, email, first_name, last_name, phone, city, state, intent_score_calculated, source, created_at')
     .eq('workspace_id', install.workspace_id)
     .gte('created_at', since.toISOString())
     .not('email', 'is', null)
@@ -119,11 +120,34 @@ async function syncOneInstall(install: InstallRow): Promise<{
   let matched = 0
   let written = 0
   let failed = 0
+  let triggersfired = 0
 
   for (const lead of leads) {
     if (!lead.email) continue
 
     try {
+      // 1. Fire Shopify Flow triggers — runs regardless of whether the
+      // visitor matches an existing Shopify customer (the triggers are
+      // about NEW visitor identification, not customer state)
+      const triggerResult = await fireVisitorResolvedTriggers({
+        shop: install.external_id,
+        accessToken,
+        payload: {
+          email: lead.email,
+          first_name: lead.first_name ?? undefined,
+          last_name: lead.last_name ?? undefined,
+          phone: lead.phone ?? undefined,
+          intent_score: typeof lead.intent_score_calculated === 'number'
+            ? lead.intent_score_calculated
+            : undefined,
+          city: lead.city ?? undefined,
+          state: lead.state ?? undefined,
+        },
+      })
+      if (triggerResult.visitor_resolved.success) triggersfired++
+      if (triggerResult.high_intent_detected?.success) triggersfired++
+
+      // 2. Match to a Shopify Customer for metafield writeback
       const customer = await findCustomerByEmail({
         shop: install.external_id,
         accessToken,
@@ -166,7 +190,10 @@ async function syncOneInstall(install: InstallRow): Promise<{
         status: failed === 0 ? 'success' : written === 0 ? 'failed' : 'partial',
         visitors_synced: written,
         visitors_failed: failed,
-        metadata: { matched_customers: matched },
+        metadata: {
+          matched_customers: matched,
+          flow_triggers_fired: triggersfired,
+        },
         completed_at: now,
       })
       .eq('id', log.data.id)

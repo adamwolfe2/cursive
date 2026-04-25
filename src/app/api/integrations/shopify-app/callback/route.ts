@@ -36,6 +36,8 @@ const MANDATORY_WEBHOOKS: Array<{ topic: ShopifyWebhookTopic; path: string }> = 
   { topic: 'SHOP_REDACT', path: '/api/webhooks/shopify-app/gdpr/shop-redact' },
   // Lifecycle
   { topic: 'APP_UNINSTALLED', path: '/api/webhooks/shopify-app/app-uninstalled' },
+  // Billing
+  { topic: 'APP_SUBSCRIPTIONS_UPDATE', path: '/api/webhooks/shopify-app/app-subscriptions-update' },
   // Suppression on conversion
   { topic: 'ORDERS_PAID', path: '/api/webhooks/shopify-app/orders-paid' },
 ]

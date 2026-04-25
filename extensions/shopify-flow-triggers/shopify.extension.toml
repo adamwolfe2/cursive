@@ -1,0 +1,139 @@
+# Cursive — Shopify Flow Triggers
+#
+# Declares 3 Cursive trigger types that merchants can drag onto their
+# Shopify Flow workflows. Per Shopify Flow PRD §F11 — this is the
+# stickiness moat: every Flow a merchant builds on top of these triggers
+# compounds switching cost.
+#
+# Triggers fire from the Cursive backend (Inngest) — we POST to the
+# trigger callback URL Shopify provides at install. The merchant's Flow
+# workflow then runs whatever actions they configured (Klaviyo, SMS,
+# Slack alert, etc.) — no Cursive engineering required for those.
+
+api_version = "2024-10"
+
+# ---------------------------------------------------------------------------
+# Trigger 1 — visitor_resolved
+# Fires every time Cursive identifies an anonymous visitor → contact data
+# ---------------------------------------------------------------------------
+
+[[extensions]]
+type = "flow_trigger"
+name = "Cursive — Visitor Resolved"
+handle = "cursive-visitor-resolved"
+
+[extensions.settings]
+description = "Fires when Cursive identifies an anonymous visitor and resolves them to email + contact data. Use this to add the visitor to a Klaviyo list, send an SMS, or trigger any downstream automation."
+
+[[extensions.settings.fields]]
+key = "email"
+name = "Email"
+description = "Resolved visitor's email"
+type = "single_line_text_field"
+required = true
+
+[[extensions.settings.fields]]
+key = "first_name"
+name = "First name"
+type = "single_line_text_field"
+
+[[extensions.settings.fields]]
+key = "last_name"
+name = "Last name"
+type = "single_line_text_field"
+
+[[extensions.settings.fields]]
+key = "phone"
+name = "Phone"
+type = "single_line_text_field"
+
+[[extensions.settings.fields]]
+key = "intent_score"
+name = "Intent score"
+description = "0–100 — higher = stronger purchase intent signal"
+type = "number_integer"
+
+[[extensions.settings.fields]]
+key = "city"
+name = "City"
+type = "single_line_text_field"
+
+[[extensions.settings.fields]]
+key = "state"
+name = "State"
+type = "single_line_text_field"
+
+[[extensions.settings.fields]]
+key = "page_url"
+name = "Page URL"
+description = "URL the visitor was on when resolution fired"
+type = "url"
+
+# ---------------------------------------------------------------------------
+# Trigger 2 — high_intent_detected
+# Fires only when the resolved visitor's intent_score crosses the high threshold
+# ---------------------------------------------------------------------------
+
+[[extensions]]
+type = "flow_trigger"
+name = "Cursive — High Intent Detected"
+handle = "cursive-high-intent-detected"
+
+[extensions.settings]
+description = "Fires when a resolved visitor has high purchase intent (score ≥ 80). Use this for premium-touch automations: VIP discount, sales rep alert, urgent SMS."
+
+[[extensions.settings.fields]]
+key = "email"
+name = "Email"
+type = "single_line_text_field"
+required = true
+
+[[extensions.settings.fields]]
+key = "intent_score"
+name = "Intent score"
+type = "number_integer"
+
+[[extensions.settings.fields]]
+key = "page_url"
+name = "Page URL"
+type = "url"
+
+[[extensions.settings.fields]]
+key = "products_viewed"
+name = "Products viewed"
+description = "Comma-separated product IDs"
+type = "single_line_text_field"
+
+# ---------------------------------------------------------------------------
+# Trigger 3 — checkout_abandoned_high_intent
+# Fires 2h after a high-intent visitor starts checkout but doesn't complete
+# ---------------------------------------------------------------------------
+
+[[extensions]]
+type = "flow_trigger"
+name = "Cursive — High-Intent Checkout Abandoned"
+handle = "cursive-checkout-abandoned-high-intent"
+
+[extensions.settings]
+description = "Fires 2 hours after a high-intent visitor reaches checkout but doesn't complete. Use this for recovery campaigns: SMS, discount code, retargeting list."
+
+[[extensions.settings.fields]]
+key = "email"
+name = "Email"
+type = "single_line_text_field"
+required = true
+
+[[extensions.settings.fields]]
+key = "phone"
+name = "Phone"
+type = "single_line_text_field"
+
+[[extensions.settings.fields]]
+key = "cart_total"
+name = "Cart total"
+type = "single_line_text_field"
+
+[[extensions.settings.fields]]
+key = "products_in_cart"
+name = "Products in cart"
+type = "single_line_text_field"
