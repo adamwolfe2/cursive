@@ -2,7 +2,7 @@ export const maxDuration = 30
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { requireAdmin } from '@/lib/auth/admin'
+import { requireAdmin, getCurrentAdminEmail } from '@/lib/auth/admin'
 import { createContractFromTemplate, buildContractFields } from '@/lib/integrations/rabbitsign'
 import { OUTBOUND_TIERS } from '@/app/admin/deal-calculator/pricing-config'
 
@@ -64,12 +64,30 @@ export async function POST(req: NextRequest) {
       inboxes: rest.inboxes ?? tierConfig?.inboxes,
     })
 
+    // Company-side signer (AM Collective). Defaults to current admin's email
+    // and a hardcoded display name; override via env if a dedicated signing
+    // identity is required.
+    const adminEmail = await getCurrentAdminEmail()
+    const companySignerName = (process.env.AM_COLLECTIVE_SIGNER_NAME || 'Adam Wolfe').trim()
+    const companySignerEmail = (process.env.AM_COLLECTIVE_SIGNER_EMAIL || adminEmail || '').trim()
+    if (!companySignerEmail) {
+      return NextResponse.json(
+        { error: 'No company-side signer email. Set AM_COLLECTIVE_SIGNER_EMAIL or sign in.' },
+        { status: 503 }
+      )
+    }
+
     const folder = await createContractFromTemplate({
       templateId,
       title: `Cursive AI SOW — ${rest.companyName}`,
       summary: `Scope of work and service agreement for ${rest.companyName}`,
       senderFieldValues,
       roles: [
+        {
+          roleName: 'AM Collective',
+          signerName: companySignerName,
+          signerEmail: companySignerEmail,
+        },
         {
           roleName: 'Client',
           signerName: contactName,
