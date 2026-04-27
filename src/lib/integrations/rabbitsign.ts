@@ -252,34 +252,26 @@ export function buildContractFields(params: {
     ? `${domains} sending domain${domains !== 1 ? 's' : ''}, ${inboxes} inbox${inboxes !== 1 ? 'es' : ''}`
     : 'Per agreed scope'
 
+  // Field set must EXACTLY match the RabbitSign template's sender fields —
+  // unknown or missing field names cause a 400 "not equal to those in template" error.
   return {
-    // ── Commercial Summary table fields ─────────────────────────
-    review_days: String(params.reviewDays ?? 3),
+    // Commercial Summary table
     client_company: params.companyName,
-    client_company_2: params.companyName,  // duplicate in Introduction paragraph
-    effective_date_2: effectiveDateFormatted, // duplicate in Introduction paragraph
-    effective_date_3: effectiveDateFormatted, // "billed monthly in advance beginning ___" in fees table
     engagement_type: engagementType,
     effective_date: effectiveDateFormatted,
     initial_term: params.initialTerm || '3 months',
     target_send_volume: targetSendVolume,
     domains_and_inboxes: domainsAndInboxes,
     delivery_method: 'Cold Email (SMTP)',
-
-    // ── Body / fee fields ────────────────────────────────────────
-    client_name: params.contactName,
-    client_email: params.contactEmail,
+    // §1 Introduction — duplicates that RabbitSign requires as separate fields
+    client_company_2: params.companyName,
+    effective_date_2: effectiveDateFormatted,
+    // Fees table
     setup_fee: `$${params.setupFee.toLocaleString()}`,
     monthly_fee: `$${params.monthlyFee.toLocaleString()}`,
+    effective_date_3: effectiveDateFormatted,
     infra_monthly: `$${params.infraMonthly.toFixed(2)}`,
-    domain_annual: `$${domainAnnual.toFixed(2)}`,
-    inbox_monthly: `$${inboxMonthly.toFixed(2)}`,
-    total_monthly: `$${(params.monthlyFee + params.infraMonthly).toLocaleString()}`,
-    packages: params.packages.join(', ') || 'Standard',
-    billing_cadence: cadenceLabel[params.billingCadence] ?? params.billingCadence,
-    outbound_tier: params.outboundTierName || params.outboundTier || 'Custom',
-    start_date: effectiveDateFormatted,
-    date: effectiveDateFormatted,
-    notes: params.notes || '',
+    // §4 Client Responsibilities
+    review_days: String(params.reviewDays ?? 3),
   }
 }
