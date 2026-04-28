@@ -423,6 +423,11 @@ export interface ClientFile {
 
 export interface EnrichedICPBrief {
   company_summary: string
+  // The precise, specific thing this client SELLS. Grounded in the intake
+  // (icp_description, pain_points, must_have_traits) — not generic industry
+  // positioning. Drives the copy engine. Optional for backward compat with
+  // older briefs generated before this field was introduced.
+  service_offering?: string
   ideal_buyer_profile: string
   primary_verticals: string[]
   buyer_personas: BuyerPersona[]
