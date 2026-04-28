@@ -301,6 +301,7 @@ export async function submitOnboardingForm(
     // Upload files to storage (now that we have clientId)
     // ---------------------------------------------------------------
     const uploadedFiles: { file_name: string; file_type: string; storage_path: string; file_size: number; mime_type: string }[] = []
+    const failedUploads: { name: string; error: string }[] = []
 
     for (let i = 0; i < fileEntries.length; i++) {
       const file = fileEntries[i]
@@ -322,6 +323,7 @@ export async function submitOnboardingForm(
 
       if (uploadError) {
         safeError('[Onboarding]',`Failed to upload file ${file.name}:`, uploadError.message)
+        failedUploads.push({ name: file.name, error: uploadError.message })
         continue
       }
 
@@ -332,6 +334,21 @@ export async function submitOnboardingForm(
         file_size: file.size,
         mime_type: file.type,
       })
+    }
+
+    // Surface failed uploads in admin_notes so the team sees them and can
+    // ask the client to re-send. Without this the failures are completely
+    // silent: client thinks they uploaded, admin sees nothing.
+    if (failedUploads.length > 0) {
+      const note = `[FILE UPLOAD FAILURES at intake]\n${failedUploads.map((f) => `- ${f.name}: ${f.error}`).join('\n')}\nAdmin should ask client to re-send these via email.`
+      try {
+        await supabase
+          .from('onboarding_clients')
+          .update({ admin_notes: note })
+          .eq('id', clientId)
+      } catch (e: unknown) {
+        safeError('[Onboarding] Could not record upload failures in admin_notes:', e)
+      }
     }
 
     // Insert file records

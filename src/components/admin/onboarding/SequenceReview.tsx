@@ -43,6 +43,8 @@ export default function SequenceReview({ client }: SequenceReviewProps) {
   const [regenerating, setRegenerating] = useState(false)
   const [showDeploy, setShowDeploy] = useState(false)
   const [comments, setComments] = useState<CopyComment[]>([])
+  const [actionError, setActionError] = useState<string | null>(null)
+  const [actionInfo, setActionInfo] = useState<string | null>(null)
   const [copyApproval, setCopyApproval] = useState<{
     status: string
     notes: string | null
@@ -220,8 +222,13 @@ export default function SequenceReview({ client }: SequenceReviewProps) {
               disabled={client.copy_approval_status === 'approved'}
               onClick={async () => {
                 setApproving(true)
+                setActionError(null)
+                setActionInfo(null)
                 try {
                   await approveSequences(client.id)
+                  setActionInfo('Approved. EmailBison push triggered.')
+                } catch (err) {
+                  setActionError(err instanceof Error ? err.message : 'Approval failed. Please try again.')
                 } finally {
                   setApproving(false)
                 }
@@ -236,8 +243,13 @@ export default function SequenceReview({ client }: SequenceReviewProps) {
               loading={requesting}
               onClick={async () => {
                 setRequesting(true)
+                setActionError(null)
+                setActionInfo(null)
                 try {
                   await requestSequenceEdits(client.id)
+                  setActionInfo('Marked as needing edits.')
+                } catch (err) {
+                  setActionError(err instanceof Error ? err.message : 'Could not save. Please try again.')
                 } finally {
                   setRequesting(false)
                 }
@@ -257,6 +269,16 @@ export default function SequenceReview({ client }: SequenceReviewProps) {
               </Button>
             )}
           </div>
+          {(actionError || actionInfo) && (
+            <div className="col-span-full mt-2 w-full">
+              {actionError && (
+                <p className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-md px-3 py-2">{actionError}</p>
+              )}
+              {actionInfo && !actionError && (
+                <p className="text-sm text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-md px-3 py-2">{actionInfo}</p>
+              )}
+            </div>
+          )}
         </CardContent>
       </Card>
 

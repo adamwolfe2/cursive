@@ -524,6 +524,7 @@ function DomainsStep({
   const [showNotes, setShowNotes] = useState(false)
   const [notes, setNotes] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const isApproved = approvalStatus === 'approved'
   const isChangesRequested = approvalStatus === 'changes_requested'
@@ -543,13 +544,20 @@ function DomainsStep({
 
   async function handleApprove() {
     setSubmitting(true)
+    setError(null)
     try {
-      await fetch(`/api/portal/${token}/approve`, {
+      const res = await fetch(`/api/portal/${token}/approve`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ stepType: 'domains', status: 'approved' }),
       })
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}))
+        throw new Error(body?.error || `Approval failed (HTTP ${res.status})`)
+      }
       onApprovalUpdate('domains', 'approved')
+    } catch (err: any) {
+      setError(err?.message || 'Could not save approval. Please try again.')
     } finally {
       setSubmitting(false)
     }
@@ -561,14 +569,21 @@ function DomainsStep({
       return
     }
     setSubmitting(true)
+    setError(null)
     try {
-      await fetch(`/api/portal/${token}/approve`, {
+      const res = await fetch(`/api/portal/${token}/approve`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ stepType: 'domains', status: 'changes_requested', notes }),
       })
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}))
+        throw new Error(body?.error || `Could not save changes request (HTTP ${res.status})`)
+      }
       onApprovalUpdate('domains', 'changes_requested')
       setShowNotes(false)
+    } catch (err: any) {
+      setError(err?.message || 'Could not save changes request. Please try again.')
     } finally {
       setSubmitting(false)
     }
@@ -699,6 +714,9 @@ function DomainsStep({
               </button>
             )}
           </div>
+          {error && (
+            <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-md px-3 py-2">{error}</p>
+          )}
         </div>
       )}
     </StepShell>
@@ -729,6 +747,7 @@ function CopyStep({
   const [showNotes, setShowNotes] = useState(false)
   const [notes, setNotes] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [expandedSeqs, setExpandedSeqs] = useState<Set<number>>(new Set([0]))
   const bodyRefs = useRef<Map<string, HTMLDivElement | null>>(new Map())
 
@@ -774,13 +793,20 @@ function CopyStep({
       if (!ok) return
     }
     setSubmitting(true)
+    setError(null)
     try {
-      await fetch(`/api/portal/${token}/approve`, {
+      const res = await fetch(`/api/portal/${token}/approve`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ stepType: 'copy', status: 'approved' }),
       })
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}))
+        throw new Error(body?.error || `Approval failed (HTTP ${res.status})`)
+      }
       onApprovalUpdate('copy', 'approved')
+    } catch (err: any) {
+      setError(err?.message || 'Could not save approval. Please try again.')
     } finally {
       setSubmitting(false)
     }
@@ -792,14 +818,21 @@ function CopyStep({
       return
     }
     setSubmitting(true)
+    setError(null)
     try {
-      await fetch(`/api/portal/${token}/approve`, {
+      const res = await fetch(`/api/portal/${token}/approve`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ stepType: 'copy', status: 'changes_requested', notes }),
       })
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}))
+        throw new Error(body?.error || `Could not save changes request (HTTP ${res.status})`)
+      }
       onApprovalUpdate('copy', 'changes_requested')
       setShowNotes(false)
+    } catch (err: any) {
+      setError(err?.message || 'Could not save changes request. Please try again.')
     } finally {
       setSubmitting(false)
     }
@@ -960,6 +993,9 @@ function CopyStep({
               </button>
             )}
           </div>
+          {error && (
+            <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-md px-3 py-2">{error}</p>
+          )}
         </div>
       )}
     </StepShell>
