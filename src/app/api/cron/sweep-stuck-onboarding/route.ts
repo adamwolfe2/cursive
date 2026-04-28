@@ -27,7 +27,10 @@ import type { AutomationLogEntry } from '@/types/onboarding'
 
 const MAX_CLIENTS_PER_RUN = 5
 const MAX_RETRIES_PER_CLIENT = 3
-const STUCK_THRESHOLD_MINUTES = 5
+// Threshold must be larger than the runner's 5-min concurrency-guard window
+// AND larger than the runner's maxDuration (300s = 5 min). 10 min gives a
+// comfortable buffer so the sweeper never grabs a pipeline that's mid-run.
+const STUCK_THRESHOLD_MINUTES = 10
 const MAX_AGE_HOURS = 24
 const SWEEP_LOG_STEP = 'pipeline_sweep_retry'
 

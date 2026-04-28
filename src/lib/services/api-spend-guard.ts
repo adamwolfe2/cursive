@@ -99,12 +99,38 @@ export class SpendLimitExceededError extends Error {
 }
 
 /**
- * Increment the cached spend total after a call completes.
- * Keeps the cache accurate without re-querying the DB.
+ * Record API spend in two places:
+ *   1. The in-memory cache, for cheap same-instance reads.
+ *   2. The api_logs table, so other Vercel function instances see the spend.
+ *
+ * Without (2) the daily cap is effectively per-instance and can be bypassed
+ * by Vercel just spawning a new cold container, the daily cap stops working
+ * the moment traffic spreads across instances. Insert is fire-and-forget so
+ * a logging hiccup cannot block onboarding.
  */
-export function recordSpend(costUsd: number): void {
+export function recordSpend(costUsd: number, metadata?: { service?: string; model?: string }): void {
   const today = todayUTC()
   if (cachedSpend?.date === today) {
     cachedSpend.total += costUsd
+  }
+
+  // Persist to api_logs so checkSpendLimit in other instances can see it.
+  try {
+    const supabase = createAdminClient()
+    Promise.resolve(
+      supabase.from('api_logs').insert({
+        service: metadata?.service ?? 'anthropic',
+        endpoint: 'messages.create',
+        method: 'POST',
+        status_code: 200,
+        duration_ms: 0,
+        estimated_cost: costUsd,
+        metadata: { source: 'spend-guard', model: metadata?.model },
+      })
+    ).then(({ error }) => {
+      if (error) safeError('[spend-guard] api_logs insert failed:', error.message)
+    }).catch(() => {/* swallow */})
+  } catch {
+    // best effort
   }
 }

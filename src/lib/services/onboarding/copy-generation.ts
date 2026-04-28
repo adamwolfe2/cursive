@@ -354,17 +354,47 @@ function safeParseJSON<T>(raw: string, label: string): T {
   throw new Error(`${label}: Response is not valid JSON`)
 }
 
+// Retry transient Anthropic errors (5xx, 529 overload, 429 rate limit).
+async function callAnthropicWithRetry<T>(
+  fn: () => Promise<T>,
+  label: string,
+  maxAttempts = 3,
+): Promise<T> {
+  let lastErr: unknown = null
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      return await fn()
+    } catch (err: any) {
+      lastErr = err
+      const status = err?.status ?? err?.response?.status
+      const isRetryable = status === 429 || status === 503 || status === 529 || status >= 500
+      if (!isRetryable || attempt === maxAttempts) {
+        throw err
+      }
+      const backoffMs = Math.min(1000 * 2 ** (attempt - 1), 8000) + Math.floor(Math.random() * 500)
+      // eslint-disable-next-line no-console
+      console.warn(`[${label}] Anthropic ${status ?? 'unknown'}, retry ${attempt}/${maxAttempts - 1} in ${backoffMs}ms`)
+      await new Promise((r) => setTimeout(r, backoffMs))
+    }
+  }
+  throw lastErr
+}
+
 async function callClaude<T>(systemPrompt: string, userMessage: string, label: string, maxTokens = 8192): Promise<T> {
   const client = getAnthropicClient()
 
   await checkSpendLimit()
 
-  const response = await client.messages.create({
-    model: MODEL,
-    max_tokens: maxTokens,
-    system: systemPrompt,
-    messages: [{ role: 'user', content: userMessage }],
-  })
+  const response = await callAnthropicWithRetry(
+    () =>
+      client.messages.create({
+        model: MODEL,
+        max_tokens: maxTokens,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: userMessage }],
+      }),
+    label,
+  )
 
   // Track spend
   const usage = response.usage

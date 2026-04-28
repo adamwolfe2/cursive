@@ -188,17 +188,30 @@ async function addEmailWithVariants(
 // ---------------------------------------------------------------------------
 
 /**
- * Attaches only the sender emails that belong to the given workspace.
+ * Attaches sender emails to a campaign.
  *
- * EmailBison has no native workspace scoping, so we resolve which sender
- * emails belong to this workspace by:
- * 1. Querying the local email_accounts table filtered by workspace_id to
- *    get the set of email addresses owned by this workspace.
- * 2. Fetching the full EB sender email list (status: connected).
- * 3. Intersecting the two sets so we only attach workspace-scoped senders.
+ * Onboarding clients pass their `client.id` as `workspaceId` because they have
+ * no real workspace. Production users pass a true `workspace_id`. The lookup
+ * works the same in both cases: try to match by workspace, and if zero rows
+ * match (which is always the case for onboarding clients) fall back to ALL
+ * connected senders. Without this fallback, campaigns ship with zero senders
+ * and silently never send, the worst possible failure mode at launch.
+ *
+ * EmailBison has no native workspace scoping, so:
+ * 1. Try to resolve workspace-owned email addresses from email_accounts.
+ * 2. If none found, attach all connected senders (onboarding fallback).
+ * 3. Otherwise intersect with the EB connected list and attach only the match.
  */
 async function attachSenderEmails(campaignId: string, workspaceId: string): Promise<void> {
   try {
+    // Always fetch the EB connected list, we need it either way.
+    const { sender_emails } = await listSenderEmails({ status: 'connected' })
+
+    if (!sender_emails || sender_emails.length === 0) {
+      safeError('[EmailBison Push] No connected sender emails available, campaign will have zero senders')
+      return
+    }
+
     // 1. Resolve workspace-owned email addresses from local DB
     const supabase = createAdminClient()
     const { data: localAccounts, error: dbError } = await supabase
@@ -208,26 +221,31 @@ async function attachSenderEmails(campaignId: string, workspaceId: string): Prom
       .eq('is_verified', true)
 
     if (dbError) {
-      safeError(`[EmailBison Push] Could not fetch local email accounts: ${dbError.message}`)
-      return
+      safeError(`[EmailBison Push] Could not fetch local email accounts: ${dbError.message}, falling back to all connected senders`)
     }
 
-    if (!localAccounts || localAccounts.length === 0) {
-      return
+    const matched = (localAccounts || []).map((a) => a.email_address.toLowerCase())
+    const workspaceAddresses = new Set(matched)
+
+    let senderIdsToAttach: string[]
+    if (workspaceAddresses.size === 0) {
+      // ONBOARDING FALLBACK: attach all connected senders so the campaign is
+      // not empty. Real-workspace users go through the matched path below.
+      senderIdsToAttach = sender_emails.map((s) => s.id)
+      safeError(`[EmailBison Push] No workspace-matched senders for ${workspaceId}, attaching all ${senderIdsToAttach.length} connected senders as fallback`)
+    } else {
+      senderIdsToAttach = sender_emails
+        .filter((s) => workspaceAddresses.has(s.email.toLowerCase()))
+        .map((s) => s.id)
+      if (senderIdsToAttach.length === 0) {
+        // Workspace had local accounts but none matched EB. Fall back too.
+        senderIdsToAttach = sender_emails.map((s) => s.id)
+        safeError(`[EmailBison Push] Workspace ${workspaceId} accounts did not match any EB connected sender, attaching all ${senderIdsToAttach.length} as fallback`)
+      }
     }
 
-    const workspaceAddresses = new Set(localAccounts.map((a) => a.email_address.toLowerCase()))
-
-    // 2. Fetch all connected EB sender emails
-    const { sender_emails } = await listSenderEmails({ status: 'connected' })
-
-    // 3. Filter to only sender emails that match this workspace's accounts
-    const workspaceSenderIds = sender_emails
-      .filter((s) => workspaceAddresses.has(s.email.toLowerCase()))
-      .map((s) => s.id)
-
-    if (workspaceSenderIds.length > 0) {
-      await addSenderEmailsToCampaign(campaignId, workspaceSenderIds)
+    if (senderIdsToAttach.length > 0) {
+      await addSenderEmailsToCampaign(campaignId, senderIdsToAttach)
     }
   } catch (error: unknown) {
     safeError(`[EmailBison Push] Could not attach sender emails: ${getErrorMessage(error)}`)

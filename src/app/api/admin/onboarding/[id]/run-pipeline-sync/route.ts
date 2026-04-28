@@ -1,15 +1,17 @@
-// Synchronous pipeline runner — bypasses Inngest entirely.
+// Synchronous pipeline runner, bypasses Inngest for the heavy compute path.
 // Runs enrichment + copy generation inline so admins can unblock a client
 // even if Inngest is misconfigured or the function isn't deployed.
 //
-// Skips Slack / email / CRM sync (non-critical, can be retried separately).
+// Side-channel notifications (Slack alert, confirmation email, CRM sync)
+// run AFTER the main pipeline succeeds. Each is wrapped in its own try/catch
+// so a Slack outage cannot break onboarding for the client.
 //
 // Auth: admin session OR x-automation-secret header (so server actions can
 // fire-and-forget this endpoint via after()).
 //
-// Timeout: 300s — enrichment ~25s + copy generation ~90-120s (3 Claude
-// calls). 60s default is not enough; the function gets killed mid-call
-// before it can write a failure log entry.
+// Timeout: 300s, enrichment ~25s + copy generation ~90-120s (3 Claude calls).
+// 60s default is not enough; the function gets killed mid-call before it can
+// write a failure log entry.
 
 export const maxDuration = 300
 
@@ -18,8 +20,11 @@ import { OnboardingClientRepository } from '@/lib/repositories/onboarding-client
 import { enrichClientICP } from '@/lib/services/onboarding/claude-enrichment'
 import { generateEmailSequences } from '@/lib/services/onboarding/copy-generation'
 import { checkCopyQuality } from '@/lib/services/onboarding/copy-quality-check'
+import { sendOnboardingConfirmation } from '@/lib/services/onboarding/onboarding-email'
+import { sendNewClientSlackAlert, sendCopyReviewSlackAlert } from '@/lib/services/onboarding/onboarding-slack'
+import { syncClientToCRM } from '@/lib/services/onboarding/crm-sync'
 import { needsOutboundSetup } from '@/types/onboarding'
-import { safeError } from '@/lib/utils/log-sanitizer'
+import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
 import type { PackageSlug } from '@/types/onboarding'
 
 async function isAuthorized(request: NextRequest): Promise<boolean> {
@@ -80,12 +85,76 @@ export async function POST(
     }
 
     // Log that we started so even if the function dies mid-Claude-call,
-    // the timeline shows "started but never finished" → timeout.
+    // the timeline shows "started but never finished" -> timeout.
     await repo.appendAutomationLog(clientId, {
       step: 'pipeline_run_started',
       status: 'complete',
       timestamp: new Date().toISOString(),
     })
+
+    // Side-channel notifications: confirmation email + Slack alert + CRM sync.
+    // These run BEFORE the heavy Claude work so a real client gets confirmation
+    // immediately, and so an admin sees the new submission in Slack even if
+    // enrichment fails. Each is wrapped so an outage in one channel cannot
+    // break onboarding for the client.
+    if (!client.confirmation_email_sent) {
+      try {
+        await sendOnboardingConfirmation(client)
+        await repo.update(clientId, { confirmation_email_sent: true })
+        await repo.appendAutomationLog(clientId, {
+          step: 'confirmation_email',
+          status: 'complete',
+          timestamp: new Date().toISOString(),
+        })
+      } catch (e: any) {
+        safeError('[run-pipeline-sync] confirmation email failed:', e?.message || e)
+        await repo.appendAutomationLog(clientId, {
+          step: 'confirmation_email',
+          status: 'failed',
+          error: e?.message || 'Unknown email error',
+          timestamp: new Date().toISOString(),
+        })
+      }
+    }
+    if (!client.slack_notification_sent) {
+      try {
+        await sendNewClientSlackAlert(client)
+        await repo.update(clientId, { slack_notification_sent: true })
+        await repo.appendAutomationLog(clientId, {
+          step: 'slack_new_client',
+          status: 'complete',
+          timestamp: new Date().toISOString(),
+        })
+      } catch (e: any) {
+        safeError('[run-pipeline-sync] slack alert failed:', e?.message || e)
+        await repo.appendAutomationLog(clientId, {
+          step: 'slack_new_client',
+          status: 'failed',
+          error: e?.message || 'Unknown slack error',
+          timestamp: new Date().toISOString(),
+        })
+      }
+    }
+    if (client.crm_sync_status !== 'synced') {
+      try {
+        const crmId = await syncClientToCRM(client)
+        await repo.update(clientId, { crm_record_id: crmId, crm_sync_status: 'synced' })
+        await repo.appendAutomationLog(clientId, {
+          step: 'crm_sync',
+          status: 'complete',
+          timestamp: new Date().toISOString(),
+        })
+      } catch (e: any) {
+        safeError('[run-pipeline-sync] CRM sync failed:', e?.message || e)
+        await repo.update(clientId, { crm_sync_status: 'failed' })
+        await repo.appendAutomationLog(clientId, {
+          step: 'crm_sync',
+          status: 'failed',
+          error: e?.message || 'Unknown CRM error',
+          timestamp: new Date().toISOString(),
+        })
+      }
+    }
 
     const result: { enrichment: string; copy: string; errors: string[] } = {
       enrichment: 'skipped',
@@ -156,6 +225,14 @@ export async function POST(
           status: 'complete',
           timestamp: new Date().toISOString(),
         })
+        // Notify the team that copy is ready for review. Non-blocking.
+        try {
+          const fresh = await repo.findById(clientId)
+          if (fresh) await sendCopyReviewSlackAlert(fresh, seqs)
+        } catch (slackErr: any) {
+          safeError('[run-pipeline-sync] copy review slack failed:', slackErr?.message || slackErr)
+        }
+        safeLog(`[run-pipeline-sync] copy generation complete for ${clientId}`)
         result.copy = 'complete'
       } catch (e: any) {
         const msg = e?.message || 'Unknown copy generation error'

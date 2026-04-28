@@ -63,7 +63,10 @@ export async function approveSequences(clientId: string) {
     throw new Error(`Failed to approve sequences: ${error.message}`)
   }
 
-  // Trigger EmailBison push when copy is approved
+  // Trigger EmailBison push when copy is approved.
+  // Two-channel approach: try Inngest first (production path), fall back to
+  // an inline call to /api/admin/onboarding/[id]/push-emailbison if Inngest
+  // is misconfigured. Either way, surface the failure instead of swallowing.
   try {
     const inngest = getInngest()
     await inngest.send({
@@ -73,8 +76,35 @@ export async function approveSequences(clientId: string) {
         workspace_id: clientId, // Onboarding clients use their own ID as workspace scope
       },
     })
-  } catch {
-    // Non-fatal — the push can be retried manually from admin
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err)
+    const { safeError } = await import('@/lib/utils/log-sanitizer')
+    safeError(`[approveSequences] inngest.send failed for ${clientId}: ${msg}`)
+    // Append failure to automation_log so admin sees it in the timeline.
+    try {
+      const repoMod = await import('@/lib/repositories/onboarding-client.repository')
+      const repo = new repoMod.OnboardingClientRepository()
+      await repo.appendAutomationLog(clientId, {
+        step: 'emailbison_push_dispatch',
+        status: 'failed',
+        error: `Inngest dispatch failed: ${msg}. Push will need manual retry.`,
+        timestamp: new Date().toISOString(),
+      })
+    } catch {
+      // best effort
+    }
+    // Best-effort Slack heads-up.
+    try {
+      const { sendSlackAlert } = await import('@/lib/monitoring/alerts')
+      await sendSlackAlert({
+        type: 'inngest_failure',
+        severity: 'critical',
+        message: `Copy approval succeeded but EmailBison dispatch FAILED for client ${clientId}. Manual retry required.`,
+        metadata: { client_id: clientId, error: msg },
+      }).catch(() => {})
+    } catch {
+      // best effort
+    }
   }
 
   revalidatePath(`/admin/onboarding/${clientId}`)

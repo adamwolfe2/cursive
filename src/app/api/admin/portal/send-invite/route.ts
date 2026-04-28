@@ -57,13 +57,20 @@ export async function POST(req: NextRequest) {
     }
 
     const portalUrl = `${APP_URL}/portal/${tokenRecord.token}`
-    const firstName = client.primary_contact_name?.split(' ')[0] ?? 'there'
+    // HTML-escape ALL client-supplied values before embedding in the email
+    // template. The form is public, so a malicious submission with HTML in
+    // primary_contact_name or company_name would otherwise be rendered into
+    // the outgoing email and could plant a phishing link.
+    const escapeHtml = (s: string) =>
+      s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')
+    const firstName = escapeHtml(client.primary_contact_name?.split(' ')[0] ?? 'there')
+    const companyNameHtml = escapeHtml(client.company_name ?? '')
 
     const content = `
       <h1 class="email-title">Your Cursive onboarding portal is ready</h1>
 
       <p class="email-text">
-        Hi ${firstName}, your onboarding portal for <strong>${client.company_name}</strong> is now live.
+        Hi ${firstName}, your onboarding portal for <strong>${companyNameHtml}</strong> is now live.
         Use the link below to complete the remaining steps to get your campaign activated.
       </p>
 
@@ -92,7 +99,7 @@ export async function POST(req: NextRequest) {
     `
 
     const html = createEmailTemplate({
-      preheader: `Your ${client.company_name} onboarding portal is ready — sign, pay, and approve to get started.`,
+      preheader: `Your ${companyNameHtml} onboarding portal is ready, sign, pay, and approve to get started.`,
       title: 'Your Cursive onboarding portal is ready',
       content,
     })
