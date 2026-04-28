@@ -204,6 +204,7 @@ export async function submitOnboardingForm(
       .from('onboarding_clients')
       .insert({
         status: 'onboarding',
+        intake_source: 'client_form',
         company_name: validatedData.company_name,
         company_website: validatedData.company_website,
         industry: validatedData.industry,

@@ -96,16 +96,22 @@ export async function POST(
           .update({ copy_approval_status: 'approved' })
           .eq('id', tokenRecord.client_id)
 
-        // Trigger EmailBison push — same event the admin approval fires
+        // Trigger EmailBison push, same event the admin approval fires.
+        // workspace_id mirrors the admin path: onboarding clients use their
+        // own client_id as workspace scope (the EB push then falls back to
+        // all connected senders when no email_accounts row matches).
         try {
           const inngest = getInngest()
           await inngest.send({
             name: 'onboarding/copy-approved',
-            data: { client_id: tokenRecord.client_id },
+            data: {
+              client_id: tokenRecord.client_id,
+              workspace_id: tokenRecord.client_id,
+            },
           })
         } catch (err) {
           safeError('[Portal] Failed to trigger EmailBison push:', err)
-          // Non-fatal — approval is saved, pipeline will retry or admin can manually push
+          // Non-fatal, approval is saved, pipeline will retry or admin can manually push
         }
       }
     }

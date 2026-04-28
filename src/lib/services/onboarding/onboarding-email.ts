@@ -5,12 +5,19 @@ import { sendEmail, createEmailTemplate } from '@/lib/email/resend-client'
 import { PACKAGES } from '@/types/onboarding'
 import type { OnboardingClient, PackageSlug } from '@/types/onboarding'
 
+// HTML-escape any client-supplied string before embedding in the template.
+// The form is public so values like company_name and primary_contact_name
+// are attacker-controlled until escaped.
+function escapeHtml(s: string): string {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')
+}
+
 function buildPackageListHtml(packages: PackageSlug[]): string {
   return packages
     .map((slug) => {
       const pkg = PACKAGES[slug]
       if (!pkg) return ''
-      return `<li style="margin-bottom: 8px;"><strong>${pkg.label}</strong> — ${pkg.description}</li>`
+      return `<li style="margin-bottom: 8px;"><strong>${escapeHtml(pkg.label)}</strong> &mdash; ${escapeHtml(pkg.description)}</li>`
     })
     .filter(Boolean)
     .join('\n')
@@ -22,12 +29,14 @@ function buildPackageListHtml(packages: PackageSlug[]): string {
  */
 export async function sendOnboardingConfirmation(client: OnboardingClient): Promise<void> {
   const packageListHtml = buildPackageListHtml(client.packages_selected)
+  const firstName = escapeHtml((client.primary_contact_name || '').split(' ')[0] || 'there')
+  const companyName = escapeHtml(client.company_name || '')
 
   const content = `
-    <h1 class="email-title">Welcome to Cursive, ${client.primary_contact_name.split(' ')[0]}!</h1>
+    <h1 class="email-title">Welcome to Cursive, ${firstName}!</h1>
 
     <p class="email-text">
-      Thank you for completing your onboarding form for <strong>${client.company_name}</strong>.
+      Thank you for completing your onboarding form for <strong>${companyName}</strong>.
       We have everything we need to get started.
     </p>
 
@@ -59,15 +68,15 @@ export async function sendOnboardingConfirmation(client: OnboardingClient): Prom
   `
 
   const html = createEmailTemplate({
-    preheader: `Welcome aboard! Setup for ${client.company_name} begins within 24-48 hours.`,
-    title: `Welcome to Cursive — ${client.company_name}`,
+    preheader: `Welcome aboard! Setup for ${companyName} begins within 24-48 hours.`,
+    title: `Welcome to Cursive, ${companyName}`,
     content,
   })
 
   const result = await sendEmail({
     to: client.primary_contact_email,
     from: 'Cursive Onboarding <onboarding@meetcursive.com>',
-    subject: `Welcome to Cursive — setup begins for ${client.company_name}`,
+    subject: `Welcome to Cursive, setup begins for ${client.company_name || 'your company'}`,
     html,
   })
 

@@ -615,31 +615,30 @@ function checkPhantomCallback(
   // "haven't heard back" / "no response" because that is honest.
   if (emailIdx === 0) {
     // Email 1 should never reference a "prior conversation". Flag if it does.
-    const lower = body.toLowerCase()
-    const phantomPhrases = [
-      'as we discussed',
-      'as you mentioned',
-      'following up on our',
-      'following up on the',
-      'following up on that',
-      'from our last',
-      'your response to',
-      'your reply to',
-      'that comment',
-      'that conversation',
-      'circling back on',
+    // Constrain matches to leading position (start of body or start of a
+    // paragraph) so legitimate prose like "noticed that conversation in
+    // your blog" does not false-positive and trigger an auto-fix loop.
+    const phantomPatterns = [
+      /(^|\n)\s*as we discussed\b/i,
+      /(^|\n)\s*as you mentioned\b/i,
+      /(^|\n)\s*following up on (our|the|that|your)\b/i,
+      /(^|\n)\s*circling back\b/i,
+      /(^|\n)\s*your (response|reply) to\b/i,
+      /(^|\n)\s*from our last (call|conversation|chat|note|email)\b/i,
     ]
-    const hit = phantomPhrases.find((p) => lower.includes(p))
-    if (hit) {
-      return [
-        {
-          sequence_index: seqIdx,
-          email_index: emailIdx,
-          severity: 'error',
-          check: 'phantom_callback',
-          detail: `Email 1 references a prior conversation that does not exist (matched "${hit}"). Email 1 is the first contact. Open cold.`,
-        },
-      ]
+    for (const pat of phantomPatterns) {
+      const m = pat.exec(body)
+      if (m) {
+        return [
+          {
+            sequence_index: seqIdx,
+            email_index: emailIdx,
+            severity: 'error',
+            check: 'phantom_callback',
+            detail: `Email 1 references a prior conversation that does not exist (matched "${m[0].trim()}"). Email 1 is the first contact. Open cold.`,
+          },
+        ]
+      }
     }
     return []
   }
