@@ -121,15 +121,29 @@ export function countWords(text: string): number {
  * Expands all spintax blocks `{opt1|opt2|opt3}` in the given text and returns
  * every possible combination.
  *
- * Uses single-brace matching (`{...}`) while avoiding double-brace merge tags
- * (`{{...}}`).
+ * Single-brace matching, with carve-outs so:
+ *  - Double-brace merge tags `{{firstName}}` (no pipe) are left alone.
+ *  - Merge tags NESTED INSIDE spintax options (e.g. `{A|B {{companyName}} C}`)
+ *    are matched correctly and preserved through to the output. The legacy
+ *    `[^{}]+` pattern silently rejected these blocks, which then leaked raw
+ *    braces into the inbox via EmailBison.
  */
 export function expandSpintax(text: string): string[] {
-  const pattern = /\{([^{}]+)\}/
+  // Match a spintax block whose contents may include literal merge tags.
+  const pattern = /\{((?:[^{}]|\{\{\w+\}\})+)\}/
   const match = pattern.exec(text)
 
   if (!match) {
     return [text]
+  }
+
+  // If there is no pipe, this is not actually a spintax block, leave it alone
+  // and skip past it so we don't infinite-loop.
+  if (!match[1].includes('|')) {
+    const before = text.slice(0, match.index + match[0].length)
+    const after = text.slice(match.index + match[0].length)
+    const tail = expandSpintax(after)
+    return tail.map((t) => before + t)
   }
 
   const options = match[1].split('|')

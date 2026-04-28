@@ -19,12 +19,23 @@ const MERGE_TAG_PLACEHOLDERS: Record<string, string> = {
   '{{title}}': 'VP Marketing',
 }
 
-const SPINTAX_RE = /\{([^{}]+)\}/g
+// Allow merge tags (`{{firstName}}`) to appear INSIDE spintax options. The
+// older `[^{}]+` regex rejected any block whose content had nested braces,
+// which meant a spintax block like `{A|B {{companyName}} C|D}` never resolved
+// and shipped raw to the inbox. The alternation here matches non-brace chars
+// OR a literal merge tag, so nested merge tags pass through cleanly and are
+// substituted by replaceMergeTags afterward.
+const SPINTAX_RE = /\{((?:[^{}]|\{\{\w+\}\})+)\}/g
 const MERGE_TAG_RE = /\{\{(\w+)\}\}/g
+// Older drafts contain double-brace spintax {{a|b|c}} from before we tightened
+// the LLM prompt. Treat as single-brace at render time so nothing leaks.
+const DOUBLE_BRACE_SPINTAX_RE = /\{\{([^{}]*\|[^{}]*)\}\}/g
 
 function resolveSpintax(text: string, seed: number): string {
   let blockIndex = 0
-  return text.replace(SPINTAX_RE, (_match, inner: string) => {
+  // Normalize {{a|b|c}} -> {a|b|c} first (legacy drafts).
+  const normalized = text.replace(DOUBLE_BRACE_SPINTAX_RE, '{$1}')
+  return normalized.replace(SPINTAX_RE, (_match, inner: string) => {
     if (!inner.includes('|')) return _match
     const options = inner.split('|')
     const picked = options[(seed + blockIndex) % options.length]
@@ -33,11 +44,15 @@ function resolveSpintax(text: string, seed: number): string {
   })
 }
 
-function expandSubjectVariants(subject: string): string[] {
+function expandSubjectVariants(rawSubject: string): string[] {
+  // Normalize legacy {{a|b|c}} -> {a|b|c} first.
+  const subject = rawSubject.replace(DOUBLE_BRACE_SPINTAX_RE, '{$1}')
   const blocks: string[][] = []
   const segments: string[] = []
   let lastIndex = 0
-  const re = /\{([^{}]+)\}/g
+  // Same merge-tag-aware pattern as SPINTAX_RE so subjects with embedded
+  // {{companyName}} expand into resolvable variants instead of unmatched raw braces.
+  const re = /\{((?:[^{}]|\{\{\w+\}\})+)\}/g
   let m = re.exec(subject)
   while (m !== null) {
     const inner = m[1]

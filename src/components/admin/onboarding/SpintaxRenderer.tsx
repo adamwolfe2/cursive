@@ -24,7 +24,10 @@ const MERGE_TAG_PLACEHOLDERS: Record<string, string> = {
   '{{website}}': 'acmetech.com',
 }
 
-const SPINTAX_PATTERN = /\{([^{}]+)\}/g
+// Spintax pattern that allows merge tags ({{firstName}}) inside options.
+// The older `[^{}]+` regex rejected any block with nested braces, which meant
+// a block like `{A|B {{companyName}} C|D}` never resolved and shipped raw.
+const SPINTAX_PATTERN = /\{((?:[^{}]|\{\{\w+\}\})+)\}/g
 const MERGE_TAG_PATTERN = /\{\{(\w+)\}\}/g
 // Catches double-brace spintax like {{a|b|c}} that older copy may have. The
 // generation pipeline now prevents this at write time (see sanitizeText in
@@ -39,7 +42,7 @@ function resolveSpintax(text: string, seed: number): string {
   let blockIndex = 0
   const normalized = normalizeDoubleBraceSpintax(text)
   return normalized.replace(SPINTAX_PATTERN, (match, inner: string) => {
-    if (inner.startsWith('{') || !inner.includes('|')) {
+    if (!inner.includes('|')) {
       return match
     }
     const options = inner.split('|')
@@ -56,7 +59,8 @@ function expandAllSpintax(rawText: string): string[] {
   const segments: string[] = []
   let lastIndex = 0
 
-  const regex = /\{([^{}]+)\}/g
+  // Same merge-tag-aware pattern as SPINTAX_PATTERN.
+  const regex = /\{((?:[^{}]|\{\{\w+\}\})+)\}/g
   let execResult = regex.exec(text)
 
   while (execResult !== null) {
@@ -112,7 +116,10 @@ function highlightSpintax(rawText: string): ReactNode {
   let lastIndex = 0
   let key = 0
 
-  const combined = /(\{\{(\w+)\}\}|\{([^{}]+)\})/g
+  // Match merge tag OR spintax-with-possibly-nested-merge-tags. Spintax
+  // alternative is second so the merge-tag alternative wins when both could
+  // match (a bare {{firstName}} should highlight as merge tag, not spintax).
+  const combined = /(\{\{(\w+)\}\}|\{((?:[^{}]|\{\{\w+\}\})+)\})/g
   let match = combined.exec(text)
 
   while (match !== null) {

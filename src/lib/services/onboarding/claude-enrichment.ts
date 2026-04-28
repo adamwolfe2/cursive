@@ -189,7 +189,11 @@ function stripMarkdownFences(text: string): string {
 
 /**
  * Attempt to extract JSON from a string that may contain surrounding text.
- * Tries direct parse first, then regex extraction.
+ * Tries direct parse, then strips a possible preamble, then regex match.
+ *
+ * On total failure, includes a short snippet of the raw response in the error
+ * so the operator can diagnose whether Claude returned a refusal, a truncated
+ * response, or a malformed structure.
  */
 function safeParseJSON<T>(raw: string, label: string): T {
   const cleaned = stripMarkdownFences(raw)
@@ -198,20 +202,58 @@ function safeParseJSON<T>(raw: string, label: string): T {
   try {
     return JSON.parse(cleaned) as T
   } catch {
-    // Fall through to regex extraction
+    // Fall through
   }
 
-  // Try to extract the outermost JSON object
-  const match = cleaned.match(/\{[\s\S]*\}/)
-  if (match) {
-    try {
-      return JSON.parse(match[0]) as T
-    } catch {
-      // Fall through to error
+  // Try the largest balanced { ... } block by walking braces. This handles
+  // cases where Claude prepends commentary like "Here is the JSON: { ... }"
+  // or appends a postamble.
+  const start = cleaned.indexOf('{')
+  if (start !== -1) {
+    let depth = 0
+    let end = -1
+    let inString = false
+    let escape = false
+    for (let i = start; i < cleaned.length; i++) {
+      const ch = cleaned[i]
+      if (inString) {
+        if (escape) escape = false
+        else if (ch === '\\') escape = true
+        else if (ch === '"') inString = false
+        continue
+      }
+      if (ch === '"') inString = true
+      else if (ch === '{') depth++
+      else if (ch === '}') {
+        depth--
+        if (depth === 0) {
+          end = i
+          break
+        }
+      }
+    }
+    if (end !== -1) {
+      const slice = cleaned.slice(start, end + 1)
+      try {
+        return JSON.parse(slice) as T
+      } catch {
+        // Fall through
+      }
     }
   }
 
-  throw new Error(`${label}: Response is not valid JSON`)
+  // Last resort, lazy regex
+  const lazy = cleaned.match(/\{[\s\S]*\}/)
+  if (lazy) {
+    try {
+      return JSON.parse(lazy[0]) as T
+    } catch {
+      // Fall through
+    }
+  }
+
+  const snippet = cleaned.slice(0, 500).replace(/\s+/g, ' ')
+  throw new Error(`${label}: Response is not valid JSON. First 500 chars: ${snippet}`)
 }
 
 // Retry helper for transient Anthropic errors (5xx, overload, rate limit).
@@ -255,7 +297,11 @@ export async function enrichClientICP(client: OnboardingClient): Promise<Enriche
     () =>
       anthropic.messages.create({
         model: MODEL,
-        max_tokens: 8192,
+        // 16K to leave headroom: the enriched ICP brief schema has nested
+        // copy_research, messaging_ammunition, etc. With a rich intake the
+        // output can run 7-10K tokens. 8K caused truncation -> "not valid
+        // JSON" parse failures (Olander hit this on 2026-04-28).
+        max_tokens: 16384,
         system: SYSTEM_PROMPT,
         messages: [
           {
